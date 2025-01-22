@@ -146,9 +146,6 @@ public:
   virtual void enterKnownTerm(css3Parser::KnownTermContext *ctx) = 0;
   virtual void exitKnownTerm(css3Parser::KnownTermContext *ctx) = 0;
 
-  virtual void enterUnknownTerm(css3Parser::UnknownTermContext *ctx) = 0;
-  virtual void exitUnknownTerm(css3Parser::UnknownTermContext *ctx) = 0;
-
   virtual void enterBadTerm(css3Parser::BadTermContext *ctx) = 0;
   virtual void exitBadTerm(css3Parser::BadTermContext *ctx) = 0;
 

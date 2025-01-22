@@ -77,7 +77,33 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
         case CSSPropertyType::PT_FLEX_SHRINK:break;
         case CSSPropertyType::PT_WIDTH:
         {
-            auto mathNode = MakeRef<CSSMathNode>();
+            if(ctx->expr()->term().size() > 1) // invalid count of terms. ignoring property...
+            {
+                printInvalidCountOfTermsInPropertyError(propertyName, ctx->expr()->term().size(), 1);
+
+                break;
+            }
+
+            auto* knownTerm = dynamic_cast<css3Parser::KnownTermContext*>(ctx->expr()->term(0));
+
+            if(knownTerm)
+            {
+                if(knownTerm->calc()) // width: calc(...)
+                {
+                    auto mathNode = MakeRef<CSSMathNode>();
+
+                    processCalculation(knownTerm->calc(), mathNode);
+                    mathNode->resolvePriorities();
+
+                    std::cout << "width calc: " << mathNode->calculate() << std::endl;
+                }
+            }
+            else // we have bad term. ignoring property...
+            {
+                printBadTermInPropertyError(propertyName, 0, ctx->expr()->term(0)->getText());
+
+                break;
+            }
 
             break;
         }
@@ -85,23 +111,6 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
         case CSSPropertyType::PT_BACKGROUND_COLOR:break;
         case CSSPropertyType::PT_UNKNOWN:break;
     }
-}
-
-void SGCore::UI::ANTLRCSSListener::enterDimension(css3Parser::DimensionContext* ctx)
-{
-    if(ctx->getText().ends_with("px"))
-    {
-        std::cout << "number in pixels: " << ctx->getText() << std::endl;
-    }
-}
-
-void SGCore::UI::ANTLRCSSListener::enterCalc(css3Parser::CalcContext* ctx)
-{
-    auto mathNode = MakeRef<CSSMathNode>();
-    processCalculation(ctx, mathNode);
-    mathNode->resolvePriorities();
-
-    std::cout << "calculation result: " << mathNode->calculate() << std::endl;
 }
 
 void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* currentANTLRNode,
@@ -314,7 +323,7 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
                     LOG_W(SGCORE_TAG,
                           "ANTLRCSSListener calculation processing warning: calculation "
                           "expression has unknown dimension: '{}'. Note: The default qualifier ('px') "
-                          "is assigned to the operand. In CSS file: '{}'",
+                          "is assigned to the operand.\nIn CSS file: '{}'",
                           asExpr->calcOperand(i)->calcValue()->unknownDimension()->getText(),
                           Utils::toUTF8(m_toCSSFile->getPath().resolved().u16string()));
 
@@ -360,5 +369,45 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
             processCalculation(child, currentParentMathNode);
         }
     }
+}
+
+void SGCore::UI::ANTLRCSSListener::printInvalidCountOfTermsInPropertyError(const std::string& propertyName,
+                                                                           const size_t& currentTermsCount,
+                                                                           const std::int64_t& validTermsMinCount,
+                                                                           const std::int64_t& validTermsMaxCount) const noexcept
+{
+    std::int64_t finalValidTermsMaxCount = validTermsMaxCount;
+
+    if(finalValidTermsMaxCount < 0)
+    {
+        finalValidTermsMaxCount = validTermsMinCount;
+    }
+
+    LOG_E(SGCORE_TAG,
+          "ANTLRCSSListener can not process property '{}': property has invalid count of terms in section 'value'. "
+          "Property was ignored. "
+          "Count of terms: '{}'. "
+          "Valid count of terms: (min: '{}', max: '{}').\n"
+          "In CSS file: {}",
+          propertyName,
+          currentTermsCount,
+          validTermsMinCount,
+          finalValidTermsMaxCount,
+          Utils::toUTF8(m_toCSSFile->getPath().resolved().u16string()));
+}
+
+void
+SGCore::UI::ANTLRCSSListener::printBadTermInPropertyError(const std::string& propertyName,
+                                                          const int64_t& termIndex,
+                                                          const std::string& termValue) const noexcept
+{
+    LOG_E(SGCORE_TAG,
+          "ANTLRCSSListener can not process property '{}': property has invalid term in section 'value'. "
+          "Property was ignored. Term index: '{}'. Term value: '{}'.\n"
+          "In CSS file: {}",
+          propertyName,
+          termIndex,
+          termValue,
+          Utils::toUTF8(m_toCSSFile->getPath().resolved().u16string()));
 }
 

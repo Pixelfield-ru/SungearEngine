@@ -5170,6 +5170,14 @@ void css3Parser::TermContext::copyFrom(TermContext *ctx) {
 
 //----------------- BadTermContext ------------------------------------------------------------------
 
+css3Parser::UnknownDimensionContext* css3Parser::BadTermContext::unknownDimension() {
+  return getRuleContext<css3Parser::UnknownDimensionContext>(0);
+}
+
+css3Parser::WsContext* css3Parser::BadTermContext::ws() {
+  return getRuleContext<css3Parser::WsContext>(0);
+}
+
 css3Parser::DxImageTransformContext* css3Parser::BadTermContext::dxImageTransform() {
   return getRuleContext<css3Parser::DxImageTransformContext>(0);
 }
@@ -5263,35 +5271,6 @@ void css3Parser::KnownTermContext::exitRule(tree::ParseTreeListener *listener) {
 std::any css3Parser::KnownTermContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<css3ParserVisitor*>(visitor))
     return parserVisitor->visitKnownTerm(this);
-  else
-    return visitor->visitChildren(this);
-}
-//----------------- UnknownTermContext ------------------------------------------------------------------
-
-css3Parser::UnknownDimensionContext* css3Parser::UnknownTermContext::unknownDimension() {
-  return getRuleContext<css3Parser::UnknownDimensionContext>(0);
-}
-
-css3Parser::WsContext* css3Parser::UnknownTermContext::ws() {
-  return getRuleContext<css3Parser::WsContext>(0);
-}
-
-css3Parser::UnknownTermContext::UnknownTermContext(TermContext *ctx) { copyFrom(ctx); }
-
-void css3Parser::UnknownTermContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<css3ParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterUnknownTerm(this);
-}
-void css3Parser::UnknownTermContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<css3ParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitUnknownTerm(this);
-}
-
-std::any css3Parser::UnknownTermContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<css3ParserVisitor*>(visitor))
-    return parserVisitor->visitUnknownTerm(this);
   else
     return visitor->visitChildren(this);
 }
@@ -5421,7 +5400,7 @@ css3Parser::TermContext* css3Parser::term() {
     }
 
     case 13: {
-      _localctx = _tracker.createInstance<css3Parser::UnknownTermContext>(_localctx);
+      _localctx = _tracker.createInstance<css3Parser::BadTermContext>(_localctx);
       enterOuterAlt(_localctx, 13);
       setState(657);
       unknownDimension();

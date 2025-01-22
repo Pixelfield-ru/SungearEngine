@@ -209,7 +209,7 @@ term
     | calc                # knownTerm
     | function_           # knownTerm
     | color               # knownTerm
-    | unknownDimension ws # unknownTerm
+    | unknownDimension ws # badTerm
     | dxImageTransform    # badTerm
     ;
 

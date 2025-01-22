@@ -107,8 +107,6 @@ public:
 
     virtual std::any visitKnownTerm(css3Parser::KnownTermContext *context) = 0;
 
-    virtual std::any visitUnknownTerm(css3Parser::UnknownTermContext *context) = 0;
-
     virtual std::any visitBadTerm(css3Parser::BadTermContext *context) = 0;
 
     virtual std::any visitFunction_(css3Parser::Function_Context *context) = 0;

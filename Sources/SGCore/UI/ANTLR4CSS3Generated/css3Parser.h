@@ -1062,6 +1062,8 @@ public:
   public:
     BadTermContext(TermContext *ctx);
 
+    UnknownDimensionContext *unknownDimension();
+    WsContext *ws();
     DxImageTransformContext *dxImageTransform();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -1086,18 +1088,6 @@ public:
     CalcContext *calc();
     Function_Context *function_();
     ColorContext *color();
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  UnknownTermContext : public TermContext {
-  public:
-    UnknownTermContext(TermContext *ctx);
-
-    UnknownDimensionContext *unknownDimension();
-    WsContext *ws();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
 

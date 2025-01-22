@@ -191,10 +191,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitUnknownTerm(css3Parser::UnknownTermContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitBadTerm(css3Parser::BadTermContext *ctx) override {
     return visitChildren(ctx);
   }

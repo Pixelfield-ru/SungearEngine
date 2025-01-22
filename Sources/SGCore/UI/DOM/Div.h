@@ -1,5 +1,5 @@
 //
-// Created by stuka on 19.01.2025.
+// Created by stuka on 23.01.2025.
 //
 
 #ifndef SUNGEARENGINE_UIDIV_H
@@ -11,7 +11,7 @@ namespace SGCore::UI
 {
     struct Div : UIElement
     {
-        void render() noexcept final;
+        void calculateLayout() noexcept final;
     };
 }
 

@@ -148,9 +148,6 @@ public:
   virtual void enterKnownTerm(css3Parser::KnownTermContext * /*ctx*/) override { }
   virtual void exitKnownTerm(css3Parser::KnownTermContext * /*ctx*/) override { }
 
-  virtual void enterUnknownTerm(css3Parser::UnknownTermContext * /*ctx*/) override { }
-  virtual void exitUnknownTerm(css3Parser::UnknownTermContext * /*ctx*/) override { }
-
   virtual void enterBadTerm(css3Parser::BadTermContext * /*ctx*/) override { }
   virtual void exitBadTerm(css3Parser::BadTermContext * /*ctx*/) override { }
 

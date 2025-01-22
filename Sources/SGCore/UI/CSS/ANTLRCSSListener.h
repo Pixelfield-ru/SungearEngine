@@ -25,9 +25,6 @@ namespace SGCore::UI
 
         void enterKnownDeclaration(css3Parser::KnownDeclarationContext* ctx) override;
 
-        void enterDimension(css3Parser::DimensionContext* ctx) override;
-        void enterCalc(css3Parser::CalcContext* ctx) override;
-
     private:
         /**
          * Iterates through all nodes of any function that can calculate and creates tree of math nodes.
@@ -36,6 +33,15 @@ namespace SGCore::UI
          */
         void processCalculation(antlr4::tree::ParseTree* currentANTLRNode,
                                 const Ref<CSSMathNode>& currentParentMathNode) noexcept;
+
+        void printInvalidCountOfTermsInPropertyError(const std::string& propertyName,
+                                                     const size_t& currentTermsCount,
+                                                     const std::int64_t& validTermsMinCount,
+                                                     const std::int64_t& validTermsMaxCount = -1) const noexcept;
+
+        void printBadTermInPropertyError(const std::string& propertyName,
+                                         const std::int64_t& termIndex,
+                                         const std::string& termValue) const noexcept;
 
         CSSSelector* m_currentSelector { };
     };
