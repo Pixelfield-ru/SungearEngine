@@ -7,126 +7,298 @@
 
 #include <cstdint>
 
+#include "SGCore/UI/CSS/CSSPropertyType.h"
+
 #define CSS_KEYWORD(name, value) static constexpr std::int64_t name = value;
+#define CSS_DECLARE_UNIVERSAL_KEYWORDS KW_INHERIT, KW_INITIAL, KW_UNSET, KW_UNKNOWN
 
 namespace SGCore::UI
 {
-    struct UniversalKeyword
+    enum struct PositionAndSizeKeyword
     {
-        CSS_KEYWORD(KW_INHERIT, 0)
-        CSS_KEYWORD(KW_INITIAL, 1)
-        CSS_KEYWORD(KW_UNSET, 2)
+        CSS_DECLARE_UNIVERSAL_KEYWORDS,
+
+        KW_AUTO,
+        KW_NONE,
+        KW_NORMAL,
+        KW_COVER,
+        KW_CONTAIN,
+        KW_FIXED,
+        KW_ABSOLUTE,
+        KW_RELATIVE,
+        KW_STATIC,
+        KW_STICKY,
     };
 
-    struct PositionAndSizeKeyword : UniversalKeyword
+    enum struct ColorKeyword
     {
-        CSS_KEYWORD(KW_AUTO, 3)
-        CSS_KEYWORD(KW_NONE, 4)
-        CSS_KEYWORD(KW_NORMAL, 5)
-        CSS_KEYWORD(KW_COVER, 6)
-        CSS_KEYWORD(KW_CONTAIN, 7)
-        CSS_KEYWORD(KW_FIXED, 8)
-        CSS_KEYWORD(KW_ABSOLUTE, 9)
-        CSS_KEYWORD(KW_RELATIVE, 10)
-        CSS_KEYWORD(KW_STATIC, 11)
-        CSS_KEYWORD(KW_STICKY, 12)
+        CSS_DECLARE_UNIVERSAL_KEYWORDS,
+
+        KW_TRANSPARENT,
+        KW_CURRENT_COLOR
     };
 
-    struct ColorKeyword : UniversalKeyword
+    enum struct FontKeyword
     {
-        CSS_KEYWORD(KW_TRANSPARENT, 3)
-        CSS_KEYWORD(KW_CURRENT_COLOR, 4)
+        CSS_DECLARE_UNIVERSAL_KEYWORDS,
+
+        KW_SERIF,
+        KW_SANS_SERIF,
+        KW_MONOSPACE,
+        KW_CURSIVE,
+        KW_FANTASY,
+        KW_BOLD,
+        KW_NORMAL,
+        KW_BOLDER,
+        KW_LIGHTER,
+        KW_ITALIC,
+        KW_OBLIQUE
     };
 
-    struct FontKeyword : UniversalKeyword
+    enum struct DisplayKeyword // prop: display
     {
-        CSS_KEYWORD(KW_SERIF, 3)
-        CSS_KEYWORD(KW_SANS_SERIF, 4)
-        CSS_KEYWORD(KW_MONOSPACE, 5)
-        CSS_KEYWORD(KW_CURSIVE, 6)
-        CSS_KEYWORD(KW_FANTASY, 7)
-        CSS_KEYWORD(KW_BOLD, 8)
-        CSS_KEYWORD(KW_NORMAL, 9)
-        CSS_KEYWORD(KW_BOLDER, 10)
-        CSS_KEYWORD(KW_LIGHTER, 11)
-        CSS_KEYWORD(KW_ITALIC, 12)
-        CSS_KEYWORD(KW_OBLIQUE, 13)
+        CSS_DECLARE_UNIVERSAL_KEYWORDS,
+
+        KW_BLOCK,
+        KW_INLINE,
+        KW_FLEX,
+        KW_GRID,
+        KW_INLINE_BLOCK,
+        KW_INLINE_FLEX,
+        KW_INLINE_GRID,
+        KW_TABLE,
+        KW_NONE
     };
 
-    struct DisplayKeyword : UniversalKeyword
+    enum struct ContentOverflowKeyword
     {
-        CSS_KEYWORD(KW_BLOCK, 3)
-        CSS_KEYWORD(KW_INLINE, 4)
-        CSS_KEYWORD(KW_FLEX, 5)
-        CSS_KEYWORD(KW_GRID, 6)
-        CSS_KEYWORD(KW_INLINE_BLOCK, 7)
-        CSS_KEYWORD(KW_INLINE_FLEX, 8)
-        CSS_KEYWORD(KW_INLINE_GRID, 9)
-        CSS_KEYWORD(KW_TABLE, 10)
-        CSS_KEYWORD(KW_NONE, 11)
+        CSS_DECLARE_UNIVERSAL_KEYWORDS,
+
+        KW_CLIP,
+        KW_ELLIPSIS,
+        KW_VISIBLE,
+        KW_HIDDEN,
+        KW_SCROLL,
+        KW_AUTO
     };
 
-    struct ContentOverflowKeyword : UniversalKeyword
+    enum struct AnimationKeyword
     {
-        CSS_KEYWORD(KW_CLIP, 3)
-        CSS_KEYWORD(KW_ELLIPSIS, 4)
-        CSS_KEYWORD(KW_VISIBLE, 5)
-        CSS_KEYWORD(KW_HIDDEN, 6)
-        CSS_KEYWORD(KW_SCROLL, 7)
-        CSS_KEYWORD(KW_AUTO, 8)
+        CSS_DECLARE_UNIVERSAL_KEYWORDS,
+
+        KW_EASE,
+        KW_LINEAR,
+        KW_EASE_IN,
+        KW_EASE_OUT,
+        KW_EASE_IN_OUT,
+        KW_INFINITE,
+        KW_FORWARDS,
+        KW_BACKWARDS
     };
 
-    struct AnimationKeyword : UniversalKeyword
+    enum struct ListKeyword
     {
-        CSS_KEYWORD(KW_EASE, 3)
-        CSS_KEYWORD(KW_LINEAR, 4)
-        CSS_KEYWORD(KW_EASE_IN, 5)
-        CSS_KEYWORD(KW_EASE_OUT, 6)
-        CSS_KEYWORD(KW_EASE_IN_OUT, 7)
-        CSS_KEYWORD(KW_INFINITE, 8)
-        CSS_KEYWORD(KW_FORWARDS, 9)
-        CSS_KEYWORD(KW_BACKWARDS, 10)
+        CSS_DECLARE_UNIVERSAL_KEYWORDS,
+
+        KW_DISC,
+        KW_CIRCLE,
+        KW_SQUARE,
+        KW_DECIMAL,
+        KW_NONE
     };
 
-    struct ListKeyword : UniversalKeyword
+    enum struct BorderKeyword
     {
-        CSS_KEYWORD(KW_DISC, 3)
-        CSS_KEYWORD(KW_CIRCLE, 4)
-        CSS_KEYWORD(KW_SQUARE, 5)
-        CSS_KEYWORD(KW_DECIMAL, 6)
-        CSS_KEYWORD(KW_NONE, 7)
+        CSS_DECLARE_UNIVERSAL_KEYWORDS,
+
+        KW_SOLID,
+        KW_DASHED,
+        KW_DOTTED,
+        KW_DOUBLE,
+        KW_GROOVE,
+        KW_RIDGE,
+        KW_INSET,
+        KW_OUTSET,
+        KW_NONE,
+        KW_HIDDEN
     };
 
-    struct BorderKeyword : UniversalKeyword
+    enum struct FlexboxKeyword
     {
-        CSS_KEYWORD(KW_SOLID, 3)
-        CSS_KEYWORD(KW_DASHED, 4)
-        CSS_KEYWORD(KW_DOTTED, 5)
-        CSS_KEYWORD(KW_DOUBLE, 6)
-        CSS_KEYWORD(KW_GROOVE, 7)
-        CSS_KEYWORD(KW_RIDGE, 8)
-        CSS_KEYWORD(KW_INSET, 9)
-        CSS_KEYWORD(KW_OUTSET, 11)
-        CSS_KEYWORD(KW_NONE, 12)
-        CSS_KEYWORD(KW_HIDDEN, 13)
+        CSS_DECLARE_UNIVERSAL_KEYWORDS,
+
+        KW_START,                   // prop: justify-content, align-items
+        KW_END,                     // prop: justify-content, align-items
+        KW_CENTER,                  // prop: justify-content, align-items
+        KW_STRETCH,                 // prop: justify-content, align-items
+        KW_SPACE_BETWEEN,           // prop: justify-content, align-items
+        KW_SPACE_AROUND,            // prop: justify-content, align-items
+        KW_SPACE_EVENLY,            // prop: justify-content, align-items
+        KW_ROW,                     // prop: flex-direction
+        KW_ROW_REVERSE,             // prop: flex-direction
+        KW_COLUMN,                  // prop: flex-direction
+        KW_COLUMN_REVERSE,          // prop: flex-direction
+        KW_WRAP,                    // prop: flex-wrap
+        KW_NOWRAP,                  // prop: flex-wrap
+        KW_WRAP_REVERSE             // prop: flex-wrap
     };
 
-    struct FlexboxKeyword : UniversalKeyword
+    enum struct ShadowKeyword
     {
-        CSS_KEYWORD(KW_START, 3)
-        CSS_KEYWORD(KW_END, 4)
-        CSS_KEYWORD(KW_CENTER, 5)
-        CSS_KEYWORD(KW_STRETCH, 6)
-        CSS_KEYWORD(KW_SPACE_BETWEEN, 7)
-        CSS_KEYWORD(KW_SPACE_AROUND, 8)
-        CSS_KEYWORD(KW_SPACE_EVENLY, 9)
+        CSS_DECLARE_UNIVERSAL_KEYWORDS,
+
+        KW_NONE,
+        KW_INSET
     };
 
-    struct ShadowKeyword : UniversalKeyword
+    template<typename KeywordEnumT>
+    [[nodiscard]] static KeywordEnumT getUniversalKeywordFromStringValue(const std::string& value) noexcept
     {
-        CSS_KEYWORD(KW_NONE, 3)
-        CSS_KEYWORD(KW_INSET, 4)
-    };
+        if(value == "inherit")
+        {
+            return KeywordEnumT::KW_INHERIT;
+        }
+        else if(value == "initial")
+        {
+            return KeywordEnumT::KW_INITIAL;
+        }
+        else if(value == "unset")
+        {
+            return KeywordEnumT::KW_UNSET;
+        }
+
+        return KeywordEnumT::KW_UNKNOWN;
+    }
+
+    [[nodiscard]] static PositionAndSizeKeyword getPositionAndSizeKeywordFromStringValue(const std::string& value) noexcept
+    {
+        if(value == "auto")
+        {
+            return PositionAndSizeKeyword::KW_AUTO;
+        }
+        else if(value == "none")
+        {
+            return PositionAndSizeKeyword::KW_NONE;
+        }
+        else if(value == "normal")
+        {
+            return PositionAndSizeKeyword::KW_NORMAL;
+        }
+        else if(value == "cover")
+        {
+            return PositionAndSizeKeyword::KW_COVER;
+        }
+        else if(value == "contain")
+        {
+            return PositionAndSizeKeyword::KW_CONTAIN;
+        }
+        else if(value == "fixed")
+        {
+            return PositionAndSizeKeyword::KW_FIXED;
+        }
+        else if(value == "absolute")
+        {
+            return PositionAndSizeKeyword::KW_ABSOLUTE;
+        }
+        else if(value == "relative")
+        {
+            return PositionAndSizeKeyword::KW_RELATIVE;
+        }
+        else if(value == "static")
+        {
+            return PositionAndSizeKeyword::KW_STATIC;
+        }
+        else if(value == "sticky")
+        {
+            return PositionAndSizeKeyword::KW_STICKY;
+        }
+
+        return getUniversalKeywordFromStringValue<PositionAndSizeKeyword>(value);
+    }
+
+    [[nodiscard]] static FlexboxKeyword getFlexboxKeywordFromStringValue(const std::string& value) noexcept
+    {
+        if(value == "start")
+        {
+            return FlexboxKeyword::KW_START;
+        }
+        else if(value == "end")
+        {
+            return FlexboxKeyword::KW_END;
+        }
+        else if(value == "center")
+        {
+            return FlexboxKeyword::KW_CENTER;
+        }
+        else if(value == "stretch")
+        {
+            return FlexboxKeyword::KW_STRETCH;
+        }
+        else if(value == "space-between")
+        {
+            return FlexboxKeyword::KW_SPACE_BETWEEN;
+        }
+        else if(value == "space-around")
+        {
+            return FlexboxKeyword::KW_SPACE_AROUND;
+        }
+        else if(value == "space-evenly")
+        {
+            return FlexboxKeyword::KW_SPACE_EVENLY;
+        }
+        else if(value == "row")
+        {
+            return FlexboxKeyword::KW_ROW;
+        }
+        else if(value == "row-reverse")
+        {
+            return FlexboxKeyword::KW_ROW_REVERSE;
+        }
+        else if(value == "column")
+        {
+            return FlexboxKeyword::KW_COLUMN;
+        }
+        else if(value == "column-reverse")
+        {
+            return FlexboxKeyword::KW_COLUMN_REVERSE;
+        }
+        else if(value == "wrap")
+        {
+            return FlexboxKeyword::KW_WRAP;
+        }
+        else if(value == "nowrap")
+        {
+            return FlexboxKeyword::KW_NOWRAP;
+        }
+        else if(value == "wrap-reverse")
+        {
+            return FlexboxKeyword::KW_WRAP_REVERSE;
+        }
+
+        return getUniversalKeywordFromStringValue<FlexboxKeyword>(value);
+    }
+
+    static std::string getDefaultPropertyValue(CSSPropertyType propertyType) noexcept
+    {
+        switch(propertyType)
+        {
+            case CSSPropertyType::PT_FLEX_DIRECTION: return "row";
+            case CSSPropertyType::PT_FLEX_WRAP: return "wrap";
+            case CSSPropertyType::PT_JUSTIFY_CONTENT: return "start";
+            case CSSPropertyType::PT_ALIGN_ITEMS: return "start";
+            case CSSPropertyType::PT_ALIGN_CONTENT: return "stretch";
+            case CSSPropertyType::PT_GAP: return "0";
+            case CSSPropertyType::PT_ORDER: return "0";
+            case CSSPropertyType::PT_FLEX_GROW: return "0";
+            case CSSPropertyType::PT_FLEX_SHRINK: return "1";
+            case CSSPropertyType::PT_WIDTH: return "auto";
+            case CSSPropertyType::PT_HEIGHT: return "height";
+            case CSSPropertyType::PT_BACKGROUND_COLOR: return "transparent";
+            case CSSPropertyType::PT_UNKNOWN:break;
+        }
+
+        return "inherit";
+    }
 }
 
 #endif //SUNGEARENGINE_CSSPROPERTYVALUEKEYWORDS_H

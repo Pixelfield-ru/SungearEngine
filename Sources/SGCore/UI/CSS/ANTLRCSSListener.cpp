@@ -2,7 +2,6 @@
 // Created by stuka on 18.01.2025.
 //
 #include "ANTLRCSSListener.h"
-#include "PropertyEnumTypes/CSSFlexDirectionType.h"
 #include "CSSPropertyType.h"
 
 #include "SGCore/Memory/AssetManager.h"
@@ -59,11 +58,13 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
 
     CSSPropertyType propertyType = getPropertyTypeFromName(propertyName);
 
+    const std::string propertyDefaultValue = getDefaultPropertyValue(propertyType);
+
     switch(propertyType)
     {
         case CSSPropertyType::PT_FLEX_DIRECTION:
         {
-            m_currentSelector->m_flexDirection = getFlexDirectionTypeFromName(propertyStringValue);
+            m_currentSelector->m_flexDirection = getFlexboxKeywordFromStringValue(propertyStringValue);
 
             break;
         }
@@ -77,9 +78,11 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
         case CSSPropertyType::PT_FLEX_SHRINK:break;
         case CSSPropertyType::PT_WIDTH:
         {
+            m_currentSelector->m_width.m_value = PositionAndSizeKeyword::KW_AUTO;
+
             if(ctx->expr()->term().size() > 1) // invalid count of terms. ignoring property...
             {
-                printInvalidCountOfTermsInPropertyError(propertyName, ctx->expr()->term().size(), 1);
+                printInvalidCountOfTermsInPropertyError(propertyName, propertyDefaultValue, ctx->expr()->term().size(), 1);
 
                 break;
             }
@@ -96,11 +99,61 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
                     mathNode->resolvePriorities();
 
                     std::cout << "width calc: " << mathNode->calculate() << std::endl;
+
+                    m_currentSelector->m_width.m_value = mathNode;
+                }
+                else if(knownTerm->number())
+                {
+                    auto mathNode = MakeRef<CSSMathNumericNode>();
+                    mathNode->m_value = std::stof(knownTerm->number()->getText());
+
+                    std::cout << "width calc: " << mathNode->calculate() << std::endl;
+
+                    m_currentSelector->m_width.m_value = mathNode;
+                }
+                else if(knownTerm->dimension())
+                {
+                    auto mathNode = MakeRef<CSSMathNumericNode>();
+
+                    const std::string dimension = knownTerm->dimension()->Dimension()->getText();
+
+                    mathNode->m_dimensionQualifier = getDimensionFromString(dimension);
+                    mathNode->m_value = std::stof(dimension);
+
+                    std::cout << "width calc: " << mathNode->calculate() << std::endl;
+
+                    m_currentSelector->m_width.m_value = mathNode;
+                }
+                else if(knownTerm->percentage())
+                {
+                    auto mathNode = MakeRef<CSSMathNumericNode>();
+
+                    const std::string percentage = knownTerm->percentage()->Percentage()->getText();
+
+                    mathNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_PERCENT;
+                    mathNode->m_value = std::stof(percentage);
+
+                    std::cout << "width calc: " << mathNode->calculate() << std::endl;
+
+                    m_currentSelector->m_width.m_value = mathNode;
+                }
+                else // we have keyword
+                {
+                    const PositionAndSizeKeyword keyword = getPositionAndSizeKeywordFromStringValue(propertyStringValue);
+
+                    if(keyword == PositionAndSizeKeyword::KW_UNKNOWN)
+                    {
+                        printUnknownKeywordUsedError(propertyName, propertyStringValue, propertyDefaultValue);
+
+                        break;
+                    }
+
+                    m_currentSelector->m_width.m_value = keyword;
                 }
             }
             else // we have bad term. ignoring property...
             {
-                printBadTermInPropertyError(propertyName, 0, ctx->expr()->term(0)->getText());
+                printBadTermInPropertyError(propertyName, 0, ctx->expr()->term(0)->getText(), propertyDefaultValue);
 
                 break;
             }
@@ -188,118 +241,7 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
 
                     const std::string dimension = asExpr->calcOperand(i)->calcValue()->dimension()->Dimension()->getText();
 
-                    #pragma region Units
-                    // ================================================================ absolute length
-                    if(dimension.ends_with("px"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_PX;
-                    }
-                    else if(dimension.ends_with("cm"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_CM;
-                    }
-                    else if(dimension.ends_with("mm"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_MM;
-                    }
-                    else if(dimension.ends_with("in"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_IN;
-                    }
-                    else if(dimension.ends_with("pt"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_PT;
-                    }
-                    else if(dimension.ends_with("pc"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_PC;
-                    }
-                    else if(dimension.ends_with("q"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_Q;
-                    }
-                    // ================================================================ angle
-                    else if(dimension.ends_with("deg"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_DEG;
-                    }
-                    else if(dimension.ends_with("rad"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_RAD;
-                    }
-                    else if(dimension.ends_with("grad"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_GRAD;
-                    }
-                    else if(dimension.ends_with("turn"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_TURN;
-                    }
-                    // ================================================================ time
-                    else if(dimension.ends_with("ms"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_MS;
-                    }
-                    else if(dimension.ends_with("s"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_S;
-                    }
-                    // ================================================================ frequency
-                    else if(dimension.ends_with("hz"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_HZ;
-                    }
-                    else if(dimension.ends_with("khz"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_KHZ;
-                    }
-                    // ================================================================ relative units
-                    else if(dimension.ends_with("em"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_EM;
-                    }
-                    else if(dimension.ends_with("ex"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_EX;
-                    }
-                    else if(dimension.ends_with("ch"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_CH;
-                    }
-                    else if(dimension.ends_with("rem"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_REM;
-                    }
-                    else if(dimension.ends_with("vw"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_VW;
-                    }
-                    else if(dimension.ends_with("vh"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_VH;
-                    }
-                    else if(dimension.ends_with("vmin"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_VMIN;
-                    }
-                    else if(dimension.ends_with("vmax"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_VMAX;
-                    }
-                    // ================================================================ resolution units
-                    else if(dimension.ends_with("dpi"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_DPI;
-                    }
-                    else if(dimension.ends_with("dpcm"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_DPCM;
-                    }
-                    else if(dimension.ends_with("dppx"))
-                    {
-                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_DPPX;
-                    }
-                    #pragma endregion Units
+                    newNumberNode->m_dimensionQualifier = getDimensionFromString(dimension);
 
                     // stof ignores chars after number so we dont care that we have 123px for example
                     newNumberNode->m_value = std::stof(dimension);
@@ -372,6 +314,7 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
 }
 
 void SGCore::UI::ANTLRCSSListener::printInvalidCountOfTermsInPropertyError(const std::string& propertyName,
+                                                                           const std::string& defaultSetKeyword,
                                                                            const size_t& currentTermsCount,
                                                                            const std::int64_t& validTermsMinCount,
                                                                            const std::int64_t& validTermsMaxCount) const noexcept
@@ -384,30 +327,170 @@ void SGCore::UI::ANTLRCSSListener::printInvalidCountOfTermsInPropertyError(const
     }
 
     LOG_E(SGCORE_TAG,
-          "ANTLRCSSListener can not process property '{}': property has invalid count of terms in section 'value'. "
-          "Property was ignored. "
+          "ANTLRCSSListener can not process property '{}' correctly: property has invalid count of terms in section 'value'. "
+          "Property has been set to the default value. "
           "Count of terms: '{}'. "
-          "Valid count of terms: (min: '{}', max: '{}').\n"
+          "Valid count of terms: (min: '{}', max: '{}'). "
+          "Set keyword (default): '{}'.\n"
           "In CSS file: {}",
           propertyName,
           currentTermsCount,
           validTermsMinCount,
           finalValidTermsMaxCount,
+          defaultSetKeyword,
           Utils::toUTF8(m_toCSSFile->getPath().resolved().u16string()));
 }
 
 void
 SGCore::UI::ANTLRCSSListener::printBadTermInPropertyError(const std::string& propertyName,
                                                           const int64_t& termIndex,
-                                                          const std::string& termValue) const noexcept
+                                                          const std::string& termValue,
+                                                          const std::string& defaultSetKeyword) const noexcept
 {
     LOG_E(SGCORE_TAG,
-          "ANTLRCSSListener can not process property '{}': property has invalid term in section 'value'. "
-          "Property was ignored. Term index: '{}'. Term value: '{}'.\n"
+          "ANTLRCSSListener can not process property '{}' correctly: property has invalid term in section 'value'. "
+          "Property has been set to the default value. Term index: '{}'. Term value: '{}'. "
+          "Set keyword (default): '{}'.\n"
           "In CSS file: {}",
           propertyName,
           termIndex,
           termValue,
+          defaultSetKeyword,
           Utils::toUTF8(m_toCSSFile->getPath().resolved().u16string()));
+}
+
+void SGCore::UI::ANTLRCSSListener::printUnknownKeywordUsedError(const std::string& propertyName,
+                                                                const std::string& currentKeyword,
+                                                                const std::string& defaultSetKeyword) const noexcept
+{
+    LOG_E(SGCORE_TAG,
+          "ANTLRCSSListener can not process property '{}' correctly: property has unknown keyword in section 'value'. "
+          "Property has been set to the default value. "
+          "Current keyword: '{}'. "
+          "Set keyword (default): '{}'.\n"
+          "In CSS file: {}",
+          propertyName,
+          currentKeyword,
+          defaultSetKeyword,
+          Utils::toUTF8(m_toCSSFile->getPath().resolved().u16string()));
+}
+
+SGCore::UI::CSSDimensionQualifier
+SGCore::UI::ANTLRCSSListener::getDimensionFromString(const std::string& dimensionStr) noexcept
+{
+    #pragma region Units
+    // ================================================================ absolute length
+    if(dimensionStr.ends_with("px"))
+    {
+        return CSSDimensionQualifier::DQ_PX;
+    }
+    else if(dimensionStr.ends_with("cm"))
+    {
+        return CSSDimensionQualifier::DQ_CM;
+    }
+    else if(dimensionStr.ends_with("mm"))
+    {
+        return CSSDimensionQualifier::DQ_MM;
+    }
+    else if(dimensionStr.ends_with("in"))
+    {
+        return CSSDimensionQualifier::DQ_IN;
+    }
+    else if(dimensionStr.ends_with("pt"))
+    {
+        return CSSDimensionQualifier::DQ_PT;
+    }
+    else if(dimensionStr.ends_with("pc"))
+    {
+        return CSSDimensionQualifier::DQ_PC;
+    }
+    else if(dimensionStr.ends_with("q"))
+    {
+        return CSSDimensionQualifier::DQ_Q;
+    }
+    // ================================================================ angle
+    else if(dimensionStr.ends_with("deg"))
+    {
+        return CSSDimensionQualifier::DQ_DEG;
+    }
+    else if(dimensionStr.ends_with("rad"))
+    {
+        return CSSDimensionQualifier::DQ_RAD;
+    }
+    else if(dimensionStr.ends_with("grad"))
+    {
+        return CSSDimensionQualifier::DQ_GRAD;
+    }
+    else if(dimensionStr.ends_with("turn"))
+    {
+        return CSSDimensionQualifier::DQ_TURN;
+    }
+    // ================================================================ time
+    else if(dimensionStr.ends_with("ms"))
+    {
+        return CSSDimensionQualifier::DQ_MS;
+    }
+    else if(dimensionStr.ends_with("s"))
+    {
+        return CSSDimensionQualifier::DQ_S;
+    }
+    // ================================================================ frequency
+    else if(dimensionStr.ends_with("hz"))
+    {
+        return CSSDimensionQualifier::DQ_HZ;
+    }
+    else if(dimensionStr.ends_with("khz"))
+    {
+        return CSSDimensionQualifier::DQ_KHZ;
+    }
+    // ================================================================ relative units
+    else if(dimensionStr.ends_with("em"))
+    {
+        return CSSDimensionQualifier::DQ_EM;
+    }
+    else if(dimensionStr.ends_with("ex"))
+    {
+        return CSSDimensionQualifier::DQ_EX;
+    }
+    else if(dimensionStr.ends_with("ch"))
+    {
+        return CSSDimensionQualifier::DQ_CH;
+    }
+    else if(dimensionStr.ends_with("rem"))
+    {
+        return CSSDimensionQualifier::DQ_REM;
+    }
+    else if(dimensionStr.ends_with("vw"))
+    {
+        return CSSDimensionQualifier::DQ_VW;
+    }
+    else if(dimensionStr.ends_with("vh"))
+    {
+        return CSSDimensionQualifier::DQ_VH;
+    }
+    else if(dimensionStr.ends_with("vmin"))
+    {
+        return CSSDimensionQualifier::DQ_VMIN;
+    }
+    else if(dimensionStr.ends_with("vmax"))
+    {
+        return CSSDimensionQualifier::DQ_VMAX;
+    }
+    // ================================================================ resolution units
+    else if(dimensionStr.ends_with("dpi"))
+    {
+        return CSSDimensionQualifier::DQ_DPI;
+    }
+    else if(dimensionStr.ends_with("dpcm"))
+    {
+        return CSSDimensionQualifier::DQ_DPCM;
+    }
+    else if(dimensionStr.ends_with("dppx"))
+    {
+        return CSSDimensionQualifier::DQ_DPPX;
+    }
+    #pragma endregion Units
+
+    return CSSDimensionQualifier::DQ_PX;
 }
 

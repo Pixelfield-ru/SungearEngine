@@ -6,9 +6,12 @@
 #define SUNGEARENGINE_CSSSELECTOR_H
 
 #include <vector>
-#include <SGCore/Memory/Assets/IAsset.h>
+#include "SGCore/Memory/Assets/IAsset.h"
+#include "SGCore/UI/CSS/PropertyValues/CSSPropertyValue.h"
 
-#include "SGCore/UI/CSS/PropertyEnumTypes/CSSFlexDirectionType.h"
+#include "PropertyValues/CSSPropertyValueKeywords.h"
+
+#include "SGCore/UI/CSS/Math/CSSMathNode.h"
 
 namespace SGCore::UI
 {
@@ -21,10 +24,11 @@ namespace SGCore::UI
         friend struct ANTLRCSSListener;
         friend struct CSSFile;
 
-        CSSFlexDirectionType m_flexDirection = CSSFlexDirectionType::FDT_ROW;
+        FlexboxKeyword m_flexDirection = FlexboxKeyword::KW_ROW;
+        DisplayKeyword m_display = DisplayKeyword::KW_FLEX;
 
-        // -1 -1 means auto size
-        glm::vec2 m_elementSize = { -1, -1 };
+        CSSPropertyValue<PositionAndSizeKeyword::KW_AUTO, Ref<CSSMathNode>> m_width;
+        CSSPropertyValue<PositionAndSizeKeyword::KW_AUTO, Ref<CSSMathNode>> m_height;
 
         [[nodiscard]] const std::string& getName() const noexcept;
 

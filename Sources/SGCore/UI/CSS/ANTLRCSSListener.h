@@ -35,13 +35,21 @@ namespace SGCore::UI
                                 const Ref<CSSMathNode>& currentParentMathNode) noexcept;
 
         void printInvalidCountOfTermsInPropertyError(const std::string& propertyName,
+                                                     const std::string& defaultSetKeyword,
                                                      const size_t& currentTermsCount,
                                                      const std::int64_t& validTermsMinCount,
                                                      const std::int64_t& validTermsMaxCount = -1) const noexcept;
 
         void printBadTermInPropertyError(const std::string& propertyName,
                                          const std::int64_t& termIndex,
-                                         const std::string& termValue) const noexcept;
+                                         const std::string& termValue,
+                                         const std::string& defaultSetKeyword) const noexcept;
+
+        void printUnknownKeywordUsedError(const std::string& propertyName,
+                                          const std::string& currentKeyword,
+                                          const std::string& defaultSetKeyword) const noexcept;
+
+        static CSSDimensionQualifier getDimensionFromString(const std::string& dimensionStr) noexcept;
 
         CSSSelector* m_currentSelector { };
     };
