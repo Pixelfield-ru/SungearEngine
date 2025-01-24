@@ -5,8 +5,12 @@
 #include "CSSPropertyType.h"
 
 #include "SGCore/Memory/AssetManager.h"
-#include "SGCore/UI/CSS/Math/CSSMathNode.h"
-#include "SGCore/UI/CSS/Math/CSSMathNumericNode.h"
+
+#include "PropertiesProcessors/CSSPropertyProcessor.h"
+#include "PropertiesProcessors/CSSWidthPropertyProcessor.h"
+#include "PropertiesProcessors/CSSHeightPropertyProcessor.h"
+#include "PropertiesProcessors/CSSFlexDirectionPropertyProcessor.h"
+#include "PropertiesProcessors/CSSDisplayPropertyProcessor.h"
 
 void SGCore::UI::ANTLRCSSListener::enterSelector(css3Parser::SelectorContext* ctx)
 {
@@ -58,13 +62,23 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
 
     CSSPropertyType propertyType = getPropertyTypeFromName(propertyName);
 
-    const std::string propertyDefaultValue = getDefaultPropertyValue(propertyType);
-
     switch(propertyType)
     {
+        case CSSPropertyType::PT_DISPLAY:
+        {
+            CSSPropertyProcessor<CSSPropertyType::PT_DISPLAY>::processProperty(this,
+                                                                               ctx,
+                                                                               propertyName,
+                                                                               propertyStringValue);
+
+            break;
+        }
         case CSSPropertyType::PT_FLEX_DIRECTION:
         {
-            m_currentSelector->m_flexDirection = getFlexboxKeywordFromStringValue(propertyStringValue);
+            CSSPropertyProcessor<CSSPropertyType::PT_FLEX_DIRECTION>::processProperty(this,
+                                                                                      ctx,
+                                                                                      propertyName,
+                                                                                      propertyStringValue);
 
             break;
         }
@@ -78,89 +92,22 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
         case CSSPropertyType::PT_FLEX_SHRINK:break;
         case CSSPropertyType::PT_WIDTH:
         {
-            m_currentSelector->m_width.m_value = PositionAndSizeKeyword::KW_AUTO;
-
-            if(ctx->expr()->term().size() > 1) // invalid count of terms. ignoring property...
-            {
-                printInvalidCountOfTermsInPropertyError(propertyName, propertyDefaultValue, ctx->expr()->term().size(), 1);
-
-                break;
-            }
-
-            auto* knownTerm = dynamic_cast<css3Parser::KnownTermContext*>(ctx->expr()->term(0));
-
-            if(knownTerm)
-            {
-                if(knownTerm->calc()) // width: calc(...)
-                {
-                    auto mathNode = MakeRef<CSSMathNode>();
-
-                    processCalculation(knownTerm->calc(), mathNode);
-                    mathNode->resolvePriorities();
-
-                    std::cout << "width calc: " << mathNode->calculate() << std::endl;
-
-                    m_currentSelector->m_width.m_value = mathNode;
-                }
-                else if(knownTerm->number())
-                {
-                    auto mathNode = MakeRef<CSSMathNumericNode>();
-                    mathNode->m_value = std::stof(knownTerm->number()->getText());
-
-                    std::cout << "width calc: " << mathNode->calculate() << std::endl;
-
-                    m_currentSelector->m_width.m_value = mathNode;
-                }
-                else if(knownTerm->dimension())
-                {
-                    auto mathNode = MakeRef<CSSMathNumericNode>();
-
-                    const std::string dimension = knownTerm->dimension()->Dimension()->getText();
-
-                    mathNode->m_dimensionQualifier = getDimensionFromString(dimension);
-                    mathNode->m_value = std::stof(dimension);
-
-                    std::cout << "width calc: " << mathNode->calculate() << std::endl;
-
-                    m_currentSelector->m_width.m_value = mathNode;
-                }
-                else if(knownTerm->percentage())
-                {
-                    auto mathNode = MakeRef<CSSMathNumericNode>();
-
-                    const std::string percentage = knownTerm->percentage()->Percentage()->getText();
-
-                    mathNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_PERCENT;
-                    mathNode->m_value = std::stof(percentage);
-
-                    std::cout << "width calc: " << mathNode->calculate() << std::endl;
-
-                    m_currentSelector->m_width.m_value = mathNode;
-                }
-                else // we have keyword
-                {
-                    const PositionAndSizeKeyword keyword = getPositionAndSizeKeywordFromStringValue(propertyStringValue);
-
-                    if(keyword == PositionAndSizeKeyword::KW_UNKNOWN)
-                    {
-                        printUnknownKeywordUsedError(propertyName, propertyStringValue, propertyDefaultValue);
-
-                        break;
-                    }
-
-                    m_currentSelector->m_width.m_value = keyword;
-                }
-            }
-            else // we have bad term. ignoring property...
-            {
-                printBadTermInPropertyError(propertyName, 0, ctx->expr()->term(0)->getText(), propertyDefaultValue);
-
-                break;
-            }
+            CSSPropertyProcessor<CSSPropertyType::PT_WIDTH>::processProperty(this,
+                                                                             ctx,
+                                                                             propertyName,
+                                                                             propertyStringValue);
 
             break;
         }
-        case CSSPropertyType::PT_HEIGHT:break;
+        case CSSPropertyType::PT_HEIGHT:
+        {
+            CSSPropertyProcessor<CSSPropertyType::PT_HEIGHT>::processProperty(this,
+                                                                              ctx,
+                                                                              propertyName,
+                                                                              propertyStringValue);
+
+            break;
+        }
         case CSSPropertyType::PT_BACKGROUND_COLOR:break;
         case CSSPropertyType::PT_UNKNOWN:break;
     }
@@ -493,4 +440,3 @@ SGCore::UI::ANTLRCSSListener::getDimensionFromString(const std::string& dimensio
 
     return CSSDimensionQualifier::DQ_PX;
 }
-

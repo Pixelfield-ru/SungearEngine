@@ -9,6 +9,8 @@
 
 #include "SGCore/UI/CSS/CSSPropertyType.h"
 
+#include "SGCore/Utils/TypeTraits.h"
+
 #define CSS_KEYWORD(name, value) static constexpr std::int64_t name = value;
 #define CSS_DECLARE_UNIVERSAL_KEYWORDS KW_INHERIT, KW_INITIAL, KW_UNSET, KW_UNKNOWN
 
@@ -216,6 +218,48 @@ namespace SGCore::UI
         return getUniversalKeywordFromStringValue<PositionAndSizeKeyword>(value);
     }
 
+    [[nodiscard]] static DisplayKeyword getDisplayKeywordFromStringValue(const std::string& value) noexcept
+    {
+        if(value == "block")
+        {
+            return DisplayKeyword::KW_BLOCK;
+        }
+        else if(value == "inline")
+        {
+            return DisplayKeyword::KW_INLINE;
+        }
+        else if(value == "flex")
+        {
+            return DisplayKeyword::KW_FLEX;
+        }
+        else if(value == "grid")
+        {
+            return DisplayKeyword::KW_GRID;
+        }
+        else if(value == "inline-block")
+        {
+            return DisplayKeyword::KW_INLINE_BLOCK;
+        }
+        else if(value == "inline-flex")
+        {
+            return DisplayKeyword::KW_INLINE_FLEX;
+        }
+        else if(value == "inline-grid")
+        {
+            return DisplayKeyword::KW_INLINE_GRID;
+        }
+        else if(value == "table")
+        {
+            return DisplayKeyword::KW_TABLE;
+        }
+        else if(value == "none")
+        {
+            return DisplayKeyword::KW_NONE;
+        }
+
+        return getUniversalKeywordFromStringValue<DisplayKeyword>(value);
+    }
+
     [[nodiscard]] static FlexboxKeyword getFlexboxKeywordFromStringValue(const std::string& value) noexcept
     {
         if(value == "start")
@@ -278,26 +322,22 @@ namespace SGCore::UI
         return getUniversalKeywordFromStringValue<FlexboxKeyword>(value);
     }
 
-    static std::string getDefaultPropertyValue(CSSPropertyType propertyType) noexcept
+    template<typename KeywordEnumT>
+    requires(std::is_enum_v<KeywordEnumT>)
+    static KeywordEnumT getKeywordFromStringValue(const std::string& value) noexcept
     {
-        switch(propertyType)
+        if constexpr(std::is_same_v<KeywordEnumT, PositionAndSizeKeyword>)
         {
-            case CSSPropertyType::PT_FLEX_DIRECTION: return "row";
-            case CSSPropertyType::PT_FLEX_WRAP: return "wrap";
-            case CSSPropertyType::PT_JUSTIFY_CONTENT: return "start";
-            case CSSPropertyType::PT_ALIGN_ITEMS: return "start";
-            case CSSPropertyType::PT_ALIGN_CONTENT: return "stretch";
-            case CSSPropertyType::PT_GAP: return "0";
-            case CSSPropertyType::PT_ORDER: return "0";
-            case CSSPropertyType::PT_FLEX_GROW: return "0";
-            case CSSPropertyType::PT_FLEX_SHRINK: return "1";
-            case CSSPropertyType::PT_WIDTH: return "auto";
-            case CSSPropertyType::PT_HEIGHT: return "height";
-            case CSSPropertyType::PT_BACKGROUND_COLOR: return "transparent";
-            case CSSPropertyType::PT_UNKNOWN:break;
+            return getPositionAndSizeKeywordFromStringValue(value);
         }
-
-        return "inherit";
+        else if constexpr(std::is_same_v<KeywordEnumT, FlexboxKeyword>)
+        {
+            return getFlexboxKeywordFromStringValue(value);
+        }
+        else
+        {
+            static_assert(always_false<KeywordEnumT>::value, "Unknown keyword enum type.");
+        }
     }
 }
 
