@@ -11,6 +11,7 @@
 #include "PropertiesProcessors/CSSHeightPropertyProcessor.h"
 #include "PropertiesProcessors/CSSFlexDirectionPropertyProcessor.h"
 #include "PropertiesProcessors/CSSDisplayPropertyProcessor.h"
+#include "PropertiesProcessors/CSSBackgroundColorPropertyProcessor.h"
 
 void SGCore::UI::ANTLRCSSListener::enterSelector(css3Parser::SelectorContext* ctx)
 {
@@ -108,14 +109,26 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
 
             break;
         }
-        case CSSPropertyType::PT_BACKGROUND_COLOR:break;
+        case CSSPropertyType::PT_BACKGROUND_COLOR:
+        {
+            CSSPropertyProcessor<CSSPropertyType::PT_BACKGROUND_COLOR>::processProperty(this,
+                                                                                        ctx,
+                                                                                        propertyName,
+                                                                                        propertyStringValue);
+
+            break;
+        }
         case CSSPropertyType::PT_UNKNOWN:break;
     }
 }
 
 void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* currentANTLRNode,
-                                                      const Ref<CSSMathNode>& currentParentMathNode) noexcept
+                                                      const std::string& currentPropertyName,
+                                                      const Ref<CSSMathNode>& currentParentMathNode,
+                                                      const std::unordered_set<CSSDimensionQualifier>& supportedQualifiers) noexcept
 {
+    const bool isAllQualifiersSupported = supportedQualifiers.contains(CSSDimensionQualifier::DQ_ANY);
+
     for(auto* child : currentANTLRNode->children)
     {
         auto* asExpr = dynamic_cast<css3Parser::CalcExprContext*>(child);
@@ -168,7 +181,8 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
 
                     currentParentMathNode->m_operands.push_back(newParentMathNode);
 
-                    processCalculation(asExpr->calcOperand(i)->calcValue()->calcNestedValue(), newParentMathNode);
+                    processCalculation(asExpr->calcOperand(i)->calcValue()->calcNestedValue(), currentPropertyName,
+                                       newParentMathNode, supportedQualifiers);
 
                     continue;
                 }
@@ -177,6 +191,7 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
                     auto newNumberNode = MakeRef<CSSMathNumericNode>();
 
                     newNumberNode->m_value = std::stof(asExpr->calcOperand(i)->calcValue()->number()->getText());
+                    newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_NUMBER;
 
                     currentParentMathNode->m_operands.push_back(newNumberNode);
 
@@ -188,7 +203,15 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
 
                     const std::string dimension = asExpr->calcOperand(i)->calcValue()->dimension()->Dimension()->getText();
 
-                    newNumberNode->m_dimensionQualifier = getDimensionFromString(dimension);
+                    newNumberNode->m_dimensionQualifier = getDimensionQualifierFromString(dimension);
+
+                    if(!isAllQualifiersSupported &&
+                       !supportedQualifiers.contains(newNumberNode->m_dimensionQualifier))
+                    {
+                        printUnsupportedQualifierInCurrentContextError(currentPropertyName,
+                                                                       asExpr->calcOperand(i)->calcValue()->dimension()->Dimension()->getText(),
+                                                                       supportedQualifiers);
+                    }
 
                     // stof ignores chars after number so we dont care that we have 123px for example
                     newNumberNode->m_value = std::stof(dimension);
@@ -232,6 +255,14 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
                     newNumberNode->m_value = std::stof(asExpr->calcOperand(i)->calcValue()->percentage()->Percentage()->getText());
                     newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_PERCENT;
 
+                    if(!isAllQualifiersSupported &&
+                       !supportedQualifiers.contains(CSSDimensionQualifier::DQ_PERCENT))
+                    {
+                        printUnsupportedQualifierInCurrentContextError(currentPropertyName,
+                                                                       asExpr->calcOperand(i)->calcValue()->percentage()->Percentage()->getText(),
+                                                                       supportedQualifiers);
+                    }
+
                     if(asExpr->calcOperand(i)->calcValue()->percentage()->Minus())
                     {
                         newNumberNode->m_value *= -1.0f;
@@ -247,7 +278,8 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
 
                     currentParentMathNode->m_operands.push_back(newParentMathNode);
 
-                    processCalculation(asExpr->calcOperand(i)->calcValue()->calc(), newParentMathNode);
+                    processCalculation(asExpr->calcOperand(i)->calcValue()->calc(), currentPropertyName,
+                                       newParentMathNode, supportedQualifiers);
 
                     continue;
                 }
@@ -255,7 +287,8 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
         }
         else
         {
-            processCalculation(child, currentParentMathNode);
+            processCalculation(child, currentPropertyName,
+                               currentParentMathNode, supportedQualifiers);
         }
     }
 }
@@ -322,121 +355,53 @@ void SGCore::UI::ANTLRCSSListener::printUnknownKeywordUsedError(const std::strin
           Utils::toUTF8(m_toCSSFile->getPath().resolved().u16string()));
 }
 
-SGCore::UI::CSSDimensionQualifier
-SGCore::UI::ANTLRCSSListener::getDimensionFromString(const std::string& dimensionStr) noexcept
+void SGCore::UI::ANTLRCSSListener::printUnsupportedQualifierInCurrentContextError(const std::string& propertyName,
+                                                                                  const std::string& currentDimensionString,
+                                                                                  const std::unordered_set<CSSDimensionQualifier>& supportedQualifiers) const noexcept
 {
-    #pragma region Units
-    // ================================================================ absolute length
-    if(dimensionStr.ends_with("px"))
-    {
-        return CSSDimensionQualifier::DQ_PX;
-    }
-    else if(dimensionStr.ends_with("cm"))
-    {
-        return CSSDimensionQualifier::DQ_CM;
-    }
-    else if(dimensionStr.ends_with("mm"))
-    {
-        return CSSDimensionQualifier::DQ_MM;
-    }
-    else if(dimensionStr.ends_with("in"))
-    {
-        return CSSDimensionQualifier::DQ_IN;
-    }
-    else if(dimensionStr.ends_with("pt"))
-    {
-        return CSSDimensionQualifier::DQ_PT;
-    }
-    else if(dimensionStr.ends_with("pc"))
-    {
-        return CSSDimensionQualifier::DQ_PC;
-    }
-    else if(dimensionStr.ends_with("q"))
-    {
-        return CSSDimensionQualifier::DQ_Q;
-    }
-    // ================================================================ angle
-    else if(dimensionStr.ends_with("deg"))
-    {
-        return CSSDimensionQualifier::DQ_DEG;
-    }
-    else if(dimensionStr.ends_with("rad"))
-    {
-        return CSSDimensionQualifier::DQ_RAD;
-    }
-    else if(dimensionStr.ends_with("grad"))
-    {
-        return CSSDimensionQualifier::DQ_GRAD;
-    }
-    else if(dimensionStr.ends_with("turn"))
-    {
-        return CSSDimensionQualifier::DQ_TURN;
-    }
-    // ================================================================ time
-    else if(dimensionStr.ends_with("ms"))
-    {
-        return CSSDimensionQualifier::DQ_MS;
-    }
-    else if(dimensionStr.ends_with("s"))
-    {
-        return CSSDimensionQualifier::DQ_S;
-    }
-    // ================================================================ frequency
-    else if(dimensionStr.ends_with("hz"))
-    {
-        return CSSDimensionQualifier::DQ_HZ;
-    }
-    else if(dimensionStr.ends_with("khz"))
-    {
-        return CSSDimensionQualifier::DQ_KHZ;
-    }
-    // ================================================================ relative units
-    else if(dimensionStr.ends_with("em"))
-    {
-        return CSSDimensionQualifier::DQ_EM;
-    }
-    else if(dimensionStr.ends_with("ex"))
-    {
-        return CSSDimensionQualifier::DQ_EX;
-    }
-    else if(dimensionStr.ends_with("ch"))
-    {
-        return CSSDimensionQualifier::DQ_CH;
-    }
-    else if(dimensionStr.ends_with("rem"))
-    {
-        return CSSDimensionQualifier::DQ_REM;
-    }
-    else if(dimensionStr.ends_with("vw"))
-    {
-        return CSSDimensionQualifier::DQ_VW;
-    }
-    else if(dimensionStr.ends_with("vh"))
-    {
-        return CSSDimensionQualifier::DQ_VH;
-    }
-    else if(dimensionStr.ends_with("vmin"))
-    {
-        return CSSDimensionQualifier::DQ_VMIN;
-    }
-    else if(dimensionStr.ends_with("vmax"))
-    {
-        return CSSDimensionQualifier::DQ_VMAX;
-    }
-    // ================================================================ resolution units
-    else if(dimensionStr.ends_with("dpi"))
-    {
-        return CSSDimensionQualifier::DQ_DPI;
-    }
-    else if(dimensionStr.ends_with("dpcm"))
-    {
-        return CSSDimensionQualifier::DQ_DPCM;
-    }
-    else if(dimensionStr.ends_with("dppx"))
-    {
-        return CSSDimensionQualifier::DQ_DPPX;
-    }
-    #pragma endregion Units
+    std::string qualifiersString;
 
-    return CSSDimensionQualifier::DQ_PX;
+    if(supportedQualifiers.empty())
+    {
+        qualifiersString = "no supported qualifiers";
+    }
+    else
+    {
+        for(const auto& qualifier: supportedQualifiers)
+        {
+            qualifiersString += dimensionQualifierToString(qualifier) + ", ";
+        }
+
+        // erasing last ", " ...
+        qualifiersString.erase(qualifiersString.size());
+        qualifiersString.erase(qualifiersString.size() - 1);
+    }
+
+    LOG_E(SGCORE_TAG,
+          "ANTLRCSSListener can not process property '{}' correctly: value of property has unsupported dimension qualifier in current context (context: '{}'). "
+          "Property has been set to the default value (numeric). "
+          "Current dimension: '{}'.\n"
+          "Supported dimensions in current context: '{}'\n"
+          "In CSS file: {}",
+          propertyName,
+          propertyName,
+          currentDimensionString,
+          qualifiersString,
+          Utils::toUTF8(m_toCSSFile->getPath().resolved().u16string()));
+}
+
+void SGCore::UI::ANTLRCSSListener::printInvalidHexError(const std::string& propertyName,
+                                                        const std::string& currentHex,
+                                                        const std::string& defaultSetKeyword) const noexcept
+{
+    LOG_E(SGCORE_TAG,
+          "ANTLRCSSListener can not process property '{}' correctly: property has unknown HEX in section 'value'. "
+          "Property has been set to the default value. "
+          "Current HEX: '{}'. "
+          "Set keyword (default): '{}'.\n"
+          "In CSS file: {}",
+          propertyName,
+          currentHex,
+          defaultSetKeyword,
+          Utils::toUTF8(m_toCSSFile->getPath().resolved().u16string()));
 }

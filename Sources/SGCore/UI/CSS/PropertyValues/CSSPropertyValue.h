@@ -30,6 +30,16 @@ namespace SGCore::UI
         static constexpr keywords_enum_t default_keyword = DefaultKeyword;
 
         std::variant<keywords_enum_t, std::tuple<ValuesT...>> m_value = DefaultKeyword;
+
+        void setWithKeyword(keywords_enum_t keyword) noexcept
+        {
+            m_value = keyword;
+        }
+
+        void setWithAlternative(const std::tuple<ValuesT...>& alternativeValues) noexcept
+        {
+            m_value = alternativeValues;
+        }
     };
 }
 

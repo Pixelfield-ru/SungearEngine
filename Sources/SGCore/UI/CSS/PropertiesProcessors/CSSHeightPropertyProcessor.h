@@ -36,19 +36,77 @@ namespace SGCore::UI
                 return;
             }
 
-            auto outputValue =
-                    antlrcssListener->getCalculablePropertyTermValue<PositionAndSizeKeyword::KW_AUTO>(propertyName,
-                                                                                                      propertyCurrentValue,
-                                                                                                      property_default_value_str,
-                                                                                                      declExpr->term(0));
+            auto* term = declExpr->term(0);
+            auto* knownTerm = dynamic_cast<css3Parser::KnownTermContext*>(term);
 
-            if(outputValue.index() == 0)
+            if(knownTerm)
             {
-                currentSelector->m_height.m_value = std::get<0>(outputValue);
+                if(knownTerm->calc()) // width: calc(...)
+                {
+                    auto mathNode = MakeRef<CSSMathNode>();
+
+                    antlrcssListener->processCalculation(knownTerm->calc(),
+                                                         propertyName,
+                                                         mathNode,
+                                                         { CSSDimensionQualifier::DQ_ANY });
+                    mathNode->resolvePriorities();
+
+                    std::cout << "calc: " << mathNode->calculate() << std::endl;
+
+                    currentSelector->m_height.m_value = mathNode;
+                }
+                else if(knownTerm->number())
+                {
+                    auto mathNode = MakeRef<CSSMathNumericNode>();
+                    mathNode->m_value = std::stof(knownTerm->number()->getText());
+
+                    std::cout << "calc: " << mathNode->calculate() << std::endl;
+
+                    currentSelector->m_height.m_value = mathNode;
+                }
+                else if(knownTerm->dimension())
+                {
+                    auto mathNode = MakeRef<CSSMathNumericNode>();
+
+                    const std::string dimension = knownTerm->dimension()->Dimension()->getText();
+
+                    mathNode->m_dimensionQualifier = getDimensionQualifierFromString(dimension);
+                    mathNode->m_value = std::stof(dimension);
+
+                    std::cout << "calc: " << mathNode->calculate() << std::endl;
+
+                    currentSelector->m_height.m_value = mathNode;
+                }
+                else if(knownTerm->percentage())
+                {
+                    auto mathNode = MakeRef<CSSMathNumericNode>();
+
+                    const std::string percentage = knownTerm->percentage()->Percentage()->getText();
+
+                    mathNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_PERCENT;
+                    mathNode->m_value = std::stof(percentage);
+
+                    std::cout << "calc: " << mathNode->calculate() << std::endl;
+
+                    currentSelector->m_height.m_value = mathNode;
+                }
+                else // we have keyword
+                {
+                    const auto keyword = getKeywordFromStringValue<PositionAndSizeKeyword>(propertyCurrentValue);
+
+                    if(keyword == PositionAndSizeKeyword::KW_UNKNOWN)
+                    {
+                        antlrcssListener->printUnknownKeywordUsedError(propertyName, propertyCurrentValue, property_default_value_str);
+
+                        return;
+                    }
+
+                    currentSelector->m_height.m_value = keyword;
+                }
             }
-            else if(outputValue.index() == 1)
+            else // we have bad term. ignoring property...
             {
-                currentSelector->m_height.m_value = std::get<1>(outputValue);
+                antlrcssListener->printBadTermInPropertyError(propertyName, 0, term->getText(), property_default_value_str);
             }
         }
     };

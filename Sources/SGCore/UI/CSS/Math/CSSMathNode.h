@@ -17,7 +17,7 @@ namespace SGCore::UI
         CSSMathSign m_sign = CSSMathSign::MS_NO_SIGN;
         /// Can be only PLUS or MINUS.
         CSSMathSign m_unarySign = CSSMathSign::MS_PLUS;
-        CSSDimensionQualifier m_dimensionQualifier = CSSDimensionQualifier::DQ_PX;
+        CSSDimensionQualifier m_dimensionQualifier = CSSDimensionQualifier::DQ_NUMBER;
 
         [[nodiscard]] virtual float calculate() const noexcept;
 

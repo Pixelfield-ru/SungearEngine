@@ -218,6 +218,20 @@ namespace SGCore::UI
         return getUniversalKeywordFromStringValue<PositionAndSizeKeyword>(value);
     }
 
+    [[nodiscard]] static ColorKeyword getColorKeywordFromStringValue(const std::string& value) noexcept
+    {
+        if(value == "transparent")
+        {
+            return ColorKeyword::KW_TRANSPARENT;
+        }
+        else if(value == "currentColor")
+        {
+            return ColorKeyword::KW_CURRENT_COLOR;
+        }
+
+        return getUniversalKeywordFromStringValue<ColorKeyword>(value);
+    }
+
     [[nodiscard]] static DisplayKeyword getDisplayKeywordFromStringValue(const std::string& value) noexcept
     {
         if(value == "block")
