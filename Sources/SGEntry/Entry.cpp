@@ -16,6 +16,7 @@
 #include <SGCore/PluginsSystem/PluginsManager.h>
 #include <SGCore/Memory/AssetManager.h>
 #include <SGCore/Memory/Assets/ModelAsset.h>
+#include <SGCore/UI/UIDocument.h>
 
 #ifdef PLATFORM_OS_WINDOWS
 #ifdef __cplusplus
@@ -48,48 +49,6 @@ public:
                   << ", Value: " << ctx->expr()->getText() << std::endl;
     }
 };*/
-
-using Styles = std::unordered_map<std::string, std::unordered_map<std::string, std::string>>;
-
-class CSSListener : public css3ParserBaseListener {
-public:
-    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> styles;
-
-    std::string currentSelector;
-
-    // Вызывается при входе в ruleset
-    void enterSelector(css3Parser::SelectorContext* ctx) override {
-        currentSelector = ctx->children[0]->children[0]->children[1]->getText(); // Извлекаем селектор
-    }
-
-    // Вызывается при входе в declaration
-    void enterKnownDeclaration(css3Parser::KnownDeclarationContext* ctx) override {
-        if (currentSelector.empty()) return;
-
-        std::string property = ctx->property_()->getText();// ctx->property_()->getText();
-        std::string value = ctx->expr()->getText();
-
-        styles[currentSelector][property] = value;
-    }
-
-    void enterColor(css3Parser::ColorContext* ctx) override {
-        auto components = ctx->color_component();
-        std::string red = components[0]->getText();
-        std::string green = components[1]->getText();
-        std::string blue = components[2]->getText();
-        std::string alpha = ctx->color_alpha() ? ctx->color_alpha()->getText() : "1.0";
-
-        std::cout << "Parsed color: R=" << red
-                  << ", G=" << green
-                  << ", B=" << blue
-                  << ", A=" << alpha
-                  << std::endl;
-    }
-
-    const auto& getStyles() const {
-        return styles;
-    }
-};
 
 void coreInit()
 {
@@ -193,6 +152,8 @@ void coreInit()
     using cat = reverse_types_container_t<types_container_cat_t<t0, t1>>;
 
     std::cout << "cat: " << typeid(cat).name() << std::endl;
+
+    auto uiDocument = AssetManager::getInstance()->loadAsset<UI::UIDocument>("test.xml");
 
     // auto deser = Serde::Serializer::deserialize<std::unique_ptr<Base>>(document, "testSerde", outputLog);
 

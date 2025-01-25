@@ -15,7 +15,7 @@ namespace SGCore::UI
     template<CSSPropertyType PropertyType>
     struct CSSPropertyProcessor
     {
-        static_assert(always_false_obj<PropertyType>::value, "CSSPropertyProcessor for this type is not implemented!");
+        static_assert(always_false_obj<PropertyType>::value, "CSSPropertyProcessor for this property is not implemented!");
 
         /// Must be implemented in your own specializations of CSSPropertyProcessor. Means default value of property.
         static constexpr int property_default_value = 0;

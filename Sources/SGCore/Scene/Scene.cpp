@@ -16,8 +16,6 @@
 #include "SGCore/Render/Atmosphere/AtmosphereUpdater.h"
 #include "SGCore/Render/Lighting/DirectionalLightsUpdater.h"
 #include "SGCore/Physics/PhysicsWorld3D.h"
-#include "SGCore/UI/UIElement.h"
-#include "SGCore/Memory/Assets/XMLDocument.h"
 #include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
 #include "SGCore/Audio/AudioProcessor.h"
@@ -320,38 +318,6 @@ void SGCore::Scene::resolveAllEntitiesRefs() const noexcept
         entityBaseInfo.resolveAllEntitiesRefs(m_ecsRegistry);
     });
 }
-
-void SGCore::Scene::setUIXMLDocument(const SGCore::Ref<SGCore::XMLDocument>& xmlDocument) noexcept
-{
-    m_UIXMLDocument = xmlDocument;
-}
-
-SGCore::Weak<SGCore::XMLDocument> SGCore::Scene::getUIXMLDocument() const noexcept
-{
-    return m_UIXMLDocument;
-}
-
-void SGCore::Scene::reloadUI() noexcept
-{
-
-}
-
-/*
-void pickObject(int x, int y)
-{
-    GLubyte pixel[3];
-
-    glReadPixels(x, windowHeight - y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixel);
-
-    int id = getObjectIdFromColor(pixel[0], pixel[1], pixel[2]);
-
-    if (id > 0) {
-        выбран объект
-    } else {
-        ничо не выбрал
-    }
-}
- */
 
 void SGCore::Scene::saveToFile(const std::filesystem::path& path) noexcept
 {

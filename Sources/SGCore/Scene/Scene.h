@@ -19,7 +19,7 @@ sg_predeclare_serde()
 
 namespace SGCore
 {
-    struct XMLDocument;
+    struct UIDocument;
 
     struct SceneEntitySaveInfo
     {
@@ -130,9 +130,7 @@ namespace SGCore
         Ref<Layer> createLayer(const std::string& name) noexcept;
         
         Ref<Layer> getLayer(const std::string& name) noexcept;
-        
-        void setUIXMLDocument(const Ref<XMLDocument>& xmlDocument) noexcept;
-        Weak<XMLDocument> getUIXMLDocument() const noexcept;
+
         void reloadUI() noexcept;
         
         double getUpdateFunctionExecutionTime() const noexcept;
@@ -196,8 +194,6 @@ namespace SGCore
         std::vector<Ref<Layer>> m_layers;
 
         size_t m_maxLayersCount = 0;
-        
-        Weak<XMLDocument> m_UIXMLDocument;
         
         static inline Ref<Scene> m_currentScene;
         static inline std::vector<SceneMetaInfo> m_scenesMeta;
