@@ -23,14 +23,6 @@ SGCore::AssetRef<SGCore::UI::CSSSelector> SGCore::UI::CSSFile::findSelector(cons
 
 void SGCore::UI::CSSFile::doLoad(const InterpolatedPath& path)
 {
-    if(!std::filesystem::exists(path.resolved()))
-    {
-        LOG_E(SGCORE_TAG, "Can not read CSS File by path '{}': this file does not exist.",
-              Utils::toUTF8(path.resolved().u16string()));
-
-        return;
-    }
-
     auto uiBodySelector = getParentAssetManager()->getOrAddAssetByPath<CSSSelector>(getPath() / "selectors" / "body");
     uiBodySelector->m_name = "body";
     m_selectors.push_back(uiBodySelector);

@@ -22,14 +22,7 @@ void SGCore::STBITextureDataDeleter::operator()(const std::uint8_t* data)
 void SGCore::ITexture2D::doLoad(const InterpolatedPath& path)
 {
     int channelsDesired = 0;
-    
-    if(!std::filesystem::exists(path.resolved()))
-    {
-        LOG_E(SGCORE_TAG,
-              "Error while loading texture: texture by path {} does not exist.", Utils::toUTF8(path.resolved().u16string()));
-        return;
-    }
-    
+
     // m_texture2D = Ref<ITexture2D>(CoreMain::getRenderer().createTexture2D())->addToGlobalStorage();
 
     const auto& ext = getPath().resolved().extension();

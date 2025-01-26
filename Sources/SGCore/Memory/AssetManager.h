@@ -179,6 +179,16 @@ namespace SGCore
                                    const InterpolatedPath& path,
                                    AssetCtorArgsT&& ... assetCtorArgs)
         {
+            if(!std::filesystem::exists(path.resolved()))
+            {
+                LOG_E(SGCORE_TAG,
+                      "Can not load asset (typeID: '{}'): this path does not exist.\nAsset path: '{}'",
+                      AssetT::type_id,
+                      Utils::toUTF8(path.resolved().u16string()));
+
+                return nullptr;
+            }
+
             const size_t hashedAssetPath = hashString(Utils::toUTF8(path.resolved().u16string()));
 
             std::unordered_map<size_t, Ref<IAsset>> foundVariants { };
@@ -260,6 +270,16 @@ namespace SGCore
                        const Ref<Threading::Thread>& lazyLoadInThread,
                        const InterpolatedPath& path)
         {
+            if(!std::filesystem::exists(path.resolved()))
+            {
+                LOG_E(SGCORE_TAG,
+                      "Can not load asset (typeID: '{}'): this path does not exist.\nAsset path: '{}'",
+                      AssetT::type_id,
+                      Utils::toUTF8(path.resolved().u16string()));
+
+                return;
+            }
+
             const size_t hashedAssetPath = hashString(Utils::toUTF8(path.resolved().u16string()));
 
             std::unordered_map<size_t, Ref<IAsset>> foundVariants { };
@@ -357,8 +377,10 @@ namespace SGCore
             switch(loadedBy)
             {
                 case AssetStorageType::BY_PATH:
+                {
                     hashedAssetPath = hashString(Utils::toUTF8(path.resolved().u16string()));
                     break;
+                }
                 case AssetStorageType::BY_ALIAS:
                     hashedAssetPath = hashString(alias);
                     break;
@@ -384,6 +406,17 @@ namespace SGCore
                 // THIS IS DEFERRED LOAD OF ASSET (LOAD AS NEEDED)
                 if(!asset->m_isLoaded)
                 {
+                    // if asset must be loaded by local path and asset was not saved in binary file (does not need to load from bin file)
+                    if(!std::filesystem::exists(path.resolved()) && !asset->m_isSavedInBinaryFile)
+                    {
+                        LOG_E(SGCORE_TAG,
+                              "Can not load asset (typeID: '{}'): this path does not exist.\nAsset path: '{}'",
+                              assetTypeID,
+                              Utils::toUTF8(path.resolved().u16string()));
+
+                        return nullptr;
+                    }
+
                     distributeAsset(asset, path, assetsLoadPolicy, lazyLoadInThread);
                     LOG_I(SGCORE_TAG, "Loaded existing asset (deferred load) with path: {}; and alias: {}. Asset type ID: {}",
                           Utils::toUTF8(path.resolved().u16string()), alias, assetTypeID);
@@ -426,6 +459,16 @@ namespace SGCore
                                 const std::string& alias,
                                 const InterpolatedPath& path)
         {
+            if(!std::filesystem::exists(path.resolved()))
+            {
+                LOG_E(SGCORE_TAG,
+                      "Can not load asset (typeID: '{}'): this path does not exist.\nAsset path: '{}'",
+                      AssetT::type_id,
+                      Utils::toUTF8(path.resolved().u16string()));
+
+                return;
+            }
+
             const size_t hashedAssetAlias = hashString(alias);
 
             // getting variants of assets that were loaded with alias 'alias'
@@ -510,6 +553,16 @@ namespace SGCore
                                             const InterpolatedPath& path,
                                             AssetCtorArgsT&& ... assetCtorArgs)
         {
+            if(!std::filesystem::exists(path.resolved()))
+            {
+                LOG_E(SGCORE_TAG,
+                      "Can not load asset (typeID: '{}'): this path does not exist.\nAsset path: '{}'",
+                      AssetT::type_id,
+                      Utils::toUTF8(path.resolved().u16string()));
+
+                return nullptr;
+            }
+
             const size_t hashedAssetAlias = hashString(alias);
 
             // getting variants of assets that were loaded with alias 'alias'

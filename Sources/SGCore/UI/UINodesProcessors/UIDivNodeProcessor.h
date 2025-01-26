@@ -20,7 +20,41 @@ namespace SGCore::UI
                                    const Ref<Div>& element,
                                    const pugi::xml_node& elementNode) noexcept
         {
+            for(const auto& attribute : elementNode.attributes())
+            {
+                const UIElementAttributeType attributeType = getUIElementAttributeTypeFromString(attribute.name());
 
+                if(attributeType == UIElementAttributeType::AT_UNKNOWN)
+                {
+                    UINodesProcessorsUtils::printUnknownAttributeError(inDocument, attribute, elementNode);
+
+                    continue;
+                }
+
+                switch(attributeType)
+                {
+                    case UIElementAttributeType::AT_CLASS:
+                    {
+                        const auto foundSelector = inDocument->findSelector(attribute.value());
+
+                        if(foundSelector)
+                        {
+                            element->m_selector = foundSelector;
+                        }
+                        else
+                        {
+                            // todo: maybe setting some default selector??
+                            element->m_selector = nullptr;
+                        }
+
+                        break;
+                    }
+                    default:
+                    {
+                        break;
+                    }
+                }
+            }
         }
     };
 }

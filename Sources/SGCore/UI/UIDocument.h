@@ -21,7 +21,11 @@ namespace SGCore::UI
         pugi::xml_document m_document;
 
         Ref<UIRoot> m_rootElement;
-        
+
+        std::vector<AssetRef<CSSFile>> m_includedCSSFiles;
+
+        [[nodiscard]] AssetRef<CSSSelector> findSelector(const std::string& selectorName) const noexcept;
+
     protected:
         void doLoad(const InterpolatedPath& path) override;
 
@@ -30,7 +34,7 @@ namespace SGCore::UI
 
         void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
 
-        [[nodiscard]] Ref<UIElement> processUIElement(const pugi::xml_node& xmlNode) const noexcept;
+        [[nodiscard]] Ref<UIElement> processUIElement(const pugi::xml_node& xmlNode) noexcept;
     };
 }
 

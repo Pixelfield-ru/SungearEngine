@@ -17,7 +17,16 @@ void SGCore::AnimationsFile::doLoad(const SGCore::InterpolatedPath& path)
 
     if(importer.IsExtensionSupported(utf8Extension))
     {
-        const aiScene* aiImportedScene(importer.ReadFile(utf8ResolvedPath, aiProcess_Triangulate | aiProcess_LimitBoneWeights));
+        const aiScene* aiImportedScene(importer.ReadFile(utf8ResolvedPath, aiProcess_Triangulate));
+
+        if(!aiImportedScene || aiImportedScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !aiImportedScene->mRootNode)
+        {
+            LOG_E(SGCORE_TAG,
+                  "Assimp error (while importing scene): {}\n{}",
+                  importer.GetErrorString(),
+                  SG_CURRENT_LOCATION_STR);
+            return;
+        }
 
         readFromExistingAssimpScene(*aiImportedScene);
     }

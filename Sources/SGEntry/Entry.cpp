@@ -155,6 +155,8 @@ void coreInit()
 
     auto uiDocument = AssetManager::getInstance()->loadAsset<UI::UIDocument>("test.xml");
 
+    //
+
     // auto deser = Serde::Serializer::deserialize<std::unique_ptr<Base>>(document, "testSerde", outputLog);
 
     // std::printf("deser: %i, %f\n", deser->a, 0.0f);

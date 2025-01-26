@@ -9,13 +9,6 @@
 
 void SGCore::SVGImage::doLoad(const InterpolatedPath& path)
 {
-    if(!std::filesystem::exists(path.resolved()))
-    {
-        LOG_E(SGCORE_TAG, "Cannot load SVG image: path '{}' does not exist.", Utils::toUTF8(path.resolved().u16string()));
-
-        return;
-    }
-
     m_document = lunasvg::Document::loadFromFile(Utils::toUTF8(path.resolved().u16string()));
 }
 
