@@ -3,8 +3,17 @@
 //
 #include "Div.h"
 
-void SGCore::UI::Div::calculateLayout() noexcept
+void SGCore::UI::Div::doCalculateLayout() noexcept
 {
 
 }
 
+void SGCore::UI::Div::doGenerateMeshBaseSelector() noexcept
+{
+
+}
+
+void SGCore::UI::Div::doGenerateBasicMesh() noexcept
+{
+
+}

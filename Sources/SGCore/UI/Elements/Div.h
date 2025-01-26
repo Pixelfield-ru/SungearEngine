@@ -11,7 +11,12 @@ namespace SGCore::UI
 {
     struct Div : UIElement
     {
-        void calculateLayout() noexcept final;
+    protected:
+        void doCalculateLayout() noexcept final;
+
+        void doGenerateMeshBaseSelector() noexcept final;
+
+        void doGenerateBasicMesh() noexcept final;
     };
 }
 

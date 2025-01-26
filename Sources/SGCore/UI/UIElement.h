@@ -20,10 +20,6 @@ namespace SGCore::UI
     {
         friend struct UIDocument;
 
-        std::vector<glm::vec3> m_verticesPositions;
-        std::vector<glm::vec3> m_verticesUV;
-        std::vector<glm::vec4> m_verticesColors;
-
         std::vector<Ref<UIElement>> m_children;
         Weak<UIElement> m_parent;
 
@@ -31,14 +27,41 @@ namespace SGCore::UI
 
         AssetRef<IShader> m_shader;
 
-        virtual void calculateLayout() noexcept = 0;
+        Ref<IMeshData> m_meshData;
+
+        void calculateLayout() noexcept;
 
         [[nodiscard]] UIElementType getType() const noexcept;
+
+    protected:
+        virtual void doCalculateLayout() noexcept = 0;
+
+        /**
+         * Generates a mesh based on the selector (i.e. selector != nullptr).\n
+         * You must implement this function in the UIElement derived classes.\n
+         * You need to generate vertex positions, uv coordinates of vertices, and vertex colors.\n
+         * Calls at the beginning of the calculateLayout function.\n
+         * Calls only if mesh has not been generated before (i.e. mesh == nullptr).\n
+         * IN THIS FUNCTION, YOU DO NOT NEED TO CREATE A MESH INSTANCE. YOU ONLY NEED TO GENERATE VERTICES.
+         */
+        virtual void doGenerateMeshBaseSelector() noexcept = 0;
+
+        /**
+         * Generates basic mesh without selector (i.e. selector == nullptr).\n
+         * You must implement this function in the UIElement derived classes.\n
+         * You need to generate vertex positions, uv coordinates of vertices, and vertex colors.\n
+         * Calls at the beginning of the calculateLayout function.\n
+         * Calls only if mesh has not been generated before (i.e. mesh == nullptr).\n
+         * IN THIS FUNCTION, YOU DO NOT NEED TO CREATE A MESH INSTANCE. YOU ONLY NEED TO GENERATE VERTICES.
+         */
+        virtual void doGenerateBasicMesh() noexcept = 0;
 
     private:
         UIElementType m_type = UIElementType::ET_UNKNOWN;
 
         Transform m_transform;
+
+        void checkForMeshGenerating() noexcept;
     };
 }
 

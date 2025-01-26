@@ -11,7 +11,7 @@
 namespace SGCore
 {
     template<typename AssetT>
-    struct AssetRefFromThis : protected std::enable_shared_from_this<AssetT>
+    struct AssetRefFromThis : public std::enable_shared_from_this<AssetT>
     {
     protected:
         AssetRef<AssetT> assetRef() noexcept
