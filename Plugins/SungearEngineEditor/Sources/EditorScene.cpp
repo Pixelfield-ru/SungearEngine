@@ -20,6 +20,9 @@
 #include <SGCore/Graphics/API/ICubemapTexture.h>
 #include <SGCore/Serde/Components/NonSavable.h>
 
+#include <SGCore/UI/UIDocument.h>
+#include <SGCore/UI/UIComponent.h>
+
 void SGE::EditorScene::setCurrentScene(const SGCore::Ref<SGE::EditorScene>& scene) noexcept
 {
     s_currentScene = scene;
@@ -198,6 +201,14 @@ void SGE::EditorScene::addEditorEntities() noexcept
         auto& gridTransform = *scene->getECSRegistry()->get<SGCore::Transform>(m_data.m_editorGrid);
         gridTransform.m_ownTransform.m_scale = { 3.0f, 3.0f, 1.0f, };
         gridTransform.m_ownTransform.m_rotation = glm::rotate(glm::identity<glm::quat>(), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+        // todo: FOR TEST
+        {
+            auto uiDocument = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::UIDocument>("test.xml");
+
+            auto& uiComponent = registry->emplace<SGCore::UI::UIComponent>(gridEntities[0]);
+            uiComponent.m_document = uiDocument;
+        }
 
         /*auto& cameraLayeredFrameReceiver = scene->getECSRegistry()->get<SGCore::LayeredFrameReceiver>(m_data.m_editorCamera);
         auto chunksPPLayer = cameraLayeredFrameReceiver.addLayer("chunks_layer");

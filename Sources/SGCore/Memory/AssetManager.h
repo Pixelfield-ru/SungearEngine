@@ -179,16 +179,6 @@ namespace SGCore
                                    const InterpolatedPath& path,
                                    AssetCtorArgsT&& ... assetCtorArgs)
         {
-            if(!std::filesystem::exists(path.resolved()))
-            {
-                LOG_E(SGCORE_TAG,
-                      "Can not load asset (typeID: '{}'): this path does not exist.\nAsset path: '{}'",
-                      AssetT::type_id,
-                      Utils::toUTF8(path.resolved().u16string()));
-
-                return nullptr;
-            }
-
             const size_t hashedAssetPath = hashString(Utils::toUTF8(path.resolved().u16string()));
 
             std::unordered_map<size_t, Ref<IAsset>> foundVariants { };
@@ -210,6 +200,11 @@ namespace SGCore
                 // THIS IS DEFERRED LOAD OF ASSET (LOAD AS NEEDED)
                 if(!asset->m_isLoaded)
                 {
+                    if(!asset->m_isSavedInBinaryFile && !checkForAssetExistenceInFilesystem(AssetT::type_id, path))
+                    {
+                        return nullptr;
+                    }
+
                     distributeAsset(asset, path, assetsLoadPolicy, lazyLoadInThread);
                     LOG_I(SGCORE_TAG, "Loaded existing asset associated by path: {}. Asset type: {}. Asset type ID: {}",
                           Utils::toUTF8(path.resolved().u16string()), typeid(AssetT).name(), AssetT::type_id);
@@ -218,6 +213,11 @@ namespace SGCore
                 // WE ARE USING STATIC CAST BECAUSE WE KNOW THAT ONLY AN ASSET WITH THE ASSET TYPE HAS SUCH AN asset_type_id.
                 // IF THIS IS NOT THE CASE, AND SUDDENLY IT TURNS OUT THAT THERE ARE TWO OR MORE ASSET CLASSES WITH THE SAME asset_type_id, THEN ALAS (i hope engine will crash).
                 return AssetRef<AssetT>(std::static_pointer_cast<AssetT>(foundAssetOfTIt->second));
+            }
+
+            if(!checkForAssetExistenceInFilesystem(AssetT::type_id, path))
+            {
+                return nullptr;
             }
 
             Ref<AssetT> newAsset = createAssetInstance<AssetT>(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
@@ -270,16 +270,6 @@ namespace SGCore
                        const Ref<Threading::Thread>& lazyLoadInThread,
                        const InterpolatedPath& path)
         {
-            if(!std::filesystem::exists(path.resolved()))
-            {
-                LOG_E(SGCORE_TAG,
-                      "Can not load asset (typeID: '{}'): this path does not exist.\nAsset path: '{}'",
-                      AssetT::type_id,
-                      Utils::toUTF8(path.resolved().u16string()));
-
-                return;
-            }
-
             const size_t hashedAssetPath = hashString(Utils::toUTF8(path.resolved().u16string()));
 
             std::unordered_map<size_t, Ref<IAsset>> foundVariants { };
@@ -300,11 +290,21 @@ namespace SGCore
                 // THIS IS DEFERRED LOAD OF ASSET (LOAD AS NEEDED)
                 if(!assetToLoad->m_isLoaded)
                 {
+                    if(!assetToLoad->m_isSavedInBinaryFile && !checkForAssetExistenceInFilesystem(AssetT::type_id, path))
+                    {
+                        return;
+                    }
+
                     distributeAsset(assetToLoad.m_asset, path, assetsLoadPolicy, lazyLoadInThread);
                     LOG_I(SGCORE_TAG, "Loaded existing asset associated by path: {}. Asset type: {}",
                           Utils::toUTF8(path.resolved().u16string()), typeid(AssetT).name());
                 }
 
+                return;
+            }
+
+            if(!checkForAssetExistenceInFilesystem(AssetT::type_id, path))
+            {
                 return;
             }
 
@@ -325,7 +325,7 @@ namespace SGCore
 
             assetToLoad->m_path = path;
             assetToLoad->m_storedBy = AssetStorageType::BY_PATH;
-            
+
             distributeAsset(assetToLoad.m_asset, path, assetsLoadPolicy, lazyLoadInThread);
 
             LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}",
@@ -407,13 +407,8 @@ namespace SGCore
                 if(!asset->m_isLoaded)
                 {
                     // if asset must be loaded by local path and asset was not saved in binary file (does not need to load from bin file)
-                    if(!std::filesystem::exists(path.resolved()) && !asset->m_isSavedInBinaryFile)
+                    if(!asset->m_isSavedInBinaryFile && !checkForAssetExistenceInFilesystem(assetTypeID, path))
                     {
-                        LOG_E(SGCORE_TAG,
-                              "Can not load asset (typeID: '{}'): this path does not exist.\nAsset path: '{}'",
-                              assetTypeID,
-                              Utils::toUTF8(path.resolved().u16string()));
-
                         return nullptr;
                     }
 
@@ -459,16 +454,6 @@ namespace SGCore
                                 const std::string& alias,
                                 const InterpolatedPath& path)
         {
-            if(!std::filesystem::exists(path.resolved()))
-            {
-                LOG_E(SGCORE_TAG,
-                      "Can not load asset (typeID: '{}'): this path does not exist.\nAsset path: '{}'",
-                      AssetT::type_id,
-                      Utils::toUTF8(path.resolved().u16string()));
-
-                return;
-            }
-
             const size_t hashedAssetAlias = hashString(alias);
 
             // getting variants of assets that were loaded with alias 'alias'
@@ -489,11 +474,21 @@ namespace SGCore
                 // THIS IS DEFERRED LOAD OF ASSET (LOAD AS NEEDED)
                 if(!assetToLoad->m_isLoaded)
                 {
+                    if(!assetToLoad->m_isSavedInBinaryFile && !checkForAssetExistenceInFilesystem(AssetT::type_id, path))
+                    {
+                        return;
+                    }
+
                     distributeAsset(assetToLoad.m_asset, path, assetsLoadPolicy, lazyLoadInThread);
                     LOG_I(SGCORE_TAG, "Loaded existing asset associated by path: {}. Asset type: {}",
                           Utils::toUTF8(path.resolved().u16string()), typeid(AssetT).name());
                 }
 
+                return;
+            }
+
+            if(!checkForAssetExistenceInFilesystem(AssetT::type_id, path))
+            {
                 return;
             }
 
@@ -553,16 +548,6 @@ namespace SGCore
                                             const InterpolatedPath& path,
                                             AssetCtorArgsT&& ... assetCtorArgs)
         {
-            if(!std::filesystem::exists(path.resolved()))
-            {
-                LOG_E(SGCORE_TAG,
-                      "Can not load asset (typeID: '{}'): this path does not exist.\nAsset path: '{}'",
-                      AssetT::type_id,
-                      Utils::toUTF8(path.resolved().u16string()));
-
-                return nullptr;
-            }
-
             const size_t hashedAssetAlias = hashString(alias);
 
             // getting variants of assets that were loaded with alias 'alias'
@@ -585,6 +570,11 @@ namespace SGCore
                 // THIS IS DEFERRED LOAD OF ASSET (LOAD AS NEEDED)
                 if(!asset->m_isLoaded)
                 {
+                    if(!asset->m_isSavedInBinaryFile && !checkForAssetExistenceInFilesystem(AssetT::type_id, path))
+                    {
+                        return nullptr;
+                    }
+
                     distributeAsset(asset, path, assetsLoadPolicy, lazyLoadInThread);
                     LOG_I(SGCORE_TAG, "Loaded existing asset associated by path: {}; and alias: {}. Asset type: {}. Asset type ID: {}",
                           Utils::toUTF8(path.resolved().u16string()), alias, typeid(AssetT).name(), AssetT::type_id);
@@ -593,6 +583,11 @@ namespace SGCore
                 // WE ARE USING STATIC CAST BECAUSE WE KNOW THAT ONLY AN ASSET WITH THE ASSET TYPE HAS SUCH AN asset_type_id.
                 // IF THIS IS NOT THE CASE, AND SUDDENLY IT TURNS OUT THAT THERE ARE TWO OR MORE ASSET CLASSES WITH THE SAME asset_type_id, THEN ALAS (i hope engine will crash).
                 return AssetRef<AssetT>(std::static_pointer_cast<AssetT>(asset));
+            }
+
+            if(!checkForAssetExistenceInFilesystem(AssetT::type_id, path))
+            {
+                return nullptr;
             }
 
             // else we are creating new asset with type 'AssetT'
@@ -1159,6 +1154,15 @@ namespace SGCore
         std::unordered_map<size_t, std::unordered_map<size_t, Ref<IAsset>>> m_assets;
         
         Threading::BaseThreadsPool<Threading::LeastTasksCount> m_threadsPool { 2, false };
+
+        /**
+         * Print error if asset does not exist in local filesystem.
+         * @param assetTypeID
+         * @param assetPath
+         * @return Does asset exist in local filesystem?
+         */
+        static bool checkForAssetExistenceInFilesystem(const int64_t& assetTypeID,
+                                                       const SGCore::InterpolatedPath& assetPath) noexcept;
 
         /// This event is using for resolve references of member assets after package deserialization.
         /// This event is called after package deserialization.

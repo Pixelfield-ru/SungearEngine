@@ -4,7 +4,7 @@
 
 #include "UIRoot.h"
 
-void SGCore::UI::UIRoot::doCalculateLayout() noexcept
+void SGCore::UI::UIRoot::doCalculateLayout(const Transform& parentTransform, Transform& ownTransform) noexcept
 {
 
 }

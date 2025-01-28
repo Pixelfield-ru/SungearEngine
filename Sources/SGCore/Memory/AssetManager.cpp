@@ -277,3 +277,19 @@ void SGCore::AssetManager::reloadAssetFromDisk(SGCore::IAsset* asset, SGCore::As
         }
     }
 }
+
+bool SGCore::AssetManager::checkForAssetExistenceInFilesystem(const int64_t& assetTypeID,
+                                                              const SGCore::InterpolatedPath& assetPath) noexcept
+{
+    if(!std::filesystem::exists(assetPath.resolved()))
+    {
+        LOG_E(SGCORE_TAG,
+              "Can not load asset (typeID: '{}'): this path does not exist.\nAsset path: '{}'",
+              assetTypeID,
+              Utils::toUTF8(assetPath.resolved().u16string()));
+
+        return false;
+    }
+
+    return true;
+}

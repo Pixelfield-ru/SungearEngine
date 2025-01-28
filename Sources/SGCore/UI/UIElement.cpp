@@ -10,11 +10,11 @@ SGCore::UI::UIElementType SGCore::UI::UIElement::getType() const noexcept
     return m_type;
 }
 
-void SGCore::UI::UIElement::calculateLayout() noexcept
+void SGCore::UI::UIElement::calculateLayout(const Transform& parentTransform, Transform& ownTransform) noexcept
 {
     checkForMeshGenerating();
 
-    doCalculateLayout();
+    doCalculateLayout(parentTransform, ownTransform);
 }
 
 void SGCore::UI::UIElement::checkForMeshGenerating() noexcept

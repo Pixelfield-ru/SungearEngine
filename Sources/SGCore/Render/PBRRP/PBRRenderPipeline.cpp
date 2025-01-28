@@ -3,13 +3,14 @@
 //
 
 #include "PBRRenderPipeline.h"
-
 #include "PBRRPGeometryPass.h"
+
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Render/PostProcess/PostProcessPass.h"
-#include "SGCore/Render/Outline/OutlinePass.h"
+#include "SGCore/Render/BaseRenderPasses/OutlinePass.h"
 #include "PBRRPDirectionalLightsPass.h"
 #include "SGCore/Render/TextRenderPass.h"
+#include "SGCore/Render/BaseRenderPasses/UIRenderPass.h"
 
 SGCore::PBRRenderPipeline::PBRRenderPipeline()
 {
@@ -79,6 +80,13 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
         auto textRenderPass = MakeRef<TextRenderPass>();
         
         m_renderPasses.push_back(textRenderPass);
+    }
+
+    // WARNING! UIRenderPass ALWAYS AFTER OTHER GEOMETRY PASS
+    {
+        auto uiPass = MakeRef<UIRenderPass>();
+
+        m_renderPasses.push_back(uiPass);
     }
 
     // WARNING! PostProcessFXPass ALWAYS AFTER OTHER PASSES

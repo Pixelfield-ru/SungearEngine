@@ -33,6 +33,8 @@ void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
               u8Path);
         return;
     }
+
+    m_rootElement = std::static_pointer_cast<UIRoot>(rootElement);
 }
 
 void SGCore::UI::UIDocument::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept

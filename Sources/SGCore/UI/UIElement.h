@@ -29,12 +29,12 @@ namespace SGCore::UI
 
         Ref<IMeshData> m_meshData;
 
-        void calculateLayout() noexcept;
+        void calculateLayout(const Transform& parentTransform, Transform& ownTransform) noexcept;
 
         [[nodiscard]] UIElementType getType() const noexcept;
 
     protected:
-        virtual void doCalculateLayout() noexcept = 0;
+        virtual void doCalculateLayout(const Transform& parentTransform, Transform& ownTransform) noexcept = 0;
 
         /**
          * Generates a mesh based on the selector (i.e. selector != nullptr).\n
@@ -58,8 +58,6 @@ namespace SGCore::UI
 
     private:
         UIElementType m_type = UIElementType::ET_UNKNOWN;
-
-        Transform m_transform;
 
         void checkForMeshGenerating() noexcept;
     };

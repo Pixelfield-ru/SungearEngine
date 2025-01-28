@@ -3,7 +3,7 @@
 //
 #include "Div.h"
 
-void SGCore::UI::Div::doCalculateLayout() noexcept
+void SGCore::UI::Div::doCalculateLayout(const Transform& parentTransform, Transform& ownTransform) noexcept
 {
 
 }
