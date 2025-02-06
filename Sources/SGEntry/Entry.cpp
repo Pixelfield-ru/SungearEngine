@@ -52,7 +52,7 @@ public:
 
 void coreInit()
 {
-    auto cssFile = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::CSSFile>("window.css");
+    // auto cssFile = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::CSSFile>("window.css");
 
     ImGui::SetCurrentContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());
 
@@ -153,7 +153,7 @@ void coreInit()
 
     std::cout << "cat: " << typeid(cat).name() << std::endl;
 
-    auto uiDocument = AssetManager::getInstance()->loadAsset<UI::UIDocument>("test.xml");
+    // auto uiDocument = AssetManager::getInstance()->loadAsset<UI::UIDocument>("test.xml");
 
     //
 

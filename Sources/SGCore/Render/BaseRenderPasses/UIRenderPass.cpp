@@ -54,7 +54,16 @@ std::int64_t SGCore::UIRenderPass::processUIElement(const std::int64_t& parentUI
         isCreatedNewTransformNode = true;
     }
 
+    auto& currentTransformNode = uiComponent.m_transformTree.m_elements[currentUITransformNodeIdx];
+
+    UI::UITransformTreeElement* parentTransformNode { };
+    if (parentUITreeNodeIdx != -1)
+    {
+        parentTransformNode = &uiComponent.m_transformTree.m_elements[parentUITreeNodeIdx];
+    }
+
     // =================================================================== calculating transform
+    // currentUIElement->calculateLayout(parentTransformNode.m_transform, currentTransformNode.m_transform);
 
     // =================================================================== rendering uielement
 

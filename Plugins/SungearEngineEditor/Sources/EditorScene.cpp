@@ -144,7 +144,7 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createBasicScene(const std::stri
         auto& skyboxMesh = newScene->getECSRegistry()->get<SGCore::Mesh>(atmosphereEntity);
         auto& atmosphereScattering = newScene->getECSRegistry()->emplace<SGCore::Atmosphere>(atmosphereEntity);
         atmosphereScattering.m_sunRotation.z = 90.0;
-        skyboxMesh.m_base.setMaterial(SGCore::AssetManager::getInstance()->getAsset<SGCore::IMaterial>("standard_skybox_material0"));
+        skyboxMesh.m_base.setMaterial(SGCore::AssetManager::getInstance()->getAsset<SGCore::IMaterial, SGCore::AssetStorageType::BY_ALIAS>("standard_skybox_material0"));
 
         auto& skyboxTransform = newScene->getECSRegistry()->get<SGCore::Transform>(atmosphereEntity);
 
@@ -196,19 +196,19 @@ void SGE::EditorScene::addEditorEntities() noexcept
         m_data.m_editorGrid = gridEntities[2];
         registry->emplace<SGCore::NonSavable>(gridEntities[0]);
         auto& gridMesh = scene->getECSRegistry()->get<SGCore::Mesh>(m_data.m_editorGrid);
-        gridMesh.m_base.setMaterial(SGCore::AssetManager::getInstance()->getAsset<SGCore::IMaterial>("standard_grid_material"));
+        gridMesh.m_base.setMaterial(SGCore::AssetManager::getInstance()->getAsset<SGCore::IMaterial, SGCore::AssetStorageType::BY_ALIAS>("standard_grid_material"));
 
         auto& gridTransform = *scene->getECSRegistry()->get<SGCore::Transform>(m_data.m_editorGrid);
         gridTransform.m_ownTransform.m_scale = { 3.0f, 3.0f, 1.0f, };
         gridTransform.m_ownTransform.m_rotation = glm::rotate(glm::identity<glm::quat>(), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
         // todo: FOR TEST
-        {
+        /*{
             auto uiDocument = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::UIDocument>("test.xml");
 
             auto& uiComponent = registry->emplace<SGCore::UI::UIComponent>(gridEntities[0]);
             uiComponent.m_document = uiDocument;
-        }
+        }*/
 
         /*auto& cameraLayeredFrameReceiver = scene->getECSRegistry()->get<SGCore::LayeredFrameReceiver>(m_data.m_editorCamera);
         auto chunksPPLayer = cameraLayeredFrameReceiver.addLayer("chunks_layer");

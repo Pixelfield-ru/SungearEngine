@@ -58,7 +58,7 @@ bool SGCore::AssetManager::isAssetExists(const std::string& alias, const Interpo
     {
         case AssetStorageType::BY_PATH:
         {
-            return isAssetExists<AssetStorageType::BY_PATH>(Utils::toUTF8(path.resolved().u16string()), assetTypeID);
+            return isAssetExists<AssetStorageType::BY_PATH>(path, assetTypeID);
             break;
         }
         case AssetStorageType::BY_ALIAS:

@@ -13,8 +13,7 @@ namespace SGCore::UI
 {
     struct UITransformTreeElement
     {
-        Transform m_ownTransform;
-        Transform m_finalTransform;
+        Transform m_transform;
 
         std::vector<std::int64_t> m_children;
         std::int64_t m_parent = -1;

@@ -1001,7 +1001,7 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
         
         if(extension == ".png" || extension == ".jpg" || extension == ".jpeg")
         {
-            bool previewExists = m_previewAssetManager->isAssetExists<SGCore::ITexture2D>(u8curPath);
+            bool previewExists = m_previewAssetManager->isAssetExists<SGCore::ITexture2D, SGCore::AssetStorageType::BY_PATH>(u8curPath);
             // if preview does not exist in asset manager then we are loading this preview using PARALLEL_THEN_LAZYLOAD
             if(!previewExists)
             {
@@ -1051,7 +1051,7 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
             {
                 // if preview is already exist then we are getting this
                 // preview from asset manager only if data of this asset was loaded (isLoaded())
-                auto tmpPreview = m_previewAssetManager->getAsset<SGCore::ITexture2D>(u8curPath);
+                auto tmpPreview = m_previewAssetManager->getAsset<SGCore::ITexture2D, SGCore::AssetStorageType::BY_PATH>(u8curPath);
                 if(tmpPreview->isLoaded())
                 {
                     fileIcon = tmpPreview;

@@ -19,6 +19,8 @@
 #include "SGCore/Render/Mesh.h"
 #include <glm/gtx/string_cast.hpp>
 
+#include "TransformUtils.h"
+
 SGCore::TransformationsUpdater::TransformationsUpdater()
 {
     std::printf("creating TransformationsUpdater %llu\n", std::hash<size_t>()((size_t) (IParallelSystem<TransformationsUpdater>*) this));
@@ -59,128 +61,12 @@ void SGCore::TransformationsUpdater::update(const double& dt, const double& fixe
                 parentTransform = (tmp ? *tmp : nullptr);
             }
 
-            bool translationChanged = false;
-            bool rotationChanged = false;
-            bool scaleChanged = false;
-
-            TransformBase& ownTransform = transform->m_ownTransform;
             TransformBase& finalTransform = transform->m_finalTransform;
 
-            // translation ==============================================
+            const bool isTransformChanged = TransformUtils::calculateTransform(*transform, parentTransform.get());
 
-            if(ownTransform.m_lastPosition != ownTransform.m_position)
+            if(isTransformChanged)
             {
-                ownTransform.m_translationMatrix = glm::translate(glm::mat4(1.0),
-                                                                  ownTransform.m_position
-                );
-
-                // std::cout << "pos : " << ownTransform.m_position.x << ", " << ownTransform.m_position.y << ", " << ownTransform.m_position.z << std::endl;
-
-                ownTransform.m_lastPosition = ownTransform.m_position;
-
-                translationChanged = true;
-            }
-
-            if(parentTransform && transform->m_followParentTRS.x)
-            {
-                // std::cout << "dfdff" << std::endl;
-                finalTransform.m_translationMatrix =
-                        parentTransform->m_finalTransform.m_translationMatrix * ownTransform.m_translationMatrix;
-            }
-            else
-            {
-                finalTransform.m_translationMatrix = ownTransform.m_translationMatrix;
-            }
-
-            // rotation ================================================
-
-            if(ownTransform.m_lastRotation != ownTransform.m_rotation)
-            {
-                ownTransform.m_rotationMatrix = glm::toMat4(ownTransform.m_rotation);
-
-                const glm::vec3& column1 = ownTransform.m_rotationMatrix[0];
-                const glm::vec3& column2 = ownTransform.m_rotationMatrix[1];
-                const glm::vec3& column3 = ownTransform.m_rotationMatrix[2];
-
-                ownTransform.m_up = glm::vec3(column1.y, column2.y, column3.y);
-                ownTransform.m_forward = -glm::vec3(column1.z, column2.z, column3.z);
-                ownTransform.m_right = glm::vec3(column1.x, column2.x, column3.x);
-
-                ownTransform.m_lastRotation = ownTransform.m_rotation;
-
-                rotationChanged = true;
-            }
-
-            if(parentTransform && transform->m_followParentTRS.y)
-            {
-                finalTransform.m_rotationMatrix =
-                        parentTransform->m_finalTransform.m_rotationMatrix * ownTransform.m_rotationMatrix;
-            }
-            else
-            {
-                finalTransform.m_rotationMatrix = ownTransform.m_rotationMatrix;
-            }
-
-            // scale ========================================================
-
-            if(ownTransform.m_lastScale != ownTransform.m_scale)
-            {
-                ownTransform.m_scaleMatrix = glm::scale(glm::mat4(1.0),
-                                                        ownTransform.m_scale
-                );
-                ownTransform.m_lastScale = ownTransform.m_scale;
-
-                scaleChanged = true;
-            }
-
-            if(parentTransform && transform->m_followParentTRS.z)
-            {
-                finalTransform.m_scaleMatrix =
-                        parentTransform->m_finalTransform.m_scaleMatrix * ownTransform.m_scaleMatrix;
-            }
-            else
-            {
-                finalTransform.m_scaleMatrix = ownTransform.m_scaleMatrix;
-            }
-
-            // model matrix =================================================
-
-            bool modelMatrixChanged = translationChanged || rotationChanged || scaleChanged;
-
-            // О ТАК ВЕРНО
-            transform->m_transformChanged =
-                    modelMatrixChanged || (parentTransform && parentTransform->m_transformChanged);
-
-            if(transform->m_transformChanged)
-            {
-                ownTransform.m_modelMatrix =
-                        ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix * ownTransform.m_scaleMatrix;
-                /*ownTransform.m_modelMatrix =
-                        ownTransform.m_scaleMatrix * ownTransform.m_rotationMatrix * ownTransform.m_translationMatrix;*/
-
-                if(parentTransform)
-                {
-                    finalTransform.m_modelMatrix =
-                            parentTransform->m_finalTransform.m_modelMatrix * ownTransform.m_modelMatrix;
-                }
-                else
-                {
-                    finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
-                }
-
-                glm::vec3 finalScale;
-                glm::quat finalRotation;
-                glm::vec3 finalTranslation;
-                glm::vec3 finalSkew;
-                glm::vec4 finalPerspective;
-
-                glm::decompose(finalTransform.m_modelMatrix, finalScale, finalRotation, finalTranslation, finalSkew,
-                               finalPerspective);
-
-                finalTransform.m_position = finalTranslation;
-                finalTransform.m_rotation = finalRotation;
-                finalTransform.m_scale = finalScale;
-
                 matrices.push_back({ entity, finalTransform.m_modelMatrix });
                 notPhysicalEntities.push_back({ entity, transform });
             }

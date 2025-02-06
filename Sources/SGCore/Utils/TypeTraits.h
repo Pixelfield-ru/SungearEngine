@@ -236,7 +236,7 @@ namespace SGCore
         static inline constexpr size_t types_count = sizeof...(Types);
 
         template<size_t Idx>
-        using get_type = extract<Idx, Types...>::type;
+        using get_type = typename extract<Idx, Types...>::type;
 
         template<typename T>
         static constexpr inline bool contains = SGCore::contains<T, Types...>::value;

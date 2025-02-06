@@ -335,14 +335,8 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
     if(rootJointEntity != entt::null)
     {
         // TEST: getting skeleton of cat
-        auto skeleton = SGCore::AssetManager::getInstance()->getAsset<SGCore::Skeleton>(
-                SGCore::Utils::toUTF8(
-                        SGCore::InterpolatedPath(
-                                "${projectPath}\\Resources\\models\\spy\\scene.gltf\\skeletons\\GLTF_created_0_rootJoint"
-                        )
-                        .resolved()
-                        .u16string()
-                )
+        auto skeleton = SGCore::AssetManager::getInstance()->getAsset<SGCore::Skeleton, SGCore::AssetStorageType::BY_PATH>(
+            "${projectPath}\\Resources\\models\\spy\\scene.gltf\\skeletons\\GLTF_created_0_rootJoint"
         );
 
         if(!skeleton)
@@ -352,14 +346,8 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
         }
 
         // TEST: getting animations of cat
-        auto animations = SGCore::AssetManager::getInstance()->getAsset<SGCore::AnimationsFile>(
-                SGCore::Utils::toUTF8(
-                        SGCore::InterpolatedPath(
-                                "${projectPath}\\Resources\\models\\spy\\scene.gltf\\animations"
-                        )
-                        .resolved()
-                        .u16string()
-                )
+        auto animations = SGCore::AssetManager::getInstance()->getAsset<SGCore::AnimationsFile, SGCore::AssetStorageType::BY_PATH>(
+            "${projectPath}\\Resources\\models\\spy\\scene.gltf\\animations"
         );
 
         if(!animations)

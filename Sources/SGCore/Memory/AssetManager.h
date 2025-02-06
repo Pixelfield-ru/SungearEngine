@@ -813,7 +813,7 @@ namespace SGCore
         template<AssetStorageType AssetStorage>
         bool isAssetExists(const asset_key<AssetStorage>& pathOrAlias, const size_t& assetTypeID) noexcept
         {
-            size_t hashedPathOrAlias = hashAssetKey<AssetStorage>(pathOrAlias);
+            const size_t hashedPathOrAlias = hashAssetKey<AssetStorage>(pathOrAlias);
 
             std::lock_guard guard(m_mutex);
 
@@ -838,7 +838,7 @@ namespace SGCore
         template<AssetStorageType AssetStorage>
         void fullRemoveAsset(const asset_key<AssetStorage>& aliasOrPath) noexcept
         {
-            size_t hashedPathOrAlias = hashAssetKey<AssetStorage>(aliasOrPath);
+            const size_t hashedPathOrAlias = hashAssetKey<AssetStorage>(aliasOrPath);
 
             m_assets.erase(hashedPathOrAlias);
         }
@@ -852,7 +852,7 @@ namespace SGCore
         requires(std::is_base_of_v<IAsset, AssetT>)
         void removeAssetLoadedByType(const asset_key<AssetStorage>& aliasOrPath) noexcept
         {
-            size_t hashedPathOrAlias = hashAssetKey<AssetStorage>(aliasOrPath);
+            const size_t hashedPathOrAlias = hashAssetKey<AssetStorage>(aliasOrPath);
 
             auto foundIt = m_assets.find(hashedPathOrAlias);
             if(foundIt == m_assets.end()) return;
