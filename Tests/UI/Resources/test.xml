@@ -1,0 +1,9 @@
+<xml>
+    <include type="stylesheet" path="test.css"/>
+
+    <div class="window-default">
+        <div class="window-header">
+
+        </div>
+    </div>
+</xml>

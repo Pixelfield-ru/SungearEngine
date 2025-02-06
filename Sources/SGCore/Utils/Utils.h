@@ -497,6 +497,8 @@ namespace SGCore
         static bool isSubpath(const std::filesystem::path& path,
                               const std::filesystem::path& base) noexcept;
 
+        static std::filesystem::path normalizePath(const std::filesystem::path& path) noexcept;
+
         template<typename CharT>
         static std::string::size_type findInString(const std::basic_string<CharT>& str,
                                                    const std::basic_string<CharT>& substr,

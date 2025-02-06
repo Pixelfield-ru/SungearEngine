@@ -7,7 +7,7 @@
 
 namespace SGCore
 {
-    enum AssetsLoadPolicy
+    enum class AssetsLoadPolicy
     {
         SINGLE_THREADED,
         PARALLEL_THEN_LAZYLOAD,

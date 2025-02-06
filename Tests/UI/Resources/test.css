@@ -1,0 +1,24 @@
+.window-default {
+    display: flex;
+    flex-direction: column;
+
+    width: 100px;
+    height: calc(100px - 10%);
+    background-color: rgb(10 100 10 / 255);
+}
+
+.window-header {
+    display: flex;
+    flex-direction: row;
+    background-color: rgb(100 10 10 / 255);
+}
+
+.window-body, .class1 {
+    display: flex;
+    flex-direction: row;
+}
+
+.window-footer {
+    display: flex;
+    flex-direction: row;
+}

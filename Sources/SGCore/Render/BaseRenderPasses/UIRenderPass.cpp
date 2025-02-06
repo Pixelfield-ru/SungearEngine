@@ -9,13 +9,13 @@
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
 
-void SGCore::UIRenderPass::create(const SGCore::Ref<SGCore::IRenderPipeline>& parentRenderPipeline) noexcept
+void SGCore::UIRenderPass::create(const Ref<IRenderPipeline>& parentRenderPipeline) noexcept
 {
     IRenderPass::create(parentRenderPipeline);
 }
 
-void SGCore::UIRenderPass::render(const SGCore::Ref<SGCore::Scene>& scene,
-                                  const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline) noexcept
+void SGCore::UIRenderPass::render(const Ref<Scene>& scene,
+                                  const Ref<IRenderPipeline>& renderPipeline) noexcept
 {
     auto uiComponentsView = scene->getECSRegistry()->view<UI::UIComponent>();
     auto camerasView = scene->getECSRegistry()->view<LayeredFrameReceiver, EntityBaseInfo, RenderingBase, Transform>();
@@ -34,8 +34,8 @@ void SGCore::UIRenderPass::render(const SGCore::Ref<SGCore::Scene>& scene,
 }
 
 std::int64_t SGCore::UIRenderPass::processUIElement(const std::int64_t& parentUITreeNodeIdx,
-                                                    SGCore::UI::UIComponent& uiComponent,
-                                                    const SGCore::Ref<SGCore::UI::UIElement>& currentUIElement) noexcept
+                                                    UI::UIComponent& uiComponent,
+                                                    const Ref<UI::UIElement>& currentUIElement) noexcept
 {
     m_currentProceedUIElements++;
 

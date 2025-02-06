@@ -31,6 +31,19 @@ bool SGCore::Utils::isSubpath(const std::filesystem::path& path, const std::file
     return !rel.empty() && rel.native()[0] != '.';
 }
 
+std::filesystem::path SGCore::Utils::normalizePath(const std::filesystem::path& path) noexcept
+{
+    auto finalPath = path.lexically_normal();
+
+    finalPath = replaceAll<char>(
+        Utils::toUTF8(finalPath.u16string()),
+        "\\",
+        "/"
+    );
+
+    return finalPath;
+}
+
 long long SGCore::Utils::getTimeNanos() noexcept
 {
     using namespace std::chrono;

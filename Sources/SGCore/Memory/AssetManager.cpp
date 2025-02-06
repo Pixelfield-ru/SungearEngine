@@ -51,45 +51,24 @@ void SGCore::AssetManager::clear() noexcept
     m_assets.clear();
 }
 
-bool SGCore::AssetManager::isAssetExists(const std::string& pathOrAlias, const size_t& assetTypeID) noexcept
-{
-    std::lock_guard guard(m_mutex);
-
-    auto foundVariantsIt = m_assets.find(hashString(pathOrAlias));
-    if(foundVariantsIt == m_assets.end())
-    {
-        return false;
-    }
-    else
-    {
-        auto foundAssetIt = foundVariantsIt->second.find(assetTypeID);
-        return foundAssetIt != foundVariantsIt->second.end();
-    }
-}
-
 bool SGCore::AssetManager::isAssetExists(const std::string& alias, const InterpolatedPath& path,
-                                         SGCore::AssetStorageType loadedBy, const size_t& assetTypeID) noexcept
+                                         AssetStorageType loadedBy, const size_t& assetTypeID) noexcept
 {
     switch(loadedBy)
     {
         case AssetStorageType::BY_PATH:
         {
-            return isAssetExists(Utils::toUTF8(path.resolved().u16string()), assetTypeID);
+            return isAssetExists<AssetStorageType::BY_PATH>(Utils::toUTF8(path.resolved().u16string()), assetTypeID);
             break;
         }
         case AssetStorageType::BY_ALIAS:
         {
-            return isAssetExists(alias, assetTypeID);
+            return isAssetExists<AssetStorageType::BY_ALIAS>(alias, assetTypeID);
             break;
         }
     }
 
     return false;
-}
-
-void SGCore::AssetManager::fullRemoveAsset(const InterpolatedPath& aliasOrPath) noexcept
-{
-    m_assets.erase(std::hash<std::filesystem::path>()(aliasOrPath.raw()));
 }
 
 void SGCore::AssetManager::createPackage(const InterpolatedPath& toDirectory,
@@ -200,28 +179,6 @@ const std::string& SGCore::AssetManager::getName() const noexcept
     return m_name;
 }
 
-SGCore::AssetRef<SGCore::IAsset>
-SGCore::AssetManager::getAsset(const std::string& pathOrAlias, const size_t& assetTypeID) noexcept
-{
-    const size_t pathOrAliasHash = hashString(pathOrAlias);
-
-    auto foundVariantsIt = m_assets.find(pathOrAliasHash);
-
-    if(foundVariantsIt == m_assets.end())
-    {
-        return nullptr;
-    }
-
-    auto foundAssetIt = foundVariantsIt->second.find(assetTypeID);
-
-    if(foundAssetIt == foundVariantsIt->second.end())
-    {
-        return nullptr;
-    }
-
-    return AssetRef<IAsset>(foundAssetIt->second);
-}
-
 SGCore::Ref<SGCore::AssetManager> SGCore::AssetManager::getInstance() noexcept
 {
     return m_instance;
@@ -232,13 +189,13 @@ void SGCore::AssetManager::reloadAssetFromDisk(SGCore::IAsset* asset, SGCore::As
 {
     switch(loadPolicy)
     {
-        case SINGLE_THREADED:
+        case AssetsLoadPolicy::SINGLE_THREADED:
         {
             asset->doReloadFromDisk(loadPolicy, lazyLoadInThread);
             asset->lazyLoad();
             break;
         }
-        case PARALLEL_THEN_LAZYLOAD:
+        case AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD:
         {
             auto loadInThread = m_threadsPool.getThread();
             // loadInThread->m_autoJoinIfNotBusy = true;
@@ -260,7 +217,7 @@ void SGCore::AssetManager::reloadAssetFromDisk(SGCore::IAsset* asset, SGCore::As
 
             break;
         }
-        case PARALLEL_NO_LAZYLOAD:
+        case AssetsLoadPolicy::PARALLEL_NO_LAZYLOAD:
         {
             auto loadInThread = m_threadsPool.getThread();
             // loadInThread->m_autoJoinIfNotBusy = true;

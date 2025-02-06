@@ -496,7 +496,7 @@ std::vector<SGCore::AssetRef<SGCore::Skeleton>> SGCore::ModelAsset::processSkele
         {
             const auto skeletonPath = getPath() / "skeletons" / std::string(currentBoneHierarchyNode.m_aiBones[0]->mName.C_Str());
 
-            if(!parentAssetManager->isAssetExists<Skeleton>(Utils::toUTF8(skeletonPath.resolved().u16string())))
+            if(!parentAssetManager->isAssetExists<Skeleton, AssetStorageType::BY_PATH>(skeletonPath))
             {
                 auto skeleton = parentAssetManager->getOrAddAssetByPath<Skeleton>(skeletonPath);
 
