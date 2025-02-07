@@ -8,6 +8,7 @@
 
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
+#include "SGCore/Transformations/TransformUtils.h"
 
 void SGCore::UIRenderPass::create(const Ref<IRenderPipeline>& parentRenderPipeline) noexcept
 {
@@ -57,13 +58,17 @@ std::int64_t SGCore::UIRenderPass::processUIElement(const std::int64_t& parentUI
     auto& currentTransformNode = uiComponent.m_transformTree.m_elements[currentUITransformNodeIdx];
 
     UI::UITransformTreeElement* parentTransformNode { };
-    if (parentUITreeNodeIdx != -1)
+    if(parentUITreeNodeIdx != -1)
     {
         parentTransformNode = &uiComponent.m_transformTree.m_elements[parentUITreeNodeIdx];
     }
 
+    const Transform* parentTransform = parentTransformNode ? &parentTransformNode->m_transform : nullptr;
+
     // =================================================================== calculating transform
-    // currentUIElement->calculateLayout(parentTransformNode.m_transform, currentTransformNode.m_transform);
+    currentUIElement->calculateLayout(parentTransform, currentTransformNode.m_transform);
+
+    TransformUtils::calculateTransform(currentTransformNode.m_transform, parentTransform);
 
     // =================================================================== rendering uielement
 

@@ -12,7 +12,7 @@ namespace SGCore::UI
     struct Div : UIElement
     {
     protected:
-        void doCalculateLayout(const Transform& parentTransform, Transform& ownTransform) noexcept final;
+        void doCalculateLayout(const Transform* parentTransform, Transform& ownTransform) noexcept final;
 
         void doGenerateMeshBaseSelector() noexcept final;
 

@@ -29,12 +29,12 @@ namespace SGCore::UI
 
         Ref<IMeshData> m_meshData;
 
-        void calculateLayout(const Transform& parentTransform, Transform& ownTransform) noexcept;
+        void calculateLayout(const Transform* parentTransform, Transform& ownTransform) noexcept;
 
         [[nodiscard]] UIElementType getType() const noexcept;
 
     protected:
-        virtual void doCalculateLayout(const Transform& parentTransform, Transform& ownTransform) noexcept = 0;
+        virtual void doCalculateLayout(const Transform* parentTransform, Transform& ownTransform) noexcept = 0;
 
         /**
          * Generates a mesh based on the selector (i.e. selector != nullptr).\n
@@ -42,7 +42,8 @@ namespace SGCore::UI
          * You need to generate vertex positions, uv coordinates of vertices, and vertex colors.\n
          * Calls at the beginning of the calculateLayout function.\n
          * Calls only if mesh has not been generated before (i.e. mesh == nullptr).\n
-         * IN THIS FUNCTION, YOU DO NOT NEED TO CREATE A MESH INSTANCE. YOU ONLY NEED TO GENERATE VERTICES.
+         * IN THIS FUNCTION, YOU DO NOT NEED TO CREATE A MESH INSTANCE. YOU ONLY NEED TO GENERATE VERTICES.\n
+         * POSITIONS OF ALL VERTICES MUST FIT TO RANGE OF -1, 1 BY X AND Y AXIS.
          */
         virtual void doGenerateMeshBaseSelector() noexcept = 0;
 
@@ -52,7 +53,8 @@ namespace SGCore::UI
          * You need to generate vertex positions, uv coordinates of vertices, and vertex colors.\n
          * Calls at the beginning of the calculateLayout function.\n
          * Calls only if mesh has not been generated before (i.e. mesh == nullptr).\n
-         * IN THIS FUNCTION, YOU DO NOT NEED TO CREATE A MESH INSTANCE. YOU ONLY NEED TO GENERATE VERTICES.
+         * IN THIS FUNCTION, YOU DO NOT NEED TO CREATE A MESH INSTANCE. YOU ONLY NEED TO GENERATE VERTICES.\n
+         * POSITIONS OF ALL VERTICES MUST FIT TO RANGE OF -1, 1 BY X AND Y AXIS
          */
         virtual void doGenerateBasicMesh() noexcept = 0;
 

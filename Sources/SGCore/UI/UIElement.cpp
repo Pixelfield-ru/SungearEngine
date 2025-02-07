@@ -10,7 +10,7 @@ SGCore::UI::UIElementType SGCore::UI::UIElement::getType() const noexcept
     return m_type;
 }
 
-void SGCore::UI::UIElement::calculateLayout(const Transform& parentTransform, Transform& ownTransform) noexcept
+void SGCore::UI::UIElement::calculateLayout(const Transform* parentTransform, Transform& ownTransform) noexcept
 {
     checkForMeshGenerating();
 
@@ -30,6 +30,11 @@ void SGCore::UI::UIElement::checkForMeshGenerating() noexcept
         else
         {
             doGenerateBasicMesh();
+        }
+
+        if(m_meshData)
+        {
+            m_meshData->m_aabb.calculate(m_meshData->m_vertices);
         }
     }
 }

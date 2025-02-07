@@ -126,7 +126,7 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
 
                 if(mesh->m_base.getMeshData())
                 {
-                    finalTransform.m_aabb.calculateAABBFromTRS(translation, rotation, scale,
+                    finalTransform.m_aabb.applyTransformations(translation, rotation, scale,
                                                                mesh->m_base.getMeshData()->m_aabb);
                 }
                 
@@ -175,7 +175,7 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 glm::decompose(finalTransform.m_modelMatrix, scale, rotation, translation, skew,
                                perspective);
                 
-                finalTransform.m_aabb.calculateAABBFromTRS(translation, rotation, scale,
+                finalTransform.m_aabb.applyTransformations(translation, rotation, scale,
                                                            mesh->m_base.getMeshData()->m_aabb);
                 
                 finalTransform.m_position = translation;

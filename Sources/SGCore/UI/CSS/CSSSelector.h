@@ -35,13 +35,13 @@ namespace SGCore::UI
         [[nodiscard]] const std::string& getName() const noexcept;
 
     protected:
-        /// DOES NOT SUPPORTED
+        /// NOT SUPPORTED
         void doLoad(const InterpolatedPath& path) final;
 
         // todo: impl
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept final;
 
-        // DOES NOT SUPPORTED
+        // NOT SUPPORTED
         void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
 
     private:

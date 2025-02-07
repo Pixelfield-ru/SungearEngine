@@ -1,0 +1,7 @@
+#ifdef SG_GLSL4
+    #include "sg_shaders/impl/glsl4/ui/div.glsl"
+#else
+    #ifdef SG_HLSL
+        #error "UI text shader is not implemented for HLSL!"
+    #endif
+#endif

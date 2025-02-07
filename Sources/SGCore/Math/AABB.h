@@ -10,10 +10,12 @@
 #include "MathUtils.h"
 #include "SGCore/Serde/Serde.h"
 #include "SGCore/ECS/Component.h"
+#include "SGCore/ImportedScenesArch/Vertex.h"
 
 namespace SGCore
 {
     template<typename ScalarT = float>
+    requires(std::is_signed_v<ScalarT>)
     struct AABB : ECS::Component<AABB<ScalarT>, const AABB<ScalarT>>
     {
         static_assert(std::is_scalar_v<ScalarT> && "ScalarT must be scalar.");
@@ -33,8 +35,10 @@ namespace SGCore
         AABB(const AABB&) = default;
         AABB(AABB&) = default;
 
-        vec3_t m_min = { 0, 0, 0 };
-        vec3_t m_max = { 0, 0, 0 };
+        // assigning 'min' to numeric_limits::max to find vertex with real min pos in vertices positions list. because real minimum can be positive
+        vec3_t m_min = { std::numeric_limits<ScalarT>::max(), std::numeric_limits<ScalarT>::max(), std::numeric_limits<ScalarT>::max() };
+        // assigning 'max' to numeric_limits::min to find vertex with real max pos in vertices positions list. because real maximum can be negative
+        vec3_t m_max = { std::numeric_limits<ScalarT>::min(), std::numeric_limits<ScalarT>::min(), std::numeric_limits<ScalarT>::min() };
         
         [[nodiscard]] bool isCollidesWith(const AABB& other) const noexcept
         {
@@ -98,8 +102,58 @@ namespace SGCore
             
             return true;
         }
+
+        void setToInitial() noexcept
+        {
+            // assigning 'min' to numeric_limits::max to find vertex with real min pos in vertices positions list. because real minimum can be positive
+            m_min = { std::numeric_limits<ScalarT>::max(),
+                      std::numeric_limits<ScalarT>::max(),
+                      std::numeric_limits<ScalarT>::max() };
+            // assigning 'max' to numeric_limits::min to find vertex with real max pos in vertices positions list. because real maximum can be negative
+            m_max = { std::numeric_limits<ScalarT>::min(),
+                      std::numeric_limits<ScalarT>::min(),
+                      std::numeric_limits<ScalarT>::min() };
+        }
+
+        void calculate(const std::vector<Vertex>& vertices) noexcept
+        {
+            setToInitial();
+
+            for(const auto& vertex : vertices)
+            {
+                if(vertex.m_position.x < m_min.x)
+                {
+                    m_min.x = vertex.m_position.x;
+                }
+
+                if(vertex.m_position.y < m_min.y)
+                {
+                    m_min.y = vertex.m_position.y;
+                }
+
+                if(vertex.m_position.z < m_min.z)
+                {
+                    m_min.z = vertex.m_position.z;
+                }
+
+                if(vertex.m_position.x > m_max.x)
+                {
+                    m_max.x = vertex.m_position.x;
+                }
+
+                if(vertex.m_position.y > m_max.y)
+                {
+                    m_max.y = vertex.m_position.y;
+                }
+
+                if(vertex.m_position.z > m_max.z)
+                {
+                    m_max.z = vertex.m_position.z;
+                }
+            }
+        }
         
-        void calculateAABBFromModelMatrix(const mat4_t& modelMatrix, const AABB& sourceAABB) noexcept
+        void applyTransformations(const mat4_t& modelMatrix, const AABB& sourceAABB) noexcept
         {
             vec3_t scale;
             quat_t rotation;
@@ -109,10 +163,10 @@ namespace SGCore
             
             glm::decompose(modelMatrix, scale, rotation, translation, skew, perspective);
             
-            calculateAABBFromTRS(translation, rotation, scale, sourceAABB);
+            applyTransformations(translation, rotation, scale, sourceAABB);
         }
         
-        void calculateAABBFromTRS(const vec3_t& translation, const quat_t& rotation, const vec3_t& scale, const AABB& sourceAABB) noexcept
+        void applyTransformations(const vec3_t& translation, const quat_t& rotation, const vec3_t& scale, const AABB& sourceAABB) noexcept
         {
             m_min = sourceAABB.m_min;
             m_max = sourceAABB.m_max;

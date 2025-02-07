@@ -18,12 +18,14 @@
 
 SGCore::AssetRef<SGCore::UI::CSSFile> cssFile;
 SGCore::AssetRef<SGCore::UI::UIDocument> uiDocument;
+SGCore::AssetRef<SGCore::IShader> divShader;
 SGCore::Ref<SGCore::Scene> scene;
 
 void coreInit()
 {
     cssFile = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::CSSFile>("${enginePath}/Tests/UI/Resources/test.css");
     uiDocument = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::UIDocument>("${enginePath}/Tests/UI/Resources/test.xml");
+    divShader = SGCore::AssetManager::getInstance()->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/ui/div.sgshader");
 
     auto pbrrpPipeline = SGCore::RenderPipelinesManager::createRenderPipeline<SGCore::PBRRenderPipeline>();
     SGCore::RenderPipelinesManager::registerRenderPipeline(pbrrpPipeline);
