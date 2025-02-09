@@ -41,6 +41,8 @@ void SGCore::GLVertexBuffer::subDataOnGAPISide(const void* data, const size_t& b
                                                const size_t& bytesOffset,
                                                bool isPutData) noexcept
 {
+    if(bytesCount == 0) return;
+
     if(isPutData)
     {
         glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) bytesCount, data,

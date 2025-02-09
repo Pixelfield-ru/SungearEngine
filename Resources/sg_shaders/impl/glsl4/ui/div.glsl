@@ -6,6 +6,7 @@
 
 layout (location = 0) in vec3 positionsAttribute;
 layout (location = 1) in vec3 UVAttribute;
+// layout (location = 9) in int sliceIndexAttribute;
 
 // REQUIRED UNIFORM!!
 // first vec2 - min, second vec2 - max
@@ -66,13 +67,16 @@ void main()
     }
     // ==================================================================
 
+   /* transformedVertexPos.x = u_elementSize.x / 2.0 + positionsAttribute.x;
+    transformedVertexPos.y = u_elementSize.y / 2.0 + positionsAttribute.y;*/
+
     // moving vertex back to actual position
     transformedVertexPos.xy += meshAABBCenterOffset * (u_elementSize);
 
     vsOut.UV = UVAttribute.xy;
     vsOut.vertexPos = transformedVertexPos;
     // vsOut.fragPos = vec3(objectTransform.modelMatrix * vec4(positionsAttribute.xy * (meshAABBCenterOffset * 10.0), 0.0, 1.0));
-    vsOut.fragPos = vec3(objectTransform.modelMatrix * vec4(transformedVertexPos.xy, 0.0, 1.0));
+    vsOut.fragPos = vec3(objectTransform.modelMatrix * vec4(positionsAttribute.xy, 0.0, 1.0));
 
     gl_Position = camera.orthographicSpaceMatrix * vec4(vsOut.fragPos, 1.0);
 }

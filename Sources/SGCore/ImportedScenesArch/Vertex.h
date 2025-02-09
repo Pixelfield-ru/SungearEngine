@@ -10,6 +10,7 @@
 
 #include "SGCore/Utils/Utils.h"
 
+
 namespace SGCore
 {
     // 92
@@ -23,26 +24,13 @@ namespace SGCore
         glm::vec3 m_tangent;
         glm::vec3 m_bitangent;
 
+        // for 9-slicing
+        std::int8_t m_sliceIndex = 0;
+
         std::array<std::int32_t, max_bones_count> m_bonesIDs = makeFilledArray<std::int32_t, max_bones_count>(-1);
         std::array<float, max_bones_count> m_bonesWeights = makeFilledArray<float, max_bones_count>(0.0f);
 
-        void addWeightData(const float& weight, const std::int32_t& boneID) noexcept
-        {
-            if(boneID == -1) return;
-
-            for(std::int32_t i = 0; i < max_bones_count; ++i)
-            {
-                if(m_bonesIDs[i] == -1)
-                {
-                    m_bonesIDs[i] = boneID;
-                    m_bonesWeights[i] = weight;
-
-                    return;
-                }
-            }
-
-            LOG_W(SGCORE_TAG, "Can not add weight data to vertex: there are no free slots for new bones for vertex!");
-        }
+        void addWeightData(const float& weight, const std::int32_t& boneID) noexcept;
 
         /*void setBonesDataToDefault() noexcept
         {

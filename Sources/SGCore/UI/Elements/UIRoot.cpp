@@ -4,6 +4,7 @@
 
 #include "UIRoot.h"
 #include "SGCore/ImportedScenesArch/IMeshData.h"
+#include "SGCore/UI/NineSlice.h"
 
 void SGCore::UI::UIRoot::doCalculateLayout(const CSSSelectorCache* parentSelectorCache,
                                            CSSSelectorCache& thisSelectorCache,
@@ -44,7 +45,9 @@ void SGCore::UI::UIRoot::doGenerateMeshBaseSelector() noexcept
 
 void SGCore::UI::UIRoot::doGenerateBasicMesh() noexcept
 {
-    m_meshData->m_vertices.resize(4);
+    NineSlice::generate9SlicedQuad<std::uint32_t>(0, 1, m_meshData->m_vertices, m_meshData->m_indices);
+
+    // m_meshData->m_vertices.resize(4);
 
     /*m_meshData->m_vertices[0] = {
         .m_position = { -1, -1, 0.0f }
@@ -62,7 +65,9 @@ void SGCore::UI::UIRoot::doGenerateBasicMesh() noexcept
         .m_position = { 1, -1, 0.0f }
     };*/
 
-    m_meshData->m_vertices[0] = {
+
+
+    /*m_meshData->m_vertices[0] = {
         .m_position = { 0, 0, 0.0f }
     };
 
@@ -76,18 +81,18 @@ void SGCore::UI::UIRoot::doGenerateBasicMesh() noexcept
 
     m_meshData->m_vertices[3] = {
         .m_position = { 1, 0, 0.0f }
-    };
+    };*/
 
     // =======================================================
 
-    m_meshData->m_indices.resize(6);
+    /*m_meshData->m_indices.resize(6);
 
     m_meshData->m_indices[0] = 0;
     m_meshData->m_indices[1] = 2;
     m_meshData->m_indices[2] = 1;
     m_meshData->m_indices[3] = 0;
     m_meshData->m_indices[4] = 3;
-    m_meshData->m_indices[5] = 2;
+    m_meshData->m_indices[5] = 2;*/
 
     m_meshData->prepare();
 }

@@ -117,7 +117,7 @@ void SGCore::GL3MeshData::prepare()
     bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(bonesIDsAttrib1))->prepare()->enableAttributes();
     // --------------------------------------------
 
-    // ---------- preparing bones ids ---------------
+    // ---------- preparing bones weights ---------------
     auto bonesWeightsAttrib0 = bufferLayout->createVertexAttribute(7,
                                                                    "bonesWeightsAttribute0",
                                                                    SGGDataType::SGG_FLOAT4,
@@ -131,7 +131,7 @@ void SGCore::GL3MeshData::prepare()
     bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(bonesWeightsAttrib0))->prepare()->enableAttributes();
     // --------------------------------------------
 
-    // ---------- preparing bones ids ---------------
+    // ---------- preparing bones weights ---------------
     auto bonesWeightsAttrib1 = bufferLayout->createVertexAttribute(8,
                                                                    "bonesWeightsAttribute",
                                                                    SGGDataType::SGG_FLOAT4,
@@ -143,6 +143,20 @@ void SGCore::GL3MeshData::prepare()
 
     bufferLayout->reset();
     bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(bonesWeightsAttrib1))->prepare()->enableAttributes();
+    // --------------------------------------------
+
+    // ---------- preparing bones weights ---------------
+    auto sliceIndexAttrib = bufferLayout->createVertexAttribute(9,
+                                                                   "sliceIndexAttribute",
+                                                                   SGGDataType::SGG_INT,
+                                                                   1,
+                                                                   false,
+                                                                   sizeof(Vertex),
+                                                                   offsetof(Vertex, m_sliceIndex),
+                                                                   0);
+
+    bufferLayout->reset();
+    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(sliceIndexAttrib))->prepare()->enableAttributes();
     // --------------------------------------------
 
     std::cout << "created mesh with " << m_vertices.size() << " vertices." << std::endl;
@@ -161,7 +175,7 @@ void SGCore::GL3MeshData::prepare()
         bufferLayout->reset();
         bufferLayout
                 ->addAttribute(std::shared_ptr<IVertexAttribute>(
-                        bufferLayout->createVertexAttribute(i + 9,
+                        bufferLayout->createVertexAttribute(i + 10,
                                                             "vertexColor" + std::to_string(i) + "Attribute",
                                                             SGGDataType::SGG_FLOAT4))
                 )
