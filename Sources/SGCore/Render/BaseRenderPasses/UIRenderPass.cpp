@@ -7,8 +7,8 @@
 #include "SGCore/Scene/Scene.h"
 
 #include "SGCore/Render/RenderingBase.h"
-#include "SGCore/Render/LayeredFrameReceiver.h"
 #include "SGCore/Transformations/TransformUtils.h"
+#include "SGCore/Graphics/API/IFrameBuffer.h"
 
 void SGCore::UIRenderPass::create(const Ref<IRenderPipeline>& parentRenderPipeline) noexcept
 {
@@ -26,15 +26,24 @@ void SGCore::UIRenderPass::render(const Ref<Scene>& scene,
 
     camerasView.each([&uiComponentsView, this](const LayeredFrameReceiver::reg_t& cameraReceiver,
                                                const EntityBaseInfo::reg_t& cameraInfo,
-                                               const RenderingBase::reg_t&,
+                                               const RenderingBase::reg_t& cameraRenderingBase,
                                                const Transform::reg_t& cameraTransform){
-        uiComponentsView.each([this](UI::UIComponent::reg_t& uiComponent) {
-            processUIElement(-1, uiComponent, uiComponent.m_document->m_rootElement);
+        CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
+
+        cameraReceiver.m_layersFrameBuffer->bind();
+
+        cameraReceiver.m_layersFrameBuffer->bindAttachmentsToDrawIn(cameraReceiver.m_attachmentToRenderIn);
+
+        uiComponentsView.each([this, &cameraReceiver](UI::UIComponent::reg_t& uiComponent) {
+            processUIElement(cameraReceiver, -1, uiComponent, uiComponent.m_document->m_rootElement);
         });
+
+        cameraReceiver.m_layersFrameBuffer->unbind();
     });
 }
 
-std::int64_t SGCore::UIRenderPass::processUIElement(const std::int64_t& parentUITreeNodeIdx,
+std::int64_t SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::reg_t& cameraReceiver,
+                                                    const std::int64_t& parentUITreeNodeIdx,
                                                     UI::UIComponent& uiComponent,
                                                     const Ref<UI::UIElement>& currentUIElement) noexcept
 {
@@ -64,19 +73,49 @@ std::int64_t SGCore::UIRenderPass::processUIElement(const std::int64_t& parentUI
     }
 
     const Transform* parentTransform = parentTransformNode ? &parentTransformNode->m_transform : nullptr;
+    const UI::CSSSelectorCache* parentCSSSelectorCache = parentTransformNode ? &parentTransformNode->m_selectorCache : nullptr;
 
     // =================================================================== calculating transform
-    currentUIElement->calculateLayout(parentTransform, currentTransformNode.m_transform);
+
+    currentUIElement->calculateLayout(parentCSSSelectorCache, currentTransformNode.m_selectorCache,
+                                      parentTransform, currentTransformNode.m_transform);
 
     TransformUtils::calculateTransform(currentTransformNode.m_transform, parentTransform);
 
     // =================================================================== rendering uielement
 
+    const auto uiElementShader = currentUIElement->m_shader;
+
+    if(uiElementShader)
+    {
+        const auto defaultPPLayer = cameraReceiver.getDefaultLayer();
+
+        SG_ASSERT(defaultPPLayer != nullptr,
+                          "Can not find default PP layer in layered frame receiver were found for UIElement mesh! Can not render this UIElement.");
+
+        uiElementShader->bind();
+        uiElementShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+
+        uiElementShader->useMatrix("objectTransform.modelMatrix",
+                                   currentTransformNode.m_transform.m_finalTransform.m_modelMatrix);
+        uiElementShader->useVectorf("objectTransform.position",
+                                    currentTransformNode.m_transform.m_finalTransform.m_position);
+
+        uiElementShader->useInteger("SGPP_CurrentLayerIndex", defaultPPLayer->getIndex());
+
+        currentUIElement->useUniforms(currentTransformNode.m_selectorCache);
+
+        CoreMain::getRenderer()->renderMeshData(
+                currentUIElement->m_meshData.get(),
+                m_meshRenderState
+        );
+    }
+
     // ===================================================================
 
     for(const auto& child : currentUIElement->m_children)
     {
-        const std::int64_t newChildNodeIdx = processUIElement(currentUITransformNodeIdx, uiComponent, child);
+        const std::int64_t newChildNodeIdx = processUIElement(cameraReceiver, currentUITransformNodeIdx, uiComponent, child);
 
         // new child was created
         if(newChildNodeIdx != -1)

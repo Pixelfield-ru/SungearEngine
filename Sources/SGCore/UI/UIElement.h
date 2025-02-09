@@ -18,6 +18,8 @@ namespace SGCore::UI
 {
     struct UIElement
     {
+        virtual ~UIElement() = default;
+
         friend struct UIDocument;
 
         std::vector<Ref<UIElement>> m_children;
@@ -29,12 +31,23 @@ namespace SGCore::UI
 
         Ref<IMeshData> m_meshData;
 
-        void calculateLayout(const Transform* parentTransform, Transform& ownTransform) noexcept;
+        /**
+         *
+         * @param parentSelectorCache May be nullptr.
+         * @param thisSelectorCache
+         * @param parentTransform May be nullptr.
+         * @param ownTransform
+         */
+        void calculateLayout(const CSSSelectorCache* parentSelectorCache, CSSSelectorCache& thisSelectorCache,
+                             const Transform* parentTransform, Transform& ownTransform) noexcept;
 
         [[nodiscard]] UIElementType getType() const noexcept;
 
+        virtual void useUniforms(const CSSSelectorCache& thisCSSSelectorCache) const noexcept;
+
     protected:
-        virtual void doCalculateLayout(const Transform* parentTransform, Transform& ownTransform) noexcept = 0;
+        virtual void doCalculateLayout(const CSSSelectorCache* parentSelectorCache, CSSSelectorCache& thisSelectorCache,
+                                       const Transform* parentTransform, Transform& ownTransform) = 0;
 
         /**
          * Generates a mesh based on the selector (i.e. selector != nullptr).\n

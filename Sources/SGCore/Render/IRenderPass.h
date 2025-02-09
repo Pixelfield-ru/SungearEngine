@@ -16,6 +16,8 @@ namespace SGCore
 
     struct IRenderPass
     {
+        virtual ~IRenderPass() = default;
+
         friend struct IRenderPipeline;
 
         bool m_active = true;

@@ -5,7 +5,7 @@
 
 #include "SGCore/Logger/Logger.h"
 
-float SGCore::UI::CSSMathNode::calculate() const noexcept
+float SGCore::UI::CSSMathNode::calculate(const float* parentSelectorValue) const noexcept
 {
     float result = 0.0f;
 
@@ -13,7 +13,7 @@ float SGCore::UI::CSSMathNode::calculate() const noexcept
 
     for(const auto& operand : m_operands)
     {
-        const float calculatedValue = operand->calculate();
+        const float calculatedValue = operand->calculate(parentSelectorValue);
 
         switch(lastSign)
         {
@@ -69,11 +69,11 @@ void SGCore::UI::CSSMathNode::resolvePriorities(bool recursed) noexcept
                 currentOperand->resolvePriorities(recursed);
             }
 
-            auto newNode = MakeRef<CSSMathNode>();
+            const auto newNode = MakeRef<CSSMathNode>();
 
             newNode->m_operands.push_back(currentOperand);
 
-            CSSMathSign lastOperandSign = CSSMathSign::MS_NO_SIGN;
+            auto lastOperandSign = CSSMathSign::MS_NO_SIGN;
 
             for(size_t j = i + 1; j < m_operands.size();)
             {

@@ -11,6 +11,8 @@
 
 namespace SGCore::UI
 {
+    struct CSSSelector;
+
     struct CSSMathNode
     {
         std::vector<Ref<CSSMathNode>> m_operands;
@@ -19,7 +21,7 @@ namespace SGCore::UI
         CSSMathSign m_unarySign = CSSMathSign::MS_PLUS;
         CSSDimensionQualifier m_dimensionQualifier = CSSDimensionQualifier::DQ_NUMBER;
 
-        [[nodiscard]] virtual float calculate() const noexcept;
+        [[nodiscard]] virtual float calculate(const float* parentSelectorValue) const noexcept;
 
         /**
          * Iterates through current (and child node if \p recursed flag is enabled) and groups all continuous sequences of numeric nodes with

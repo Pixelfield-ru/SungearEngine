@@ -36,7 +36,7 @@ namespace SGCore::Serde
         static constexpr std::uint64_t base_classes_count = sizeof...(Cls);
 
         template<std::int64_t Idx>
-        using get_base_type = extract<Idx, Cls...>::type;
+        using get_base_type = typename extract<Idx, Cls...>::type;
 
         using base_types_container = types_container<Cls...>;
     };
@@ -51,7 +51,7 @@ namespace SGCore::Serde
         static constexpr std::uint64_t derived_classes_count = sizeof...(Cls);
 
         template<std::int64_t Idx>
-        using get_derived_type = extract<Idx, Cls...>::type;
+        using get_derived_type = typename extract<Idx, Cls...>::type;
 
         using derived_types_container = types_container<Cls...>;
     };
@@ -515,7 +515,7 @@ namespace SGCore::Serde
                 }
 
                 // getting element_type that pointer contains
-                using ptr_element_type = SerdeSpec<T, TFormatType>::element_type;
+                using ptr_element_type = typename SerdeSpec<T, TFormatType>::element_type;
                 
                 // creating view that contains element_type object
                 SerializableValueView<ptr_element_type, TFormatType> tmpView { };
@@ -575,7 +575,7 @@ namespace SGCore::Serde
                 }
 
                 // getting element_type that pointer contains
-                using ptr_element_type = SerdeSpec<T, TFormatType>::element_type;
+                using ptr_element_type = typename SerdeSpec<T, TFormatType>::element_type;
                 
                 // creating view that contains element_type object
                 DeserializableValueView<ptr_element_type, TFormatType> tmpView { };
@@ -687,7 +687,6 @@ namespace SGCore::Serde
         /**
          * Tries to find correct derived type
          * @tparam OriginalT
-         * @tparam BaseT
          * @param valueView
          */
         template<typename OriginalT, FormatType TFormatType, size_t CurrentDerivedIdx, typename... SharedDataT>
@@ -1015,7 +1014,7 @@ namespace SGCore::Serde
     struct DeserializableValueContainer
     {
         template<FormatType>
-        friend struct SerializerImpl;
+        friend class SerializerImpl;
 
         friend struct Serializer;
 
@@ -1080,7 +1079,7 @@ namespace SGCore::Serde
          * Getting first iterator of members container.
          * @return First iterator of members container (begin).
          */
-        [[nodiscard]] FormatInfo<TFormatType>::member_iterator_t memberBegin() const noexcept
+        [[nodiscard]] typename FormatInfo<TFormatType>::member_iterator_t memberBegin() const noexcept
         {
 
         }
@@ -1089,7 +1088,7 @@ namespace SGCore::Serde
          * Getting last iterator of members container.
          * @return Last iterator of members container (end).
          */
-        [[nodiscard]] FormatInfo<TFormatType>::member_iterator_t memberEnd() const noexcept
+        [[nodiscard]] typename FormatInfo<TFormatType>::member_iterator_t memberEnd() const noexcept
         {
 
         }
@@ -1098,7 +1097,7 @@ namespace SGCore::Serde
         * Getting first iterator of array container.
         * @return First iterator of array container (begin).
         */
-        [[nodiscard]] FormatInfo<TFormatType>::array_iterator_t begin() const noexcept
+        [[nodiscard]] typename FormatInfo<TFormatType>::array_iterator_t begin() const noexcept
         {
 
         }
@@ -1107,7 +1106,7 @@ namespace SGCore::Serde
          * Getting last iterator of array container.
          * @return Last iterator of array container (end).
          */
-        [[nodiscard]] FormatInfo<TFormatType>::array_iterator_t end() const noexcept
+        [[nodiscard]] typename FormatInfo<TFormatType>::array_iterator_t end() const noexcept
         {
 
         }
@@ -1158,7 +1157,7 @@ namespace SGCore::Serde
 
         /**
          * Getting type name of member by iterator.
-         * @param memberIterator
+         * @param valueIterator
          * @return
          */
         [[nodiscard]] std::string getMemberTypeName(const typename FormatInfo<TFormatType>::array_iterator_t& valueIterator) const noexcept
@@ -1181,14 +1180,13 @@ namespace SGCore::Serde
      * You must implement all next functions and members in your specialization of this struct.\n
      * DO NOT STORE ANYWHERE. DOES NOT OWN ANYTHING.
      * EXAMPLE STRUCT.
-     * @tparam T
      * @tparam TFormatType
      */
     template<FormatType TFormatType>
     struct SerializableValueContainer
     {
         template<FormatType>
-        friend struct SerializerImpl;
+        friend class SerializerImpl;
 
         friend struct Serializer;
 
@@ -1340,7 +1338,7 @@ namespace SGCore::Serde
     public:
 
         template<FormatType>
-        friend struct SerializerImpl;
+        friend class SerializerImpl;
 
         friend struct Serializer;
 
@@ -1404,7 +1402,7 @@ namespace SGCore::Serde
     struct DeserializableValueView
     {
         template<FormatType>
-        friend struct SerializerImpl;
+        friend class SerializerImpl;
 
         friend struct Serializer;
 

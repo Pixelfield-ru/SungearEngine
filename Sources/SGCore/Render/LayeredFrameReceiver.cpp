@@ -124,7 +124,7 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             0
     );
     m_layersFXFrameBuffer->addAttachment(
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7, // CONTAINS COLOR1 BUT WITH EFFECTS
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7, // ATTACHMENT WITH APPLIED FX
             SGGColorFormat::SGG_RGBA,
             SGGColorInternalFormat::SGG_RGBA32_FLOAT,
             0,
@@ -191,7 +191,7 @@ SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::getLayer(con
     return it != m_layers.end() ? *it : nullptr;
 }
 
-SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::getDefaultLayer() noexcept
+SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::getDefaultLayer() const noexcept
 {
     return m_defaultLayer;
 }

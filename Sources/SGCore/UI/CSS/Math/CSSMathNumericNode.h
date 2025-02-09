@@ -13,7 +13,7 @@ namespace SGCore::UI
     {
         float m_value = 0.0f;
 
-        [[nodiscard]] float calculate() const noexcept final;
+        [[nodiscard]] float calculate(const float* parentSelectorValue) const noexcept final;
     };
 }
 

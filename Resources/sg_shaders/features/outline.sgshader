@@ -2,6 +2,6 @@
     #include "sg_shaders/impl/glsl4/outline.glsl"
 #else
     #ifdef SG_HLSL
-        #error "Standard utline shader is not implemented for HLSL!"
+        #error "Standard outline shader is not implemented for HLSL!"
     #endif
 #endif

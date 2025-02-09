@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_UIRENDERPASS_H
 
 #include "SGCore/Render/IRenderPass.h"
+#include "SGCore/Render/LayeredFrameReceiver.h"
 #include "SGCore/UI/UIComponent.h"
 
 namespace SGCore
@@ -27,7 +28,8 @@ namespace SGCore
          * @param currentUIElement
          * @return New child transform node index. Returns -1 if new node was created. Else returns bigger then zero number.
          */
-        std::int64_t processUIElement(const std::int64_t& parentUITreeNodeIdx,
+        std::int64_t processUIElement(const LayeredFrameReceiver::reg_t& cameraReceiver,
+                                      const std::int64_t& parentUITreeNodeIdx,
                                       UI::UIComponent::reg_t& uiComponent,
                                       const Ref<UI::UIElement>& currentUIElement) noexcept;
 

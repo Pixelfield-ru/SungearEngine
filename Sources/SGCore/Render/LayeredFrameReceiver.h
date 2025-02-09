@@ -150,7 +150,7 @@ namespace SGCore
         }
         
         Ref<PostProcessLayer> getLayer(const std::string& name) noexcept;
-        Ref<PostProcessLayer> getDefaultLayer() noexcept;
+        Ref<PostProcessLayer> getDefaultLayer() const noexcept;
         
         [[nodiscard]] std::uint16_t getLayersMaximumIndex() const noexcept;
         

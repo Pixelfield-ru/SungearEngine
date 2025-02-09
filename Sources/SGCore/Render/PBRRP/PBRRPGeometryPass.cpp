@@ -30,7 +30,7 @@
 
 size_t renderedInOctrees = 0;
 
-void SGCore::PBRRPGeometryPass::create(const SGCore::Ref<SGCore::IRenderPipeline>& parentRenderPipeline)
+void SGCore::PBRRPGeometryPass::create(const Ref<IRenderPipeline>& parentRenderPipeline)
 {
     auto shaderFile = AssetManager::getInstance()->loadAsset<TextFileAsset>(
             *parentRenderPipeline->m_shadersPaths["StandardMeshShader"]);
@@ -50,7 +50,7 @@ void SGCore::PBRRPGeometryPass::create(const SGCore::Ref<SGCore::IRenderPipeline
     m_transparentEntitiesRenderState.m_globalBlendingState.m_blendingEquation = SGEquation::SGG_FUNC_ADD;*/
 }
 
-void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
+void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline)
 {
     Ref<PBRRPDirectionalLightsPass> dirLightsPass = renderPipeline->getRenderPass<PBRRPDirectionalLightsPass>();
     
@@ -78,7 +78,6 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
         }
         
         LayeredFrameReceiver* cameraLayeredFrameReceiver = registry->tryGet<LayeredFrameReceiver>(cameraEntity);
-        if(cameraLayeredFrameReceiver) cameraLayeredFrameReceiver->clearPostProcessFrameBuffers();
 
         if(cameraLayeredFrameReceiver)
         {

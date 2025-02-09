@@ -51,16 +51,12 @@ namespace SGCore::UI
                                                          { CSSDimensionQualifier::DQ_ANY });
                     mathNode->resolvePriorities();
 
-                    std::cout << "calc: " << mathNode->calculate() << std::endl;
-
                     currentSelector->m_height.m_value = mathNode;
                 }
                 else if(knownTerm->number())
                 {
                     auto mathNode = MakeRef<CSSMathNumericNode>();
                     mathNode->m_value = std::stof(knownTerm->number()->getText());
-
-                    std::cout << "calc: " << mathNode->calculate() << std::endl;
 
                     currentSelector->m_height.m_value = mathNode;
                 }
@@ -73,8 +69,6 @@ namespace SGCore::UI
                     mathNode->m_dimensionQualifier = getDimensionQualifierFromString(dimension);
                     mathNode->m_value = std::stof(dimension);
 
-                    std::cout << "calc: " << mathNode->calculate() << std::endl;
-
                     currentSelector->m_height.m_value = mathNode;
                 }
                 else if(knownTerm->percentage())
@@ -85,8 +79,6 @@ namespace SGCore::UI
 
                     mathNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_PERCENT;
                     mathNode->m_value = std::stof(percentage);
-
-                    std::cout << "calc: " << mathNode->calculate() << std::endl;
 
                     currentSelector->m_height.m_value = mathNode;
                 }

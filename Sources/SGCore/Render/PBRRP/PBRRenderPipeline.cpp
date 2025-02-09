@@ -11,6 +11,7 @@
 #include "PBRRPDirectionalLightsPass.h"
 #include "SGCore/Render/TextRenderPass.h"
 #include "SGCore/Render/BaseRenderPasses/UIRenderPass.h"
+#include "SGCore/Render/PostProcess/PostProcessBuffersClearPass.h"
 
 SGCore::PBRRenderPipeline::PBRRenderPipeline()
 {
@@ -61,6 +62,14 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
 
         m_renderPasses.push_back(directionalLightsPass);
     }*/
+
+    {
+        auto postProcessBuffersClearPass = MakeRef<PostProcessBuffersClearPass>();
+
+        // geometryPass->m_shader->m_uniformBuffer = Scope<IUniformBuffer>(CoreMain::getRenderer().createUniformBuffer());
+
+        m_renderPasses.push_back(postProcessBuffersClearPass);
+    }
 
     {
         auto geometryPass = MakeRef<PBRRPGeometryPass>();

@@ -25,8 +25,9 @@ namespace SGCore::UI
     template<auto DefaultKeyword, typename... ValuesT>
     struct CSSPropertyValue
     {
-        static constexpr size_t values_count = sizeof...(ValuesT);
         using keywords_enum_t = decltype(DefaultKeyword);
+
+        static constexpr size_t values_count = sizeof...(ValuesT);
         static constexpr keywords_enum_t default_keyword = DefaultKeyword;
 
         std::variant<keywords_enum_t, std::tuple<ValuesT...>> m_value = DefaultKeyword;
@@ -39,6 +40,50 @@ namespace SGCore::UI
         void setWithAlternative(const std::tuple<ValuesT...>& alternativeValues) noexcept
         {
             m_value = alternativeValues;
+        }
+
+        auto& getKeyword() noexcept
+        {
+            return std::get<0>(m_value);
+        }
+
+        const auto& getKeyword() const noexcept
+        {
+            return std::get<0>(m_value);
+        }
+
+        auto& getAlternative() noexcept
+        {
+            return std::get<1>(m_value);
+        }
+
+        const auto& getAlternative() const noexcept
+        {
+            return std::get<1>(m_value);
+        }
+
+        template<size_t Index>
+        auto& getFromAlternativeValue() noexcept
+        {
+            return std::get<Index>(std::get<1>(m_value));
+        }
+
+        template<size_t Index>
+        const auto& getFromAlternativeValue() const noexcept
+        {
+            return std::get<Index>(std::get<1>(m_value));
+        }
+
+        bool containsKeyword() const noexcept
+        {
+            // return false;
+            return m_value.valueless_by_exception() ? false : m_value.index() == 0;
+        }
+
+        bool containsAlternative() const noexcept
+        {
+            // return false;
+            return m_value.valueless_by_exception() ? false : m_value.index() == 1;
         }
     };
 }

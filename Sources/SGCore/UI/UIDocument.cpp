@@ -37,13 +37,13 @@ void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
     m_rootElement = std::static_pointer_cast<UIRoot>(rootElement);
 }
 
-void SGCore::UI::UIDocument::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
+void SGCore::UI::UIDocument::doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept
 {
 
 }
 
-void SGCore::UI::UIDocument::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolicy,
-                                              SGCore::Ref<SGCore::Threading::Thread> lazyLoadInThread) noexcept
+void SGCore::UI::UIDocument::doReloadFromDisk(AssetsLoadPolicy loadPolicy,
+                                              Ref<Threading::Thread> lazyLoadInThread) noexcept
 {
     doLoad(getPath());
 }

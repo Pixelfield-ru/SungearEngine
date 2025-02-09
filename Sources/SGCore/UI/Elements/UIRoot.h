@@ -12,7 +12,8 @@ namespace SGCore::UI
     struct UIRoot : UIElement
     {
     protected:
-        void doCalculateLayout(const Transform* parentTransform, Transform& ownTransform) noexcept final;
+        void doCalculateLayout(const CSSSelectorCache* parentSelectorCache, CSSSelectorCache& thisSelectorCache,
+                               const Transform* parentTransform, Transform& ownTransform) noexcept final;
 
         void doGenerateMeshBaseSelector() noexcept final;
 

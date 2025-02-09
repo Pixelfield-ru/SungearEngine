@@ -6,6 +6,8 @@
 #define SUNGEARENGINE_CSSSELECTOR_H
 
 #include <vector>
+
+#include "CSSSelectorCache.h"
 #include "SGCore/Memory/Assets/IAsset.h"
 #include "SGCore/UI/CSS/PropertyValues/CSSPropertyValue.h"
 

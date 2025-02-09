@@ -160,11 +160,11 @@ namespace SGCore::UI
         {
             return KeywordEnumT::KW_INHERIT;
         }
-        else if(value == "initial")
+        if(value == "initial")
         {
             return KeywordEnumT::KW_INITIAL;
         }
-        else if(value == "unset")
+        if(value == "unset")
         {
             return KeywordEnumT::KW_UNSET;
         }
@@ -178,39 +178,39 @@ namespace SGCore::UI
         {
             return PositionAndSizeKeyword::KW_AUTO;
         }
-        else if(value == "none")
+        if(value == "none")
         {
             return PositionAndSizeKeyword::KW_NONE;
         }
-        else if(value == "normal")
+        if(value == "normal")
         {
             return PositionAndSizeKeyword::KW_NORMAL;
         }
-        else if(value == "cover")
+        if(value == "cover")
         {
             return PositionAndSizeKeyword::KW_COVER;
         }
-        else if(value == "contain")
+        if(value == "contain")
         {
             return PositionAndSizeKeyword::KW_CONTAIN;
         }
-        else if(value == "fixed")
+        if(value == "fixed")
         {
             return PositionAndSizeKeyword::KW_FIXED;
         }
-        else if(value == "absolute")
+        if(value == "absolute")
         {
             return PositionAndSizeKeyword::KW_ABSOLUTE;
         }
-        else if(value == "relative")
+        if(value == "relative")
         {
             return PositionAndSizeKeyword::KW_RELATIVE;
         }
-        else if(value == "static")
+        if(value == "static")
         {
             return PositionAndSizeKeyword::KW_STATIC;
         }
-        else if(value == "sticky")
+        if(value == "sticky")
         {
             return PositionAndSizeKeyword::KW_STICKY;
         }
@@ -224,7 +224,7 @@ namespace SGCore::UI
         {
             return ColorKeyword::KW_TRANSPARENT;
         }
-        else if(value == "currentColor")
+        if(value == "currentColor")
         {
             return ColorKeyword::KW_CURRENT_COLOR;
         }
@@ -238,35 +238,35 @@ namespace SGCore::UI
         {
             return DisplayKeyword::KW_BLOCK;
         }
-        else if(value == "inline")
+        if(value == "inline")
         {
             return DisplayKeyword::KW_INLINE;
         }
-        else if(value == "flex")
+        if(value == "flex")
         {
             return DisplayKeyword::KW_FLEX;
         }
-        else if(value == "grid")
+        if(value == "grid")
         {
             return DisplayKeyword::KW_GRID;
         }
-        else if(value == "inline-block")
+        if(value == "inline-block")
         {
             return DisplayKeyword::KW_INLINE_BLOCK;
         }
-        else if(value == "inline-flex")
+        if(value == "inline-flex")
         {
             return DisplayKeyword::KW_INLINE_FLEX;
         }
-        else if(value == "inline-grid")
+        if(value == "inline-grid")
         {
             return DisplayKeyword::KW_INLINE_GRID;
         }
-        else if(value == "table")
+        if(value == "table")
         {
             return DisplayKeyword::KW_TABLE;
         }
-        else if(value == "none")
+        if(value == "none")
         {
             return DisplayKeyword::KW_NONE;
         }
@@ -280,55 +280,55 @@ namespace SGCore::UI
         {
             return FlexboxKeyword::KW_START;
         }
-        else if(value == "end")
+        if(value == "end")
         {
             return FlexboxKeyword::KW_END;
         }
-        else if(value == "center")
+        if(value == "center")
         {
             return FlexboxKeyword::KW_CENTER;
         }
-        else if(value == "stretch")
+        if(value == "stretch")
         {
             return FlexboxKeyword::KW_STRETCH;
         }
-        else if(value == "space-between")
+        if(value == "space-between")
         {
             return FlexboxKeyword::KW_SPACE_BETWEEN;
         }
-        else if(value == "space-around")
+        if(value == "space-around")
         {
             return FlexboxKeyword::KW_SPACE_AROUND;
         }
-        else if(value == "space-evenly")
+        if(value == "space-evenly")
         {
             return FlexboxKeyword::KW_SPACE_EVENLY;
         }
-        else if(value == "row")
+        if(value == "row")
         {
             return FlexboxKeyword::KW_ROW;
         }
-        else if(value == "row-reverse")
+        if(value == "row-reverse")
         {
             return FlexboxKeyword::KW_ROW_REVERSE;
         }
-        else if(value == "column")
+        if(value == "column")
         {
             return FlexboxKeyword::KW_COLUMN;
         }
-        else if(value == "column-reverse")
+        if(value == "column-reverse")
         {
             return FlexboxKeyword::KW_COLUMN_REVERSE;
         }
-        else if(value == "wrap")
+        if(value == "wrap")
         {
             return FlexboxKeyword::KW_WRAP;
         }
-        else if(value == "nowrap")
+        if(value == "nowrap")
         {
             return FlexboxKeyword::KW_NOWRAP;
         }
-        else if(value == "wrap-reverse")
+        if(value == "wrap-reverse")
         {
             return FlexboxKeyword::KW_WRAP_REVERSE;
         }

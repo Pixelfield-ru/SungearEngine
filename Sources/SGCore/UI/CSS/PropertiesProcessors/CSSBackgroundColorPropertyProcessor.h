@@ -63,8 +63,6 @@ namespace SGCore::UI
                             auto mathNode = MakeRef<CSSMathNumericNode>();
                             mathNode->m_value = std::stof(currentComponent->calcValue()->number()->getText());
 
-                            std::cout << "component '" << i << "' calc: " << mathNode->calculate() << std::endl;
-
                             *colorArr[i] = mathNode;
                         }
                         else if(currentComponent->calcValue()->calc())
@@ -75,8 +73,6 @@ namespace SGCore::UI
                                                                  propertyName,
                                                                  mathNode,
                                                                  {});
-
-                            std::cout << "component '" << i << "' calc: " << mathNode->calculate() << std::endl;
 
                             *colorArr[i] = mathNode;
                         }
@@ -96,8 +92,6 @@ namespace SGCore::UI
                         auto mathNode = MakeRef<CSSMathNumericNode>();
                         mathNode->m_value = std::stof(alphaComponent->calcValue()->number()->getText());
 
-                        std::cout << "alpha component calc: " << mathNode->calculate() << std::endl;
-
                         *colorArr[3] = mathNode;
                     }
                     else if(alphaComponent->calcValue()->calc())
@@ -108,8 +102,6 @@ namespace SGCore::UI
                                                              propertyName,
                                                              mathNode,
                                                              {});
-
-                        std::cout << "alpha component calc: " << mathNode->calculate() << std::endl;
 
                         *colorArr[3] = mathNode;
                     }
@@ -149,8 +141,6 @@ namespace SGCore::UI
                         {
                             mathNode->m_value = std::stoi(hexColorStr.substr(i * 2 + 1, 2), nullptr, 16); // r, g, b
                         }
-
-                        std::cout << "component '" << (std::int64_t) i << "' value: " << mathNode->calculate() << std::endl;
                     }
                 }
                 else // we have keyword
