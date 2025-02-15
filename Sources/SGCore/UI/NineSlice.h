@@ -5,7 +5,7 @@
 #ifndef NINESLICE_H
 #define NINESLICE_H
 
-#include "SGCore/ImportedScenesArch/Vertex.h"
+#include "UIElementMesh/UIVertex.h"
 
 namespace SGCore::UI
 {
@@ -15,7 +15,7 @@ namespace SGCore::UI
         requires(std::is_integral_v<IndexT>)
         static void generate9SlicedQuad(const float& borderRadius,
                                         const float& borderWidth,
-                                        std::vector<Vertex>& outputQuadVertices,
+                                        std::vector<UIVertex>& outputQuadVertices,
                                         std::vector<IndexT>& outputIndices) noexcept
         {
 

@@ -16,6 +16,8 @@
 
 namespace SGCore::UI
 {
+    struct UIElementMesh;
+
     struct UIElement
     {
         virtual ~UIElement() = default;
@@ -29,7 +31,7 @@ namespace SGCore::UI
 
         AssetRef<IShader> m_shader;
 
-        Ref<IMeshData> m_meshData;
+        Ref<UIElementMesh> m_meshData;
 
         /**
          *

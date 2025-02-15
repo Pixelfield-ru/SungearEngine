@@ -5,6 +5,7 @@
 #include "UIRoot.h"
 #include "SGCore/ImportedScenesArch/IMeshData.h"
 #include "SGCore/UI/NineSlice.h"
+#include "../UIElementMesh/UIElementMesh.h"
 
 void SGCore::UI::UIRoot::doCalculateLayout(const CSSSelectorCache* parentSelectorCache,
                                            CSSSelectorCache& thisSelectorCache,

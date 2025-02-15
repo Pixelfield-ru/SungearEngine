@@ -92,7 +92,7 @@ namespace SGCore
         Ref<btTriangleMesh> m_physicalMesh;
 
         // ----------------
-        virtual void prepare() = 0;
+        virtual void prepare();
 
         void setVertexPosition(const std::uint64_t& vertexIdx, const float& x, const float& y, const float& z) noexcept;
         void getVertexPosition(const std::uint64_t& vertexIdx, float& outX, float& outY, float& outZ) noexcept;

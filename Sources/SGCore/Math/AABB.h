@@ -115,7 +115,9 @@ namespace SGCore
                       std::numeric_limits<ScalarT>::min() };
         }
 
-        void calculate(const std::vector<Vertex>& vertices) noexcept
+        template<typename VertexT>
+        requires(requires(VertexT vertex) { vertex.m_position; })
+        void calculate(const std::vector<VertexT>& vertices) noexcept
         {
             setToInitial();
 

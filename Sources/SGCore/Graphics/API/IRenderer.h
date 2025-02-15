@@ -36,6 +36,8 @@ namespace SGCore
     class IRenderer
     {
     public:
+        virtual ~IRenderer() = default;
+
         // Buffer for storing matrices of the currently main camera.
         Ref<IUniformBuffer> m_viewMatricesBuffer;
         // Buffer for storing matrices of the program.

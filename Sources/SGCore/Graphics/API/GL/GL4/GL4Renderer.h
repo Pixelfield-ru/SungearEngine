@@ -15,7 +15,6 @@
 
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/ImportedScenesArch/IMeshData.h"
-#include "SGCore/Graphics/API/GL/GL3/GL3MeshData.h"
 #include "GL4FrameBuffer.h"
 #include "GL4CubemapTexture.h"
 #include "GL4UniformBuffer.h"
@@ -82,7 +81,7 @@ namespace SGCore
         [[nodiscard]] GL4UniformBuffer* createUniformBuffer() const override;
         [[nodiscard]] GL4FrameBuffer* createFrameBuffer() const override;
 
-        [[nodiscard]] GL3MeshData* createMeshData() const override;
+        [[nodiscard]] IMeshData* createMeshData() const override;
 
         static const Ref<GL4Renderer>& getInstance() noexcept;
     };

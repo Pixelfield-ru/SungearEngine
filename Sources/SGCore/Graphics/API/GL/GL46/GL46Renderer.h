@@ -15,7 +15,6 @@
 
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/ImportedScenesArch/IMeshData.h"
-#include "SGCore/Graphics/API/GL/GL3/GL3MeshData.h"
 
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 

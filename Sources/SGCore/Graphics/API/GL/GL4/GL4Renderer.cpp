@@ -208,8 +208,8 @@ void SGCore::GL4Renderer::renderMeshData(const IMeshData* meshData,
     }
 }
 
-void SGCore::GL4Renderer::renderArray(const SGCore::Ref<SGCore::IVertexArray>& vertexArray,
-                                      const SGCore::MeshRenderState& meshRenderState,
+void SGCore::GL4Renderer::renderArray(const Ref<IVertexArray>& vertexArray,
+                                      const MeshRenderState& meshRenderState,
                                       const size_t& verticesCount,
                                       const size_t& indicesCount)
 {
@@ -233,8 +233,8 @@ void SGCore::GL4Renderer::renderArray(const SGCore::Ref<SGCore::IVertexArray>& v
     }
 }
 
-void SGCore::GL4Renderer::renderArrayInstanced(const SGCore::Ref<SGCore::IVertexArray>& vertexArray,
-                                               const SGCore::MeshRenderState& meshRenderState,
+void SGCore::GL4Renderer::renderArrayInstanced(const Ref<IVertexArray>& vertexArray,
+                                               const MeshRenderState& meshRenderState,
                                                const size_t& verticesCount, const size_t& indicesCount,
                                                const size_t& instancesCount)
 {
@@ -318,9 +318,9 @@ SGCore::GL4FrameBuffer* SGCore::GL4Renderer::createFrameBuffer() const
     return fb;
 }
 
-SGCore::GL3MeshData* SGCore::GL4Renderer::createMeshData() const
+SGCore::IMeshData* SGCore::GL4Renderer::createMeshData() const
 {
-    return new GL3MeshData;
+    return new IMeshData;
 }
 
 const SGCore::Ref<SGCore::GL4Renderer>& SGCore::GL4Renderer::getInstance() noexcept

@@ -24,9 +24,6 @@ namespace SGCore
         glm::vec3 m_tangent;
         glm::vec3 m_bitangent;
 
-        // for 9-slicing
-        std::int8_t m_sliceIndex = 0;
-
         std::array<std::int32_t, max_bones_count> m_bonesIDs = makeFilledArray<std::int32_t, max_bones_count>(-1);
         std::array<float, max_bones_count> m_bonesWeights = makeFilledArray<float, max_bones_count>(0.0f);
 

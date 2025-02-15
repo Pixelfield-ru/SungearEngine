@@ -9,6 +9,8 @@
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Transformations/TransformUtils.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"
+#include "SGCore/UI/UIElementMesh/UIElementMesh.h"
+#include "SGCore/Graphics/API/IVertexArray.h"
 
 void SGCore::UIRenderPass::create(const Ref<IRenderPipeline>& parentRenderPipeline) noexcept
 {
@@ -105,9 +107,11 @@ std::int64_t SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::
 
         currentUIElement->useUniforms(currentTransformNode.m_selectorCache);
 
-        CoreMain::getRenderer()->renderMeshData(
-                currentUIElement->m_meshData.get(),
-                m_meshRenderState
+        CoreMain::getRenderer()->renderArray(
+                currentUIElement->m_meshData->getVertexArray(),
+                m_meshRenderState,
+                currentUIElement->m_meshData->m_vertices.size(),
+                currentUIElement->m_meshData->m_indices.size()
         );
     }
 

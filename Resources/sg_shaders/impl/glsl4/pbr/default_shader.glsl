@@ -27,8 +27,8 @@ layout (location = 5) in ivec4 bonesIDsAttribute0;
 layout (location = 6) in ivec4 bonesIDsAttribute1;
 layout (location = 7) in vec4 bonesWeightsAttribute0;
 layout (location = 8) in vec4 bonesWeightsAttribute1;
-layout (location = 10) in vec4 vertexColor0Attribute;
-layout (location = 11) in vec4 vertexColor1Attribute;
+layout (location = 9) in vec4 vertexColor0Attribute;
+layout (location = 10) in vec4 vertexColor1Attribute;
 
 #include "sg_shaders/impl/glsl4/animation/bones_calculation.glsl"
 

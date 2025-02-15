@@ -3,7 +3,7 @@
 //
 #include "UIElement.h"
 
-#include "SGCore/ImportedScenesArch/IMeshData.h"
+#include "UIElementMesh/UIElementMesh.h"
 
 SGCore::UI::UIElementType SGCore::UI::UIElement::getType() const noexcept
 {
@@ -39,7 +39,7 @@ void SGCore::UI::UIElement::checkForMeshGenerating() noexcept
 {
     if(!m_meshData)
     {
-        m_meshData = Ref<IMeshData>(CoreMain::getRenderer()->createMeshData());
+        m_meshData = MakeRef<UIElementMesh>();
 
         if(m_selector)
         {

@@ -6,7 +6,7 @@
 
 layout (location = 0) in vec3 positionsAttribute;
 layout (location = 1) in vec3 UVAttribute;
-// layout (location = 9) in int sliceIndexAttribute;
+layout (location = 2) in int sliceIndexAttribute;
 
 // REQUIRED UNIFORM!!
 // first vec2 - min, second vec2 - max
