@@ -17,7 +17,7 @@ namespace SGCore::UI
         glm::vec2 m_uv;
 
         // for 9-slicing
-        std::int8_t m_sliceIndex = 0;
+        std::int32_t m_sliceIndex = 0;
     };
 }
 

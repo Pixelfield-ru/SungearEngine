@@ -57,8 +57,7 @@ namespace SGCore::UI
          * You need to generate vertex positions, uv coordinates of vertices, and vertex colors.\n
          * Calls at the beginning of the calculateLayout function.\n
          * Calls only if mesh has not been generated before (i.e. mesh == nullptr).\n
-         * IN THIS FUNCTION, YOU DO NOT NEED TO CREATE A MESH INSTANCE. YOU ONLY NEED TO GENERATE VERTICES.\n
-         * POSITIONS OF ALL VERTICES MUST FIT TO RANGE OF -1, 1 BY X AND Y AXIS.
+         * IN THIS FUNCTION, YOU DO NOT NEED TO CREATE A MESH INSTANCE. YOU ONLY NEED TO GENERATE VERTICES.
          */
         virtual void doGenerateMeshBaseSelector() noexcept = 0;
 
@@ -68,8 +67,7 @@ namespace SGCore::UI
          * You need to generate vertex positions, uv coordinates of vertices, and vertex colors.\n
          * Calls at the beginning of the calculateLayout function.\n
          * Calls only if mesh has not been generated before (i.e. mesh == nullptr).\n
-         * IN THIS FUNCTION, YOU DO NOT NEED TO CREATE A MESH INSTANCE. YOU ONLY NEED TO GENERATE VERTICES.\n
-         * POSITIONS OF ALL VERTICES MUST FIT TO RANGE OF -1, 1 BY X AND Y AXIS
+         * IN THIS FUNCTION, YOU DO NOT NEED TO CREATE A MESH INSTANCE. YOU ONLY NEED TO GENERATE VERTICES.
          */
         virtual void doGenerateBasicMesh() noexcept = 0;
 

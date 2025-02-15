@@ -23,7 +23,7 @@ void SGCore::UI::UIElementMesh::prepare()
     m_verticesBuffer = std::shared_ptr<IVertexBuffer>(
             CoreMain::getRenderer()->createVertexBuffer()
             );
-    m_verticesBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_vertices);
+    m_verticesBuffer->setUsage(SGGUsage::SGG_STATIC)->create()->bind()->putData(m_vertices);
 
     // ============================================================ preparing positions
 
@@ -43,7 +43,7 @@ void SGCore::UI::UIElementMesh::prepare()
 
     auto uvAttrib = bufferLayout->createVertexAttribute(1,
                                                         "UVAttribute",
-                                                        SGGDataType::SGG_FLOAT3,
+                                                        SGGDataType::SGG_FLOAT2,
                                                         2,
                                                         false,
                                                         sizeof(UIVertex),
@@ -56,13 +56,13 @@ void SGCore::UI::UIElementMesh::prepare()
     // ============================================================ preparing slice index
 
     auto sliceIndexAttrib = bufferLayout->createVertexAttribute(2,
-                                                                   "sliceIndexAttribute",
-                                                                   SGGDataType::SGG_INT,
-                                                                   1,
-                                                                   false,
-                                                                   sizeof(UIVertex),
-                                                                   offsetof(UIVertex, m_sliceIndex),
-                                                                   0);
+                                                                "sliceIndexAttribute",
+                                                                SGGDataType::SGG_INT,
+                                                                1,
+                                                                false,
+                                                                sizeof(UIVertex),
+                                                                offsetof(UIVertex, m_sliceIndex),
+                                                                0);
 
     bufferLayout->reset();
     bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(sliceIndexAttrib))->prepare()->enableAttributes();
@@ -70,7 +70,7 @@ void SGCore::UI::UIElementMesh::prepare()
     // ============================================================ preparing indices
 
     m_indicesBuffer = std::shared_ptr<IIndexBuffer>(CoreMain::getRenderer()->createIndexBuffer());
-    m_indicesBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_indices);
+    m_indicesBuffer->setUsage(SGGUsage::SGG_STATIC)->create()->bind()->putData(m_indices);
 }
 
 SGCore::Ref<SGCore::IVertexArray> SGCore::UI::UIElementMesh::getVertexArray() const noexcept
