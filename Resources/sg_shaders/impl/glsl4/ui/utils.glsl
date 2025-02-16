@@ -37,6 +37,10 @@ vec3 calc9SliceVertexPos(in vec3 vertexPos, in int vertexSlice, in vec2 elementS
     {
         return vec3(vertexPos.x * (elementSize.x / 2.0), vertexPos.y - elementSize.y / 2.0, 0.0);
     }
+    else if(vertexSlice == LEFT_TOP_SLICE)
+    {
+        return vec3(vertexPos.x, vertexPos.y, 0.0);
+    }
 
     return vec3(0, 0, 0);
 }

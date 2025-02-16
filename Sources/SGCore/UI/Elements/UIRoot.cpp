@@ -34,8 +34,8 @@ void SGCore::UI::UIRoot::doCalculateLayout(const CSSSelectorCache* parentSelecto
 
         CoreMain::getWindow().getSize(windowSizeX, windowSizeY);
 
-        thisSelectorCache.m_width = 200;
-        thisSelectorCache.m_height = 100;
+        thisSelectorCache.m_width = 100;
+        thisSelectorCache.m_height = 200;
     }
 }
 

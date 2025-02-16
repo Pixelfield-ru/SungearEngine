@@ -217,6 +217,50 @@ namespace SGCore::UI
             outputIndices.push_back(currentMaxIndex + 0);
             outputIndices.push_back(currentMaxIndex + 3);
             outputIndices.push_back(currentMaxIndex + 2);
+
+            // ========================================================= generating 1 slice
+
+            float currentRoundingAngle = 270.0f;
+            const float angleStep = 5.0;
+
+            glm::vec3 rotatedVertex = glm::vec3(0.0f, borderRadius, 0.0f);
+            glm::vec3 lastRotatedVertex = rotatedVertex;
+
+            while(currentRoundingAngle < 360.0f)
+            {
+                rotatedVertex = glm::vec3(0.0f, borderRadius, 0.0f);
+
+                currentRoundingAngle = std::min(currentRoundingAngle, 360.0f);
+
+                glm::quat rotationQuat = glm::angleAxis(glm::radians(currentRoundingAngle), glm::vec3(0.0f, 0.0f, 1.0f));
+                rotatedVertex = rotationQuat * rotatedVertex;
+
+                outputQuadVertices.push_back({
+                    .m_position = lastRotatedVertex,
+                    .m_sliceIndex = 1
+                });
+
+                outputQuadVertices.push_back({
+                    .m_position = { 0, 0, 0 },
+                    .m_sliceIndex = 1
+                });
+
+                outputQuadVertices.push_back({
+                    .m_position = rotatedVertex,
+                    .m_sliceIndex = 1
+                });
+
+                outputIndices.push_back(currentMaxIndex + 0);
+                outputIndices.push_back(currentMaxIndex + 2);
+                outputIndices.push_back(currentMaxIndex + 1);
+
+                currentMaxIndex += 3;
+
+                lastRotatedVertex = rotatedVertex;
+                currentRoundingAngle += angleStep;
+            }
+
+            ++currentMaxIndex;
         }
     };
 }
