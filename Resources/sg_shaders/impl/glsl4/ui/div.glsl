@@ -16,8 +16,10 @@ uniform vec4 u_meshAABB;
 // REQUIRED UNIFORM!!
 uniform vec2 u_elementSize;
 
+// REQUIRED UNIFORM!!
+uniform float u_totalBorderWidth;
+
 out float si;
-out float vertexID;
 
 out VSOut
 {
@@ -29,11 +31,9 @@ out VSOut
 
 void main()
 {
-    vertexID = float(gl_VertexID);
-
     si = float(sliceIndexAttribute);
 
-    vec3 finalVertexPos = calc9SliceVertexPos(positionsAttribute, sliceIndexAttribute, u_elementSize);
+    vec3 finalVertexPos = calc9SliceVertexPos(positionsAttribute, sliceIndexAttribute, u_elementSize, u_totalBorderWidth);
 
     vsOut.UV = UVAttribute.xy;
     vsOut.vertexPos = finalVertexPos;
@@ -63,7 +63,6 @@ uniform vec3 u_pickingColor;
 uniform int SGPP_CurrentLayerIndex;
 
 in float si;
-in float vertexID;
 
 in VSOut
 {
@@ -77,7 +76,8 @@ void main()
 {
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
     // layerColor = u_backgroundColor;
-    layerColor = vec4(vec3(si / 9.0), 1.0);
+    layerColor = vec4(si / 9.0, 0.0, 0.0, 1.0);
+    // layerColor = vec4(1.0);
 }
 
 #end

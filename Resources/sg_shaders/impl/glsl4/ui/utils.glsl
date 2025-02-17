@@ -15,31 +15,87 @@
 
 // HERE WE ASSUME THAT THE CENTRAL SLICE HAS VERTICES
 // WITH COORDINATES FROM -1 TO 1 (I.E. THE MAGNIFICATION IN ALL DIRECTIONS IS THE SAME)
-vec3 calc9SliceVertexPos(in vec3 vertexPos, in int vertexSlice, in vec2 elementSize)
+// shit happens
+vec3 calc9SliceVertexPos(in vec3 vertexPos, in int vertexSlice, in vec2 elementSize, float borderTotalWidth)
 {
+    vec2 cornerCoeff = vec2(1.0);
+    vec2 borderCoeff = vec2(1.0);
+
+    // ========================================================
+    // doing some magic to guarantee element size if borders are bigger than size of element
+    if(borderTotalWidth * 2.0 > elementSize.x)
+    {
+        cornerCoeff.x = elementSize.x / (borderTotalWidth * 2.0);
+        cornerCoeff.y = cornerCoeff.x;
+
+        borderCoeff.x = cornerCoeff.x;
+        borderCoeff.y = 1.0 / cornerCoeff.y;
+    }
+    if(borderTotalWidth * 2.0 > elementSize.y)
+    {
+        cornerCoeff.y = elementSize.y / (borderTotalWidth * 2.0);
+        cornerCoeff.x = cornerCoeff.y;
+
+        borderCoeff.x = 1.0 / cornerCoeff.y;
+        borderCoeff.y = cornerCoeff.y;
+    }
+    // ========================================================
+
+    vec2 finalElementSize = elementSize;
+    finalElementSize.x = max(elementSize.x - borderTotalWidth * 2.0 / borderCoeff.x, 0.0);
+    finalElementSize.y = max(elementSize.y - borderTotalWidth * 2.0 / borderCoeff.y, 0.0);
+
     if(vertexSlice == CENTER_SLICE)
     {
-        return vec3(vertexPos.xy * (elementSize / 2.0), 0.0);
+        return vec3(vertexPos.xy * (finalElementSize / 2.0), 0.0);
     }
     else if(vertexSlice == LEFT_CENTER_SLICE)
     {
-        return vec3(vertexPos.x - elementSize.x / 2.0, vertexPos.y * (elementSize.y / 2.0), 0.0);
+        return vec3(vertexPos.x * borderCoeff.x - finalElementSize.x / 2.0,
+                    vertexPos.y * (finalElementSize.y / 2.0), 0.0);
     }
     else if(vertexSlice == RIGHT_CENTER_SLICE)
     {
-        return vec3(vertexPos.x + elementSize.x / 2.0, vertexPos.y * (elementSize.y / 2.0), 0.0);
+        return vec3(vertexPos.x * borderCoeff.x + finalElementSize.x / 2.0,
+                    vertexPos.y * (finalElementSize.y / 2.0), 0.0);
     }
     else if(vertexSlice == BOTTOM_CENTER_SLICE)
     {
-        return vec3(vertexPos.x * (elementSize.x / 2.0), vertexPos.y + elementSize.y / 2.0, 0.0);
+        return vec3(vertexPos.x * (finalElementSize.x / 2.0),
+                    vertexPos.y * borderCoeff.y + finalElementSize.y / 2.0, 0.0);
     }
     else if(vertexSlice == TOP_CENTER_SLICE)
     {
-        return vec3(vertexPos.x * (elementSize.x / 2.0), vertexPos.y - elementSize.y / 2.0, 0.0);
+        return vec3(vertexPos.x * (finalElementSize.x / 2.0),
+                    vertexPos.y * borderCoeff.y - finalElementSize.y / 2.0, 0.0);
     }
     else if(vertexSlice == LEFT_TOP_SLICE)
     {
-        return vec3(vertexPos.x, vertexPos.y, 0.0);
+        vec2 finalVertexPos = vec2(vertexPos.x * cornerCoeff.x - finalElementSize.x / 2.0,
+                                   vertexPos.y * cornerCoeff.y - finalElementSize.y / 2.0);
+
+        return vec3(finalVertexPos, 0.0);
+    }
+    else if(vertexSlice == RIGHT_TOP_SLICE)
+    {
+        vec2 finalVertexPos = vec2(vertexPos.x * cornerCoeff.x + finalElementSize.x / 2.0,
+                                   vertexPos.y * cornerCoeff.y - finalElementSize.y / 2.0);
+
+        return vec3(finalVertexPos, 0.0);
+    }
+    else if(vertexSlice == LEFT_BOTTOM_SLICE)
+    {
+        vec2 finalVertexPos = vec2(vertexPos.x * cornerCoeff.x - finalElementSize.x / 2.0,
+                                   vertexPos.y * cornerCoeff.y + finalElementSize.y / 2.0);
+
+        return vec3(finalVertexPos, 0.0);
+    }
+    else if(vertexSlice == RIGHT_BOTTOM_SLICE)
+    {
+        vec2 finalVertexPos = vec2(vertexPos.x * cornerCoeff.x + finalElementSize.x / 2.0,
+                                   vertexPos.y * cornerCoeff.y + finalElementSize.y / 2.0);
+
+        return vec3(finalVertexPos, 0.0);
     }
 
     return vec3(0, 0, 0);

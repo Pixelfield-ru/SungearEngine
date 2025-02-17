@@ -24,6 +24,8 @@ void SGCore::UI::UIElement::useUniforms(const CSSSelectorCache& thisCSSSelectorC
     m_shader->useVectorf("u_elementSize", glm::vec2 { selectorCache.m_width, selectorCache.m_height });
 
     m_shader->useVectorf("u_backgroundColor", selectorCache.m_backgroundColor);
+
+    m_shader->useFloat("u_totalBorderWidth", selectorCache.m_totalBorderWidth);
 }
 
 void SGCore::UI::UIElement::calculateLayout(const CSSSelectorCache* parentSelectorCache,

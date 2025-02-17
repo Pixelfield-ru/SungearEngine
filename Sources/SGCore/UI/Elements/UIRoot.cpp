@@ -34,9 +34,14 @@ void SGCore::UI::UIRoot::doCalculateLayout(const CSSSelectorCache* parentSelecto
 
         CoreMain::getWindow().getSize(windowSizeX, windowSizeY);
 
-        thisSelectorCache.m_width = 100;
-        thisSelectorCache.m_height = 200;
+        thisSelectorCache.m_width = windowSizeX;
+        thisSelectorCache.m_height = windowSizeY;
+        // thisSelectorCache.m_width = 200;
+        // thisSelectorCache.m_height = 200;
     }
+
+    // TODO: CONSIDER border-radius AND border-width
+    thisSelectorCache.m_totalBorderWidth = 90.0f;
 }
 
 void SGCore::UI::UIRoot::doGenerateMeshBaseSelector() noexcept
@@ -46,7 +51,7 @@ void SGCore::UI::UIRoot::doGenerateMeshBaseSelector() noexcept
 
 void SGCore::UI::UIRoot::doGenerateBasicMesh() noexcept
 {
-    NineSlice::generate9SlicedQuad<std::uint32_t>(30, 0, m_meshData->m_vertices, m_meshData->m_indices);
+    NineSlice::generate9SlicedQuad<std::uint32_t>(90, 0, m_meshData->m_vertices, m_meshData->m_indices);
 
     // m_meshData->m_vertices.resize(4);
 

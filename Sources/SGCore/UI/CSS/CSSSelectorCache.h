@@ -17,6 +17,8 @@ namespace SGCore::UI
         float m_width { };
         float m_height { };
         glm::vec4 m_backgroundColor { };
+
+        float m_totalBorderWidth = 0.0f;
     };
 }
 

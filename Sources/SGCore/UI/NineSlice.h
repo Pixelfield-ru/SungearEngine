@@ -89,6 +89,8 @@ namespace SGCore::UI
 
             currentMaxIndex = 4;
 
+            if(sideSize.x == 0.0f) return;
+
             // ========================================================= generating 2 slice
 
             outputQuadVertices.push_back({
@@ -218,49 +220,108 @@ namespace SGCore::UI
             outputIndices.push_back(currentMaxIndex + 3);
             outputIndices.push_back(currentMaxIndex + 2);
 
+            // 4 vertices
+            currentMaxIndex += 4;
+
+            const size_t cornerSegmentsCount = 10;
+            const float cornerAngleStep = borderRadius / cornerSegmentsCount;
+
             // ========================================================= generating 1 slice
 
-            float currentRoundingAngle = 270.0f;
-            const float angleStep = 5.0;
+            generateCorner(borderRadius,
+                           cornerAngleStep,
+                           90,
+                           180,
+                           1,
+                           currentMaxIndex,
+                           outputQuadVertices,
+                           outputIndices);
+
+            // ========================================================= generating 3 slice
+
+            generateCorner(borderRadius,
+                           cornerAngleStep,
+                           180,
+                           270,
+                           3,
+                           currentMaxIndex,
+                           outputQuadVertices,
+                           outputIndices);
+
+            // ========================================================= generating 7 slice
+
+            generateCorner(borderRadius,
+                           cornerAngleStep,
+                           360,
+                           450,
+                           7,
+                           currentMaxIndex,
+                           outputQuadVertices,
+                           outputIndices);
+
+            // ========================================================= generating 9 slice
+
+            generateCorner(borderRadius,
+                           cornerAngleStep,
+                           270,
+                           360,
+                           9,
+                           currentMaxIndex,
+                           outputQuadVertices,
+                           outputIndices);
+        }
+
+    private:
+        template<typename IndexT>
+        requires(std::is_integral_v<IndexT>)
+        static void generateCorner(const float& borderRadius,
+                                   const float& angleStep,
+                                   const float& startAngle,
+                                   const float& endAngle,
+                                   const std::int32_t& sliceIndex,
+                                   size_t& outputMaxIndex,
+                                   std::vector<UIVertex>& outputQuadVertices,
+                                   std::vector<IndexT>& outputIndices) noexcept
+        {
+            float currentRoundingAngle = startAngle;
 
             glm::vec3 rotatedVertex = glm::vec3(0.0f, borderRadius, 0.0f);
-            glm::vec3 lastRotatedVertex = rotatedVertex;
+            glm::vec3 lastRotatedVertex = glm::angleAxis(glm::radians(currentRoundingAngle), glm::vec3(0.0f, 0.0f, 1.0f)) * rotatedVertex;
 
-            while(currentRoundingAngle < 360.0f)
+            while(currentRoundingAngle < endAngle)
             {
+                currentRoundingAngle += angleStep;
+
                 rotatedVertex = glm::vec3(0.0f, borderRadius, 0.0f);
 
-                currentRoundingAngle = std::min(currentRoundingAngle, 360.0f);
+                currentRoundingAngle = std::min(currentRoundingAngle, endAngle);
 
                 glm::quat rotationQuat = glm::angleAxis(glm::radians(currentRoundingAngle), glm::vec3(0.0f, 0.0f, 1.0f));
                 rotatedVertex = rotationQuat * rotatedVertex;
 
                 outputQuadVertices.push_back({
                     .m_position = lastRotatedVertex,
-                    .m_sliceIndex = 1
+                    .m_sliceIndex = sliceIndex
                 });
 
                 outputQuadVertices.push_back({
                     .m_position = { 0, 0, 0 },
-                    .m_sliceIndex = 1
+                    .m_sliceIndex = sliceIndex
                 });
 
                 outputQuadVertices.push_back({
                     .m_position = rotatedVertex,
-                    .m_sliceIndex = 1
+                    .m_sliceIndex = sliceIndex
                 });
 
-                outputIndices.push_back(currentMaxIndex + 0);
-                outputIndices.push_back(currentMaxIndex + 2);
-                outputIndices.push_back(currentMaxIndex + 1);
+                outputIndices.push_back(outputMaxIndex + 2);
+                outputIndices.push_back(outputMaxIndex + 1);
+                outputIndices.push_back(outputMaxIndex + 0);
 
-                currentMaxIndex += 3;
+                outputMaxIndex += 3;
 
                 lastRotatedVertex = rotatedVertex;
-                currentRoundingAngle += angleStep;
             }
-
-            ++currentMaxIndex;
         }
     };
 }
