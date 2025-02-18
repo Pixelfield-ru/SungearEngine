@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "SGCore/Transformations/Transform.h"
-#include "SGCore/UI/CSS/CSSSelectorCache.h"
+#include "UIElementCache.h"
 
 namespace SGCore::UI
 {
@@ -16,7 +16,7 @@ namespace SGCore::UI
     {
         Transform m_transform;
 
-        CSSSelectorCache m_selectorCache;
+        UIElementCache m_elementCache;
 
         std::vector<std::int64_t> m_children;
         std::int64_t m_parent = -1;

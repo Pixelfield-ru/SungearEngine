@@ -22,7 +22,6 @@
 
 SGCore::AssetRef<SGCore::UI::CSSFile> cssFile;
 SGCore::AssetRef<SGCore::UI::UIDocument> uiDocument;
-SGCore::AssetRef<SGCore::IShader> divShader;
 SGCore::AssetRef<SGCore::IShader> screenShader;
 SGCore::Ref<SGCore::Scene> scene;
 SGCore::Ref<SGCore::IMeshData> quadMesh;
@@ -37,11 +36,8 @@ void coreInit()
 {
     cssFile = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::CSSFile>("${enginePath}/Tests/UI/Resources/test.css");
     uiDocument = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::UIDocument>("${enginePath}/Tests/UI/Resources/test.xml");
-    divShader = SGCore::AssetManager::getInstance()->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/ui/div.sgshader");
     screenShader = SGCore::AssetManager::getInstance()->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
     someTexture = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/no_material.png");
-
-    uiDocument->m_rootElement->m_shader = divShader;
 
     auto pbrrpPipeline = SGCore::RenderPipelinesManager::createRenderPipeline<SGCore::PBRRenderPipeline>();
     SGCore::RenderPipelinesManager::registerRenderPipeline(pbrrpPipeline);
@@ -74,22 +70,6 @@ void coreInit()
 
     quadMesh->m_vertices.resize(4);
 
-    /*quadMesh->m_vertices[0] = {
-        .m_position = { 0, 0, -1.0f }
-    };
-
-    quadMesh->m_vertices[1] = {
-        .m_position = { 0, 1, -1.0f }
-    };
-
-    quadMesh->m_vertices[2] = {
-        .m_position = { 1, 1, -1.0f }
-    };
-
-    quadMesh->m_vertices[3] = {
-        .m_position = { 1, 0, -1.0f }
-    };*/
-
     quadMesh->m_vertices[0] = {
         .m_position = { -1, -1, 0.0f }
     };
@@ -114,24 +94,8 @@ void coreInit()
     quadMesh->m_indices[3] = 0;
     quadMesh->m_indices[4] = 3;
     quadMesh->m_indices[5] = 2;
-    /*quadMesh->m_indices[0] = 0;
-    quadMesh->m_indices[1] = 1;
-
-    quadMesh->m_indices[2] = 1;
-    quadMesh->m_indices[3] = 2;
-
-    quadMesh->m_indices[4] = 2;
-    quadMesh->m_indices[5] = 0;
-
-    quadMesh->m_indices[6] = 0;
-    quadMesh->m_indices[7] = 3;
-
-    quadMesh->m_indices[8] = 3;
-    quadMesh->m_indices[9] = 2;*/
 
     quadMesh->prepare();
-
-    // quadMeshRenderState.m_useFacesCulling = false;
 }
 
 void onUpdate(const double& dt, const double& fixedDt)

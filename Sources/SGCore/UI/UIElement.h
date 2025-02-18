@@ -35,20 +35,20 @@ namespace SGCore::UI
 
         /**
          *
-         * @param parentSelectorCache May be nullptr.
-         * @param thisSelectorCache
+         * @param parentElementCache May be nullptr.
+         * @param thisElementCache
          * @param parentTransform May be nullptr.
          * @param ownTransform
          */
-        void calculateLayout(const CSSSelectorCache* parentSelectorCache, CSSSelectorCache& thisSelectorCache,
+        void calculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,
                              const Transform* parentTransform, Transform& ownTransform) noexcept;
 
         [[nodiscard]] UIElementType getType() const noexcept;
 
-        virtual void useUniforms(const CSSSelectorCache& thisCSSSelectorCache) const noexcept;
+        virtual void useUniforms(const UIElementCache& thisElementCache) const noexcept;
 
     protected:
-        virtual void doCalculateLayout(const CSSSelectorCache* parentSelectorCache, CSSSelectorCache& thisSelectorCache,
+        virtual void doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,
                                        const Transform* parentTransform, Transform& ownTransform) = 0;
 
         /**

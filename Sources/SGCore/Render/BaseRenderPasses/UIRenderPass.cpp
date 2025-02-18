@@ -75,11 +75,11 @@ std::int64_t SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::
     }
 
     const Transform* parentTransform = parentTransformNode ? &parentTransformNode->m_transform : nullptr;
-    const UI::CSSSelectorCache* parentCSSSelectorCache = parentTransformNode ? &parentTransformNode->m_selectorCache : nullptr;
+    const UI::UIElementCache* parentCSSSelectorCache = parentTransformNode ? &parentTransformNode->m_elementCache : nullptr;
 
     // =================================================================== calculating transform
 
-    currentUIElement->calculateLayout(parentCSSSelectorCache, currentTransformNode.m_selectorCache,
+    currentUIElement->calculateLayout(parentCSSSelectorCache, currentTransformNode.m_elementCache,
                                       parentTransform, currentTransformNode.m_transform);
 
     TransformUtils::calculateTransform(currentTransformNode.m_transform, parentTransform);
@@ -105,7 +105,7 @@ std::int64_t SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::
 
         uiElementShader->useInteger("SGPP_CurrentLayerIndex", defaultPPLayer->getIndex());
 
-        currentUIElement->useUniforms(currentTransformNode.m_selectorCache);
+        currentUIElement->useUniforms(currentTransformNode.m_elementCache);
 
         CoreMain::getRenderer()->renderArray(
                 currentUIElement->m_meshData->getVertexArray(),

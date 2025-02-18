@@ -3,12 +3,16 @@
 //
 
 #include "UIRoot.h"
-#include "SGCore/ImportedScenesArch/IMeshData.h"
 #include "SGCore/UI/NineSlice.h"
-#include "../UIElementMesh/UIElementMesh.h"
+#include "SGCore/UI/UIElementMesh/UIElementMesh.h"
 
-void SGCore::UI::UIRoot::doCalculateLayout(const CSSSelectorCache* parentSelectorCache,
-                                           CSSSelectorCache& thisSelectorCache,
+SGCore::UI::UIRoot::UIRoot() noexcept
+{
+    m_shader = AssetManager::getInstance()->loadAsset<IShader>("${enginePath}/Resources/sg_shaders/features/ui/div.sgshader");
+}
+
+void SGCore::UI::UIRoot::doCalculateLayout(const UIElementCache* parentElementCache,
+                                           UIElementCache& thisElementCache,
                                            const Transform* parentTransform, Transform& ownTransform) noexcept
 {
     if(m_selector)
@@ -17,14 +21,14 @@ void SGCore::UI::UIRoot::doCalculateLayout(const CSSSelectorCache* parentSelecto
 
         if(m_selector->m_width.containsAlternative())
         {
-            thisSelectorCache.m_width = m_selector->m_width.getFromAlternativeValue<0>()->calculate(
-                parentSelectorCache ? &parentSelectorCache->m_width : nullptr);
+            thisElementCache.m_size.x = m_selector->m_width.getFromAlternativeValue<0>()->calculate(
+                parentElementCache ? &parentElementCache->m_size.x : nullptr);
         }
 
         if(m_selector->m_height.containsAlternative())
         {
-            thisSelectorCache.m_height = m_selector->m_height.getFromAlternativeValue<0>()->calculate(
-                parentSelectorCache ? &parentSelectorCache->m_height : nullptr);
+            thisElementCache.m_size.y = m_selector->m_height.getFromAlternativeValue<0>()->calculate(
+                parentElementCache ? &parentElementCache->m_size.y : nullptr);
         }
     }
     else
@@ -34,8 +38,8 @@ void SGCore::UI::UIRoot::doCalculateLayout(const CSSSelectorCache* parentSelecto
 
         CoreMain::getWindow().getSize(windowSizeX, windowSizeY);
 
-        thisSelectorCache.m_width = windowSizeX;
-        thisSelectorCache.m_height = windowSizeY;
+        thisElementCache.m_size.x = windowSizeX;
+        thisElementCache.m_size.y = windowSizeY;
         // thisSelectorCache.m_width = 120;
         // thisSelectorCache.m_height = 145;
         // thisSelectorCache.m_width = 200;
@@ -45,7 +49,7 @@ void SGCore::UI::UIRoot::doCalculateLayout(const CSSSelectorCache* parentSelecto
     }
 
     // TODO: CONSIDER border-radius AND border-width
-    thisSelectorCache.m_totalBorderWidth = 90.0f;
+    thisElementCache.m_totalBorderWidth = 90.0f;
 }
 
 void SGCore::UI::UIRoot::doGenerateMeshBaseSelector() noexcept
@@ -56,53 +60,6 @@ void SGCore::UI::UIRoot::doGenerateMeshBaseSelector() noexcept
 void SGCore::UI::UIRoot::doGenerateBasicMesh() noexcept
 {
     NineSlice::generate9SlicedQuad<std::uint32_t>(90, 0, m_meshData->m_vertices, m_meshData->m_indices);
-
-    // m_meshData->m_vertices.resize(4);
-
-    /*m_meshData->m_vertices[0] = {
-        .m_position = { -1, -1, 0.0f }
-    };
-
-    m_meshData->m_vertices[1] = {
-        .m_position = { -1, 1, 0.0f }
-    };
-
-    m_meshData->m_vertices[2] = {
-        .m_position = { 1, 1, 0.0f }
-    };
-
-    m_meshData->m_vertices[3] = {
-        .m_position = { 1, -1, 0.0f }
-    };*/
-
-
-
-    /*m_meshData->m_vertices[0] = {
-        .m_position = { 0, 0, 0.0f }
-    };
-
-    m_meshData->m_vertices[1] = {
-        .m_position = { 0, 0.4, 0.0f }
-    };
-
-    m_meshData->m_vertices[2] = {
-        .m_position = { 1, 1, 0.0f }
-    };
-
-    m_meshData->m_vertices[3] = {
-        .m_position = { 1, 0, 0.0f }
-    };*/
-
-    // =======================================================
-
-    /*m_meshData->m_indices.resize(6);
-
-    m_meshData->m_indices[0] = 0;
-    m_meshData->m_indices[1] = 2;
-    m_meshData->m_indices[2] = 1;
-    m_meshData->m_indices[3] = 0;
-    m_meshData->m_indices[4] = 3;
-    m_meshData->m_indices[5] = 2;*/
 
     m_meshData->prepare();
 }

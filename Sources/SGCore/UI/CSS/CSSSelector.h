@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "CSSSelectorCache.h"
+#include "../TransformTree/UIElementCache.h"
 #include "SGCore/Memory/Assets/IAsset.h"
 #include "SGCore/UI/CSS/PropertyValues/CSSPropertyValue.h"
 

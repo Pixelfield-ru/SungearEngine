@@ -10,9 +10,9 @@ SGCore::UI::UIElementType SGCore::UI::UIElement::getType() const noexcept
     return m_type;
 }
 
-void SGCore::UI::UIElement::useUniforms(const CSSSelectorCache& thisCSSSelectorCache) const noexcept
+void SGCore::UI::UIElement::useUniforms(const UIElementCache& thisElementCache) const noexcept
 {
-    const auto& selectorCache = thisCSSSelectorCache;
+    const auto& elementCache = thisElementCache;
 
     m_shader->useVectorf("u_meshAABB", glm::vec4 {
         m_meshData->m_aabb.m_min.x,
@@ -21,20 +21,20 @@ void SGCore::UI::UIElement::useUniforms(const CSSSelectorCache& thisCSSSelectorC
         m_meshData->m_aabb.m_max.y,
     });
 
-    m_shader->useVectorf("u_elementSize", glm::vec2 { selectorCache.m_width, selectorCache.m_height });
+    m_shader->useVectorf("u_elementSize", elementCache.m_size);
 
-    m_shader->useVectorf("u_backgroundColor", selectorCache.m_backgroundColor);
+    m_shader->useVectorf("u_backgroundColor", elementCache.m_backgroundColor);
 
-    m_shader->useFloat("u_totalBorderWidth", selectorCache.m_totalBorderWidth);
+    m_shader->useFloat("u_totalBorderWidth", elementCache.m_totalBorderWidth);
 }
 
-void SGCore::UI::UIElement::calculateLayout(const CSSSelectorCache* parentSelectorCache,
-                                            CSSSelectorCache& thisSelectorCache, const Transform* parentTransform,
+void SGCore::UI::UIElement::calculateLayout(const UIElementCache* parentElementCache,
+                                            UIElementCache& thisElementCache, const Transform* parentTransform,
                                             Transform& ownTransform) noexcept
 {
     checkForMeshGenerating();
 
-    doCalculateLayout(parentSelectorCache, thisSelectorCache, parentTransform, ownTransform);
+    doCalculateLayout(parentElementCache, thisElementCache, parentTransform, ownTransform);
 }
 
 void SGCore::UI::UIElement::checkForMeshGenerating() noexcept
