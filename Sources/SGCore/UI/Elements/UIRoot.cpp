@@ -36,8 +36,12 @@ void SGCore::UI::UIRoot::doCalculateLayout(const CSSSelectorCache* parentSelecto
 
         thisSelectorCache.m_width = windowSizeX;
         thisSelectorCache.m_height = windowSizeY;
+        // thisSelectorCache.m_width = 120;
+        // thisSelectorCache.m_height = 145;
         // thisSelectorCache.m_width = 200;
         // thisSelectorCache.m_height = 200;
+
+        std::cout << "window size: " << windowSizeX << ", " << windowSizeY << std::endl;
     }
 
     // TODO: CONSIDER border-radius AND border-width

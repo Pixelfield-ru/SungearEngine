@@ -21,9 +21,12 @@ vec3 calc9SliceVertexPos(in vec3 vertexPos, in int vertexSlice, in vec2 elementS
     vec2 cornerCoeff = vec2(1.0);
     vec2 borderCoeff = vec2(1.0);
 
+    vec2 borderToElementSizeDif = vec2(borderTotalWidth * 2.0 - elementSize.x,
+                                       borderTotalWidth * 2.0 - elementSize.y);
+
     // ========================================================
     // doing some magic to guarantee element size if borders are bigger than size of element
-    if(borderTotalWidth * 2.0 > elementSize.x)
+    if(borderTotalWidth * 2.0 > elementSize.x && borderToElementSizeDif.x >= borderToElementSizeDif.y)
     {
         cornerCoeff.x = elementSize.x / (borderTotalWidth * 2.0);
         cornerCoeff.y = cornerCoeff.x;
@@ -31,7 +34,7 @@ vec3 calc9SliceVertexPos(in vec3 vertexPos, in int vertexSlice, in vec2 elementS
         borderCoeff.x = cornerCoeff.x;
         borderCoeff.y = 1.0 / cornerCoeff.y;
     }
-    if(borderTotalWidth * 2.0 > elementSize.y)
+    if(borderTotalWidth * 2.0 > elementSize.y && borderToElementSizeDif.y > borderToElementSizeDif.x)
     {
         cornerCoeff.y = elementSize.y / (borderTotalWidth * 2.0);
         cornerCoeff.x = cornerCoeff.y;
