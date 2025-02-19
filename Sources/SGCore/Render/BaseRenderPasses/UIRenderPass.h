@@ -31,7 +31,12 @@ namespace SGCore
         std::int64_t processUIElement(const LayeredFrameReceiver::reg_t& cameraReceiver,
                                       const std::int64_t& parentUITreeNodeIdx,
                                       UI::UIComponent::reg_t& uiComponent,
-                                      const Ref<UI::UIElement>& currentUIElement) noexcept;
+                                      const Ref<UI::UIElement>& currentUIElement,
+                                      const Ref<UI::UIElement>& parentUIElement) noexcept;
+
+        static void calculateElementLayout(const Ref<UI::UIElement>& parentUIElement,
+                                           UI::UITransformTreeElement& parentElementTransform,
+                                           UI::UITransformTreeElement& currentElementTransform) noexcept;
 
         std::int64_t m_currentProceedUIElements = 0;
     };

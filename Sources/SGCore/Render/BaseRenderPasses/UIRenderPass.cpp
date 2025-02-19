@@ -37,7 +37,7 @@ void SGCore::UIRenderPass::render(const Ref<Scene>& scene,
         cameraReceiver.m_layersFrameBuffer->bindAttachmentsToDrawIn(cameraReceiver.m_attachmentToRenderIn);
 
         uiComponentsView.each([this, &cameraReceiver](UI::UIComponent::reg_t& uiComponent) {
-            processUIElement(cameraReceiver, -1, uiComponent, uiComponent.m_document->m_rootElement);
+            processUIElement(cameraReceiver, -1, uiComponent, uiComponent.m_document->m_rootElement, nullptr);
         });
 
         cameraReceiver.m_layersFrameBuffer->unbind();
@@ -47,7 +47,8 @@ void SGCore::UIRenderPass::render(const Ref<Scene>& scene,
 std::int64_t SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::reg_t& cameraReceiver,
                                                     const std::int64_t& parentUITreeNodeIdx,
                                                     UI::UIComponent& uiComponent,
-                                                    const Ref<UI::UIElement>& currentUIElement) noexcept
+                                                    const Ref<UI::UIElement>& currentUIElement,
+                                                    const Ref<UI::UIElement>& parentUIElement) noexcept
 {
     m_currentProceedUIElements++;
 
@@ -67,6 +68,7 @@ std::int64_t SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::
     }
 
     auto& currentTransformNode = uiComponent.m_transformTree.m_elements[currentUITransformNodeIdx];
+    auto& currentElementCache = currentTransformNode.m_elementCache;
 
     UI::UITransformTreeElement* parentTransformNode { };
     if(parentUITreeNodeIdx != -1)
@@ -75,12 +77,17 @@ std::int64_t SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::
     }
 
     const Transform* parentTransform = parentTransformNode ? &parentTransformNode->m_transform : nullptr;
-    const UI::UIElementCache* parentCSSSelectorCache = parentTransformNode ? &parentTransformNode->m_elementCache : nullptr;
+    UI::UIElementCache* parentElementCache = parentTransformNode ? &parentTransformNode->m_elementCache : nullptr;
 
     // =================================================================== calculating transform
 
-    currentUIElement->calculateLayout(parentCSSSelectorCache, currentTransformNode.m_elementCache,
+    currentUIElement->calculateLayout(parentElementCache, currentTransformNode.m_elementCache,
                                       parentTransform, currentTransformNode.m_transform);
+
+    if(parentTransformNode)
+    {
+        calculateElementLayout(parentUIElement, *parentTransformNode, currentTransformNode);
+    }
 
     TransformUtils::calculateTransform(currentTransformNode.m_transform, parentTransform);
 
@@ -117,9 +124,17 @@ std::int64_t SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::
 
     // ===================================================================
 
+    // =================================================================== reset some cache data
+
+    currentTransformNode.m_elementCache.m_freeSpaceSize = currentTransformNode.m_elementCache.m_size;
+    currentTransformNode.m_elementCache.m_curLocalPositionForElements = glm::vec3 { currentTransformNode.m_elementCache.m_size, 0.0f } / -2.0;
+    currentTransformNode.m_elementCache.m_curLocalPositionForElements.x += currentElementCache.m_padding.x;
+    currentTransformNode.m_elementCache.m_curLocalPositionForElements.y += currentElementCache.m_padding.y;
+
     for(const auto& child : currentUIElement->m_children)
     {
-        const std::int64_t newChildNodeIdx = processUIElement(cameraReceiver, currentUITransformNodeIdx, uiComponent, child);
+        const std::int64_t newChildNodeIdx = processUIElement(cameraReceiver, currentUITransformNodeIdx, uiComponent,
+                                                              child, currentUIElement);
 
         // new child was created
         if(newChildNodeIdx != -1)
@@ -134,4 +149,37 @@ std::int64_t SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::
     }
 
     return -1;
+}
+
+void SGCore::UIRenderPass::calculateElementLayout(const Ref<UI::UIElement>& parentUIElement,
+                                                  UI::UITransformTreeElement& parentElementTransform,
+                                                  UI::UITransformTreeElement& currentElementTransform) noexcept
+{
+    auto& parentElementCache = parentElementTransform.m_elementCache;
+    auto& currentElementCache = currentElementTransform.m_elementCache;
+
+    auto parentSelector = parentUIElement->m_selector;
+
+    if(!parentSelector) return;
+
+    if(parentSelector->m_display == UI::DisplayKeyword::KW_FLEX)
+    {
+        if(currentElementCache.m_size.y > parentElementCache.m_lastRowSize.y)
+        {
+            parentElementCache.m_lastRowSize.y = currentElementCache.m_size.y;
+        }
+
+        if(parentElementCache.m_curLocalPositionForElements.x + currentElementCache.m_size.x > parentElementCache.m_size.x / 2.0f - parentElementCache.m_padding.x)
+        {
+            parentElementCache.m_curLocalPositionForElements.x = parentElementCache.m_size.x / -2.0f + parentElementCache.m_padding.x;
+            parentElementCache.m_curLocalPositionForElements.y += currentElementCache.m_size.y + parentElementCache.m_gap.y;
+        }
+
+        glm::vec3 currentElementPos = parentElementCache.m_curLocalPositionForElements;
+        currentElementPos += glm::vec3 { currentElementCache.m_size, 0.0 } / 2.0f;
+
+        currentElementTransform.m_transform.m_ownTransform.m_position = currentElementPos;
+
+        parentElementCache.m_curLocalPositionForElements.x += currentElementCache.m_size.x + parentElementCache.m_gap.x;
+    }
 }

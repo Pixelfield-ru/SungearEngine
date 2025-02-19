@@ -1,9 +1,75 @@
 <xml>
     <include type="stylesheet" path="test.css"/>
 
-    <div class="window-default">
-        <div class="window-header">
+    <div class="window-header">
 
-        </div>
+    </div>
+
+    <div class="window-header">
+
+    </div>
+
+    <div class="window-header">
+
+    </div>
+
+    <div class="window-header">
+
+    </div>
+
+    <div class="window-header">
+
+    </div>
+
+    <div class="window-header">
+
+    </div>
+
+    <div class="window-header">
+
+    </div>
+
+    <div class="window-header">
+
+    </div>
+
+    <div class="window-header">
+
+    </div>
+
+    <div class="window-header">
+
+    </div>
+
+    <div class="window-header">
+
+    </div>
+
+    <div class="window-header">
+
+    </div>
+
+    <div class="window-header">
+
+    </div>
+
+    <div class="window-header">
+
+    </div>
+
+    <div class="window-header">
+
+    </div>
+
+    <div class="window-header">
+
+    </div>
+
+    <div class="window-header">
+
+    </div>
+
+    <div class="window-header">
+
     </div>
 </xml>

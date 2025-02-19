@@ -2,8 +2,8 @@
 // Created by stuka on 08.02.2025.
 //
 
-#ifndef CSSSELECTORCACHE_H
-#define CSSSELECTORCACHE_H
+#ifndef UIEELEMENTCACHE_H
+#define UIEELEMENTCACHE_H
 
 #include <glm/vec4.hpp>
 
@@ -22,13 +22,17 @@ namespace SGCore::UI
         // column and row gaps
         glm::vec2 m_gap { };
 
-        float m_padding = 0.0f;
+        glm::vec2 m_padding { };
+
+        // ===================================== tmp values! DO NOT CHANGE EXTERNALLY!
 
         // used to place children elements in current element considering wrapping, gaps and more
-        glm::vec3 m_curPositionForElements { };
+        glm::vec3 m_curLocalPositionForElements { };
         // free space inside the current element, which is left for children elements
         glm::vec2 m_freeSpaceSize { };
+
+        glm::vec2 m_lastRowSize { };
     };
 }
 
-#endif //CSSSELECTORCACHE_H
+#endif // UIEELEMENTCACHE_H

@@ -16,6 +16,11 @@
 
 namespace SGCore::UI
 {
+    enum struct UniversalKeyword
+    {
+        CSS_DECLARE_UNIVERSAL_KEYWORDS
+    };
+
     enum struct PositionAndSizeKeyword
     {
         CSS_DECLARE_UNIVERSAL_KEYWORDS,

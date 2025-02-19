@@ -15,6 +15,8 @@ namespace SGCore::UI
 
     struct CSSMathNode
     {
+        virtual ~CSSMathNode() = default;
+
         std::vector<Ref<CSSMathNode>> m_operands;
         CSSMathSign m_sign = CSSMathSign::MS_NO_SIGN;
         /// Can be only PLUS or MINUS.
