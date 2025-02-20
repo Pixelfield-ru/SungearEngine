@@ -31,63 +31,18 @@ void SGCore::UI::UIRoot::doCalculateLayout(const UIElementCache* parentElementCa
                                            UIElementCache& thisElementCache,
                                            const Transform* parentTransform, Transform& ownTransform) noexcept
 {
-    /*if(m_selector)
-    {
-        auto lockedParent = m_parent.lock();
-
-        if(m_selector->m_width.containsAlternative())
-        {
-            thisElementCache.m_size.x = m_selector->m_width.getFromAlternativeValue<0>()->calculate(
-                parentElementCache ? &parentElementCache->m_size.x : nullptr);
-        }
-
-        if(m_selector->m_height.containsAlternative())
-        {
-            thisElementCache.m_size.y = m_selector->m_height.getFromAlternativeValue<0>()->calculate(
-                parentElementCache ? &parentElementCache->m_size.y : nullptr);
-        }
-    }
-    else
-    {
-        int windowSizeX = 0;
-        int windowSizeY = 0;
-
-        CoreMain::getWindow().getSize(windowSizeX, windowSizeY);
-
-        thisElementCache.m_size.x = windowSizeX;
-        thisElementCache.m_size.y = windowSizeY;
-
-        std::cout << "window size: " << windowSizeX << ", " << windowSizeY << std::endl;
-    }*/
-
     // todo: move into CSSSelector struct to calculate all selector props
     if(m_selector)
     {
-        auto lockedParent = m_parent.lock();
-
-        if(m_selector->m_padding.containsAlternative())
-        {
-            thisElementCache.m_padding.x = m_selector->m_padding.getFromAlternativeValue<0>()->calculate(
-                parentElementCache ? &parentElementCache->m_padding.x : nullptr);
-
-            thisElementCache.m_padding.y = m_selector->m_padding.getFromAlternativeValue<1>()->calculate(
-                parentElementCache ? &parentElementCache->m_padding.y : nullptr);
-        }
-
-        if(m_selector->m_gap.containsAlternative())
-        {
-            thisElementCache.m_gap.x = m_selector->m_gap.getFromAlternativeValue<0>()->calculate(
-                parentElementCache ? &parentElementCache->m_gap.x : nullptr);
-
-            thisElementCache.m_gap.y = m_selector->m_gap.getFromAlternativeValue<1>()->calculate(
-                parentElementCache ? &parentElementCache->m_gap.y : nullptr);
-        }
+        m_selector->calculateCache(parentElementCache, thisElementCache);
     }
     else
     {
         thisElementCache.m_padding = { };
         thisElementCache.m_gap = { };
     }
+
+    thisElementCache.m_backgroundColor.a = 255.0f;
 
     int windowSizeX = 0;
     int windowSizeY = 0;
@@ -96,19 +51,20 @@ void SGCore::UI::UIRoot::doCalculateLayout(const UIElementCache* parentElementCa
 
     thisElementCache.m_size.x = windowSizeX;
     thisElementCache.m_size.y = windowSizeY;
-
-    // TODO: CONSIDER border-radius AND border-width
-    thisElementCache.m_totalBorderWidth = 90.0f;
 }
 
-void SGCore::UI::UIRoot::doGenerateMeshBaseSelector() noexcept
+void SGCore::UI::UIRoot::doGenerateMeshBaseSelector(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept
 {
-    doGenerateBasicMesh();
+    m_selector->calculateCache(parentElementCache, thisElementCache);
+
+    NineSlice::generate9SlicedQuad<std::uint32_t>(thisElementCache.m_borderRadius, 0, m_meshData->m_vertices, m_meshData->m_indices);
+
+    m_meshData->prepare();
 }
 
 void SGCore::UI::UIRoot::doGenerateBasicMesh() noexcept
 {
-    NineSlice::generate9SlicedQuad<std::uint32_t>(90, 0, m_meshData->m_vertices, m_meshData->m_indices);
+    NineSlice::generate9SlicedQuad<std::uint32_t>({ 0, 0, 0, 0 }, 0, m_meshData->m_vertices, m_meshData->m_indices);
 
     m_meshData->prepare();
 }

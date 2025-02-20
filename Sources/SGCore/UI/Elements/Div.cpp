@@ -15,19 +15,33 @@ void SGCore::UI::Div::doCalculateLayout(const UIElementCache* parentElementCache
                                         UIElementCache& thisElementCache,
                                         const Transform* parentTransform, Transform& ownTransform) noexcept
 {
-    thisElementCache.m_size.x = 100;
-    thisElementCache.m_size.y = 100;
-    thisElementCache.m_totalBorderWidth = 20.0f;
+    if(m_selector)
+    {
+        m_selector->calculateCache(parentElementCache, thisElementCache);
+    }
+    else
+    {
+
+    }
 }
 
-void SGCore::UI::Div::doGenerateMeshBaseSelector() noexcept
+void SGCore::UI::Div::doGenerateMeshBaseSelector(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept
 {
-    doGenerateBasicMesh();
+    m_selector->calculateCache(parentElementCache, thisElementCache);
+
+    thisElementCache.m_borderRadius.x = 30.0f;
+    thisElementCache.m_borderRadius.y = 10.0f;
+    thisElementCache.m_borderRadius.z = 20.0f;
+    thisElementCache.m_borderRadius.w = 15.0f;
+
+    NineSlice::generate9SlicedQuad<std::uint32_t>(thisElementCache.m_borderRadius, 0, m_meshData->m_vertices, m_meshData->m_indices);
+
+    m_meshData->prepare();
 }
 
 void SGCore::UI::Div::doGenerateBasicMesh() noexcept
 {
-    NineSlice::generate9SlicedQuad<std::uint32_t>(20, 0, m_meshData->m_vertices, m_meshData->m_indices);
+    NineSlice::generate9SlicedQuad<std::uint32_t>({ 0, 0, 0, 0 }, 0, m_meshData->m_vertices, m_meshData->m_indices);
 
     m_meshData->prepare();
 }

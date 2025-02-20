@@ -45,7 +45,7 @@ namespace SGCore::UI
 
         [[nodiscard]] UIElementType getType() const noexcept;
 
-        virtual void useUniforms(const UIElementCache& thisElementCache) const noexcept;
+        virtual void useUniforms(UIElementCache& thisElementCache) const noexcept;
 
     protected:
         virtual void doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,
@@ -59,7 +59,7 @@ namespace SGCore::UI
          * Calls only if mesh has not been generated before (i.e. mesh == nullptr).\n
          * IN THIS FUNCTION, YOU DO NOT NEED TO CREATE A MESH INSTANCE. YOU ONLY NEED TO GENERATE VERTICES.
          */
-        virtual void doGenerateMeshBaseSelector() noexcept = 0;
+        virtual void doGenerateMeshBaseSelector(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept = 0;
 
         /**
          * Generates basic mesh without selector (i.e. selector == nullptr).\n
@@ -74,7 +74,7 @@ namespace SGCore::UI
     private:
         UIElementType m_type = UIElementType::ET_UNKNOWN;
 
-        void checkForMeshGenerating() noexcept;
+        void checkForMeshGenerating(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept;
     };
 }
 

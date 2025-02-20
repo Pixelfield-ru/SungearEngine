@@ -2,7 +2,17 @@
     <include type="stylesheet" path="test.css"/>
 
     <div class="window-header">
+        <div class="window-header-test">
 
+        </div>
+
+        <div class="window-header-test">
+
+        </div>
+
+        <div class="window-header-test">
+
+        </div>
     </div>
 
     <div class="window-header">

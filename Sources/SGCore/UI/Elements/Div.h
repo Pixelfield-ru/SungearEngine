@@ -24,7 +24,7 @@ namespace SGCore::UI
         void doCalculateLayout(const UIElementCache* parentSelectorCache, UIElementCache& thisSelectorCache,
                                const Transform* parentTransform, Transform& ownTransform) noexcept final;
 
-        void doGenerateMeshBaseSelector() noexcept final;
+        void doGenerateMeshBaseSelector(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept final;
 
         void doGenerateBasicMesh() noexcept final;
     };

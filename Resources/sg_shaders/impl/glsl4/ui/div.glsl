@@ -75,8 +75,8 @@ in VSOut
 void main()
 {
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
-    // layerColor = u_backgroundColor;
-    layerColor = vec4(si / 9.0, 0.0, 0.0, 1.0);
+    layerColor = u_backgroundColor / 255.0;
+    // layerColor = vec4(si / 9.0, 0.0, 0.0, 1.0);
     // layerColor = vec4(1.0);
 }
 

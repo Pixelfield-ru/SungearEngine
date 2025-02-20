@@ -13,6 +13,13 @@
 
 void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
 {
+    for(auto cssFile : m_includedCSSFiles)
+    {
+        cssFile->getParentAssetManager()->removeAsset(cssFile);
+    }
+
+    m_includedCSSFiles.clear();
+
     const std::string u8Path = Utils::toUTF8(path.resolved().u16string());
 
     pugi::xml_parse_result parseResult = m_document.load_file(u8Path.c_str());

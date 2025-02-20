@@ -19,6 +19,7 @@
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "SGCore/Graphics/API/IFrameBufferAttachment.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
+#include "SGCore/Input/InputManager.h"
 
 SGCore::AssetRef<SGCore::UI::CSSFile> cssFile;
 SGCore::AssetRef<SGCore::UI::UIDocument> uiDocument;
@@ -124,6 +125,20 @@ void onUpdate(const double& dt, const double& fixedDt)
         quadMesh.get(),
         quadMeshRenderState
     );
+
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_1))
+    {
+        uiDocument->reloadFromDisk();
+    }
+
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_2))
+    {
+        auto shaders = SGCore::AssetManager::getInstance()->getAssetsWithType<SGCore::IShader>();
+        for(const auto& shader : shaders)
+        {
+            shader->reloadFromDisk();
+        }
+    }
 }
 
 void onFixedUpdate(const double& dt, const double& fixedDt)

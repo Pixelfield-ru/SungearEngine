@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "../TransformTree/UIElementCache.h"
+#include "SGCore/UI/TransformTree/UIElementCache.h"
 #include "SGCore/Memory/Assets/IAsset.h"
 #include "SGCore/UI/CSS/PropertyValues/CSSPropertyValue.h"
 
@@ -36,9 +36,14 @@ namespace SGCore::UI
 
         CSSPropertyValue<PositionAndSizeKeyword::KW_UNSET, Ref<CSSMathNode>, Ref<CSSMathNode>> m_gap;
 
+        CSSPropertyValue<UniversalKeyword::KW_UNSET, Ref<CSSMathNode>, Ref<CSSMathNode>, Ref<CSSMathNode>, Ref<CSSMathNode>> m_borderRadius;
+
         CSSPropertyValue<ColorKeyword::KW_TRANSPARENT, Ref<CSSMathNode>, Ref<CSSMathNode>, Ref<CSSMathNode>, Ref<CSSMathNode>> m_backgroundColor;
 
         [[nodiscard]] const std::string& getName() const noexcept;
+
+        void calculateCache(const UIElementCache* parentElementCache,
+                            UIElementCache& thisElementCache) noexcept;
 
     protected:
         /// NOT SUPPORTED

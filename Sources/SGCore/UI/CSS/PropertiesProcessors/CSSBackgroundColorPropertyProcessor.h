@@ -76,6 +76,14 @@ namespace SGCore::UI
 
                             *colorArr[i] = mathNode;
                         }
+                        else if(currentComponent->calcValue()->percentage())
+                        {
+                            auto mathNode = MakeRef<CSSMathNumericNode>();
+                            mathNode->m_value = std::stof(currentComponent->calcValue()->percentage()->getText());
+                            mathNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_PERCENT;
+
+                            *colorArr[i] = mathNode;
+                        }
                         else
                         {
                             antlrcssListener->printUnsupportedQualifierInCurrentContextError(propertyName,
@@ -102,6 +110,14 @@ namespace SGCore::UI
                                                              propertyName,
                                                              mathNode,
                                                              {});
+
+                        *colorArr[3] = mathNode;
+                    }
+                    else if(alphaComponent->calcValue()->percentage())
+                    {
+                        auto mathNode = MakeRef<CSSMathNumericNode>();
+                        mathNode->m_value = std::stof(alphaComponent->calcValue()->percentage()->getText());
+                        mathNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_PERCENT;
 
                         *colorArr[3] = mathNode;
                     }

@@ -24,6 +24,8 @@ namespace SGCore::UI
 
         glm::vec2 m_padding { };
 
+        glm::vec4 m_borderRadius { };
+
         // ===================================== tmp values! DO NOT CHANGE EXTERNALLY!
 
         // used to place children elements in current element considering wrapping, gaps and more
