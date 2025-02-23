@@ -16,27 +16,27 @@
 // HERE WE ASSUME THAT THE CENTRAL SLICE HAS VERTICES
 // WITH COORDINATES FROM -1 TO 1 (I.E. THE MAGNIFICATION IN ALL DIRECTIONS IS THE SAME)
 // shit happens
-vec3 calc9SliceVertexPos(in vec3 vertexPos, in int vertexSlice, in vec2 elementSize, float borderTotalWidth)
+vec3 calc9SliceVertexPos(in vec3 vertexPos, in int vertexSlice, in vec2 elementSize, vec2 borderTotalSize)
 {
     vec2 cornerCoeff = vec2(1.0);
     vec2 borderCoeff = vec2(1.0);
 
-    vec2 borderToElementSizeDif = vec2(borderTotalWidth * 2.0 - elementSize.x,
-                                       borderTotalWidth * 2.0 - elementSize.y);
+    vec2 borderToElementSizeDif = vec2(borderTotalSize.x * 2.0 - elementSize.x,
+                                       borderTotalSize.y * 2.0 - elementSize.y);
 
     // ========================================================
     // doing some magic to guarantee element size if borders are bigger than size of element
-    if(borderTotalWidth * 2.0 > elementSize.x && borderToElementSizeDif.x >= borderToElementSizeDif.y)
+    if(borderTotalSize.x * 2.0 > elementSize.x && borderToElementSizeDif.x >= borderToElementSizeDif.y)
     {
-        cornerCoeff.x = elementSize.x / (borderTotalWidth * 2.0);
+        cornerCoeff.x = elementSize.x / (borderTotalSize.x * 2.0);
         cornerCoeff.y = cornerCoeff.x;
 
         borderCoeff.x = cornerCoeff.x;
         borderCoeff.y = 1.0 / cornerCoeff.y;
     }
-    if(borderTotalWidth * 2.0 > elementSize.y && borderToElementSizeDif.y > borderToElementSizeDif.x)
+    if(borderTotalSize.y * 2.0 > elementSize.y && borderToElementSizeDif.y > borderToElementSizeDif.x)
     {
-        cornerCoeff.y = elementSize.y / (borderTotalWidth * 2.0);
+        cornerCoeff.y = elementSize.y / (borderTotalSize.y * 2.0);
         cornerCoeff.x = cornerCoeff.y;
 
         borderCoeff.x = 1.0 / cornerCoeff.y;
@@ -45,8 +45,8 @@ vec3 calc9SliceVertexPos(in vec3 vertexPos, in int vertexSlice, in vec2 elementS
     // ========================================================
 
     vec2 finalElementSize = elementSize;
-    finalElementSize.x = max(elementSize.x - borderTotalWidth * 2.0 / borderCoeff.x, 0.0);
-    finalElementSize.y = max(elementSize.y - borderTotalWidth * 2.0 / borderCoeff.y, 0.0);
+    finalElementSize.x = max(elementSize.x - borderTotalSize.x * 2.0 / borderCoeff.x, 0.0);
+    finalElementSize.y = max(elementSize.y - borderTotalSize.y * 2.0 / borderCoeff.y, 0.0);
 
     if(vertexSlice == CENTER_SLICE)
     {

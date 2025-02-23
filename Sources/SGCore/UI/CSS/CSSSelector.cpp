@@ -56,7 +56,51 @@ void SGCore::UI::CSSSelector::calculateCache(const UIElementCache* parentElement
             parentElementCache ? &parentElementCache->m_backgroundColor.a : nullptr);
     }
 
-    if(m_borderRadius.containsAlternative())
+    if(m_topLeftBorderRadius.containsAlternative())
+    {
+        const auto& alternativeValue = m_topLeftBorderRadius.getFromAlternativeValue<0>();
+
+        thisElementCache.m_borderRadiusCache[0].x = alternativeValue.m_radiusX->calculate(
+            parentElementCache ? &parentElementCache->m_borderRadiusCache[0].x : nullptr);
+
+        thisElementCache.m_borderRadiusCache[0].y = alternativeValue.m_radiusY->calculate(
+            parentElementCache ? &parentElementCache->m_borderRadiusCache[0].y : nullptr);
+    }
+
+    if(m_topRightBorderRadius.containsAlternative())
+    {
+        const auto& alternativeValue = m_topRightBorderRadius.getFromAlternativeValue<0>();
+
+        thisElementCache.m_borderRadiusCache[1].x = alternativeValue.m_radiusX->calculate(
+            parentElementCache ? &parentElementCache->m_borderRadiusCache[1].x : nullptr);
+
+        thisElementCache.m_borderRadiusCache[1].y = alternativeValue.m_radiusY->calculate(
+            parentElementCache ? &parentElementCache->m_borderRadiusCache[1].y : nullptr);
+    }
+
+    if(m_bottomRightBorderRadius.containsAlternative())
+    {
+        const auto& alternativeValue = m_bottomRightBorderRadius.getFromAlternativeValue<0>();
+
+        thisElementCache.m_borderRadiusCache[2].x = alternativeValue.m_radiusX->calculate(
+            parentElementCache ? &parentElementCache->m_borderRadiusCache[2].x : nullptr);
+
+        thisElementCache.m_borderRadiusCache[2].y = alternativeValue.m_radiusY->calculate(
+            parentElementCache ? &parentElementCache->m_borderRadiusCache[2].y : nullptr);
+    }
+
+    if(m_bottomLeftBorderRadius.containsAlternative())
+    {
+        const auto& alternativeValue = m_bottomLeftBorderRadius.getFromAlternativeValue<0>();
+
+        thisElementCache.m_borderRadiusCache[3].x = alternativeValue.m_radiusX->calculate(
+            parentElementCache ? &parentElementCache->m_borderRadiusCache[3].x : nullptr);
+
+        thisElementCache.m_borderRadiusCache[3].y = alternativeValue.m_radiusY->calculate(
+            parentElementCache ? &parentElementCache->m_borderRadiusCache[3].y : nullptr);
+    }
+
+    /*if(m_borderRadius.containsAlternative())
     {
         thisElementCache.m_borderRadius.x = m_borderRadius.getFromAlternativeValue<0>()->calculate(
             parentElementCache ? &parentElementCache->m_borderRadius.x : nullptr);
@@ -69,7 +113,7 @@ void SGCore::UI::CSSSelector::calculateCache(const UIElementCache* parentElement
 
         thisElementCache.m_borderRadius.w = m_borderRadius.getFromAlternativeValue<3>()->calculate(
             parentElementCache ? &parentElementCache->m_borderRadius.w : nullptr);
-    }
+    }*/
 }
 
 void SGCore::UI::CSSSelector::doLoad(const InterpolatedPath& path)

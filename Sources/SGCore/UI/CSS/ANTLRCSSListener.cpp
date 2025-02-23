@@ -12,6 +12,7 @@
 #include "PropertiesProcessors/CSSFlexDirectionPropertyProcessor.h"
 #include "PropertiesProcessors/CSSDisplayPropertyProcessor.h"
 #include "PropertiesProcessors/CSSBackgroundColorPropertyProcessor.h"
+#include "PropertiesProcessors/CSSBorderRadiusPropertyProcessor.h"
 
 void SGCore::UI::ANTLRCSSListener::enterSelector(css3Parser::SelectorContext* ctx)
 {
@@ -94,27 +95,36 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
         case CSSPropertyType::PT_WIDTH:
         {
             CSSPropertyProcessor<CSSPropertyType::PT_WIDTH>::processProperty(this,
-                                                                             ctx,
-                                                                             propertyName,
-                                                                             propertyStringValue);
+                ctx,
+                propertyName,
+                propertyStringValue);
 
             break;
         }
         case CSSPropertyType::PT_HEIGHT:
         {
             CSSPropertyProcessor<CSSPropertyType::PT_HEIGHT>::processProperty(this,
-                                                                              ctx,
-                                                                              propertyName,
-                                                                              propertyStringValue);
+                ctx,
+                propertyName,
+                propertyStringValue);
 
             break;
         }
         case CSSPropertyType::PT_BACKGROUND_COLOR:
         {
             CSSPropertyProcessor<CSSPropertyType::PT_BACKGROUND_COLOR>::processProperty(this,
-                                                                                        ctx,
-                                                                                        propertyName,
-                                                                                        propertyStringValue);
+                ctx,
+                propertyName,
+                propertyStringValue);
+
+            break;
+        }
+        case CSSPropertyType::PT_BORDER_RADIUS:
+        {
+            CSSPropertyProcessor<CSSPropertyType::PT_BORDER_RADIUS>::processProperty(this,
+                ctx,
+                propertyName,
+                propertyStringValue);
 
             break;
         }

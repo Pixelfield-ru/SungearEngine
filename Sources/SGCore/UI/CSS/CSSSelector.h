@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "PropertiesAlternativeValues/BorderRadiusAlternativeValue.h"
 #include "SGCore/UI/TransformTree/UIElementCache.h"
 #include "SGCore/Memory/Assets/IAsset.h"
 #include "SGCore/UI/CSS/PropertyValues/CSSPropertyValue.h"
@@ -36,7 +37,10 @@ namespace SGCore::UI
 
         CSSPropertyValue<PositionAndSizeKeyword::KW_UNSET, Ref<CSSMathNode>, Ref<CSSMathNode>> m_gap;
 
-        CSSPropertyValue<UniversalKeyword::KW_UNSET, Ref<CSSMathNode>, Ref<CSSMathNode>, Ref<CSSMathNode>, Ref<CSSMathNode>> m_borderRadius;
+        CSSPropertyValue<UniversalKeyword::KW_UNSET, BorderRadiusAlternativeValue> m_bottomLeftBorderRadius;
+        CSSPropertyValue<UniversalKeyword::KW_UNSET, BorderRadiusAlternativeValue> m_topLeftBorderRadius;
+        CSSPropertyValue<UniversalKeyword::KW_UNSET, BorderRadiusAlternativeValue> m_topRightBorderRadius;
+        CSSPropertyValue<UniversalKeyword::KW_UNSET, BorderRadiusAlternativeValue> m_bottomRightBorderRadius;
 
         CSSPropertyValue<ColorKeyword::KW_TRANSPARENT, Ref<CSSMathNode>, Ref<CSSMathNode>, Ref<CSSMathNode>, Ref<CSSMathNode>> m_backgroundColor;
 

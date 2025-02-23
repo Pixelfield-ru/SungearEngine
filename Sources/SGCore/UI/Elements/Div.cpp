@@ -29,19 +29,34 @@ void SGCore::UI::Div::doGenerateMeshBaseSelector(const UIElementCache* parentEle
 {
     m_selector->calculateCache(parentElementCache, thisElementCache);
 
-    thisElementCache.m_borderRadius.x = 30.0f;
-    thisElementCache.m_borderRadius.y = 10.0f;
-    thisElementCache.m_borderRadius.z = 20.0f;
-    thisElementCache.m_borderRadius.w = 15.0f;
+    /*thisElementCache.m_borderRadiusCache[3].m_radius.x = 40.0f;
+    thisElementCache.m_borderRadiusCache[3].m_radius.y = 30.0f;
+    thisElementCache.m_borderRadiusCache[3].m_isElliptical = true;*/
 
-    NineSlice::generate9SlicedQuad<std::uint32_t>(thisElementCache.m_borderRadius, 0, m_meshData->m_vertices, m_meshData->m_indices);
+    thisElementCache.m_borderRadiusCache[0].x = 50.0f;
+    thisElementCache.m_borderRadiusCache[0].y = 100.0f;
+
+    thisElementCache.m_borderRadiusCache[1].x = 30.0f;
+    thisElementCache.m_borderRadiusCache[1].y = 30.0f;
+
+    /*thisElementCache.m_borderRadiusCache[3].m_radius.x = 50.0f;
+    thisElementCache.m_borderRadiusCache[3].m_radius.y = 30.0f;
+    thisElementCache.m_borderRadiusCache[3].m_isElliptical = true;*/
+
+    thisElementCache.m_borderRadiusCache[2].x = 30.0f;
+    thisElementCache.m_borderRadiusCache[2].y = 30.0f;
+
+    thisElementCache.m_borderRadiusCache[3].x = 100.0f;
+    thisElementCache.m_borderRadiusCache[3].y = 100.0f;
+
+    NineSlice::generate9SlicedQuad<std::uint32_t>(thisElementCache.m_borderRadiusCache, 0, m_meshData->m_vertices, m_meshData->m_indices);
 
     m_meshData->prepare();
 }
 
 void SGCore::UI::Div::doGenerateBasicMesh() noexcept
 {
-    NineSlice::generate9SlicedQuad<std::uint32_t>({ 0, 0, 0, 0 }, 0, m_meshData->m_vertices, m_meshData->m_indices);
+    NineSlice::generate9SlicedQuad<std::uint32_t>({ }, 0, m_meshData->m_vertices, m_meshData->m_indices);
 
     m_meshData->prepare();
 }

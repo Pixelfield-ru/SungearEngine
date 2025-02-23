@@ -17,7 +17,7 @@ uniform vec4 u_meshAABB;
 uniform vec2 u_elementSize;
 
 // REQUIRED UNIFORM!!
-uniform float u_totalBorderWidth;
+uniform vec2 u_totalBorderSize;
 
 out float si;
 
@@ -33,7 +33,7 @@ void main()
 {
     si = float(sliceIndexAttribute);
 
-    vec3 finalVertexPos = calc9SliceVertexPos(positionsAttribute, sliceIndexAttribute, u_elementSize, u_totalBorderWidth);
+    vec3 finalVertexPos = calc9SliceVertexPos(positionsAttribute, sliceIndexAttribute, u_elementSize, u_totalBorderSize);
 
     vsOut.UV = UVAttribute.xy;
     vsOut.vertexPos = finalVertexPos;

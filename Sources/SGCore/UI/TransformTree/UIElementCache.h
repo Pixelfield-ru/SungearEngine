@@ -17,14 +17,15 @@ namespace SGCore::UI
         glm::vec2 m_size { };
         glm::vec4 m_backgroundColor { };
 
-        float m_totalBorderWidth = 0.0f;
+        glm::vec2 m_totalBorderSize { };
 
         // column and row gaps
         glm::vec2 m_gap { };
 
         glm::vec2 m_padding { };
 
-        glm::vec4 m_borderRadius { };
+        // bottom-left, top-left, top-right, bottom-right
+        std::array<glm::vec2, 4> m_borderRadiusCache;
 
         // ===================================== tmp values! DO NOT CHANGE EXTERNALLY!
 

@@ -19,9 +19,9 @@ SGCore::UI::UIRoot::UIRoot() noexcept
     yPaddingMathNode->m_value = 10;
 
     auto xGapMathNode = MakeRef<CSSMathNumericNode>();
-    xGapMathNode->m_value = 10;
+    xGapMathNode->m_value = 20;
     auto yGapMathNode = MakeRef<CSSMathNumericNode>();
-    yGapMathNode->m_value = 10;
+    yGapMathNode->m_value = 20;
 
     m_selector->m_padding.setWithAlternative({ xPaddingMathNode, yPaddingMathNode });
     m_selector->m_gap.setWithAlternative({ xGapMathNode, yGapMathNode });
@@ -57,14 +57,14 @@ void SGCore::UI::UIRoot::doGenerateMeshBaseSelector(const UIElementCache* parent
 {
     m_selector->calculateCache(parentElementCache, thisElementCache);
 
-    NineSlice::generate9SlicedQuad<std::uint32_t>(thisElementCache.m_borderRadius, 0, m_meshData->m_vertices, m_meshData->m_indices);
+    NineSlice::generate9SlicedQuad<std::uint32_t>(thisElementCache.m_borderRadiusCache, 0, m_meshData->m_vertices, m_meshData->m_indices);
 
     m_meshData->prepare();
 }
 
 void SGCore::UI::UIRoot::doGenerateBasicMesh() noexcept
 {
-    NineSlice::generate9SlicedQuad<std::uint32_t>({ 0, 0, 0, 0 }, 0, m_meshData->m_vertices, m_meshData->m_indices);
+    NineSlice::generate9SlicedQuad<std::uint32_t>({ }, 0, m_meshData->m_vertices, m_meshData->m_indices);
 
     m_meshData->prepare();
 }
