@@ -62,7 +62,7 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
     const std::string propertyName = ctx->property_()->getText();
     const std::string propertyStringValue = ctx->expr()->getText();
 
-    CSSPropertyType propertyType = getPropertyTypeFromName(propertyName);
+    const CSSPropertyType propertyType = getPropertyTypeFromName(propertyName);
 
     switch(propertyType)
     {

@@ -13,8 +13,6 @@ namespace SGCore::UI
     {
         Ref<CSSMathNode> m_radiusX;
         Ref<CSSMathNode> m_radiusY;
-
-        bool m_isElliptical = false;
     };
 }
 
