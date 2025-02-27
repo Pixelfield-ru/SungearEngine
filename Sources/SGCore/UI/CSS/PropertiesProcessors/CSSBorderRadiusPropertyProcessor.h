@@ -36,84 +36,110 @@ namespace SGCore::UI
             {
                 auto* knownTerm = dynamic_cast<css3Parser::KnownTermContext*>(declExpr->term(0));
 
-                if(knownTerm->calc()) // width: calc(...)
+                if(knownTerm)
                 {
-                    auto mathNode = MakeRef<CSSMathNode>();
+                    auto termValue = processKnownTerm(antlrcssListener, currentSelector, knownTerm, propertyName);
 
-                    antlrcssListener->processCalculation(knownTerm->calc(),
-                                                         propertyName,
-                                                         mathNode,
-                                                         { CSSDimensionQualifier::DQ_ANY });
-                    mathNode->resolvePriorities();
+                    if(std::holds_alternative<Ref<CSSMathNode>>(termValue))
+                    {
+                        const auto finalValue = BorderRadiusAlternativeValue {
+                            .m_radiusX = std::get<1>(termValue),
+                            .m_radiusY = std::get<1>(termValue)
+                        };
 
-                    const auto alternativeValue = BorderRadiusAlternativeValue {
-                        .m_radiusX = mathNode,
-                        .m_radiusY = mathNode
-                    };
-
-                    currentSelector->m_topLeftBorderRadius.m_value = alternativeValue;
-                    currentSelector->m_topRightBorderRadius.m_value = alternativeValue;
-                    currentSelector->m_bottomRightBorderRadius.m_value = alternativeValue;
-                    currentSelector->m_bottomLeftBorderRadius.m_value = alternativeValue;
+                        currentSelector->m_topLeftBorderRadius.m_value = finalValue;
+                        currentSelector->m_topRightBorderRadius.m_value = finalValue;
+                        currentSelector->m_bottomRightBorderRadius.m_value = finalValue;
+                        currentSelector->m_bottomLeftBorderRadius.m_value = finalValue;
+                    }
                 }
-                else if(knownTerm->number())
-                {
-                    auto mathNode = MakeRef<CSSMathNumericNode>();
-                    mathNode->m_value = std::stof(knownTerm->number()->getText());
+            }
+            else if(declExpr->term().size() == 2)
+            {
+                auto* knownTerm0 = dynamic_cast<css3Parser::KnownTermContext*>(declExpr->term(0));
+                auto* knownTerm1 = dynamic_cast<css3Parser::KnownTermContext*>(declExpr->term(1));
 
-                    const auto alternativeValue = BorderRadiusAlternativeValue {
-                        .m_radiusX = mathNode,
-                        .m_radiusY = mathNode
+                if(knownTerm0 && knownTerm1)
+                {
+                    auto termValue0 = processKnownTerm(antlrcssListener, currentSelector, knownTerm0, propertyName);
+                    auto termValue1 = processKnownTerm(antlrcssListener, currentSelector, knownTerm1, propertyName);
+
+                    if(std::holds_alternative<UniversalKeyword>(termValue0))
+                    {
+                        antlrcssListener->printBadTermInPropertyError(propertyName, 0, knownTerm0->getText(), property_default_value_str);
+                        return;
+                    }
+
+                    if(std::holds_alternative<UniversalKeyword>(termValue1))
+                    {
+                        antlrcssListener->printBadTermInPropertyError(propertyName, 1, knownTerm1->getText(), property_default_value_str);
+                        return;
+                    }
+
+                    const auto finalValue = BorderRadiusAlternativeValue {
+                        .m_radiusX = std::get<1>(termValue0),
+                        .m_radiusY = std::get<1>(termValue1)
                     };
 
-                    currentSelector->m_topLeftBorderRadius.m_value = alternativeValue;
-                    currentSelector->m_topRightBorderRadius.m_value = alternativeValue;
-                    currentSelector->m_bottomRightBorderRadius.m_value = alternativeValue;
-                    currentSelector->m_bottomLeftBorderRadius.m_value = alternativeValue;
-                }
-                else if(knownTerm->dimension())
-                {
-                    auto mathNode = MakeRef<CSSMathNumericNode>();
-
-                    const std::string dimension = knownTerm->dimension()->Dimension()->getText();
-
-                    mathNode->m_dimensionQualifier = getDimensionQualifierFromString(dimension);
-                    mathNode->m_value = std::stof(dimension);
-
-                    const auto alternativeValue = BorderRadiusAlternativeValue {
-                        .m_radiusX = mathNode,
-                        .m_radiusY = mathNode
-                    };
-
-                    currentSelector->m_topLeftBorderRadius.m_value = alternativeValue;
-                    currentSelector->m_topRightBorderRadius.m_value = alternativeValue;
-                    currentSelector->m_bottomRightBorderRadius.m_value = alternativeValue;
-                    currentSelector->m_bottomLeftBorderRadius.m_value = alternativeValue;
-                }
-                else if(knownTerm->percentage())
-                {
-                    auto mathNode = MakeRef<CSSMathNumericNode>();
-
-                    const std::string percentage = knownTerm->percentage()->Percentage()->getText();
-
-                    mathNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_PERCENT;
-                    mathNode->m_value = std::stof(percentage);
-
-                    const auto alternativeValue = BorderRadiusAlternativeValue {
-                        .m_radiusX = mathNode,
-                        .m_radiusY = mathNode
-                    };
-
-                    currentSelector->m_topLeftBorderRadius.m_value = alternativeValue;
-                    currentSelector->m_topRightBorderRadius.m_value = alternativeValue;
-                    currentSelector->m_bottomRightBorderRadius.m_value = alternativeValue;
-                    currentSelector->m_bottomLeftBorderRadius.m_value = alternativeValue;
+                    currentSelector->m_topLeftBorderRadius.m_value = finalValue;
+                    currentSelector->m_topRightBorderRadius.m_value = finalValue;
+                    currentSelector->m_bottomRightBorderRadius.m_value = finalValue;
+                    currentSelector->m_bottomLeftBorderRadius.m_value = finalValue;
                 }
             }
         }
 
     private:
+        static std::variant<UniversalKeyword, Ref<CSSMathNode>> processKnownTerm(
+            ANTLRCSSListener* antlrcssListener,
+            CSSSelector* currentSelector,
+            css3Parser::KnownTermContext* knownTerm,
+            const std::string& propertyName) noexcept
+        {
+            if(knownTerm->calc()) // width: calc(...)
+            {
+                auto mathNode = MakeRef<CSSMathNode>();
 
+                antlrcssListener->processCalculation(knownTerm->calc(),
+                                                     propertyName,
+                                                     mathNode,
+                                                     { CSSDimensionQualifier::DQ_ANY });
+                mathNode->resolvePriorities();
+
+                return { mathNode };
+            }
+            if(knownTerm->number())
+            {
+                auto mathNode = MakeRef<CSSMathNumericNode>();
+                mathNode->m_value = std::stof(knownTerm->number()->getText());
+
+                return { mathNode };
+            }
+            if(knownTerm->dimension())
+            {
+                auto mathNode = MakeRef<CSSMathNumericNode>();
+
+                const std::string dimension = knownTerm->dimension()->Dimension()->getText();
+
+                mathNode->m_dimensionQualifier = getDimensionQualifierFromString(dimension);
+                mathNode->m_value = std::stof(dimension);
+
+                return { mathNode };
+            }
+            if(knownTerm->percentage())
+            {
+                auto mathNode = MakeRef<CSSMathNumericNode>();
+
+                const std::string percentage = knownTerm->percentage()->Percentage()->getText();
+
+                mathNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_PERCENT;
+                mathNode->m_value = std::stof(percentage);
+
+                return { mathNode };
+            }
+
+            return property_default_value;
+        }
     };
 }
 
