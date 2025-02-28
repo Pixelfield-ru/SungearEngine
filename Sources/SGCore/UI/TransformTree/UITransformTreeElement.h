@@ -16,7 +16,8 @@ namespace SGCore::UI
     {
         Transform m_transform;
 
-        UIElementCache m_elementCache;
+        UIElementCache m_lastElementCache;
+        UIElementCache m_currentElementCache;
 
         std::vector<std::int64_t> m_children;
         std::int64_t m_parent = -1;

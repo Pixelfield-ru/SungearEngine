@@ -13,7 +13,7 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Main/CoreMain.h"
 
-void SGCore::UI::UIElementMesh::prepare()
+void SGCore::UI::UIElementMesh::prepare() noexcept
 {
     m_vertexArray = std::shared_ptr<IVertexArray>(CoreMain::getRenderer()->createVertexArray());
     m_vertexArray->create()->bind();
@@ -23,7 +23,7 @@ void SGCore::UI::UIElementMesh::prepare()
     m_verticesBuffer = std::shared_ptr<IVertexBuffer>(
             CoreMain::getRenderer()->createVertexBuffer()
             );
-    m_verticesBuffer->setUsage(SGGUsage::SGG_STATIC)->create()->bind()->putData(m_vertices);
+    m_verticesBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_vertices);
 
     // ============================================================ preparing positions
 
@@ -70,7 +70,24 @@ void SGCore::UI::UIElementMesh::prepare()
     // ============================================================ preparing indices
 
     m_indicesBuffer = std::shared_ptr<IIndexBuffer>(CoreMain::getRenderer()->createIndexBuffer());
-    m_indicesBuffer->setUsage(SGGUsage::SGG_STATIC)->create()->bind()->putData(m_indices);
+    m_indicesBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_indices);
+}
+
+void SGCore::UI::UIElementMesh::update() noexcept
+{
+    m_vertexArray->bind();
+
+    if(m_verticesBuffer)
+    {
+        m_verticesBuffer->bind();
+        m_verticesBuffer->subData(m_vertices, 0);
+    }
+
+    if(m_indicesBuffer)
+    {
+        m_indicesBuffer->bind();
+        m_indicesBuffer->subData(m_indices, 0);
+    }
 }
 
 SGCore::Ref<SGCore::IVertexArray> SGCore::UI::UIElementMesh::getVertexArray() const noexcept

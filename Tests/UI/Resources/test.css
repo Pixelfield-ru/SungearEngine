@@ -24,7 +24,7 @@
     height: 100px;
     background-color: rgb(255 0 100 / 255);
 
-    border-radius: 20% 10% 50% 50px;
+    border-radius: 50% 10px 20px 50px;
 }
 
 .window-body, .class1 {

@@ -24,7 +24,8 @@ namespace SGCore::UI
     {
         virtual ~UIElementMesh() noexcept = default;
 
-        virtual void prepare();
+        virtual void prepare() noexcept;
+        virtual void update() noexcept;
 
         AABB<> m_aabb;
 

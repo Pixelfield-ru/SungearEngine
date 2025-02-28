@@ -58,13 +58,9 @@ void SGCore::UI::UIRoot::doGenerateMeshBaseSelector(const UIElementCache* parent
     m_selector->calculateCache(parentElementCache, thisElementCache);
 
     NineSlice::generate9SlicedQuad<std::uint32_t>(thisElementCache.m_borderRadiusCache, 0, m_meshData->m_vertices, m_meshData->m_indices);
-
-    m_meshData->prepare();
 }
 
 void SGCore::UI::UIRoot::doGenerateBasicMesh() noexcept
 {
     NineSlice::generate9SlicedQuad<std::uint32_t>({ }, 0, m_meshData->m_vertices, m_meshData->m_indices);
-
-    m_meshData->prepare();
 }

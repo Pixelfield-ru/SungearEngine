@@ -68,7 +68,9 @@ std::int64_t SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::
     }
 
     auto& currentTransformNode = uiComponent.m_transformTree.m_elements[currentUITransformNodeIdx];
-    auto& currentElementCache = currentTransformNode.m_elementCache;
+    auto& currentElementCache = currentTransformNode.m_currentElementCache;
+
+    currentTransformNode.m_lastElementCache = currentElementCache;
 
     UI::UITransformTreeElement* parentTransformNode { };
     if(parentUITreeNodeIdx != -1)
@@ -77,12 +79,15 @@ std::int64_t SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::
     }
 
     const Transform* parentTransform = parentTransformNode ? &parentTransformNode->m_transform : nullptr;
-    UI::UIElementCache* parentElementCache = parentTransformNode ? &parentTransformNode->m_elementCache : nullptr;
+    UI::UIElementCache* parentElementCache = parentTransformNode ? &parentTransformNode->m_currentElementCache : nullptr;
 
     // =================================================================== calculating transform
 
-    currentUIElement->calculateLayout(parentElementCache, currentTransformNode.m_elementCache,
-                                      parentTransform, currentTransformNode.m_transform);
+    currentUIElement->calculateLayout(parentElementCache,
+                                      currentTransformNode.m_lastElementCache,
+                                      currentTransformNode.m_currentElementCache,
+                                      parentTransform,
+                                      currentTransformNode.m_transform);
 
     if(parentTransformNode)
     {
@@ -112,7 +117,7 @@ std::int64_t SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::
 
         uiElementShader->useInteger("SGPP_CurrentLayerIndex", defaultPPLayer->getIndex());
 
-        currentUIElement->useUniforms(currentTransformNode.m_elementCache);
+        currentUIElement->useUniforms(currentTransformNode.m_currentElementCache);
 
         CoreMain::getRenderer()->renderArray(
                 currentUIElement->m_meshData->getVertexArray(),
@@ -126,10 +131,10 @@ std::int64_t SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::
 
     // =================================================================== reset some cache data
 
-    currentTransformNode.m_elementCache.m_freeSpaceSize = currentTransformNode.m_elementCache.m_size;
-    currentTransformNode.m_elementCache.m_curLocalPositionForElements = glm::vec3 { currentTransformNode.m_elementCache.m_size, 0.0f } / -2.0;
-    currentTransformNode.m_elementCache.m_curLocalPositionForElements.x += currentElementCache.m_padding.x;
-    currentTransformNode.m_elementCache.m_curLocalPositionForElements.y += currentElementCache.m_padding.y;
+    currentTransformNode.m_currentElementCache.m_freeSpaceSize = currentTransformNode.m_currentElementCache.m_size;
+    currentTransformNode.m_currentElementCache.m_curLocalPositionForElements = glm::vec3 { currentTransformNode.m_currentElementCache.m_size, 0.0f } / -2.0;
+    currentTransformNode.m_currentElementCache.m_curLocalPositionForElements.x += currentElementCache.m_padding.x;
+    currentTransformNode.m_currentElementCache.m_curLocalPositionForElements.y += currentElementCache.m_padding.y;
 
     for(const auto& child : currentUIElement->m_children)
     {
@@ -155,8 +160,8 @@ void SGCore::UIRenderPass::calculateElementLayout(const Ref<UI::UIElement>& pare
                                                   UI::UITransformTreeElement& parentElementTransform,
                                                   UI::UITransformTreeElement& currentElementTransform) noexcept
 {
-    auto& parentElementCache = parentElementTransform.m_elementCache;
-    auto& currentElementCache = currentElementTransform.m_elementCache;
+    auto& parentElementCache = parentElementTransform.m_currentElementCache;
+    auto& currentElementCache = currentElementTransform.m_currentElementCache;
 
     auto parentSelector = parentUIElement->m_selector;
 

@@ -43,16 +43,35 @@ void SGCore::UI::UIElement::useUniforms(UIElementCache& thisElementCache) const 
 }
 
 void SGCore::UI::UIElement::calculateLayout(const UIElementCache* parentElementCache,
-                                            UIElementCache& thisElementCache, const Transform* parentTransform,
+                                            const UIElementCache& thisLastElementCache,
+                                            UIElementCache& thisElementCache,
+                                            const Transform* parentTransform,
                                             Transform& ownTransform) noexcept
 {
+    const bool isMeshGenerated = m_meshData != nullptr;
+
     checkForMeshGenerating(parentElementCache, thisElementCache);
 
     doCalculateLayout(parentElementCache, thisElementCache, parentTransform, ownTransform);
 
-    // TODO: maybe to do this if mesh is dynamic (for example: uielement has selector with border-radius with percentage value)
-    /*m_meshData->m_vertices.clear();
+    // ======================================== next are the conditions under which the mesh will be regenerated
+
+    if(!isMeshGenerated) return;
+
+    if(thisLastElementCache.m_borderRadiusCache[0] != thisElementCache.m_borderRadiusCache[0] ||
+       thisLastElementCache.m_borderRadiusCache[1] != thisElementCache.m_borderRadiusCache[1] ||
+       thisLastElementCache.m_borderRadiusCache[2] != thisElementCache.m_borderRadiusCache[2] ||
+       thisLastElementCache.m_borderRadiusCache[3] != thisElementCache.m_borderRadiusCache[3])
+    {
+        regenerateMesh(parentElementCache, thisElementCache);
+    }
+}
+
+void SGCore::UI::UIElement::regenerateMesh(const UIElementCache* parentElementCache,
+                                           UIElementCache& thisElementCache) noexcept
+{
     m_meshData->m_indices.clear();
+    m_meshData->m_vertices.clear();
 
     if(m_selector)
     {
@@ -61,7 +80,14 @@ void SGCore::UI::UIElement::calculateLayout(const UIElementCache* parentElementC
     else
     {
         doGenerateBasicMesh();
-    }*/
+    }
+
+    m_meshData->update();
+
+    if(m_meshData)
+    {
+        m_meshData->m_aabb.calculate(m_meshData->m_vertices);
+    }
 }
 
 void SGCore::UI::UIElement::checkForMeshGenerating(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept
@@ -78,6 +104,8 @@ void SGCore::UI::UIElement::checkForMeshGenerating(const UIElementCache* parentE
         {
             doGenerateBasicMesh();
         }
+
+        m_meshData->prepare();
 
         if(m_meshData)
         {

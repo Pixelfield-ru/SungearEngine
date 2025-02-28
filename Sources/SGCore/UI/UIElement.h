@@ -40,12 +40,18 @@ namespace SGCore::UI
          * @param parentTransform May be nullptr.
          * @param ownTransform
          */
-        void calculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,
-                             const Transform* parentTransform, Transform& ownTransform) noexcept;
+        void calculateLayout(const UIElementCache* parentElementCache,
+                             const UIElementCache& thisLastElementCache,
+                             UIElementCache& thisElementCache,
+                             const Transform* parentTransform,
+                             Transform& ownTransform) noexcept;
 
         [[nodiscard]] UIElementType getType() const noexcept;
 
         virtual void useUniforms(UIElementCache& thisElementCache) const noexcept;
+
+        void regenerateMesh(const UIElementCache* parentElementCache,
+                            UIElementCache& thisElementCache) noexcept;
 
     protected:
         virtual void doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,
