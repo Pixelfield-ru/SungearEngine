@@ -196,7 +196,7 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
 
                     continue;
                 }
-                else if(asExpr->calcOperand(i)->calcValue()->number())
+                if(asExpr->calcOperand(i)->calcValue()->number())
                 {
                     auto newNumberNode = MakeRef<CSSMathNumericNode>();
 
@@ -207,7 +207,7 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
 
                     continue;
                 }
-                else if(asExpr->calcOperand(i)->calcValue()->dimension())
+                if(asExpr->calcOperand(i)->calcValue()->dimension())
                 {
                     auto newNumberNode = MakeRef<CSSMathNumericNode>();
 
@@ -235,7 +235,7 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
 
                     continue;
                 }
-                else if(asExpr->calcOperand(i)->calcValue()->unknownDimension())
+                if(asExpr->calcOperand(i)->calcValue()->unknownDimension())
                 {
                     auto newNumberNode = MakeRef<CSSMathNumericNode>();
 
@@ -258,7 +258,7 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
 
                     continue;
                 }
-                else if(asExpr->calcOperand(i)->calcValue()->percentage())
+                if(asExpr->calcOperand(i)->calcValue()->percentage())
                 {
                     auto newNumberNode = MakeRef<CSSMathNumericNode>();
 
@@ -282,7 +282,7 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
 
                     continue;
                 }
-                else if(asExpr->calcOperand(i)->calcValue()->calc())
+                if(asExpr->calcOperand(i)->calcValue()->calc())
                 {
                     auto newParentMathNode = MakeRef<CSSMathNode>();
 
@@ -331,6 +331,34 @@ void SGCore::UI::ANTLRCSSListener::printInvalidCountOfTermsInPropertyError(const
           Utils::toUTF8(m_toCSSFile->getPath().resolved().u16string()));
 }
 
+void SGCore::UI::ANTLRCSSListener::printInvalidCountOfOperatorsInPropertyError(const std::string& propertyName,
+                                                                               const std::string& defaultSetKeyword,
+                                                                               const size_t& currentOperatorsCount,
+                                                                               const std::int64_t& validOperatorsMinCount,
+                                                                               const std::int64_t& validOperatorsMaxCount) const noexcept
+{
+    std::int64_t finalValidOperatorsMaxCount = validOperatorsMaxCount;
+
+    if(finalValidOperatorsMaxCount < 0)
+    {
+        finalValidOperatorsMaxCount = validOperatorsMinCount;
+    }
+
+    LOG_E(SGCORE_TAG,
+          "ANTLRCSSListener can not process property '{}' correctly: property has invalid count of operators in section 'value'. "
+          "Property has been set to the default value. "
+          "Count of operators: '{}'. "
+          "Valid count of operators: (min: '{}', max: '{}'). "
+          "Set keyword (default): '{}'.\n"
+          "In CSS file: {}",
+          propertyName,
+          currentOperatorsCount,
+          validOperatorsMinCount,
+          finalValidOperatorsMaxCount,
+          defaultSetKeyword,
+          Utils::toUTF8(m_toCSSFile->getPath().resolved().u16string()));
+}
+
 void
 SGCore::UI::ANTLRCSSListener::printBadTermInPropertyError(const std::string& propertyName,
                                                           const int64_t& termIndex,
@@ -339,12 +367,31 @@ SGCore::UI::ANTLRCSSListener::printBadTermInPropertyError(const std::string& pro
 {
     LOG_E(SGCORE_TAG,
           "ANTLRCSSListener can not process property '{}' correctly: property has invalid term in section 'value'. "
-          "Property has been set to the default value. Term index: '{}'. Term value: '{}'. "
+          "Property has been set to the default value. "
+          "Term index: '{}'. Term value: '{}'. "
           "Set keyword (default): '{}'.\n"
           "In CSS file: {}",
           propertyName,
           termIndex,
           termValue,
+          defaultSetKeyword,
+          Utils::toUTF8(m_toCSSFile->getPath().resolved().u16string()));
+}
+
+void SGCore::UI::ANTLRCSSListener::printBadOperatorInPropertyError(const std::string& propertyName,
+                                                                   const std::int64_t& operatorIndex,
+                                                                   const std::string& operatorValue,
+                                                                   const std::string& defaultSetKeyword) const noexcept
+{
+    LOG_E(SGCORE_TAG,
+          "ANTLRCSSListener can not process property '{}' correctly: property has invalid operator in section 'value'. "
+          "Property has been set to the default value. "
+          "Operator index: '{}'. Operator value: '{}'. "
+          "Set keyword (default): '{}'.\n"
+          "In CSS file: {}",
+          propertyName,
+          operatorIndex,
+          operatorValue,
           defaultSetKeyword,
           Utils::toUTF8(m_toCSSFile->getPath().resolved().u16string()));
 }
@@ -389,7 +436,7 @@ void SGCore::UI::ANTLRCSSListener::printUnsupportedQualifierInCurrentContextErro
 
     LOG_E(SGCORE_TAG,
           "ANTLRCSSListener can not process property '{}' correctly: value of property has unsupported dimension qualifier in current context (context: '{}'). "
-          "Property has been set to the default value (numeric). "
+          "Property has been set to the default value. "
           "Current dimension: '{}'.\n"
           "Supported dimensions in current context: '{}'\n"
           "In CSS file: {}",

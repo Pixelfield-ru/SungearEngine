@@ -50,10 +50,21 @@ namespace SGCore::UI
                                                      const std::int64_t& validTermsMinCount,
                                                      const std::int64_t& validTermsMaxCount = -1) const noexcept;
 
+        void printInvalidCountOfOperatorsInPropertyError(const std::string& propertyName,
+                                                         const std::string& defaultSetKeyword,
+                                                         const size_t& currentOperatorsCount,
+                                                         const std::int64_t& validOperatorsMinCount,
+                                                         const std::int64_t& validOperatorsMaxCount = -1) const noexcept;
+
         void printBadTermInPropertyError(const std::string& propertyName,
                                          const std::int64_t& termIndex,
                                          const std::string& termValue,
                                          const std::string& defaultSetKeyword) const noexcept;
+
+        void printBadOperatorInPropertyError(const std::string& propertyName,
+                                             const std::int64_t& operatorIndex,
+                                             const std::string& operatorValue,
+                                             const std::string& defaultSetKeyword) const noexcept;
 
         void printUnknownKeywordUsedError(const std::string& propertyName,
                                           const std::string& currentKeyword,

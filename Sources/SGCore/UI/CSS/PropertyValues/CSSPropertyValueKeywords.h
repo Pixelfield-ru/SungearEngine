@@ -353,6 +353,10 @@ namespace SGCore::UI
         {
             return getFlexboxKeywordFromStringValue(value);
         }
+        else if constexpr(std::is_same_v<KeywordEnumT, UniversalKeyword>)
+        {
+            return getUniversalKeywordFromStringValue<UniversalKeyword>(value);
+        }
         else
         {
             static_assert(always_false<KeywordEnumT>::value, "Unknown keyword enum type.");

@@ -49,6 +49,19 @@ void SGCore::UI::UIElement::calculateLayout(const UIElementCache* parentElementC
     checkForMeshGenerating(parentElementCache, thisElementCache);
 
     doCalculateLayout(parentElementCache, thisElementCache, parentTransform, ownTransform);
+
+    // TODO: maybe to do this if mesh is dynamic (for example: uielement has selector with border-radius with percentage value)
+    /*m_meshData->m_vertices.clear();
+    m_meshData->m_indices.clear();
+
+    if(m_selector)
+    {
+        doGenerateMeshBaseSelector(parentElementCache, thisElementCache);
+    }
+    else
+    {
+        doGenerateBasicMesh();
+    }*/
 }
 
 void SGCore::UI::UIElement::checkForMeshGenerating(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept
