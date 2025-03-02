@@ -5,6 +5,7 @@
 #ifndef CSSROUNDINGPROPERTYPROCESSOR_H
 #define CSSROUNDINGPROPERTYPROCESSOR_H
 
+#include "CSSPropertyProcessorCommon.h"
 #include "SGCore/UI/CSS/CSSPropertyType.h"
 
 #include "SGCore/Utils/TypeTraits.h"
@@ -48,7 +49,7 @@ namespace SGCore::UI
                     return;
                 }
 
-                auto termValue = processKnownTerm(antlrcssListener, currentSelector, knownTerm, 0, propertyName);
+                auto termValue = CSSPropertyProcessorCommon::processKnownTerm<UniversalKeyword>(antlrcssListener, currentSelector, knownTerm, 0, propertyName);
 
                 if(std::holds_alternative<Ref<CSSMathNode>>(termValue))
                 {
@@ -61,6 +62,10 @@ namespace SGCore::UI
                     currentSelector->m_topRightBorderRadius.m_value = finalValue;
                     currentSelector->m_bottomRightBorderRadius.m_value = finalValue;
                     currentSelector->m_bottomLeftBorderRadius.m_value = finalValue;
+                }
+                else
+                {
+                    // todo: keyword support
                 }
             }
             else if(declExpr->term().size() >= 2 && declExpr->operator_().size() == 0)
@@ -78,7 +83,7 @@ namespace SGCore::UI
                         return;
                     }
 
-                    auto termValue = processKnownTerm(antlrcssListener, currentSelector, knownTerm, i, propertyName);
+                    auto termValue = CSSPropertyProcessorCommon::processKnownTerm<UniversalKeyword>(antlrcssListener, currentSelector, knownTerm, i, propertyName);
 
                     if(std::holds_alternative<UniversalKeyword>(termValue))
                     {
@@ -150,7 +155,7 @@ namespace SGCore::UI
                         return;
                     }
 
-                    const auto termValue = processKnownTerm(antlrcssListener, currentSelector, knownTerm, i, propertyName);
+                    const auto termValue = CSSPropertyProcessorCommon::processKnownTerm<UniversalKeyword>(antlrcssListener, currentSelector, knownTerm, i, propertyName);
 
                     // do not allow some keywords in this context
                     if(std::holds_alternative<UniversalKeyword>(termValue))
@@ -263,58 +268,6 @@ namespace SGCore::UI
                 }
                 default: return;
             }
-        }
-
-        static term_value_t processKnownTerm(
-            ANTLRCSSListener* antlrcssListener,
-            CSSSelector* currentSelector,
-            css3Parser::KnownTermContext* knownTerm,
-            const size_t& termIndex,
-            const std::string& propertyName) noexcept
-        {
-            if(knownTerm->calc()) // width: calc(...)
-            {
-                auto mathNode = MakeRef<CSSMathNode>();
-
-                antlrcssListener->processCalculation(knownTerm->calc(),
-                                                     propertyName,
-                                                     mathNode,
-                                                     { CSSDimensionQualifier::DQ_ANY });
-                mathNode->resolvePriorities();
-
-                return { mathNode };
-            }
-            if(knownTerm->number())
-            {
-                auto mathNode = MakeRef<CSSMathNumericNode>();
-                mathNode->m_value = std::stof(knownTerm->number()->getText());
-
-                return { mathNode };
-            }
-            if(knownTerm->dimension())
-            {
-                auto mathNode = MakeRef<CSSMathNumericNode>();
-
-                const std::string dimension = knownTerm->dimension()->Dimension()->getText();
-
-                mathNode->m_dimensionQualifier = getDimensionQualifierFromString(dimension);
-                mathNode->m_value = std::stof(dimension);
-
-                return { mathNode };
-            }
-            if(knownTerm->percentage())
-            {
-                auto mathNode = MakeRef<CSSMathNumericNode>();
-
-                const std::string percentage = knownTerm->percentage()->Percentage()->getText();
-
-                mathNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_PERCENT;
-                mathNode->m_value = std::stof(percentage);
-
-                return { mathNode };
-            }
-
-            return getKeywordFromStringValue<UniversalKeyword>(knownTerm->getText());
         }
     };
 }

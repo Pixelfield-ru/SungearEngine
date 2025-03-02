@@ -13,6 +13,7 @@
     width: 20%;
     height: 20%;
     background-color: rgb(0 0 100 / 100%);
+    gap: 10%;
 
     border-radius: 50px calc(50px) 10px 10px;
 }
@@ -20,11 +21,11 @@
 .window-header-test {
     display: flex;
     flex-direction: row;
-    width: 50%;
-    height: 100px;
+    width: 25%;
+    height: 50%;
     background-color: rgb(255 0 100 / 255);
 
-    border-radius: 50% 10px 20px 50px;
+    border-radius: 10px;
 }
 
 .window-body, .class1 {

@@ -13,6 +13,7 @@
 #include "PropertiesProcessors/CSSDisplayPropertyProcessor.h"
 #include "PropertiesProcessors/CSSBackgroundColorPropertyProcessor.h"
 #include "PropertiesProcessors/CSSBorderRadiusPropertyProcessor.h"
+#include "PropertiesProcessors/CSSGapPropertyProcessor.h"
 
 void SGCore::UI::ANTLRCSSListener::enterSelector(css3Parser::SelectorContext* ctx)
 {
@@ -88,7 +89,15 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
         case CSSPropertyType::PT_JUSTIFY_CONTENT:break;
         case CSSPropertyType::PT_ALIGN_ITEMS:break;
         case CSSPropertyType::PT_ALIGN_CONTENT:break;
-        case CSSPropertyType::PT_GAP:break;
+        case CSSPropertyType::PT_GAP:
+        {
+            CSSPropertyProcessor<CSSPropertyType::PT_GAP>::processProperty(this,
+                            ctx,
+                            propertyName,
+                            propertyStringValue);
+
+            break;
+        }
         case CSSPropertyType::PT_ORDER:break;
         case CSSPropertyType::PT_FLEX_GROW:break;
         case CSSPropertyType::PT_FLEX_SHRINK:break;

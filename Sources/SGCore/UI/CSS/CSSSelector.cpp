@@ -22,11 +22,9 @@ void SGCore::UI::CSSSelector::calculateCache(const UIElementCache* parentElement
 
     if(m_gap.containsAlternative())
     {
-        thisElementCache.m_gap.x = m_gap.getFromAlternativeValue<0>()->calculate(
-            parentElementCache ? &parentElementCache->m_gap.x : nullptr);
+        thisElementCache.m_gap.x = m_gap.getFromAlternativeValue<0>()->calculate(&thisElementCache.m_size.x);
 
-        thisElementCache.m_gap.y = m_gap.getFromAlternativeValue<1>()->calculate(
-            parentElementCache ? &parentElementCache->m_gap.y : nullptr);
+        thisElementCache.m_gap.y = m_gap.getFromAlternativeValue<1>()->calculate(&thisElementCache.m_size.y);
     }
 
     if(m_width.containsAlternative())

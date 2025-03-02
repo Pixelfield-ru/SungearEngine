@@ -24,6 +24,7 @@ namespace SGCore::UI
     {
         template<CSSPropertyType>
         friend struct CSSPropertyProcessor;
+        friend struct CSSPropertyProcessorCommon;
 
         CSSFile* m_toCSSFile { };
 

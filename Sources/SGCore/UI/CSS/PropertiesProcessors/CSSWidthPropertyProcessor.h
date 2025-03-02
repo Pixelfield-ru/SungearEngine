@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_CSSWIDTHPROPERTYPROCESSOR_H
 #define SUNGEARENGINE_CSSWIDTHPROPERTYPROCESSOR_H
 
-#include "CSSPropertyProcessor.h"
-
 namespace SGCore::UI
 {
     template<>
