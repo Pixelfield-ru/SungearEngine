@@ -15,6 +15,7 @@ namespace SGCore::UI
     struct UIElementCache
     {
         glm::vec2 m_size { };
+        glm::vec2 m_finalSize { };
         glm::vec4 m_backgroundColor { };
 
         glm::vec2 m_totalBorderSize { };
@@ -34,10 +35,11 @@ namespace SGCore::UI
 
         // used to place children elements in current element considering wrapping, gaps and more
         glm::vec3 m_curLocalPositionForElements { };
-        // free space inside the current element, which is left for children elements
-        glm::vec2 m_freeSpaceSize { };
 
         glm::vec2 m_lastRowSize { };
+
+        /// used if nowrap to fit parent (this) element
+        glm::vec2 m_childrenElementsScale { 1.0, 1.0 };
     };
 }
 

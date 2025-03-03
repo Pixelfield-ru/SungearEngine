@@ -21,7 +21,7 @@ void SGCore::UI::UIElement::useUniforms(UIElementCache& thisElementCache) const 
         m_meshData->m_aabb.m_max.y,
     });
 
-    m_shader->useVectorf("u_elementSize", elementCache.m_size);
+    m_shader->useVectorf("u_elementSize", elementCache.m_finalSize);
 
     m_shader->useVectorf("u_backgroundColor", elementCache.m_backgroundColor);
 

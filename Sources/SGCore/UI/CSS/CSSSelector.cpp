@@ -29,12 +29,16 @@ void SGCore::UI::CSSSelector::calculateCache(const UIElementCache* parentElement
     {
         thisElementCache.m_size.x = m_width.getFromAlternativeValue<0>()->calculate(
             parentElementCache ? &parentElementCache->m_size.x : nullptr);
+
+        thisElementCache.m_finalSize.x = thisElementCache.m_size.x;
     }
 
     if(m_height.containsAlternative())
     {
         thisElementCache.m_size.y = m_height.getFromAlternativeValue<0>()->calculate(
             parentElementCache ? &parentElementCache->m_size.y : nullptr);
+
+        thisElementCache.m_finalSize.y = thisElementCache.m_size.y;
     }
 
     if(m_backgroundColor.containsAlternative())

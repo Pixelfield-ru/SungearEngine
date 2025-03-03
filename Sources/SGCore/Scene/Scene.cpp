@@ -22,6 +22,7 @@
 #include "SGCore/Animation/MotionPlannersResolver.h"
 #include "SGCore/Serde/Serde.h"
 #include "SGCore/Serde/StandardSerdeSpecs.h"
+#include "SGCore/UI/UILayoutCalculator.h"
 
 SGCore::Scene::Scene()
 {
@@ -94,6 +95,11 @@ void SGCore::Scene::createDefaultSystems()
 
     auto motionPlannersResolver = MakeRef<MotionPlannersResolver>();
     addSystem(motionPlannersResolver);
+
+    // ui layout calculator =================================
+
+    auto uiLayoutCalculator = MakeRef<UI::UILayoutCalculator>();
+    addSystem(uiLayoutCalculator);
 }
 
 // ----------------

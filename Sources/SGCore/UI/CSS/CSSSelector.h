@@ -27,8 +27,9 @@ namespace SGCore::UI
         friend struct ANTLRCSSListener;
         friend struct CSSFile;
 
-        FlexboxKeyword m_flexDirection = FlexboxKeyword::KW_ROW;
         DisplayKeyword m_display = DisplayKeyword::KW_FLEX;
+        FlexboxKeyword m_flexDirection = FlexboxKeyword::KW_ROW;
+        FlexboxKeyword m_flexWrap = FlexboxKeyword::KW_NOWRAP;
 
         CSSPropertyValue<PositionAndSizeKeyword::KW_AUTO, Ref<CSSMathNode>> m_width;
         CSSPropertyValue<PositionAndSizeKeyword::KW_AUTO, Ref<CSSMathNode>> m_height;
