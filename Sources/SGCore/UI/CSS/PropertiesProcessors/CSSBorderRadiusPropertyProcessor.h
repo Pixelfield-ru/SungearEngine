@@ -95,7 +95,7 @@ namespace SGCore::UI
                     termsValues.push_back(termValue);
                 }
 
-                expandBordersRadiusVector(termsValues.size(), termsValues);
+                expandBordersRadiusVector(termsValues);
 
                 const auto finalValue0 = BorderRadiusAlternativeValue {
                     .m_radiusX = std::get<1>(termsValues[0]),
@@ -213,8 +213,8 @@ namespace SGCore::UI
 
                 // here all terms values contains math nodes =================================
 
-                expandBordersRadiusVector(leftTermsValues.size(), leftTermsValues);
-                expandBordersRadiusVector(rightTermsValues.size(), rightTermsValues);
+                expandBordersRadiusVector(leftTermsValues);
+                expandBordersRadiusVector(rightTermsValues);
 
                 const auto finalValue0 = BorderRadiusAlternativeValue {
                     .m_radiusX = std::get<1>(leftTermsValues[0]),
@@ -244,7 +244,7 @@ namespace SGCore::UI
         }
 
     private:
-        static void expandBordersRadiusVector(std::int8_t originalSize, std::vector<term_value_t>& outputVec) noexcept
+        static void expandBordersRadiusVector(std::vector<term_value_t>& outputVec) noexcept
         {
             switch(outputVec.size())
             {

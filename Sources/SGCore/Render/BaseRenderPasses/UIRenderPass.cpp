@@ -133,8 +133,8 @@ std::int64_t SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::
 
     currentTransformNode.m_currentElementCache.m_freeSpaceSize = currentTransformNode.m_currentElementCache.m_size;
     currentTransformNode.m_currentElementCache.m_curLocalPositionForElements = glm::vec3 { currentTransformNode.m_currentElementCache.m_size, 0.0f } / -2.0;
-    currentTransformNode.m_currentElementCache.m_curLocalPositionForElements.x += currentElementCache.m_padding.x;
-    currentTransformNode.m_currentElementCache.m_curLocalPositionForElements.y += currentElementCache.m_padding.y;
+    currentTransformNode.m_currentElementCache.m_curLocalPositionForElements.x += currentElementCache.m_leftPadding;
+    currentTransformNode.m_currentElementCache.m_curLocalPositionForElements.y += currentElementCache.m_topPadding;
 
     for(const auto& child : currentUIElement->m_children)
     {
@@ -169,15 +169,17 @@ void SGCore::UIRenderPass::calculateElementLayout(const Ref<UI::UIElement>& pare
 
     if(parentSelector->m_display == UI::DisplayKeyword::KW_FLEX)
     {
+        // moving cursor to a new line if current element is bigger than (containerSize.x / 2 - rightPadding)
+        if(parentElementCache.m_curLocalPositionForElements.x + currentElementCache.m_size.x > parentElementCache.m_size.x / 2.0f - parentElementCache.m_rightPadding)
+        {
+            parentElementCache.m_curLocalPositionForElements.x = parentElementCache.m_size.x / -2.0f + parentElementCache.m_leftPadding;
+            parentElementCache.m_curLocalPositionForElements.y += parentElementCache.m_lastRowSize.y + parentElementCache.m_gap.y;
+            parentElementCache.m_lastRowSize.y = 0.0f;
+        }
+
         if(currentElementCache.m_size.y > parentElementCache.m_lastRowSize.y)
         {
             parentElementCache.m_lastRowSize.y = currentElementCache.m_size.y;
-        }
-
-        if(parentElementCache.m_curLocalPositionForElements.x + currentElementCache.m_size.x > parentElementCache.m_size.x / 2.0f - parentElementCache.m_padding.x)
-        {
-            parentElementCache.m_curLocalPositionForElements.x = parentElementCache.m_size.x / -2.0f + parentElementCache.m_padding.x;
-            parentElementCache.m_curLocalPositionForElements.y += currentElementCache.m_size.y + parentElementCache.m_gap.y;
         }
 
         glm::vec3 currentElementPos = parentElementCache.m_curLocalPositionForElements;

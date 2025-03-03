@@ -25,6 +25,7 @@ namespace SGCore::UI
         PT_HEIGHT,
         PT_BACKGROUND_COLOR,
         PT_BORDER_RADIUS,
+        PT_PADDING,
 
         PT_UNKNOWN
     };

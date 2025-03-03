@@ -13,17 +13,15 @@ void SGCore::UI::CSSSelector::calculateCache(const UIElementCache* parentElement
 {
     if(m_padding.containsAlternative())
     {
-        thisElementCache.m_padding.x = m_padding.getFromAlternativeValue<0>()->calculate(
-            parentElementCache ? &parentElementCache->m_padding.x : nullptr);
-
-        thisElementCache.m_padding.y = m_padding.getFromAlternativeValue<1>()->calculate(
-            parentElementCache ? &parentElementCache->m_padding.y : nullptr);
+        thisElementCache.m_topPadding = m_padding.getFromAlternativeValue<0>()->calculate(&thisElementCache.m_size.y);
+        thisElementCache.m_rightPadding = m_padding.getFromAlternativeValue<1>()->calculate(&thisElementCache.m_size.x);
+        thisElementCache.m_bottomPadding = m_padding.getFromAlternativeValue<2>()->calculate(&thisElementCache.m_size.y);
+        thisElementCache.m_leftPadding = m_padding.getFromAlternativeValue<3>()->calculate(&thisElementCache.m_size.x);
     }
 
     if(m_gap.containsAlternative())
     {
         thisElementCache.m_gap.x = m_gap.getFromAlternativeValue<0>()->calculate(&thisElementCache.m_size.x);
-
         thisElementCache.m_gap.y = m_gap.getFromAlternativeValue<1>()->calculate(&thisElementCache.m_size.y);
     }
 
@@ -89,21 +87,6 @@ void SGCore::UI::CSSSelector::calculateCache(const UIElementCache* parentElement
 
         thisElementCache.m_borderRadiusCache[3].y = alternativeValue.m_radiusY->calculate(&thisElementCache.m_size.y);
     }
-
-    /*if(m_borderRadius.containsAlternative())
-    {
-        thisElementCache.m_borderRadius.x = m_borderRadius.getFromAlternativeValue<0>()->calculate(
-            parentElementCache ? &parentElementCache->m_borderRadius.x : nullptr);
-
-        thisElementCache.m_borderRadius.y = m_borderRadius.getFromAlternativeValue<1>()->calculate(
-            parentElementCache ? &parentElementCache->m_borderRadius.y : nullptr);
-
-        thisElementCache.m_borderRadius.z = m_borderRadius.getFromAlternativeValue<2>()->calculate(
-            parentElementCache ? &parentElementCache->m_borderRadius.z : nullptr);
-
-        thisElementCache.m_borderRadius.w = m_borderRadius.getFromAlternativeValue<3>()->calculate(
-            parentElementCache ? &parentElementCache->m_borderRadius.w : nullptr);
-    }*/
 }
 
 void SGCore::UI::CSSSelector::doLoad(const InterpolatedPath& path)

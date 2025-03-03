@@ -62,6 +62,10 @@ SGCore::UI::CSSPropertyType SGCore::UI::getPropertyTypeFromName(const std::strin
     {
         return CSSPropertyType::PT_BORDER_RADIUS;
     }
+    if(propertyName == "padding")
+    {
+        return CSSPropertyType::PT_PADDING;
+    }
 
     return CSSPropertyType::PT_UNKNOWN;
 }

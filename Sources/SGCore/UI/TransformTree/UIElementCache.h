@@ -19,12 +19,15 @@ namespace SGCore::UI
 
         glm::vec2 m_totalBorderSize { };
 
-        // column and row gaps
+        /// column and row gaps
         glm::vec2 m_gap { };
 
-        glm::vec2 m_padding { };
+        float m_topPadding = 0.0f;
+        float m_rightPadding = 0.0f;
+        float m_bottomPadding = 0.0f;
+        float m_leftPadding = 0.0f;
 
-        // bottom-left, top-left, top-right, bottom-right
+        /// bottom-left, top-left, top-right, bottom-right
         std::array<glm::vec2, 4> m_borderRadiusCache;
 
         // ===================================== tmp values! DO NOT CHANGE EXTERNALLY!
