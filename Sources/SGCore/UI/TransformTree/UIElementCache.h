@@ -14,7 +14,9 @@ namespace SGCore::UI
      */
     struct UIElementCache
     {
-        glm::vec2 m_size { };
+        /// basic size of element
+        glm::vec2 m_basicSize { };
+        /// final size of element. this size can differ from basic size because element can be auto-resized
         glm::vec2 m_finalSize { };
         glm::vec4 m_backgroundColor { };
 

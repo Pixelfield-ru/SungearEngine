@@ -13,32 +13,52 @@ void SGCore::UI::CSSSelector::calculateCache(const UIElementCache* parentElement
 {
     if(m_padding.containsAlternative())
     {
-        thisElementCache.m_topPadding = m_padding.getFromAlternativeValue<0>()->calculate(&thisElementCache.m_size.y);
-        thisElementCache.m_rightPadding = m_padding.getFromAlternativeValue<1>()->calculate(&thisElementCache.m_size.x);
-        thisElementCache.m_bottomPadding = m_padding.getFromAlternativeValue<2>()->calculate(&thisElementCache.m_size.y);
-        thisElementCache.m_leftPadding = m_padding.getFromAlternativeValue<3>()->calculate(&thisElementCache.m_size.x);
+        auto topPadding = m_padding.getFromAlternativeValue<0>();
+        auto rightPadding = m_padding.getFromAlternativeValue<1>();
+        auto bottomPadding = m_padding.getFromAlternativeValue<2>();
+        auto leftPadding = m_padding.getFromAlternativeValue<3>();
+
+        if(topPadding)
+        {
+            thisElementCache.m_topPadding = topPadding->calculate(&thisElementCache.m_finalSize.y);
+        }
+
+        if(rightPadding)
+        {
+            thisElementCache.m_rightPadding = rightPadding->calculate(&thisElementCache.m_finalSize.x);
+        }
+
+        if(bottomPadding)
+        {
+            thisElementCache.m_bottomPadding = bottomPadding->calculate(&thisElementCache.m_finalSize.y);
+        }
+
+        if(leftPadding)
+        {
+            thisElementCache.m_leftPadding = leftPadding->calculate(&thisElementCache.m_finalSize.x);
+        }
     }
 
     if(m_gap.containsAlternative())
     {
-        thisElementCache.m_gap.x = m_gap.getFromAlternativeValue<0>()->calculate(&thisElementCache.m_size.x);
-        thisElementCache.m_gap.y = m_gap.getFromAlternativeValue<1>()->calculate(&thisElementCache.m_size.y);
+        thisElementCache.m_gap.x = m_gap.getFromAlternativeValue<0>()->calculate(&thisElementCache.m_finalSize.x);
+        thisElementCache.m_gap.y = m_gap.getFromAlternativeValue<1>()->calculate(&thisElementCache.m_finalSize.y);
     }
 
     if(m_width.containsAlternative())
     {
-        thisElementCache.m_size.x = m_width.getFromAlternativeValue<0>()->calculate(
-            parentElementCache ? &parentElementCache->m_size.x : nullptr);
+        thisElementCache.m_basicSize.x = m_width.getFromAlternativeValue<0>()->calculate(
+            parentElementCache ? &parentElementCache->m_finalSize.x : nullptr);
 
-        thisElementCache.m_finalSize.x = thisElementCache.m_size.x;
+        thisElementCache.m_finalSize.x = thisElementCache.m_basicSize.x;
     }
 
     if(m_height.containsAlternative())
     {
-        thisElementCache.m_size.y = m_height.getFromAlternativeValue<0>()->calculate(
-            parentElementCache ? &parentElementCache->m_size.y : nullptr);
+        thisElementCache.m_basicSize.y = m_height.getFromAlternativeValue<0>()->calculate(
+            parentElementCache ? &parentElementCache->m_finalSize.y : nullptr);
 
-        thisElementCache.m_finalSize.y = thisElementCache.m_size.y;
+        thisElementCache.m_finalSize.y = thisElementCache.m_basicSize.y;
     }
 
     if(m_backgroundColor.containsAlternative())
@@ -60,36 +80,36 @@ void SGCore::UI::CSSSelector::calculateCache(const UIElementCache* parentElement
     {
         const auto& alternativeValue = m_topLeftBorderRadius.getFromAlternativeValue<0>();
 
-        thisElementCache.m_borderRadiusCache[0].x = alternativeValue.m_radiusX->calculate(&thisElementCache.m_size.x);
+        thisElementCache.m_borderRadiusCache[0].x = alternativeValue.m_radiusX->calculate(&thisElementCache.m_finalSize.x);
 
-        thisElementCache.m_borderRadiusCache[0].y = alternativeValue.m_radiusY->calculate(&thisElementCache.m_size.y);
+        thisElementCache.m_borderRadiusCache[0].y = alternativeValue.m_radiusY->calculate(&thisElementCache.m_finalSize.y);
     }
 
     if(m_topRightBorderRadius.containsAlternative())
     {
         const auto& alternativeValue = m_topRightBorderRadius.getFromAlternativeValue<0>();
 
-        thisElementCache.m_borderRadiusCache[1].x = alternativeValue.m_radiusX->calculate(&thisElementCache.m_size.x);
+        thisElementCache.m_borderRadiusCache[1].x = alternativeValue.m_radiusX->calculate(&thisElementCache.m_finalSize.x);
 
-        thisElementCache.m_borderRadiusCache[1].y = alternativeValue.m_radiusY->calculate(&thisElementCache.m_size.y);
+        thisElementCache.m_borderRadiusCache[1].y = alternativeValue.m_radiusY->calculate(&thisElementCache.m_finalSize.y);
     }
 
     if(m_bottomRightBorderRadius.containsAlternative())
     {
         const auto& alternativeValue = m_bottomRightBorderRadius.getFromAlternativeValue<0>();
 
-        thisElementCache.m_borderRadiusCache[2].x = alternativeValue.m_radiusX->calculate(&thisElementCache.m_size.x);
+        thisElementCache.m_borderRadiusCache[2].x = alternativeValue.m_radiusX->calculate(&thisElementCache.m_finalSize.x);
 
-        thisElementCache.m_borderRadiusCache[2].y = alternativeValue.m_radiusY->calculate(&thisElementCache.m_size.y);
+        thisElementCache.m_borderRadiusCache[2].y = alternativeValue.m_radiusY->calculate(&thisElementCache.m_finalSize.y);
     }
 
     if(m_bottomLeftBorderRadius.containsAlternative())
     {
         const auto& alternativeValue = m_bottomLeftBorderRadius.getFromAlternativeValue<0>();
 
-        thisElementCache.m_borderRadiusCache[3].x = alternativeValue.m_radiusX->calculate(&thisElementCache.m_size.x);
+        thisElementCache.m_borderRadiusCache[3].x = alternativeValue.m_radiusX->calculate(&thisElementCache.m_finalSize.x);
 
-        thisElementCache.m_borderRadiusCache[3].y = alternativeValue.m_radiusY->calculate(&thisElementCache.m_size.y);
+        thisElementCache.m_borderRadiusCache[3].y = alternativeValue.m_radiusY->calculate(&thisElementCache.m_finalSize.y);
     }
 }
 

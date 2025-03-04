@@ -69,15 +69,6 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
         calculateElementLayout(parentUIElement, *parentTransformNode, currentTransformNode);
     }
 
-    TransformUtils::calculateTransform(currentTransformNode.m_transform, parentTransform);
-
-    // =================================================================== reset some cache data
-
-    currentTransformNode.m_currentElementCache.m_curLocalPositionForElements = glm::vec3 { currentTransformNode.m_currentElementCache.m_size, 0.0f } / -2.0;
-    currentTransformNode.m_currentElementCache.m_curLocalPositionForElements.x += currentElementCache.m_leftPadding;
-    currentTransformNode.m_currentElementCache.m_curLocalPositionForElements.y += currentElementCache.m_topPadding;
-    currentTransformNode.m_currentElementCache.m_lastRowSize = { };
-
     for(const auto& child : currentUIElement->m_children)
     {
         const std::int64_t newChildNodeIdx = processUIElement(currentUITransformNodeIdx, uiComponent,
@@ -89,6 +80,15 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
             uiComponent.m_transformTree.m_elements[currentUITransformNodeIdx].m_children.push_back(newChildNodeIdx);
         }
     }
+
+    currentTransformNode.m_currentElementCache.m_curLocalPositionForElements = glm::vec3 { currentTransformNode.m_currentElementCache.m_finalSize, 0.0f } / -2.0;
+    currentTransformNode.m_currentElementCache.m_curLocalPositionForElements.x += currentElementCache.m_leftPadding;
+    currentTransformNode.m_currentElementCache.m_curLocalPositionForElements.y += currentElementCache.m_topPadding;
+    currentTransformNode.m_currentElementCache.m_lastRowSize = { };
+
+    TransformUtils::calculateTransform(currentTransformNode.m_transform, parentTransform);
+
+    // =================================================================== reset some cache data
 
     if(isCreatedNewTransformNode)
     {
@@ -114,28 +114,42 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(const Ref<UIElement>
         if(parentSelector->m_flexDirection == UI::FlexboxKeyword::KW_ROW)
         {
             // moving cursor to a new line if current element is bigger than (containerSize.x / 2 - rightPadding)
-            if(parentElementCache.m_curLocalPositionForElements.x + currentElementCache.m_size.x > parentElementCache.m_size.x / 2.0f - parentElementCache.m_rightPadding)
+            if(parentElementCache.m_curLocalPositionForElements.x + currentElementCache.m_finalSize.x > parentElementCache.m_finalSize.x / 2.0f - parentElementCache.m_rightPadding)
             {
-                parentElementCache.m_curLocalPositionForElements.x = parentElementCache.m_size.x / -2.0f + parentElementCache.m_leftPadding;
+                parentElementCache.m_curLocalPositionForElements.x = parentElementCache.m_finalSize.x / -2.0f + parentElementCache.m_leftPadding;
                 parentElementCache.m_curLocalPositionForElements.y += parentElementCache.m_lastRowSize.y + parentElementCache.m_gap.y;
+
+                /*if(parentElementCache.m_curLocalPositionForElements.y > parentElementCache.m_finalSize.y / 2.0)
+                {
+                    parentElementCache.m_finalSize.y += parentElementCache.m_lastRowSize.y + parentElementCache.m_gap.y;
+                }*/
+
                 parentElementCache.m_lastRowSize.y = 0.0f;
             }
 
-            if(currentElementCache.m_size.y > parentElementCache.m_lastRowSize.y)
+            if(currentElementCache.m_finalSize.y > parentElementCache.m_lastRowSize.y)
             {
-                parentElementCache.m_lastRowSize.y = currentElementCache.m_size.y;
+                parentElementCache.m_lastRowSize.y = currentElementCache.m_finalSize.y;
             }
 
             glm::vec3 currentElementPos = parentElementCache.m_curLocalPositionForElements;
-            currentElementPos += glm::vec3 { currentElementCache.m_size, 0.0 } / 2.0f;
+            currentElementPos += glm::vec3 { currentElementCache.m_finalSize, 0.0 } / 2.0f;
 
             currentElementTransform.m_transform.m_ownTransform.m_position = currentElementPos;
 
-            parentElementCache.m_curLocalPositionForElements.x += currentElementCache.m_size.x + parentElementCache.m_gap.x;
+            parentElementCache.m_curLocalPositionForElements.x += currentElementCache.m_finalSize.x + parentElementCache.m_gap.x;
 
-            if(parentElementCache.m_curLocalPositionForElements.y * 2.0f + parentElementCache.m_lastRowSize.y * 2.0f + parentElementCache.m_bottomPadding * 2.0f > parentElementCache.m_size.y)
+            /*if(parentElementCache.m_curLocalPositionForElements.y + parentElementCache.m_bottomPadding > parentElementCache.m_finalSize.y)
             {
                 parentElementCache.m_finalSize.y = parentElementCache.m_curLocalPositionForElements.y * 2.0f + parentElementCache.m_lastRowSize.y * 2.0f + parentElementCache.m_bottomPadding * 2.0f;
+            }*/
+
+            if(parentElementCache.m_curLocalPositionForElements.y * 2.0f + parentElementCache.m_lastRowSize.y * 2.0f + parentElementCache.m_bottomPadding * 2.0f > parentElementCache.m_finalSize.y)
+            {
+                const float lastHeight = parentElementCache.m_finalSize.y;
+                // parentElementCache.m_finalSize.y += parentElementCache.m_lastRowSize.y + parentElementCache.m_gap.y;
+                parentElementCache.m_finalSize.y = (parentElementCache.m_curLocalPositionForElements.y * 2.0f + parentElementCache.m_lastRowSize.y * 2.0f + parentElementCache.m_bottomPadding * 2.0f) / 2.0f;
+                parentElementTransform.m_transform.m_ownTransform.m_position.y += (parentElementCache.m_finalSize.y - lastHeight) / 2.0f;
             }
         }
         else if(parentSelector->m_flexDirection == UI::FlexboxKeyword::KW_COLUMN)

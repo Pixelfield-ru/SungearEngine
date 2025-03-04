@@ -86,6 +86,15 @@ void SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::reg_t& c
 
     // ===================================================================
 
+    // if count of children in transform node != in ui element then clearing UIComponent transform tree
+    // to fill it again in UILayoutCalculator.
+    // it can be possible if uidocument was reloaded
+    if(currentUIElement->m_children.size() != currentTransformNode.m_children.size())
+    {
+        uiComponent.m_transformTree = { };
+        return;
+    }
+
     for(size_t i = 0; i < currentUIElement->m_children.size(); ++i)
     {
         const auto& child = currentUIElement->m_children[i];

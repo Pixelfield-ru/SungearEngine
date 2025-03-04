@@ -14,16 +14,16 @@
     width: 20%;
     height: 20%;
     background-color: rgb(0 0 100 / 100%);
-    gap: 100px;
+    gap: 10px;
     padding: 10px;
 
-    border-radius: 0px;
+    border-radius: 20px;
 }
 
 .window-header-1 {
-    width: 20%;
-    height: 100%;
-    background-color: rgb(100 0 0 / 100%);
+    width: 10px;
+    height: 200px;
+    background-color: rgb(0 100 0 / 100%);
     gap: 10%;
     padding: 5px;
 

@@ -12,6 +12,22 @@ SGCore::UI::UIRoot::UIRoot() noexcept
     m_shader = AssetManager::getInstance()->loadAsset<IShader>("${enginePath}/Resources/sg_shaders/features/ui/div.sgshader");
     // default style for root
     m_selector = AssetManager::getInstance()->getOrAddAssetByAlias<CSSSelector>("sgui_root_style");
+
+    auto bottomRightRadius = MakeRef<CSSMathNumericNode>();
+    bottomRightRadius->m_value = 30.0f;
+
+    m_selector->m_bottomRightBorderRadius.setWithAlternative({});
+    m_selector->m_bottomRightBorderRadius.m_value = BorderRadiusAlternativeValue {
+        .m_radiusX = bottomRightRadius,
+        .m_radiusY = bottomRightRadius
+    };
+
+    auto topPadding = MakeRef<CSSMathNumericNode>();
+    topPadding->m_value = 250;
+
+    m_selector->m_padding.setWithAlternative({});
+    m_selector->m_padding.getFromAlternativeValue<0>() = topPadding;
+    m_selector->m_padding.getFromAlternativeValue<3>() = topPadding;
 }
 
 void SGCore::UI::UIRoot::doCalculateLayout(const UIElementCache* parentElementCache,
@@ -33,6 +49,7 @@ void SGCore::UI::UIRoot::doCalculateLayout(const UIElementCache* parentElementCa
         thisElementCache.m_gap = { };
     }
 
+    thisElementCache.m_backgroundColor.r = 255.0f;
     thisElementCache.m_backgroundColor.a = 255.0f;
 
     int windowSizeX = 0;
@@ -40,8 +57,8 @@ void SGCore::UI::UIRoot::doCalculateLayout(const UIElementCache* parentElementCa
 
     CoreMain::getWindow().getSize(windowSizeX, windowSizeY);
 
-    thisElementCache.m_size.x = windowSizeX;
-    thisElementCache.m_size.y = windowSizeY;
+    thisElementCache.m_finalSize.x = windowSizeX;
+    thisElementCache.m_finalSize.y = windowSizeY;
 }
 
 void SGCore::UI::UIRoot::doGenerateMeshBaseSelector(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept

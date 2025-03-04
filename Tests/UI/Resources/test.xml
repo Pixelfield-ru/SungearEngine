@@ -11,6 +11,10 @@
         </div>
 
         <div class="window-header-test">
+            <div class="window-header-1">
+
+            </div>
+
 
         </div>
 
@@ -19,7 +23,9 @@
         </div>
 
         <div class="window-header-test">
+            <div class="window-header-1">
 
+            </div>
         </div>
     </div>
 </xml>
