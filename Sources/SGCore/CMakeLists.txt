@@ -70,6 +70,8 @@
          ${ANTLR4_CSS_GENERATED_OUTPUT_DIR}/css3Parser.cpp
  )
 
+ add_dependencies(ANTLR4CSS SGCore)
+
  # =================================================================
 
  add_library(${PROJECT_NAME} SHARED ${SGCORE_SOURCES})
@@ -123,7 +125,7 @@
 
          )
 
- if(${CMAKE_COMPILER_IS_GNUCXX})
+ if(CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
   find_library(Backtrace_LIBRARY backtrace)
 
   target_link_libraries(${PROJECT_NAME} PUBLIC

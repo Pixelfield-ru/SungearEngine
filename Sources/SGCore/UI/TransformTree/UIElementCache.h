@@ -18,7 +18,6 @@ namespace SGCore::UI
         glm::vec2 m_basicSize { };
         /**
          * Final size of element. this size can differ from basic size because element can be auto-resized.
-         * Calculates as m_basicSize + m_additionalSize
          */
         glm::vec2 m_finalSize { };
         glm::vec4 m_backgroundColor { };
@@ -38,7 +37,7 @@ namespace SGCore::UI
 
         // ===================================== tmp values! DO NOT CHANGE EXTERNALLY!
 
-        glm::vec2 m_additionalSize { };
+        glm::vec2 m_contentSize { };
 
         // used to place children elements in current element considering wrapping, gaps and more
         glm::vec3 m_curLocalPositionForElements { };

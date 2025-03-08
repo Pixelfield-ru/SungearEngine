@@ -12,7 +12,7 @@
     flex-direction: row;
     flex-wrap: wrap;
     width: 20%;
-    height: 20%;
+    height: 100px;
     background-color: rgb(0 0 100 / 100%);
     gap: 10px;
     padding: 10px;

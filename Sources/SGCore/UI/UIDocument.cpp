@@ -41,6 +41,7 @@ void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
         return;
     }
 
+    m_rootElement = nullptr;
     m_rootElement = std::static_pointer_cast<UIRoot>(rootElement);
 }
 
