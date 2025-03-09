@@ -14,7 +14,7 @@ SGCore::ECS::entity_t SGCore::SceneUtils::pickEntity(const glm::vec2& cursorPos,
 {
     const auto pickedColor = fromFrameBuffer->readPixelsFromAttachment(cursorPos, fromAttachment);
 
-    std::cout << std::format("picked color: {}, {}, {}", pickedColor.x, pickedColor.y, pickedColor.z) << std::endl;
+    std::cout << fmt::format("picked color: {}, {}, {}", pickedColor.x, pickedColor.y, pickedColor.z) << std::endl;
 
     ECS::entity_t pickedEntity = entt::null;
 

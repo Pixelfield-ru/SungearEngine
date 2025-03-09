@@ -228,7 +228,7 @@ void SGCore::EntityBaseInfo::generateUniqueColor() noexcept
     m_uniqueColor.y = (float) (((underlyingVal + 1) & 0x00FF00) >> 8) / 255.0f;
     m_uniqueColor.z = (float) ((underlyingVal + 1) & 0x0000FF) / 255.0f;
 
-    std::cout << std::format("UNIQUE COLOR x = {}, y = {}, z = {}",
+    std::cout << fmt::format("UNIQUE COLOR x = {}, y = {}, z = {}",
                              m_uniqueColor.x, m_uniqueColor.y, m_uniqueColor.z) << std::endl;
 }
 

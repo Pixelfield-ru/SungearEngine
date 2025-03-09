@@ -239,12 +239,18 @@ namespace SGCore
 
         [[nodiscard]] static std::chrono::sys_time<std::chrono::seconds> getStringAsTime(const std::string& dateTime, const std::string& format = "%Y-%m-%d") noexcept
         {
+            #if defined(PLATFORM_OS_WINDOWS)
             std::istringstream in { dateTime };
             std::chrono::sys_time<std::chrono::seconds> dt;
 
             in >> std::chrono::parse(format, dt);
 
             return dt;
+            #else
+                #warning getStringAsTime DOES NOT SUPPORTED IN LINUX AND MAC OS NOW. FOR DEVS: PLEASE, IMPLEMENT getStringAsTime!
+            
+            return {};
+            #endif
             /*std::istringstream ss{ dateTime };
             std::tm dt;
             ss >> std::get_time(&dt, format.c_str());

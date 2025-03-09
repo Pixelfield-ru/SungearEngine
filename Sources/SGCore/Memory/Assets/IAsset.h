@@ -42,6 +42,8 @@ namespace SGCore
 
     template<typename>
     struct AssetRef;
+    
+    class AssetManager;
 
     /// You must use \p sg_implement_type_id macro in your assets types to implement static type ID.
     class IAsset

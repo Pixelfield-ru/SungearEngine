@@ -18,7 +18,7 @@ namespace SGCore::Serde
     struct DeserializableValueContainer<FormatType::JSON>
     {
         template<FormatType>
-        friend struct SerializerImpl;
+        friend class SerializerImpl;
 
         friend struct Serializer;
 

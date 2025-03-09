@@ -11,6 +11,8 @@
 
 namespace SGCore::UI
 {
+    struct CSSFile;
+    
     struct UIDocument : public IAsset
     {
         template<UIElementType>
