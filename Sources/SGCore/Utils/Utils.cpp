@@ -20,6 +20,8 @@ std::string SGCore::Utils::getRealPath(const std::string& path) noexcept
         return buf;
     }
     return "";
+    #else
+        #error Please, implement SGCore::Utils::getRealPath function for your target OS!
     #endif
     return "";
 }

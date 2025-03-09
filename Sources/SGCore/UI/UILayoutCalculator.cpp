@@ -85,8 +85,8 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
     currentElementCache.m_curLocalPositionForElements.x += currentElementCache.m_leftPadding;
     currentElementCache.m_curLocalPositionForElements.y += currentElementCache.m_topPadding;
     currentElementCache.m_lastRowSize = { };
-    currentElementCache.m_contentSize.x = currentElementCache.m_leftPadding;
-    currentElementCache.m_contentSize.y = currentElementCache.m_topPadding;
+    currentElementCache.m_contentSize.x = currentElementCache.m_leftPadding + currentElementCache.m_rightPadding;
+    currentElementCache.m_contentSize.y = currentElementCache.m_topPadding + currentElementCache.m_bottomPadding;
 
     TransformUtils::calculateTransform(currentTransformNode.m_transform, parentTransform);
 
@@ -105,11 +105,18 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(const Ref<UIElement>
                                                             UITransformTreeElement& currentElementTransform) noexcept
 {
     auto& parentElementCache = parentElementTransform.m_currentElementCache;
+    auto& lastParentElementCache = parentElementTransform.m_lastElementCache;
     auto& currentElementCache = currentElementTransform.m_currentElementCache;
 
     auto parentSelector = parentUIElement->m_selector;
 
     if(!parentSelector) return;
+
+    if(parentUIElement->getType() != UIElementType::ET_ROOT)
+    {
+        /*parentElementTransform.m_transform.m_ownTransform.m_position.x += (parentElementCache.m_finalSize.x - lastParentElementCache.m_finalSize.x) / 2.0f;
+        parentElementTransform.m_transform.m_ownTransform.m_position.y += (parentElementCache.m_finalSize.y - lastParentElementCache.m_finalSize.y) / 2.0f;*/
+    }
 
     if(parentSelector->m_display == UI::DisplayKeyword::KW_FLEX)
     {
@@ -137,11 +144,9 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(const Ref<UIElement>
 
             parentElementCache.m_curLocalPositionForElements.x += currentElementCache.m_finalSize.x + parentElementCache.m_gap.x;
 
-            if(parentElementCache.m_contentSize.y + parentElementCache.m_lastRowSize.y + parentElementCache.m_bottomPadding > parentElementCache.m_finalSize.y)
+            if(parentElementCache.m_contentSize.y + parentElementCache.m_lastRowSize.y > parentElementCache.m_finalSize.y)
             {
-                const float lastHeight = parentElementCache.m_finalSize.y;
-                parentElementCache.m_finalSize.y = parentElementCache.m_contentSize.y + parentElementCache.m_lastRowSize.y + parentElementCache.m_bottomPadding;
-                // parentElementTransform.m_transform.m_ownTransform.m_position.y += (parentElementCache.m_finalSize.y - lastHeight) / 2.0f;
+                parentElementCache.m_finalSize.y = parentElementCache.m_contentSize.y + parentElementCache.m_lastRowSize.y;
             }
         }
         else if(parentSelector->m_flexDirection == UI::FlexboxKeyword::KW_COLUMN)
