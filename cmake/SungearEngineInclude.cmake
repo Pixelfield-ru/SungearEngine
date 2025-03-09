@@ -117,7 +117,13 @@ endif()
 #endif()
 
 find_package(antlr4-runtime CONFIG REQUIRED)
-list(APPEND SungearEngine_LIBS "antlr4_shared")
+
+if(CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
+    list(APPEND SungearEngine_LIBS "antlr4_static")
+else()
+    list(APPEND SungearEngine_LIBS "antlr4_shared")
+endif()
+
 list(APPEND SungearEngine_INCLUDE_DIRS "${ANTLR4_INCLUDE_DIR}")
 
 if(${CMAKE_COMPILER_IS_GNUCXX})

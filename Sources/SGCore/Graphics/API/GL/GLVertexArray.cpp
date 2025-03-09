@@ -37,11 +37,11 @@ void SGCore::GLVertexArray::destroy() noexcept
     #endif
 }
 
-std::shared_ptr<SGCore::IVertexArray> SGCore::GLVertexArray::bind() noexcept
+void SGCore::GLVertexArray::bind() noexcept
 {
+    SG_ASSERT(glIsBuffer(m_handler), fmt::format("OGL: Can not bind vertex array! Vertex array with handler '{}' is invalid", m_handler).c_str());
+    
     glBindVertexArray(m_handler);
 
     // CoreMain::getRenderer()->m_currentBoundVertexArray = this;
-
-    return shared_from_this();
 }

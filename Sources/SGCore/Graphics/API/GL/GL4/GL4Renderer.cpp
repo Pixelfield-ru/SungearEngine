@@ -118,6 +118,7 @@ void SGCore::GL4Renderer::checkForErrors(const std::source_location& location) n
     if(errCode != 0)
     {
         LOG_E(SGCORE_TAG, "OpenGL error (code: {}): {}", errCode, errStr);
+        std::cerr << fmt::format("OpenGL error (code: {}): {}", errCode, errStr) << std::endl;
     }
 }
 
@@ -199,7 +200,7 @@ void SGCore::GL4Renderer::renderMeshData(const IMeshData* meshData,
 
     if(!meshRenderState.m_useIndices)
     {
-        glDrawArrays(drawMode, 0, meshData->m_vertices.size() / 3);
+        glDrawArrays(drawMode, 0, meshData->m_vertices.size());
     }
     else
     {
@@ -210,8 +211,8 @@ void SGCore::GL4Renderer::renderMeshData(const IMeshData* meshData,
 
 void SGCore::GL4Renderer::renderArray(const Ref<IVertexArray>& vertexArray,
                                       const MeshRenderState& meshRenderState,
-                                      const size_t& verticesCount,
-                                      const size_t& indicesCount)
+                                      const int& verticesCount,
+                                      const int& indicesCount)
 {
     useMeshRenderState(meshRenderState);
 
@@ -235,8 +236,9 @@ void SGCore::GL4Renderer::renderArray(const Ref<IVertexArray>& vertexArray,
 
 void SGCore::GL4Renderer::renderArrayInstanced(const Ref<IVertexArray>& vertexArray,
                                                const MeshRenderState& meshRenderState,
-                                               const size_t& verticesCount, const size_t& indicesCount,
-                                               const size_t& instancesCount)
+                                               const int& verticesCount,
+                                               const int& indicesCount,
+                                               const int& instancesCount)
 {
     useMeshRenderState(meshRenderState);
 

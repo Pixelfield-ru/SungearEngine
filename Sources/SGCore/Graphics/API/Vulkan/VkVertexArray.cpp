@@ -19,7 +19,6 @@ void SGCore::VkVertexArray::destroy() noexcept
 
 }
 
-std::shared_ptr<SGCore::IVertexArray> SGCore::VkVertexArray::bind() noexcept
+void SGCore::VkVertexArray::bind() noexcept
 {
-    return shared_from_this();
 }
