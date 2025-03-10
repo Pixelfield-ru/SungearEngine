@@ -16,6 +16,7 @@ add_definitions(-DSG_BUILD_PRESET="${SG_BUILD_PRESET}")
 #set(ZLIB_ROOT ${CMAKE_SOURCE_DIR}/Externals/zlib)
 #set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/Externals/zlib)
 
+add_definitions(-DBOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED)
 add_definitions(-DBOOST_STACKTRACE_USE_ADDR2LINE)
 add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)
 add_definitions(-DUSE_LIBPNG)
@@ -73,8 +74,11 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 endif ()
 
 # multiple definition because of bullet library
-set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition -Wno-return-type")
-
+if (WIN32 OR CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition -Wno-return-type")
+elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
+    set(CMAKE_SHARED_LINKER_FLAGS "-Wl, -Wno-return-type")
+endif ()
 # options --------------------------
 
 # TODO: make SG_BUILD_EDITOR

@@ -29,6 +29,14 @@ void SGCore::Window::create()
     glfwDefaultWindowHints(); // установка для будущего окна дефолтных настроек
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
+#ifdef __APPLE__
+    /* We need to explicitly ask for a 3.2 context on OS X */
+    glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#endif
+
     // OpenGL is the default API for GLFW, so it's not here
     if(CoreMain::getRenderer()->getGAPIType() == GAPIType::SG_API_TYPE_VULKAN)
     {

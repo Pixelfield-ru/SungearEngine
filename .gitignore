@@ -3,6 +3,8 @@ cmake-build-release
 release-test
 out
 .vs
+.DS_Store
+_build
 
 # SOURCES ---------------
 Sources/cmake-build-debug

@@ -3,7 +3,10 @@ project(SungearEngineEditor)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
-if(${CMAKE_COMPILER_IS_GNUCXX})
+
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
+	list(APPEND CMAKE_CXX_FLAGS "-g -rdynamic -fno-pie -no-pie -fexceptions -fnon-call-exceptions")
+elseif (CMAKE_COMPILER_IS_GNUCXX)
 	list(APPEND CMAKE_CXX_FLAGS "-g -rdynamic -fno-pie -no-pie -fno-gnu-unique -fexceptions -fnon-call-exceptions")
 	message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 elseif(MSVC)

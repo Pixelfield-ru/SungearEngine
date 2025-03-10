@@ -10,7 +10,8 @@
 
 #include <functional>
 
-#ifdef PLATFORM_OS_LINUX
+#if defined(PLATFORM_OS_LINUX) || defined(PLATFORM_OS_MAC_OS_X)
+#include <unistd.h>
 #include <dlfcn.h>
 #elif defined(PLATFORM_OS_WINDOWS)
 #include <windows.h>
@@ -20,6 +21,8 @@
 #define DL_POSTFIX ".dll"
 #elif defined(PLATFORM_OS_LINUX)
 #define DL_POSTFIX ".so"
+#elif defined(PLATFORM_OS_MAC_OS_X)
+#define DL_POSTFIX ".dylib"
 #endif
 
 namespace SGCore
@@ -30,7 +33,7 @@ namespace SGCore
      */
     struct DynamicLibrary
     {
-        #ifdef PLATFORM_OS_LINUX
+        #if defined(PLATFORM_OS_LINUX) || defined(PLATFORM_OS_MAC_OS_X)
         /**
          * Native (system) the type of dynamic library handler.
          */
@@ -61,8 +64,13 @@ namespace SGCore
             unload();
 
             const std::string u8Path = Utils::toUTF8(pluginDLPath.u16string());
-            
-            #ifdef PLATFORM_OS_LINUX
+
+            #if defined(PLATFORM_OS_LINUX) || defined(PLATFORM_OS_MAC_OS_X)
+
+            if (access(u8Path.c_str(), F_OK) != 0) {
+                std::cerr << "Library not found" << std::endl;
+            }
+
             m_nativeHandler = dlopen(u8Path.c_str(), RTLD_NOW | RTLD_GLOBAL);
             if(!m_nativeHandler)
             {
@@ -84,7 +92,7 @@ namespace SGCore
          */
         void unload()
         {
-            #ifdef PLATFORM_OS_LINUX
+            #if defined(PLATFORM_OS_LINUX) || defined(PLATFORM_OS_MAC_OS_X)
             if(m_nativeHandler)
             {
                 dlclose(m_nativeHandler);
@@ -123,7 +131,7 @@ namespace SGCore
             }
             else
             {
-                #ifdef PLATFORM_OS_LINUX
+                #if defined(PLATFORM_OS_LINUX) || defined(PLATFORM_OS_MAC_OS_X)
                 T* field  = (T*) dlsym(m_nativeHandler, symbolName);
                 if(!field)
                 {
@@ -194,15 +202,15 @@ namespace SGCore
         {
             std::function<Result(Args...)> operator()(native_handler_t nativeHandler, const char* funcName, std::string& err) const noexcept
             {
-                #ifdef PLATFORM_OS_LINUX
+                #if defined(PLATFORM_OS_LINUX) || defined(PLATFORM_OS_MAC_OS_X)
                 using func_t = Result(*)(Args...);
                 #elif defined(PLATFORM_OS_WINDOWS)
                 using func_t = Result(__cdecl *)(Args...);
                 #endif
                 
                 func_t func = nullptr;
-                
-                #ifdef PLATFORM_OS_LINUX
+
+                #if defined(PLATFORM_OS_LINUX) || defined(PLATFORM_OS_MAC_OS_X)
                 func = (func_t) dlsym(nativeHandler, funcName);
                 if(!func)
                 {

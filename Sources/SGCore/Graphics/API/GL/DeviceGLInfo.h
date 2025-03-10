@@ -33,8 +33,8 @@ namespace SGCore
         static void init() noexcept
         {
             // todo:
-            glEnable(GL_DEBUG_OUTPUT);
-            glDebugMessageCallback(messageCallback, 0);
+            //glEnable(GL_DEBUG_OUTPUT);
+            //glDebugMessageCallback(messageCallback, 0);
             
             GLint extensionsNum = 0;
             glGetIntegerv(GL_NUM_EXTENSIONS, &extensionsNum);

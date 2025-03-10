@@ -2,6 +2,10 @@ include($ENV{SUNGEAR_SOURCES_ROOT}/cmake/utils.cmake)
 
 add_definitions(-DSG_BUILD_PRESET="${SG_BUILD_PRESET}")
 
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
+    add_definitions(-DBOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED)
+endif()
+
 if(NOT DEFINED SG_BUILD_PRESET)
     message(FATAL_ERROR "Your preset does not have 'SG_BUILD_PRESET' in 'cacheVariables' section.")
 endif()

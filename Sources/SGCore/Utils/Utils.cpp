@@ -12,7 +12,7 @@ std::string SGCore::Utils::getRealPath(const std::string& path) noexcept
         return buf;
     }
     return "";
-    #elif defined(PLATFORM_OS_LINUX)
+    #elif defined(PLATFORM_OS_LINUX) || defined(PLATFORM_OS_MAC_OS_X)
     char buf[PATH_MAX];
     char* res = realpath(path.c_str(), buf);
     if(res)

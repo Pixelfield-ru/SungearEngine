@@ -58,7 +58,8 @@ void SGCore::CoreMain::start()
         {
             const std::string errorMsg = "The 'SUNGEAR_SOURCES_ROOT' environment variable contains an invalid value. "
                                          "Make sure that the 'SUNGEAR_SOURCES_ROOT' environment variable contains the correct value and indeed points to the Sungear Engine root folder. "
-                                         "Until then, you will not be able to build the project, as well as some other features of the engine.";
+                                         "Until then, you will not be able to build the project, as well as some other features of the engine.\n"
+                                         "Current value of 'SUNGEAR_SOURCES_ROOT': " + std::string(sungearEngineRoot);
 
             LOG_C_UNFORMATTED(SGCORE_TAG, errorMsg)
             assert(errorMsg.c_str());
