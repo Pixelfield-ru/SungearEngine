@@ -16,8 +16,12 @@ add_definitions(-DSG_BUILD_PRESET="${SG_BUILD_PRESET}")
 #set(ZLIB_ROOT ${CMAKE_SOURCE_DIR}/Externals/zlib)
 #set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/Externals/zlib)
 
-add_definitions(-DBOOST_STACKTRACE_USE_ADDR2LINE)
-add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)
+if(CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
+    add_definitions(-DBOOST_STACKTRACE_USE_ADDR2LINE)
+    add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)
+elseif(MSVC)
+    add_definitions(-DBOOST_STACKTRACE_USE_WINDBG)
+endif ()
 add_definitions(-DUSE_LIBPNG)
 add_definitions(-DHC_NO_COMPRESSION)
 add_definitions(-DNOMINMAX)
@@ -27,6 +31,7 @@ add_definitions(-DNOGDI)
 #add_definitions(-DSPDLOG_WCHAR_TO_UTF8_SUPPORT)
 
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
@@ -42,13 +47,13 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
     add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
-    if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    if(${CMAKE_BUILD_TYPE} STREQUAL "Debug" AND MSVC)
         set(CXX_COMPILER_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} /Od")
 
         set(C_COMPILER_FLAGS "${CMAKE_C_FLAGS_DEBUG} /Od")
     endif()
 
-    if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    if(${CMAKE_BUILD_TYPE} STREQUAL "Release" AND MSVC)
         set(CXX_COMPILER_FLAGS "${CMAKE_CXX_FLAGS_RELEASE} /O2")
 
         set(C_COMPILER_FLAGS "${CMAKE_C_FLAGS_RELEASE} /O2")
