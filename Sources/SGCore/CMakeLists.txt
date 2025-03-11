@@ -124,7 +124,7 @@
 
          )
 
- if(CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
+ if(POSIX OR APPLE)
   find_library(Backtrace_LIBRARY backtrace)
 
   target_link_libraries(${PROJECT_NAME} PUBLIC
