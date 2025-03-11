@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_PATHS_H
 
 #include <SGCore/pch.h>
+#include <optional>
 
 #include "SGCore/Utils/StringInterpolation/InterpolatedPath.h"
 #include "Singleton.h"

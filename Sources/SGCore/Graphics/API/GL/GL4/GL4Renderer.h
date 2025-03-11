@@ -48,14 +48,14 @@ namespace SGCore
         
         void renderArray(const Ref<IVertexArray>& vertexArray,
                          const MeshRenderState& meshRenderState,
-                         const size_t& verticesCount,
-                         const size_t& indicesCount) override;
+                         const int& verticesCount,
+                         const int& indicesCount) override;
         
         void renderArrayInstanced(const Ref<IVertexArray>& vertexArray,
                                   const MeshRenderState& meshRenderState,
-                                  const size_t& verticesCount,
-                                  const size_t& indicesCount,
-                                  const size_t& instancesCount) override;
+                                  const int& verticesCount,
+                                  const int& indicesCount,
+                                  const int& instancesCount) override;
 
         void useState(const RenderState& newRenderState, bool forceState = false) noexcept final;
         void useBlendingState(const BlendingState& newBlendingState, bool forceState = false) noexcept final;

@@ -24,7 +24,7 @@ namespace SGCore
         std::shared_ptr<IVertexArray> create() noexcept override;
         void destroy() noexcept override;
 
-        std::shared_ptr<IVertexArray> bind() noexcept override;
+        void bind() noexcept override;
     };
 }
 

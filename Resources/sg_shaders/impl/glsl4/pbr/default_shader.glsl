@@ -4,6 +4,10 @@
 #include "sg_shaders/impl/glsl4/math.glsl"
 #include "sg_shaders/impl/glsl4/defines.glsl"
 #include "sg_shaders/impl/glsl4/color_correction/aces.glsl"
+#include "sg_shaders/impl/glsl4/color_correction/reinhard.glsl"
+#include "sg_shaders/impl/glsl4/color_correction/lottes.glsl"
+#include "sg_shaders/impl/glsl4/color_correction/filmic.glsl"
+#include "sg_shaders/impl/glsl4/color_correction/neutral.glsl"
 #include "sg_shaders/impl/glsl4/postprocessing/layered/utils.glsl"
 #include "sg_shaders/impl/glsl4/alpha_resolving/wboit.glsl"
 #include "sg_shaders/impl/glsl4/alpha_resolving/stochastic_transparency.glsl"
@@ -467,10 +471,10 @@ void main()
     // ВЫГЛЯДИТ ПЛОХО
     /*finalCol = finalCol / (finalCol + vec3(1.0));
     finalCol = pow(finalCol, vec3(1.0 / exposure));*/
-    // finalCol = ACESTonemap(finalCol, exposure);
+    finalCol = ACESTonemap(finalCol, exposure);
     // finalCol = lottes(finalCol);
     // finalCol = reinhard2(finalCol);
-    // finalCol = reinhard(finalCol);
+    //finalCol = reinhard(finalCol);
     // finalCol = neutral(finalCol);
     // finalCol = filmic(finalCol);
 

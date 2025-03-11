@@ -241,6 +241,8 @@ size_t SGCore::IShader::bindMaterialTextures(const SGCore::AssetRef<SGCore::IMat
         
         for(const auto& tex : texturesOfType)
         {
+            if(!tex) continue;
+            
             preallocUniformName += '[';
             preallocUniformName += std::to_string(arrayIdx);
             preallocUniformName += ']';

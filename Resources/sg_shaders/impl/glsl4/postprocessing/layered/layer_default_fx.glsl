@@ -134,9 +134,9 @@ void main()
             // STColor.rgba = texture(SGPP_LayersWBOITColorAccum, (gl_FragCoord.xy) / wboitAccumulationTexSize).rgba;
             // STColor.rgba = texelFetch(SGPP_LayersSTColor, texelCoord, 0).rgba;
 
-            STColor.rgb = ACESTonemap(STColor.rgb, exposure);
+            // STColor.rgb = ACESTonemap(STColor.rgb, exposure);
 
-            layerColor.rgb = ACESTonemap(layerColor.rgb, exposure);
+            // layerColor.rgb = ACESTonemap(layerColor.rgb);
 
             fragColor = vec4(layerColor.rgb * (1.0 - STColor.a) + STColor.rgb * (STColor.a), 1.0);
         }

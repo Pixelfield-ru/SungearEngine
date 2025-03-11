@@ -4,6 +4,7 @@
 #include <SGCore/pch.h>
 
 #include <sgcore_export.h>
+#include <optional>
 
 #include "Layer.h"
 #include "ISystem.h"

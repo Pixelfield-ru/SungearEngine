@@ -35,11 +35,6 @@ SGCore::Ref<SGCore::RenderingBase> cameraRenderingBase { };
 
 void coreInit()
 {
-    cssFile = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::CSSFile>("${enginePath}/Tests/UI/Resources/test.css");
-    uiDocument = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::UIDocument>("${enginePath}/Tests/UI/Resources/test.xml");
-    screenShader = SGCore::AssetManager::getInstance()->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
-    someTexture = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/no_material.png");
-
     auto pbrrpPipeline = SGCore::RenderPipelinesManager::createRenderPipeline<SGCore::PBRRenderPipeline>();
     SGCore::RenderPipelinesManager::registerRenderPipeline(pbrrpPipeline);
     SGCore::RenderPipelinesManager::setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();
@@ -48,6 +43,11 @@ void coreInit()
     scene->createDefaultSystems();
 
     SGCore::Scene::setCurrentScene(scene);
+    
+    cssFile = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::CSSFile>("${enginePath}/Tests/UI/Resources/test.css");
+    uiDocument = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::UIDocument>("${enginePath}/Tests/UI/Resources/test.xml");
+    screenShader = SGCore::AssetManager::getInstance()->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
+    someTexture = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/no_material.png");
 
     auto ecsRegistry = scene->getECSRegistry();
 
@@ -121,9 +121,11 @@ void onUpdate(const double& dt, const double& fixedDt)
     attachmentToDisplay->bind(0);
     screenShader->useTextureBlock("u_bufferToDisplay", 0);
 
-    SGCore::CoreMain::getRenderer()->renderMeshData(
-        quadMesh.get(),
-        quadMeshRenderState
+    SGCore::CoreMain::getRenderer()->renderArray(
+        quadMesh->getVertexArray(),
+        quadMeshRenderState,
+        quadMesh->m_vertices.size(),
+        quadMesh->m_indices.size()
     );
 
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_1))

@@ -8,7 +8,7 @@
 #include "UIElementNodeProcessor.h"
 #include "SGCore/UI/UIElementAttributeType.h"
 #include "UINodesProcessorsUtils.h"
-#include "CSS/CSSFile.h"
+#include "SGCore/UI/CSS/CSSFile.h"
 
 namespace SGCore::UI
 {

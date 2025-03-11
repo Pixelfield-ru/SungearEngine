@@ -69,14 +69,14 @@ namespace SGCore
 
         virtual void renderArray(const Ref<IVertexArray>& vertexArray,
                                  const MeshRenderState& meshRenderState,
-                                 const size_t& verticesCount,
-                                 const size_t& indicesCount) { }
+                                 const int& verticesCount,
+                                 const int& indicesCount) { }
         
         virtual void renderArrayInstanced(const Ref<IVertexArray>& vertexArray,
                                           const MeshRenderState& meshRenderState,
-                                          const size_t& verticesCount,
-                                          const size_t& indicesCount,
-                                          const size_t& instancesCount)
+                                          const int& verticesCount,
+                                          const int& indicesCount,
+                                          const int& instancesCount)
         {}
 
         /**

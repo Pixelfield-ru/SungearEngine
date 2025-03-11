@@ -67,28 +67,32 @@ namespace SGCore::UI
             const glm::vec2 CSliceLBPos = { -CSliceSize.x / 2.0f, -CSliceSize.y / 2.0f };
             // 11 point
             const glm::vec2 CSliceRBPos = { CSliceSize.x / 2.0f, -CSliceSize.y / 2.0f };
-
-            size_t currentMaxIndex = 0;
+            
+            IndexT currentMaxIndex = 0;
 
             // ========================================================= generating 5 slice
 
             outputQuadVertices.push_back({
                 .m_position = { CSliceLBPos, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 5
             });
 
             outputQuadVertices.push_back({
                 .m_position = { CSliceLTPos, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 5
             });
 
             outputQuadVertices.push_back({
                 .m_position = { CSliceRTPos, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 5
             });
 
             outputQuadVertices.push_back({
                 .m_position = { CSliceRBPos, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 5
             });
 
@@ -108,21 +112,25 @@ namespace SGCore::UI
 
             outputQuadVertices.push_back({
                 .m_position = { CSliceLTPos.x, -sideSize.y, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 2
             });
 
             outputQuadVertices.push_back({
                 .m_position = { CSliceLTPos.x, 0, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 2
             });
 
             outputQuadVertices.push_back({
                 .m_position = { CSliceRTPos.x, 0, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 2
             });
 
             outputQuadVertices.push_back({
                 .m_position = { CSliceRTPos.x, -sideSize.y, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 2
             });
 
@@ -141,21 +149,25 @@ namespace SGCore::UI
 
             outputQuadVertices.push_back({
                 .m_position = { CSliceLTPos.x, 0, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 8
             });
 
             outputQuadVertices.push_back({
                 .m_position = { CSliceLTPos.x, sideSize.y, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 8
             });
 
             outputQuadVertices.push_back({
                 .m_position = { CSliceRTPos.x, sideSize.y, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 8
             });
 
             outputQuadVertices.push_back({
                 .m_position = { CSliceRTPos.x, 0, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 8
             });
 
@@ -174,21 +186,25 @@ namespace SGCore::UI
 
             outputQuadVertices.push_back({
                 .m_position = { -sideSize.x, CSliceLBPos.y, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 4
             });
 
             outputQuadVertices.push_back({
                 .m_position = { -sideSize.x, CSliceLTPos.y, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 4
             });
 
             outputQuadVertices.push_back({
                 .m_position = { 0, CSliceLTPos.y, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 4
             });
 
             outputQuadVertices.push_back({
                 .m_position = { 0, CSliceLBPos.y, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 4
             });
 
@@ -207,21 +223,25 @@ namespace SGCore::UI
 
             outputQuadVertices.push_back({
                 .m_position = { 0, CSliceRBPos.y, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 6
             });
 
             outputQuadVertices.push_back({
                 .m_position = { 0, CSliceRTPos.y, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 6
             });
 
             outputQuadVertices.push_back({
                 .m_position = { sideSize.x, CSliceRTPos.y, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 6
             });
 
             outputQuadVertices.push_back({
                 .m_position = { sideSize.x, CSliceRBPos.y, 0.0 },
+                .m_uv = { },
                 .m_sliceIndex = 6
             });
 
@@ -296,7 +316,7 @@ namespace SGCore::UI
                                    const float& startAngle,
                                    const float& endAngle,
                                    const std::int32_t& sliceIndex,
-                                   size_t& outputMaxIndex,
+                                   IndexT& outputMaxIndex,
                                    std::vector<UIVertex>& outputQuadVertices,
                                    std::vector<IndexT>& outputIndices) noexcept
         {
@@ -393,16 +413,19 @@ namespace SGCore::UI
 
                 outputQuadVertices.push_back({
                     .m_position = toBiggestRadiusOffset + lastRotatedVertex,
+                    .m_uv = { },
                     .m_sliceIndex = sliceIndex
                 });
 
                 outputQuadVertices.push_back({
                     .m_position = toBiggestRadiusOffset,
+                    .m_uv = { },
                     .m_sliceIndex = sliceIndex
                 });
 
                 outputQuadVertices.push_back({
                     .m_position = toBiggestRadiusOffset + rotatedVertex,
+                    .m_uv = { },
                     .m_sliceIndex = sliceIndex
                 });
 
@@ -452,7 +475,7 @@ namespace SGCore::UI
         static void generateCornerQuad(std::array<glm::vec3, 4>& verticesPos,
                                        const std::array<IndexT, 6>& quadIndices,
                                        const std::int32_t& sliceIndex,
-                                       size_t& outputMaxIndex,
+                                       IndexT& outputMaxIndex,
                                        std::vector<UIVertex>& outputQuadVertices,
                                        std::vector<IndexT>& outputIndices) noexcept
         {
@@ -471,21 +494,25 @@ namespace SGCore::UI
 
             outputQuadVertices.push_back({
                 .m_position = verticesPos[0],
+                .m_uv = { },
                 .m_sliceIndex = sliceIndex
             });
 
             outputQuadVertices.push_back({
                 .m_position = verticesPos[1],
+                .m_uv = { },
                 .m_sliceIndex = sliceIndex
             });
 
             outputQuadVertices.push_back({
                 .m_position = verticesPos[2],
+                .m_uv = { },
                 .m_sliceIndex = sliceIndex
             });
 
             outputQuadVertices.push_back({
                 .m_position = verticesPos[3],
+                .m_uv = { },
                 .m_sliceIndex = sliceIndex
             });
 

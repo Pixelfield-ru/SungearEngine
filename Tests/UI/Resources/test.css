@@ -17,7 +17,7 @@
     gap: 10px;
     padding: 10px;
 
-    border-radius: 20px;
+    border-radius: 0px;
 }
 
 .window-header-1 {
@@ -37,7 +37,7 @@
     height: 100px;
     background-color: rgb(255 0 100 / 255);
 
-    border-radius: 10px;
+    border-radius: 0px;
 }
 
 .window-body, .class1 {

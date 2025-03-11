@@ -18,7 +18,7 @@ namespace SGCore::Serde
     struct DeserializableValueContainer<FormatType::JSON>
     {
         template<FormatType>
-        friend struct SerializerImpl;
+        friend class SerializerImpl;
 
         friend struct Serializer;
 
@@ -95,7 +95,7 @@ namespace SGCore::Serde
         }
 
         template<typename T, template<typename> typename ContainerT = std::vector, typename... SharedDataT>
-        requires(requires(ContainerT<T> con) { con.push_back; })
+        requires(requires(ContainerT<T> con, T obj) { con.push_back(obj); })
         [[nodiscard]] ContainerT<T> getAsArray(SharedDataT&&... sharedData) noexcept
         {
             if(!(m_thisValue && m_document))

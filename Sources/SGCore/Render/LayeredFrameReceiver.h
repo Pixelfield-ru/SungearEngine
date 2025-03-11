@@ -31,6 +31,11 @@ namespace SGCore
 
         std::string m_name;
         
+        ~PostProcessLayer()
+        {
+            std::cout << "LAYER DELETED!!!!!!!!!!!!!!!!!!!!! WTF?????????\n";
+        }
+        
         template<typename EffectT>
         requires(std::is_base_of_v<PostProcessEffect, EffectT>)
         void addEffect(const Ref<EffectT>& effect) noexcept
@@ -103,7 +108,7 @@ namespace SGCore
             }
         }
 
-        const size_t& getIndex() const noexcept
+        const std::uint16_t& getIndex() const noexcept
         {
             return m_index;
         }

@@ -150,9 +150,8 @@ SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addOrGetLaye
         return foundPPLayer;
     }
 
-    m_layers.emplace_back(MakeRef<PostProcessLayer>());
+    auto newPPLayer = MakeRef<PostProcessLayer>();
     
-    auto& newPPLayer = *m_layers.rbegin();
     // without - 1 because 0 is always default FB
     newPPLayer->m_index = m_layers.empty() ? 0 : getLayersMaximumIndex() + 1;
 
@@ -161,6 +160,8 @@ SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addOrGetLaye
     // adding one sub pass
     PostProcessFXSubPass subPass;
     newPPLayer->m_subPasses.push_back(subPass);
+    
+    m_layers.push_back(newPPLayer);
 
     return newPPLayer;
 }

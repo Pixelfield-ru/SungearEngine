@@ -25,16 +25,16 @@ namespace SGCore
             /*spdlog::error("GL CALLBACK: {0} type = 0x{1}, severity = 0x{2}, message = {3}\n",
                      (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
                      type, severity, message);*/
-            /*fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+            fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
                      ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
-                     type, severity, message );*/
+                     type, severity, message );
         }
         
         static void init() noexcept
         {
             // todo:
-            // glEnable(GL_DEBUG_OUTPUT);
-            // glDebugMessageCallback(messageCallback, 0);
+            glEnable(GL_DEBUG_OUTPUT);
+            glDebugMessageCallback(messageCallback, 0);
             
             GLint extensionsNum = 0;
             glGetIntegerv(GL_NUM_EXTENSIONS, &extensionsNum);

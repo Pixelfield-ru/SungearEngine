@@ -17,7 +17,7 @@ namespace SGCore
         std::shared_ptr<IVertexArray> create() noexcept final;
         void destroy() noexcept final;
 
-        std::shared_ptr<IVertexArray> bind() noexcept final;
+        void bind() noexcept final;
     };
 }
 

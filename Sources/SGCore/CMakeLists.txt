@@ -118,7 +118,6 @@
          glaze::glaze
          unofficial::lunasvg::lunasvg
          rapidjson
-         antlr4_shared
 
          ${SG_BULLET_LIBS}
          ${FREETYPE_LIBRARIES}
@@ -130,7 +129,10 @@
 
   target_link_libraries(${PROJECT_NAME} PUBLIC
           ${CMAKE_DL_LIBS}
-          ${Backtrace_LIBRARY})
+          ${Backtrace_LIBRARY}
+          antlr4_static)
+ else()
+  target_link_libraries(${PROJECT_NAME} PUBLIC antlr4_shared)
  endif()
 
  #target_link_libraries(${PROJECT_NAME} PUBLIC -static-libgcc -static-libstdc++)
