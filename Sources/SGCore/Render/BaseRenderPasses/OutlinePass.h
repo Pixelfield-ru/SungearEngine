@@ -9,7 +9,7 @@
 
 namespace SGCore
 {
-    struct IMeshData;
+    class IMeshData;
 
     struct OutlinePass : public IRenderPass
     {

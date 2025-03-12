@@ -31,7 +31,7 @@ out VSOut
 
 void main()
 {
-    si = float(sliceIndexAttribute);
+    // si = float(sliceIndexAttribute);
 
     vec3 finalVertexPos = calc9SliceVertexPos(positionsAttribute, sliceIndexAttribute, u_elementSize, u_totalBorderSize);
 

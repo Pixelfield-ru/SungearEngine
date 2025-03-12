@@ -17,7 +17,7 @@
 
 namespace SGCore
 {
-    struct IMeshData;
+    class IMeshData;
 
     struct BoneVertexWeight
     {

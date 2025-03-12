@@ -124,7 +124,7 @@
 
          )
 
- if(POSIX OR APPLE)
+ if(UNIX OR APPLE)
   find_library(Backtrace_LIBRARY backtrace)
 
   target_link_libraries(${PROJECT_NAME} PUBLIC

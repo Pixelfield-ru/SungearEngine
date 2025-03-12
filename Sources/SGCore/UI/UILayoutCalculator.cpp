@@ -75,19 +75,21 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
             uiComponent.m_transformTree.m_elements[currentUITransformNodeIdx].m_children.push_back(newChildNodeIdx);
         }
     }
-
+    
+    // TODO: WTF WITH THIS WHY IF I MOVE IT ABOVE THE CYCLE THEN IT WILL WORK
     if(parentTransformNode)
     {
         calculateElementLayout(parentUIElement, *parentTransformNode, currentTransformNode);
     }
-
+    
     currentElementCache.m_curLocalPositionForElements = glm::vec3 { currentTransformNode.m_currentElementCache.m_finalSize, 0.0f } / -2.0;
     currentElementCache.m_curLocalPositionForElements.x += currentElementCache.m_leftPadding;
     currentElementCache.m_curLocalPositionForElements.y += currentElementCache.m_topPadding;
     currentElementCache.m_lastRowSize = { };
     currentElementCache.m_contentSize.x = currentElementCache.m_leftPadding + currentElementCache.m_rightPadding;
     currentElementCache.m_contentSize.y = currentElementCache.m_topPadding + currentElementCache.m_bottomPadding;
-
+    
+    // TODO: WTF WITH THIS WHY IF I MOVE IT ABOVE THE CYCLE THEN IT WILL WORK
     TransformUtils::calculateTransform(currentTransformNode.m_transform, parentTransform);
 
     // =================================================================== reset some cache data
