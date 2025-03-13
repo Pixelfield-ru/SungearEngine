@@ -37,7 +37,7 @@
     "version>=" : "1.13.0"
   }, {
     "name" : "stb",
-    "version>=" : "2023-04-11#1"
+    "version>=" : "2024-07-29#1"
   }, {
     "name" : "vcpkg-cmake",
     "version>=" : "2023-05-04"

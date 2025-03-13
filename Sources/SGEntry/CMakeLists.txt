@@ -16,7 +16,7 @@ target_include_directories(${SG_EXEC_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/Externals/OpenGL/include
         )
 
-target_link_libraries(${SG_EXEC_NAME} PUBLIC
+target_link_libraries(${SG_EXEC_NAME} PRIVATE
         spdlog::spdlog
         SGCore
         )

@@ -463,18 +463,17 @@ void main()
     // ambient = ambient * albedo.rgb * ao;
     ambient = albedo.rgb * ao;
     vec3 finalCol = ambient * u_materialAmbientCol.rgb * materialAmbientFactor + ambient + lo;
-    float exposure = 0.5;
+    float exposure = 0.7;
 
     // finalCol *= dirLightsShadowCoeff;
 
     // HDR standard tonemapper
-    // ВЫГЛЯДИТ ПЛОХО
     /*finalCol = finalCol / (finalCol + vec3(1.0));
     finalCol = pow(finalCol, vec3(1.0 / exposure));*/
     finalCol = ACESTonemap(finalCol, exposure);
     // finalCol = lottes(finalCol);
     // finalCol = reinhard2(finalCol);
-    //finalCol = reinhard(finalCol);
+    // finalCol = reinhard(finalCol);
     // finalCol = neutral(finalCol);
     // finalCol = filmic(finalCol);
 
