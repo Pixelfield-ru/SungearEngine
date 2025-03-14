@@ -103,6 +103,9 @@ uniform int mat_diffuseSamplers_CURRENT_COUNT;
 uniform sampler2D mat_metalnessSamplers[1];
 uniform int mat_metalnessSamplers_CURRENT_COUNT;
 
+uniform sampler2D mat_specularSamplers[1];
+uniform int mat_specularSamplers_CURRENT_COUNT;
+
 uniform sampler2D mat_normalsSamplers[1];
 uniform int mat_normalsSamplers_CURRENT_COUNT;
 
@@ -206,6 +209,7 @@ void main()
 
     vec4 diffuseColor = vec4(u_materialDiffuseCol);
     vec4 aoRoughnessMetallic = vec4(materialAmbientFactor, u_materialRoughnessFactor, u_materialMetallicFactor, 1);
+    float specularCoeff = 0.0;
     vec3 normalMapColor = vec3(0);
     vec3 finalNormal = vec3(0);
 
@@ -231,6 +235,21 @@ void main()
             }
         }
     }
+
+    {
+        if(mat_specularSamplers_CURRENT_COUNT > 0)
+        {
+            float mixCoeff = 1.0 / mat_specularSamplers_CURRENT_COUNT;
+
+            specularCoeff = 0.0;
+
+            for (int i = 0; i < mat_specularSamplers_CURRENT_COUNT; ++i)
+            {
+                specularCoeff += texture(mat_specularSamplers[i], finalUV).r * mixCoeff;
+            }
+        }
+    }
+
 
     /*if(diffuseColor.a < 0.1)
     {
@@ -448,7 +467,7 @@ void main()
         // vec3 ctNumerator = vec3(1.0, 1.0, 1.0) * G;
         vec3 ctNumerator = D * F * G;
         float ctDenominator = 1.0 * NdotVD * NdotL;
-        vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * u_materialSpecularCol.rgb;
+        vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * u_materialSpecularCol.r;
         // vec3 specular = ctNumerator / (ctDenominator + 0.001);
         //vec3 specular = vec3(0.1);
 
@@ -486,6 +505,19 @@ void main()
 
     // layerColor.rgb = vsIn.bonesWeights.rgb;
 
+    // DEBUG ==================================
+    // base color
+    // finalCol.rgb = albedo.rgb; // PASSED
+    // finalCol.rgb = vec3(albedo.r, albedo.g, albedo.b); // PASSED
+    // finalCol.rgb = vec3(metalness); // PASSED
+    // finalCol.rgb = vec3(roughness); // PASSED
+    // finalCol.rgb = vec3(u_materialSpecularCol.r); // PASSED
+    // finalCol.rgb = finalNormal;
+    // finalCol.rgb = normalizedNormal;
+    // finalCol.rgb = normalMapColor; // PASSED
+    // finalCol.rgb = vec3(ao); // PASSED
+    // finalCol.rgb = vec3(vsIn.UV, 1.0);
+
     // todo: make
     // if(u_isStochasticTransparencyEnabled) // todo: impl
     {
@@ -522,18 +554,6 @@ void main()
     fragColor1 = vec4(normalMapColor, 1.0);*/
 
     // layerColor.rgb = vec3(1.0);
-
-    // DEBUG ==================================
-    // base color
-    // layerColor.rgb = albedo.rgb; // PASSED
-    // layerColor.rgb = vec3(albedo.r, albedo.g, albedo.b); // PASSED
-    // layerColor.rgb = vec3(metalness); // PASSED
-    // layerColor.rgb = vec3(roughness); // PASSED
-    // layerColor.rgb = finalNormal;
-    // layerColor.rgb = normalizedNormal;
-    // layerColor.rgb = normalMapColor; // PASSED
-    // layerColor.rgb = vec3(ao); // PASSED
-    // layerColor.rgb = vec3(vsIn.UV, 1.0);
 }
 
 #end

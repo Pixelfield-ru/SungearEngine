@@ -28,6 +28,18 @@
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Graphics/API/ICubemapTexture.h"
 
+#ifdef PLATFORM_OS_WINDOWS
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <windows.h>
+    __declspec(dllexport) DWORD NvOptimusEnablement = 1;
+    __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+#ifdef __cplusplus
+}
+#endif
+#endif
+
 SGCore::AssetRef<SGCore::IShader> screenShader;
 SGCore::Ref<SGCore::Scene> scene;
 SGCore::Ref<SGCore::IMeshData> quadMesh;
