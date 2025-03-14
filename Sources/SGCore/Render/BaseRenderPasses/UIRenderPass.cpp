@@ -51,8 +51,6 @@ void SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::reg_t& c
     auto& currentTransformNode = uiComponent.m_transformTree.m_elements[currentTransformNodeIdx];
     auto& currentElementCache = currentTransformNode.m_currentElementCache;
 
-    currentTransformNode.m_lastElementCache = currentElementCache;
-
     // =================================================================== rendering uielement
 
     const auto uiElementShader = currentUIElement->m_shader;
