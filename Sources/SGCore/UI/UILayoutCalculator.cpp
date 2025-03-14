@@ -11,19 +11,22 @@ void SGCore::UI::UILayoutCalculator::fixedUpdate(const double& dt, const double&
 {
     auto scene = getScene();
 
-    m_currentProceedUIElements = 0;
-
     auto uiComponentsView = scene->getECSRegistry()->view<UIComponent>();
 
     uiComponentsView.each([this](UIComponent::reg_t& uiComponent) {
-        processUIElement(-1, uiComponent, uiComponent.m_document->m_rootElement, nullptr);
+        m_currentProceedUIElements = 0;
+        
+        bool isTreeFormed = true;
+        
+        processUIElement(-1, uiComponent, uiComponent.m_document->m_rootElement, nullptr, isTreeFormed);
     });
 }
 
 std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t& parentUITreeNodeIdx,
                                                               UIComponent::reg_t& uiComponent,
                                                               const Ref<UIElement>& currentUIElement,
-                                                              const Ref<UIElement>& parentUIElement) noexcept
+                                                              const Ref<UIElement>& parentUIElement,
+                                                              bool& isTreeFormed) noexcept
 {
     m_currentProceedUIElements++;
 
@@ -40,6 +43,7 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
         uiComponent.m_transformTree.m_elements[currentUITransformNodeIdx].m_parent = parentUITreeNodeIdx;
 
         isCreatedNewTransformNode = true;
+        isTreeFormed = false;
     }
 
     auto& currentTransformNode = uiComponent.m_transformTree.m_elements[currentUITransformNodeIdx];
@@ -67,7 +71,7 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
     for(const auto& child : currentUIElement->m_children)
     {
         const std::int64_t newChildNodeIdx = processUIElement(currentUITransformNodeIdx, uiComponent,
-                                                              child, currentUIElement);
+                                                              child, currentUIElement, isTreeFormed);
 
         // new child was created
         if(newChildNodeIdx != -1)
@@ -76,21 +80,23 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
         }
     }
     
-    // TODO: WTF WITH THIS WHY IF I MOVE IT ABOVE THE CYCLE THEN IT WILL WORK
-    if(parentTransformNode)
+    if(isTreeFormed)
     {
-        calculateElementLayout(parentUIElement, *parentTransformNode, currentTransformNode);
+        if(parentTransformNode)
+        {
+            calculateElementLayout(parentUIElement, *parentTransformNode, currentTransformNode);
+        }
+        
+        currentElementCache.m_curLocalPositionForElements =
+                glm::vec3 { currentTransformNode.m_currentElementCache.m_finalSize, 0.0f } / -2.0;
+        currentElementCache.m_curLocalPositionForElements.x += currentElementCache.m_leftPadding;
+        currentElementCache.m_curLocalPositionForElements.y += currentElementCache.m_topPadding;
+        currentElementCache.m_lastRowSize = {};
+        currentElementCache.m_contentSize.x = currentElementCache.m_leftPadding + currentElementCache.m_rightPadding;
+        currentElementCache.m_contentSize.y = currentElementCache.m_topPadding + currentElementCache.m_bottomPadding;
+        
+        TransformUtils::calculateTransform(currentTransformNode.m_transform, parentTransform);
     }
-    
-    currentElementCache.m_curLocalPositionForElements = glm::vec3 { currentTransformNode.m_currentElementCache.m_finalSize, 0.0f } / -2.0;
-    currentElementCache.m_curLocalPositionForElements.x += currentElementCache.m_leftPadding;
-    currentElementCache.m_curLocalPositionForElements.y += currentElementCache.m_topPadding;
-    currentElementCache.m_lastRowSize = { };
-    currentElementCache.m_contentSize.x = currentElementCache.m_leftPadding + currentElementCache.m_rightPadding;
-    currentElementCache.m_contentSize.y = currentElementCache.m_topPadding + currentElementCache.m_bottomPadding;
-    
-    // TODO: WTF WITH THIS WHY IF I MOVE IT ABOVE THE CYCLE THEN IT WILL WORK
-    TransformUtils::calculateTransform(currentTransformNode.m_transform, parentTransform);
 
     // =================================================================== reset some cache data
 
@@ -116,8 +122,8 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(const Ref<UIElement>
 
     if(parentUIElement->getType() != UIElementType::ET_ROOT)
     {
-        /*parentElementTransform.m_transform.m_ownTransform.m_position.x += (parentElementCache.m_finalSize.x - lastParentElementCache.m_finalSize.x) / 2.0f;
-        parentElementTransform.m_transform.m_ownTransform.m_position.y += (parentElementCache.m_finalSize.y - lastParentElementCache.m_finalSize.y) / 2.0f;*/
+        parentElementTransform.m_transform.m_ownTransform.m_position.x += (parentElementCache.m_finalSize.x - lastParentElementCache.m_finalSize.x) / 2.0f;
+        parentElementTransform.m_transform.m_ownTransform.m_position.y += (parentElementCache.m_finalSize.y - lastParentElementCache.m_finalSize.y) / 2.0f;
     }
 
     if(parentSelector->m_display == UI::DisplayKeyword::KW_FLEX)

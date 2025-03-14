@@ -120,6 +120,9 @@ void onUpdate(const double& dt, const double& fixedDt)
 
     attachmentToDisplay->bind(0);
     screenShader->useTextureBlock("u_bufferToDisplay", 0);
+    
+    // use this to flip screen output
+    screenShader->useInteger("u_flipOutput", true);
 
     SGCore::CoreMain::getRenderer()->renderArray(
         quadMesh->getVertexArray(),

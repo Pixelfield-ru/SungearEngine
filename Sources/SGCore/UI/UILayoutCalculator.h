@@ -21,12 +21,14 @@ namespace SGCore::UI
          *
          * @param uiComponent
          * @param currentUIElement
+         * @param isTreeFormed Indicates if transform tree was formed. False if some new node was created.
          * @return New child transform node index. Returns -1 if new node was created. Else returns bigger then zero number.
          */
         std::int64_t processUIElement(const std::int64_t& parentUITreeNodeIdx,
                                       UIComponent::reg_t& uiComponent,
                                       const Ref<UIElement>& currentUIElement,
-                                      const Ref<UIElement>& parentUIElement) noexcept;
+                                      const Ref<UIElement>& parentUIElement,
+                                      bool& isTreeFormed) noexcept;
 
         static void calculateElementLayout(const Ref<UIElement>& parentUIElement,
                                            UITransformTreeElement& parentElementTransform,
