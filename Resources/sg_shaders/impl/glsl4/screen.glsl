@@ -34,11 +34,23 @@ in VSOut
 } vsIn;
 
 uniform sampler2D u_bufferToDisplay;
+// bool
+uniform bool u_flipOutput;
 
 void main()
 {
     // gl_FragColor = vec4(vsIn.UV, 1.0, 1.0);
-    gl_FragColor = vec4(texture(u_bufferToDisplay, vec2(vsIn.UV.x - 1.0, 1.0 - vsIn.UV.y) / 2.0).xyz, 1.0);
+    float uvY = vsIn.UV.y;
+    if(u_flipOutput)
+    {
+        uvY = 1.0 - uvY;
+    }
+    else
+    {
+        uvY = uvY - 1.0;
+    }
+
+    gl_FragColor = vec4(texture(u_bufferToDisplay, vec2(vsIn.UV.x - 1.0, uvY) / 2.0).xyz, 1.0);
 }
 
 #end
