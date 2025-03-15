@@ -84,7 +84,9 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
     {
         if(parentTransformNode)
         {
-            calculateElementLayout(parentUIElement, *parentTransformNode, currentTransformNode);
+            const bool isFirstChildElement = (parentTransformNode && !parentTransformNode->m_children.empty()) ?
+                parentTransformNode->m_children[0] == currentUITransformNodeIdx : 0;
+            calculateElementLayout(isFirstChildElement, parentUIElement, *parentTransformNode, currentTransformNode);
         }
         
         currentElementCache.m_curLocalPositionForElements =
@@ -110,7 +112,8 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
     return -1;
 }
 
-void SGCore::UI::UILayoutCalculator::calculateElementLayout(const Ref<UIElement>& parentUIElement,
+void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildElement,
+                                                            const Ref<UIElement>& parentUIElement,
                                                             UITransformTreeElement& parentElementTransform,
                                                             UITransformTreeElement& currentElementTransform) noexcept
 {
@@ -127,7 +130,8 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(const Ref<UIElement>
         if(parentSelector->m_flexDirection == UI::FlexboxKeyword::KW_ROW)
         {
             // moving cursor to a new line if current element is bigger than (containerSize.x / 2 - rightPadding)
-            if(parentElementCache.m_curLocalPositionForElements.x + currentElementCache.m_finalSize.x > parentElementCache.m_finalSize.x / 2.0f - parentElementCache.m_rightPadding)
+            if(parentElementCache.m_curLocalPositionForElements.x + currentElementCache.m_finalSize.x > parentElementCache.m_finalSize.x / 2.0f - parentElementCache.m_rightPadding &&
+               !isFirstChildElement)
             {
                 parentElementCache.m_curLocalPositionForElements.x = parentElementCache.m_finalSize.x / -2.0f + parentElementCache.m_leftPadding;
                 parentElementCache.m_curLocalPositionForElements.y += parentElementCache.m_lastRowSize.y + parentElementCache.m_gap.y;

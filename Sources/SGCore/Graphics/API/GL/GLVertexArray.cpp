@@ -39,7 +39,7 @@ void SGCore::GLVertexArray::destroy() noexcept
 
 void SGCore::GLVertexArray::bind() noexcept
 {
-    SG_ASSERT(glIsBuffer(m_handler), fmt::format("OGL: Can not bind vertex array! Vertex array with handler '{}' is invalid", m_handler).c_str());
+    // SG_ASSERT(glIsBuffer(m_handler), fmt::format("OGL: Can not bind vertex array! Vertex array with handler '{}' is invalid", m_handler).c_str());
     
     glBindVertexArray(m_handler);
 

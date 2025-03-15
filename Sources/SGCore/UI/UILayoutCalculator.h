@@ -30,7 +30,8 @@ namespace SGCore::UI
                                       const Ref<UIElement>& parentUIElement,
                                       bool& isTreeFormed) noexcept;
 
-        static void calculateElementLayout(const Ref<UIElement>& parentUIElement,
+        static void calculateElementLayout(bool isFirstChildElement,
+                                           const Ref<UIElement>& parentUIElement,
                                            UITransformTreeElement& parentElementTransform,
                                            UITransformTreeElement& currentElementTransform) noexcept;
 

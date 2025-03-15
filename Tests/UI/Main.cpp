@@ -101,6 +101,8 @@ void coreInit()
 
 void onUpdate(const double& dt, const double& fixedDt)
 {
+    SGCore::CoreMain::getWindow().setTitle("UI Test. FPS: " + std::to_string(SGCore::CoreMain::getFPS()));
+
     if(SGCore::Scene::getCurrentScene())
     {
         SGCore::Scene::getCurrentScene()->update(dt, fixedDt);
