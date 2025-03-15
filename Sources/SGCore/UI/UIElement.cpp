@@ -40,6 +40,8 @@ void SGCore::UI::UIElement::useUniforms(UIElementCache& thisElementCache) const 
     });
 
     m_shader->useVectorf("u_totalBorderSize", elementCache.m_totalBorderSize);
+
+    m_shader->useInteger("u_layer", elementCache.m_layer);
 }
 
 void SGCore::UI::UIElement::calculateLayout(const UIElementCache* parentElementCache,

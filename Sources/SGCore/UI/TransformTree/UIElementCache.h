@@ -46,6 +46,9 @@ namespace SGCore::UI
 
         /// used if nowrap to fit parent (this) element
         glm::vec2 m_childrenElementsScale { 1.0, 1.0 };
+
+        /// used to calculate Z position
+        std::int32_t m_layer = 0;
     };
 }
 

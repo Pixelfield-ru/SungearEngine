@@ -22,12 +22,12 @@ SGCore::UI::UIRoot::UIRoot() noexcept
         .m_radiusY = bottomRightRadius
     };
 
-    auto topPadding = MakeRef<CSSMathNumericNode>();
+    /*auto topPadding = MakeRef<CSSMathNumericNode>();
     topPadding->m_value = 250;
 
     m_selector->m_padding.setWithAlternative({});
     m_selector->m_padding.getFromAlternativeValue<0>() = topPadding;
-    m_selector->m_padding.getFromAlternativeValue<3>() = topPadding;
+    m_selector->m_padding.getFromAlternativeValue<3>() = topPadding;*/
     
     m_selector->m_display = UI::DisplayKeyword::KW_BLOCK;
 }

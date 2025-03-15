@@ -49,17 +49,25 @@ void SGCore::UI::CSSSelector::calculateCache(const UIElementCache* parentElement
     {
         thisElementCache.m_basicSize.x = m_width.getFromAlternativeValue<0>()->calculate(
             parentElementCache ? &parentElementCache->m_finalSize.x : nullptr);
-
-        thisElementCache.m_finalSize.x = thisElementCache.m_basicSize.x;
     }
 
     if(m_height.containsAlternative())
     {
         thisElementCache.m_basicSize.y = m_height.getFromAlternativeValue<0>()->calculate(
             parentElementCache ? &parentElementCache->m_finalSize.y : nullptr);
-
-        thisElementCache.m_finalSize.y = thisElementCache.m_basicSize.y;
     }
+    else
+    {
+        const PositionAndSizeKeyword keyword = m_height.getKeyword();
+
+        if(keyword == PositionAndSizeKeyword::KW_AUTO)
+        {
+            thisElementCache.m_basicSize.y = 0.0f;
+        }
+    }
+
+    thisElementCache.m_finalSize.x = thisElementCache.m_basicSize.x;
+    thisElementCache.m_finalSize.y = thisElementCache.m_basicSize.y;
 
     if(m_backgroundColor.containsAlternative())
     {

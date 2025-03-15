@@ -83,9 +83,10 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(const double& dt, const double& 
         }
         
         renderingBase->m_frustum = { renderingBase->m_projectionSpaceMatrix };
-        
+
         renderingBase->m_orthographicMatrix = glm::ortho<float>(renderingBase->m_left, renderingBase->m_right,
-                                                                renderingBase->m_bottom, renderingBase->m_top);
+                                                                renderingBase->m_bottom, renderingBase->m_top,
+                                                                renderingBase->m_zNear, renderingBase->m_zFar);
         
         {
             renderingBase->m_orthographicSpaceMatrix =

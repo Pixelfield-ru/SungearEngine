@@ -115,6 +115,8 @@ void onUpdate(const double& dt, const double& fixedDt)
     cameraRenderingBase->m_right = windowSizeX / 2.0f;
     cameraRenderingBase->m_top = windowSizeY / 2.0f;
     cameraRenderingBase->m_bottom = -windowSizeY / 2.0f;
+    cameraRenderingBase->m_zNear = -100;
+    cameraRenderingBase->m_zFar = 100;
 
     screenShader->bind();
 

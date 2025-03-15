@@ -19,6 +19,9 @@ uniform vec2 u_elementSize;
 // REQUIRED UNIFORM!!
 uniform vec2 u_totalBorderSize;
 
+// REQUIRED UNIFORM!!
+uniform int u_layer;
+
 out float si;
 
 out VSOut
@@ -38,7 +41,7 @@ void main()
     vsOut.UV = UVAttribute.xy;
     vsOut.vertexPos = finalVertexPos;
     // vsOut.fragPos = vec3(objectTransform.modelMatrix * vec4(positionsAttribute.xy * (meshAABBCenterOffset * 10.0), 0.0, 1.0));
-    vsOut.fragPos = vec3(objectTransform.modelMatrix * vec4(finalVertexPos.xy, 0.0, 1.0));
+    vsOut.fragPos = vec3(objectTransform.modelMatrix * vec4(finalVertexPos.xy, float(u_layer), 1.0));
 
     gl_Position = camera.orthographicSpaceMatrix * vec4(vsOut.fragPos, 1.0);
 }

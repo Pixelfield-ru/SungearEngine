@@ -60,6 +60,8 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
 
     // =================================================================== calculating transform
 
+    currentTransformNode.m_currentElementCache.m_layer = parentElementCache ? parentElementCache->m_layer + 1 : 0;
+
     currentUIElement->calculateLayout(parentElementCache,
                                       currentTransformNode.m_lastElementCache,
                                       currentTransformNode.m_currentElementCache,
@@ -146,7 +148,7 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(const Ref<UIElement>
 
             parentElementCache.m_curLocalPositionForElements.x += currentElementCache.m_finalSize.x + parentElementCache.m_gap.x;
 
-            if(parentElementCache.m_contentSize.y + parentElementCache.m_lastRowSize.y > parentElementCache.m_finalSize.y)
+            if(parentElementCache.m_contentSize.y + parentElementCache.m_lastRowSize.y > parentElementCache.m_finalSize.y && parentUIElement->m_selector->m_height.containsKeyword())
             {
                 parentElementCache.m_finalSize.y = parentElementCache.m_contentSize.y + parentElementCache.m_lastRowSize.y;
 
