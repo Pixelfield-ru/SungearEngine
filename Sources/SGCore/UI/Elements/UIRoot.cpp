@@ -29,7 +29,7 @@ SGCore::UI::UIRoot::UIRoot() noexcept
     m_selector->m_padding.getFromAlternativeValue<0>() = topPadding;
     m_selector->m_padding.getFromAlternativeValue<3>() = topPadding;
     
-    // m_selector->m_display = UI::DisplayKeyword::KW_NONE;
+    m_selector->m_display = UI::DisplayKeyword::KW_BLOCK;
 }
 
 void SGCore::UI::UIRoot::doCalculateLayout(const UIElementCache* parentElementCache,

@@ -129,7 +129,7 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(const Ref<UIElement>
             {
                 parentElementCache.m_curLocalPositionForElements.x = parentElementCache.m_finalSize.x / -2.0f + parentElementCache.m_leftPadding;
                 parentElementCache.m_curLocalPositionForElements.y += parentElementCache.m_lastRowSize.y + parentElementCache.m_gap.y;
-                parentElementCache.m_contentSize.y += parentElementCache.m_lastRowSize.y;
+                parentElementCache.m_contentSize.y += parentElementCache.m_lastRowSize.y + parentElementCache.m_gap.y;
 
                 parentElementCache.m_lastRowSize.y = 0.0f;
             }
@@ -146,22 +146,28 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(const Ref<UIElement>
 
             parentElementCache.m_curLocalPositionForElements.x += currentElementCache.m_finalSize.x + parentElementCache.m_gap.x;
 
-            if(parentElementCache.m_contentSize.y + parentElementCache.m_lastRowSize.y + parentElementCache.m_gap.y > parentElementCache.m_finalSize.y)
+            if(parentElementCache.m_contentSize.y + parentElementCache.m_lastRowSize.y > parentElementCache.m_finalSize.y)
             {
-                auto lastHeight = lastParentElementCache.m_finalSize.y;
-                parentElementCache.m_finalSize.y = parentElementCache.m_contentSize.y + parentElementCache.m_lastRowSize.y + parentElementCache.m_gap.y;
-                
-                // parentElementTransform.m_transform.m_ownTransform.m_position.y += (parentElementCache.m_finalSize.y - lastHeight) / 2.0f;
-                if(parentUIElement->getType() != UIElementType::ET_ROOT)
-                {
-                    // parentElementTransform.m_transform.m_ownTransform.m_position.x += (parentElementCache.m_finalSize.x - lastParentElementCache.m_finalSize.x) / 2.0f;
-                    // parentElementTransform.m_transform.m_ownTransform.m_position.y += (parentElementCache.m_finalSize.y - lastParentElementCache.m_finalSize.y) / 2.0f;
-                }
+                parentElementCache.m_finalSize.y = parentElementCache.m_contentSize.y + parentElementCache.m_lastRowSize.y;
+
+                // parentElementTransform.m_transform.m_ownTransform.m_position.x += (parentElementCache.m_finalSize.x - lastParentElementCache.m_finalSize.x) / 2.0f;
+                parentElementTransform.m_transform.m_ownTransform.m_position.y += (parentElementCache.m_finalSize.y - lastParentElementCache.m_finalSize.y) / 2.0f;
             }
         }
         else if(parentSelector->m_flexDirection == UI::FlexboxKeyword::KW_COLUMN)
         {
 
         }
+    }
+    else if(parentSelector->m_display == DisplayKeyword::KW_BLOCK)
+    {
+        glm::vec3 currentElementPos = parentElementCache.m_curLocalPositionForElements;
+        currentElementPos += glm::vec3 { currentElementCache.m_finalSize, 0.0 } / 2.0f;
+
+        currentElementTransform.m_transform.m_ownTransform.m_position = currentElementPos;
+
+        currentElementCache.m_contentSize.y += currentElementCache.m_finalSize.y + parentElementCache.m_gap.y;
+
+        parentElementCache.m_curLocalPositionForElements.y += currentElementCache.m_finalSize.y + parentElementCache.m_gap.y;
     }
 }
