@@ -3,6 +3,16 @@
 //
 #include "CSSSelector.h"
 
+#include "SGCore/UI/FontsManager.h"
+
+SGCore::UI::CSSSelector::CSSSelector() noexcept
+{
+    // setting default font
+    m_font = FontsManager::getAssetManager()->getAsset<Font, AssetStorageType::BY_ALIAS>("times-new-roman");
+
+    setFontSpecializationSettings(m_fontSpecializationSettings);
+}
+
 const std::string& SGCore::UI::CSSSelector::getName() const noexcept
 {
     return m_name;
@@ -119,6 +129,46 @@ void SGCore::UI::CSSSelector::calculateCache(const UIElementCache* parentElement
 
         thisElementCache.m_borderRadiusCache[3].y = alternativeValue.m_radiusY->calculate(&thisElementCache.m_finalSize.y);
     }
+}
+
+void SGCore::UI::CSSSelector::setFontSpecializationSettings(const FontSpecializationSettings& settings) noexcept
+{
+    m_fontSpecializationSettings = settings;
+
+    auto lockedFont = m_font.lock();
+
+    if(lockedFont)
+    {
+        if(!lockedFont->isSpecializationExists(m_fontSpecializationSettings))
+        {
+            auto specialization = lockedFont->addOrGetSpecialization(m_fontSpecializationSettings);
+            specialization->parse(u'A', u'Z');
+            specialization->parse(u'a', u'z');
+            specialization->parse(u'А', u'Я');
+            specialization->parse(u'а', u'я');
+            specialization->parse(u'0', u'0');
+            specialization->parse({ u'!', u'@', u'"', u'\'', u'№', u'#', u'$', u';', u'%', u'^', u':', u'&', u'?', u'*', u'(', u')', u'-', u'_', u'+', u'=', u'|', u'\\', u'/', u'.', u',', u'`', u'{', u'}', u'[', u']', u'~' });
+
+            specialization->createAtlas();
+            specialization->saveAtlasAsTexture(m_fontSpecializationSettings.m_name + ".png");
+
+            m_fontSpecialization = specialization;
+        }
+        else
+        {
+            m_fontSpecialization = lockedFont->getSpecialization(m_fontSpecializationSettings);
+        }
+    }
+}
+
+const SGCore::UI::FontSpecializationSettings& SGCore::UI::CSSSelector::getFontSpecializationSettings() const noexcept
+{
+    return m_fontSpecializationSettings;
+}
+
+SGCore::Ref<SGCore::UI::FontSpecialization> SGCore::UI::CSSSelector::getFontSpecialization() const noexcept
+{
+    return m_fontSpecialization.lock();
 }
 
 void SGCore::UI::CSSSelector::doLoad(const InterpolatedPath& path)

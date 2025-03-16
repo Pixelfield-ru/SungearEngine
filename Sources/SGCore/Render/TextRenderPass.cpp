@@ -3,26 +3,29 @@
 //
 
 #include "TextRenderPass.h"
+
+#include "LayeredFrameReceiver.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Memory/Assets/Font.h"
 #include "SGCore/Memory/Assets/FontSpecialization.h"
 #include "SGCore/Memory/AssetManager.h"
-#include "SGCore/UI/Text.h"
 #include "SGCore/UI/FontSpecializationRenderer.h"
 #include "UICamera.h"
 #include "RenderingBase.h"
+#include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/API/IRenderer.h"
+#include "SGCore/UI/FontsManager.h"
 
 void SGCore::TextRenderPass::render(const SGCore::Ref<SGCore::Scene>& scene,
                                     const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
 {
-    auto textsView = scene->getECSRegistry()->view<Text, Transform>();
-    auto uiCamerasView = scene->getECSRegistry()->view<UICamera, RenderingBase, Transform>();
-    auto fontsView = AssetManager::getInstance()->getAssetsWithType<Font>();
+    // auto textsView = scene->getECSRegistry()->view<Text, Transform>();
+    auto uiCamerasView = scene->getECSRegistry()->view<LayeredFrameReceiver, RenderingBase, Transform>();
+    auto fontsView = UI::FontsManager::getAssetManager()->getAssetsWithType<UI::Font>();
     
-    textsView.each([](Text::reg_t& text, Transform::reg_t& textTransform) {
+    /*textsView.each([](Text::reg_t& text, Transform::reg_t& textTransform) {
         Ref<Font> font = text.m_usedFont.lock();
         
         if(font)
@@ -34,9 +37,15 @@ void SGCore::TextRenderPass::render(const SGCore::Ref<SGCore::Scene>& scene,
                 fontSpec->getRenderer()->drawText(text, textTransform);
             }
         }
-    });
-    
-    uiCamerasView.each([&fontsView](UICamera::reg_t& uiCamera, RenderingBase::reg_t& renderingBase, Transform::reg_t& transform) {
+    });*/
+
+    uiCamerasView.each([&fontsView](LayeredFrameReceiver::reg_t& cameraReceiver,
+                                         RenderingBase::reg_t& renderingBase,
+                                         Transform::reg_t& transform) {
+        cameraReceiver.m_layersFrameBuffer->bind();
+
+        cameraReceiver.m_layersFrameBuffer->bindAttachmentsToDrawIn(cameraReceiver.m_attachmentToRenderIn);
+
         CoreMain::getRenderer()->prepareUniformBuffers(renderingBase, transform);
 
         for(const auto& font : fontsView)
@@ -46,8 +55,10 @@ void SGCore::TextRenderPass::render(const SGCore::Ref<SGCore::Scene>& scene,
                 spec.second->getRenderer()->drawAll();
             }
         }
+
+        cameraReceiver.m_layersFrameBuffer->unbind();
     });
-    
+
     for(const auto& font : fontsView)
     {
         for(const auto& spec : font->getSpecializations())

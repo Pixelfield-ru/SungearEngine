@@ -7,19 +7,24 @@
 
 #include <SGCore/pch.h>
 
-#include "Text.h"
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Graphics/API/RenderState.h"
+#include "TransformTree/UIElementCache.h"
 
 namespace SGCore
 {
-    struct FontSpecialization;
     class IShader;
-    
+
     class IVertexArray;
     class IVertexBuffer;
     class IIndexBuffer;
-    
+}
+
+namespace SGCore::UI
+{
+    struct FontSpecialization;
+    struct Text;
+
     struct FontSpecializationRenderer
     {
         FontSpecializationRenderer();
@@ -38,7 +43,7 @@ namespace SGCore
 
         Weak<FontSpecialization> m_parentSpecialization;
         
-        void drawText(Text& text, const Ref<Transform>& textTransform) noexcept;
+        void drawText(Text* text, const Transform& textTransform, const UIElementCache& textCache) noexcept;
         
         void drawAll() noexcept;
         
@@ -56,12 +61,12 @@ namespace SGCore
         std::vector<float> m_charactersUVs;
         std::vector<float> m_charactersVerticesPositions;
         // ------------------------------------
-        
+
+        void onRenderPipelineSet() noexcept;
+
         EventListener<void()> m_onRenderPipelineSetEventListener = [this]() {
             onRenderPipelineSet();
         };
-        
-        void onRenderPipelineSet() noexcept;
     };
 }
 

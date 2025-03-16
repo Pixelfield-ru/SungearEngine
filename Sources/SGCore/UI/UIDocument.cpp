@@ -4,12 +4,15 @@
 
 #include "UIDocument.h"
 #include <spdlog/spdlog.h>
+
+#include "Elements/Text.h"
 #include "SGCore/Logger/Logger.h"
 
 #include "UINodesProcessors/UIElementNodeProcessor.h"
 #include "UINodesProcessors/UIRootNodeProcessor.h"
 #include "UINodesProcessors/UIIncludeNodeProcessor.h"
 #include "UINodesProcessors/UIDivNodeProcessor.h"
+#include "UINodesProcessors/UITextNodeProcessor.h"
 
 void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
 {
@@ -103,7 +106,16 @@ SGCore::UI::UIDocument::processUIElement(const pugi::xml_node& xmlNode) noexcept
 
             break;
         }
-        case UIElementType::ET_TEXT:break;
+        case UIElementType::ET_TEXT:
+        {
+            auto element = MakeRef<Text>();
+
+            UIElementNodeProcessor<UIElementType::ET_TEXT>::processElement(this, element, xmlNode);
+
+            outputElement = element;
+
+            break;
+        }
         case UIElementType::ET_UNKNOWN:
         {
             LOG_E(SGCORE_TAG,

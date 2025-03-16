@@ -11,6 +11,8 @@
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "SGCore/UI/UIElementMesh/UIElementMesh.h"
 #include "SGCore/Graphics/API/IVertexArray.h"
+#include "SGCore/UI/FontsManager.h"
+#include "SGCore/UI/FontSpecializationRenderer.h"
 
 void SGCore::UIRenderPass::create(const Ref<IRenderPipeline>& parentRenderPipeline) noexcept
 {
@@ -22,8 +24,9 @@ void SGCore::UIRenderPass::render(const Ref<Scene>& scene,
 {
     auto uiComponentsView = scene->getECSRegistry()->view<UI::UIComponent>();
     auto camerasView = scene->getECSRegistry()->view<LayeredFrameReceiver, EntityBaseInfo, RenderingBase, Transform>();
+    auto fontsView = UI::FontsManager::getAssetManager()->getAssetsWithType<UI::Font>();
 
-    camerasView.each([&uiComponentsView, this](const LayeredFrameReceiver::reg_t& cameraReceiver,
+    camerasView.each([&uiComponentsView, &fontsView, this](const LayeredFrameReceiver::reg_t& cameraReceiver,
                                                const EntityBaseInfo::reg_t& cameraInfo,
                                                const RenderingBase::reg_t& cameraRenderingBase,
                                                const Transform::reg_t& cameraTransform){
@@ -55,7 +58,9 @@ void SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::reg_t& c
 
     const auto uiElementShader = currentUIElement->m_shader;
 
-    if(uiElementShader)
+    const bool isElementCustomRendered = currentUIElement->draw(cameraReceiver, currentTransformNode.m_transform, currentElementCache);
+
+    if(!isElementCustomRendered && uiElementShader)
     {
         const auto defaultPPLayer = cameraReceiver.getDefaultLayer();
 

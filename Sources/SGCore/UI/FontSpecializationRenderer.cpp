@@ -5,6 +5,8 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "FontSpecializationRenderer.h"
+
+#include "SGCore/UI/Elements/Text.h"
 #include "SGCore/Memory/Assets/FontSpecialization.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
@@ -18,7 +20,7 @@
 #include "SGCore/Graphics/API/ITexture2D.h"
 
 // todo: fix rendering with indices
-SGCore::FontSpecializationRenderer::FontSpecializationRenderer()
+SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
 {
     // 4 rows * 4 columns
     m_charactersMatrices.resize(m_maxCharactersCount * 16);
@@ -153,7 +155,8 @@ SGCore::FontSpecializationRenderer::FontSpecializationRenderer()
     }
 }
 
-void SGCore::FontSpecializationRenderer::drawText(SGCore::Text& text, const Ref<Transform>& textTransform) noexcept
+void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transform& textTransform,
+                                                      const UIElementCache& textCache) noexcept
 {
     Ref<FontSpecialization> lockedSpec = m_parentSpecialization.lock();
     
@@ -162,7 +165,7 @@ void SGCore::FontSpecializationRenderer::drawText(SGCore::Text& text, const Ref<
     float curX = 0;
     float curY = 0;
     
-    for(const auto& c : text.m_text)
+    for(const auto& c : text->m_text)
     {
         if(m_currentDrawingCharacter >= m_maxCharactersCount - 1) return;
         
@@ -193,35 +196,35 @@ void SGCore::FontSpecializationRenderer::drawText(SGCore::Text& text, const Ref<
             size_t colorIdx = m_currentDrawingCharacter * 24;
             
             // colors =====================================================
-            m_charactersColors[colorIdx] = text.m_color.r;
-            m_charactersColors[colorIdx + 1] = text.m_color.g;
-            m_charactersColors[colorIdx + 2] = text.m_color.b;
-            m_charactersColors[colorIdx + 3] = text.m_color.a;
+            m_charactersColors[colorIdx] = textCache.m_color.r;
+            m_charactersColors[colorIdx + 1] = textCache.m_color.g;
+            m_charactersColors[colorIdx + 2] = textCache.m_color.b;
+            m_charactersColors[colorIdx + 3] = textCache.m_color.a;
             
-            m_charactersColors[colorIdx + 4] = text.m_color.r;
-            m_charactersColors[colorIdx + 5] = text.m_color.g;
-            m_charactersColors[colorIdx + 6] = text.m_color.b;
-            m_charactersColors[colorIdx + 7] = text.m_color.a;
+            m_charactersColors[colorIdx + 4] = textCache.m_color.r;
+            m_charactersColors[colorIdx + 5] = textCache.m_color.g;
+            m_charactersColors[colorIdx + 6] = textCache.m_color.b;
+            m_charactersColors[colorIdx + 7] = textCache.m_color.a;
             
-            m_charactersColors[colorIdx + 8] = text.m_color.r;
-            m_charactersColors[colorIdx + 9] = text.m_color.g;
-            m_charactersColors[colorIdx + 10] = text.m_color.b;
-            m_charactersColors[colorIdx + 11] = text.m_color.a;
+            m_charactersColors[colorIdx + 8] = textCache.m_color.r;
+            m_charactersColors[colorIdx + 9] = textCache.m_color.g;
+            m_charactersColors[colorIdx + 10] = textCache.m_color.b;
+            m_charactersColors[colorIdx + 11] = textCache.m_color.a;
             
-            m_charactersColors[colorIdx + 12] = text.m_color.r;
-            m_charactersColors[colorIdx + 13] = text.m_color.g;
-            m_charactersColors[colorIdx + 14] = text.m_color.b;
-            m_charactersColors[colorIdx + 15] = text.m_color.a;
+            m_charactersColors[colorIdx + 12] = textCache.m_color.r;
+            m_charactersColors[colorIdx + 13] = textCache.m_color.g;
+            m_charactersColors[colorIdx + 14] = textCache.m_color.b;
+            m_charactersColors[colorIdx + 15] = textCache.m_color.a;
             
-            m_charactersColors[colorIdx + 16] = text.m_color.r;
-            m_charactersColors[colorIdx + 17] = text.m_color.g;
-            m_charactersColors[colorIdx + 18] = text.m_color.b;
-            m_charactersColors[colorIdx + 19] = text.m_color.a;
+            m_charactersColors[colorIdx + 16] = textCache.m_color.r;
+            m_charactersColors[colorIdx + 17] = textCache.m_color.g;
+            m_charactersColors[colorIdx + 18] = textCache.m_color.b;
+            m_charactersColors[colorIdx + 19] = textCache.m_color.a;
             
-            m_charactersColors[colorIdx + 20] = text.m_color.r;
-            m_charactersColors[colorIdx + 21] = text.m_color.g;
-            m_charactersColors[colorIdx + 22] = text.m_color.b;
-            m_charactersColors[colorIdx + 23] = text.m_color.a;
+            m_charactersColors[colorIdx + 20] = textCache.m_color.r;
+            m_charactersColors[colorIdx + 21] = textCache.m_color.g;
+            m_charactersColors[colorIdx + 22] = textCache.m_color.b;
+            m_charactersColors[colorIdx + 23] = textCache.m_color.a;
             
             // matrices =====================================================
             
@@ -229,7 +232,7 @@ void SGCore::FontSpecializationRenderer::drawText(SGCore::Text& text, const Ref<
             
             for(std::uint8_t i = 0; i < 16; ++i)
             {
-                m_charactersMatrices[matrixIdx + i] = *(glm::value_ptr(textTransform->m_finalTransform.m_modelMatrix) + i);
+                m_charactersMatrices[matrixIdx + i] = *(glm::value_ptr(textTransform.m_finalTransform.m_modelMatrix) + i);
             }
             
             // uvs =====================================================
@@ -286,7 +289,7 @@ void SGCore::FontSpecializationRenderer::drawText(SGCore::Text& text, const Ref<
     }
 }
 
-void SGCore::FontSpecializationRenderer::drawAll() noexcept
+void SGCore::UI::FontSpecializationRenderer::drawAll() noexcept
 {
     Ref<FontSpecialization> lockedParentSpec = m_parentSpecialization.lock();
     
@@ -294,7 +297,7 @@ void SGCore::FontSpecializationRenderer::drawAll() noexcept
     
     auto subPassShader = m_textShader;
     
-    if(!subPassShader || subPassShader->getAnalyzedFile()->getSubPassName() != "TextRenderPass") return;
+    if(!subPassShader) return;
     
     size_t charsCount = std::min(m_currentDrawingCharacter, m_maxCharactersCount);
     
@@ -319,12 +322,12 @@ void SGCore::FontSpecializationRenderer::drawAll() noexcept
                                                   charsCount);
 }
 
-void SGCore::FontSpecializationRenderer::resetRenderer() noexcept
+void SGCore::UI::FontSpecializationRenderer::resetRenderer() noexcept
 {
     m_currentDrawingCharacter = 0;
 }
 
-void SGCore::FontSpecializationRenderer::onRenderPipelineSet() noexcept
+void SGCore::UI::FontSpecializationRenderer::onRenderPipelineSet() noexcept
 {
     m_textShader = Ref<IShader>(CoreMain::getRenderer()->createShader());
     m_textShader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
@@ -333,10 +336,10 @@ void SGCore::FontSpecializationRenderer::onRenderPipelineSet() noexcept
     updateUniforms();
 }
 
-void SGCore::FontSpecializationRenderer::updateUniforms() noexcept
+void SGCore::UI::FontSpecializationRenderer::updateUniforms() noexcept
 {
     auto subPassShader = m_textShader;
-    if(subPassShader && subPassShader->getAnalyzedFile()->getSubPassName() == "TextRenderPass")
+    if(subPassShader)
     {
         subPassShader->bind();
 

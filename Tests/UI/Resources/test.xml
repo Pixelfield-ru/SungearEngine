@@ -1,33 +1,7 @@
 <xml>
     <include type="stylesheet" path="test.css"/>
 
-    <div class="window-header">
-        <div class="window-header-1">
-
-        </div>
-
-        <div class="window-header-1">
-
-        </div>
-
-        <div class="window-header-1">
-
-        </div>
-
-        <div class="window-header-1">
-
-        </div>
-
-        <div class="window-header-1">
-
-        </div>
-
-        <div class="window-header-test">
-            <div class="window-header-1">
-
-            </div>
-        </div>
-    </div>
+    <text>SDFSDF</text>
 
     <div class="window-header">
         <div class="window-header-1">
@@ -49,6 +23,10 @@
         <div class="window-header-1">
 
         </div>
+        <div class="window-header-1">
+
+        </div>
+
         <div class="window-header-test">
             <div class="window-header-1">
 
@@ -56,4 +34,62 @@
         </div>
     </div>
 
+    <text>это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!
+это тест ui, тут ничего не происходит!</text>
+
+    <div class="window-header">
+        <div class="window-header-1">
+
+        </div>
+
+        <div class="window-header-1">
+
+        </div>
+
+        <div class="window-header-1">
+
+        </div>
+
+        <div class="window-header-1">
+
+        </div>
+
+        <div class="window-header-1">
+
+        </div>
+        <div class="window-header-test">
+            <div class="window-header-1">
+
+            </div>
+        </div>
+    </div>
 </xml>

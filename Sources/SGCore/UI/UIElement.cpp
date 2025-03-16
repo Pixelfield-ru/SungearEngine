@@ -12,14 +12,19 @@ SGCore::UI::UIElementType SGCore::UI::UIElement::getType() const noexcept
 
 void SGCore::UI::UIElement::useUniforms(UIElementCache& thisElementCache) const noexcept
 {
+    if(!m_shader) return;
+
     auto& elementCache = thisElementCache;
 
-    m_shader->useVectorf("u_meshAABB", glm::vec4 {
-        m_meshData->m_aabb.m_min.x,
-        m_meshData->m_aabb.m_min.y,
-        m_meshData->m_aabb.m_max.y,
-        m_meshData->m_aabb.m_max.y,
-    });
+    if(m_meshData)
+    {
+        m_shader->useVectorf("u_meshAABB", glm::vec4 {
+            m_meshData->m_aabb.m_min.x,
+            m_meshData->m_aabb.m_min.y,
+            m_meshData->m_aabb.m_max.y,
+            m_meshData->m_aabb.m_max.y,
+        });
+    }
 
     m_shader->useVectorf("u_elementSize", elementCache.m_finalSize);
 

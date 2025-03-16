@@ -12,7 +12,10 @@
 namespace SGCore
 {
     class ITexture2D;
-    
+}
+
+namespace SGCore::UI
+{
     struct FontGlyph
     {
         friend struct FontSpecialization;
@@ -34,7 +37,7 @@ namespace SGCore
     
     struct FontSpecializationSettings
     {
-        size_t m_height = 12;
+        size_t m_height = 16;
         std::string m_name = "default";
         
         bool operator==(const FontSpecializationSettings& other) const noexcept;
@@ -55,8 +58,8 @@ namespace SGCore
         
         Ref<ITexture2D> m_atlas;
         
-        void saveTextAsTexture(const std::string& path, const std::u16string& text) const noexcept;
-        void saveAtlasAsTexture(const std::string& path) const noexcept;
+        void saveTextAsTexture(const std::filesystem::path& path, const std::u16string& text) const noexcept;
+        void saveAtlasAsTexture(const std::filesystem::path& path) const noexcept;
         
         void parse(const char16_t& from, const char16_t& to) noexcept;
         void parse(const std::vector<uint16_t>& characters) noexcept;
@@ -90,9 +93,9 @@ namespace SGCore
 }
 
 template<>
-struct std::hash<SGCore::FontSpecializationSettings>
+struct std::hash<SGCore::UI::FontSpecializationSettings>
 {
-    std::size_t operator()(const SGCore::FontSpecializationSettings& k) const
+    std::size_t operator()(const SGCore::UI::FontSpecializationSettings& k) const noexcept
     {
         return std::hash<size_t>()(k.m_height);
     }

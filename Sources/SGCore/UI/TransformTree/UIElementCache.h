@@ -20,7 +20,8 @@ namespace SGCore::UI
          * Final size of element. this size can differ from basic size because element can be auto-resized.
          */
         glm::vec2 m_finalSize { };
-        glm::vec4 m_backgroundColor { };
+        glm::vec4 m_backgroundColor { 1.0 };
+        glm::vec4 m_color { 1.0 };
 
         glm::vec2 m_totalBorderSize { };
 

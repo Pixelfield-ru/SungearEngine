@@ -51,8 +51,8 @@ void SGCore::UI::UIRoot::doCalculateLayout(const UIElementCache* parentElementCa
         thisElementCache.m_gap = { };
     }
 
-    thisElementCache.m_backgroundColor.r = 255.0f;
-    thisElementCache.m_backgroundColor.a = 255.0f;
+    // thisElementCache.m_backgroundColor.r = 255.0f;
+    thisElementCache.m_backgroundColor.a = 0.0f;
 
     int windowSizeX = 0;
     int windowSizeY = 0;

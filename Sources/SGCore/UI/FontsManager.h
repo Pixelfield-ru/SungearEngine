@@ -9,14 +9,26 @@
 
 #include <sgcore_export.h>
 
+#include "SGCore/Main/CoreGlobals.h"
+
 namespace SGCore
+{
+    class AssetManager;
+}
+
+namespace SGCore::UI
 {
     struct SGCORE_EXPORT FontsManager
     {
         static void init() noexcept;
         
         static FT_Library getFTLibrary() noexcept;
+
+        static Ref<AssetManager> getAssetManager() noexcept;
+
     private:
+        static inline Ref<AssetManager> m_fontsAssetsManager;
+
         static inline FT_Library m_FTLib = nullptr;
     };
 }

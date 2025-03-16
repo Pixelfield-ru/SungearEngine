@@ -10,15 +10,16 @@
 #include "IAsset.h"
 #include "FontSpecialization.h"
 
-namespace SGCore
+namespace SGCore::UI
 {
     struct Font : public IAsset
     {
         sg_implement_type_id(Font, 5)
 
-        Ref<FontSpecialization> addOrGetSpecialization(const SGCore::FontSpecializationSettings& fontSpecializationSettings);
+        Ref<FontSpecialization> addOrGetSpecialization(const FontSpecializationSettings& fontSpecializationSettings);
         Ref<FontSpecialization> getSpecialization(const FontSpecializationSettings& fontSpecializationSettings);
-        
+        [[nodiscard]] bool isSpecializationExists(const FontSpecializationSettings& fontSpecializationSettings) const noexcept;
+
         const auto& getSpecializations() const noexcept
         {
             return m_specializations;

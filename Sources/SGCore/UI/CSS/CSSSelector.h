@@ -13,8 +13,11 @@
 #include "SGCore/UI/CSS/PropertyValues/CSSPropertyValue.h"
 
 #include "PropertyValues/CSSPropertyValueKeywords.h"
+#include "SGCore/Memory/AssetManager.h"
+#include "SGCore/Memory/Assets/Font.h"
 
 #include "SGCore/UI/CSS/Math/CSSMathNode.h"
+#include "SGCore/Utils/Macroses.h"
 
 namespace SGCore::UI
 {
@@ -26,6 +29,14 @@ namespace SGCore::UI
 
         friend struct ANTLRCSSListener;
         friend struct CSSFile;
+
+        CSSSelector() noexcept;
+
+        copy_constructor(CSSSelector) = default;
+        move_constructor(CSSSelector) = default;
+
+        copy_operator(CSSSelector) = default;
+        move_operator(CSSSelector) = default;
 
         DisplayKeyword m_display = DisplayKeyword::KW_FLEX;
         FlexboxKeyword m_flexDirection = FlexboxKeyword::KW_ROW;
@@ -46,10 +57,17 @@ namespace SGCore::UI
 
         CSSPropertyValue<ColorKeyword::KW_TRANSPARENT, Ref<CSSMathNode>, Ref<CSSMathNode>, Ref<CSSMathNode>, Ref<CSSMathNode>> m_backgroundColor;
 
+        AssetWeakRef<Font> m_font;
+
         [[nodiscard]] const std::string& getName() const noexcept;
 
         void calculateCache(const UIElementCache* parentElementCache,
                             UIElementCache& thisElementCache) noexcept;
+
+        void setFontSpecializationSettings(const FontSpecializationSettings& settings) noexcept;
+        const FontSpecializationSettings& getFontSpecializationSettings() const noexcept;
+
+        Ref<FontSpecialization> getFontSpecialization() const noexcept;
 
     protected:
         /// NOT SUPPORTED
@@ -62,6 +80,9 @@ namespace SGCore::UI
         void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
 
     private:
+        FontSpecializationSettings m_fontSpecializationSettings;
+        Weak<FontSpecialization> m_fontSpecialization;
+
         std::string m_name;
     };
 }

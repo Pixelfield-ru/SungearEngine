@@ -13,23 +13,22 @@
 #include <set>
 #include <SGCore/Logger/Logger.h>
 
-bool SGCore::FontSpecializationSettings::operator==
-(const SGCore::FontSpecializationSettings& other) const noexcept
+bool SGCore::UI::FontSpecializationSettings::operator==(const SGCore::UI::FontSpecializationSettings& other) const noexcept
 {
     return m_height == other.m_height && m_name == other.m_name;
 }
 
-bool SGCore::FontSpecializationSettings::operator!=(const SGCore::FontSpecializationSettings& other) const noexcept
+bool SGCore::UI::FontSpecializationSettings::operator!=(const SGCore::UI::FontSpecializationSettings& other) const noexcept
 {
     return !(*this == other);
 }
 
-SGCore::FontSpecialization::FontSpecialization()
+SGCore::UI::FontSpecialization::FontSpecialization()
 {
     m_renderer = MakeRef<FontSpecializationRenderer>();
 }
 
-SGCore::FontSpecialization::~FontSpecialization()
+SGCore::UI::FontSpecialization::~FontSpecialization()
 {
     if(m_face)
     {
@@ -37,7 +36,7 @@ SGCore::FontSpecialization::~FontSpecialization()
     }
 }
 
-void SGCore::FontSpecialization::prepareToBuild(const std::string& path)
+void SGCore::UI::FontSpecialization::prepareToBuild(const std::string& path)
 {
     destroyFace();
     
@@ -52,7 +51,7 @@ void SGCore::FontSpecialization::prepareToBuild(const std::string& path)
     FT_Set_Pixel_Sizes(m_face, 0, m_settings.m_height);
 }
 
-void SGCore::FontSpecialization::destroyFace()
+void SGCore::UI::FontSpecialization::destroyFace()
 {
     if(m_face)
     {
@@ -67,7 +66,7 @@ void SGCore::FontSpecialization::destroyFace()
     }
 }
 
-void SGCore::FontSpecialization::saveTextAsTexture(const std::string& path, const std::u16string& text) const noexcept
+void SGCore::UI::FontSpecialization::saveTextAsTexture(const std::filesystem::path& path, const std::u16string& text) const noexcept
 {
     std::vector<std::uint8_t> textBuf;
     
@@ -96,24 +95,24 @@ void SGCore::FontSpecialization::saveTextAsTexture(const std::string& path, cons
         }
     }
     
-    stbi_write_png(path.c_str(), finalTextWidth, m_maxCharacterSize.y, 1,
+    stbi_write_png(Utils::toUTF8(path.u16string()).c_str(), finalTextWidth, m_maxCharacterSize.y, 1,
                    textBuf.data(), 1 * finalTextWidth);
 }
 
-void SGCore::FontSpecialization::saveAtlasAsTexture(const std::string& path) const noexcept
+void SGCore::UI::FontSpecialization::saveAtlasAsTexture(const std::filesystem::path& path) const noexcept
 {
-    stbi_write_png(path.c_str(), m_maxAtlasWidth, m_maxCharacterSize.y, 1,
+    stbi_write_png(Utils::toUTF8(path.u16string()).c_str(), m_maxAtlasWidth, m_maxCharacterSize.y, 1,
                    m_atlas->getData().get(), 1 * m_maxAtlasWidth);
 }
 
-const SGCore::FontGlyph* SGCore::FontSpecialization::tryGetGlyph(const char16_t& c) const noexcept
+const SGCore::UI::FontGlyph* SGCore::UI::FontSpecialization::tryGetGlyph(const char16_t& c) const noexcept
 {
     auto foundGlyph = m_glyphs.find(c);
     
     return foundGlyph == m_glyphs.end() ? nullptr : &m_glyphs.at(c);
 }
 
-void SGCore::FontSpecialization::parse(const char16_t& from, const char16_t& to) noexcept
+void SGCore::UI::FontSpecialization::parse(const char16_t& from, const char16_t& to) noexcept
 {
     for(char16_t c = from; c <= to; ++c)
     {
@@ -121,7 +120,7 @@ void SGCore::FontSpecialization::parse(const char16_t& from, const char16_t& to)
     }
 }
 
-void SGCore::FontSpecialization::parse(const std::vector<uint16_t>& characters) noexcept
+void SGCore::UI::FontSpecialization::parse(const std::vector<uint16_t>& characters) noexcept
 {
     for(const auto& c : characters)
     {
@@ -129,7 +128,7 @@ void SGCore::FontSpecialization::parse(const std::vector<uint16_t>& characters) 
     }
 }
 
-bool SGCore::FontSpecialization::parse(const uint16_t& character) noexcept
+bool SGCore::UI::FontSpecialization::parse(const uint16_t& character) noexcept
 {
     const auto& c = character;
     
@@ -187,7 +186,7 @@ bool SGCore::FontSpecialization::parse(const uint16_t& character) noexcept
     return true;
 }
 
-void SGCore::FontSpecialization::createAtlas() noexcept
+void SGCore::UI::FontSpecialization::createAtlas() noexcept
 {
     std::vector<std::uint8_t> unsortedBuffer;
     std::cout << m_maxCharacterSize.y << std::endl;
@@ -276,29 +275,29 @@ void SGCore::FontSpecialization::createAtlas() noexcept
     destroyFace();
 }
 
-SGCore::Ref<SGCore::FontSpecializationRenderer> SGCore::FontSpecialization::getRenderer() noexcept
+SGCore::Ref<SGCore::UI::FontSpecializationRenderer> SGCore::UI::FontSpecialization::getRenderer() noexcept
 {
     m_renderer->m_parentSpecialization = shared_from_this();
     
     return m_renderer;
 }
 
-size_t SGCore::FontSpecialization::getMaxAtlasWidth() const noexcept
+size_t SGCore::UI::FontSpecialization::getMaxAtlasWidth() const noexcept
 {
     return m_maxAtlasWidth;
 }
 
-glm::vec<2, size_t, glm::defaultp> SGCore::FontSpecialization::getMaxCharacterSize() const noexcept
+glm::vec<2, size_t, glm::defaultp> SGCore::UI::FontSpecialization::getMaxCharacterSize() const noexcept
 {
     return m_maxCharacterSize;
 }
 
-glm::vec<2, size_t, glm::defaultp> SGCore::FontSpecialization::getMaxCharacterAdvance() const noexcept
+glm::vec<2, size_t, glm::defaultp> SGCore::UI::FontSpecialization::getMaxCharacterAdvance() const noexcept
 {
     return m_maxCharacterAdvance;
 }
 
-glm::vec<2, size_t, glm::defaultp> SGCore::FontSpecialization::getMaxCharacterBearing() const noexcept
+glm::vec<2, size_t, glm::defaultp> SGCore::UI::FontSpecialization::getMaxCharacterBearing() const noexcept
 {
     return m_maxCharacterBearing;
 }

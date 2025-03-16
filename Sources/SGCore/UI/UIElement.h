@@ -13,6 +13,7 @@
 #include "SGCore/Memory/AssetRef.h"
 #include "SGCore/Graphics/API/IShader.h"
 #include "UIElementType.h"
+#include "SGCore/Render/LayeredFrameReceiver.h"
 
 namespace SGCore::UI
 {
@@ -33,6 +34,14 @@ namespace SGCore::UI
 
         Ref<UIElementMesh> m_meshData;
 
+        /**
+         * 
+         * @return False if was not rendered, true - rendered.
+         */
+        virtual bool draw(const LayeredFrameReceiver::reg_t& cameraReceiver,
+                          const Transform& elementTransform,
+                          UIElementCache& elementCache) noexcept { return false; }
+        
         /**
          *
          * @param parentElementCache May be nullptr.

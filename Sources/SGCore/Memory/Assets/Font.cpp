@@ -8,13 +8,13 @@
 #include "SGCore/UI/FontsManager.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 
-void SGCore::Font::doLoad(const InterpolatedPath& path)
+void SGCore::UI::Font::doLoad(const InterpolatedPath& path)
 {
 
 }
 
-SGCore::Ref<SGCore::FontSpecialization>
-SGCore::Font::addOrGetSpecialization(const SGCore::FontSpecializationSettings& fontSpecializationSettings)
+SGCore::Ref<SGCore::UI::FontSpecialization>
+SGCore::UI::Font::addOrGetSpecialization(const FontSpecializationSettings& fontSpecializationSettings)
 {
     Ref<FontSpecialization> specialization;
     auto foundSpecIter = m_specializations.find(fontSpecializationSettings);
@@ -35,8 +35,8 @@ SGCore::Font::addOrGetSpecialization(const SGCore::FontSpecializationSettings& f
     return specialization;
 }
 
-SGCore::Ref<SGCore::FontSpecialization> SGCore::Font::getSpecialization
-(const SGCore::FontSpecializationSettings& fontSpecializationSettings)
+SGCore::Ref<SGCore::UI::FontSpecialization> SGCore::UI::Font::getSpecialization
+(const SGCore::UI::FontSpecializationSettings& fontSpecializationSettings)
 {
     auto foundSpecIter = m_specializations.find(fontSpecializationSettings);
     if(foundSpecIter == m_specializations.end())
@@ -49,12 +49,17 @@ SGCore::Ref<SGCore::FontSpecialization> SGCore::Font::getSpecialization
     }
 }
 
-void SGCore::Font::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
+bool SGCore::UI::Font::isSpecializationExists(const FontSpecializationSettings& fontSpecializationSettings) const noexcept
+{
+    return m_specializations.contains(fontSpecializationSettings);
+}
+
+void SGCore::UI::Font::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
 {
 
 }
 
-void SGCore::Font::doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept
+void SGCore::UI::Font::doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept
 {
 
 }
