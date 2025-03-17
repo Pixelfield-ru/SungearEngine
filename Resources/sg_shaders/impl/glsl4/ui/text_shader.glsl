@@ -32,6 +32,7 @@ void main()
 #fragment
 
 layout(location = 0) out vec4 layerVolume;
+layout(location = 1) out vec4 layerColor;
 
 in vec2 vs_UVAttribute;
 in vec4 vs_characterColor;
@@ -50,7 +51,7 @@ void main()
     charCol = texture(u_fontSpecializationAtlas, vec2(finalUV.x, finalUV.y));
 
     // fragColor = charCol;
-    layerVolume = vec4(vec3(charCol.r) * vs_characterColor.rgb, charCol.r * vs_characterColor.a);
+    layerColor = vec4(vec3(charCol.r) * vs_characterColor.rgb, charCol.r * vs_characterColor.a);
     // fragColor = vec4(1.0);
 }
 

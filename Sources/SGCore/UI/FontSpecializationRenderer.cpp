@@ -22,8 +22,8 @@
 // todo: fix rendering with indices
 SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
 {
-    // 4 rows * 4 columns
-    m_charactersMatrices.resize(m_maxCharactersCount * 16);
+    // 4 rows * 4 columns * 6 vertices
+    m_charactersMatrices.resize(m_maxCharactersCount * 16 * 6);
     // 6 vertices * 4 (rgba)
     m_charactersColors.resize(m_maxCharactersCount * 24);
     // 6 vertices * 2 (xy)
@@ -47,32 +47,53 @@ SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
         
         std::shared_ptr<IVertexBufferLayout> bufferLayout = Ref<IVertexBufferLayout>(
                 CoreMain::getRenderer()->createVertexBufferLayout());
-        bufferLayout
-                ->addAttribute(Ref<IVertexAttribute>(
-                        bufferLayout->createVertexAttribute(0,
-                                                            "characterModelMatrix",
-                                                            SGGDataType::SGG_FLOAT4,
-                                                            (size_t) 1))
-                )
-                ->addAttribute(Ref<IVertexAttribute>(
-                        bufferLayout->createVertexAttribute(1,
-                                                            "characterModelMatrix",
-                                                            SGGDataType::SGG_FLOAT4,
-                                                            (size_t) 1))
-                )
-                ->addAttribute(Ref<IVertexAttribute>(
-                        bufferLayout->createVertexAttribute(2,
-                                                            "characterModelMatrix",
-                                                            SGGDataType::SGG_FLOAT4,
-                                                            (size_t) 1))
-                )
-                ->addAttribute(Ref<IVertexAttribute>(
-                        bufferLayout->createVertexAttribute(3,
-                                                            "characterModelMatrix",
-                                                            SGGDataType::SGG_FLOAT4,
-                                                            (size_t) 1))
-                )
-                ->prepare()->enableAttributes();
+
+        auto modelMatrixAttrib0 = bufferLayout->createVertexAttribute(0,
+                                                               "characterModelMatrix",
+                                                               SGGDataType::SGG_FLOAT4,
+                                                               4,
+                                                               false,
+                                                               16 * 4,
+                                                               0,
+                                                               0);
+
+        bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(modelMatrixAttrib0))->prepare()->enableAttributes();
+
+        auto modelMatrixAttrib1 = bufferLayout->createVertexAttribute(1,
+                                                               "characterModelMatrix",
+                                                               SGGDataType::SGG_FLOAT4,
+                                                               4,
+                                                               false,
+                                                               16 * 4,
+                                                               4 * 4,
+                                                               0);
+
+        bufferLayout->reset();
+        bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(modelMatrixAttrib1))->prepare()->enableAttributes();
+
+        auto modelMatrixAttrib2 = bufferLayout->createVertexAttribute(2,
+                                                                       "characterModelMatrix",
+                                                                       SGGDataType::SGG_FLOAT4,
+                                                                       4,
+                                                                       false,
+                                                                       16 * 4,
+                                                                       8 * 4,
+                                                                       0);
+
+        bufferLayout->reset();
+        bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(modelMatrixAttrib2))->prepare()->enableAttributes();
+
+        auto modelMatrixAttrib3 = bufferLayout->createVertexAttribute(3,
+                                                                       "characterModelMatrix",
+                                                                       SGGDataType::SGG_FLOAT4,
+                                                                       4,
+                                                                       false,
+                                                                       16 * 4,
+                                                                       12 * 4,
+                                                                       0);
+
+        bufferLayout->reset();
+        bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(modelMatrixAttrib3))->prepare()->enableAttributes();
         
         // ======
         
@@ -146,9 +167,7 @@ SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
 
     if(renderPipeline)
     {
-        m_textShader = Ref<IShader>(CoreMain::getRenderer()->createShader());
-        m_textShader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
-                *renderPipeline->m_shadersPaths["StandardTextShader"]));
+        m_textShader = AssetManager::getInstance()->loadAsset<IShader>(*renderPipeline->m_shadersPaths["StandardTextShader"]);
         
         // todo: pass uniforms
         updateUniforms();
@@ -193,7 +212,7 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
             float w = (float) glyph->m_realSize.x;
             float h = (float) glyph->m_realSize.y;
             
-            size_t colorIdx = m_currentDrawingCharacter * 24;
+            const size_t colorIdx = m_currentDrawingCharacter * 24;
             
             // colors =====================================================
             m_charactersColors[colorIdx] = textCache.m_color.r;
@@ -228,15 +247,28 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
             
             // matrices =====================================================
             
-            size_t matrixIdx = m_currentDrawingCharacter * 16;
-            
-            for(std::uint8_t i = 0; i < 16; ++i)
+            const size_t matrixIdx = m_currentDrawingCharacter * 16 * 6;
+
+            // for 6 vertices
+            for(std::uint8_t i = 0; i < 6; ++i)
+            {
+                std::memcpy(&m_charactersMatrices[matrixIdx + (16 * i)], glm::value_ptr(textTransform.m_finalTransform.m_modelMatrix), 16 * sizeof(float));
+            }
+            /*for(std::uint8_t i = 0; i < 6; ++i)
+            {
+                for(std::uint8_t j = 0; j < 16; ++j)
+                {
+                    m_charactersMatrices[matrixIdx * (16 + i) + j] = *(glm::value_ptr(textTransform.m_finalTransform.m_modelMatrix) + i);
+                }
+            }*/
+
+            /*for(std::uint8_t i = 0; i < 16; ++i)
             {
                 m_charactersMatrices[matrixIdx + i] = *(glm::value_ptr(textTransform.m_finalTransform.m_modelMatrix) + i);
-            }
+            }*/
             
             // uvs =====================================================
-            size_t uvsOffset = m_currentDrawingCharacter * 12;
+            const size_t uvsOffset = m_currentDrawingCharacter * 12;
             
             m_charactersUVs[uvsOffset] = glyph->m_uvMin.x;
             m_charactersUVs[uvsOffset + 1] = glyph->m_uvMax.y;
@@ -299,10 +331,12 @@ void SGCore::UI::FontSpecializationRenderer::drawAll() noexcept
     
     if(!subPassShader) return;
     
-    size_t charsCount = std::min(m_currentDrawingCharacter, m_maxCharactersCount);
-    
+    const size_t charsCount = std::min(m_currentDrawingCharacter, m_maxCharactersCount);
+
+    m_charactersVertexArray->bind();
+
     m_charactersMatricesVertexBuffer->bind();
-    m_charactersMatricesVertexBuffer->subData(m_charactersMatrices.data(), charsCount * 16, 0);
+    m_charactersMatricesVertexBuffer->subData(m_charactersMatrices.data(), charsCount * 16 * 6, 0);
     
     m_charactersColorsVertexBuffer->bind();
     m_charactersColorsVertexBuffer->subData(m_charactersColors.data(), charsCount * 24, 0);
@@ -317,9 +351,8 @@ void SGCore::UI::FontSpecializationRenderer::drawAll() noexcept
     subPassShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
     
     lockedParentSpec->m_atlas->bind(0);
-    
-    CoreMain::getRenderer()->renderArrayInstanced(m_charactersVertexArray, m_meshRenderState, charsCount * 6, 6,
-                                                  charsCount);
+
+    CoreMain::getRenderer()->renderArray(m_charactersVertexArray, m_meshRenderState, charsCount * 6, 6);
 }
 
 void SGCore::UI::FontSpecializationRenderer::resetRenderer() noexcept
@@ -329,9 +362,7 @@ void SGCore::UI::FontSpecializationRenderer::resetRenderer() noexcept
 
 void SGCore::UI::FontSpecializationRenderer::onRenderPipelineSet() noexcept
 {
-    m_textShader = Ref<IShader>(CoreMain::getRenderer()->createShader());
-    m_textShader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
-            *RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["StandardTextShader"]));
+    m_textShader = AssetManager::getInstance()->loadAsset<IShader>(*RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["StandardTextShader"]);
     
     updateUniforms();
 }

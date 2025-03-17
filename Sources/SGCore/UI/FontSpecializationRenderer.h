@@ -9,6 +9,7 @@
 
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Graphics/API/RenderState.h"
+#include "SGCore/Memory/AssetRef.h"
 #include "TransformTree/UIElementCache.h"
 
 namespace SGCore
@@ -36,7 +37,7 @@ namespace SGCore::UI
         Ref<IVertexBuffer> m_charactersColorsVertexBuffer;
         Ref<IVertexBuffer> m_charactersUVsVertexBuffer;
         
-        Ref<IShader> m_textShader;
+        AssetRef<IShader> m_textShader;
         
         RenderState m_renderState;
         MeshRenderState m_meshRenderState;
@@ -52,7 +53,7 @@ namespace SGCore::UI
     private:
         void updateUniforms() noexcept;
         
-        std::uint32_t m_maxCharactersCount = 3000;
+        std::uint32_t m_maxCharactersCount = 50000;
         std::uint32_t m_currentDrawingCharacter = 0;
         
         // big buffers

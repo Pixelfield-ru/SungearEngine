@@ -146,7 +146,8 @@ void SGCore::UI::CSSSelector::setFontSpecializationSettings(const FontSpecializa
             specialization->parse(u'a', u'z');
             specialization->parse(u'А', u'Я');
             specialization->parse(u'а', u'я');
-            specialization->parse(u'0', u'0');
+            specialization->parse({ u'ё', u'Ё' });
+            specialization->parse(u'0', u'9');
             specialization->parse({ u'!', u'@', u'"', u'\'', u'№', u'#', u'$', u';', u'%', u'^', u':', u'&', u'?', u'*', u'(', u')', u'-', u'_', u'+', u'=', u'|', u'\\', u'/', u'.', u',', u'`', u'{', u'}', u'[', u']', u'~' });
 
             specialization->createAtlas();
