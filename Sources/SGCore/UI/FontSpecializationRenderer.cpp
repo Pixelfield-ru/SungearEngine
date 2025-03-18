@@ -349,6 +349,8 @@ void SGCore::UI::FontSpecializationRenderer::drawAll() noexcept
     
     subPassShader->bind();
     subPassShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+
+    subPassShader->useVectorf("u_maxCharacterSize", lockedParentSpec->getMaxCharacterSize());
     
     lockedParentSpec->m_atlas->bind(0);
 

@@ -12,13 +12,15 @@ layout (location = 6) in vec3 characterVertexPosition;
 out vec2 vs_UVAttribute;
 out vec4 vs_characterColor;
 
+uniform vec2 u_maxCharacterSize;
+
 void main()
 {
     vs_UVAttribute = characterUV;
     vs_characterColor = characterColor;
 
     vec3 charVPos = characterVertexPosition;
-    charVPos.y = 1.0 - charVPos.y;
+    charVPos.y = (1.0 - charVPos.y) + u_maxCharacterSize.y / 4.0;
 
     gl_Position = camera.orthographicSpaceMatrix * characterModelMatrix * vec4(charVPos, 1.0);
 }
@@ -50,8 +52,11 @@ void main()
 
     charCol = texture(u_fontSpecializationAtlas, vec2(finalUV.x, finalUV.y));
 
+    // float smoothAlpha = smoothstep(0.5, 0.6, charCol.r * vs_characterColor.a); // Сглаживание краёв
+
     // fragColor = charCol;
     layerColor = vec4(vec3(charCol.r) * vs_characterColor.rgb, charCol.r * vs_characterColor.a);
+    // layerColor = vec4(1.0);
     // fragColor = vec4(1.0);
 }
 

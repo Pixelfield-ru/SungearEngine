@@ -10,6 +10,7 @@ SGCore::UI::CSSSelector::CSSSelector() noexcept
     // setting default font
     m_font = FontsManager::getAssetManager()->getAsset<Font, AssetStorageType::BY_ALIAS>("times-new-roman");
 
+    m_fontSpecializationSettings.m_height = 16;
     setFontSpecializationSettings(m_fontSpecializationSettings);
 }
 
