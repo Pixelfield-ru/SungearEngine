@@ -40,9 +40,35 @@ in vec2 vs_UVAttribute;
 in vec4 vs_characterColor;
 
 uniform sampler2D u_fontSpecializationAtlas;
+uniform sampler2D u_fontSpecializationAtlasSDF;
 
 // REQUIRED UNIFORM!!
 uniform int SGPP_CurrentLayerIndex;
+
+const float threshold = .01;
+
+float f( vec2 x )
+{
+    float r = length(x);
+    float a = atan(x.y,x.x);
+    return r - 1.0 + 0.5*sin(3.0*a+2.0*r*r);
+}
+
+vec2 grad( vec2 x )
+{
+    vec2 h = vec2( 0.01, 0.0 );
+    return vec2( f(x+h.xy) - f(x-h.xy),
+    f(x+h.yx) - f(x-h.yx) )/(2.0*h.x);
+}
+
+float color( vec2 x )
+{
+    float v = f( x );
+    vec2  g = grad( x );
+    float de = abs(v)/length(g);
+    float eps = 0.05;
+    return smoothstep( 1.0*eps, 2.0*eps, de );
+}
 
 void main()
 {
@@ -50,12 +76,22 @@ void main()
 
     vec2 finalUV = vs_UVAttribute.xy;
 
+    float distance = texture(u_fontSpecializationAtlasSDF, vec2(finalUV.x, finalUV.y)).r;
+    float alpha = smoothstep(0.5 - 0.01, 0.5 + 0.01, distance);
+
+
+
     charCol = texture(u_fontSpecializationAtlas, vec2(finalUV.x, finalUV.y));
 
-    // float smoothAlpha = smoothstep(0.5, 0.6, charCol.r * vs_characterColor.a); // Сглаживание краёв
+    vec3 c = texture2D(u_fontSpecializationAtlasSDF, vec2(finalUV.x, finalUV.y)).rgb;
+    // vec3 res = smoothstep(.5-threshold, .5+threshold, c);
+
+    float coll = color(c.rg);
+
+    // gl_FragColor = vec4((c-0.5)*contrast,1.0);
 
     // fragColor = charCol;
-    layerColor = vec4(vec3(charCol.r) * vs_characterColor.rgb, charCol.r * vs_characterColor.a);
+    layerColor = vec4(vec3(alpha) * vs_characterColor.rgb, vs_characterColor.a);
     // layerColor = vec4(1.0);
     // fragColor = vec4(1.0);
 }

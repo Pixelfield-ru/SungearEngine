@@ -105,6 +105,12 @@ void SGCore::UI::FontSpecialization::saveAtlasAsTexture(const std::filesystem::p
                    m_atlas->getData().get(), 1 * m_maxAtlasWidth);
 }
 
+void SGCore::UI::FontSpecialization::saveAtlasSDFAsTexture(const std::filesystem::path& path) const noexcept
+{
+    stbi_write_png(Utils::toUTF8(path.u16string()).c_str(), m_atlasSDF.m_texture->getWidth(), m_atlasSDF.m_texture->getHeight(), 1,
+                   m_atlasSDF.m_texture->getData().get(), 1 * m_maxAtlasWidth);
+}
+
 const SGCore::UI::FontGlyph* SGCore::UI::FontSpecialization::tryGetGlyph(const char16_t& c) const noexcept
 {
     auto foundGlyph = m_glyphs.find(c);
@@ -207,6 +213,7 @@ void SGCore::UI::FontSpecialization::createAtlas() noexcept
         {
             if(i < glyph.m_realSize.x * glyph.m_realSize.y)
             {
+                // unsortedBuffer.push_back(glyph.m_bitmapBuffer[i]);
                 unsortedBuffer.push_back(m_face->glyph->bitmap.buffer[i]);
             }
             else
@@ -271,6 +278,8 @@ void SGCore::UI::FontSpecialization::createAtlas() noexcept
                     1,
                     SGGColorInternalFormat::SGG_R8,
                     SGGColorFormat::SGG_R);
+
+    m_atlasSDF.generate(sortedBuffer, m_atlas->getWidth(), m_atlas->getHeight(), 255);
     
     destroyFace();
 }

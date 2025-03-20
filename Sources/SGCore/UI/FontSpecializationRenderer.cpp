@@ -351,8 +351,12 @@ void SGCore::UI::FontSpecializationRenderer::drawAll() noexcept
     subPassShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
 
     subPassShader->useVectorf("u_maxCharacterSize", lockedParentSpec->getMaxCharacterSize());
+
+    subPassShader->useTextureBlock("u_fontSpecializationAtlas", 0);
+    subPassShader->useTextureBlock("u_fontSpecializationAtlasSDF", 1);
     
     lockedParentSpec->m_atlas->bind(0);
+    lockedParentSpec->m_atlasSDF.m_texture->bind(1);
 
     CoreMain::getRenderer()->renderArray(m_charactersVertexArray, m_meshRenderState, charsCount * 6, 6);
 }
@@ -371,11 +375,12 @@ void SGCore::UI::FontSpecializationRenderer::onRenderPipelineSet() noexcept
 
 void SGCore::UI::FontSpecializationRenderer::updateUniforms() noexcept
 {
-    auto subPassShader = m_textShader;
+    /*auto subPassShader = m_textShader;
     if(subPassShader)
     {
         subPassShader->bind();
 
         subPassShader->useTextureBlock("u_fontSpecializationAtlas", 0);
-    }
+        subPassShader->useTextureBlock("u_fontSpecializationAtlasSDF", 1);
+    }*/
 }

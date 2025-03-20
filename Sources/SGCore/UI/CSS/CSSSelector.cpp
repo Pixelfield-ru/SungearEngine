@@ -153,6 +153,7 @@ void SGCore::UI::CSSSelector::setFontSpecializationSettings(const FontSpecializa
 
             specialization->createAtlas();
             specialization->saveAtlasAsTexture(m_fontSpecializationSettings.m_name + ".png");
+            specialization->saveAtlasSDFAsTexture(m_fontSpecializationSettings.m_name + "_sdf.png");
 
             m_fontSpecialization = specialization;
         }

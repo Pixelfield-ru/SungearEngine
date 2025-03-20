@@ -9,6 +9,8 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 
+#include "SGCore/Utils/SDFTexture.h"
+
 namespace SGCore
 {
     class ITexture2D;
@@ -57,10 +59,12 @@ namespace SGCore::UI
         void destroyFace();
         
         Ref<ITexture2D> m_atlas;
+        SDFTexture m_atlasSDF;
         
         void saveTextAsTexture(const std::filesystem::path& path, const std::u16string& text) const noexcept;
         void saveAtlasAsTexture(const std::filesystem::path& path) const noexcept;
-        
+        void saveAtlasSDFAsTexture(const std::filesystem::path& path) const noexcept;
+
         void parse(const char16_t& from, const char16_t& to) noexcept;
         void parse(const std::vector<uint16_t>& characters) noexcept;
         bool parse(const uint16_t& character) noexcept;
