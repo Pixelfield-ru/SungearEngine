@@ -19,51 +19,58 @@ namespace SGCore
     public:
         Ref<ITexture2D> m_texture;
 
-        void generate(const std::vector<std::uint8_t>& originalImage, std::uint32_t imageWidth, std::uint32_t imageHeight, float maxDist) noexcept
+        void generate(const std::uint8_t* const originalImage,
+                      std::uint32_t originalImageWidth,
+                      std::uint32_t originalImageHeight,
+                      SGGColorInternalFormat originalImageInternalFormat,
+                      SGGColorFormat originalImageFormat,
+                      float maxDist) noexcept
         {
+            const std::int8_t channelsCount = getSGGFormatChannelsCount(originalImageFormat);
+
             m_texture = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
 
             std::vector<std::uint8_t> sdfBuffer;
-            sdfBuffer.resize(imageWidth * imageHeight);
+            sdfBuffer.resize(originalImageWidth * originalImageHeight * channelsCount);
 
             std::vector<glm::ivec2> grid0;
-            grid0.resize(imageWidth * imageHeight);
+            grid0.resize(originalImageWidth * originalImageHeight);
 
             std::vector<glm::ivec2> grid1;
-            grid1.resize(imageWidth * imageHeight);
+            grid1.resize(originalImageWidth * originalImageHeight);
 
-            for(int y = 0; y < imageHeight; ++y)
+            for(int y = 0; y < originalImageHeight; ++y)
             {
-                for (int x = 0; x < imageWidth; ++x)
+                for (int x = 0; x < originalImageWidth; ++x)
                 {
-                    const std::uint8_t pixelColor = originalImage[y * imageWidth + x];
+                    const std::uint8_t pixelColor = originalImage[y * originalImageWidth + x];
 
                     // Points inside get marked with a dx/dy of zero.
                     // Points outside get marked with an infinitely large distance.
                     if (pixelColor < 128)
                     {
-                        grid0[y * imageWidth + x] = pointInside;
-                        grid1[y * imageWidth + x] = pointOutside;
+                        grid0[y * originalImageWidth + x] = pointInside;
+                        grid1[y * originalImageWidth + x] = pointOutside;
                     }
                     else
                     {
-                        grid1[y * imageWidth + x] = pointInside;
-                        grid0[y * imageWidth + x] = pointOutside;
+                        grid1[y * originalImageWidth + x] = pointInside;
+                        grid0[y * originalImageWidth + x] = pointOutside;
                     }
                 }
             }
 
-            calculateGridSDF(grid0, imageWidth, imageHeight);
-            calculateGridSDF(grid1, imageWidth, imageHeight);
+            calculateGridSDF(grid0, originalImageWidth, originalImageHeight);
+            calculateGridSDF(grid1, originalImageWidth, originalImageHeight);
 
             // final pass
-            for(int y = 0; y < imageHeight; ++y)
+            for(int y = 0; y < originalImageHeight; ++y)
             {
-                for(int x = 0; x < imageWidth; ++x)
+                for(int x = 0; x < originalImageWidth; ++x)
                 {
                     // Calculate the actual distance from the dx/dy
-                    const int dist1 = (int) (std::sqrt((double) lengthSquared(grid0[y * imageWidth + x])));
-                    const int dist2 = (int) (std::sqrt((double) lengthSquared(grid1[y * imageWidth + x])));
+                    const int dist1 = (int) (std::sqrt((double) lengthSquared(grid0[y * originalImageWidth + x])));
+                    const int dist2 = (int) (std::sqrt((double) lengthSquared(grid1[y * originalImageWidth + x])));
                     const int dist = dist1 - dist2;
 
                     // Clamp and scale it, just for display purposes.
@@ -71,16 +78,16 @@ namespace SGCore
                     if (c < 0) c = 0;
                     if (c > 255) c = 255;
 
-                    sdfBuffer[y * imageWidth + x] = c;
+                    sdfBuffer[y * originalImageWidth + x] = c;
                 }
             }
 
             m_texture->create(sdfBuffer.data(),
-                    imageWidth,
-                    imageHeight,
-                    1,
-                    SGGColorInternalFormat::SGG_R8,
-                    SGGColorFormat::SGG_R);
+                    originalImageWidth,
+                    originalImageHeight,
+                    channelsCount,
+                    originalImageInternalFormat,
+                    originalImageFormat);
         }
 
     private:
@@ -91,7 +98,7 @@ namespace SGCore
 
         static void calculateGridSDF(std::vector<glm::ivec2>& grid, std::uint32_t gridWidth, std::uint32_t gridHeight) noexcept;
 
-        static float getDistanceToNearestBorder(const std::vector<std::uint8_t>& originalImage, std::uint32_t pixelPosX, std::uint32_t pixelPosY, std::uint32_t imageWidth, std::uint32_t imageHeight, float maxDist) noexcept
+        static float getDistanceToNearestBorder(const std::uint8_t* const originalImage, std::uint32_t pixelPosX, std::uint32_t pixelPosY, std::uint32_t imageWidth, std::uint32_t imageHeight, float maxDist) noexcept
         {
             float minDist = maxDist;
 

@@ -63,5 +63,8 @@
   }, {
     "name" : "antlr4",
     "version>=" : "4.13.1"
-  } ]
+  }, {
+    "name" : "skia",
+    "version>=" : "129#3"
+  }]
 }

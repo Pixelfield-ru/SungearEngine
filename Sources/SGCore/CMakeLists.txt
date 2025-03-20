@@ -118,6 +118,7 @@
          glaze::glaze
          unofficial::lunasvg::lunasvg
          rapidjson
+         msdf-atlas-gen
 
          ${SG_BULLET_LIBS}
          ${FREETYPE_LIBRARIES}

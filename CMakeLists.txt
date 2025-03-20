@@ -116,6 +116,15 @@ set(SG_RESOURCES_COPY_UI ON)
 set(SG_RESOURCES_COPY_FONTS ON)
 
 # ----------------------------------
+# including msdf-atlas-gen ========================================
+
+set(MSDF_ATLAS_BUILD_STANDALONE OFF)
+set(MSDF_ATLAS_DYNAMIC_RUNTIME ON)
+
+add_subdirectory(Externals/msdf-atlas-gen)
+
+# =================================================================
+
 add_subdirectory(Sources)
 
 if(${SG_BUILD_TESTS})

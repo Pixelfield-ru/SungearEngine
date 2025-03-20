@@ -4,6 +4,7 @@
 
 #include "Main.h"
 
+#include <stb_image_write.h>
 #include <SGCore/Memory/AssetManager.h>
 #include <SGCore/UI/CSS/CSSFile.h>
 #include <SGCore/Main/CoreMain.h>
@@ -31,6 +32,9 @@ SGCore::MeshRenderState quadMeshRenderState;
 SGCore::Ref<SGCore::ITexture2D> attachmentToDisplay;
 SGCore::AssetRef<SGCore::ITexture2D> someTexture;
 
+SGCore::AssetRef<SGCore::ITexture2D> testTex;
+SGCore::SDFTexture sdfTest;
+
 SGCore::Ref<SGCore::RenderingBase> cameraRenderingBase { };
 
 void coreInit()
@@ -48,6 +52,12 @@ void coreInit()
     uiDocument = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::UIDocument>("${enginePath}/Tests/UI/Resources/test.xml");
     screenShader = SGCore::AssetManager::getInstance()->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
     someTexture = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/no_material.png");
+
+    testTex = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test.png");
+    // sdfTest.generate(testTex->getData().get(), testTex->getWidth(), testTex->getHeight(), 20.0f);
+
+    stbi_write_png("test.png", sdfTest.m_texture->getWidth(), sdfTest.m_texture->getHeight(), testTex->m_channelsCount,
+                   sdfTest.m_texture->getData().get(),  testTex->m_channelsCount * sdfTest.m_texture->getWidth());
 
     auto ecsRegistry = scene->getECSRegistry();
 

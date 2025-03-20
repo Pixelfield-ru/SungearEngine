@@ -10,6 +10,7 @@
 #include "SGCore/UI/FontSpecializationRenderer.h"
 
 #include <spdlog/spdlog.h>
+#include <msdf-atlas-gen/msdf-atlas-gen.h>
 #include <set>
 #include <SGCore/Logger/Logger.h>
 
@@ -147,7 +148,9 @@ bool SGCore::UI::FontSpecialization::parse(const uint16_t& character) noexcept
     
     const auto& bitmapWidth = m_face->glyph->bitmap.width;
     const auto& bitmapHeight = m_face->glyph->bitmap.rows;
-    
+
+    // msdfgen::loa
+
     // buffer.reserve(buffer.capacity() + bitmapWidth * bitmapHeight);
     
     m_maxAtlasWidth += bitmapWidth;
@@ -197,6 +200,8 @@ void SGCore::UI::FontSpecialization::createAtlas() noexcept
     std::vector<std::uint8_t> unsortedBuffer;
     std::cout << m_maxCharacterSize.y << std::endl;
     unsortedBuffer.reserve(m_maxAtlasWidth * m_maxCharacterSize.y);
+
+    std::vector<msdf_atlas::GlyphGeometry> glyphs;
     
     for(auto& g : m_glyphs)
     {
@@ -279,7 +284,7 @@ void SGCore::UI::FontSpecialization::createAtlas() noexcept
                     SGGColorInternalFormat::SGG_R8,
                     SGGColorFormat::SGG_R);
 
-    m_atlasSDF.generate(sortedBuffer, m_atlas->getWidth(), m_atlas->getHeight(), 255);
+    // m_atlasSDF.generate(sortedBuffer.data(), m_atlas->getWidth(), m_atlas->getHeight(), m_atlas->m_internalFormat, 255);
     
     destroyFace();
 }

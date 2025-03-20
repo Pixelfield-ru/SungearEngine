@@ -746,6 +746,126 @@ enum class SGGColorInternalFormat
     SGG_DEPTH32F_STENCIL8
 };
 
+static std::int8_t getSGGInternalFormatChannelsCount(const SGGColorInternalFormat& sggInternalFormat) noexcept
+{
+    switch(sggInternalFormat)
+    {
+        case SGGColorInternalFormat::SGG_RED: return 1;
+
+        case SGGColorInternalFormat::SGG_R8: return 1;
+        case SGGColorInternalFormat::SGG_R8_SIGNED_NORMALIZED: return 1;
+
+        case SGGColorInternalFormat::SGG_R16: return 1;
+        case SGGColorInternalFormat::SGG_R16_SIGNED_NORMALIZED: return 1;
+
+        case SGGColorInternalFormat::SGG_RG8: return 2;
+        case SGGColorInternalFormat::SGG_RG8_SIGNED_NORMALIZED: return 2;
+
+        case SGGColorInternalFormat::SGG_RG16: return 2;
+        case SGGColorInternalFormat::SGG_RG16_SIGNED_NORMALIZED: return 2;
+
+        case SGGColorInternalFormat::SGG_R3_G3_B2: return 3;
+
+        case SGGColorInternalFormat::SGG_RGB4: return 3;
+        case SGGColorInternalFormat::SGG_RGB5: return 3;
+        case SGGColorInternalFormat::SGG_RGB8: return 3;
+
+        case SGGColorInternalFormat::SGG_RGB8_SIGNED_NORMALIZED: return 3;
+
+        case SGGColorInternalFormat::SGG_RGB10: return 3;
+        case SGGColorInternalFormat::SGG_RGB12: return 3;
+
+        case SGGColorInternalFormat::SGG_RGB16_SIGNED_NORMALIZED: return 3;
+
+        case SGGColorInternalFormat::SGG_RGBA2: return 4;
+        case SGGColorInternalFormat::SGG_RGBA4: return 4;
+
+        case SGGColorInternalFormat::SGG_RGB5_A1: return 4;
+
+        case SGGColorInternalFormat::SGG_RGBA8: return 4;
+        case SGGColorInternalFormat::SGG_RGBA8_SIGNED_NORMALIZED: return 4;
+
+        case SGGColorInternalFormat::SGG_RGB10_A2: return 4;
+        case SGGColorInternalFormat::SGG_RGB10_A2_UNSIGNED_INT: return 4;
+
+        case SGGColorInternalFormat::SGG_RGBA12: return 4;
+        case SGGColorInternalFormat::SGG_RGBA16: return 4;
+
+        case SGGColorInternalFormat::SGG_SRGB8: return 3;
+        case SGGColorInternalFormat::SGG_SRGB8_ALPHA8: return 4;
+
+        case SGGColorInternalFormat::SGG_R16_FLOAT: return 1;
+        case SGGColorInternalFormat::SGG_RG16_FLOAT: return 2;
+        case SGGColorInternalFormat::SGG_RGB16_FLOAT: return 3;
+        case SGGColorInternalFormat::SGG_RGBA16_FLOAT: return 4;
+
+        case SGGColorInternalFormat::SGG_R32_FLOAT: return 1;
+        case SGGColorInternalFormat::SGG_RG32_FLOAT: return 2;
+        case SGGColorInternalFormat::SGG_RGB32_FLOAT: return 3;
+        case SGGColorInternalFormat::SGG_RGBA32_FLOAT: return 4;
+
+        case SGGColorInternalFormat::SGG_R11_G11_B10_FLOAT: return 3;
+
+        case SGGColorInternalFormat::SGG_RGB9_E5: return 3;
+
+        case SGGColorInternalFormat::SGG_R8_INT: return 1;
+        case SGGColorInternalFormat::SGG_R8_UNSIGNED_INT: return 1;
+
+        case SGGColorInternalFormat::SGG_R16_INT: return 1;
+        case SGGColorInternalFormat::SGG_R16_UNSIGNED_INT: return 1;
+
+        case SGGColorInternalFormat::SGG_R32_INT: return 1;
+        case SGGColorInternalFormat::SGG_R32_UNSIGNED_INT: return 1;
+
+        case SGGColorInternalFormat::SGG_RG8_INT: return 2;
+        case SGGColorInternalFormat::SGG_RG8_UNSIGNED_INT: return 2;
+
+        case SGGColorInternalFormat::SGG_RG16_INT: return 2;
+        case SGGColorInternalFormat::SGG_RG16_UNSIGNED_INT: return 2;
+
+        case SGGColorInternalFormat::SGG_RG32_INT: return 2;
+        case SGGColorInternalFormat::SGG_RG32_UNSIGNED_INT: return 2;
+
+        case SGGColorInternalFormat::SGG_RGB8_INT: return 3;
+        case SGGColorInternalFormat::SGG_RGB8_UNSIGNED_INT: return 3;
+
+        case SGGColorInternalFormat::SGG_RGB16_INT: return 3;
+        case SGGColorInternalFormat::SGG_RGB16_UNSIGNED_INT: return 3;
+
+        case SGGColorInternalFormat::SGG_RGB32_INT: return 3;
+        case SGGColorInternalFormat::SGG_RGB32_UNSIGNED_INT: return 3;
+
+        case SGGColorInternalFormat::SGG_RGBA8_INT: return 4;
+        case SGGColorInternalFormat::SGG_RGBA8_UNSIGNED_INT: return 4;
+
+        case SGGColorInternalFormat::SGG_RGBA16_INT: return 4;
+        case SGGColorInternalFormat::SGG_RGBA16_UNSIGNED_INT: return 4;
+
+        case SGGColorInternalFormat::SGG_RGBA32_INT: return 4;
+        case SGGColorInternalFormat::SGG_RGBA32_UNSIGNED_INT: return 4;
+
+        case SGGColorInternalFormat::SGG_COMPRESSED_R: return 1;
+        case SGGColorInternalFormat::SGG_COMPRESSED_RG: return 2;
+        case SGGColorInternalFormat::SGG_COMPRESSED_RGB: return 3;
+        case SGGColorInternalFormat::SGG_COMPRESSED_RGBA: return 4;
+
+        case SGGColorInternalFormat::SGG_COMPRESSED_SRGB: return 3;
+        case SGGColorInternalFormat::SGG_COMPRESSED_SRGBA: return 4;
+
+        case SGGColorInternalFormat::SGG_STENCIL_INDEX8: return 1;
+
+        case SGGColorInternalFormat::SGG_DEPTH_COMPONENT16: return 1;
+        case SGGColorInternalFormat::SGG_DEPTH_COMPONENT24: return 1;
+        case SGGColorInternalFormat::SGG_DEPTH_COMPONENT32: return 1;
+        case SGGColorInternalFormat::SGG_DEPTH_COMPONENT32F: return 1;
+
+        case SGGColorInternalFormat::SGG_DEPTH24_STENCIL8: return 2;
+        case SGGColorInternalFormat::SGG_DEPTH32F_STENCIL8: return 2;
+
+        default: return -1;
+    }
+}
+
 enum class SGGColorFormat
 {
     SGG_R,
@@ -770,5 +890,32 @@ enum class SGGColorFormat
     
     SGG_COLOR_FORMAT_NONE
 };
+
+static std::int8_t getSGGFormatChannelsCount(const SGGColorFormat& sggFormat) noexcept
+{
+    switch(sggFormat)
+    {
+        case SGGColorFormat::SGG_R: return 1;
+        case SGGColorFormat::SGG_RG: return 2;
+        case SGGColorFormat::SGG_RGB: return 3;
+        case SGGColorFormat::SGG_BGR: return 3;
+        case SGGColorFormat::SGG_RGBA: return 4;
+        case SGGColorFormat::SGG_BGRA: return 4;
+
+        case SGGColorFormat::SGG_R_INTEGER: return 1;
+        case SGGColorFormat::SGG_RG_INTEGER: return 2;
+        case SGGColorFormat::SGG_RGB_INTEGER: return 3;
+        case SGGColorFormat::SGG_BGR_INTEGER: return 3;
+        case SGGColorFormat::SGG_RGBA_INTEGER: return 4;
+        case SGGColorFormat::SGG_BGRA_INTEGER: return 4;
+
+        case SGGColorFormat::SGG_STENCIL_INDEX: return 1;
+
+        case SGGColorFormat::SGG_DEPTH_COMPONENT: return 1;
+        case SGGColorFormat::SGG_DEPTH_STENCIL: return 2;
+
+        default: return -1;
+    }
+}
 
 #endif //SUNGEARENGINE_GRAPHICSDATATYPES_H
