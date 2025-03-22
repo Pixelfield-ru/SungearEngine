@@ -200,7 +200,7 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
             curX = 0.0f;
         }
 
-        const FontGlyph* glyph = lockedSpec->tryGetGlyph(c);
+        /*const FontGlyph* glyph = lockedSpec->tryGetGlyph(c);
         
         if(glyph)
         {
@@ -260,12 +260,12 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
                 {
                     m_charactersMatrices[matrixIdx * (16 + i) + j] = *(glm::value_ptr(textTransform.m_finalTransform.m_modelMatrix) + i);
                 }
-            }*/
+            }#1#
 
             /*for(std::uint8_t i = 0; i < 16; ++i)
             {
                 m_charactersMatrices[matrixIdx + i] = *(glm::value_ptr(textTransform.m_finalTransform.m_modelMatrix) + i);
-            }*/
+            }#1#
             
             // uvs =====================================================
             const size_t uvsOffset = m_currentDrawingCharacter * 12;
@@ -317,7 +317,7 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
             
             ++m_currentDrawingCharacter;
             curX += (float) (glyph->m_advance.x >> 6);
-        }
+        }*/
     }
 }
 
@@ -355,8 +355,8 @@ void SGCore::UI::FontSpecializationRenderer::drawAll() noexcept
     subPassShader->useTextureBlock("u_fontSpecializationAtlas", 0);
     subPassShader->useTextureBlock("u_fontSpecializationAtlasSDF", 1);
     
-    lockedParentSpec->m_atlas->bind(0);
-    lockedParentSpec->m_atlasSDF.m_texture->bind(1);
+    lockedParentSpec->m_atlasTexture->bind(0);
+    // lockedParentSpec->m_atlasSDF.m_texture->bind(1);
 
     CoreMain::getRenderer()->renderArray(m_charactersVertexArray, m_meshRenderState, charsCount * 6, 6);
 }

@@ -14,6 +14,8 @@
 #include <set>
 #include <SGCore/Logger/Logger.h>
 
+#include "Font.h"
+
 bool SGCore::UI::FontSpecializationSettings::operator==(const SGCore::UI::FontSpecializationSettings& other) const noexcept
 {
     return m_height == other.m_height && m_name == other.m_name;
@@ -27,29 +29,6 @@ bool SGCore::UI::FontSpecializationSettings::operator!=(const SGCore::UI::FontSp
 SGCore::UI::FontSpecialization::FontSpecialization()
 {
     m_renderer = MakeRef<FontSpecializationRenderer>();
-}
-
-SGCore::UI::FontSpecialization::~FontSpecialization()
-{
-    if(m_face)
-    {
-        FT_Done_Face(m_face);
-    }
-}
-
-void SGCore::UI::FontSpecialization::prepareToBuild(const std::string& path)
-{
-    destroyFace();
-    
-    int faceCreateErrCode = FT_New_Face(FontsManager::getFTLibrary(), path.c_str(), 0, &m_face);
-    if(faceCreateErrCode)
-    {
-        LOG_E(SGCORE_TAG, "Could not create face by path '{}'. FreeType error code: {}", path, faceCreateErrCode);
-        return;
-    }
-    
-    // pixel_width = 0 means auto generate pixel width
-    FT_Set_Pixel_Sizes(m_face, 0, m_settings.m_height);
 }
 
 void SGCore::UI::FontSpecialization::destroyFace()
@@ -69,7 +48,7 @@ void SGCore::UI::FontSpecialization::destroyFace()
 
 void SGCore::UI::FontSpecialization::saveTextAsTexture(const std::filesystem::path& path, const std::u16string& text) const noexcept
 {
-    std::vector<std::uint8_t> textBuf;
+    /*std::vector<std::uint8_t> textBuf;
     
     size_t finalTextWidth = 0;
     
@@ -86,7 +65,7 @@ void SGCore::UI::FontSpecialization::saveTextAsTexture(const std::filesystem::pa
             size_t finalPos = m_maxAtlasWidth * y + leftOffset;
             for(size_t x = 0; x < foundC->second.m_realSize.x; ++x)
             {
-                textBuf.push_back(m_atlas->getData().get()[finalPos + x]);
+                textBuf.push_back(m_atlasTexture->getData().get()[finalPos + x]);
             }
             
             if(y == 0)
@@ -97,30 +76,37 @@ void SGCore::UI::FontSpecialization::saveTextAsTexture(const std::filesystem::pa
     }
     
     stbi_write_png(Utils::toUTF8(path.u16string()).c_str(), finalTextWidth, m_maxCharacterSize.y, 1,
-                   textBuf.data(), 1 * finalTextWidth);
+                   textBuf.data(), 1 * finalTextWidth);*/
 }
 
 void SGCore::UI::FontSpecialization::saveAtlasAsTexture(const std::filesystem::path& path) const noexcept
 {
-    stbi_write_png(Utils::toUTF8(path.u16string()).c_str(), m_maxAtlasWidth, m_maxCharacterSize.y, 1,
-                   m_atlas->getData().get(), 1 * m_maxAtlasWidth);
+    /*stbi_write_png(Utils::toUTF8(path.u16string()).c_str(), m_maxAtlasWidth, m_maxCharacterSize.y, 1,
+                   m_atlasTexture->getData().get(), 1 * m_maxAtlasWidth);*/
+
+    stbi_write_png(Utils::toUTF8(path.u16string()).c_str(), m_atlasTexture->getWidth(), m_atlasTexture->getHeight(), m_atlasTexture->m_channelsCount,
+                   m_atlasTexture->getData().get(), m_atlasTexture->m_channelsCount * m_maxAtlasWidth);
 }
 
-void SGCore::UI::FontSpecialization::saveAtlasSDFAsTexture(const std::filesystem::path& path) const noexcept
+const msdf_atlas::GlyphGeometry* SGCore::UI::FontSpecialization::tryGetGlyph(const char16_t& c) const noexcept
 {
-    stbi_write_png(Utils::toUTF8(path.u16string()).c_str(), m_atlasSDF.m_texture->getWidth(), m_atlasSDF.m_texture->getHeight(), 1,
-                   m_atlasSDF.m_texture->getData().get(), 1 * m_maxAtlasWidth);
-}
-
-const SGCore::UI::FontGlyph* SGCore::UI::FontSpecialization::tryGetGlyph(const char16_t& c) const noexcept
-{
-    auto foundGlyph = m_glyphs.find(c);
+    auto it = m_glyphsIndices.find(c);
     
-    return foundGlyph == m_glyphs.end() ? nullptr : &m_glyphs.at(c);
+    return it == m_glyphsIndices.end() ? nullptr : &m_glyphs.at(it->second);
 }
 
 void SGCore::UI::FontSpecialization::parse(const char16_t& from, const char16_t& to) noexcept
 {
+    if(!m_usedFont)
+    {
+        LOG_E(SGCORE_TAG,
+              "Can not load bunch of characters in font specialization with settings: name: '{}', height: {}. Parent font is nullptr!",
+              m_settings.m_name,
+              m_settings.m_height);
+
+        return;
+    }
+
     for(char16_t c = from; c <= to; ++c)
     {
         parse(c);
@@ -129,6 +115,16 @@ void SGCore::UI::FontSpecialization::parse(const char16_t& from, const char16_t&
 
 void SGCore::UI::FontSpecialization::parse(const std::vector<uint16_t>& characters) noexcept
 {
+    if(!m_usedFont)
+    {
+        LOG_E(SGCORE_TAG,
+              "Can not load bunch of characters in font specialization with settings: name: '{}', height: {}. Parent font is nullptr!",
+              m_settings.m_name,
+              m_settings.m_height);
+
+        return;
+    }
+
     for(const auto& c : characters)
     {
         parse(c);
@@ -137,7 +133,70 @@ void SGCore::UI::FontSpecialization::parse(const std::vector<uint16_t>& characte
 
 bool SGCore::UI::FontSpecialization::parse(const uint16_t& character) noexcept
 {
-    const auto& c = character;
+    if(!m_usedFont)
+    {
+        LOG_E(SGCORE_TAG,
+              "Can not load character '{}' in font specialization with settings: name: '{}', height: {}. Parent font is nullptr!",
+              character,
+              m_settings.m_name,
+              m_settings.m_height);
+
+        return false;
+    }
+
+    if(m_glyphsIndices.contains(character)) return false;
+
+    std::vector<msdf_atlas::GlyphGeometry> glyph;
+
+    msdf_atlas::FontGeometry fontGeometry(&glyph);
+
+    msdf_atlas::Charset charset;
+    charset.add(character);
+
+    fontGeometry.loadGlyphset(m_usedFont->getFontHandler(), 1.0, charset);
+
+    // TODO: IDK WHAT IS THIS. NEED TO FIGURE IT OUT ===
+    // Apply MSDF edge coloring. See edge-coloring.h for other coloring strategies.
+    const double maxCornerAngle = 3.0;
+    glyph[0].edgeColoring(&msdfgen::edgeColoringInkTrap, maxCornerAngle, 0);
+    // =====
+
+    // adding new glyph to glyphs =================
+    m_glyphs.push_back(glyph[0]);
+    m_glyphsIndices[character] = m_glyphs.size() - 1;
+    // ============================================
+
+    // TightAtlasPacker class computes the layout of the atlas.
+    msdf_atlas::TightAtlasPacker packer;
+
+    // Set atlas parameters:
+    // setDimensions or setDimensionsConstraint to find the best value
+    packer.setDimensionsConstraint(msdf_atlas::DimensionsConstraint::SQUARE);
+
+    // setScale for a fixed size or setMinimumScale to use the largest that fits
+    packer.setScale(m_settings.m_height);
+
+    // setPixelRange or setUnitRange
+    packer.setPixelRange(2.0);
+    packer.setMiterLimit(1.0);
+
+    // Compute atlas layout - pack glyphs
+    packer.pack(m_glyphs.data(), m_glyphs.size());
+
+    // Get final atlas dimensions
+    int width = 0, height = 0;
+    packer.getDimensions(width, height);
+
+    // packer.
+    const bool isAtlasChanged = m_atlas.add(glyph.data(), glyph.size()) & DynamicAtlas::RESIZED;
+
+    if(!m_isAtlasChanged)
+    {
+        m_isAtlasChanged = isAtlasChanged;
+    }
+
+
+    /*const auto& c = character;
     
     int loadGlyphErrCode = FT_Load_Char(m_face, c, FT_LOAD_RENDER);
     if(loadGlyphErrCode)
@@ -190,14 +249,31 @@ bool SGCore::UI::FontSpecialization::parse(const uint16_t& character) noexcept
     glyph.m_advance = { m_face->glyph->advance.x, m_face->glyph->advance.y };
     glyph.m_bitmapBuffer = m_face->glyph->bitmap.buffer;
     
-    m_glyphs[c] = glyph;
+    m_glyphs[c] = glyph;*/
     
     return true;
 }
 
 void SGCore::UI::FontSpecialization::createAtlas() noexcept
 {
-    std::vector<std::uint8_t> unsortedBuffer;
+    if(m_isAtlasChanged)
+    {
+        // TODO: saving to texture...
+        const msdf_atlas::BitmapAtlasStorage<byte, 3>& atlasStorage = m_atlas.atlasGenerator().atlasStorage();
+        msdfgen::Bitmap<byte, 3> bitmap(atlasStorage);
+        const byte* atlasBytes(bitmap);
+
+        m_atlasTexture = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
+
+        m_atlasTexture->create(atlasBytes,
+                    bitmap.width(),
+                    bitmap.height(),
+                    3,
+                    SGGColorInternalFormat::SGG_RGB8,
+                    SGGColorFormat::SGG_RGB);
+    }
+
+    /*std::vector<std::uint8_t> unsortedBuffer;
     std::cout << m_maxCharacterSize.y << std::endl;
     unsortedBuffer.reserve(m_maxAtlasWidth * m_maxCharacterSize.y);
 
@@ -262,31 +338,21 @@ void SGCore::UI::FontSpecialization::createAtlas() noexcept
         g.second.m_uvMin = { (float) curXOffset / (float) m_maxAtlasWidth, 0 };
         g.second.m_uvMax = { ((float) curXOffset + (float) g.second.m_realSize.x) / (float) m_maxAtlasWidth, g.second.m_realSize.y / (float) m_maxCharacterSize.y };
         
-        /*if(g.first == u'g')
-        {
-            std::cout << "glyph size: " << std::to_string(g.second.m_realSize.x) << ", " << std::to_string(g.second.m_realSize.y) << std::endl;
-            std::cout << "atlas size: " << std::to_string(m_maxAtlasWidth) << ", " << std::to_string(m_maxCharacterHeight) << std::endl;
-            std::cout << "min: " << std::to_string(g.second.m_uvMin.x) << ", " << std::to_string(g.second.m_uvMin.y) << std::endl;
-            std::cout << "max: " << std::to_string(g.second.m_uvMax.x) << ", " << std::to_string(g.second.m_uvMax.y) << std::endl;
-        }*/
-        
         curXOffset += g.second.m_realSize.x;
     }
     
     std::cout << "buffer size: " << unsortedBuffer.size() << std::endl;
     
-    m_atlas = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
+    m_atlasTexture = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
     
-    m_atlas->create(sortedBuffer.data(),
+    m_atlasTexture->create(sortedBuffer.data(),
                     m_maxAtlasWidth,
                     m_maxCharacterSize.y,
                     1,
                     SGGColorInternalFormat::SGG_R8,
                     SGGColorFormat::SGG_R);
-
-    // m_atlasSDF.generate(sortedBuffer.data(), m_atlas->getWidth(), m_atlas->getHeight(), m_atlas->m_internalFormat, 255);
     
-    destroyFace();
+    destroyFace();*/
 }
 
 SGCore::Ref<SGCore::UI::FontSpecializationRenderer> SGCore::UI::FontSpecialization::getRenderer() noexcept

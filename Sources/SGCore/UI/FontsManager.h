@@ -9,6 +9,8 @@
 
 #include <sgcore_export.h>
 
+#include <msdf-atlas-gen/msdf-atlas-gen.h>
+
 #include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
@@ -20,16 +22,27 @@ namespace SGCore::UI
 {
     struct SGCORE_EXPORT FontsManager
     {
-        static void init() noexcept;
-        
-        static FT_Library getFTLibrary() noexcept;
+        FontsManager(const FontsManager&) = delete;
+        FontsManager(FontsManager&&) = delete;
 
-        static Ref<AssetManager> getAssetManager() noexcept;
+        void init() const noexcept;
+
+        static FontsManager& getInstance() noexcept;
+
+        msdfgen::FreetypeHandle* getFTLibrary() noexcept;
+
+        Ref<AssetManager> getAssetManager() noexcept;
+
+        FontsManager& operator=(const FontsManager&) = delete;
+        FontsManager& operator=(FontsManager&&) = delete;
 
     private:
-        static inline Ref<AssetManager> m_fontsAssetsManager;
+        FontsManager() noexcept;
+        ~FontsManager() noexcept;
 
-        static inline FT_Library m_FTLib = nullptr;
+        Ref<AssetManager> m_fontsAssetsManager;
+
+        msdfgen::FreetypeHandle* m_FTLib = nullptr;
     };
 }
 

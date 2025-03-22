@@ -24,7 +24,7 @@ void SGCore::UIRenderPass::render(const Ref<Scene>& scene,
 {
     auto uiComponentsView = scene->getECSRegistry()->view<UI::UIComponent>();
     auto camerasView = scene->getECSRegistry()->view<LayeredFrameReceiver, EntityBaseInfo, RenderingBase, Transform>();
-    auto fontsView = UI::FontsManager::getAssetManager()->getAssetsWithType<UI::Font>();
+    auto fontsView = UI::FontsManager::getInstance().getAssetManager()->getAssetsWithType<UI::Font>();
 
     camerasView.each([&uiComponentsView, &fontsView, this](const LayeredFrameReceiver::reg_t& cameraReceiver,
                                                const EntityBaseInfo::reg_t& cameraInfo,

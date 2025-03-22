@@ -8,9 +8,26 @@
 #include "SGCore/UI/FontsManager.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 
+SGCore::UI::Font::~Font() noexcept
+{
+    for(auto& [settings, font] : m_specializations)
+    {
+        font->m_usedFont = nullptr;
+    }
+
+    msdfgen::destroyFont(m_fontHandler);
+}
+
+msdfgen::FontHandle* SGCore::UI::Font::getFontHandler() const noexcept
+{
+    return m_fontHandler;
+}
+
 void SGCore::UI::Font::doLoad(const InterpolatedPath& path)
 {
+    const auto ftLib = FontsManager::getInstance().getFTLibrary();
 
+    m_fontHandler = msdfgen::loadFont(ftLib, Utils::toUTF8(path.resolved().u16string()).c_str());
 }
 
 SGCore::Ref<SGCore::UI::FontSpecialization>
@@ -22,8 +39,8 @@ SGCore::UI::Font::addOrGetSpecialization(const FontSpecializationSettings& fontS
     {
         specialization = MakeRef<FontSpecialization>();
         specialization->m_settings = fontSpecializationSettings;
-        
-        specialization->prepareToBuild(getPath().resolved().string());
+
+        specialization->m_usedFont = this;
         
         m_specializations[fontSpecializationSettings] = specialization;
     }

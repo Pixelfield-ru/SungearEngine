@@ -23,7 +23,7 @@ void SGCore::TextRenderPass::render(const SGCore::Ref<SGCore::Scene>& scene,
 {
     // auto textsView = scene->getECSRegistry()->view<Text, Transform>();
     auto uiCamerasView = scene->getECSRegistry()->view<LayeredFrameReceiver, RenderingBase, Transform>();
-    auto fontsView = UI::FontsManager::getAssetManager()->getAssetsWithType<UI::Font>();
+    auto fontsView = UI::FontsManager::getInstance().getAssetManager()->getAssetsWithType<UI::Font>();
     
     /*textsView.each([](Text::reg_t& text, Transform::reg_t& textTransform) {
         Ref<Font> font = text.m_usedFont.lock();

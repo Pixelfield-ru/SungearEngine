@@ -56,9 +56,6 @@ void coreInit()
     testTex = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test.png");
     // sdfTest.generate(testTex->getData().get(), testTex->getWidth(), testTex->getHeight(), 20.0f);
 
-    stbi_write_png("test.png", sdfTest.m_texture->getWidth(), sdfTest.m_texture->getHeight(), testTex->m_channelsCount,
-                   sdfTest.m_texture->getData().get(),  testTex->m_channelsCount * sdfTest.m_texture->getWidth());
-
     auto ecsRegistry = scene->getECSRegistry();
 
     // creating camera ===========================================

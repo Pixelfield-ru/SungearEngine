@@ -9,12 +9,15 @@
 
 #include "IAsset.h"
 #include "FontSpecialization.h"
+#include <msdf-atlas-gen/msdf-atlas-gen.h>
 
 namespace SGCore::UI
 {
     struct Font : public IAsset
     {
         sg_implement_type_id(Font, 5)
+
+        ~Font() noexcept;
 
         Ref<FontSpecialization> addOrGetSpecialization(const FontSpecializationSettings& fontSpecializationSettings);
         Ref<FontSpecialization> getSpecialization(const FontSpecializationSettings& fontSpecializationSettings);
@@ -24,6 +27,8 @@ namespace SGCore::UI
         {
             return m_specializations;
         }
+
+        msdfgen::FontHandle* getFontHandler() const noexcept;
         
     protected:
         // todo: impl
@@ -35,6 +40,8 @@ namespace SGCore::UI
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
         
     private:
+        msdfgen::FontHandle* m_fontHandler = nullptr;
+
         std::unordered_map<FontSpecializationSettings, Ref<FontSpecialization>> m_specializations;
     };
 }

@@ -111,7 +111,7 @@ void SGCore::CoreMain::start()
 
     Paths::init();
     InputManager::init();
-    UI::FontsManager::init();
+    UI::FontsManager::getInstance().init();
 
     m_renderTimer.onUpdate.connect<&updateStart>(0);
     m_renderTimer.onUpdate.connect<&updateEnd>(std::numeric_limits<size_t>::max());

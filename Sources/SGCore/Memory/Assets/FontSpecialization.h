@@ -7,6 +7,10 @@
 
 #include <SGCore/pch.h>
 
+#include <msdf-atlas-gen/BitmapAtlasStorage.h>
+#include <msdf-atlas-gen/DynamicAtlas.h>
+#include <msdf-atlas-gen/glyph-generators.h>
+#include <msdf-atlas-gen/ImmediateAtlasGenerator.h>
 #include "SGCore/Main/CoreGlobals.h"
 
 #include "SGCore/Utils/SDFTexture.h"
@@ -28,13 +32,6 @@ namespace SGCore::UI
         
         glm::vec2 m_uvMin;
         glm::vec2 m_uvMax;
-        
-        size_t m_unsortedDataOffset = 0;
-        size_t m_sortedDataOffset = 0;
-        
-    private:
-        // INVALID AFTER SORTING STAGE! BE CAREFUL
-        std::uint8_t* m_bitmapBuffer = nullptr;
     };
     
     struct FontSpecializationSettings
@@ -47,23 +44,22 @@ namespace SGCore::UI
     };
     
     struct FontSpecializationRenderer;
+    struct Font;
     
     struct FontSpecialization : public std::enable_shared_from_this<FontSpecialization>
     {
         friend struct Font;
+
+        using DynamicAtlas = msdf_atlas::DynamicAtlas<msdf_atlas::ImmediateAtlasGenerator<float, 3, msdf_atlas::msdfGenerator, msdf_atlas::BitmapAtlasStorage<byte, 3>>>;
         
         FontSpecialization();
-        ~FontSpecialization();
-        
-        void prepareToBuild(const std::string& path);
+
         void destroyFace();
         
-        Ref<ITexture2D> m_atlas;
-        SDFTexture m_atlasSDF;
+        Ref<ITexture2D> m_atlasTexture;
         
         void saveTextAsTexture(const std::filesystem::path& path, const std::u16string& text) const noexcept;
         void saveAtlasAsTexture(const std::filesystem::path& path) const noexcept;
-        void saveAtlasSDFAsTexture(const std::filesystem::path& path) const noexcept;
 
         void parse(const char16_t& from, const char16_t& to) noexcept;
         void parse(const std::vector<uint16_t>& characters) noexcept;
@@ -71,7 +67,7 @@ namespace SGCore::UI
         
         void createAtlas() noexcept;
         
-        const FontGlyph* tryGetGlyph(const char16_t& c) const noexcept;
+        const msdf_atlas::GlyphGeometry* tryGetGlyph(const char16_t& c) const noexcept;
         
         Ref<FontSpecializationRenderer> getRenderer() noexcept;
         
@@ -82,17 +78,23 @@ namespace SGCore::UI
         
     private:
         Ref<FontSpecializationRenderer> m_renderer;
+        Font* m_usedFont = nullptr;
         
         FontSpecializationSettings m_settings;
-        
+
         FT_Face m_face = nullptr;
-        
+
+        DynamicAtlas m_atlas;
+        std::vector<msdf_atlas::GlyphGeometry> m_glyphs;
+
         size_t m_maxAtlasWidth = 0;
         glm::vec<2, size_t, glm::defaultp> m_maxCharacterSize { 0, 0 };
         glm::vec<2, size_t, glm::defaultp> m_maxCharacterAdvance { 0, 0 };
         glm::vec<2, size_t, glm::defaultp> m_maxCharacterBearing { 0, 0 };
-        
-        std::unordered_map<char16_t, FontGlyph> m_glyphs;
+
+        bool m_isAtlasChanged = false;
+
+        std::unordered_map<char16_t, size_t> m_glyphsIndices;
     };
 }
 
