@@ -10,7 +10,7 @@ SGCore::UI::CSSSelector::CSSSelector() noexcept
     // setting default font
     m_font = FontsManager::getInstance().getAssetManager()->getAsset<Font, AssetStorageType::BY_ALIAS>("times-new-roman");
 
-    m_fontSpecializationSettings.m_height = 16;
+    m_fontSpecializationSettings.m_height = 52;
     setFontSpecializationSettings(m_fontSpecializationSettings);
 }
 
@@ -144,14 +144,13 @@ void SGCore::UI::CSSSelector::setFontSpecializationSettings(const FontSpecializa
         {
             auto specialization = lockedFont->addOrGetSpecialization(m_fontSpecializationSettings);
 
-            specialization->parse(u'A');
-            // specialization->parse(u'A', u'Z');
-            // specialization->parse(u'a', u'z');
-            // specialization->parse(u'А', u'Я');
-            // specialization->parse(u'а', u'я');
-            // specialization->parse({ u'ё', u'Ё' });
-            // specialization->parse(u'0', u'9');
-            // specialization->parse({ u'!', u'@', u'"', u'\'', u'№', u'#', u'$', u';', u'%', u'^', u':', u'&', u'?', u'*', u'(', u')', u'-', u'_', u'+', u'=', u'|', u'\\', u'/', u'.', u',', u'`', u'{', u'}', u'[', u']', u'~' });
+            specialization->parse('A', 'Z');
+            specialization->parse('a', 'z');
+            specialization->parse(u'А', u'Я');
+            specialization->parse(u'а', u'я');
+            specialization->parse({ u'ё', u'Ё' });
+            specialization->parse('0', '9');
+            specialization->parse({ u'!', u'@', u'"', u'\'', u'№', u'#', u'$', u';', u'%', u'^', u':', u'&', u'?', u'*', u'(', u')', u'-', u'_', u'+', u'=', u'|', u'\\', u'/', u'.', u',', u'`', u'{', u'}', u'[', u']', u'~' });
 
             specialization->createAtlas();
             specialization->saveAtlasAsTexture(m_fontSpecializationSettings.m_name + ".png");

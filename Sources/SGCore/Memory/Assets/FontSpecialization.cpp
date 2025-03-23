@@ -29,21 +29,14 @@ bool SGCore::UI::FontSpecializationSettings::operator!=(const SGCore::UI::FontSp
 SGCore::UI::FontSpecialization::FontSpecialization()
 {
     m_renderer = MakeRef<FontSpecializationRenderer>();
-}
 
-void SGCore::UI::FontSpecialization::destroyFace()
-{
-    if(m_face)
-    {
-        int errCode = FT_Done_Face(m_face);
-        if(errCode)
-        {
-            LOG_E(SGCORE_TAG, "Could not delete face. FreeType error code: {}", errCode);
-            return;
-        }
-        
-        m_face = nullptr;
-    }
+    /*msdfgen::GeneratorConfig config;
+
+    config.
+
+    m_atlas.atlasGenerator().setAttributes({
+        .config =
+    })*/
 }
 
 void SGCore::UI::FontSpecialization::saveTextAsTexture(const std::filesystem::path& path, const std::u16string& text) const noexcept
@@ -88,14 +81,14 @@ void SGCore::UI::FontSpecialization::saveAtlasAsTexture(const std::filesystem::p
                    m_atlasTexture->getData().get(), m_atlasTexture->m_channelsCount * m_maxAtlasWidth);
 }
 
-const msdf_atlas::GlyphGeometry* SGCore::UI::FontSpecialization::tryGetGlyph(const char16_t& c) const noexcept
+const msdf_atlas::GlyphGeometry* SGCore::UI::FontSpecialization::tryGetGlyph(const uint32_t& c) const noexcept
 {
     auto it = m_glyphsIndices.find(c);
     
     return it == m_glyphsIndices.end() ? nullptr : &m_glyphs.at(it->second);
 }
 
-void SGCore::UI::FontSpecialization::parse(const char16_t& from, const char16_t& to) noexcept
+void SGCore::UI::FontSpecialization::parse(const uint32_t& from, const uint32_t& to) noexcept
 {
     if(!m_usedFont)
     {
@@ -107,13 +100,17 @@ void SGCore::UI::FontSpecialization::parse(const char16_t& from, const char16_t&
         return;
     }
 
-    for(char16_t c = from; c <= to; ++c)
+    for(uint32_t c = from; c <= to; ++c)
     {
-        parse(c);
+        if(m_glyphsIndices.contains(c)) continue;
+
+        m_charset.add(c);
+
+        m_isCharsetChanged = true;
     }
 }
 
-void SGCore::UI::FontSpecialization::parse(const std::vector<uint16_t>& characters) noexcept
+void SGCore::UI::FontSpecialization::parse(const std::vector<uint32_t>& characters) noexcept
 {
     if(!m_usedFont)
     {
@@ -125,13 +122,17 @@ void SGCore::UI::FontSpecialization::parse(const std::vector<uint16_t>& characte
         return;
     }
 
-    for(const auto& c : characters)
+    for(const auto& character : characters)
     {
-        parse(c);
+        if(m_glyphsIndices.contains(character)) continue;
+
+        m_charset.add(character);
+
+        m_isCharsetChanged = true;
     }
 }
 
-bool SGCore::UI::FontSpecialization::parse(const uint16_t& character) noexcept
+bool SGCore::UI::FontSpecialization::parse(const uint32_t& character) noexcept
 {
     if(!m_usedFont)
     {
@@ -146,55 +147,11 @@ bool SGCore::UI::FontSpecialization::parse(const uint16_t& character) noexcept
 
     if(m_glyphsIndices.contains(character)) return false;
 
-    std::vector<msdf_atlas::GlyphGeometry> glyph;
+    m_charset.add(character);
 
-    msdf_atlas::FontGeometry fontGeometry(&glyph);
+    m_isCharsetChanged = true;
 
-    msdf_atlas::Charset charset;
-    charset.add(character);
-
-    fontGeometry.loadGlyphset(m_usedFont->getFontHandler(), 1.0, charset);
-
-    // TODO: IDK WHAT IS THIS. NEED TO FIGURE IT OUT ===
-    // Apply MSDF edge coloring. See edge-coloring.h for other coloring strategies.
-    const double maxCornerAngle = 3.0;
-    glyph[0].edgeColoring(&msdfgen::edgeColoringInkTrap, maxCornerAngle, 0);
-    // =====
-
-    // adding new glyph to glyphs =================
-    m_glyphs.push_back(glyph[0]);
-    m_glyphsIndices[character] = m_glyphs.size() - 1;
-    // ============================================
-
-    // TightAtlasPacker class computes the layout of the atlas.
-    msdf_atlas::TightAtlasPacker packer;
-
-    // Set atlas parameters:
-    // setDimensions or setDimensionsConstraint to find the best value
-    packer.setDimensionsConstraint(msdf_atlas::DimensionsConstraint::SQUARE);
-
-    // setScale for a fixed size or setMinimumScale to use the largest that fits
-    packer.setScale(m_settings.m_height);
-
-    // setPixelRange or setUnitRange
-    packer.setPixelRange(2.0);
-    packer.setMiterLimit(1.0);
-
-    // Compute atlas layout - pack glyphs
-    packer.pack(m_glyphs.data(), m_glyphs.size());
-
-    // Get final atlas dimensions
-    int width = 0, height = 0;
-    packer.getDimensions(width, height);
-
-    // packer.
-    const bool isAtlasChanged = m_atlas.add(glyph.data(), glyph.size()) & DynamicAtlas::RESIZED;
-
-    if(!m_isAtlasChanged)
-    {
-        m_isAtlasChanged = isAtlasChanged;
-    }
-
+    // int a = m_atlas.atlasGenerator().generate()
 
     /*const auto& c = character;
     
@@ -256,10 +213,80 @@ bool SGCore::UI::FontSpecialization::parse(const uint16_t& character) noexcept
 
 void SGCore::UI::FontSpecialization::createAtlas() noexcept
 {
-    if(m_isAtlasChanged)
+    if(m_isCharsetChanged)
     {
+        m_glyphs.clear();
+        m_glyphsIndices.clear();
+
+        m_geometry = msdf_atlas::FontGeometry(&m_glyphs);
+
+        if(!m_geometry.loadCharset(m_usedFont->getFontHandler(), 1, m_charset))
+        {
+            LOG_E(SGCORE_TAG,
+                  "Can not load bunch of characters in font specialization with settings: name: '{}', height: {}. Character was not found in font!",
+                  m_settings.m_name,
+                  m_settings.m_height);
+
+            return;
+        }
+
+        const double pixelRange = 2.0;
+        const double miterLimit = 1.0;
+
+        // TODO: IDK WHAT IS THIS. NEED TO FIGURE IT OUT ===
+        // Apply MSDF edge coloring. See edge-coloring.h for other coloring strategies.
+        const double maxCornerAngle = 3.0;
+
+        for(auto& glyph : m_glyphs)
+        {
+            // Apply MSDF edge coloring. See edge-coloring.h for other coloring strategies.
+            glyph.edgeColoring(&msdfgen::edgeColoringInkTrap, maxCornerAngle, 0);
+            // Finalize glyph box size based on the parameters
+            // glyph.wrapBox(m_settings.m_height, pixelRange / m_settings.m_height, miterLimit);
+            // =====
+        }
+
+        // TightAtlasPacker class computes the layout of the atlas.
+        msdf_atlas::TightAtlasPacker packer;
+        // Set atlas parameters:
+        // setDimensions or setDimensionsConstraint to find the best value
+        packer.setDimensionsConstraint(msdf_atlas::DimensionsConstraint::SQUARE);
+        // setScale for a fixed size or setMinimumScale to use the largest that fits
+        packer.setScale(m_settings.m_height);
+        // setPixelRange or setUnitRange
+        packer.setPixelRange(pixelRange);
+        packer.setMiterLimit(miterLimit);
+        // packer.setMinimumScale(m_settings.m_height);
+        // Compute atlas layout - pack glyphs
+        packer.pack(m_glyphs.data(), m_glyphs.size());
+        // Get final atlas dimensions
+        int width = 0, height = 0;
+        packer.getDimensions(width, height);
+
+        msdf_atlas::GeneratorAttributes attributes;
+        attributes.scanlinePass = true;
+        attributes.config.overlapSupport = true;
+        m_atlas.setAttributes(attributes);
+        m_atlas.setThreadCount(1);
+
+        std::cout << "scale: " << packer.getScale() << std::endl;
+
+        m_atlas.resize(width, height);
+        m_atlas.generate(m_glyphs.data(), m_glyphs.size());
+
+        // adding glyphs indices to map only after generating atlas because generate() function makes positioning of glyphs
+        for(size_t i = 0; i < m_glyphs.size(); ++i)
+        {
+            m_glyphsIndices[m_glyphs[i].getCodepoint()] = i;
+        }
+
+        m_atlasSize = { width, height };
+
+        // ============================================================
+        // generating texture
+
         // TODO: saving to texture...
-        const msdf_atlas::BitmapAtlasStorage<byte, 3>& atlasStorage = m_atlas.atlasGenerator().atlasStorage();
+        const msdf_atlas::BitmapAtlasStorage<byte, 3>& atlasStorage = m_atlas.atlasStorage();
         msdfgen::Bitmap<byte, 3> bitmap(atlasStorage);
         const byte* atlasBytes(bitmap);
 
@@ -271,6 +298,8 @@ void SGCore::UI::FontSpecialization::createAtlas() noexcept
                     3,
                     SGGColorInternalFormat::SGG_RGB8,
                     SGGColorFormat::SGG_RGB);
+
+        m_isCharsetChanged = false;
     }
 
     /*std::vector<std::uint8_t> unsortedBuffer;
@@ -380,4 +409,24 @@ glm::vec<2, size_t, glm::defaultp> SGCore::UI::FontSpecialization::getMaxCharact
 glm::vec<2, size_t, glm::defaultp> SGCore::UI::FontSpecialization::getMaxCharacterBearing() const noexcept
 {
     return m_maxCharacterBearing;
+}
+
+const msdfgen::FontMetrics& SGCore::UI::FontSpecialization::getMetrics() const noexcept
+{
+    return m_geometry.getMetrics();
+}
+
+const msdf_atlas::FontGeometry& SGCore::UI::FontSpecialization::getGeometry() const noexcept
+{
+    return m_geometry;
+}
+
+const SGCore::UI::FontSpecializationSettings& SGCore::UI::FontSpecialization::getSettings() const noexcept
+{
+    return m_settings;
+}
+
+glm::ivec2 SGCore::UI::FontSpecialization::getSize() const noexcept
+{
+    return m_atlasSize;
 }

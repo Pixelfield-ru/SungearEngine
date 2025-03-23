@@ -20,7 +20,7 @@ void main()
     vs_characterColor = characterColor;
 
     vec3 charVPos = characterVertexPosition;
-    charVPos.y = (1.0 - charVPos.y) + u_maxCharacterSize.y / 4.0;
+    // charVPos.y = (charVPos.y) + u_maxCharacterSize.y / 4.0;
 
     gl_Position = camera.orthographicSpaceMatrix * characterModelMatrix * vec4(charVPos, 1.0);
 }
@@ -91,7 +91,7 @@ void main()
     // gl_FragColor = vec4((c-0.5)*contrast,1.0);
 
     // fragColor = charCol;
-    layerColor = vec4(vec3(alpha) * vs_characterColor.rgb, vs_characterColor.a);
+    layerColor = vec4(charCol.rgb * vs_characterColor.rgb, vs_characterColor.a);
     // layerColor = vec4(1.0);
     // fragColor = vec4(1.0);
 }

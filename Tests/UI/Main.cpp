@@ -21,6 +21,7 @@
 #include "SGCore/Graphics/API/IFrameBufferAttachment.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Input/InputManager.h"
+#include "SGCore/UI/FontsManager.h"
 
 SGCore::AssetRef<SGCore::UI::CSSFile> cssFile;
 SGCore::AssetRef<SGCore::UI::UIDocument> uiDocument;
@@ -128,6 +129,8 @@ void onUpdate(const double& dt, const double& fixedDt)
     cameraRenderingBase->m_zFar = 100;
 
     screenShader->bind();
+
+    // auto spec = SGCore::UI::FontsManager::getInstance().getAssetManager()->getAssetsWithType<SGCore::UI::Font>()[0]->getSpecialization({ .m_height = 52, .m_name = "default" });
 
     attachmentToDisplay->bind(0);
     screenShader->useTextureBlock("u_bufferToDisplay", 0);

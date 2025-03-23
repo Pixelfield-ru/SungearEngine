@@ -44,7 +44,7 @@ namespace SGCore::UI
 
         Weak<FontSpecialization> m_parentSpecialization;
         
-        void drawText(Text* text, const Transform& textTransform, const UIElementCache& textCache) noexcept;
+        void drawText(Text* text, const Transform& textTransform, UIElementCache& textCache) noexcept;
         
         void drawAll() noexcept;
         

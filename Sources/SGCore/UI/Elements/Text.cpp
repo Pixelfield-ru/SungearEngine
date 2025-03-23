@@ -54,7 +54,7 @@ void SGCore::UI::Text::doCalculateLayout(const UIElementCache* parentElementCach
             }
         }*/
 
-        thisElementCache.m_finalSize.y = m_selector->getFontSpecialization()->getMaxCharacterSize().y;
+        // thisElementCache.m_finalSize.y = m_selector->getFontSpecialization()->getMaxCharacterSize().y;
     }
     else
     {

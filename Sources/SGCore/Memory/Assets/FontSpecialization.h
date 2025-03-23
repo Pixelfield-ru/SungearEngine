@@ -11,6 +11,9 @@
 #include <msdf-atlas-gen/DynamicAtlas.h>
 #include <msdf-atlas-gen/glyph-generators.h>
 #include <msdf-atlas-gen/ImmediateAtlasGenerator.h>
+
+#include "msdf-atlas-gen/Charset.h"
+#include "msdf-atlas-gen/FontGeometry.h"
 #include "SGCore/Main/CoreGlobals.h"
 
 #include "SGCore/Utils/SDFTexture.h"
@@ -50,24 +53,22 @@ namespace SGCore::UI
     {
         friend struct Font;
 
-        using DynamicAtlas = msdf_atlas::DynamicAtlas<msdf_atlas::ImmediateAtlasGenerator<float, 3, msdf_atlas::msdfGenerator, msdf_atlas::BitmapAtlasStorage<byte, 3>>>;
+        using AtlasT = msdf_atlas::ImmediateAtlasGenerator<float, 3, msdf_atlas::msdfGenerator, msdf_atlas::BitmapAtlasStorage<byte, 3>>;
         
         FontSpecialization();
-
-        void destroyFace();
         
         Ref<ITexture2D> m_atlasTexture;
         
         void saveTextAsTexture(const std::filesystem::path& path, const std::u16string& text) const noexcept;
         void saveAtlasAsTexture(const std::filesystem::path& path) const noexcept;
 
-        void parse(const char16_t& from, const char16_t& to) noexcept;
-        void parse(const std::vector<uint16_t>& characters) noexcept;
-        bool parse(const uint16_t& character) noexcept;
+        void parse(const uint32_t& from, const uint32_t& to) noexcept;
+        void parse(const std::vector<uint32_t>& characters) noexcept;
+        bool parse(const uint32_t& character) noexcept;
         
         void createAtlas() noexcept;
         
-        const msdf_atlas::GlyphGeometry* tryGetGlyph(const char16_t& c) const noexcept;
+        const msdf_atlas::GlyphGeometry* tryGetGlyph(const uint32_t& c) const noexcept;
         
         Ref<FontSpecializationRenderer> getRenderer() noexcept;
         
@@ -75,6 +76,12 @@ namespace SGCore::UI
         [[nodiscard]] glm::vec<2, size_t, glm::defaultp> getMaxCharacterSize() const noexcept;
         [[nodiscard]] glm::vec<2, size_t, glm::defaultp> getMaxCharacterAdvance() const noexcept;
         [[nodiscard]] glm::vec<2, size_t, glm::defaultp> getMaxCharacterBearing() const noexcept;
+
+        const msdfgen::FontMetrics& getMetrics() const noexcept;
+        const msdf_atlas::FontGeometry& getGeometry() const noexcept;
+        const FontSpecializationSettings& getSettings() const noexcept;
+
+        glm::ivec2 getSize() const noexcept;
         
     private:
         Ref<FontSpecializationRenderer> m_renderer;
@@ -82,19 +89,21 @@ namespace SGCore::UI
         
         FontSpecializationSettings m_settings;
 
-        FT_Face m_face = nullptr;
-
-        DynamicAtlas m_atlas;
+        AtlasT m_atlas;
         std::vector<msdf_atlas::GlyphGeometry> m_glyphs;
+        std::unordered_map<uint32_t, size_t> m_glyphsIndices;
+        msdf_atlas::Charset m_charset;
+
+        msdf_atlas::FontGeometry m_geometry;
+
+        glm::ivec2 m_atlasSize;
 
         size_t m_maxAtlasWidth = 0;
         glm::vec<2, size_t, glm::defaultp> m_maxCharacterSize { 0, 0 };
         glm::vec<2, size_t, glm::defaultp> m_maxCharacterAdvance { 0, 0 };
         glm::vec<2, size_t, glm::defaultp> m_maxCharacterBearing { 0, 0 };
 
-        bool m_isAtlasChanged = false;
-
-        std::unordered_map<char16_t, size_t> m_glyphsIndices;
+        bool m_isCharsetChanged = false;
     };
 }
 
