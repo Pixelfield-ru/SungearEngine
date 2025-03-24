@@ -9,7 +9,7 @@
 
 #include <sgcore_export.h>
 
-#include <msdf-atlas-gen/msdf-atlas-gen.h>
+#include <msdf-atlas-gen/msdf-atlas-gen/msdf-atlas-gen.h>
 
 #include "SGCore/Main/CoreGlobals.h"
 

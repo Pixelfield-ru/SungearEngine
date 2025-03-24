@@ -4,55 +4,41 @@ if(${SG_BUILD_ENTRY})
 endif()
 
 #[[
-# installing targets
-install(TARGETS SGUtils SGCore SGConsoleAPI
+# installing sgcore
+install(TARGETS SGCore
         EXPORT SungearEngineTargets
-        ARCHIVE DESTINATION "share/sungearengine"
+        ARCHIVE DESTINATION lib               # for .lib
+        LIBRARY DESTINATION lib               # for .dll
+        RUNTIME DESTINATION bin               # for .exe and .dll
+        INCLUDES DESTINATION include/SGCore   # for headers
 )
 
-export(
+# installing dependencies
+install(TARGETS msdf-atlas-gen msdfgen-full msdfgen-core msdfgen-ext
         EXPORT SungearEngineTargets
-        FILE "share/sungearengine/SungearEngineTargets.cmake"
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
 )
 
-install(
-        EXPORT SungearEngineTargets
+# installing headers
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/Sources/SGCore DESTINATION include/SGCore FILES_MATCHING PATTERN "*.h")
+
+# generating config file
+configure_package_config_file(
+        ${CMAKE_SOURCE_DIR}/cmake/SungearEngineConfig.cmake.in  # template
+        ${CMAKE_BINARY_DIR}/SungearEngineConfig.cmake
+        INSTALL_DESTINATION lib/cmake/SungearEngine
+)
+
+# installing cmake file
+install(EXPORT SungearEngineTargets
         FILE SungearEngineTargets.cmake
-        DESTINATION "share/sungearengine"
+        NAMESPACE SungearEngine::
+        DESTINATION lib/cmake/SungearEngine
 )
 
-#installing headers
-file(GLOB_RECURSE SGCONSOLEAPI_HEADERS SGConsole/API/*.h)
-file(GLOB_RECURSE SGCORE_HEADERS SGCore/*.h)
-file(GLOB_RECURSE SGUTILS_HEADERS SGUtils/*.h)
-
-#message("core headers: " ${SGCORE_HEADERS})
-
-install(DIRECTORY "SGConsole" # source directory
-        DESTINATION "include/SungearEngine" # target directory
-        FILES_MATCHING # install only matched files
-        PATTERN "*.h" # select header files
-        PATTERN "*.hpp"
-        )
-
-install(DIRECTORY "SGCore" # source directory
-        DESTINATION "include/SungearEngine" # target directory
-        FILES_MATCHING # install only matched files
-        PATTERN "*.h" # select header files
-        PATTERN "*.hpp"
-        )
-
-install(DIRECTORY "SGUtils" # source directory
-        DESTINATION "include/SungearEngine" # target directory
-        FILES_MATCHING # install only matched files
-        PATTERN "*.h" # select header files
-        PATTERN "*.hpp"
-        )
-
-install(FILES "sgcore_export.h" # source directory
-        DESTINATION "include/SungearEngine" # target directory
-)
-
-install(FILES "sgutils_export.h" # source directory
-        DESTINATION "include/SungearEngine" # target directory
+# installing engine configuration
+install(FILES ${CMAKE_BINARY_DIR}/SungearEngineConfig.cmake
+        DESTINATION lib/cmake/SungearEngine
 )]]

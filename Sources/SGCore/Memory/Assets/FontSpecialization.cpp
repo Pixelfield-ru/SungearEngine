@@ -220,7 +220,7 @@ void SGCore::UI::FontSpecialization::createAtlas() noexcept
 
         m_geometry = msdf_atlas::FontGeometry(&m_glyphs);
 
-        if(!m_geometry.loadCharset(m_usedFont->getFontHandler(), 1, m_charset))
+        if(!m_geometry.loadCharset(m_usedFont->getFontHandler(), 3, m_charset))
         {
             LOG_E(SGCORE_TAG,
                   "Can not load bunch of characters in font specialization with settings: name: '{}', height: {}. Character was not found in font!",
@@ -237,10 +237,11 @@ void SGCore::UI::FontSpecialization::createAtlas() noexcept
         // Apply MSDF edge coloring. See edge-coloring.h for other coloring strategies.
         const double maxCornerAngle = 3.0;
 
-        for(auto& glyph : m_glyphs)
+        for(size_t i = 0; i < m_glyphs.size(); ++i)
         {
+            auto& glyph = m_glyphs[i];
             // Apply MSDF edge coloring. See edge-coloring.h for other coloring strategies.
-            glyph.edgeColoring(&msdfgen::edgeColoringInkTrap, maxCornerAngle, 0);
+            glyph.edgeColoring(&msdfgen::edgeColoringByDistance, maxCornerAngle, 0);
             // Finalize glyph box size based on the parameters
             // glyph.wrapBox(m_settings.m_height, pixelRange / m_settings.m_height, miterLimit);
             // =====

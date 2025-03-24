@@ -188,9 +188,9 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
     const auto& specMetrics = lockedSpec->getMetrics();
     const auto& specGeometry = lockedSpec->getGeometry();
 
-    const double fsScale = 1.0 / (specMetrics.ascenderY - specMetrics.descenderY);
+    const double fsScale = (1.0 / (specMetrics.ascenderY - specMetrics.descenderY)) * lockedSpec->getSettings().m_height;
 
-    const double lineHeight = fsScale * specMetrics.lineHeight * lockedSpec->getSettings().m_height + lineHeightOffset;
+    const double lineHeight = fsScale * specMetrics.lineHeight + lineHeightOffset;
 
     textCache.m_finalSize.y = lineHeight;
 
@@ -234,8 +234,9 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
 
             double pl, pb, pr, pt;
             glyph->getQuadPlaneBounds(pl, pb, pr, pt);
-            const glm::vec2 quadMin = glm::vec2 { pl, pb } * fsScale * lockedSpec->getSettings().m_height + glm::vec2(curX, curY);
-            const glm::vec2 quadMax = glm::vec2 { pr, pt } * fsScale * lockedSpec->getSettings().m_height + glm::vec2(curX, curY);
+            // glyph->getShape().bound(pl, pb, pr, pt);
+            const glm::vec2 quadMin = glm::vec2 { pl, pb } * fsScale + glm::vec2(curX, curY);
+            const glm::vec2 quadMax = glm::vec2 { pr, pt } * fsScale + glm::vec2(curX, curY);
 
             const size_t colorIdx = m_currentDrawingCharacter * 24;
 
@@ -353,7 +354,7 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
                 const auto nextChar = text->m_text[i + 1];
                 specGeometry.getAdvance(advance, c, nextChar);
 
-                curX += fsScale * advance * lockedSpec->getSettings().m_height;
+                curX += fsScale * advance;
             }
             // curX += (float) (glyph->m_advance.x >> 6);
         }

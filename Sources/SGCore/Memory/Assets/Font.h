@@ -9,7 +9,7 @@
 
 #include "IAsset.h"
 #include "FontSpecialization.h"
-#include <msdf-atlas-gen/msdf-atlas-gen.h>
+#include <msdf-atlas-gen/msdf-atlas-gen/msdf-atlas-gen.h>
 
 namespace SGCore::UI
 {

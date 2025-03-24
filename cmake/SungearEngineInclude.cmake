@@ -13,16 +13,23 @@ endif()
 if(${SG_BUILD_TYPE} STREQUAL "Release")
     set(SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}/Sources")
     list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}/cmake-build-release/Sources/SGCore")
-    list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}/Externals")
 
     set(SungearEngine_LIBS "$ENV{SUNGEAR_SOURCES_ROOT}/cmake-build-release/Sources/SGCore/SGCore.${SG_DL_EXT}")
 elseif(${SG_BUILD_TYPE} STREQUAL "Debug")
     set(SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}/Sources")
     list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}/cmake-build-debug/Sources/SGCore")
-    list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}/Externals")
 
     set(SungearEngine_LIBS "$ENV{SUNGEAR_SOURCES_ROOT}/cmake-build-debug/Sources/SGCore/SGCore.${SG_DL_EXT}")
 endif()
+
+list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}/Externals")
+
+#[[set(MSDF_ATLAS_BUILD_STANDALONE OFF)
+set(MSDF_ATLAS_DYNAMIC_RUNTIME ON)]]
+add_definitions(-DMSDFGEN_PUBLIC=)
+
+list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}/Externals/msdf-atlas-gen")
+list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}/Externals/msdf-atlas-gen/msdfgen")
 
 #if(${SG_INCLUDE_BULLET})
     find_package(Bullet REQUIRED)

@@ -54,7 +54,12 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	set(CMAKE_C_FLAGS ${C_COMPILER_FLAGS})
 
 	if(MSVC)
-		set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebugDLL")
+		if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+			set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebugDLL")
+		elseif(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+			set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+		endif()
+
 		set(MSVC_RUNTIME "static")
 	endif()
 
@@ -70,9 +75,10 @@ elseif(MSVC)
 endif ()
 add_definitions(-DNOMINMAX)
 
-find_package(unofficial-nativefiledialog CONFIG REQUIRED)
-
 include($ENV{SUNGEAR_SOURCES_ROOT}/cmake/SungearEngineInclude.cmake)
+
+message("CMAKE_MODULE_PATH=${CMAKE_PREFIX_PATH}")
+find_package(unofficial-nativefiledialog CONFIG REQUIRED)
 
 file(GLOB_RECURSE SGE_SOURCES Sources/*.cpp Sources/*.h)
 list(FILTER SGE_SOURCES EXCLUDE REGEX ".templates")

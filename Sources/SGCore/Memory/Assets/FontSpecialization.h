@@ -7,13 +7,13 @@
 
 #include <SGCore/pch.h>
 
-#include <msdf-atlas-gen/BitmapAtlasStorage.h>
-#include <msdf-atlas-gen/DynamicAtlas.h>
-#include <msdf-atlas-gen/glyph-generators.h>
-#include <msdf-atlas-gen/ImmediateAtlasGenerator.h>
+#include <msdf-atlas-gen/msdf-atlas-gen/BitmapAtlasStorage.h>
+#include <msdf-atlas-gen/msdf-atlas-gen/DynamicAtlas.h>
+#include <msdf-atlas-gen/msdf-atlas-gen/glyph-generators.h>
+#include <msdf-atlas-gen/msdf-atlas-gen/ImmediateAtlasGenerator.h>
 
-#include "msdf-atlas-gen/Charset.h"
-#include "msdf-atlas-gen/FontGeometry.h"
+#include "msdf-atlas-gen/msdf-atlas-gen/Charset.h"
+#include "msdf-atlas-gen/msdf-atlas-gen/FontGeometry.h"
 #include "SGCore/Main/CoreGlobals.h"
 
 #include "SGCore/Utils/SDFTexture.h"

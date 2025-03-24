@@ -1,0 +1,7 @@
+@PACKAGE_INIT@
+
+set(INSTALL_PREFIX_RAW "$ENV{SUNGEAR_SOURCES_ROOT}/installed")
+
+string(REPLACE "\\" "\\\\" INSTALL_PREFIX_ESCAPED ${INSTALL_PREFIX_RAW})
+
+set_and_check(SungearEngine_DIR "${INSTALL_PREFIX_ESCAPED}/lib/cmake/SungearEngine")

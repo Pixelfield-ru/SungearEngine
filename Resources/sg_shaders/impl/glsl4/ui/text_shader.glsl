@@ -19,7 +19,7 @@ void main()
     vs_UVAttribute = characterUV;
     vs_characterColor = characterColor;
 
-    vec3 charVPos = characterVertexPosition;
+    vec3 charVPos = characterVertexPosition * 1.0;
     // charVPos.y = (charVPos.y) + u_maxCharacterSize.y / 4.0;
 
     gl_Position = camera.orthographicSpaceMatrix * characterModelMatrix * vec4(charVPos, 1.0);
@@ -47,27 +47,20 @@ uniform int SGPP_CurrentLayerIndex;
 
 const float threshold = .01;
 
-float f( vec2 x )
+uniform float pxRange = 2.0;
+uniform vec4 bgColor = vec4(0.0);
+uniform vec4 fgColor = vec4(1.0);
+
+float screenPxRange()
 {
-    float r = length(x);
-    float a = atan(x.y,x.x);
-    return r - 1.0 + 0.5*sin(3.0*a+2.0*r*r);
+    vec2 unitRange = vec2(pxRange) / vec2(textureSize(u_fontSpecializationAtlas, 0));
+    vec2 screenTexSize = vec2(1.0) / fwidth(vs_UVAttribute.xy);
+    return max(0.5 * dot(unitRange, screenTexSize), 1.0);
 }
 
-vec2 grad( vec2 x )
+float median(float r, float g, float b)
 {
-    vec2 h = vec2( 0.01, 0.0 );
-    return vec2( f(x+h.xy) - f(x-h.xy),
-    f(x+h.yx) - f(x-h.yx) )/(2.0*h.x);
-}
-
-float color( vec2 x )
-{
-    float v = f( x );
-    vec2  g = grad( x );
-    float de = abs(v)/length(g);
-    float eps = 0.05;
-    return smoothstep( 1.0*eps, 2.0*eps, de );
+    return max(min(r, g), min(max(r, g), b));
 }
 
 void main()
@@ -76,22 +69,15 @@ void main()
 
     vec2 finalUV = vs_UVAttribute.xy;
 
-    float distance = texture(u_fontSpecializationAtlasSDF, vec2(finalUV.x, finalUV.y)).r;
-    float alpha = smoothstep(0.5 - 0.01, 0.5 + 0.01, distance);
+    vec3 msd = texture(u_fontSpecializationAtlas, vec2(finalUV.x, finalUV.y)).rgb;
+    float sd = median(msd.r, msd.g, msd.b);
+    float screenPxDistance = screenPxRange() * (sd - 0.5);
+    float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
 
-
-
-    charCol = texture(u_fontSpecializationAtlas, vec2(finalUV.x, finalUV.y));
-
-    vec3 c = texture2D(u_fontSpecializationAtlasSDF, vec2(finalUV.x, finalUV.y)).rgb;
-    // vec3 res = smoothstep(.5-threshold, .5+threshold, c);
-
-    float coll = color(c.rg);
-
-    // gl_FragColor = vec4((c-0.5)*contrast,1.0);
-
+    layerColor = mix(bgColor, fgColor, opacity);
+    // layerColor = vec4(msd, 1.0);
     // fragColor = charCol;
-    layerColor = vec4(charCol.rgb * vs_characterColor.rgb, vs_characterColor.a);
+    // layerColor = vec4(charCol.rgb * vs_characterColor.rgb, vs_characterColor.a);
     // layerColor = vec4(1.0);
     // fragColor = vec4(1.0);
 }

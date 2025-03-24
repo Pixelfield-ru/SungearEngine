@@ -323,12 +323,23 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
     // ak47_reload
     // spy
 
-    if(modelAsset->getPath() != "${projectPath}\\Resources\\models\\spy\\scene.gltf") return;
+    if(modelAsset->getPath() != "${projectPath}\\Resources\\models\\test cube.gltf") return;
 
-    auto rootJointEntity = SGCore::Scene::getCurrentScene()
+    SGCore::ECS::entity_t rootJointEntity = entt::null;
+    for(const auto& e : entities)
+    {
+        if(SGCore::Scene::getCurrentScene()
+            ->getECSRegistry()
+            ->get<SGCore::EntityBaseInfo>(e).getName() == "Bone")
+        {
+            rootJointEntity = e;
+        }
+    }
+
+    /*auto rootJointEntity = SGCore::Scene::getCurrentScene()
             ->getECSRegistry()
             ->get<SGCore::EntityBaseInfo>(entities[0])
-            .findEntity(*SGCore::Scene::getCurrentScene()->getECSRegistry(), "GLTF_created_0_rootJoint");
+            .findEntity(*SGCore::Scene::getCurrentScene()->getECSRegistry(), "Bone");*/
 
     std::cout << "found entity root join: " << std::to_underlying(rootJointEntity) << std::endl;
 
@@ -336,7 +347,7 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
     {
         // TEST: getting skeleton of cat
         auto skeleton = SGCore::AssetManager::getInstance()->getAsset<SGCore::Skeleton, SGCore::AssetStorageType::BY_PATH>(
-            "${projectPath}\\Resources\\models\\spy\\scene.gltf\\skeletons\\GLTF_created_0_rootJoint"
+            "${projectPath}\\Resources\\models\\test cube.gltf\\skeletons\\Bone"
         );
 
         if(!skeleton)
@@ -347,7 +358,7 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
 
         // TEST: getting animations of cat
         auto animations = SGCore::AssetManager::getInstance()->getAsset<SGCore::AnimationsFile, SGCore::AssetStorageType::BY_PATH>(
-            "${projectPath}\\Resources\\models\\spy\\scene.gltf\\animations"
+            "${projectPath}\\Resources\\models\\test cube.gltf\\animations"
         );
 
         if(!animations)
@@ -360,6 +371,11 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
         motionPlanner.m_skeleton = skeleton;
 
         auto mainNode = SGCore::MotionPlannerNode::createNode();
+        mainNode->m_isRepeated = true;
+        mainNode->m_animationSpeed = 1.0f;
+        mainNode->m_skeletalAnimation = animations->m_skeletalAnimations[0];
+
+        /*auto mainNode = SGCore::MotionPlannerNode::createNode();
         mainNode->m_isRepeated = true;
         mainNode->m_animationSpeed = 1.0f;
         mainNode->m_skeletalAnimation = animations->m_skeletalAnimations[1];
@@ -379,7 +395,7 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
         walkConnection->m_nextNode = walkNode;
         walkConnection->m_blendTime = 0.3f;
 
-        mainNode->m_connections.push_back(walkConnection);
+        mainNode->m_connections.push_back(walkConnection);*/
 
         motionPlanner.m_rootNodes.push_back(mainNode);
     }

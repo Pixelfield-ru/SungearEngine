@@ -1,3 +1,5 @@
+set(CMAKE_INSTALL_PREFIX $ENV{SUNGEAR_SOURCES_ROOT}/installed)
+
 include(cmake/set-toolchain.cmake)
 
 if(WIN32)
@@ -130,3 +132,9 @@ add_subdirectory(Sources)
 if(${SG_BUILD_TESTS})
     add_subdirectory(Tests)
 endif()
+
+add_custom_target(auto_install ALL
+        COMMAND ${CMAKE_COMMAND} -E echo "Auto-install target triggered"
+        COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${CMAKE_INSTALL_PREFIX}
+        COMMENT "Automatically installing SungearEngine after project build..."
+)

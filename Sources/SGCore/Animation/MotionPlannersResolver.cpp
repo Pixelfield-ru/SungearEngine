@@ -292,6 +292,8 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
         auto finalBoneMatrix =
                  currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix * currentBone->m_offsetMatrix;
 
+        // std::cout << "Animation time: " << nodesToInterpolate[0]->m_currentAnimationTime << ", Bone: " << currentBone->m_boneName << ", bone final matrix: " << finalBoneMatrix << std::endl;
+
         // updating current bone matrix data in m_bonesMatricesData
         // 16 is count of scalars in matrix
         // 4 is count of scalars in vector. this vector contains count of bones

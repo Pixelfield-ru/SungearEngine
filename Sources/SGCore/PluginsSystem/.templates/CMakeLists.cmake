@@ -54,7 +54,12 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     set(CMAKE_C_FLAGS ${C_COMPILER_FLAGS})
 
     if(MSVC)
-        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebugDLL")
+        if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+            set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebugDLL")
+        elseif(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+            set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+        endif()
+
         set(MSVC_RUNTIME "static")
     endif()
 
