@@ -39,22 +39,7 @@ void SGCore::UI::Text::doCalculateLayout(const UIElementCache* parentElementCach
     {
         m_selector->calculateCache(parentElementCache, thisElementCache);
 
-        /*float maxHeight = 0.0f;
-
-        for(const auto& c : m_text)
-        {
-            const auto* glyph = m_selector->getFontSpecialization()->tryGetGlyph(c);
-
-            if(glyph)
-            {
-                if(glyph->m_realSize.y > maxHeight)
-                {
-                    maxHeight = glyph->m_realSize.y;
-                }
-            }
-        }*/
-
-        // thisElementCache.m_finalSize.y = m_selector->getFontSpecialization()->getMaxCharacterSize().y;
+        thisElementCache.m_finalSize.y = m_textSize.y;
     }
     else
     {

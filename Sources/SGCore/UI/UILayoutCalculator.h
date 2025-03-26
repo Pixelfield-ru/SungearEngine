@@ -32,6 +32,7 @@ namespace SGCore::UI
 
         static void calculateElementLayout(bool isFirstChildElement,
                                            const Ref<UIElement>& parentUIElement,
+                                           const Ref<UIElement>& currentUIElement,
                                            UITransformTreeElement& parentElementTransform,
                                            UITransformTreeElement& currentElementTransform) noexcept;
 

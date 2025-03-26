@@ -180,6 +180,12 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
     Ref<FontSpecialization> lockedSpec = m_parentSpecialization.lock();
     
     if(!lockedSpec) return;
+
+    if(text->m_text.empty())
+    {
+        text->m_textSize.y = 0;
+        return;
+    }
     
     double curX = 0;
     double curY = 0;
@@ -194,7 +200,7 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
 
     const double lineHeight = fsScale * specMetrics.lineHeight + lineHeightOffset;
 
-    textCache.m_finalSize.y = lineHeight;
+    text->m_textSize.y = lineHeight + (ascenderYPos - descenderYPos);
 
     const msdf_atlas::GlyphGeometry* unknownGlyph = lockedSpec->tryGetGlyph('?');
     const msdf_atlas::GlyphGeometry* spaceGlyph = lockedSpec->tryGetGlyph(' ');
@@ -210,7 +216,7 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
             curX = 0.0f;
             curY -= lineHeight;
 
-            textCache.m_finalSize.y += lineHeight;
+            text->m_textSize.y += lineHeight;
 
             continue;
         }

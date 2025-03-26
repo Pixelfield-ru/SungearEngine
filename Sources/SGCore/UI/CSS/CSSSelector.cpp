@@ -10,7 +10,7 @@ SGCore::UI::CSSSelector::CSSSelector() noexcept
     // setting default font
     m_font = FontsManager::getInstance().getAssetManager()->getAsset<Font, AssetStorageType::BY_ALIAS>("JetBrainsMono-Regular");
 
-    m_fontSpecializationSettings.m_height = 20;
+    m_fontSpecializationSettings.m_height = 52;
     setFontSpecializationSettings(m_fontSpecializationSettings);
 }
 

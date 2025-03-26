@@ -41,7 +41,7 @@ const msdf_atlas::GlyphGeometry* SGCore::UI::FontSpecialization::tryGetGlyph(con
 {
     auto it = m_glyphsIndices.find(c);
     
-    return it == m_glyphsIndices.end() ? nullptr : &m_glyphs.at(it->second);
+    return it == m_glyphsIndices.end() ? nullptr : &m_glyphs[it->second];
 }
 
 void SGCore::UI::FontSpecialization::parse(const uint32_t& from, const uint32_t& to) noexcept

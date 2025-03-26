@@ -13,6 +13,8 @@ namespace SGCore::UI
 {
     struct Text : UIElement
     {
+        friend struct FontSpecializationRenderer;
+
         Text() noexcept;
 
         copy_constructor(Text) = default;
@@ -28,6 +30,10 @@ namespace SGCore::UI
                   UIElementCache& elementCache) noexcept override;
 
     protected:
+        /// todo: omg i have element size (m_basicSize) in selector but i cant use it because of order. i am calculating m_basicSize in draw function of struct Text and then i am calling m_selector->calculateCache() in UILayoutCalculator so m_basicSize resets
+        /// todo: so i need to hold this variable
+        glm::vec2 m_textSize { };
+
         void doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,
                                const Transform* parentTransform, Transform& ownTransform) noexcept final;
 

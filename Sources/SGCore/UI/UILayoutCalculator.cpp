@@ -86,7 +86,7 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
         {
             const bool isFirstChildElement = (parentTransformNode && !parentTransformNode->m_children.empty()) ?
                 parentTransformNode->m_children[0] == currentUITransformNodeIdx : 0;
-            calculateElementLayout(isFirstChildElement, parentUIElement, *parentTransformNode, currentTransformNode);
+            calculateElementLayout(isFirstChildElement, parentUIElement, currentUIElement, *parentTransformNode, currentTransformNode);
         }
         
         currentElementCache.m_curLocalPositionForElements =
@@ -114,6 +114,7 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
 
 void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildElement,
                                                             const Ref<UIElement>& parentUIElement,
+                                                            const Ref<UIElement>& currentUIElement,
                                                             UITransformTreeElement& parentElementTransform,
                                                             UITransformTreeElement& currentElementTransform) noexcept
 {
@@ -146,7 +147,10 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
             }
 
             glm::vec3 currentElementPos = parentElementCache.m_curLocalPositionForElements;
-            currentElementPos += glm::vec3 { currentElementCache.m_finalSize, 0.0 } / 2.0f;
+            if(currentUIElement->getType() != UIElementType::ET_TEXT)
+            {
+                currentElementPos += glm::vec3 { currentElementCache.m_finalSize, 0.0 } / 2.0f;
+            }
 
             currentElementTransform.m_transform.m_ownTransform.m_position = currentElementPos;
 
@@ -168,7 +172,10 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
     else if(parentSelector->m_display == DisplayKeyword::KW_BLOCK)
     {
         glm::vec3 currentElementPos = parentElementCache.m_curLocalPositionForElements;
-        currentElementPos += glm::vec3 { currentElementCache.m_finalSize, 0.0 } / 2.0f;
+        if(currentUIElement->getType() != UIElementType::ET_TEXT)
+        {
+            currentElementPos += glm::vec3 { currentElementCache.m_finalSize, 0.0 } / 2.0f;
+        }
 
         currentElementTransform.m_transform.m_ownTransform.m_position = currentElementPos;
 

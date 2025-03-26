@@ -1,7 +1,5 @@
 <xml>
     <include type="stylesheet" path="test.css"/>
-
-
     <div class="window-header">
         <div class="window-header-1">
 
@@ -29,52 +27,61 @@
         </div>
     </div>
 
-    <text>
-layout(location = 0) out vec4 layerVolume;
-layout(location = 1) out vec4 layerColor;
+    <text>В процессе разработки новой версии Тёмной Долины, на локации были сделаны автомобильные
+дороги на север от недостройки и на восток, от автозаправки. Однако, они были убраны ещё на
+этапе первых тестов геометрии и в сборке 1935, локация уже была представлена без этих дорог,
+несмотря на свою незаконченность.</text>
 
-in vec2 vs_UVAttribute;
-in vec4 vs_characterColor;
+    <div class="window-header">
+        <div class="window-header-1">
 
-uniform sampler2D u_fontSpecializationAtlas;
+        </div>
 
-// REQUIRED UNIFORM!!
-uniform int SGPP_CurrentLayerIndex;
+        <div class="window-header-1">
 
-const float threshold = 0.01;
+        </div>
 
-uniform float pxRange = 0.0;
-uniform vec4 bgColor = vec4(0.0);
-uniform vec4 fgColor = vec4(1.0, 1.0, 1.0, 1.0);
+        <div class="window-header-1">
 
-float screenPxRange()
-{
-    vec2 unitRange = vec2(pxRange) / vec2(textureSize(u_fontSpecializationAtlas, 0));
-    vec2 screenTexSize = vec2(1.0) / fwidth(vs_UVAttribute.xy);
-    return max(0.5 * dot(unitRange, screenTexSize), 1.0);
-}
+        </div>
 
-float median(float r, float g, float b)
-{
-    return max(min(r, g), min(max(r, g), b));
-}
+        <div class="window-header-1">
 
-void main()
-{
-    vec4 charCol = vec4(0, 0, 0, 1);
+        </div>
 
-    vec2 finalUV = vs_UVAttribute.xy;
+        <div class="window-header-1">
 
-    vec3 msd = texture(u_fontSpecializationAtlas, vec2(finalUV.x, finalUV.y)).rgb;
-    float sd = median(msd.r, msd.g, msd.b);
-    float screenPxDistance = screenPxRange() * (sd - 0.5);
-    float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
+        </div>
+        <div class="window-header-test">
+            <div class="window-header-1">
 
-    layerColor = mix(bgColor, fgColor * 1.4, opacity);
-    // layerColor = vec4(msd, 1.0);
-    // fragColor = charCol;
-    // layerColor = vec4(charCol.rgb * vs_characterColor.rgb, vs_characterColor.a);
-    // layerColor = vec4(1.0);
-    // fragColor = vec4(1.0);
-}</text>
+            </div>
+        </div>
+    </div>
+    <div class="window-header">
+        <div class="window-header-1">
+
+        </div>
+
+        <div class="window-header-1">
+
+        </div>
+
+        <div class="window-header-1">
+
+        </div>
+
+        <div class="window-header-1">
+
+        </div>
+
+        <div class="window-header-1">
+
+        </div>
+        <div class="window-header-test">
+            <div class="window-header-1">
+
+            </div>
+        </div>
+    </div>
 </xml>
