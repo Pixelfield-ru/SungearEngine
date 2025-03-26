@@ -189,14 +189,19 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
     const auto& specGeometry = lockedSpec->getGeometry();
 
     const double fsScale = (1.0 / (specMetrics.ascenderY - specMetrics.descenderY)) * lockedSpec->getSettings().m_height;
+    const double descenderYPos = (-specMetrics.descenderY) * fsScale;
+    const double ascenderYPos = (specMetrics.ascenderY) * fsScale;
 
     const double lineHeight = fsScale * specMetrics.lineHeight + lineHeightOffset;
 
     textCache.m_finalSize.y = lineHeight;
 
+    const msdf_atlas::GlyphGeometry* unknownGlyph = lockedSpec->tryGetGlyph('?');
+    const msdf_atlas::GlyphGeometry* spaceGlyph = lockedSpec->tryGetGlyph(' ');
+
     for(size_t i = 0; i < text->m_text.size(); ++i)
     {
-        const auto c = text->m_text[i];
+        auto c = text->m_text[i];
 
         if(m_currentDrawingCharacter >= m_maxCharactersCount - 1) return;
 
@@ -214,14 +219,15 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
 
         if(!glyph)
         {
-            glyph = lockedSpec->tryGetGlyph('?');
+            c = '?';
+            glyph = unknownGlyph;
         }
 
         if(!glyph) return;
 
         if(c == '\t')
         {
-            glyph = lockedSpec->tryGetGlyph(' ');
+            glyph = spaceGlyph;
         }
 
 
@@ -234,9 +240,14 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
 
             double pl, pb, pr, pt;
             glyph->getQuadPlaneBounds(pl, pb, pr, pt);
-            // glyph->getShape().bound(pl, pb, pr, pt);
-            const glm::vec2 quadMin = glm::vec2 { pl, pb } * fsScale + glm::vec2(curX, curY);
-            const glm::vec2 quadMax = glm::vec2 { pr, pt } * fsScale + glm::vec2(curX, curY);
+            glm::vec2 quadMin = glm::vec2 { pl, pb } * fsScale + glm::vec2(curX, curY);
+            glm::vec2 quadMax = glm::vec2 { pr, pt } * fsScale + glm::vec2(curX, curY);
+
+            const float offsetFromDescender = (quadMax.y - descenderYPos);
+            const float offsetFromAscender = (quadMin.y - ascenderYPos);
+
+            quadMin.y -= offsetFromDescender + offsetFromAscender;
+            quadMax.y -= offsetFromDescender + offsetFromAscender;
 
             const size_t colorIdx = m_currentDrawingCharacter * 24;
 
@@ -351,7 +362,11 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
 
                 double advance = 0.0f;
                 // const float advance = glyph->getAdvance();
-                const auto nextChar = text->m_text[i + 1];
+                auto nextChar = text->m_text[i + 1];
+                if(!lockedSpec->tryGetGlyph(nextChar))
+                {
+                    nextChar = '?';
+                }
                 specGeometry.getAdvance(advance, c, nextChar);
 
                 curX += fsScale * advance;
@@ -390,13 +405,9 @@ void SGCore::UI::FontSpecializationRenderer::drawAll() noexcept
     subPassShader->bind();
     subPassShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
 
-    subPassShader->useVectorf("u_maxCharacterSize", lockedParentSpec->getMaxCharacterSize());
-
     subPassShader->useTextureBlock("u_fontSpecializationAtlas", 0);
-    subPassShader->useTextureBlock("u_fontSpecializationAtlasSDF", 1);
     
     lockedParentSpec->m_atlasTexture->bind(0);
-    // lockedParentSpec->m_atlasSDF.m_texture->bind(1);
 
     CoreMain::getRenderer()->renderArray(m_charactersVertexArray, m_meshRenderState, charsCount * 6, 6);
 }

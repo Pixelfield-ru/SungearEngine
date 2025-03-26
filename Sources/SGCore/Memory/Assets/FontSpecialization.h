@@ -58,8 +58,7 @@ namespace SGCore::UI
         FontSpecialization();
         
         Ref<ITexture2D> m_atlasTexture;
-        
-        void saveTextAsTexture(const std::filesystem::path& path, const std::u16string& text) const noexcept;
+
         void saveAtlasAsTexture(const std::filesystem::path& path) const noexcept;
 
         void parse(const uint32_t& from, const uint32_t& to) noexcept;
@@ -71,11 +70,6 @@ namespace SGCore::UI
         const msdf_atlas::GlyphGeometry* tryGetGlyph(const uint32_t& c) const noexcept;
         
         Ref<FontSpecializationRenderer> getRenderer() noexcept;
-        
-        [[nodiscard]] size_t getMaxAtlasWidth() const noexcept;
-        [[nodiscard]] glm::vec<2, size_t, glm::defaultp> getMaxCharacterSize() const noexcept;
-        [[nodiscard]] glm::vec<2, size_t, glm::defaultp> getMaxCharacterAdvance() const noexcept;
-        [[nodiscard]] glm::vec<2, size_t, glm::defaultp> getMaxCharacterBearing() const noexcept;
 
         const msdfgen::FontMetrics& getMetrics() const noexcept;
         const msdf_atlas::FontGeometry& getGeometry() const noexcept;

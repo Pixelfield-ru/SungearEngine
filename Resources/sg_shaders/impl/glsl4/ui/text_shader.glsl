@@ -12,8 +12,6 @@ layout (location = 6) in vec3 characterVertexPosition;
 out vec2 vs_UVAttribute;
 out vec4 vs_characterColor;
 
-uniform vec2 u_maxCharacterSize;
-
 void main()
 {
     vs_UVAttribute = characterUV;
@@ -40,16 +38,15 @@ in vec2 vs_UVAttribute;
 in vec4 vs_characterColor;
 
 uniform sampler2D u_fontSpecializationAtlas;
-uniform sampler2D u_fontSpecializationAtlasSDF;
 
 // REQUIRED UNIFORM!!
 uniform int SGPP_CurrentLayerIndex;
 
-const float threshold = .01;
+const float threshold = 0.01;
 
-uniform float pxRange = 2.0;
+uniform float pxRange = 0.0;
 uniform vec4 bgColor = vec4(0.0);
-uniform vec4 fgColor = vec4(1.0);
+uniform vec4 fgColor = vec4(1.0, 1.0, 1.0, 1.0);
 
 float screenPxRange()
 {
@@ -74,7 +71,7 @@ void main()
     float screenPxDistance = screenPxRange() * (sd - 0.5);
     float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
 
-    layerColor = mix(bgColor, fgColor, opacity);
+    layerColor = mix(bgColor, fgColor * 1.4, opacity);
     // layerColor = vec4(msd, 1.0);
     // fragColor = charCol;
     // layerColor = vec4(charCol.rgb * vs_characterColor.rgb, vs_characterColor.a);

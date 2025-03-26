@@ -29,7 +29,8 @@ SGCore::UI::FontsManager::~FontsManager() noexcept
 
 void SGCore::UI::FontsManager::init() const noexcept
 {
-    m_fontsAssetsManager->loadAssetWithAlias<Font>("times-new-roman", "${enginePath}/Resources/fonts/timesnewromanpsmt.ttf");
+    m_fontsAssetsManager->loadAssetWithAlias<Font>("TimesNewRoman", "${enginePath}/Resources/fonts/timesnewromanpsmt.ttf");
+    m_fontsAssetsManager->loadAssetWithAlias<Font>("JetBrainsMono-Regular", "${enginePath}/Resources/fonts/JetBrainsMono/JetBrainsMono-Regular.ttf");
 }
 
 SGCore::UI::FontsManager& SGCore::UI::FontsManager::getInstance() noexcept
