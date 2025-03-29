@@ -9,7 +9,6 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/ECS/Component.h"
-#include "SGCore/Utils/EventListener.h"
 
 namespace SGCore
 {

@@ -4,8 +4,7 @@
 #include <SGCore/pch.h>
 
 // #include "TimerCallback.h"
-#include "Event.h"
-#include "EventListener.h"
+#include "Signal.h"
 
 namespace SGCore
 {
@@ -13,9 +12,11 @@ namespace SGCore
     class Timer
     {
     public:
-        Event<void(const double&, const double&)> onUpdate;
-        Event<void()> onStart;
-        
+        Signal<void(const double&, const double&)> onUpdate;
+        Signal<void()> onStart;
+        std::function<void(const double&, const double&)> onPreUpdate;
+        std::function<void(const double&, const double&)> onPostUpdate;
+
         bool m_active = true;
         bool m_cyclic = false;
         

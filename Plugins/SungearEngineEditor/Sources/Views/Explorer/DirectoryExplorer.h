@@ -80,11 +80,11 @@ namespace SGE
     {
         DirectoryExplorer();
         
-        SGCore::Event<void(SGCore::AssetRef<SGCore::ITexture2D>& iconTexture,
+        SGCore::Signal<void(SGCore::AssetRef<SGCore::ITexture2D>& iconTexture,
                            const std::string& fileExtension,
                            const std::string& fileName)> onIconRender;
         
-        SGCore::Event<void(const std::filesystem::path& filePath)> onRightClick;
+        SGCore::Signal<void(const std::filesystem::path& filePath)> onRightClick;
         
         void renderBody() override;
         
@@ -300,8 +300,8 @@ namespace SGE
         FileInfo* m_draggingFileInfo = nullptr;
         
         // =======================================================================
-        SGCore::EventListener<void(const std::filesystem::path& byPath, bool canceled)> onSceneFileCreatedListener;
-        SGCore::EventListener<void(const std::filesystem::path& byPath, bool canceled)> onMaterialFileCreatedListener;
+        SGCore::Slot<void(const std::filesystem::path& byPath, bool canceled)> onSceneFileCreatedListener;
+        SGCore::Slot<void(const std::filesystem::path& byPath, bool canceled)> onMaterialFileCreatedListener;
     };
 }
 

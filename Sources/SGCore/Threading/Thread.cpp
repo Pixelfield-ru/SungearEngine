@@ -37,6 +37,8 @@ void SGCore::Threading::Thread::processTasks() noexcept
         
         onUpdateCopy = onUpdate;
     }
+
+    onTasksProcess.clear();
     
     onTasksProcessCopy();
     onUpdateCopy();
@@ -48,7 +50,7 @@ void SGCore::Threading::Thread::processTasks() noexcept
         std::lock_guard copyGuard(m_threadProcessMutex);
         
         // #TODO
-        onTasksProcess.exclude(onTasksProcessCopy);
+        // onTasksProcess.exclude(onTasksProcessCopy);
         
         // exclude from vector
         {
@@ -66,7 +68,7 @@ void SGCore::Threading::Thread::processTasks() noexcept
         m_tasksCopy.clear();
         
         tasksCount = m_tasks.size();
-        onUpdateEventListenersCount = onUpdate.listenersCount();
+        onUpdateEventListenersCount = onUpdate.slotsCount();
     }
     
     processFinishedTasks();
@@ -127,36 +129,13 @@ void SGCore::Threading::Thread::join() noexcept
     m_hasJoinRequest = false;
 }
 
-std::shared_ptr<SGCore::Threading::Task> SGCore::Threading::Thread::createTask
-(const SGCore::Threading::TaskSingletonGuard taskSingletonGuard)
-{
-    const size_t taskGuardHash = hashObject(taskSingletonGuard);
-    
-    std::lock_guard guard(m_threadProcessMutex);
-    
-    if(!onTasksProcess.contains(taskGuardHash))
-    {
-        auto task = std::make_shared<Task>();
-        task->useSingletonGuard(taskSingletonGuard);
-        
-        return task;
-    }
-    
-    return nullptr;
-}
-
 void SGCore::Threading::Thread::addTask(std::shared_ptr<Task> task)
 {
-    const size_t taskGuardHash = hashObject(task->m_parentTaskGuard);
-    
     std::lock_guard guard(m_threadProcessMutex);
-    
-    if(!onTasksProcess.contains(taskGuardHash))
-    {
-        m_tasks.push_back(task);
+
+    m_tasks.push_back(task);
         
-        onTasksProcess += task->m_onExecuteListener;
-    }
+    onTasksProcess += task->m_onExecuteListener;
 }
 
 void SGCore::Threading::Thread::removeTask(std::shared_ptr<Task> task)

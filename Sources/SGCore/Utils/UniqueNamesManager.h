@@ -8,8 +8,7 @@
 #include <SGCore/pch.h>
 
 #include "UniqueName.h"
-#include "Event.h"
-#include "EventListener.h"
+#include "Signal.h"
 
 namespace SGCore
 {
@@ -30,12 +29,12 @@ namespace SGCore
         void setUniqueNameRawName(UniqueName& uniqueName, const std::string& newRawName);
         void onUniqueNameDestroys(UniqueName& uniqueName);
 
-        void subscribeToSomeNameChangedEvent(const EventListener<void(const std::string&)>& eventListener);
+        void subscribeToSomeNameChangedEvent(Slot<void(const std::string&)>& eventListener);
 
         void clearCounters() noexcept;
 
     private:
-        Event<void(const std::string& newName)> onSomeNameChanged;
+        Signal<void(const std::string& newName)> onSomeNameChanged;
 
         std::unordered_map<std::string, UniqueNamesCounter> m_uniqueNamesCounters;
     };

@@ -10,7 +10,7 @@
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/Utils/Timer.h"
 #include "SGCore/Scene/EntityComponentMember.h"
-#include "SGCore/Utils/Event.h"
+#include "SGCore/Utils/Signal.h"
 #include "Transform.h"
 #include "SGCore/Scene/IParallelSystem.h"
 #include "SGCore/Threading/WrappedObject.h"
@@ -34,7 +34,7 @@ namespace SGCore
         // main thread
         void fixedUpdate(const double& dt, const double& fixedDt) noexcept final;
         
-        Event<void(const Ref<ECS::registry_t>& registry, const ECS::entity_t&, const Transform::reg_t)> onTransformChanged;
+        Signal<void(const Ref<ECS::registry_t>& registry, const ECS::entity_t&, const Transform::const_reg_t)> onTransformChanged;
         
     private:
         Threading::WrappedObject<std::vector<EntityComponentMember<glm::mat4>>> m_changedModelMatrices;

@@ -91,10 +91,8 @@ void SGE::DialogWindowsManager::addDialogWindow(const SGCore::Ref<DialogWindow>&
             }
         }
     };
-    lastDialogWnd->onIconRenderListener.m_priority = 0;
-    lastDialogWnd->onRenderBody += lastDialogWnd->onIconRenderListener;
 
-    lastDialogWnd->onCustomBodyRenderListener.m_priority = 1;
+    lastDialogWnd->onRenderBody += lastDialogWnd->onIconRenderListener;
     lastDialogWnd->onRenderBody += lastDialogWnd->onCustomBodyRenderListener;
 }
 

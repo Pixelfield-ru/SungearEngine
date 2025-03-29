@@ -10,8 +10,7 @@
 #include "ISystem.h"
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/Utils/UniqueNamesManager.h"
-#include "SGCore/Utils/Event.h"
-#include "SGCore/Utils/EventListener.h"
+#include "SGCore/Utils/Signal.h"
 #include "SGCore/Utils/TypeTraits.h"
 #include "SGCore/Memory/Assets/IAsset.h"
 #include "SGCore/ECS/Registry.h"
@@ -44,20 +43,20 @@ namespace SGCore
         template<Serde::FormatType TFormatType>
         struct SGCORE_EXPORT SceneSerdeEvents
         {
-            static inline Event<void(Serde::SerializableValueView<SceneEntitySaveInfo, TFormatType>& entityView,
-                                     const Scene& serializableScene,
-                                     const ECS::entity_t& serializableEntity)> onEntitySerialize;
+            static inline Signal<void(Serde::SerializableValueView<SceneEntitySaveInfo, TFormatType>& entityView,
+                                      const Scene& serializableScene,
+                                      const ECS::entity_t& serializableEntity)> onEntitySerialize;
 
-            static inline Event<void(Serde::DeserializableValueView<SceneEntitySaveInfo, TFormatType>& entityView,
-                                     const typename Serde::FormatInfo<TFormatType>::array_iterator_t& componentsIterator,
-                                     ECS::registry_t& toRegistry)> onEntityDeserialize;
+            static inline Signal<void(Serde::DeserializableValueView<SceneEntitySaveInfo, TFormatType>& entityView,
+                                      const typename Serde::FormatInfo<TFormatType>::array_iterator_t& componentsIterator,
+                                      ECS::registry_t& toRegistry)> onEntityDeserialize;
 
-            static inline Event<void(Serde::SerializableValueView<Scene::systems_container_t, TFormatType>& systemsContainerView,
-                                     const Scene& serializableScene,
-                                     const Ref<ISystem>& serializableSystem)> onSystemSerialize;
+            static inline Signal<void(Serde::SerializableValueView<Scene::systems_container_t, TFormatType>& systemsContainerView,
+                                      const Scene& serializableScene,
+                                      const Ref<ISystem>& serializableSystem)> onSystemSerialize;
 
-            static inline Event<void(Serde::DeserializableValueView<Scene::systems_container_t, TFormatType>& systemsContainerView,
-                                     const typename Serde::FormatInfo<TFormatType>::array_iterator_t& systemsIterator)> onSystemDeserialize;
+            static inline Signal<void(Serde::DeserializableValueView<Scene::systems_container_t, TFormatType>& systemsContainerView,
+                                      const typename Serde::FormatInfo<TFormatType>::array_iterator_t& systemsIterator)> onSystemDeserialize;
         };
 
     public:
@@ -182,7 +181,7 @@ namespace SGCore
         }
 
     private:
-        static inline Event<void(const Scene& savedScene)> onSceneSaved;
+        static inline Signal<void(const Scene& savedScene)> onSceneSaved;
 
         double m_update_executionTime = 0.0;
         double m_fixedUpdate_executionTime = 0.0;

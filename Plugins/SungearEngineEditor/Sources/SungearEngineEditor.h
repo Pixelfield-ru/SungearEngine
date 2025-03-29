@@ -23,7 +23,7 @@ namespace SGE
 
         SGCore::Ref<Project> m_currentProject;
 
-        SGCore::Event<void()> onConstructed;
+        SGCore::Signal<void()> onConstructed;
 
         ~SungearEngineEditor() override;
 

@@ -9,7 +9,7 @@
 
 #include "Task.h"
 
-#include "SGCore/Utils/Event.h"
+#include "SGCore/Utils/Signal.h"
 #include "SGCore/Utils/Utils.h"
 
 namespace SGCore::Threading
@@ -36,15 +36,13 @@ namespace SGCore::Threading
         
         void processTasks() noexcept;
         
-        std::shared_ptr<Task> createTask(const TaskSingletonGuard taskSingletonGuard);
-        
         void addTask(std::shared_ptr<Task> task);
         void removeTask(std::shared_ptr<Task> task);
         
         [[nodiscard]] size_t tasksCount() noexcept;
         
         template<typename Func>
-        requires(std::is_invocable_v<Func, Event<void()>&>)
+        requires(std::is_invocable_v<Func, Signal<void()>&>)
         void editOnUpdateEvent(const Func& func)
         {
             std::lock_guard guard(m_threadProcessMutex);
@@ -83,13 +81,13 @@ namespace SGCore::Threading
         std::atomic<double> m_executionTime = 0.0;
         
         std::vector<std::shared_ptr<Task>> m_tasks;
-        Event<void()> onTasksProcess;
+        Signal<void()> onTasksProcess;
         
         std::vector<std::shared_ptr<Task>> m_tasksCopy;
-        Event<void()> onTasksProcessCopy;
+        Signal<void()> onTasksProcessCopy;
         
-        Event<void()> onUpdate;
-        Event<void()> onUpdateCopy;
+        Signal<void()> onUpdate;
+        Signal<void()> onUpdateCopy;
         
         std::atomic<bool> m_isRunning = false;
         std::atomic<bool> m_isAlive = true;

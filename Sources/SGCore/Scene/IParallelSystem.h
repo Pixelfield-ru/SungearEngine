@@ -19,9 +19,7 @@ namespace SGCore
     template<typename ParallelSystemT>
     class IParallelSystem : public ISystem, public std::enable_shared_from_this<ParallelSystemT>
     {
-        template<typename>
-        friend struct Event;
-        
+
     public:
         using subproc_t = IParallelSystemSubprocess<ParallelSystemT>;
 
@@ -33,9 +31,9 @@ namespace SGCore
             
             m_timer.setTargetFrameRate(80);
             m_timer.m_cyclic = true;
-            m_timer.onUpdate.connect<&IParallelSystem::internalUpdate>(*this);
+            m_timer.onUpdate += m_internalUpdateListener;
             
-            m_thread->editOnUpdateEvent([this](Event<void()>& onUpdate) {
+            m_thread->editOnUpdateEvent([this](Signal<void()>& onUpdate) {
                 onUpdate += m_threadUpdateListener;
             });
         }
@@ -43,7 +41,8 @@ namespace SGCore
         ~IParallelSystem() override
         {
             std::printf("deleting parallel system: %llu\n", std::hash<size_t>()((size_t) this));
-            m_timer.onUpdate.disconnect<&IParallelSystem::internalUpdate>(*this);
+            // m_timer.onUpdate.disconnect<&IParallelSystem::internalUpdate>(*this);
+            m_timer.onUpdate -= m_internalUpdateListener;
         }
         
         void fixedUpdate(const double& dt, const double& fixedDt) noexcept override
@@ -98,8 +97,12 @@ namespace SGCore
             
             m_executionTimes["parallelUpdate"] = timeDiff<double, std::milli>(t0, t1);
         }
-        
-        EventListener<void()> m_threadUpdateListener = [this]() {
+
+        Slot<void(const double&, const double&)> m_internalUpdateListener = [this](const double& dt, const double& fixedDt) {
+            internalUpdate(dt, fixedDt);
+        };
+
+        Slot<void()> m_threadUpdateListener = [this]() {
             if(m_active)
             {
                 m_timer.startFrame();

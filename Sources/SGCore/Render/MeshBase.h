@@ -6,8 +6,6 @@
 #define SUNGEARENGINE_MESHBASE_H
 
 #include "SGCore/ImportedScenesArch/IMeshData.h"
-#include "SGCore/Main/CoreMain.h"
-#include "SGCore/Utils/EventListener.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
 #include "SGCore/Memory/IAssetsRefsResolver.h"
 

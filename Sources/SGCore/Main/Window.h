@@ -7,7 +7,7 @@
 
 #include <sgcore_export.h>
 
-#include "SGCore/Utils/Event.h"
+#include "SGCore/Utils/Signal.h"
 
 namespace SGCore
 {
@@ -243,17 +243,17 @@ namespace SGCore
     {
         friend class ImGuiWrap::ImGuiLayer;
         
-        static inline Event<void(Window&)> onClose;
+        static inline Signal<void(Window&)> onClose;
         
-        static inline Event<void(Window&, const int&)> onIconify;
+        static inline Signal<void(Window&, const int&)> onIconify;
         
-        static inline Event<void(Window&, const KeyboardKey&, const int&, const KeyState&, const int&)> onKeyboardKeyEvent;
+        static inline Signal<void(Window&, const KeyboardKey&, const int&, const KeyState&, const int&)> onKeyboardKeyEvent;
         
-        static inline Event<void(Window&, const MouseButton&, const KeyState&, const int&)> onMouseButtonEvent;
+        static inline Signal<void(Window&, const MouseButton&, const KeyState&, const int&)> onMouseButtonEvent;
         
-        static inline Event<void(Window&, const double&, const double&)> onCursorPositionChanged;
+        static inline Signal<void(Window&, const double&, const double&)> onCursorPositionChanged;
 
-        static inline Event<void(Window&, const int&, const int&)> onFrameBufferSizeChanged;
+        static inline Signal<void(Window&, const int&, const int&)> onFrameBufferSizeChanged;
 
         Window() noexcept = default;
 

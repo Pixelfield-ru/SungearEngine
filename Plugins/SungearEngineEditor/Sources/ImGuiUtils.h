@@ -113,7 +113,7 @@ namespace SGE
 
         static SGCore::AssetRef<SGCore::ITexture2D> getFileIcon(const std::filesystem::path& filePath,
                                                                 const SGCore::ivec2_32& iconSize,
-                                                                SGCore::Event<void(
+                                                                SGCore::Signal<void(
                                                                         SGCore::AssetRef<SGCore::ITexture2D>& iconTexture,
                                                                         const std::string& fileExtension,
                                                                         const std::string& fileName)>* onIconSet = nullptr) noexcept;

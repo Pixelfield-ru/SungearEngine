@@ -29,7 +29,17 @@ void SGCore::Timer::startFrame()
 
     if(m_elapsedTimeForUpdate >= m_targetFrameTime)
     {
+        if(onPreUpdate)
+        {
+            onPreUpdate(m_elapsedTimeForUpdate, m_targetFrameTime);
+        }
+
         onUpdate(m_elapsedTimeForUpdate, m_targetFrameTime);
+
+        if(onPostUpdate)
+        {
+            onPostUpdate(m_elapsedTimeForUpdate, m_targetFrameTime);
+        }
         
         m_elapsedTimeForUpdate = 0.0;
         ++m_framesPerSecondAccum;

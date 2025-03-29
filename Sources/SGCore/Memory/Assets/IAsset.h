@@ -12,7 +12,7 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/UniqueName.h"
-#include "SGCore/Utils/Event.h"
+#include "SGCore/Utils/Signal.h"
 #include "SGCore/Serde/SerializationType.h"
 #include "SGCore/Memory/AssetsLoadPolicy.h"
 #include "SGCore/Threading/Thread.h"
@@ -55,9 +55,9 @@ namespace SGCore
         friend class AssetManager;
 
         /// You can make a downcast to the type of asset you subscribe to using static_cast<your_type>(asset).
-        Event<void(IAsset* asset)> onLoadDone;
+        Signal<void(IAsset* asset)> onLoadDone;
         /// You can make a downcast to the type of asset you subscribe to using static_cast<your_type>(asset).
-        Event<void(IAsset* asset)> onLazyLoadDone;
+        Signal<void(IAsset* asset)> onLazyLoadDone;
 
         virtual ~IAsset() = default;
 

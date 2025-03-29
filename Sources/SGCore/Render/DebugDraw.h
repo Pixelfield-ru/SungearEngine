@@ -9,7 +9,7 @@
 
 #include "SGCore/Graphics/API/RenderState.h"
 #include "SGCore/Main/CoreGlobals.h"
-#include "SGCore/Utils/Event.h"
+#include "SGCore/Utils/Signal.h"
 #include "SGCore/Scene/ISystem.h"
 
 namespace SGCore
@@ -62,12 +62,12 @@ namespace SGCore
         std::vector<float> m_linesPositions;
         std::vector<float> m_linesColors;
         std::vector<std::uint32_t> m_linesIndices;
-        
-        EventListener<void()> m_onRenderPipelineSetEventListener = [this]() {
+
+        void onRenderPipelineSet() noexcept;
+
+        Slot<void()> m_onRenderPipelineSetEventListener = [this]() {
             onRenderPipelineSet();
         };
-        
-        void onRenderPipelineSet() noexcept;
     };
 }
 

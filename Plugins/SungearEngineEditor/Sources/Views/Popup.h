@@ -70,8 +70,8 @@ namespace SGE
         bool m_isCustomPosition = false;
         ImVec2 m_customPosition { 0, 0 };
         
-        SGCore::Event<void(const SGCore::Ref<PopupElement>&)> onElementClicked;
-        SGCore::Event<void(bool last, bool current)> onOpenedChanged;
+        SGCore::Signal<void(const SGCore::Ref<PopupElement>&)> onElementClicked;
+        SGCore::Signal<void(bool last, bool current)> onOpenedChanged;
 
         SGCore::Ref<PopupElement> tryGetElement(std::string_view id) noexcept;
         std::vector<SGCore::Ref<PopupElement>> tryGetElementsContain(std::string_view id) noexcept;

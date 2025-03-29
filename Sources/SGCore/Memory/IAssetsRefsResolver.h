@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_IASSETSREFSRESOLVER_H
 #define SUNGEARENGINE_IASSETSREFSRESOLVER_H
 
-#include "SGCore/Utils/EventListener.h"
+#include "SGCore/Utils/Slot.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Utils/Defines.h"
 
@@ -42,10 +42,7 @@ namespace SGCore
         {
             if(this == std::addressof(other)) return *this;
 
-            onMemberAssetsReferencesResolveListener = other.onMemberAssetsReferencesResolveListener;
-            onMemberAssetsReferencesResolveListener = [this](AssetManager* updatedAssetManager) {
-                onMemberAssetsReferencesResolve(updatedAssetManager);
-            };
+            onMemberAssetsReferencesResolveListener.connectToSignals(other.onMemberAssetsReferencesResolveListener);
 
             return *this;
         }
@@ -54,10 +51,7 @@ namespace SGCore
         {
             if(this == std::addressof(other)) return *this;
 
-            onMemberAssetsReferencesResolveListener = std::move(other.onMemberAssetsReferencesResolveListener);
-            onMemberAssetsReferencesResolveListener = [this](AssetManager* updatedAssetManager) {
-                onMemberAssetsReferencesResolve(updatedAssetManager);
-            };
+            onMemberAssetsReferencesResolveListener.connectToSignals(other.onMemberAssetsReferencesResolveListener);
 
             return *this;
         }
@@ -79,7 +73,7 @@ namespace SGCore
             static_cast<DerivedT*>(this)->onMemberAssetsReferencesResolveImpl(updatedAssetManager);
         }
 
-        EventListener<void(AssetManager* updatedAssetManager)> onMemberAssetsReferencesResolveListener = [this](AssetManager* updatedAssetManager) {
+        Slot<void(AssetManager* updatedAssetManager)> onMemberAssetsReferencesResolveListener = [this](AssetManager* updatedAssetManager) {
             onMemberAssetsReferencesResolve(updatedAssetManager);
         };
     };

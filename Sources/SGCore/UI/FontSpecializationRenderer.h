@@ -65,7 +65,7 @@ namespace SGCore::UI
 
         void onRenderPipelineSet() noexcept;
 
-        EventListener<void()> m_onRenderPipelineSetEventListener = [this]() {
+        Slot<void()> m_onRenderPipelineSetEventListener = [this]() {
             onRenderPipelineSet();
         };
     };

@@ -5,8 +5,7 @@
 
 #include <sgcore_export.h>
 
-#include "SGCore/Utils/Event.h"
-#include "SGCore/Utils/EventListener.h"
+#include "SGCore/Utils/Signal.h"
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Logger/Logger.h"
 #include "IRenderPipeline.h"
@@ -22,9 +21,9 @@ namespace SGCore
             return MakeRef<PipelineT>();
         }
 
-        static void subscribeToRenderPipelineSetEvent(const EventListener<void()>& holder)
+        static void subscribeToRenderPipelineSetEvent(Slot<void()>& slot)
         {
-            onRenderPipelineSet += holder;
+            onRenderPipelineSet += slot;
         }
 
         template<typename PipelineT>
@@ -85,7 +84,7 @@ namespace SGCore
         static inline std::vector<Ref<IRenderPipeline>> m_renderPipelines;
         static inline Ref<IRenderPipeline> m_currentRenderPipeline;
 
-        static inline Event<void()> onRenderPipelineSet;
+        static inline Signal<void()> onRenderPipelineSet;
     };
 }
 

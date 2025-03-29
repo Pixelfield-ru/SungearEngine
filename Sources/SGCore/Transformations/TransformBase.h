@@ -10,8 +10,6 @@
 #include <SGCore/pch.h>
 
 #include "SGCore/Math/MathUtils.h"
-#include "SGCore/Utils/Utils.h"
-#include "SGCore/Utils/Event.h"
 #include "SGCore/Math/AABB.h"
 
 namespace SGCore

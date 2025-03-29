@@ -20,7 +20,7 @@ namespace SGE
 
         FileOpenMode m_mode = FileOpenMode::CREATE;
         
-        SGCore::Event<void(const std::filesystem::path& byPath, bool canceled)> onOperationEnd;
+        SGCore::Signal<void(const std::filesystem::path& byPath, bool canceled)> onOperationEnd;
         
         /**
          * Leave empty to use path where current executable file is located

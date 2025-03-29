@@ -6,18 +6,6 @@
 
 #include "Thread.h"
 
-void SGCore::Threading::Task::useSingletonGuard
-(const SGCore::Threading::TaskSingletonGuard taskSingletonGuard) noexcept
-{
-    const size_t hash = hashObject(taskSingletonGuard);
-    
-    std::lock_guard guard(m_listenerMutex);
-    
-    m_onExecuteListener.m_hash = hash;
-    
-    m_parentTaskGuard = taskSingletonGuard;
-}
-
 /*void SGCore::Threading::Task::attachToThread(std::shared_ptr<Thread> thread)
 {
     auto lockedThread = m_parentThread.lock();

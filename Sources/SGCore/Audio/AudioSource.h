@@ -6,7 +6,7 @@
 #define SUNGEARENGINE_AUDIOSOURCE_H
 
 #include <glm/vec3.hpp>
-#include "SGCore/Utils/Event.h"
+#include "SGCore/Utils/Signal.h"
 #include "AudioUtils.h"
 
 #include "SGCore/Main/CoreGlobals.h"
@@ -83,7 +83,7 @@ namespace SGCore
         AudioSource& operator=(const AudioSource& other) noexcept;
         AudioSource& operator=(AudioSource&& other) noexcept;
         
-        Event<void(AudioSource& source, AudioSourceState lastState, AudioSourceState newState)> onStateChanged;
+        Signal<void(AudioSource& source, AudioSourceState lastState, AudioSourceState newState)> onStateChanged;
         
     private:
         AudioSourceState m_lastState = AudioSourceState::STOPPED;

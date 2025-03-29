@@ -20,7 +20,7 @@ namespace SGCore
     private:
         Timer m_renderTimer { true };
         
-        EventListener<void(const double&, const double&)> m_renderListener = [](const auto&, const auto&) { };
+        Slot<void(const double&, const double&)> m_renderListener = [](const auto&, const auto&) { };
     };
 }
 

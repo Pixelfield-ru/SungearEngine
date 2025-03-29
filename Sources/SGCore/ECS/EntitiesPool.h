@@ -7,9 +7,6 @@
 
 #include <SGCore/pch.h>
 
-#include "SGCore/Utils/EventListener.h"
-#include "SGCore/Utils/Event.h"
-
 #include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore::ECS

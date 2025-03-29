@@ -25,11 +25,11 @@ namespace SGCore
         Ref<IUniformBuffer> m_uniformBuffer;
         
     private:
-        EventListener<void(const double&, const double&)> m_atmosphereUpdateEventListener = [this](auto, auto) {
+        void updateAtmosphere() noexcept;
+
+        Slot<void(const double&, const double&)> m_atmosphereUpdateEventListener = [this](auto, auto) {
             updateAtmosphere();
         };
-        
-        void updateAtmosphere() noexcept;
     };
 }
 

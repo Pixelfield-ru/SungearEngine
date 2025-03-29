@@ -86,8 +86,7 @@ void SGCore::UniqueNamesManager::onUniqueNameDestroys(SGCore::UniqueName& unique
     }
 }
 
-void SGCore::UniqueNamesManager::subscribeToSomeNameChangedEvent(
-        const SGCore::EventListener<void(const std::string&)>& eventListener)
+void SGCore::UniqueNamesManager::subscribeToSomeNameChangedEvent(SGCore::Slot<void(const std::string&)>& eventListener)
 {
     onSomeNameChanged += eventListener;
 }

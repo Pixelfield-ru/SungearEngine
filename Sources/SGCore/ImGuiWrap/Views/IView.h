@@ -8,10 +8,11 @@
 #include <SGCore/pch.h>
 
 #include "SGCore/Utils/UUID.h"
-#include "SGCore/Utils/Event.h"
+#include "SGCore/Utils/Signal.h"
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/UniqueName.h"
 #include "SGCore/Utils/UniqueNamesManager.h"
+#include "SGCore/Utils/Utils.h"
 
 namespace SGCore::ImGuiWrap
 {
@@ -19,8 +20,8 @@ namespace SGCore::ImGuiWrap
     {
         friend struct ViewsInjector;
 
-        Event<void()> onRenderBody;
-        Event<void(bool lastActive, bool isActive)> onActiveChanged;
+        Signal<void()> onRenderBody;
+        Signal<void(bool lastActive, bool isActive)> onActiveChanged;
 
         UniqueName m_name = SGCore::UUID::generateNew();
         std::string m_tag;

@@ -28,11 +28,11 @@ namespace SGCore
         Timer m_lightsUpdateTimer;
         
     private:
-        EventListener<void(const double&, const double&)> m_lightsUpdateEventListener = [this](auto, auto) {
+        void updateLights() noexcept;
+
+        Slot<void(const double&, const double&)> m_lightsUpdateEventListener = [this](auto, auto) {
             updateLights();
         };
-        
-        void updateLights() noexcept;
     };
 }
 

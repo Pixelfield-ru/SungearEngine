@@ -7,7 +7,7 @@
 
 #include <SGCore/pch.h>
 
-#include "SGCore/Utils/Event.h"
+#include "SGCore/Utils/Signal.h"
 #include "SGCore/Utils/Utils.h"
 
 namespace SGCore::Threading
@@ -29,8 +29,6 @@ namespace SGCore::Threading
         friend struct Thread;
         
         bool m_isStatic = false;
-        
-        void useSingletonGuard(const TaskSingletonGuard taskSingletonGuard) noexcept;
         
         template<typename F>
         void setOnExecuteCallback(F&& func)
@@ -82,7 +80,7 @@ namespace SGCore::Threading
         
         void execute() noexcept;
         
-        EventListener<void()> m_onExecuteListener = [this]() {
+        Slot<void()> m_onExecuteListener = [this]() {
             execute();
         };
     };

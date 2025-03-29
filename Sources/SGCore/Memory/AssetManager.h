@@ -17,7 +17,7 @@
 #include "AssetsPackage.h"
 #include "AssetRef.h"
 #include "AssetWeakRef.h"
-#include "SGCore/Utils/Event.h"
+#include "SGCore/Utils/Slot.h"
 #include "AssetsLoadPolicy.h"
 
 namespace SGCore
@@ -1268,7 +1268,7 @@ namespace SGCore
         /// This event is called after package deserialization.
         /// You can subscribe to this event to resolve member assets references.
         /// @param assetManager AssetManager for which new assets were deserialized.
-        static inline Event<void(AssetManager* assetManager)> onMemberAssetsReferencesResolve;
+        static inline Signal<void(AssetManager* assetManager)> onMemberAssetsReferencesResolve;
 
         static inline Ref<AssetManager> m_instance;
 

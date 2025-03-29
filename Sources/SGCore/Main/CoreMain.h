@@ -24,7 +24,7 @@ namespace SGCore
     class SGCORE_EXPORT CoreMain
     {
     public:
-        static inline Event<void()> onInit;
+        static inline Signal<void()> onInit;
         
         CoreMain() = delete;
 
