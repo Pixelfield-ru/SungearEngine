@@ -189,21 +189,16 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
     
     double curX = 0;
     double curY = 0;
-    double lineHeightOffset = 0.0f;
 
-    const auto& specMetrics = lockedSpec->getMetrics();
     const auto& specGeometry = lockedSpec->getGeometry();
 
-    const double fsScale = (1.0 / (specMetrics.ascenderY - specMetrics.descenderY)) * lockedSpec->getSettings().m_height;
-    const double descenderYPos = (-specMetrics.descenderY) * fsScale;
-    const double ascenderYPos = (specMetrics.ascenderY) * fsScale;
+    const float lineHeight = lockedSpec->getLineHeight();
+    const float glyphsHeightScale = lockedSpec->getGlyphsHeightScale();
 
-    const double lineHeight = fsScale * specMetrics.lineHeight + lineHeightOffset;
+    text->m_textSize.y = lineHeight + (lockedSpec->getAscenderYPos() - lockedSpec->getDescenderYPos());
 
-    text->m_textSize.y = lineHeight + (ascenderYPos - descenderYPos);
-
-    const msdf_atlas::GlyphGeometry* unknownGlyph = lockedSpec->tryGetGlyph('?');
-    const msdf_atlas::GlyphGeometry* spaceGlyph = lockedSpec->tryGetGlyph(' ');
+    const FontGlyph* unknownGlyph = lockedSpec->tryGetGlyph('?');
+    const FontGlyph* spaceGlyph = lockedSpec->tryGetGlyph(' ');
 
     for(size_t i = 0; i < text->m_text.size(); ++i)
     {
@@ -221,7 +216,7 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
             continue;
         }
 
-        const msdf_atlas::GlyphGeometry* glyph = lockedSpec->tryGetGlyph(c);
+        const FontGlyph* glyph = lockedSpec->tryGetGlyph(c);
 
         if(!glyph)
         {
@@ -239,21 +234,8 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
 
         if(glyph)
         {
-            double al, ab, ar, at;
-            glyph->getQuadAtlasBounds(al, ab, ar, at);
-            const glm::vec2 uvMin { al / lockedSpec->getSize().x, ab / lockedSpec->getSize().y };
-            const glm::vec2 uvMax { ar / lockedSpec->getSize().x, at / lockedSpec->getSize().y };
-
-            double pl, pb, pr, pt;
-            glyph->getQuadPlaneBounds(pl, pb, pr, pt);
-            glm::vec2 quadMin = glm::vec2 { pl, pb } * fsScale + glm::vec2(curX, curY);
-            glm::vec2 quadMax = glm::vec2 { pr, pt } * fsScale + glm::vec2(curX, curY);
-
-            const float offsetFromDescender = (quadMax.y - descenderYPos);
-            const float offsetFromAscender = (quadMin.y - ascenderYPos);
-
-            quadMin.y -= offsetFromDescender + offsetFromAscender;
-            quadMax.y -= offsetFromDescender + offsetFromAscender;
+            const glm::vec2 quadMin = glyph->getQuadMin() + glm::vec2(curX, -curY);
+            const glm::vec2 quadMax = glyph->getQuadMax() + glm::vec2(curX, -curY);
 
             const size_t colorIdx = m_currentDrawingCharacter * 24;
 
@@ -309,23 +291,23 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
 
             const size_t uvsOffset = m_currentDrawingCharacter * 12;
 
-            m_charactersUVs[uvsOffset] = uvMin.x;
-            m_charactersUVs[uvsOffset + 1] = uvMax.y;
+            m_charactersUVs[uvsOffset] = glyph->getUVMin().x;
+            m_charactersUVs[uvsOffset + 1] = glyph->getUVMax().y;
 
-            m_charactersUVs[uvsOffset + 2] = uvMin.x;
-            m_charactersUVs[uvsOffset + 3] = uvMin.y;
+            m_charactersUVs[uvsOffset + 2] = glyph->getUVMin().x;
+            m_charactersUVs[uvsOffset + 3] = glyph->getUVMin().y;
 
-            m_charactersUVs[uvsOffset + 4] = uvMax.x;
-            m_charactersUVs[uvsOffset + 5] = uvMin.y;
+            m_charactersUVs[uvsOffset + 4] = glyph->getUVMax().x;
+            m_charactersUVs[uvsOffset + 5] = glyph->getUVMin().y;
 
-            m_charactersUVs[uvsOffset + 6] = uvMin.x;
-            m_charactersUVs[uvsOffset + 7] = uvMax.y;
+            m_charactersUVs[uvsOffset + 6] = glyph->getUVMin().x;
+            m_charactersUVs[uvsOffset + 7] = glyph->getUVMax().y;
 
-            m_charactersUVs[uvsOffset + 8] = uvMax.x;
-            m_charactersUVs[uvsOffset + 9] = uvMax.y;
+            m_charactersUVs[uvsOffset + 8] = glyph->getUVMax().x;
+            m_charactersUVs[uvsOffset + 9] = glyph->getUVMax().y;
 
-            m_charactersUVs[uvsOffset + 10] = uvMax.x;
-            m_charactersUVs[uvsOffset + 11] = uvMin.y;
+            m_charactersUVs[uvsOffset + 10] = glyph->getUVMax().x;
+            m_charactersUVs[uvsOffset + 11] = glyph->getUVMin().y;
 
 #pragma endregion UVs
 
@@ -375,9 +357,8 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
                 }
                 specGeometry.getAdvance(advance, c, nextChar);
 
-                curX += fsScale * advance;
+                curX += glyphsHeightScale * advance;
             }
-            // curX += (float) (glyph->m_advance.x >> 6);
         }
     }
 }

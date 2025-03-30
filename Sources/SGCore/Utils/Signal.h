@@ -280,20 +280,33 @@ SGCore::Signal<ReturnT(Args...)>& SGCore::Signal<ReturnT(Args...)>::operator=(co
 
     std::scoped_lock signalsLock(other.m_mutex, m_mutex);
 
-    m_uniqueSlots.clear();
-    m_slots.clear();
+    for(auto* lastSlot : m_slots)
+    {
+        bool isSlotBound = false;
+
+        {
+            std::lock_guard slotLock(lastSlot->m_mutex);
+            lastSlot->m_listenedSignals.remove(this);
+            --lastSlot->m_listenedSignalsCount;
+
+            isSlotBound = lastSlot->bound();
+        }
+
+        if(lastSlot->m_isAllocatedBySignal && !isSlotBound)
+        {
+            delete lastSlot;
+        }
+    }
 
     for(auto* slot : other.m_slots)
     {
-        m_uniqueSlots.insert(slot);
-        m_slots.push_back(slot);
-
-        {
-            std::lock_guard slotLock(slot->m_mutex);
-            slot->m_listenedSignals.push_back(this);
-            ++slot->m_listenedSignalsCount;
-        }
+        std::lock_guard slotLock(slot->m_mutex);
+        slot->m_listenedSignals.push_back(this);
+        ++slot->m_listenedSignalsCount;
     }
+
+    m_uniqueSlots = other.m_uniqueSlots;
+    m_slots = other.m_slots;
 
     return *this;
 }
@@ -307,14 +320,26 @@ SGCore::Signal<ReturnT(Args...)>& SGCore::Signal<ReturnT(Args...)>::operator=(Si
 
     std::scoped_lock signalsLock(other.m_mutex, m_mutex);
 
-    m_uniqueSlots.clear();
-    m_slots.clear();
+    for(auto* lastSlot : m_slots)
+    {
+        bool isSlotBound = false;
+
+        {
+            std::lock_guard slotLock(lastSlot->m_mutex);
+            lastSlot->m_listenedSignals.remove(this);
+            --lastSlot->m_listenedSignalsCount;
+
+            isSlotBound = lastSlot->bound();
+        }
+
+        if(lastSlot->m_isAllocatedBySignal && !isSlotBound)
+        {
+            delete lastSlot;
+        }
+    }
 
     for(auto* slot : other.m_slots)
     {
-        m_uniqueSlots.insert(slot);
-        m_slots.push_back(slot);
-
         {
             std::lock_guard slotLock(slot->m_mutex);
             slot->m_listenedSignals.remove(&other);
@@ -322,8 +347,8 @@ SGCore::Signal<ReturnT(Args...)>& SGCore::Signal<ReturnT(Args...)>::operator=(Si
         }
     }
 
-    other.m_slots.clear();
-    other.m_uniqueSlots.clear();
+    m_uniqueSlots = std::move(other.m_uniqueSlots);
+    m_slots = std::move(other.m_slots);
 
     return *this;
 }

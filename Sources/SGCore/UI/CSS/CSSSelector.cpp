@@ -10,7 +10,7 @@ SGCore::UI::CSSSelector::CSSSelector() noexcept
     // setting default font
     m_font = FontsManager::getInstance().getAssetManager()->getAsset<Font, AssetStorageType::BY_ALIAS>("JetBrainsMono-Regular");
 
-    m_fontSpecializationSettings.m_height = 52;
+    m_fontSpecializationSettings.m_height = 20;
     setFontSpecializationSettings(m_fontSpecializationSettings);
 }
 
@@ -145,12 +145,17 @@ void SGCore::UI::CSSSelector::setFontSpecializationSettings(const FontSpecializa
             auto specialization = lockedFont->addOrGetSpecialization(m_fontSpecializationSettings);
 
             specialization->parse('A', 'Z');
-            specialization->parse('a', 'z');
+            specialization->parse(u'a', u'z');
             specialization->parse(u'А', u'Я');
             specialization->parse(u'а', u'я');
             specialization->parse({ u'ё', u'Ё' });
             specialization->parse('0', '9');
-            specialization->parse({ u'!', u'@', u'"', u'\'', u'№', u'#', u'$', u';', u'%', u'^', u':', u'&', u'*', u'(', u')', u'-', u'_', u'+', u'=', u'|', u'\\', u'/', u'.', u',', u'`', u'{', u'}', u'[', u']', u'~', ' ', '<', '>' });
+            specialization->parse({ u'!', u'@', u'"', u'\'', u'№', u'#', u'$', u';', u'%', u'^', u':', u'&', u'*', u'(', u')', u'-', u'–', u'—', u'_', u'+', u'=', u'|', u'\\', u'/', u'.', u',', u'`', u'{', u'}', u'[', u']', u'~', u' ', u'<', u'>' });
+            specialization->parse({ U'😊', U'😁', U'😃', U'😄', U'😅', U'😂', U'😍', U'😜', U'😎', U'🤔',
+                                                U'🤗', U'😔', U'😢', U'😡', U'🤯', U'🤩', U'🙄', U'🤣', U'🥺', U'😏',
+                                                U'😳', U'😜', U'😤', U'🤪', U'😈', U'👀', U'👋', U'🙌', U'🤝', U'💪',
+                                                U'✌', U'🙏', U'👐', U'💔',  U'\u2764', U'💥', U'🌟', U'🎉', U'🎶', U'🎧',
+                                                U'🕺', U'💃', U'🚀'  });
 
             specialization->createAtlas();
             specialization->saveAtlasAsTexture(m_fontSpecializationSettings.m_name + ".png");

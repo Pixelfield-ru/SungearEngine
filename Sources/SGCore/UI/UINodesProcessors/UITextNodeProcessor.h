@@ -23,7 +23,7 @@ namespace SGCore::UI
                                    const Ref<Text>& element,
                                    const pugi::xml_node& elementNode) noexcept
         {
-            element->m_text = Utils::fromUTF8<char16_t>(elementNode.text().as_string());
+            element->m_text = Utils::fromUTF8<char32_t>(elementNode.text().as_string());
 
             for(const auto& attribute : elementNode.attributes())
             {

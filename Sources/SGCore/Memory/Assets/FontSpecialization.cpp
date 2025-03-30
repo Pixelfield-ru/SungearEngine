@@ -37,7 +37,7 @@ void SGCore::UI::FontSpecialization::saveAtlasAsTexture(const std::filesystem::p
                    m_atlasTexture->getData().get(), m_atlasTexture->m_channelsCount * m_maxAtlasWidth);
 }
 
-const msdf_atlas::GlyphGeometry* SGCore::UI::FontSpecialization::tryGetGlyph(const uint32_t& c) const noexcept
+const SGCore::UI::FontGlyph* SGCore::UI::FontSpecialization::tryGetGlyph(const uint32_t& c) const noexcept
 {
     auto it = m_glyphsIndices.find(c);
     
@@ -124,7 +124,7 @@ void SGCore::UI::FontSpecialization::createAtlas() noexcept
         m_glyphs.clear();
         m_glyphsIndices.clear();
 
-        m_geometry = msdf_atlas::FontGeometry(&m_glyphs);
+        m_geometry = msdf_atlas::FontGeometry(&m_glyphsGeometry);
 
         if(!m_geometry.loadCharset(m_usedFont->getFontHandler(), 1, m_charset))
         {
@@ -143,9 +143,9 @@ void SGCore::UI::FontSpecialization::createAtlas() noexcept
         // Apply MSDF edge coloring. See edge-coloring.h for other coloring strategies.
         const double maxCornerAngle = 5.0;
 
-        for(size_t i = 0; i < m_glyphs.size(); ++i)
+        for(size_t i = 0; i < m_glyphsGeometry.size(); ++i)
         {
-            auto& glyph = m_glyphs[i];
+            auto& glyph = m_glyphsGeometry[i];
             // Apply MSDF edge coloring. See edge-coloring.h for other coloring strategies.
             glyph.edgeColoring(&msdfgen::edgeColoringByDistance, maxCornerAngle, 0);
             // Finalize glyph box size based on the parameters
@@ -166,7 +166,7 @@ void SGCore::UI::FontSpecialization::createAtlas() noexcept
         // packer.setUnitRange(0.9);
         // packer.setMinimumScale(m_settings.m_height);
         // Compute atlas layout - pack glyphs
-        packer.pack(m_glyphs.data(), m_glyphs.size());
+        packer.pack(m_glyphsGeometry.data(), m_glyphsGeometry.size());
         // Get final atlas dimensions
         int width = 0, height = 0;
         packer.getDimensions(width, height);
@@ -183,15 +183,52 @@ void SGCore::UI::FontSpecialization::createAtlas() noexcept
         std::cout << "scale: " << packer.getScale() << std::endl;
 
         m_atlas.resize(width, height);
-        m_atlas.generate(m_glyphs.data(), m_glyphs.size());
+        m_atlas.generate(m_glyphsGeometry.data(), m_glyphsGeometry.size());
 
         // adding glyphs indices to map only after generating atlas because generate() function makes positioning of glyphs
-        for(size_t i = 0; i < m_glyphs.size(); ++i)
+        for(size_t i = 0; i < m_glyphsGeometry.size(); ++i)
         {
-            m_glyphsIndices[m_glyphs[i].getCodepoint()] = i;
+            m_glyphsIndices[m_glyphsGeometry[i].getCodepoint()] = i;
         }
 
         m_atlasSize = { width, height };
+
+        const auto& metrics = getMetrics();
+
+        m_glyphsHeightScale = (1.0 / (metrics.ascenderY - metrics.descenderY)) * m_settings.m_height;
+        m_descenderYPos = -metrics.descenderY * m_glyphsHeightScale;
+        m_ascenderYPos = metrics.ascenderY * m_glyphsHeightScale;
+        m_lineHeight = metrics.lineHeight * m_glyphsHeightScale;
+
+        // preparing glyphs
+        for(size_t i = 0; i < m_glyphsGeometry.size(); ++i)
+        {
+            const auto& glyphGeometry = m_glyphsGeometry[i];
+
+            double al, ab, ar, at;
+            glyphGeometry.getQuadAtlasBounds(al, ab, ar, at);
+
+            double pl, pb, pr, pt;
+            glyphGeometry.getQuadPlaneBounds(pl, pb, pr, pt);
+
+            FontGlyph glyph;
+            glyph.m_character = glyphGeometry.getCodepoint();
+            glyph.m_uvMin = { al / m_atlasSize.x, ab / m_atlasSize.y };
+            glyph.m_uvMax = { ar / m_atlasSize.x, at / m_atlasSize.y };
+            glyph.m_quadMin = glm::vec2 { pl, pb } * m_glyphsHeightScale;
+            glyph.m_quadMax = glm::vec2 { pr, pt } * m_glyphsHeightScale;
+
+            const float offsetFromDescender = (glyph.m_quadMax.y - m_descenderYPos);
+            const float offsetFromAscender = (glyph.m_quadMin.y - m_ascenderYPos);
+
+            glyph.m_quadMin.y -= offsetFromDescender + offsetFromAscender;
+            glyph.m_quadMax.y -= offsetFromDescender + offsetFromAscender;
+
+            // not moving because msdf_atlas::GlyphGeometry is simple struct. no benefit from moving
+            glyph.m_geometry = glyphGeometry;
+
+            m_glyphs.push_back(glyph);
+        }
 
         // ============================================================
         // generating texture
@@ -234,6 +271,26 @@ const msdf_atlas::FontGeometry& SGCore::UI::FontSpecialization::getGeometry() co
 const SGCore::UI::FontSpecializationSettings& SGCore::UI::FontSpecialization::getSettings() const noexcept
 {
     return m_settings;
+}
+
+float SGCore::UI::FontSpecialization::getGlyphsHeightScale() const noexcept
+{
+    return m_glyphsHeightScale;
+}
+
+float SGCore::UI::FontSpecialization::getDescenderYPos() const noexcept
+{
+    return m_descenderYPos;
+}
+
+float SGCore::UI::FontSpecialization::getAscenderYPos() const noexcept
+{
+    return m_ascenderYPos;
+}
+
+float SGCore::UI::FontSpecialization::getLineHeight() const noexcept
+{
+    return m_lineHeight;
 }
 
 glm::ivec2 SGCore::UI::FontSpecialization::getSize() const noexcept

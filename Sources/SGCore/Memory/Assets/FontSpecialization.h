@@ -25,18 +25,6 @@ namespace SGCore
 
 namespace SGCore::UI
 {
-    struct FontGlyph
-    {
-        friend struct FontSpecialization;
-        
-        glm::ivec2 m_realSize;
-        glm::ivec2 m_bearing; // offset from baseline to left/top of glyph
-        glm::ivec2 m_advance;
-        
-        glm::vec2 m_uvMin;
-        glm::vec2 m_uvMax;
-    };
-    
     struct FontSpecializationSettings
     {
         size_t m_height = 16;
@@ -44,6 +32,41 @@ namespace SGCore::UI
         
         bool operator==(const FontSpecializationSettings& other) const noexcept;
         bool operator!=(const FontSpecializationSettings& other) const noexcept;
+    };
+
+    struct FontGlyph
+    {
+        friend struct FontSpecialization;
+
+        msdf_atlas::GlyphGeometry m_geometry;
+
+        glm::vec2 getUVMin() const noexcept
+        {
+            return m_uvMin;
+        }
+
+        glm::vec2 getUVMax() const noexcept
+        {
+            return m_uvMax;
+        }
+
+        glm::vec2 getQuadMin() const noexcept
+        {
+            return m_quadMin;
+        }
+
+        glm::vec2 getQuadMax() const noexcept
+        {
+            return m_quadMax;
+        }
+
+    private:
+        std::uint32_t m_character = '?';
+
+        glm::vec2 m_uvMin { 0 };
+        glm::vec2 m_uvMax { 0 };
+        glm::vec2 m_quadMin { 0 };
+        glm::vec2 m_quadMax { 0 };
     };
     
     struct FontSpecializationRenderer;
@@ -67,13 +90,18 @@ namespace SGCore::UI
         
         void createAtlas() noexcept;
         
-        const msdf_atlas::GlyphGeometry* tryGetGlyph(const uint32_t& c) const noexcept;
+        const FontGlyph* tryGetGlyph(const uint32_t& c) const noexcept;
         
         Ref<FontSpecializationRenderer> getRenderer() noexcept;
 
         const msdfgen::FontMetrics& getMetrics() const noexcept;
         const msdf_atlas::FontGeometry& getGeometry() const noexcept;
         const FontSpecializationSettings& getSettings() const noexcept;
+
+        float getGlyphsHeightScale() const noexcept;
+        float getDescenderYPos() const noexcept;
+        float getAscenderYPos() const noexcept;
+        float getLineHeight() const noexcept;
 
         glm::ivec2 getSize() const noexcept;
         
@@ -84,7 +112,9 @@ namespace SGCore::UI
         FontSpecializationSettings m_settings;
 
         AtlasT m_atlas;
-        std::vector<msdf_atlas::GlyphGeometry> m_glyphs;
+        std::vector<FontGlyph> m_glyphs;
+        // omg i need to store this field because constructor of msdf_atlas::FontGeometry stores pointer to vector of msdf_atlas::GlyphGeometry...
+        std::vector<msdf_atlas::GlyphGeometry> m_glyphsGeometry;
         std::unordered_map<uint32_t, size_t> m_glyphsIndices;
         msdf_atlas::Charset m_charset;
 
@@ -92,10 +122,12 @@ namespace SGCore::UI
 
         glm::ivec2 m_atlasSize;
 
+        float m_glyphsHeightScale = 0.0f;
+        float m_descenderYPos = 0.0f;
+        float m_ascenderYPos = 0.0f;
+        float m_lineHeight = 0.0f;
+
         size_t m_maxAtlasWidth = 0;
-        glm::vec<2, size_t, glm::defaultp> m_maxCharacterSize { 0, 0 };
-        glm::vec<2, size_t, glm::defaultp> m_maxCharacterAdvance { 0, 0 };
-        glm::vec<2, size_t, glm::defaultp> m_maxCharacterBearing { 0, 0 };
 
         bool m_isCharsetChanged = false;
     };
