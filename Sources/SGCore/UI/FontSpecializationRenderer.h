@@ -36,7 +36,8 @@ namespace SGCore::UI
         Ref<IVertexBuffer> m_charactersMatricesVertexBuffer;
         Ref<IVertexBuffer> m_charactersColorsVertexBuffer;
         Ref<IVertexBuffer> m_charactersUVsVertexBuffer;
-        
+        Ref<IVertexBuffer> m_charactersLayerVertexBuffer;
+
         AssetRef<IShader> m_textShader;
         
         RenderState m_renderState;
@@ -53,7 +54,7 @@ namespace SGCore::UI
     private:
         void updateUniforms() noexcept;
         
-        std::uint32_t m_maxCharactersCount = 50000;
+        std::uint32_t m_maxCharactersCount = 75000;
         std::uint32_t m_currentDrawingCharacter = 0;
         
         // big buffers
@@ -61,6 +62,7 @@ namespace SGCore::UI
         std::vector<float> m_charactersColors;
         std::vector<float> m_charactersUVs;
         std::vector<float> m_charactersVerticesPositions;
+        std::vector<std::int32_t> m_charactersLayer;
         // ------------------------------------
 
         void onRenderPipelineSet() noexcept;

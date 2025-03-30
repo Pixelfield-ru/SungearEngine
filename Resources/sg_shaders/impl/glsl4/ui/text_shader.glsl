@@ -8,6 +8,7 @@ layout (location = 0) in mat4 characterModelMatrix;
 layout (location = 4) in vec4 characterColor;
 layout (location = 5) in vec2 characterUV;
 layout (location = 6) in vec3 characterVertexPosition;
+layout (location = 7) in int characterLayer;
 
 out vec2 vs_UVAttribute;
 out vec4 vs_characterColor;
@@ -19,6 +20,8 @@ void main()
 
     vec3 charVPos = characterVertexPosition * 1.0;
     // charVPos.y = (charVPos.y) + u_maxCharacterSize.y / 4.0;
+
+    charVPos.z = float(characterLayer);
 
     gl_Position = camera.orthographicSpaceMatrix * characterModelMatrix * vec4(charVPos, 1.0);
 }
@@ -70,6 +73,8 @@ void main()
     float sd = median(msd.r, msd.g, msd.b);
     float screenPxDistance = screenPxRange() * (sd - 0.5);
     float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
+
+    if(opacity < 0.2) discard;
 
     layerColor = mix(bgColor, fgColor * 1.4, opacity);
     // layerColor = vec4(msd, 1.0);

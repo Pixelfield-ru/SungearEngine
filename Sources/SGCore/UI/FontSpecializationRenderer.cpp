@@ -31,7 +31,10 @@ SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
     
     // 6 vertices * 3 (xyz)
     m_charactersVerticesPositions.resize(m_maxCharactersCount * 18);
-    
+
+    // 6 vertices * 1 int
+    m_charactersLayer.resize(m_maxCharactersCount * 6);
+
     // creating buffers
     
     {
@@ -151,6 +154,25 @@ SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
                                                             (size_t) 0))
                 )
                 ->prepare()->enableAttributes();
+
+        // =========================
+
+        m_charactersLayerVertexBuffer = std::shared_ptr<IVertexBuffer>(
+                CoreMain::getRenderer()->createVertexBuffer()
+        );
+
+        m_charactersLayerVertexBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(
+                m_charactersLayer);
+
+        bufferLayout->reset();
+        bufferLayout
+                ->addAttribute(std::shared_ptr<IVertexAttribute>(
+                        bufferLayout->createVertexAttribute(7,
+                                                            "characterLayer",
+                                                            SGGDataType::SGG_INT,
+                                                            (size_t) 0))
+                )
+                ->prepare()->enableAttributes();
     }
     
     // ==================================================================
@@ -216,7 +238,7 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
             continue;
         }
 
-        const FontGlyph* glyph = lockedSpec->tryGetGlyph(c);
+        const FontGlyph* glyph = text->getGlyph(i);
 
         if(!glyph)
         {
@@ -231,45 +253,55 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
             glyph = spaceGlyph;
         }
 
+        std::int32_t* characterLayerBuf = &m_charactersLayer[m_currentDrawingCharacter * 6];
+
+        characterLayerBuf[0] = textCache.m_layer;
+        characterLayerBuf[1] = textCache.m_layer;
+        characterLayerBuf[2] = textCache.m_layer;
+        characterLayerBuf[3] = textCache.m_layer;
+        characterLayerBuf[4] = textCache.m_layer;
+        characterLayerBuf[5] = textCache.m_layer;
 
         if(glyph)
         {
             const glm::vec2 quadMin = glyph->getQuadMin() + glm::vec2(curX, -curY);
             const glm::vec2 quadMax = glyph->getQuadMax() + glm::vec2(curX, -curY);
 
-            const size_t colorIdx = m_currentDrawingCharacter * 24;
-
             // colors =====================================================
 #pragma region Colors
-            m_charactersColors[colorIdx] = textCache.m_color.r;
-            m_charactersColors[colorIdx + 1] = textCache.m_color.g;
-            m_charactersColors[colorIdx + 2] = textCache.m_color.b;
-            m_charactersColors[colorIdx + 3] = textCache.m_color.a;
+            const size_t colorIdx = m_currentDrawingCharacter * 24;
 
-            m_charactersColors[colorIdx + 4] = textCache.m_color.r;
-            m_charactersColors[colorIdx + 5] = textCache.m_color.g;
-            m_charactersColors[colorIdx + 6] = textCache.m_color.b;
-            m_charactersColors[colorIdx + 7] = textCache.m_color.a;
+            float* charsColors = &m_charactersColors[colorIdx];
 
-            m_charactersColors[colorIdx + 8] = textCache.m_color.r;
-            m_charactersColors[colorIdx + 9] = textCache.m_color.g;
-            m_charactersColors[colorIdx + 10] = textCache.m_color.b;
-            m_charactersColors[colorIdx + 11] = textCache.m_color.a;
+            charsColors[0] = textCache.m_color.r;
+            charsColors[1] = textCache.m_color.g;
+            charsColors[2] = textCache.m_color.b;
+            charsColors[3] = textCache.m_color.a;
 
-            m_charactersColors[colorIdx + 12] = textCache.m_color.r;
-            m_charactersColors[colorIdx + 13] = textCache.m_color.g;
-            m_charactersColors[colorIdx + 14] = textCache.m_color.b;
-            m_charactersColors[colorIdx + 15] = textCache.m_color.a;
+            charsColors[4] = textCache.m_color.r;
+            charsColors[5] = textCache.m_color.g;
+            charsColors[6] = textCache.m_color.b;
+            charsColors[7] = textCache.m_color.a;
 
-            m_charactersColors[colorIdx + 16] = textCache.m_color.r;
-            m_charactersColors[colorIdx + 17] = textCache.m_color.g;
-            m_charactersColors[colorIdx + 18] = textCache.m_color.b;
-            m_charactersColors[colorIdx + 19] = textCache.m_color.a;
+            charsColors[8] = textCache.m_color.r;
+            charsColors[9] = textCache.m_color.g;
+            charsColors[10] = textCache.m_color.b;
+            charsColors[11] = textCache.m_color.a;
 
-            m_charactersColors[colorIdx + 20] = textCache.m_color.r;
-            m_charactersColors[colorIdx + 21] = textCache.m_color.g;
-            m_charactersColors[colorIdx + 22] = textCache.m_color.b;
-            m_charactersColors[colorIdx + 23] = textCache.m_color.a;
+            charsColors[12] = textCache.m_color.r;
+            charsColors[13] = textCache.m_color.g;
+            charsColors[14] = textCache.m_color.b;
+            charsColors[15] = textCache.m_color.a;
+
+            charsColors[16] = textCache.m_color.r;
+            charsColors[17] = textCache.m_color.g;
+            charsColors[18] = textCache.m_color.b;
+            charsColors[19] = textCache.m_color.a;
+
+            charsColors[20] = textCache.m_color.r;
+            charsColors[21] = textCache.m_color.g;
+            charsColors[22] = textCache.m_color.b;
+            charsColors[23] = textCache.m_color.a;
 #pragma endregion Colors
 
             // matrices =====================================================
@@ -291,23 +323,25 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
 
             const size_t uvsOffset = m_currentDrawingCharacter * 12;
 
-            m_charactersUVs[uvsOffset] = glyph->getUVMin().x;
-            m_charactersUVs[uvsOffset + 1] = glyph->getUVMax().y;
+            float* uvsPos = &m_charactersUVs[uvsOffset];
 
-            m_charactersUVs[uvsOffset + 2] = glyph->getUVMin().x;
-            m_charactersUVs[uvsOffset + 3] = glyph->getUVMin().y;
+            uvsPos[0] = glyph->getUVMin().x;
+            uvsPos[1] = glyph->getUVMax().y;
 
-            m_charactersUVs[uvsOffset + 4] = glyph->getUVMax().x;
-            m_charactersUVs[uvsOffset + 5] = glyph->getUVMin().y;
+            uvsPos[2] = glyph->getUVMin().x;
+            uvsPos[3] = glyph->getUVMin().y;
 
-            m_charactersUVs[uvsOffset + 6] = glyph->getUVMin().x;
-            m_charactersUVs[uvsOffset + 7] = glyph->getUVMax().y;
+            uvsPos[4] = glyph->getUVMax().x;
+            uvsPos[5] = glyph->getUVMin().y;
 
-            m_charactersUVs[uvsOffset + 8] = glyph->getUVMax().x;
-            m_charactersUVs[uvsOffset + 9] = glyph->getUVMax().y;
+            uvsPos[6] = glyph->getUVMin().x;
+            uvsPos[7] = glyph->getUVMax().y;
 
-            m_charactersUVs[uvsOffset + 10] = glyph->getUVMax().x;
-            m_charactersUVs[uvsOffset + 11] = glyph->getUVMin().y;
+            uvsPos[8] = glyph->getUVMax().x;
+            uvsPos[9] = glyph->getUVMax().y;
+
+            uvsPos[10] = glyph->getUVMax().x;
+            uvsPos[11] = glyph->getUVMin().y;
 
 #pragma endregion UVs
 
@@ -316,29 +350,31 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
 
             size_t positionsOffset = m_currentDrawingCharacter * 18;
 
-            m_charactersVerticesPositions[positionsOffset] = quadMin.x;
-            m_charactersVerticesPositions[positionsOffset + 1] = quadMin.y;
-            m_charactersVerticesPositions[positionsOffset + 2] = 0.0;
+            float* verticesPos = &m_charactersVerticesPositions[positionsOffset];
 
-            m_charactersVerticesPositions[positionsOffset + 3] = quadMin.x;
-            m_charactersVerticesPositions[positionsOffset + 4] = quadMax.y;
-            m_charactersVerticesPositions[positionsOffset + 5] = 0.0f;
+            verticesPos[0] = quadMin.x;
+            verticesPos[1] = quadMin.y;
+            verticesPos[2] = 0.0;
 
-            m_charactersVerticesPositions[positionsOffset + 6] = quadMax.x;
-            m_charactersVerticesPositions[positionsOffset + 7] = quadMax.y;
-            m_charactersVerticesPositions[positionsOffset + 8] = 0.0f;
+            verticesPos[3] = quadMin.x;
+            verticesPos[4] = quadMax.y;
+            verticesPos[5] = 0.0f;
 
-            m_charactersVerticesPositions[positionsOffset + 9] = quadMin.x;
-            m_charactersVerticesPositions[positionsOffset + 10] = quadMin.y;
-            m_charactersVerticesPositions[positionsOffset + 11] = 0.0;
+            verticesPos[6] = quadMax.x;
+            verticesPos[7] = quadMax.y;
+            verticesPos[8] = 0.0f;
 
-            m_charactersVerticesPositions[positionsOffset + 12] = quadMax.x;
-            m_charactersVerticesPositions[positionsOffset + 13] = quadMin.y;
-            m_charactersVerticesPositions[positionsOffset + 14] = 0.0f;
+            verticesPos[9] = quadMin.x;
+            verticesPos[10] = quadMin.y;
+            verticesPos[11] = 0.0;
 
-            m_charactersVerticesPositions[positionsOffset + 15] = quadMax.x;
-            m_charactersVerticesPositions[positionsOffset + 16] = quadMax.y;
-            m_charactersVerticesPositions[positionsOffset + 17] = 0.0f;
+            verticesPos[12] = quadMax.x;
+            verticesPos[13] = quadMin.y;
+            verticesPos[14] = 0.0f;
+
+            verticesPos[15] = quadMax.x;
+            verticesPos[16] = quadMax.y;
+            verticesPos[17] = 0.0f;
 
 #pragma endregion Positions
 
@@ -350,14 +386,22 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
 
                 double advance = 0.0f;
                 // const float advance = glyph->getAdvance();
-                auto nextChar = text->m_text[i + 1];
+                // TODO: VERY HEAVY OPERATIONS =====
+                /*auto nextChar = text->m_text[i + 1];
                 if(!lockedSpec->tryGetGlyph(nextChar))
                 {
                     nextChar = '?';
                 }
-                specGeometry.getAdvance(advance, c, nextChar);
+                specGeometry.getAdvance(advance, c, nextChar);*/
+                // =================================
+                advance = glyph->m_geometry.getAdvance();
 
                 curX += glyphsHeightScale * advance;
+
+                if(curX > text->m_textSize.x)
+                {
+                    text->m_textSize.x = curX;
+                }
             }
         }
     }
@@ -388,6 +432,9 @@ void SGCore::UI::FontSpecializationRenderer::drawAll() noexcept
     
     m_charactersPositionsBuffer->bind();
     m_charactersPositionsBuffer->subData(m_charactersVerticesPositions.data(), charsCount * 18, 0);
+
+    m_charactersLayerVertexBuffer->bind();
+    m_charactersLayerVertexBuffer->subData(m_charactersLayer.data(), charsCount * 6, 0);
     
     subPassShader->bind();
     subPassShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
