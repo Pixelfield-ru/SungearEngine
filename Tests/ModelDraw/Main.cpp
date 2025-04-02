@@ -13,6 +13,9 @@
 #include <SGCore/Render/LayeredFrameReceiver.h>
 #include <SGCore/Render/RenderingBase.h>
 
+#include "SGCore/Actions/KeyboardKeyDownAction.h"
+#include "SGCore/Animation/MotionPlanner.h"
+#include "SGCore/Animation/MotionPlannerConnection.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Input/InputManager.h"
@@ -27,6 +30,7 @@
 #include "SGCore/Render/Atmosphere/Atmosphere.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Graphics/API/ICubemapTexture.h"
+#include "SGCore/Memory/Assets/AnimationsFile.h"
 
 #ifdef PLATFORM_OS_WINDOWS
 #ifdef __cplusplus
@@ -156,12 +160,69 @@ void coreInit()
     // creating model ===============================================================================================
 
     // loading model asset
-    auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/doom/scene.gltf");
+    auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx");
+    auto modelAsset0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/Walking.fbx");
+    auto modelAsset1 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/Idle.fbx");
+    auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx/skeletons/mixamorig:Hips");
 
     std::vector<SGCore::ECS::entity_t> entities;
     modelAsset->m_rootNode->addOnScene(SGCore::Scene::getCurrentScene(), SG_LAYER_OPAQUE_NAME, [&entities](const auto& entity) {
         entities.push_back(entity);
     });
+
+    // adding animation
+    {
+        auto animations = SGCore::AssetManager::getInstance()->getAsset<SGCore::AnimationsFile, SGCore::AssetStorageType::BY_PATH>(
+                "${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx/animations"
+        );
+
+        auto animations0 = SGCore::AssetManager::getInstance()->getAsset<SGCore::AnimationsFile, SGCore::AssetStorageType::BY_PATH>(
+                "${enginePath}/Tests/ModelDraw/Resources/Walking.fbx/animations"
+        );
+
+        auto animations1 = SGCore::AssetManager::getInstance()->getAsset<SGCore::AnimationsFile, SGCore::AssetStorageType::BY_PATH>(
+                "${enginePath}/Tests/ModelDraw/Resources/Idle.fbx/animations"
+        );
+
+        auto& motionPlanner = SGCore::Scene::getCurrentScene()->getECSRegistry()->emplace<SGCore::MotionPlanner>(entities[0]);
+        motionPlanner.m_skeleton = modelSkeletonAsset;
+
+        auto idleNode = SGCore::MotionPlannerNode::createNode();
+        idleNode->m_isRepeated = true;
+        idleNode->m_animationSpeed = 1.0f;
+        idleNode->m_skeletalAnimation = animations1->m_skeletalAnimations[0];
+
+        auto walkNode = SGCore::MotionPlannerNode::createNode();
+        walkNode->m_isRepeated = true;
+        walkNode->m_animationSpeed = 1.0f;
+        walkNode->m_skeletalAnimation = animations0->m_skeletalAnimations[0];
+        auto walkActivationAction = SGCore::MakeRef<SGCore::KeyboardKeyDownAction>();
+        walkActivationAction->m_key = SGCore::KeyboardKey::KEY_W;
+        walkNode->m_activationAction = walkActivationAction;
+
+        auto runNode = SGCore::MotionPlannerNode::createNode();
+        runNode->m_isRepeated = true;
+        runNode->m_animationSpeed = 1.0f;
+        runNode->m_skeletalAnimation = animations->m_skeletalAnimations[0];
+        auto runActivationAction = SGCore::MakeRef<SGCore::KeyboardKeyDownAction>();
+        runActivationAction->m_key = SGCore::KeyboardKey::KEY_LEFT_SHIFT;
+        runNode->m_activationAction = runActivationAction;
+
+        auto walkConnection = SGCore::MakeRef<SGCore::MotionPlannerConnection>();
+        walkConnection->m_previousNode = idleNode;
+        walkConnection->m_nextNode = walkNode;
+        walkConnection->m_blendTime = 0.2f;
+
+        auto runConnection = SGCore::MakeRef<SGCore::MotionPlannerConnection>();
+        runConnection->m_previousNode = walkNode;
+        runConnection->m_nextNode = runNode;
+        runConnection->m_blendTime = 0.2f;
+
+        idleNode->m_connections.push_back(walkConnection);
+        walkNode->m_connections.push_back(runConnection);
+
+        motionPlanner.m_rootNodes.push_back(idleNode);
+    }
 
     // creating quad model for drawing camera framebuffer attachment to screen ======================================
 

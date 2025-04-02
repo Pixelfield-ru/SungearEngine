@@ -22,7 +22,9 @@ void calculateVertexPosAndNormal(vec3 inVertexPos, vec3 inVertexNormal, out vec4
         outVertexNormal = inVertexNormal;
     }
 
-    for(int i = 0 ; i < SG_MAX_BONES_PER_VERTEX && i < bonesCount && u_isAnimatedMesh == 1; ++i)
+    bool isVertexAffected = false;
+
+    for(int i = 0 ; i < SG_MAX_BONES_PER_VERTEX && i < bonesCount; ++i)
     {
         int curBoneID = -1;
         float curBoneWeight = 0.0f;
@@ -45,7 +47,12 @@ void calculateVertexPosAndNormal(vec3 inVertexPos, vec3 inVertexNormal, out vec4
         boneMatrix[2] = texelFetch(u_bonesMatricesUniformBuffer, curBoneID * 4 + 3);
         boneMatrix[3] = texelFetch(u_bonesMatricesUniformBuffer, curBoneID * 4 + 4);
 
-        if(curBoneID == -1) continue;
+        if(curBoneID == -1)
+        {
+            continue;
+        }
+
+        isVertexAffected = true;
 
         if(curBoneID >= SG_MAX_BONES_PER_MESH)
         {
@@ -57,5 +64,11 @@ void calculateVertexPosAndNormal(vec3 inVertexPos, vec3 inVertexNormal, out vec4
         outVertexPos += localPosition * curBoneWeight;
         vec3 localNormal = mat3(boneMatrix) * inVertexNormal;
         outVertexNormal += localNormal * curBoneWeight;
+    }
+
+    if(!isVertexAffected)
+    {
+        outVertexPos = vec4(inVertexPos, 1.0);
+        outVertexNormal = inVertexNormal;
     }
 }

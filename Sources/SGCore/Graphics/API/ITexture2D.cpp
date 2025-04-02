@@ -6,9 +6,9 @@
 #include "SGCore/Utils/FileUtils.h"
 #include "SGCore/Memory/AssetManager.h"
 
+#include <SGCore/Logger/Logger.h>
 #include <stb_image.h>
 #include <stb_image_resize2.h>
-#include <SGCore/Logger/Logger.h>
 
 void SGCore::STBITextureDataDeleter::operator()(const std::uint8_t* data)
 {
@@ -25,7 +25,7 @@ void SGCore::ITexture2D::doLoad(const InterpolatedPath& path)
 
     // m_texture2D = Ref<ITexture2D>(CoreMain::getRenderer().createTexture2D())->addToGlobalStorage();
 
-    const auto& ext = getPath().resolved().extension();
+    const auto ext = getPath().resolved().extension();
     
     if(ext == ".png" || ext == ".jpg" || ext == ".jpeg")
     {
@@ -59,6 +59,19 @@ void SGCore::ITexture2D::doLoad(const InterpolatedPath& path)
 
             std::cout << "one channel tex" << std::endl;
         }
+    }
+    else if(ext == ".dds")
+    {
+        const std::string resolvedUTF8Path = Utils::toUTF8(getPath().resolved().u16string());
+
+        m_gliTexture = gli::load(resolvedUTF8Path);
+        if(m_gliTexture.empty())
+        {
+            LOG_E(SGCORE_TAG, "Failed to load .DDS texture by path '{}'.", resolvedUTF8Path);
+            return;
+        }
+
+        m_isCompressedFormat = true;
     }
 }
 

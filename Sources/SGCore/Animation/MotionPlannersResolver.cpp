@@ -112,193 +112,200 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     std::vector<SkeletalBoneAnimation*> currentBoneAnims;
     auto currentBone = skeleton->findBone(currentEntityBaseInfo.getRawName());
 
-    if(currentBone)
+    if(currentBone) { ++bonesCount; }
+
+    // collecting all animations for currentBone
+    for(const auto& node : nodesToInterpolate)
     {
-        ++bonesCount;
-
-        // collecting all animations for currentBone
-        for(const auto& node : nodesToInterpolate)
-        {
-            SkeletalBoneAnimation* boneAnimation = node->m_skeletalAnimation->getBoneAnimation(currentBone->m_boneName);
-            if(boneAnimation)
-            {
-                currentBoneAnims.push_back(boneAnimation);
-            }
-            else
-            {
-                currentBoneAnims.push_back(nullptr);
-                /*LOG_W(SGCORE_TAG, "MotionPlannersResolver: Can not find bone '{}' in skeletal animation '{}'!",
-                      currentBone->m_boneName, node->m_skeletalAnimation->m_animationName);*/
-            }
-        }
-
-        std::vector<glm::vec3> positionsToInterpolate;
-        std::vector<glm::quat> rotationsToInterpolate;
-        std::vector<glm::vec3> scalesToInterpolate;
-
-        bool isBoneAnimated = false;
-
-        // GUARANTEED THAT currentBoneAnims.size() == nodesToInterpolate.size()
-        // calculating all transformations for all animations using currentBone and keys from currentBoneAnims
-        for(size_t i = 0; i < currentBoneAnims.size(); ++i)
-        {
-            auto& currentNodeToInterpolate = nodesToInterpolate[i];
-            auto* currentBoneAnim = currentBoneAnims[i];
-
-            float curAnimTime = currentNodeToInterpolate->m_currentAnimationTime;
-
-            // calculating interpolated position for bone
-            glm::vec3 interpolatedPosition = { 0.0, 0.0, 0.0 };
-
-            if(currentBoneAnim)
-            {
-                const std::int64_t nextKeyIndex = currentBoneAnim->findPositionKeyByTime(curAnimTime);
-                if(nextKeyIndex != -1)
-                {
-                    const KeyPosition& nextKey = currentBoneAnim->m_positionKeys[nextKeyIndex];
-                    KeyPosition prevKey;
-
-                    float normalizedTime = 0.0f;
-                    if(nextKeyIndex - 1 >= 0)
-                    {
-                        prevKey = currentBoneAnim->m_positionKeys[nextKeyIndex - 1];
-                        normalizedTime = (curAnimTime - prevKey.m_timeStamp) / (nextKey.m_timeStamp - prevKey.m_timeStamp);
-                    }
-                    else
-                    {
-                        prevKey = currentBoneAnim->m_positionKeys[currentBoneAnim->m_positionKeys.size() - 1];
-                        normalizedTime = curAnimTime / nextKey.m_timeStamp;
-                    }
-
-                    interpolatedPosition = glm::lerp(prevKey.m_position, nextKey.m_position, normalizedTime);
-                }
-
-                isBoneAnimated = true;
-            }
-
-            positionsToInterpolate.push_back(interpolatedPosition);
-
-            // calculating interpolated rotation for bone
-            auto interpolatedRotation = glm::identity<glm::quat>();
-
-            if(currentBoneAnim)
-            {
-                const std::int64_t nextKeyIndex = currentBoneAnim->findRotationKeyByTime(curAnimTime);
-                if(nextKeyIndex != -1)
-                {
-                    const KeyRotation& nextKey = currentBoneAnim->m_rotationKeys[nextKeyIndex];
-                    KeyRotation prevKey;
-
-                    float normalizedTime = 0.0f;
-                    if(nextKeyIndex - 1 >= 0)
-                    {
-                        prevKey = currentBoneAnim->m_rotationKeys[nextKeyIndex - 1];
-                        normalizedTime = (curAnimTime - prevKey.m_timeStamp) / (nextKey.m_timeStamp - prevKey.m_timeStamp);
-                    }
-                    else
-                    {
-                        prevKey = currentBoneAnim->m_rotationKeys[currentBoneAnim->m_rotationKeys.size() - 1];
-                        normalizedTime = curAnimTime / nextKey.m_timeStamp;
-                    }
-
-                    interpolatedRotation = glm::normalize(glm::slerp(prevKey.m_rotation, nextKey.m_rotation, normalizedTime));
-                }
-            }
-
-            rotationsToInterpolate.push_back(interpolatedRotation);
-
-            // calculating interpolated scale for bone
-            glm::vec3 interpolatedScale = { 1.0, 1.0, 1.0 };
-
-            if(currentBoneAnim)
-            {
-                const std::int64_t nextKeyIndex = currentBoneAnim->findScaleKeyByTime(curAnimTime);
-                if(nextKeyIndex != -1)
-                {
-                    const KeyScale& nextKey = currentBoneAnim->m_scaleKeys[nextKeyIndex];
-                    KeyScale prevKey;
-
-                    float normalizedTime = 0.0f;
-                    if(nextKeyIndex - 1 >= 0)
-                    {
-                        prevKey = currentBoneAnim->m_scaleKeys[nextKeyIndex - 1];
-                        normalizedTime = (curAnimTime - prevKey.m_timeStamp) / (nextKey.m_timeStamp - prevKey.m_timeStamp);
-                    }
-                    else
-                    {
-                        prevKey = currentBoneAnim->m_scaleKeys[currentBoneAnim->m_scaleKeys.size() - 1];
-                        normalizedTime = curAnimTime / nextKey.m_timeStamp;
-                    }
-
-                    interpolatedScale = glm::lerp(prevKey.m_scale, nextKey.m_scale, normalizedTime);
-                }
-            }
-
-            scalesToInterpolate.push_back(interpolatedScale);
-        }
-
-        glm::vec3 interpolatedPosition = { 0, 0, 0 };
-        auto interpolatedRotation = glm::identity<glm::quat>();
-        glm::vec3 interpolatedScale = { 1, 1, 1 };
-
-        // GUARANTEED THAT currentBoneAnims.size() ==
-        // nodesToInterpolate.size() ==
-        // positionsToInterpolate.size() ==
-        // rotationsToInterpolate.size() == scalesToInterpolate.size()
-        // interpolating all nodes transform components to find animated matrix
-        if(!nodesToInterpolate.empty())
-        {
-            interpolatedPosition = positionsToInterpolate[0];
-            interpolatedRotation = rotationsToInterpolate[0];
-            interpolatedScale = scalesToInterpolate[0];
-
-            for(size_t i = 1; i < nodesToInterpolate.size(); ++i)
-            {
-                const auto& node = nodesToInterpolate[i];
-
-                interpolatedPosition = glm::lerp(interpolatedPosition, positionsToInterpolate[i], node->m_currentBlendFactor);
-                interpolatedRotation = glm::slerp(interpolatedRotation, rotationsToInterpolate[i], node->m_currentBlendFactor);
-                interpolatedScale = glm::lerp(interpolatedScale, scalesToInterpolate[i], node->m_currentBlendFactor);
-            }
-        }
-
-        // constructing animated matrix from interpolated transform components of all animations nodes
-        auto animatedMatrix = glm::identity<glm::mat4>();
-
-        // if this bone is animated by some node
-        if(isBoneAnimated)
-        {
-            animatedMatrix = glm::translate(animatedMatrix, interpolatedPosition);
-            animatedMatrix *= glm::toMat4(interpolatedRotation);
-            animatedMatrix = glm::scale(animatedMatrix, interpolatedScale);
-        }
-        else // else if not animated then we are using model matrix of entity as animated matrix to put the bone into correct place
-        {
-            animatedMatrix = currentEntityTransform->m_ownTransform.m_modelMatrix;
-        }
-
-        // if current entity has parent with bone
-        if(parentEntityTransform)
-        {
-            currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix =
-                    parentEntityTransform->m_finalTransform.m_boneAnimatedMatrix * animatedMatrix;
-        }
+        SkeletalBoneAnimation* boneAnimation = node->m_skeletalAnimation->getBoneAnimation(
+            currentBone ? currentBone->m_boneName : currentEntityBaseInfo.getRawName());
+        if(boneAnimation) { currentBoneAnims.push_back(boneAnimation); }
         else
         {
-            currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix = animatedMatrix;
+            currentBoneAnims.push_back(nullptr);
+            /*LOG_W(SGCORE_TAG, "MotionPlannersResolver: Can not find bone '{}' in skeletal animation '{}'!",
+                  currentBone->m_boneName, node->m_skeletalAnimation->m_animationName);*/
+        }
+    }
+
+    std::vector<glm::vec3> positionsToInterpolate;
+    std::vector<glm::quat> rotationsToInterpolate;
+    std::vector<glm::vec3> scalesToInterpolate;
+
+    bool isBoneAnimated = false;
+
+    // GUARANTEED THAT currentBoneAnims.size() == nodesToInterpolate.size()
+    // calculating all transformations for all animations using currentBone and keys from currentBoneAnims
+    for(size_t i = 0; i < currentBoneAnims.size(); ++i)
+    {
+        auto& currentNodeToInterpolate = nodesToInterpolate[i];
+        auto* currentBoneAnim = currentBoneAnims[i];
+
+        float curAnimTime = currentNodeToInterpolate->m_currentAnimationTime;
+
+        // calculating interpolated position for bone
+        glm::vec3 interpolatedPosition = { 0.0, 0.0, 0.0 };
+
+        if(currentBoneAnim)
+        {
+            const std::int64_t nextKeyIndex = currentBoneAnim->findPositionKeyByTime(curAnimTime);
+            if(nextKeyIndex != -1)
+            {
+                const KeyPosition& nextKey = currentBoneAnim->m_positionKeys[nextKeyIndex];
+                KeyPosition prevKey;
+
+                float normalizedTime = 0.0f;
+                if(nextKeyIndex - 1 >= 0)
+                {
+                    prevKey = currentBoneAnim->m_positionKeys[nextKeyIndex - 1];
+                    normalizedTime = (curAnimTime - prevKey.m_timeStamp) / (nextKey.m_timeStamp - prevKey.m_timeStamp);
+                }
+                else
+                {
+                    prevKey = currentBoneAnim->m_positionKeys[currentBoneAnim->m_positionKeys.size() - 1];
+                    normalizedTime = curAnimTime / nextKey.m_timeStamp;
+                }
+
+                interpolatedPosition = glm::lerp(prevKey.m_position, nextKey.m_position, normalizedTime);
+            }
+
+            isBoneAnimated = true;
         }
 
-        // finally updating bone matrix in uniform buffer
-        auto finalBoneMatrix =
-                 currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix * currentBone->m_offsetMatrix;
+        positionsToInterpolate.push_back(interpolatedPosition);
 
-        // std::cout << "Animation time: " << nodesToInterpolate[0]->m_currentAnimationTime << ", Bone: " << currentBone->m_boneName << ", bone final matrix: " << finalBoneMatrix << std::endl;
+        // calculating interpolated rotation for bone
+        auto interpolatedRotation = glm::identity<glm::quat>();
 
-        // updating current bone matrix data in m_bonesMatricesData
-        // 16 is count of scalars in matrix
-        // 4 is count of scalars in vector. this vector contains count of bones
-        std::memcpy(motionPlanner.m_bonesMatricesData.data() + 4 + currentBone->m_id * 16, glm::value_ptr(finalBoneMatrix), 16 * 4);
+        if(currentBoneAnim)
+        {
+            const std::int64_t nextKeyIndex = currentBoneAnim->findRotationKeyByTime(curAnimTime);
+            if(nextKeyIndex != -1)
+            {
+                const KeyRotation& nextKey = currentBoneAnim->m_rotationKeys[nextKeyIndex];
+                KeyRotation prevKey;
+
+                float normalizedTime = 0.0f;
+                if(nextKeyIndex - 1 >= 0)
+                {
+                    prevKey = currentBoneAnim->m_rotationKeys[nextKeyIndex - 1];
+                    normalizedTime = (curAnimTime - prevKey.m_timeStamp) / (nextKey.m_timeStamp - prevKey.m_timeStamp);
+                }
+                else
+                {
+                    prevKey = currentBoneAnim->m_rotationKeys[currentBoneAnim->m_rotationKeys.size() - 1];
+                    normalizedTime = curAnimTime / nextKey.m_timeStamp;
+                }
+
+                interpolatedRotation = glm::normalize(
+                    glm::slerp(prevKey.m_rotation, nextKey.m_rotation, normalizedTime));
+            }
+        }
+
+        rotationsToInterpolate.push_back(interpolatedRotation);
+
+        // calculating interpolated scale for bone
+        glm::vec3 interpolatedScale = { 1.0, 1.0, 1.0 };
+
+        if(currentBoneAnim)
+        {
+            const std::int64_t nextKeyIndex = currentBoneAnim->findScaleKeyByTime(curAnimTime);
+            if(nextKeyIndex != -1)
+            {
+                const KeyScale& nextKey = currentBoneAnim->m_scaleKeys[nextKeyIndex];
+                KeyScale prevKey;
+
+                float normalizedTime = 0.0f;
+                if(nextKeyIndex - 1 >= 0)
+                {
+                    prevKey = currentBoneAnim->m_scaleKeys[nextKeyIndex - 1];
+                    normalizedTime = (curAnimTime - prevKey.m_timeStamp) / (nextKey.m_timeStamp - prevKey.m_timeStamp);
+                }
+                else
+                {
+                    prevKey = currentBoneAnim->m_scaleKeys[currentBoneAnim->m_scaleKeys.size() - 1];
+                    normalizedTime = curAnimTime / nextKey.m_timeStamp;
+                }
+
+                interpolatedScale = glm::lerp(prevKey.m_scale, nextKey.m_scale, normalizedTime);
+            }
+        }
+
+        scalesToInterpolate.push_back(interpolatedScale);
     }
+
+    glm::vec3 interpolatedPosition = { 0, 0, 0 };
+    auto interpolatedRotation = glm::identity<glm::quat>();
+    glm::vec3 interpolatedScale = { 1, 1, 1 };
+
+    // GUARANTEED THAT currentBoneAnims.size() ==
+    // nodesToInterpolate.size() ==
+    // positionsToInterpolate.size() ==
+    // rotationsToInterpolate.size() == scalesToInterpolate.size()
+    // interpolating all nodes transform components to find animated matrix
+    if(!nodesToInterpolate.empty())
+    {
+        interpolatedPosition = positionsToInterpolate[0];
+        interpolatedRotation = rotationsToInterpolate[0];
+        interpolatedScale = scalesToInterpolate[0];
+
+        for(size_t i = 1; i < nodesToInterpolate.size(); ++i)
+        {
+            const auto& node = nodesToInterpolate[i];
+
+            interpolatedPosition = glm::lerp(interpolatedPosition, positionsToInterpolate[i],
+                                             node->m_currentBlendFactor);
+            interpolatedRotation = glm::slerp(interpolatedRotation, rotationsToInterpolate[i],
+                                              node->m_currentBlendFactor);
+            interpolatedScale = glm::lerp(interpolatedScale, scalesToInterpolate[i], node->m_currentBlendFactor);
+        }
+    }
+
+    // constructing animated matrix from interpolated transform components of all animations nodes
+    auto animatedMatrix = glm::identity<glm::mat4>();
+
+    // if this bone is animated by some node
+    if(isBoneAnimated)
+    {
+        animatedMatrix = glm::translate(animatedMatrix, interpolatedPosition);
+        animatedMatrix *= glm::toMat4(interpolatedRotation);
+        animatedMatrix = glm::scale(animatedMatrix, interpolatedScale);
+    }
+
+    // if current entity has parent with bone
+    if(parentEntityTransform)
+    {
+        currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix =
+                parentEntityTransform->m_finalTransform.m_boneAnimatedMatrix * animatedMatrix;
+    }
+    else
+    {
+        currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix = animatedMatrix;
+    }
+
+    currentEntityTransform->m_ownTransform.m_boneAnimatedMatrix = animatedMatrix;
+
+    // finally updating bone matrix in uniform buffer
+    currentEntityTransform->m_finalTransform.m_boneFinalMatrix =
+            currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix * (currentBone
+                                                                                 ? currentBone->m_offsetMatrix
+                                                                                 : glm::identity<glm::mat4>());
+
+    currentEntityTransform->m_ownTransform.m_boneFinalMatrix =
+            animatedMatrix * (currentBone ? currentBone->m_offsetMatrix : glm::identity<glm::mat4>());
+
+    currentEntityTransform->m_isAnimated = isBoneAnimated;
+
+    // updating current bone matrix data in m_bonesMatricesData
+    // 16 is count of scalars in matrix
+    // 4 is count of scalars in vector. this vector contains count of bones
+    if(currentBone)
+    {
+        std::memcpy(motionPlanner.m_bonesMatricesData.data() + 4 + currentBone->m_id * 16,
+                    glm::value_ptr(currentEntityTransform->m_finalTransform.m_boneFinalMatrix), 16 * 4);
+    }
+
+    // ========================================================================================================
 
     // if current entity has mesh then mesh of current entity
     // is using uniform buffer (m_bonesTransformationsUniformBuffer) from motion planner

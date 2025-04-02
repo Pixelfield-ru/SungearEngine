@@ -14,6 +14,8 @@
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/API/IRenderer.h"
 
+#include <gli/gli.hpp>
+
 namespace SGCore
 {
     class IFrameBuffer;
@@ -158,6 +160,9 @@ namespace SGCore
         [[nodiscard]] SGFrameBufferAttachmentType getFrameBufferAttachmentType() const noexcept;
         
     protected:
+        // USED ONLY FOR DDS AND KTX. an extra half a kilobyte (((
+        gli::texture m_gliTexture;
+
         std::int32_t m_width = 0;
         std::int32_t m_height = 0;
         

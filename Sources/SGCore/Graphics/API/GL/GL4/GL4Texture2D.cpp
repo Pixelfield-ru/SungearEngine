@@ -48,14 +48,46 @@ void SGCore::GL4Texture2D::create() noexcept
 
         if(m_isCompressedFormat)
         {
-            glCompressedTexImage2D(GL_TEXTURE_2D,
-                                   0,
-                                   GLGraphicsTypesCaster::sggInternalFormatToGL(m_internalFormat),
-                                   m_width,
-                                   m_height,
-                                   0,
-                                   m_pixelSize,
-                                   m_textureData.get());
+            // dds or ktx
+            if(!m_gliTexture.empty())
+            {
+                gli::gl GL(gli::gl::PROFILE_GL33);
+                const gli::gl::format gliFormat = GL.translate(m_gliTexture.format(), m_gliTexture.swizzles());
+                const GLenum target = GL.translate(m_gliTexture.target());
+                const auto textureExtent = m_gliTexture.extent();
+
+                {
+                    const std::string assertMsg = fmt::format(
+                        "Can not create texture with compressed format and target not equals to GL_TEXTURE_2D. "
+                        "Texture by path: '{}', texture target: GLenum '{}'.",
+                        Utils::toUTF8(getPath().resolved().u16string()),
+                        target
+                    );
+
+                    SG_ASSERT(gli::is_compressed(m_gliTexture.format()) && target == GL_TEXTURE_2D, assertMsg.c_str());
+                }
+
+
+                glTexParameteri(target, GL_TEXTURE_BASE_LEVEL, 0);
+                glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, static_cast<GLint>(m_gliTexture.levels() - 1));
+                glTexParameteriv(target, GL_TEXTURE_SWIZZLE_RGBA, &gliFormat.Swizzles[0]);
+                glTexStorage2D(target, static_cast<GLint>(m_gliTexture.levels()), gliFormat.Internal, textureExtent.x, textureExtent.y);
+
+                // m_internalFormat = gliFormat.Internal;
+                m_internalFormat = GLGraphicsTypesCaster::oglInternalFormatToSG(gliFormat.Internal);
+                m_format = GLGraphicsTypesCaster::oglFormatToSG(gliFormat.External);
+                m_width = textureExtent.x;
+                m_height = textureExtent.x;
+                m_channelsCount = getSGGFormatChannelsCount(m_format);
+
+                for(std::size_t level = 0; level < m_gliTexture.levels(); ++level)
+                {
+                    glm::tvec3<GLsizei> Extent(m_gliTexture.extent(level));
+                    glCompressedTexSubImage2D(
+                        target, static_cast<GLint>(level), 0, 0, Extent.x, Extent.y,
+                        gliFormat.Internal, static_cast<GLsizei>(m_gliTexture.size(level)), m_gliTexture.data(0, 0, level));
+                }
+            }
         }
         else
         {

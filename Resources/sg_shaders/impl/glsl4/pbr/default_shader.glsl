@@ -236,6 +236,8 @@ void main()
         }
     }
 
+    if(diffuseColor.a < 0.05) discard;
+
     {
         if(mat_specularSamplers_CURRENT_COUNT > 0)
         {

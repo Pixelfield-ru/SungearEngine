@@ -99,15 +99,15 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
     childTransform.m_transformChanged =
             modelMatrixChanged || (parentTransform && parentTransform->m_transformChanged);
 
-    if(childTransform.m_transformChanged)
+    // if(childTransform.m_transformChanged)
     {
         childOwnTransform.m_modelMatrix =
-                childOwnTransform.m_translationMatrix * childOwnTransform.m_rotationMatrix * childOwnTransform.m_scaleMatrix;
+                childOwnTransform.m_translationMatrix * childOwnTransform.m_rotationMatrix * childOwnTransform.m_scaleMatrix * childOwnTransform.m_boneAnimatedMatrix;
 
         if(parentTransform)
         {
             childFinalTransform.m_modelMatrix =
-                    parentTransform->m_finalTransform.m_modelMatrix * childOwnTransform.m_modelMatrix;
+                parentTransform->m_finalTransform.m_modelMatrix * childOwnTransform.m_modelMatrix;
         }
         else
         {

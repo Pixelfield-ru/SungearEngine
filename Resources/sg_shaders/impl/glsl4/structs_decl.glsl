@@ -11,6 +11,7 @@ struct ProgramData
 struct ObjectTransform
 {
     mat4 modelMatrix;
+    mat4 boneMatrix;
     vec3 position;
     float p0;
     vec3 rotation;

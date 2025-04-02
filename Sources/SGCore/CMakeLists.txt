@@ -26,6 +26,7 @@
  find_package(unofficial-lunasvg CONFIG REQUIRED)
  find_package(RapidJSON CONFIG REQUIRED)
  find_package(antlr4-runtime CONFIG REQUIRED)
+ find_package(gli CONFIG REQUIRED)
 
  include(FetchContent)
 
@@ -119,6 +120,7 @@
          unofficial::lunasvg::lunasvg
          rapidjson
          msdf-atlas-gen
+         gli
 
          ${SG_BULLET_LIBS}
          ${FREETYPE_LIBRARIES}
