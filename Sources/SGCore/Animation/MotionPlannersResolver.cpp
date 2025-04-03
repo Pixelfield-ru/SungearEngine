@@ -26,15 +26,100 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
         // collecting all nodes to interpolate bones animations
         for(const auto& rootNode : motionPlanner.m_rootNodes)
         {
-            if(rootNode->m_isActive && rootNode->m_activationAction->execute())
+            if(rootNode->m_isActive /*&& rootNode->m_activationAction->execute()*/)
             {
+                rootNode->m_anyState.m_isSomeNodeInTreeExceptRootActive = false;
+
                 if(rootNode->m_skeletalAnimation)
                 {
                     rootNode->m_isPlaying = true;
                     nodesToInterpolate.push_back(rootNode);
                 }
 
-                collectAndUpdateNodesToInterpolate(dt, rootNode, nodesToInterpolate);
+                // except root node
+                bool isSomeNodeInTreeActive = true;
+
+                {
+                    const size_t lastNodesToInterpolateCount = nodesToInterpolate.size();
+                    collectAndUpdateNodesToInterpolate(dt, motionPlanner, rootNode, rootNode, nodesToInterpolate);
+                    if(nodesToInterpolate.size() == lastNodesToInterpolateCount)
+                    {
+                        isSomeNodeInTreeActive = false;
+                    }
+                }
+
+                // going from any state in tree to root node
+                if(!rootNode->m_anyState.m_isSomeNodeInTreeExceptRootActive && !rootNode->m_anyState.m_lastActivatedConnections.empty())
+                {
+                    auto& anyState = rootNode->m_anyState;
+                    const auto& toRootConnection = anyState.m_toRootConnection;
+
+                    if(toRootConnection->m_currentBlendTime >= toRootConnection->m_blendTime)
+                    {
+                        anyState.m_lastActivatedConnections.clear();
+                    }
+
+                    const float lastBlendFactor = rootNode->m_currentBlendFactor;
+
+                    toRootConnection->m_currentBlendTime += dt * toRootConnection->m_blendSpeed;
+                    toRootConnection->m_currentBlendTime = std::min(toRootConnection->m_currentBlendTime, toRootConnection->m_blendTime);
+
+                    const float blendFactor = toRootConnection->m_currentBlendTime / toRootConnection->m_blendTime;
+
+                    rootNode->m_currentBlendFactor = blendFactor;
+
+                    const float blendFactorDif = blendFactor - lastBlendFactor;
+
+                    auto it = anyState.m_lastActivatedConnections.begin();
+                    while(it != anyState.m_lastActivatedConnections.end())
+                    {
+                        const auto currentState = it->lock();
+
+                        if(!currentState)
+                        {
+                            it = anyState.m_lastActivatedConnections.erase(it);
+                            continue;
+                        }
+
+                        bool deletePreviousConnection = true;
+
+                        const auto prevNode = currentState->m_previousNode.lock();
+                        if(prevNode)
+                        {
+                            prevNode->m_currentBlendFactor -= blendFactorDif;
+                            prevNode->m_currentBlendFactor = std::max(prevNode->m_currentBlendFactor, 0.0f);
+                            if(prevNode->m_currentBlendFactor > 0.0f)
+                            {
+                                deletePreviousConnection = false;
+                            }
+
+                            nodesToInterpolate.push_back(prevNode);
+                        }
+
+                        const auto nextNode = currentState->m_nextNode;
+                        if(nextNode)
+                        {
+                            nextNode->m_currentBlendFactor -= blendFactorDif;
+                            nextNode->m_currentBlendFactor = std::max(nextNode->m_currentBlendFactor, 0.0f);
+                            if(nextNode->m_currentBlendFactor > 0.0f)
+                            {
+                                deletePreviousConnection = false;
+                            }
+
+                            nodesToInterpolate.push_back(nextNode);
+                        }
+
+                        if(deletePreviousConnection)
+                        {
+                            currentState->m_currentBlendTime = 0.0f;
+                            it = anyState.m_lastActivatedConnections.erase(it);
+                        }
+                        else
+                        {
+                            ++it;
+                        }
+                    }
+                }
             }
         }
 
@@ -354,6 +439,8 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
 }
 
 void SGCore::MotionPlannersResolver::collectAndUpdateNodesToInterpolate(const double& dt,
+                                                                        MotionPlanner& motionPlanner,
+                                                                        const Ref<MotionPlannerNode>& fromRootNode,
                                                                         const Ref<MotionPlannerNode>& currentNode,
                                                                         std::vector<Ref<MotionPlannerNode>>& nodesToInterpolate) noexcept
 {
@@ -361,7 +448,7 @@ void SGCore::MotionPlannersResolver::collectAndUpdateNodesToInterpolate(const do
     {
         if(!connection->m_nextNode || !connection->m_nextNode->m_skeletalAnimation) continue;
 
-        bool isConnectionActivated = connection->m_nextNode->m_activationAction->execute();
+        bool isConnectionActivated = connection->m_activationAction->execute();
 
         auto previousNode = connection->m_previousNode.lock();
 
@@ -379,7 +466,7 @@ void SGCore::MotionPlannersResolver::collectAndUpdateNodesToInterpolate(const do
                 connection->m_currentBlendTime += dt * connection->m_blendSpeed;
                 connection->m_currentBlendTime = std::min(connection->m_currentBlendTime, connection->m_blendTime);
 
-                float blendFactor = connection->m_currentBlendTime / connection->m_blendTime;
+                const float blendFactor = connection->m_currentBlendTime / connection->m_blendTime;
 
                 connection->m_nextNode->m_currentBlendFactor = blendFactor;
                 previousNode->m_currentBlendFactor = 1.0 - blendFactor;
@@ -387,7 +474,19 @@ void SGCore::MotionPlannersResolver::collectAndUpdateNodesToInterpolate(const do
 
             nodesToInterpolate.push_back(connection->m_nextNode);
 
-            collectAndUpdateNodesToInterpolate(dt, connection->m_nextNode, nodesToInterpolate);
+            if(fromRootNode != currentNode)
+            {
+                bool exists = false;
+                if(std::ranges::find_if(fromRootNode->m_anyState.m_lastActivatedConnections, [connection](const Weak<MotionPlannerConnection>& otherConnection) {
+                    return otherConnection.lock() == connection;
+                }) == fromRootNode->m_anyState.m_lastActivatedConnections.end())
+                {
+                    fromRootNode->m_anyState.m_lastActivatedConnections.push_back(connection);
+                }
+            }
+
+            fromRootNode->m_anyState.m_isSomeNodeInTreeExceptRootActive = true;
+            collectAndUpdateNodesToInterpolate(dt, motionPlanner, fromRootNode, connection->m_nextNode, nodesToInterpolate);
         }
         else if(!isConnectionActivated)
         {
@@ -400,7 +499,7 @@ void SGCore::MotionPlannersResolver::collectAndUpdateNodesToInterpolate(const do
                 connection->m_currentBlendTime -= dt * connection->m_blendSpeed;
                 connection->m_currentBlendTime = std::max(connection->m_currentBlendTime, 0.0f);
 
-                float blendFactor = connection->m_currentBlendTime / connection->m_blendTime;
+                const float blendFactor = connection->m_currentBlendTime / connection->m_blendTime;
 
                 connection->m_nextNode->m_currentBlendFactor = blendFactor;
                 previousNode->m_currentBlendFactor = 1.0f - blendFactor;

@@ -24,6 +24,8 @@ namespace SGCore
         std::vector<Ref<MotionPlannerNode>> m_rootNodes;
         AssetRef<Skeleton> m_skeleton;
 
+        std::vector<Ref<MotionPlannerConnection>> m_notInterruptedConnections;
+
         std::int32_t m_maxBonesPerMesh = 300;
 
         /**
@@ -48,6 +50,7 @@ namespace SGCore
         [[nodiscard]] MotionPlanner& operator=(MotionPlanner&&) noexcept = default;
 
     private:
+
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
     };
 }

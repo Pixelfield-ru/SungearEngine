@@ -5468,7 +5468,6 @@ namespace SGCore::Serde
         {
             valueView.getValueContainer().addMember("m_connections", valueView.m_data->m_connections);
             valueView.getValueContainer().addMember("m_skeletalAnimation", valueView.m_data->m_skeletalAnimation);
-            valueView.getValueContainer().addMember("m_activationAction", valueView.m_data->m_activationAction);
             valueView.getValueContainer().addMember("m_isActive", valueView.m_data->m_isActive);
             // valueView.getValueContainer().addMember("m_isPaused", valueView.m_data->m_isPaused);
             // valueView.getValueContainer().addMember("m_isPlaying", valueView.m_data->m_isPlaying);
@@ -5495,12 +5494,6 @@ namespace SGCore::Serde
             if(skeletalAnimation)
             {
                 valueView.m_data->m_skeletalAnimation = std::move(*skeletalAnimation);
-            }
-
-            auto activationAction = valueView.getValueContainer().template getMember<decltype(MotionPlannerNode::m_activationAction)>("m_activationAction");
-            if(activationAction)
-            {
-                valueView.m_data->m_activationAction = std::move(*activationAction);
             }
 
             auto isActive = valueView.getValueContainer().template getMember<bool>("m_isActive");
@@ -5533,6 +5526,7 @@ namespace SGCore::Serde
         {
             valueView.getValueContainer().addMember("m_blendTime", valueView.m_data->m_blendTime);
             valueView.getValueContainer().addMember("m_blendSpeed", valueView.m_data->m_blendSpeed);
+            valueView.getValueContainer().addMember("m_activationAction", valueView.m_data->m_activationAction);
             // serializing only next node because m_previousNode owns this connection
             valueView.getValueContainer().addMember("m_nextNode", valueView.m_data->m_nextNode);
         }
@@ -5549,6 +5543,12 @@ namespace SGCore::Serde
             if(blendSpeed)
             {
                 valueView.m_data->m_blendSpeed = std::move(*blendSpeed);
+            }
+
+            auto activationAction = valueView.getValueContainer().template getMember<decltype(MotionPlannerConnection::m_activationAction)>("m_activationAction");
+            if(activationAction)
+            {
+                valueView.m_data->m_activationAction = std::move(*activationAction);
             }
 
             auto nextNode = valueView.getValueContainer().template getMember<decltype(MotionPlannerConnection::m_nextNode)>("m_nextNode");

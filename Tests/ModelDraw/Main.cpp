@@ -14,6 +14,7 @@
 #include <SGCore/Render/RenderingBase.h>
 
 #include "SGCore/Actions/KeyboardKeyDownAction.h"
+#include "SGCore/Actions/KeyboardKeyReleasedAction.h"
 #include "SGCore/Animation/MotionPlanner.h"
 #include "SGCore/Animation/MotionPlannerConnection.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"
@@ -191,35 +192,51 @@ void coreInit()
         idleNode->m_isRepeated = true;
         idleNode->m_animationSpeed = 1.0f;
         idleNode->m_skeletalAnimation = animations1->m_skeletalAnimations[0];
+        auto idleConnection = SGCore::MakeRef<SGCore::MotionPlannerConnection>();
+        idleConnection->m_blendTime = 1.0f;
+        idleConnection->m_doNotInterruptWhenInactive = true;
+        idleNode->m_anyState.m_toRootConnection = idleConnection;
 
         auto walkNode = SGCore::MotionPlannerNode::createNode();
         walkNode->m_isRepeated = true;
         walkNode->m_animationSpeed = 1.0f;
         walkNode->m_skeletalAnimation = animations0->m_skeletalAnimations[0];
-        auto walkActivationAction = SGCore::MakeRef<SGCore::KeyboardKeyDownAction>();
-        walkActivationAction->m_key = SGCore::KeyboardKey::KEY_W;
-        walkNode->m_activationAction = walkActivationAction;
+        // walkNode->m_activationAction = walkActivationAction;
 
         auto runNode = SGCore::MotionPlannerNode::createNode();
         runNode->m_isRepeated = true;
         runNode->m_animationSpeed = 1.0f;
         runNode->m_skeletalAnimation = animations->m_skeletalAnimations[0];
-        auto runActivationAction = SGCore::MakeRef<SGCore::KeyboardKeyDownAction>();
-        runActivationAction->m_key = SGCore::KeyboardKey::KEY_LEFT_SHIFT;
-        runNode->m_activationAction = runActivationAction;
+        // runNode->m_activationAction = runActivationAction;
 
         auto walkConnection = SGCore::MakeRef<SGCore::MotionPlannerConnection>();
         walkConnection->m_previousNode = idleNode;
         walkConnection->m_nextNode = walkNode;
         walkConnection->m_blendTime = 0.2f;
+        auto walkActivationAction = SGCore::MakeRef<SGCore::KeyboardKeyDownAction>();
+        walkActivationAction->m_key = SGCore::KeyboardKey::KEY_W;
+        walkConnection->m_activationAction = walkActivationAction;
 
         auto runConnection = SGCore::MakeRef<SGCore::MotionPlannerConnection>();
         runConnection->m_previousNode = walkNode;
         runConnection->m_nextNode = runNode;
         runConnection->m_blendTime = 0.2f;
+        auto runActivationAction = SGCore::MakeRef<SGCore::KeyboardKeyDownAction>();
+        runActivationAction->m_key = SGCore::KeyboardKey::KEY_LEFT_SHIFT;
+        runConnection->m_activationAction = runActivationAction;
+
+        /*auto idleConnection = SGCore::MakeRef<SGCore::MotionPlannerConnection>();
+        idleConnection->m_previousNode = runNode;
+        idleConnection->m_nextNode = idleNode;
+        idleConnection->m_blendTime = 0.2f;
+        idleConnection->m_doNotInterruptWhenInactive = true;
+        auto idleActivationAction = SGCore::MakeRef<SGCore::KeyboardKeyReleasedAction>();
+        idleActivationAction->m_key = SGCore::KeyboardKey::KEY_W;
+        idleConnection->m_activationAction = idleActivationAction;*/
 
         idleNode->m_connections.push_back(walkConnection);
         walkNode->m_connections.push_back(runConnection);
+        // runNode->m_connections.push_back(idleConnection);
 
         motionPlanner.m_rootNodes.push_back(idleNode);
     }

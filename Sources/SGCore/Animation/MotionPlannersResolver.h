@@ -29,6 +29,8 @@ namespace SGCore
                                        std::int32_t& bonesCount) noexcept;
 
         static void collectAndUpdateNodesToInterpolate(const double& dt,
+                                                       MotionPlanner& motionPlanner,
+                                                       const Ref<MotionPlannerNode>& fromRootNode,
                                                        const Ref<MotionPlannerNode>& currentNode,
                                                        std::vector<Ref<MotionPlannerNode>>& nodesToInterpolate) noexcept;
     };

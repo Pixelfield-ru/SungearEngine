@@ -13,6 +13,7 @@ SGCore::MotionPlannerConnection SGCore::MotionPlannerConnection::copyStructure(c
 
     newConnection.m_previousNode = baseNode;
     newConnection.m_nextNode = m_nextNode->copyStructure();
+    newConnection.m_activationAction = m_activationAction->copy();
 
     return newConnection;
     // newConnection->

@@ -5,6 +5,7 @@
 #ifndef SUNGEARENGINE_MOTIONPLANNERNODE_H
 #define SUNGEARENGINE_MOTIONPLANNERNODE_H
 
+#include "MotionAnyState.h"
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Memory/Assets/SkeletalAnimationAsset.h"
 #include "SGCore/Actions/IAction.h"
@@ -28,12 +29,8 @@ namespace SGCore
 
         AssetRef<SkeletalAnimationAsset> m_skeletalAnimation;
 
-        // calls if:
-        // 1) if connected to other node as child, then calls if
-        // parent node is playing (m_isPlaying == true) and active (m_isActive == true)
-        // 2) if not connected to other node as child (it means that this node is root),
-        // then calls if this node is playing (m_isPlaying == true) and active (m_isActive == true)
-        Ref<IAction<bool>> m_activationAction = MakeRef<AlwaysTrueAction>();
+        // used as 'any state' to interpolate from any state to root nodes
+        MotionAnyState m_anyState;
 
         /// m_isActive indicates whether the node is active. If the node is not active, then it and all its children are not animated.
         bool m_isActive = true;
