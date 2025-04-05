@@ -36,17 +36,7 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
                     nodesToInterpolate.push_back(rootNode);
                 }
 
-                // except root node
-                bool isSomeNodeInTreeActive = true;
-
-                {
-                    const size_t lastNodesToInterpolateCount = nodesToInterpolate.size();
-                    collectAndUpdateNodesToInterpolate(dt, motionPlanner, rootNode, rootNode, nodesToInterpolate);
-                    if(nodesToInterpolate.size() == lastNodesToInterpolateCount)
-                    {
-                        isSomeNodeInTreeActive = false;
-                    }
-                }
+                collectAndUpdateNodesToInterpolate(dt, motionPlanner, rootNode, rootNode, nodesToInterpolate);
 
                 // going from any state in tree to root node
                 if(!rootNode->m_anyState.m_isSomeNodeInTreeExceptRootActive && !rootNode->m_anyState.m_lastActivatedConnections.empty())
@@ -57,6 +47,7 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
                     if(toRootConnection->m_currentBlendTime >= toRootConnection->m_blendTime)
                     {
                         anyState.m_lastActivatedConnections.clear();
+                        toRootConnection->m_currentBlendTime = 0.0f;
                     }
 
                     const float lastBlendFactor = rootNode->m_currentBlendFactor;
@@ -158,6 +149,8 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
         if(!nodesToInterpolate.empty())
         {
 
+            std::cout << "playing nodes: " << nodesToInterpolate.size() << std::endl;
+
             // animating bones
             processMotionNodes(dt,
                                registry,
@@ -197,14 +190,19 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     std::vector<SkeletalBoneAnimation*> currentBoneAnims;
     auto currentBone = skeleton->findBone(currentEntityBaseInfo.getRawName());
 
-    if(currentBone) { ++bonesCount; }
+    if(currentBone)
+    {
+        ++bonesCount;
+    }
 
     // collecting all animations for currentBone
     for(const auto& node : nodesToInterpolate)
     {
-        SkeletalBoneAnimation* boneAnimation = node->m_skeletalAnimation->getBoneAnimation(
-            currentBone ? currentBone->m_boneName : currentEntityBaseInfo.getRawName());
-        if(boneAnimation) { currentBoneAnims.push_back(boneAnimation); }
+        SkeletalBoneAnimation* boneAnimation = node->m_skeletalAnimation->getBoneAnimation(currentBone ? currentBone->m_boneName : currentEntityBaseInfo.getRawName());
+        if(boneAnimation)
+        {
+            currentBoneAnims.push_back(boneAnimation);
+        }
         else
         {
             currentBoneAnims.push_back(nullptr);
@@ -444,6 +442,10 @@ void SGCore::MotionPlannersResolver::collectAndUpdateNodesToInterpolate(const do
                                                                         const Ref<MotionPlannerNode>& currentNode,
                                                                         std::vector<Ref<MotionPlannerNode>>& nodesToInterpolate) noexcept
 {
+    currentNode->m_currentBlendFactor = std::max(currentNode->m_currentBlendFactor, currentNode->m_staticBlendFactor);
+
+    bool isNoConnectionsActivated = true;
+
     for(const auto& connection : currentNode->m_connections)
     {
         if(!connection->m_nextNode || !connection->m_nextNode->m_skeletalAnimation) continue;
@@ -472,7 +474,12 @@ void SGCore::MotionPlannersResolver::collectAndUpdateNodesToInterpolate(const do
                 previousNode->m_currentBlendFactor = 1.0 - blendFactor;
             }
 
-            nodesToInterpolate.push_back(connection->m_nextNode);
+            if(previousNode->m_currentBlendFactor > 0.0f)
+            {
+                nodesToInterpolate.push_back(previousNode);
+            }
+
+            // nodesToInterpolate.push_back(connection->m_nextNode);
 
             if(fromRootNode != currentNode)
             {
@@ -486,7 +493,14 @@ void SGCore::MotionPlannersResolver::collectAndUpdateNodesToInterpolate(const do
             }
 
             fromRootNode->m_anyState.m_isSomeNodeInTreeExceptRootActive = true;
+
+            const size_t lastNodesToInterpolateCount = nodesToInterpolate.size();
             collectAndUpdateNodesToInterpolate(dt, motionPlanner, fromRootNode, connection->m_nextNode, nodesToInterpolate);
+
+            if(lastNodesToInterpolateCount != nodesToInterpolate.size())
+            {
+                isNoConnectionsActivated = false;
+            }
         }
         else if(!isConnectionActivated)
         {
@@ -512,5 +526,11 @@ void SGCore::MotionPlannersResolver::collectAndUpdateNodesToInterpolate(const do
                 nodesToInterpolate.push_back(connection->m_nextNode);
             }
         }
+    }
+
+    // interpolating only last activated node
+    if((isNoConnectionsActivated && currentNode != fromRootNode))
+    {
+        nodesToInterpolate.push_back(currentNode);
     }
 }

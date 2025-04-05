@@ -45,6 +45,9 @@ namespace SGCore
 
         float m_currentAnimationTime = 0.0f;
 
+        /// Minimum blend factor. Helpful for blending root nodes.
+        float m_staticBlendFactor = 0.0f;
+
         [[nodiscard]] Ref<MotionPlannerNode> copyStructure() const noexcept;
 
         [[nodiscard]] SGCORE_EXPORT static Ref<MotionPlannerNode> createNode() noexcept;
