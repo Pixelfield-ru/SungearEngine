@@ -13,12 +13,15 @@
 
 namespace SGCore
 {
-    // sizeof(Transform) = 767
     struct Transform : ECS::Component<Ref<Transform>, Ref<const Transform>>
     {
+        friend class Node;
+
         TransformBase m_finalTransform;
 
         TransformBase m_ownTransform;
+
+        glm::mat4 m_boneMatrix = glm::identity<glm::mat4>();
 
         // will transform follow parent entity`s translation, rotation and scale
         // x - follow translation
@@ -30,6 +33,15 @@ namespace SGCore
         bool m_transformChanged = false;
 
         bool m_isAnimated = false;
+
+        const auto& getInitialModelMatrix() const noexcept
+        {
+            return m_initialModelMatrix;
+        }
+
+    private:
+        // initial model matrix of node in asset
+        glm::mat4 m_initialModelMatrix = glm::identity<glm::mat4>();
     };
 
     /*template<>

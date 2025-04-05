@@ -18,6 +18,8 @@ namespace SGCore
          * @return Is m_ownTransform of childTransform has been changed.
          */
         static bool calculateTransform(Transform& childTransform, const Transform* parentTransform) noexcept;
+
+        static glm::mat4 calculateModelMatrix(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale) noexcept;
     };
 }
 

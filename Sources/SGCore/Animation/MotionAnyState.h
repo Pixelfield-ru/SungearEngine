@@ -12,7 +12,8 @@ namespace SGCore
     struct MotionAnyState
     {
         Ref<MotionPlannerConnection> m_toRootConnection;
-        std::vector<Weak<MotionPlannerConnection>> m_lastActivatedConnections;
+        std::vector<Weak<MotionPlannerNode>> m_lastActiveNodes;
+        // std::vector<Weak<MotionPlannerConnection>> m_lastActivatedConnections;
         bool m_isSomeNodeInTreeExceptRootActive = false;
     };
 }

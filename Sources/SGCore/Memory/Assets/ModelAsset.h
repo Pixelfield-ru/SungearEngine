@@ -80,26 +80,6 @@ namespace SGCore
 
         static std::int32_t findParentNodeWithBone(const aiNode* currentParentNode, const std::vector<BoneHierarchyNode>& fromBones) noexcept;
 
-        static std::vector<BoneVertexWeight> trimBoneWeights(std::vector<BoneVertexWeight>& weights, size_t maxBones) {
-            std::sort(weights.begin(), weights.end(), [](const BoneVertexWeight& a, const BoneVertexWeight& b) {
-                return a.m_weight > b.m_weight; // Сортировка по весу, убывающе
-            });
-
-            if (weights.size() > maxBones) {
-                weights.resize(maxBones); // Усекаем кости
-            }
-
-            float totalWeight = 0.0f;
-            for (const auto& w : weights) {
-                totalWeight += w.m_weight; // Считаем суммарный вес
-            }
-            for (auto& w : weights) {
-                w.m_weight /= totalWeight; // Нормализуем веса
-            }
-
-            return weights;
-        }
-
         static void trimAndSetupWeightsOfMeshes(const AssetRef<Bone>& currentSkeletonBone) noexcept;
     };
 }

@@ -11,7 +11,7 @@ namespace SGCore
 {
     class Node : public IAssetsRefsResolver<Node>
     {
-        friend struct ModelAsset;
+        friend class ModelAsset;
         sg_assets_refs_resolver_as_friend
 
     private:

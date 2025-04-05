@@ -97,21 +97,21 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
 
     // О ТАК ВЕРНО
     childTransform.m_transformChanged =
-            modelMatrixChanged || (parentTransform && parentTransform->m_transformChanged);
+            modelMatrixChanged || (parentTransform && parentTransform->m_transformChanged) || childTransform.m_isAnimated;
 
-    // if(childTransform.m_transformChanged)
+    if(childTransform.m_transformChanged)
     {
         childOwnTransform.m_modelMatrix =
-                childOwnTransform.m_translationMatrix * childOwnTransform.m_rotationMatrix * childOwnTransform.m_scaleMatrix * childOwnTransform.m_boneAnimatedMatrix;
+                childOwnTransform.m_translationMatrix * childOwnTransform.m_rotationMatrix * childOwnTransform.m_scaleMatrix;
 
         if(parentTransform)
         {
             childFinalTransform.m_modelMatrix =
-                parentTransform->m_finalTransform.m_modelMatrix * childOwnTransform.m_modelMatrix;
+                parentTransform->m_finalTransform.m_modelMatrix * childTransform.m_boneMatrix * childOwnTransform.m_modelMatrix;
         }
         else
         {
-            childFinalTransform.m_modelMatrix = childOwnTransform.m_modelMatrix;
+            childFinalTransform.m_modelMatrix = childTransform.m_boneMatrix * childOwnTransform.m_modelMatrix;
         }
 
         // ================================================= getting final TRS
@@ -131,4 +131,17 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
     }
 
     return childTransform.m_transformChanged;
+}
+
+glm::mat4 SGCore::TransformUtils::calculateModelMatrix(const glm::vec3& position,
+                                                       const glm::quat& rotation,
+                                                       const glm::vec3& scale) noexcept
+{
+    auto modelMatrix = glm::mat4(1.0f);
+
+    modelMatrix = glm::translate(glm::mat4(1.0), position);
+    modelMatrix *= glm::toMat4(rotation);
+    modelMatrix *= glm::scale(glm::mat4(1.0), scale);
+
+    return modelMatrix;
 }

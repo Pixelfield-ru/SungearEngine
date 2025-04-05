@@ -15,6 +15,7 @@
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Render/Alpha/TransparentEntityTag.h"
 #include "SGCore/Render/Alpha/OpaqueEntityTag.h"
+#include "SGCore/Transformations/TransformUtils.h"
 
 SGCore::ECS::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
                                                const std::string& layerName,
@@ -38,6 +39,7 @@ SGCore::ECS::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
     // auto eulerRot = glm::eulerAngles(m_rotationQuaternion);
     nodeTransform->m_ownTransform.m_rotation = m_rotationQuaternion;
     nodeTransform->m_ownTransform.m_scale = m_scale;
+    nodeTransform->m_initialModelMatrix = TransformUtils::calculateModelMatrix(m_position, m_rotationQuaternion, m_scale);
 
     nodeBaseInfo.setRawName(m_name);
 

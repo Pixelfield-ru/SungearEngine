@@ -50,7 +50,7 @@ namespace SGCore
         sg_assets_refs_resolver_as_friend
 
         friend class AssetManager;
-        friend struct Node;
+        friend class Node;
 
         AABB<> m_aabb;
         
