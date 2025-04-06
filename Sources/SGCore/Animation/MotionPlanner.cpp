@@ -8,7 +8,7 @@
 
 SGCore::MotionPlanner::MotionPlanner() noexcept
 {
-    m_bonesMatricesData.resize(m_maxBonesPerMesh * 16 + 4);
+    m_bonesMatricesData.resize(m_maxBonesPerMesh * 16 * 4 + 4);
 
     m_bonesMatricesBuffer = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
     m_bonesMatricesBuffer->m_textureBufferUsage = SGGUsage::SGG_DYNAMIC;

@@ -83,7 +83,8 @@ void SGCore::TransformationsUpdater::update(const double& dt, const double& fixe
         auto& vec = m_calculatedNotPhysicalEntitiesCopy.getWrapped();
         if(vec.empty())
         {
-            vec = std::move(notPhysicalEntities);
+            // todo: fix
+            // vec = std::move(notPhysicalEntities);
         }
     }
 

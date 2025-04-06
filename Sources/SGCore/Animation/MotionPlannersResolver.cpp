@@ -174,6 +174,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
                     normalizedTime = curAnimTime / nextKey.m_timeStamp;
                 }
 
+                if(normalizedTime > 1.0f) normalizedTime = 0.0f;
                 interpolatedPosition = glm::lerp(prevKey.m_position, nextKey.m_position, normalizedTime);
             }
 
@@ -205,6 +206,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
                     normalizedTime = curAnimTime / nextKey.m_timeStamp;
                 }
 
+                if(normalizedTime > 1.0f) normalizedTime = 0.0f;
                 interpolatedRotation = glm::normalize(
                     glm::slerp(prevKey.m_rotation, nextKey.m_rotation, normalizedTime));
             }
@@ -235,6 +237,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
                     normalizedTime = curAnimTime / nextKey.m_timeStamp;
                 }
 
+                if(normalizedTime > 1.0f) normalizedTime = 0.0f;
                 interpolatedScale = glm::lerp(prevKey.m_scale, nextKey.m_scale, normalizedTime);
             }
         }
@@ -321,6 +324,8 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
         boneFinalMatrix *= offsetMatrix;
     }
 
+    // boneFinalMatrix = glm::identity<glm::mat4>();
+
     // if bone is not animated than we are set boneMatrix to identity to avoid incorrect position of node or mesh.
     // offset matrix will cancel the model matrix of node or mesh if bone is not animated
     if(!isBoneAnimated)
@@ -331,6 +336,8 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     {
         currentEntityTransform->m_boneMatrix = animatedMatrix * offsetMatrix;
     }
+
+    // currentEntityTransform->m_boneMatrix = glm::identity<glm::mat4>();
 
     currentEntityTransform->m_isAnimated = isBoneAnimated;
 

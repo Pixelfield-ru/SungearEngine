@@ -161,8 +161,8 @@ void coreInit()
     // creating model ===============================================================================================
 
     // loading model asset
-    auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx");
-    auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx/skeletons/mixamorig:Hips");
+    /*auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx");
+    auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx/skeletons/mixamorig:Hips");*/
 
     /*auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf");
     auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf/skeletons/GLTF_created_0_rootJoint");*/
@@ -170,8 +170,8 @@ void coreInit()
     /*auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/tec/scene.gltf");
     auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/tec/scene.gltf/skeletons/GLTF_created_0_rootJoint");*/
 
-    /*auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf");
-    auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf/skeletons/_rootJoint");*/
+    auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf");
+    auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf/skeletons/_rootJoint");
 
     std::vector<SGCore::ECS::entity_t> entities;
     modelAsset->m_rootNode->addOnScene(SGCore::Scene::getCurrentScene(), SG_LAYER_OPAQUE_NAME, [&entities](const auto& entity) {
@@ -180,18 +180,18 @@ void coreInit()
 
     // adding animation
     {
-        auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/Walking.fbx");
+        /*auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/Walking.fbx");
         auto animations1 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/Idle.fbx");
 
         auto animations = SGCore::AssetManager::getInstance()->getAsset<SGCore::AnimationsFile, SGCore::AssetStorageType::BY_PATH>(
                 "${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx/animations"
-        );
+        );*/
 
         // auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf/animations");
 
         // auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/tec/scene.gltf/animations");
 
-        // auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf/animations");
+        auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf/animations");
 
         auto& motionPlanner = SGCore::Scene::getCurrentScene()->getECSRegistry()->emplace<SGCore::MotionPlanner>(entities[0]);
         motionPlanner.m_skeleton = modelSkeletonAsset;
@@ -201,7 +201,7 @@ void coreInit()
         // huTaoTransform->m_ownTransform.m_scale = { 0.01, 0.01, 0.01 };
 
         // sample skeleton
-        auto idleNode = SGCore::MotionPlannerNode::createNode();
+        /*auto idleNode = SGCore::MotionPlannerNode::createNode();
         idleNode->m_isRepeated = true;
         idleNode->m_animationSpeed = 1.0f;
         idleNode->m_skeletalAnimation = animations1->m_skeletalAnimations[0];
@@ -237,12 +237,12 @@ void coreInit()
         runConnection->m_activationAction = runActivationAction;
 
         idleNode->m_connections.push_back(walkConnection);
-        walkNode->m_connections.push_back(runConnection);
+        walkNode->m_connections.push_back(runConnection);*/
 
-        /*auto idleNode = SGCore::MotionPlannerNode::createNode();
+        auto idleNode = SGCore::MotionPlannerNode::createNode();
         idleNode->m_animationSpeed = 1.0f;
         idleNode->m_isRepeated = true;
-        idleNode->m_skeletalAnimation = animations0->m_skeletalAnimations[0];*/
+        idleNode->m_skeletalAnimation = animations0->m_skeletalAnimations[0];
 
         motionPlanner.m_rootNodes.push_back(idleNode);
     }

@@ -1,0 +1,11 @@
+Model Information:
+* title:	mixamo animations: hu tao dancing to some samba
+* source:	https://sketchfab.com/3d-models/mixamo-animations-hu-tao-dancing-to-some-samba-d5664b8d6ada4a42b903f8390b6848d4
+* author:	potato🥔 (https://sketchfab.com/Frenchfriesyummy)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "mixamo animations: hu tao dancing to some samba" (https://sketchfab.com/3d-models/mixamo-animations-hu-tao-dancing-to-some-samba-d5664b8d6ada4a42b903f8390b6848d4) by potato🥔 (https://sketchfab.com/Frenchfriesyummy) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
