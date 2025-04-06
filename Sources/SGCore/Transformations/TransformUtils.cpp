@@ -141,7 +141,7 @@ glm::mat4 SGCore::TransformUtils::calculateModelMatrix(const glm::vec3& position
 
     modelMatrix = glm::translate(glm::mat4(1.0), position);
     modelMatrix *= glm::toMat4(rotation);
-    modelMatrix *= glm::scale(glm::mat4(1.0), scale);
+    modelMatrix = glm::scale(modelMatrix, scale);
 
     return modelMatrix;
 }
