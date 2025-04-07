@@ -26,6 +26,7 @@ void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double&
 
     controllablesView.each([&finalDt](Transform::reg_t& transform, Controllable3D::reg_t& controllable3D) {
         TransformBase& ownTransform = transform->m_ownTransform;
+        TransformBase& finalTransform = transform->m_finalTransform;
         const auto& mainListener = InputManager::getMainInputListener();
 
         if(!ownTransform.m_blockRotation)
@@ -58,19 +59,19 @@ void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double&
 
         if(mainListener->keyboardKeyDown(KeyboardKey::KEY_W))
         {
-            ownTransform.m_position += ownTransform.m_forward * finalCameraSpeed * finalDt;
+            ownTransform.m_position += finalTransform.m_forward * finalCameraSpeed * finalDt;
         }
         if(mainListener->keyboardKeyDown(KeyboardKey::KEY_S))
         {
-            ownTransform.m_position -= ownTransform.m_forward * finalCameraSpeed * finalDt;
+            ownTransform.m_position -= finalTransform.m_forward * finalCameraSpeed * finalDt;
         }
         if(mainListener->keyboardKeyDown(KeyboardKey::KEY_A))
         {
-            ownTransform.m_position -= ownTransform.m_right * finalCameraSpeed * finalDt;
+            ownTransform.m_position -= finalTransform.m_right * finalCameraSpeed * finalDt;
         }
         if(mainListener->keyboardKeyDown(KeyboardKey::KEY_D))
         {
-            ownTransform.m_position += ownTransform.m_right * finalCameraSpeed * finalDt;
+            ownTransform.m_position += finalTransform.m_right * finalCameraSpeed * finalDt;
         }
 
         if(mainListener->keyboardKeyReleased(KeyboardKey::KEY_ESCAPE))

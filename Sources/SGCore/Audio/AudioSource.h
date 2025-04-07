@@ -34,11 +34,24 @@ namespace SGCore
         AMBIENT
     };
 
+    enum class AudioSourceDirectionType
+    {
+        NOT_DIRECTIONAL,
+        FORWARD_DIRECTION,
+        UP_DIRECTION,
+        RIGHT_DIRECTION,
+        BACKWARD_DIRECTION,
+        DOWN_DIRECTION,
+        LEFT_DIRECTION
+    };
+
     struct AudioSource : ECS::Component<AudioSource, const AudioSource>
     {
         sg_serde_as_friend()
 
         friend struct AudioProcessor;
+
+        AudioSourceDirectionType m_directionType = AudioSourceDirectionType::NOT_DIRECTIONAL;
 
         AudioSource() = default;
         AudioSource(const AudioSource&) = default;

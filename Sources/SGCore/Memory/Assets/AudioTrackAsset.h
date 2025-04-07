@@ -52,6 +52,8 @@ namespace SGCore
         [[nodiscard]] bool isALHandlerValid() const noexcept;
 
         [[nodiscard]] std::string getSummary() const noexcept;
+
+        void toMono() noexcept;
     
     protected:
         void doLoad(const InterpolatedPath& path) override;

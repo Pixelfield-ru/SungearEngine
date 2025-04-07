@@ -128,6 +128,10 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
         childFinalTransform.m_position = finalTranslation;
         childFinalTransform.m_rotation = finalRotation;
         childFinalTransform.m_scale = finalScale;
+
+        childFinalTransform.m_forward = -MathUtils::forward3 * finalRotation;
+        childFinalTransform.m_right = MathUtils::right3 * finalRotation;
+        childFinalTransform.m_up = MathUtils::up3 * finalRotation;
     }
 
     return childTransform.m_transformChanged;

@@ -104,6 +104,7 @@ void SGCore::AudioTrackAsset::doLoad(const InterpolatedPath& path)
 
     char tmpBuf[4];
 
+    // wav specification: https://en.wikipedia.org/wiki/WAV
     if(trackType == AudioTrackType::WAV)
     {
         constexpr bool isLittleNative = std::endian::native == std::endian::little;
@@ -134,55 +135,48 @@ void SGCore::AudioTrackAsset::doLoad(const InterpolatedPath& path)
 
         std::uint32_t subchunk1Size = 0;
 
-        std::memcpy(tmpBuf, m_dataBuffer + 16, 4);
-        if(!isLittleNative)
+        std::memcpy(&subchunk1Size, m_dataBuffer + 16, 4);
+        if constexpr(!isLittleNative)
         {
             SGCore::Utils::swapEndian(tmpBuf, 4);
         }
-        std::memcpy(&subchunk1Size, tmpBuf, 4);
         std::cout << subchunk1Size << std::endl;
 
-        std::memcpy(tmpBuf, m_dataBuffer + 20, 2);
-        if(!isLittleNative)
+        std::memcpy(&m_audioFormat, m_dataBuffer + 20, 2);
+        if constexpr(!isLittleNative)
         {
             SGCore::Utils::swapEndian(tmpBuf, 2);
         }
-        std::memcpy(&m_audioFormat, tmpBuf, 2);
 
-        std::memcpy(tmpBuf, m_dataBuffer + 22, 2);
-        if(!isLittleNative)
+        std::memcpy(&m_numChannels, m_dataBuffer + 22, 2);
+        if constexpr(!isLittleNative)
         {
             SGCore::Utils::swapEndian(tmpBuf, 2);
         }
-        std::memcpy(&m_numChannels, tmpBuf, 2);
 
-        std::memcpy(tmpBuf, m_dataBuffer + 24, 4);
-        if(!isLittleNative)
+        std::memcpy(&m_sampleRate, m_dataBuffer + 24, 4);
+        if constexpr(!isLittleNative)
         {
             SGCore::Utils::swapEndian(tmpBuf, 4);
         }
-        std::memcpy(&m_sampleRate, tmpBuf, 4);
 
-        std::memcpy(tmpBuf, m_dataBuffer + 28, 4);
-        if(!isLittleNative)
+        std::memcpy(&m_byteRate, m_dataBuffer + 28, 4);
+        if constexpr(!isLittleNative)
         {
             SGCore::Utils::swapEndian(tmpBuf, 4);
         }
-        std::memcpy(&m_byteRate, tmpBuf, 4);
 
-        std::memcpy(tmpBuf, m_dataBuffer + 32, 2);
-        if(!isLittleNative)
+        std::memcpy(&m_blockAlign, m_dataBuffer + 32, 2);
+        if constexpr(!isLittleNative)
         {
             SGCore::Utils::swapEndian(tmpBuf, 2);
         }
-        std::memcpy(&m_blockAlign, tmpBuf, 2);
 
-        std::memcpy(tmpBuf, m_dataBuffer + 34, 2);
-        if(!isLittleNative)
+        std::memcpy(&m_bitsPerSample, m_dataBuffer + 34, 2);
+        if constexpr(!isLittleNative)
         {
             SGCore::Utils::swapEndian(tmpBuf, 2);
         }
-        std::memcpy(&m_bitsPerSample, tmpBuf, 2);
 
         std::uint32_t offsetToData = 20 + subchunk1Size;
 
@@ -204,6 +198,10 @@ void SGCore::AudioTrackAsset::doLoad(const InterpolatedPath& path)
                 std::memcpy(&subchunkSize, m_dataBuffer + offsetToData + 4, 4);
                 offsetToData += 4 + 4 + subchunkSize;
             }
+            else
+            {
+                break;
+            }
         }
 
         if(!dataFound)
@@ -212,10 +210,15 @@ void SGCore::AudioTrackAsset::doLoad(const InterpolatedPath& path)
             return;
         }
 
+        // getting size of buffer with data of audio
         std::memcpy(&m_dataBufferSize, m_dataBuffer + offsetToData + 4, 4);
+
+        char* audioDataBuf = (char*) std::malloc(m_dataBufferSize);
+        std::memmove(audioDataBuf, m_dataBuffer + offsetToData + 8, m_dataBufferSize);
+
         deleteData();
-        m_dataBuffer = (char*) std::malloc(m_dataBufferSize);
-        std::memcpy(m_dataBuffer, m_dataBuffer + offsetToData + 8, m_dataBufferSize);
+
+        m_dataBuffer = audioDataBuf;
     }
     else if(trackType == AudioTrackType::OGG)
     {
@@ -233,7 +236,7 @@ void SGCore::AudioTrackAsset::doLoad(const InterpolatedPath& path)
         m_sampleRate = vorbis->sample_rate;
         m_numChannels = vorbis->channels;
 
-        size_t trackByteSize = stb_vorbis_stream_length_in_samples(vorbis) * sizeof(short) * m_numChannels;
+        size_t trackByteSize = stb_vorbis_stream_length_in_samples(vorbis) * (m_bitsPerSample / 8) * m_numChannels;
 
         m_dataBuffer = (char*) std::malloc(trackByteSize);
         m_dataBufferSize = trackByteSize;
@@ -366,6 +369,66 @@ std::string SGCore::AudioTrackAsset::getSummary() const noexcept
     sum += "\tData buffer size: " + std::to_string(m_dataBufferSize);
 
     return sum;
+}
+
+void SGCore::AudioTrackAsset::toMono() noexcept
+{
+    // todo: 24 bits per sample support
+
+    if(m_numChannels == 1) return;
+
+    const std::int16_t bytesPerSample = m_bitsPerSample / 8;
+    const size_t frameSize = bytesPerSample * 2;
+    const size_t numFrames = m_dataBufferSize / frameSize;
+
+    const size_t newBufferSize = m_dataBufferSize / 2;
+
+    char* tmpBuf = (char*) malloc(newBufferSize);
+
+    for(size_t i = 0; i < numFrames; ++i)
+    {
+        const char* framePtr = m_dataBuffer + i * frameSize;
+
+        int32_t left = 0;
+        int32_t right = 0;
+
+        std::memcpy(&left, framePtr, bytesPerSample);
+        std::memcpy(&right, framePtr + bytesPerSample, bytesPerSample);
+
+        if(m_bitsPerSample == 8)
+        {
+            left = static_cast<int8_t>(left);
+            right = static_cast<int8_t>(right);
+        }
+        else if(m_bitsPerSample == 16)
+        {
+            left = static_cast<int16_t>(left);
+            right = static_cast<int16_t>(right);
+        }
+
+        const int32_t mono = (left + right) / 2;
+
+        std::memcpy(tmpBuf + i * bytesPerSample, &mono, bytesPerSample);
+    }
+
+    deleteData();
+
+    m_dataBuffer = tmpBuf;
+    m_dataBufferSize = newBufferSize;
+    m_numChannels = 1;
+
+    ALenum alFormat = 0;
+    if(m_bitsPerSample == 8)
+    {
+        alFormat = AL_FORMAT_MONO8;
+    }
+    else if(m_bitsPerSample == 16)
+    {
+        alFormat = AL_FORMAT_MONO16;
+    }
+
+    // updating openal buffer
+    AL_CALL(alBufferData, m_ALHandler, alFormat, m_dataBuffer, m_dataBufferSize, m_sampleRate);
 }
 
 void SGCore::AudioTrackAsset::doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept

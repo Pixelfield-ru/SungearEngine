@@ -165,7 +165,8 @@ void coreInit()
     skyboxTransform->m_ownTransform.m_scale = { 1150, 1150, 1150 };
 
     // loading audio ================================================================================================
-    copterSound = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AudioTrackAsset>("${enginePath}/Tests/ModelDraw/Resources/drone/copter.ogg");
+    copterSound = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AudioTrackAsset>("${enginePath}/Tests/ModelDraw/Resources/drone/copter.wav");
+    copterSound->toMono();
     std::cout << copterSound->getSummary() << std::endl;
 
     // creating model ===============================================================================================
@@ -209,11 +210,10 @@ void coreInit()
         auto& copterAudioSource = SGCore::Scene::getCurrentScene()->getECSRegistry()->emplace<SGCore::AudioSource>(entities[0]);
         copterAudioSource.create();
         copterAudioSource.attachAudioTrack(copterSound);
-        copterAudioSource.setRolloffFactor(0.1f);
-        copterAudioSource.setType(SGCore::AudioSourceType::POSITIONAL);
+        copterAudioSource.setRolloffFactor(0.5f);
         copterAudioSource.setIsLooping(true);
         copterAudioSource.setState(SGCore::AudioSourceState::PLAYING);
-        copterAudioSource.setPosition({0.0f,0.0f,0.0f});
+        copterAudioSource.setType(SGCore::AudioSourceType::POSITIONAL);
 
         // SGCore::Transform::reg_t& huTaoTransform = SGCore::Scene::getCurrentScene()->getECSRegistry()->get<SGCore::Transform>(entities[0]);
 
@@ -310,9 +310,10 @@ void onUpdate(const double& dt, const double& fixedDt)
 
         SGCore::AudioListener::setPosition(cameraTransform->m_finalTransform.m_position);
         SGCore::AudioListener::setOrientation(cameraTransform->m_finalTransform.m_forward, cameraTransform->m_finalTransform.m_up);
+
         // SGCore::AudioListener::setGain(0.1f);
 
-        std::cout << "camera pos: " << cameraTransform->m_finalTransform.m_position << std::endl;
+        std::cout << "camera pos: " << cameraTransform->m_finalTransform.m_position << ", camera forward: " << cameraTransform->m_finalTransform.m_forward << std::endl;
 
         SGCore::Scene::getCurrentScene()->update(dt, fixedDt);
     }
