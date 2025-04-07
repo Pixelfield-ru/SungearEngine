@@ -67,9 +67,9 @@ namespace SGCore::AudioUtils
                Args&& ... args)
     {
         alFunc(args...);
-        #ifdef SUNGEAR_DEBUG
+        // #ifdef SUNGEAR_DEBUG
         checkALErrors(sourceLocation);
-        #endif
+        // #endif
     }
     
     template<typename ALFunc, typename... Args>
@@ -79,9 +79,9 @@ namespace SGCore::AudioUtils
                               Args&& ... args)
     {
         auto ret = alFunc(args...);
-        #ifdef SUNGEAR_DEBUG
+        // #ifdef SUNGEAR_DEBUG
         checkALErrors(sourceLocation);
-        #endif
+        // #endif
         return ret;
     }
     
@@ -94,11 +94,11 @@ namespace SGCore::AudioUtils
     {
         
         alFunc(std::forward<Args>(args)...);
-        #ifdef SUNGEAR_DEBUG
+        //#ifdef SUNGEAR_DEBUG
         noError = checkALErrors(sourceLocation);
-        #else
+        /*#else
         noError = true;
-        #endif
+        #endif*/
     }
     
     template<typename ALFunc, typename... Args>
@@ -109,11 +109,11 @@ namespace SGCore::AudioUtils
                                Args&& ... args)
     {
         auto ret = alFunc(std::forward<Args>(args)...);
-        #ifdef SUNGEAR_DEBUG
+        // #ifdef SUNGEAR_DEBUG
         noError = checkALErrors(sourceLocation);
-        #else
+        /*#else
         noError = true;
-        #endif
+        #endif*/
         return ret;
     }
 }

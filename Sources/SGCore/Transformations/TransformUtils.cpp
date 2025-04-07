@@ -102,7 +102,7 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
     if(childTransform.m_transformChanged)
     {
         childOwnTransform.m_modelMatrix =
-                childOwnTransform.m_translationMatrix * childOwnTransform.m_rotationMatrix * childOwnTransform.m_scaleMatrix;
+            childOwnTransform.m_translationMatrix * childOwnTransform.m_rotationMatrix * childOwnTransform.m_scaleMatrix;
 
         if(parentTransform)
         {

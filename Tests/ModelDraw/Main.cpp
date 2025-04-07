@@ -17,6 +17,8 @@
 #include "SGCore/Actions/KeyboardKeyReleasedAction.h"
 #include "SGCore/Animation/MotionPlanner.h"
 #include "SGCore/Animation/MotionPlannerConnection.h"
+#include "SGCore/Audio/AudioListener.h"
+#include "SGCore/Audio/AudioSource.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Input/InputManager.h"
@@ -32,6 +34,7 @@
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Graphics/API/ICubemapTexture.h"
 #include "SGCore/Memory/Assets/AnimationsFile.h"
+#include "SGCore/Memory/Assets/AudioTrackAsset.h"
 
 #ifdef PLATFORM_OS_WINDOWS
 #ifdef __cplusplus
@@ -49,6 +52,7 @@ SGCore::AssetRef<SGCore::IShader> screenShader;
 SGCore::Ref<SGCore::Scene> scene;
 SGCore::Ref<SGCore::IMeshData> quadMesh;
 SGCore::AssetRef<SGCore::ITexture2D> someTexture;
+SGCore::AssetRef<SGCore::AudioTrackAsset> copterSound;
 SGCore::MeshRenderState quadMeshRenderState;
 
 SGCore::Ref<SGCore::ITexture2D> attachmentToDisplay;
@@ -56,6 +60,8 @@ SGCore::Ref<SGCore::ITexture2D> attachmentToDisplay;
 SGCore::Ref<SGCore::RenderingBase> cameraRenderingBase { };
 
 SGCore::ECS::entity_t mainCamera;
+
+SGCore::Ref<SGCore::MotionPlannerNode> testIdleNode;
 
 void coreInit()
 {
@@ -158,6 +164,10 @@ void coreInit()
 
     skyboxTransform->m_ownTransform.m_scale = { 1150, 1150, 1150 };
 
+    // loading audio ================================================================================================
+    copterSound = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AudioTrackAsset>("${enginePath}/Tests/ModelDraw/Resources/drone/copter.ogg");
+    std::cout << copterSound->getSummary() << std::endl;
+
     // creating model ===============================================================================================
 
     // loading model asset
@@ -170,8 +180,8 @@ void coreInit()
     /*auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/tec/scene.gltf");
     auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/tec/scene.gltf/skeletons/GLTF_created_0_rootJoint");*/
 
-    auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf");
-    auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf/skeletons/_rootJoint");
+    auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf");
+    auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf/skeletons/GLTF_created_0_rootJoint");
 
     std::vector<SGCore::ECS::entity_t> entities;
     modelAsset->m_rootNode->addOnScene(SGCore::Scene::getCurrentScene(), SG_LAYER_OPAQUE_NAME, [&entities](const auto& entity) {
@@ -191,10 +201,19 @@ void coreInit()
 
         // auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/tec/scene.gltf/animations");
 
-        auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf/animations");
+        auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf/animations");
 
         auto& motionPlanner = SGCore::Scene::getCurrentScene()->getECSRegistry()->emplace<SGCore::MotionPlanner>(entities[0]);
         motionPlanner.m_skeleton = modelSkeletonAsset;
+
+        auto& copterAudioSource = SGCore::Scene::getCurrentScene()->getECSRegistry()->emplace<SGCore::AudioSource>(entities[0]);
+        copterAudioSource.create();
+        copterAudioSource.attachAudioTrack(copterSound);
+        copterAudioSource.setRolloffFactor(0.1f);
+        copterAudioSource.setType(SGCore::AudioSourceType::POSITIONAL);
+        copterAudioSource.setIsLooping(true);
+        copterAudioSource.setState(SGCore::AudioSourceState::PLAYING);
+        copterAudioSource.setPosition({0.0f,0.0f,0.0f});
 
         // SGCore::Transform::reg_t& huTaoTransform = SGCore::Scene::getCurrentScene()->getECSRegistry()->get<SGCore::Transform>(entities[0]);
 
@@ -244,6 +263,8 @@ void coreInit()
         idleNode->m_isRepeated = true;
         idleNode->m_skeletalAnimation = animations0->m_skeletalAnimations[0];
 
+        testIdleNode = idleNode;
+
         motionPlanner.m_rootNodes.push_back(idleNode);
     }
 
@@ -285,6 +306,14 @@ void onUpdate(const double& dt, const double& fixedDt)
 {
     if(SGCore::Scene::getCurrentScene())
     {
+        auto& cameraTransform = SGCore::Scene::getCurrentScene()->getECSRegistry()->get<SGCore::Transform>(mainCamera);
+
+        SGCore::AudioListener::setPosition(cameraTransform->m_finalTransform.m_position);
+        SGCore::AudioListener::setOrientation(cameraTransform->m_finalTransform.m_forward, cameraTransform->m_finalTransform.m_up);
+        // SGCore::AudioListener::setGain(0.1f);
+
+        std::cout << "camera pos: " << cameraTransform->m_finalTransform.m_position << std::endl;
+
         SGCore::Scene::getCurrentScene()->update(dt, fixedDt);
     }
 
@@ -312,6 +341,11 @@ void onUpdate(const double& dt, const double& fixedDt)
         {
             shader->reloadFromDisk();
         }
+    }
+
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_3))
+    {
+        testIdleNode->m_isPaused = !testIdleNode->m_isPaused;
     }
 }
 

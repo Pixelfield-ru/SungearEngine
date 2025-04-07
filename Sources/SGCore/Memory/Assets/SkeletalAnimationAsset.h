@@ -78,6 +78,8 @@ namespace SGCore
         void changeBoneName(const std::string& lastBoneName, const std::string& newBoneName) noexcept;
         SkeletalBoneAnimation* getBoneAnimation(const std::string& boneName) noexcept;
 
+        size_t getBonesAnimationsCount() const noexcept;
+
     private:
         // first - bone name
         std::unordered_map<std::string, SkeletalBoneAnimation> m_bonesAnimations;

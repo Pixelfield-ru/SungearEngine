@@ -32,7 +32,7 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
 
                 if(rootNode->m_skeletalAnimation)
                 {
-                    rootNode->m_isPlaying = true;
+                    // rootNode->m_isPlaying = true;
                     // nodesToInterpolate.push_back(rootNode);
                 }
 
@@ -123,6 +123,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     // collecting all animations for currentBone
     for(const auto& node : nodesToInterpolate)
     {
+        // std::cout << "bones animations count: " << node->m_skeletalAnimation->getBonesAnimationsCount() << std::endl;
         SkeletalBoneAnimation* boneAnimation = node->m_skeletalAnimation->getBoneAnimation(currentBone ? currentBone->m_boneName : currentEntityBaseInfo.getRawName());
         if(boneAnimation)
         {
@@ -174,7 +175,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
                     normalizedTime = curAnimTime / nextKey.m_timeStamp;
                 }
 
-                if(normalizedTime > 1.0f) normalizedTime = 0.0f;
+                if(normalizedTime > 1.0f) normalizedTime = 1.0f;
                 interpolatedPosition = glm::lerp(prevKey.m_position, nextKey.m_position, normalizedTime);
             }
 
@@ -206,7 +207,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
                     normalizedTime = curAnimTime / nextKey.m_timeStamp;
                 }
 
-                if(normalizedTime > 1.0f) normalizedTime = 0.0f;
+                if(normalizedTime > 1.0f) normalizedTime = 1.0f;
                 interpolatedRotation = glm::normalize(
                     glm::slerp(prevKey.m_rotation, nextKey.m_rotation, normalizedTime));
             }
@@ -237,7 +238,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
                     normalizedTime = curAnimTime / nextKey.m_timeStamp;
                 }
 
-                if(normalizedTime > 1.0f) normalizedTime = 0.0f;
+                if(normalizedTime > 1.0f) normalizedTime = 1.0f;
                 interpolatedScale = glm::lerp(prevKey.m_scale, nextKey.m_scale, normalizedTime);
             }
         }

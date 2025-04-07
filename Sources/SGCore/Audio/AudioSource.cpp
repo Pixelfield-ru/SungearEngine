@@ -32,12 +32,13 @@ void SGCore::AudioSource::destroy() noexcept
     }
 }
 
-void SGCore::AudioSource::attachAudioTrack(const Ref<AudioTrackAsset>& audioTrackAsset) noexcept
+void SGCore::AudioSource::attachAudioTrack(const AssetRef<AudioTrackAsset>& audioTrackAsset) noexcept
 {
     m_attachedAudioTrack = audioTrackAsset;
     
     if(m_isValid && audioTrackAsset)
     {
+        std::cout << "m_handler: " << m_handler << ", audio track handler: " << audioTrackAsset->getALHandler() << std::endl;
         AL_CALL(alSourcei, m_handler, AL_BUFFER, audioTrackAsset->getALHandler());
     }
 }

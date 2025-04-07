@@ -15,13 +15,12 @@
 #include "SGCore/Memory/Assets/AudioTrackAsset.h"
 #include "SGCore/Serde/Defines.h"
 #include "SGCore/ECS/Component.h"
+#include "SGCore/Memory/AssetRef.h"
 
 sg_predeclare_serde()
 
 namespace SGCore
 {
-    struct AudioBuffer;
-    
     enum class AudioSourceState
     {
         PLAYING,
@@ -50,7 +49,7 @@ namespace SGCore
         void create() noexcept;
         void destroy() noexcept;
         
-        void attachAudioTrack(const Ref<AudioTrackAsset>& audioTrackAsset) noexcept;
+        void attachAudioTrack(const AssetRef<AudioTrackAsset>& audioTrackAsset) noexcept;
         void detachAudioTrack() const noexcept;
 
         void setPosition(const glm::vec3& position) noexcept;
@@ -91,9 +90,9 @@ namespace SGCore
 
         bool m_isLooping = false;
 
-        Ref<AudioTrackAsset> m_attachedAudioTrack;
+        AssetRef<AudioTrackAsset> m_attachedAudioTrack;
         
-        ALuint m_handler = 0;
+        ALuint m_handler = -1;
         bool m_isValid = false;
     };
 }

@@ -1,0 +1,11 @@
+Model Information:
+* title:	animated drone with camera (FREE)
+* source:	https://sketchfab.com/3d-models/animated-drone-with-camera-free-a8e2c50f69264e75bb6277779fb5028b
+* author:	ulunkwulunk (https://sketchfab.com/ulunkwulunk)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "animated drone with camera (FREE)" (https://sketchfab.com/3d-models/animated-drone-with-camera-free-a8e2c50f69264e75bb6277779fb5028b) by ulunkwulunk (https://sketchfab.com/ulunkwulunk) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

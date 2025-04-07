@@ -70,6 +70,8 @@ void SGCore::AudioTrackAsset::putData(const uint16_t& numChannels, const uint16_
 
 void SGCore::AudioTrackAsset::doLoad(const InterpolatedPath& path)
 {
+    createALBuffer();
+
     AudioTrackType trackType;
     std::string extension = getPath().resolved().extension().string();
     if(extension == ".wav")
@@ -231,17 +233,42 @@ void SGCore::AudioTrackAsset::doLoad(const InterpolatedPath& path)
         m_sampleRate = vorbis->sample_rate;
         m_numChannels = vorbis->channels;
 
-        size_t trackByteSize = stb_vorbis_stream_length_in_samples(vorbis) * sizeof(short);
+        size_t trackByteSize = stb_vorbis_stream_length_in_samples(vorbis) * sizeof(short) * m_numChannels;
 
         m_dataBuffer = (char*) std::malloc(trackByteSize);
         m_dataBufferSize = trackByteSize;
 
-        int samplesCount = stb_vorbis_decode_memory((std::uint8_t*) m_dataBuffer, trackByteSize, &m_numChannels, &m_sampleRate, (short**) &m_dataBuffer);
+        int samplesCount = stb_vorbis_get_samples_short_interleaved(vorbis, m_numChannels, (short*) m_dataBuffer, trackByteSize);
+        // int samplesCount = stb_vorbis_decode_memory((std::uint8_t*) m_dataBuffer, trackByteSize, &m_numChannels, &m_sampleRate, (short**) &m_dataBuffer);
 
         LOG_I(SGCORE_TAG, "Loaded audio: samples count: {}, stream length: {}, track byte size: {}", samplesCount, vorbis->stream_len, trackByteSize);
 
         stb_vorbis_close(vorbis);
     }
+
+    ALenum alFormat = 0;
+    if(m_numChannels == 1 && m_bitsPerSample == 8)
+    {
+        alFormat = AL_FORMAT_MONO8;
+    }
+    else if(m_numChannels == 1 && m_bitsPerSample == 16)
+    {
+        alFormat = AL_FORMAT_MONO16;
+    }
+    else if(m_numChannels == 2 && m_bitsPerSample == 8)
+    {
+        alFormat = AL_FORMAT_STEREO8;
+    }
+    else if(m_numChannels == 2 && m_bitsPerSample == 16)
+    {
+        alFormat = AL_FORMAT_STEREO16;
+    }
+
+    AL_CALL(alBufferData, m_ALHandler, alFormat, m_dataBuffer, m_dataBufferSize, m_sampleRate);
+
+    setFrequency(m_frequency);
+    setBitsPerSample(m_bitsPerSample);
+    setNumChannels(m_numChannels);
 }
 
 void SGCore::AudioTrackAsset::deleteData() noexcept
@@ -255,7 +282,7 @@ void SGCore::AudioTrackAsset::setFrequency(const std::uint32_t& frequency) noexc
     m_frequency = frequency;
     if(m_isALHandlerValid)
     {
-        AL_CALL(alBufferf, m_ALHandler, AL_FREQUENCY, frequency);
+        AL_CALL(alBufferi, m_ALHandler, AL_FREQUENCY, frequency);
     }
 }
 

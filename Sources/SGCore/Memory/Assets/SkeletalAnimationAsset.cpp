@@ -54,6 +54,11 @@ SGCore::SkeletalBoneAnimation* SGCore::SkeletalAnimationAsset::getBoneAnimation(
     return &boneAnimationIt->second;
 }
 
+size_t SGCore::SkeletalAnimationAsset::getBonesAnimationsCount() const noexcept
+{
+    return m_bonesAnimations.size();
+}
+
 const std::string& SGCore::SkeletalBoneAnimation::getBoneName() const noexcept
 {
     return m_boneName;
