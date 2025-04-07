@@ -311,10 +311,6 @@ void onUpdate(const double& dt, const double& fixedDt)
         SGCore::AudioListener::setPosition(cameraTransform->m_finalTransform.m_position);
         SGCore::AudioListener::setOrientation(cameraTransform->m_finalTransform.m_forward, cameraTransform->m_finalTransform.m_up);
 
-        // SGCore::AudioListener::setGain(0.1f);
-
-        std::cout << "camera pos: " << cameraTransform->m_finalTransform.m_position << ", camera forward: " << cameraTransform->m_finalTransform.m_forward << std::endl;
-
         SGCore::Scene::getCurrentScene()->update(dt, fixedDt);
     }
 

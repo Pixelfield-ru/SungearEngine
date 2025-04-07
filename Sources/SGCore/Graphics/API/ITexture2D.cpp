@@ -2,7 +2,6 @@
 
 #define DDSKTX_IMPLEMENT
 
-#include "SGCore/Utils/DDSLoader/dds-ktx.h"
 #include "SGCore/Utils/FileUtils.h"
 #include "SGCore/Memory/AssetManager.h"
 
