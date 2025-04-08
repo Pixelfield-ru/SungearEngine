@@ -7,6 +7,7 @@
 #include <spdlog/spdlog.h>
 #include <SGCore/Logger/Logger.h>
 #include <assimp/version.h>
+#include <assimp/GltfMaterial.h>
 
 #include "SGCore/Main/CoreSettings.h"
 #include "SGCore/Main/CoreMain.h"
@@ -44,9 +45,12 @@ void SGCore::ModelAsset::doLoad(const InterpolatedPath& path)
 
     m_modelName = aiImportedScene->mName.data;
 
-    processNode(aiImportedScene->mRootNode, aiImportedScene, m_rootNode);
+    // map to get meshes for bones
+    meshes_map outputMeshes;
 
-    processSkeletons(aiImportedScene);
+    processNode(aiImportedScene->mRootNode, aiImportedScene, m_rootNode, outputMeshes);
+
+    processSkeletons(aiImportedScene, outputMeshes);
 
     importer.FreeScene();
 
@@ -56,7 +60,8 @@ void SGCore::ModelAsset::doLoad(const InterpolatedPath& path)
 
 void SGCore::ModelAsset::processNode(const aiNode* aiNode,
                                      const aiScene* aiScene,
-                                     std::shared_ptr<Node>& outputNode)
+                                     std::shared_ptr<Node>& outputNode,
+                                     meshes_map& outputMeshes) noexcept
 {
     outputNode = MakeRef<Node>();
 
@@ -75,19 +80,21 @@ void SGCore::ModelAsset::processNode(const aiNode* aiNode,
     for(unsigned int i = 0; i < aiNode->mNumChildren; i++)
     {
         Ref<Node> childNode;
-        processNode(aiNode->mChildren[i], aiScene, childNode);
+        processNode(aiNode->mChildren[i], aiScene, childNode, outputMeshes);
         outputNode->m_children.push_back(childNode);
     }
 
     // process all meshes in node
     for(unsigned int i = 0; i < aiNode->mNumMeshes; i++)
     {
-        aiMesh *mesh = aiScene->mMeshes[aiNode->mMeshes[i]];
-        outputNode->m_meshesData.push_back(processMesh(mesh, aiScene));
+        aiMesh* mesh = aiScene->mMeshes[aiNode->mMeshes[i]];
+        const auto processedMesh = processMesh(mesh, aiScene, outputMeshes);
+        outputMeshes[processedMesh->m_name] = processedMesh;
+        outputNode->m_meshesData.push_back(processedMesh);
     }
 }
 
-SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(aiMesh* aiMesh, const aiScene* aiScene)
+SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(aiMesh* aiMesh, const aiScene* aiScene, const meshes_map& inputMeshes) noexcept
 {
     auto sgMeshData = AssetManager::getInstance()->getOrAddAssetByPath<IMeshData>(getPath() / "meshes" / aiMesh->mName.data);
 
@@ -98,9 +105,9 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(aiMesh* aiMe
     sgMeshData->m_verticesColors.clear();
 
     std::string meshName = aiMesh->mName.C_Str();
-    // OMG IT IS SO FUCKING DUMMY BUT I NEED THIS TO DO RELATIONSHIPS BETWEEN BONES AND MESHES (see initAndAddBoneToSkeleton and findMesh in it)
+    // OMG IT IS SO FUCKING DUMMY BUT I NEED THIS TO DO RELATIONSHIPS BETWEEN BONES AND MESHES (see initAndAddBoneToSkeleton and mesh finding in it)
     // GENERATING UNIQUE NAME FOR MESH IN ALL SCENE
-    if(m_rootNode->findMesh(meshName))
+    if(inputMeshes.contains(meshName))
     {
         meshName += " (1)";
         aiMesh->mName = aiString(meshName);
@@ -402,6 +409,7 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(aiMesh* aiMe
 
     if(aiGetMaterialFloat(aiMat, AI_MATKEY_ROUGHNESS_FACTOR, &roughness) == AI_SUCCESS)
     {
+        std::cout << "roughness: " << roughness << std::endl;
         sgMeshData->m_material->setRoughnessFactor(roughness);
     }
 
@@ -465,7 +473,7 @@ void SGCore::ModelAsset::loadTextures(aiMaterial* aiMat,
     }
 }
 
-std::vector<SGCore::AssetRef<SGCore::Skeleton>> SGCore::ModelAsset::processSkeletons(const aiScene* fromScene) noexcept
+std::vector<SGCore::AssetRef<SGCore::Skeleton>> SGCore::ModelAsset::processSkeletons(const aiScene* fromScene, const meshes_map& inputMeshes) noexcept
 {
     auto parentAssetManager = getParentAssetManager();
 
@@ -504,12 +512,7 @@ std::vector<SGCore::AssetRef<SGCore::Skeleton>> SGCore::ModelAsset::processSkele
                 LOG_W(SGCORE_TAG, "Loaded new skeleton by path '{}'!",
                       Utils::toUTF8(skeletonPath.resolved().u16string()));
 
-                initAndAddBoneToSkeleton(skeleton->m_rootBone, currentBoneHierarchyNode, bones, skeleton);
-
-                for(size_t j = 0; j < skeleton->m_allBones.size(); ++j)
-                {
-                    // trimAndSetupWeightsOfMeshes(skeleton->m_allBones[j]);
-                }
+                initAndAddBoneToSkeleton(skeleton->m_rootBone, currentBoneHierarchyNode, bones, skeleton, inputMeshes);
 
                 outputSkeletons.push_back(skeleton);
             }
@@ -529,9 +532,10 @@ std::vector<SGCore::AssetRef<SGCore::Skeleton>> SGCore::ModelAsset::processSkele
 }
 
 void SGCore::ModelAsset::initAndAddBoneToSkeleton(AssetRef<Bone>& skeletonBone,
-                                                  const SGCore::ModelAsset::BoneHierarchyNode& tmpBone,
+                                                  const BoneHierarchyNode& tmpBone,
                                                   std::vector<BoneHierarchyNode>& hierarchyBones,
-                                                  const AssetRef<Skeleton>& toSkeleton) noexcept
+                                                  const AssetRef<Skeleton>& toSkeleton,
+                                                  const meshes_map& inputMeshes) noexcept
 {
     // creating skeleton bone =======================================================================================
 
@@ -562,7 +566,13 @@ void SGCore::ModelAsset::initAndAddBoneToSkeleton(AssetRef<Bone>& skeletonBone,
         const auto* curAffectedAiMesh = tmpBone.m_affectedMeshes[i];
 
         MeshBoneData meshBoneData { };
-        meshBoneData.m_affectedMesh = m_rootNode->findMesh(curAffectedAiMesh->mName.C_Str());
+        // meshBoneData.m_affectedMesh = m_rootNode->findMesh(curAffectedAiMesh->mName.C_Str());
+        // finding mesh
+        const auto foundMeshIt = inputMeshes.find(curAffectedAiMesh->mName.C_Str());
+        meshBoneData.m_affectedMesh = foundMeshIt != inputMeshes.end() ? foundMeshIt->second : nullptr;
+
+        // prealloc
+        meshBoneData.m_weights.reserve(tmpBone.m_aiBones[i]->mNumWeights);
 
         for(size_t j = 0; j < tmpBone.m_aiBones[i]->mNumWeights; ++j)
         {
@@ -593,33 +603,17 @@ void SGCore::ModelAsset::initAndAddBoneToSkeleton(AssetRef<Bone>& skeletonBone,
 
     std::cout << "processed bone: " << tmpBone.m_name << std::endl;
 
+    // prealloc
+    skeletonBone->m_children.reserve(tmpBone.m_children.size());
+
     for(size_t i = 0; i < tmpBone.m_children.size(); ++i)
     {
         AssetRef<Bone> childBone;
         auto& childHierarchyBone = hierarchyBones[tmpBone.m_children[i]];
 
-        initAndAddBoneToSkeleton(childBone, childHierarchyBone, hierarchyBones, toSkeleton);
+        initAndAddBoneToSkeleton(childBone, childHierarchyBone, hierarchyBones, toSkeleton, inputMeshes);
 
         skeletonBone->m_children.push_back(childBone);
-    }
-}
-
-void SGCore::ModelAsset::trimAndSetupWeightsOfMeshes(const SGCore::AssetRef<SGCore::Bone>& currentSkeletonBone) noexcept
-{
-    for(size_t i = 0; i < currentSkeletonBone->m_affectedMeshesBoneData.size(); ++i)
-    {
-        const auto& affectedMeshBoneData = currentSkeletonBone->m_affectedMeshesBoneData[i];
-
-        // affectedMeshBoneData.m_affectedMesh->m_tmpVertexWeights = trimBoneWeights(affectedMeshBoneData.m_affectedMesh->m_tmpVertexWeights, 8);
-
-        for(size_t j = 0; j < affectedMeshBoneData.m_affectedMesh->m_tmpVertexWeights.size(); ++j)
-        {
-            const auto& weight = affectedMeshBoneData.m_affectedMesh->m_tmpVertexWeights[j];
-
-            affectedMeshBoneData.m_affectedMesh->m_vertices[weight.m_vertexIdx].addWeightData(weight.m_weight, currentSkeletonBone->m_id);
-        }
-
-        //affectedMeshBoneData.m_affectedMesh->m_tmpVertexWeights.clear();
     }
 }
 

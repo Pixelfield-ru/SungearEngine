@@ -209,7 +209,7 @@ void main()
 
     vec4 diffuseColor = vec4(u_materialDiffuseCol);
     vec4 aoRoughnessMetallic = vec4(materialAmbientFactor, u_materialRoughnessFactor, u_materialMetallicFactor, 1);
-    float specularCoeff = 0.0;
+    float specularCoeff = 0.0f;
     vec3 normalMapColor = vec3(0);
     vec3 finalNormal = vec3(0);
 
@@ -429,13 +429,6 @@ void main()
         float NdotL = saturate(dot(finalNormal, lightDir));
         float NdotVD = abs(dot(finalNormal, viewDir)) + 1e-5f;
 
-        /*if(NdotL <= 0.0)
-        {
-            ambient += atmosphere.sunAmbient;
-        }*/
-
-        // vec3 finalRadiance = NdotL * radiance + radiance * 0.04;
-
         // ===================        shadows calc        =====================
 
         /*dirLightsShadowCoeff += calcDirLightShadow(
@@ -453,7 +446,7 @@ void main()
         float D = GGXTR(
             finalNormal,
             halfWayDir,
-            roughness
+            roughness * (1.0 - specularCoeff)
         );// TRUE
 
         float cosTheta = saturate(dot(halfWayDir, viewDir));
@@ -461,22 +454,14 @@ void main()
         // это по сути зеркальная часть (kS)
         vec3 F = SchlickFresnel(cosTheta, F0);// kS
         // geometry function
-        float G = GeometrySmith(NdotVD, NdotL, roughness);// TRUE
+        float G = GeometrySmith(NdotVD, NdotL, roughness * (1.0 - specularCoeff));// TRUE
 
         vec3 diffuse = vec3(1.0) - F;
         diffuse *= (1.0 - metalness);// check diffuse color higher
 
-        // vec3 ctNumerator = vec3(1.0, 1.0, 1.0) * G;
         vec3 ctNumerator = D * F * G;
         float ctDenominator = 1.0 * NdotVD * NdotL;
         vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * u_materialSpecularCol.r;
-        // vec3 specular = ctNumerator / (ctDenominator + 0.001);
-        //vec3 specular = vec3(0.1);
-
-        /*vec3 reflectDir = reflect(-lightDir, finalNormal);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-        vec3 specular = vec3(spec);*/
-        // vec3 specular = vec3(0.0);
 
         lo += (diffuse * albedo.rgb / PI + specular) * max(atmosphere.sunColor.rgb, vec3(0, 0, 0)) * NdotL * 1.0;
     }
@@ -513,6 +498,7 @@ void main()
     // finalCol.rgb = vec3(albedo.r, albedo.g, albedo.b); // PASSED
     // finalCol.rgb = vec3(metalness); // PASSED
     // finalCol.rgb = vec3(roughness); // PASSED
+    // finalCol.rgb = vec3(specularCoeff); // PASSED
     // finalCol.rgb = vec3(u_materialSpecularCol.r); // PASSED
     // finalCol.rgb = finalNormal;
     // finalCol.rgb = normalizedNormal;

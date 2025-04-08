@@ -37,6 +37,9 @@ namespace SGCore
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
 
     private:
+        /// Key is name of mesh. These maps are using to get meshes for bones faster.
+        using meshes_map = std::unordered_map<std::string, AssetRef<IMeshData>>;
+
         // this is so fucking shitty... but assimp forces me to do this
         struct BoneHierarchyNode
         {
@@ -56,15 +59,15 @@ namespace SGCore
         // model name
         std::string m_modelName;
 
-        void processNode(const aiNode*, const aiScene*, std::shared_ptr<Node>& outputNode);
-        AssetRef<IMeshData> processMesh(aiMesh*, const aiScene*);
+        void processNode(const aiNode*, const aiScene*, std::shared_ptr<Node>& outputNode, meshes_map& outputMeshes) noexcept;
+        AssetRef<IMeshData> processMesh(aiMesh*, const aiScene*, const meshes_map& inputMeshes) noexcept;
         void loadTextures(aiMaterial* aiMat, AssetRef<IMaterial>& sgMaterial, const aiTextureType& aiTexType, const SGTextureType& sgMaterialTextureType);
 
         void prepareNodeMeshes(const Ref<Node>& node) noexcept;
 
         // FOR BUILDING SKELETONS ==================================================
 
-        std::vector<AssetRef<Skeleton>> processSkeletons(const aiScene* fromScene) noexcept;
+        std::vector<AssetRef<Skeleton>> processSkeletons(const aiScene* fromScene, const meshes_map& inputMeshes) noexcept;
         // sub process of processSkeletons function
         void collectAllBones(std::unordered_map<std::string, BoneHierarchyNode>& bones, const aiScene* scene) noexcept;
         // sub process of processSkeletons function
@@ -73,14 +76,13 @@ namespace SGCore
         void initAndAddBoneToSkeleton(AssetRef<Bone>& skeletonBone,
                                       const BoneHierarchyNode& tmpBone,
                                       std::vector<BoneHierarchyNode>& hierarchyBones,
-                                      const AssetRef<Skeleton>& toSkeleton) noexcept;
+                                      const AssetRef<Skeleton>& toSkeleton,
+                                      const meshes_map& inputMeshes) noexcept;
 
         static int32_t findBoneIndex(const std::string& name,
                                      const std::vector<BoneHierarchyNode>& bones) noexcept;
 
         static std::int32_t findParentNodeWithBone(const aiNode* currentParentNode, const std::vector<BoneHierarchyNode>& fromBones) noexcept;
-
-        static void trimAndSetupWeightsOfMeshes(const AssetRef<Bone>& currentSkeletonBone) noexcept;
     };
 }
 
