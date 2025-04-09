@@ -35,24 +35,24 @@ char* SGCore::FileUtils::readBytes(const std::filesystem::path& path, size_t& ou
     std::ifstream stream(path, std::ios::binary | std::ios::ate);
     stream.unsetf(std::ios::skipws);
     stream.exceptions(std::ios_base::badbit);
-    
+
     if(!stream)
     {
         LOG_E(SGCORE_TAG, "Read file error: File does not exist. Path: {}", Utils::toUTF8(path.u16string()));
         return nullptr;
     }
-    
+
     std::streamsize size = stream.tellg();
     stream.seekg(0, std::ios::beg);
-    
+
     auto* buffer = (char*) malloc(size);
     outSize = size;
-    
+
     if (stream.read(buffer, size))
     {
-    
+
     }
-    
+
     return buffer;
 }
 

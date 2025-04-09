@@ -28,6 +28,8 @@ void SGCore::ITexture2D::doLoad(const InterpolatedPath& path)
     
     if(ext == ".png" || ext == ".jpg" || ext == ".jpeg")
     {
+        /*stbi_load_from_memory(m_textureData.get(), readBytes, &m_width, &m_height,
+                              &m_channelsCount, channelsDesired);*/
         m_textureData = Ref<std::uint8_t[]>(
                 stbi_load(getPath().resolved().string().data(),
                           &m_width, &m_height,
@@ -94,11 +96,11 @@ SGCore::Ref<std::uint8_t[]> SGCore::ITexture2D::getData() noexcept
 
 void SGCore::ITexture2D::resize(std::int32_t newWidth, std::int32_t newHeight, bool noDataResize) noexcept
 {
-    Ref<std::uint8_t[]> newData = Ref<std::uint8_t[]>(new std::uint8_t[newWidth * newHeight * m_channelsCount],
-                                                      STBITextureDataDeleter {});
-    
     if(!noDataResize)
     {
+        Ref<std::uint8_t[]> newData = Ref<std::uint8_t[]>(new std::uint8_t[newWidth * newHeight * m_channelsCount],
+                                                              STBITextureDataDeleter {});
+
         // stbir_resize()
         
         if(m_channelsCount == 4)

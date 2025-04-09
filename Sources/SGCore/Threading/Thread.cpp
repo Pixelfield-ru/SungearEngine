@@ -32,13 +32,13 @@ void SGCore::Threading::Thread::processTasks() noexcept
     {
         std::lock_guard copyGuard(m_threadProcessMutex);
         
-        onTasksProcessCopy = onTasksProcess;
+        onTasksProcessCopy = std::move(onTasksProcess);
         m_tasksCopy = m_tasks;
         
         onUpdateCopy = onUpdate;
     }
 
-    onTasksProcess.clear();
+    // onTasksProcess.clear();
     
     onTasksProcessCopy();
     onUpdateCopy();

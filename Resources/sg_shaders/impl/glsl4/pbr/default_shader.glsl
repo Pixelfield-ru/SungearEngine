@@ -395,7 +395,7 @@ void main()
         float D = GGXTR(
             finalNormal,
             halfWayDir,
-            roughness
+            roughness * (1.0 - specularCoeff)
         );// TRUE
 
         float cosTheta = max(dot(halfWayDir, viewDir), 0.0);
@@ -403,7 +403,7 @@ void main()
         // это по сути зеркальная часть (kS)
         vec3 F = SchlickFresnel(cosTheta, F0);// kS
         // geometry function
-        float G = GeometrySmith(NdotVD, NdotL, roughness);// TRUE
+        float G = GeometrySmith(NdotVD, NdotL, roughness * (1.0 - specularCoeff));// TRUE
 
         vec3 diffuse = vec3(1.0) - F;
         diffuse *= (1.0 - metalness);// check diffuse color higher

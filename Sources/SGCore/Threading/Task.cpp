@@ -35,7 +35,7 @@ void SGCore::Threading::Task::execute() noexcept
         {
             auto lockedParentThread = m_onExecutedCallbackParentThread.lock();
             
-            std::cout << lockedParentThread << std::endl;
+            // std::cout << lockedParentThread << std::endl;
             
             if(lockedParentThread)
             {

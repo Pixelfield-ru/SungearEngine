@@ -142,6 +142,8 @@ namespace SGCore
         /// Indicates whether this asset was loaded along the path to any file (for example: .wav, .gltf) or loaded from the binary file of the some AssetManager.\n
         /// You can change value of this variable in your implementations of \p doLoad , \p doLazyLoad or \p doLoadFromBinaryFile functions to indicate whether this asset was successfully loaded or it is need to be reloaded.
         bool m_isLoaded = false;
+        /// Is asset is in loading now.
+        bool m_isLoadingNow = false;
 
         long m_lastModified = -1;
 

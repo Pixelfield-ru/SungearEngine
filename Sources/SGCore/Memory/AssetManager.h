@@ -1164,7 +1164,9 @@ namespace SGCore
                              AssetsLoadPolicy loadPolicy,
                              const Ref<Threading::Thread>& lazyLoadInThread) noexcept
         {
-            if(asset->m_isLoaded) return;
+            if(asset->m_isLoaded || asset->m_isLoadingNow) return;
+
+            asset->m_isLoadingNow = true;
 
             switch(loadPolicy)
             {
