@@ -17,7 +17,6 @@
 #include <SGCore/Memory/AssetManager.h>
 #include <SGCore/Graphics/API/ICubemapTexture.h>
 #include <SGCore/Memory/Assets/Materials/IMaterial.h>
-#include <SGCore/Render/ShaderComponent.h>
 #include <SGCore/Render/Mesh.h>
 #include <SGCore/Render/Atmosphere/Atmosphere.h>
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
@@ -25,20 +24,30 @@
 #include <SGCore/Physics/PhysicsWorld3D.h>
 #include <SGCore/Input/InputManager.h>
 
+#include "SGCore/Render/Alpha/TransparentEntityTag.h"
+#include "SGCore/Render/Picking/Pickable.h"
+#include "SGCore/Render/SpacePartitioning/IgnoreOctrees.h"
+#include "SGCore/Serde/Components/NonSavable.h"
+
 using namespace SGCore;
 
 // VARIABLES =================================================
 
-Ref<ModelAsset> cubeModel;
-Ref<ModelAsset> sphereModel;
-Ref<ICubemapTexture> cubemapTexture;
+SGCore::AssetRef<SGCore::IShader> screenShader;
+AssetRef<ModelAsset> cubeModel;
+AssetRef<ModelAsset> sphereModel;
+AssetRef<ICubemapTexture> cubemapTexture;
 
 Ref<Scene> testScene;
 
-entity_t testCameraEntity;
-entity_t testPlayerEntity;
+ECS::entity_t testCameraEntity;
+ECS::entity_t testPlayerEntity;
 
-entity_t planeEntity;
+ECS::entity_t planeEntity;
+
+SGCore::Ref<SGCore::ITexture2D> attachmentToDisplay;
+SGCore::Ref<SGCore::IMeshData> quadMesh;
+SGCore::MeshRenderState quadMeshRenderState;
 
 // ===========================================================
 
@@ -47,15 +56,15 @@ void createBallAndApplyImpulse(const glm::vec3& spherePos,
 {
     auto sphereModel = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("sphere_model");
 
-    std::vector<SGCore::entity_t> sphereEntities;
-    sphereModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
-        [&sphereEntities](const SGCore::entity_t& entity)
+    std::vector<SGCore::ECS::entity_t> sphereEntities;
+    sphereModel->m_rootNode->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
+        [&sphereEntities](const SGCore::ECS::entity_t& entity)
         {
             sphereEntities.push_back(entity);
         }
     );
 
-    auto sphereRigidbody3D = testScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Rigidbody3D>>(sphereEntities[2],
+    auto sphereRigidbody3D = testScene->getECSRegistry()->emplace<SGCore::Rigidbody3D>(sphereEntities[2],
         SGCore::MakeRef<SGCore::Rigidbody3D>(
             testScene->getSystem<SGCore::PhysicsWorld3D>()));
 
@@ -74,12 +83,14 @@ void createBallAndApplyImpulse(const glm::vec3& spherePos,
     glm::vec3 finalImpulse = impulse;
     sphereRigidbody3D->m_body->applyCentralImpulse({ finalImpulse.x, finalImpulse.y, finalImpulse.z });
 
-    SGCore::Ref<SGCore::Transform>& sphereTransform = testScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(sphereEntities[0]);
+    SGCore::Ref<SGCore::Transform>& sphereTransform = testScene->getECSRegistry()->get<SGCore::Transform>(sphereEntities[0]);
     sphereTransform->m_ownTransform.m_position = spherePos;
 }
 
 void coreInit()
 {
+    auto mainAssetManager = SGCore::AssetManager::getInstance();
+
     // creating PBR render pipeline and setting as current
     auto pbrrpPipeline = RenderPipelinesManager::createRenderPipeline<PBRRenderPipeline>();
     RenderPipelinesManager::registerRenderPipeline(pbrrpPipeline);
@@ -87,25 +98,25 @@ void coreInit()
 
     // creating scene and setting as current
     testScene = SGCore::MakeRef<SGCore::Scene>();
-    testScene->m_name = "TestScene";
+    testScene->m_metaInfo.m_sceneName = "TestScene";
     testScene->createDefaultSystems();
-    Scene::addScene(testScene);
-    Scene::setCurrentScene("TestScene");
+
+    Scene::setCurrentScene(testScene);
+
+    auto ecsRegistry = testScene->getECSRegistry();
 
     // creating camera entity
     testCameraEntity = testScene->getECSRegistry()->create();
-    // adding base info to entity
-    auto& cameraBaseInfo = testScene->getECSRegistry()->emplace<EntityBaseInfo::reg_t>(testCameraEntity, testCameraEntity);
-    cameraBaseInfo.setRawName("SGMainCamera");
 
-    auto& cameraTransform = testScene->getECSRegistry()->emplace<Ref<Transform>>(testCameraEntity, MakeRef<Transform>());
-    cameraTransform->m_ownTransform.m_position.y = 10.0f;
-    cameraTransform->m_ownTransform.m_position.z = -10.0f;
-    //cameraTransform->m_ownTransform.m_rotation.y = 180.0f;
 
-    auto& cameraEntityCamera3D = testScene->getECSRegistry()->emplace<Ref<Camera3D>>(testCameraEntity, MakeRef<Camera3D>());
-    auto& cameraEntityControllable = testScene->getECSRegistry()->emplace<Controllable3D>(testCameraEntity);
-    auto& cameraRenderingBase = testScene->getECSRegistry()->emplace<Ref<RenderingBase>>(testCameraEntity, MakeRef<RenderingBase>());
+    ecsRegistry->emplace<SGCore::Transform>(testCameraEntity, SGCore::MakeRef<SGCore::Transform>());
+    ecsRegistry->emplace<SGCore::NonSavable>(testCameraEntity);
+    ecsRegistry->emplace<SGCore::Camera3D>(testCameraEntity, SGCore::MakeRef<SGCore::Camera3D>());
+    ecsRegistry->emplace<SGCore::RenderingBase>(testCameraEntity, SGCore::MakeRef<SGCore::RenderingBase>());
+    ecsRegistry->emplace<SGCore::Controllable3D>(testCameraEntity);
+    auto& cameraReceiver = ecsRegistry->emplace<SGCore::LayeredFrameReceiver>(testCameraEntity);
+
+    attachmentToDisplay = cameraReceiver.m_layersFXFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7);
 
     // loading assets =============================================
 
@@ -119,67 +130,71 @@ void coreInit()
         CoreMain::getSungearEngineRootPath() / "Resources/models/standard/sphere.obj"
     );
 
+    screenShader = mainAssetManager->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
+
     // =====
 
-    cubemapTexture = Ref<ICubemapTexture>(CoreMain::getRenderer()->createCubemapTexture());
+    auto standardCubemap = mainAssetManager->getOrAddAssetByAlias<SGCore::ICubemapTexture>("standard_skybox0");
 
-    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
-        CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
+    standardCubemap->m_parts.push_back(mainAssetManager->loadAsset<SGCore::ITexture2D>(
+            "${enginePath}/Resources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
     ));
-    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
-        CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
-    ));
-
-    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
-        CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
-    ));
-    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
-        CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
+    standardCubemap->m_parts.push_back(mainAssetManager->loadAsset<SGCore::ITexture2D>(
+            "${enginePath}/Resources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
     ));
 
-    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
-        CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
+    standardCubemap->m_parts.push_back(mainAssetManager->loadAsset<SGCore::ITexture2D>(
+            "${enginePath}/Resources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
     ));
-    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
-        CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
+    standardCubemap->m_parts.push_back(mainAssetManager->loadAsset<SGCore::ITexture2D>(
+            "${enginePath}/Resources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
     ));
 
-    cubemapTexture->setRawName("standard_skybox0");
-    cubemapTexture->create();
-    AssetManager::getInstance()->addAssetByAlias("standard_skybox0", cubemapTexture);
+    standardCubemap->m_parts.push_back(mainAssetManager->loadAsset<SGCore::ITexture2D>(
+            "${enginePath}/Resources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
+    ));
+    standardCubemap->m_parts.push_back(mainAssetManager->loadAsset<SGCore::ITexture2D>(
+            "${enginePath}/Resources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
+    ));
 
-    auto standardCubemapMaterial = SGCore::MakeRef<SGCore::IMaterial>();
-    standardCubemapMaterial->addTexture2D(SGTextureType::SGTT_SKYBOX, cubemapTexture);
-    AssetManager::getInstance()->addAssetByAlias("standard_skybox_material0", standardCubemapMaterial);
+    standardCubemap->create();
 
     // adding skybox with atmosphere
     {
-        std::vector<entity_t> skyboxEntities;
-        cubeModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities](const auto& entity) {
+        auto standardCubemapMaterial = mainAssetManager->getOrAddAssetByAlias<SGCore::IMaterial>("standard_skybox_material0");
+        standardCubemapMaterial->m_shader =
+                mainAssetManager->loadAsset<SGCore::IShader>(
+                        *SGCore::RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["SkyboxShader"]);
+        standardCubemapMaterial->m_meshRenderState.m_useFacesCulling = false;
+        standardCubemapMaterial->addTexture2D(SGTextureType::SGTT_SKYBOX, standardCubemap);SGCore::ECS::entity_t atmosphereEntity;
+
+        std::vector<SGCore::ECS::entity_t> skyboxEntities;
+        auto cubeModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("cube_model");
+        cubeModel->m_rootNode->addOnScene(testScene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities](const auto& entity) {
             skyboxEntities.push_back(entity);
-            });
+            testScene->getECSRegistry()->emplace<SGCore::IgnoreOctrees>(entity);
+            testScene->getECSRegistry()->remove<SGCore::Pickable>(entity);
+            testScene->getECSRegistry()->remove<SGCore::TransparentEntityTag>(entity);
+        });
 
-        const entity_t& skyboxMeshEntity = skyboxEntities[2];
+        atmosphereEntity = skyboxEntities[2];
 
-        Mesh& skyboxMesh = testScene->getECSRegistry()->get<Mesh>(skyboxMeshEntity);
-        ShaderComponent& skyboxShaderComponent = testScene->getECSRegistry()->emplace<ShaderComponent>(skyboxMeshEntity);
-        Atmosphere& atmosphereScattering = testScene->getECSRegistry()->emplace<Atmosphere>(skyboxMeshEntity);
+        auto& skyboxMesh = testScene->getECSRegistry()->get<SGCore::Mesh>(atmosphereEntity);
+        auto& atmosphereScattering = testScene->getECSRegistry()->emplace<SGCore::Atmosphere>(atmosphereEntity);
+        atmosphereScattering.m_sunRotation.z = 90.0;
+        skyboxMesh.m_base.setMaterial(SGCore::AssetManager::getInstance()->getAsset<SGCore::IMaterial, SGCore::AssetStorageType::BY_ALIAS>("standard_skybox_material0"));
 
-        // setting material
-        // skyboxMesh.m_base.setMaterial(AssetManager::getInstance()->loadAsset<IMaterial>("standard_skybox_material0"));
-
-        ShadersUtils::loadShader(skyboxShaderComponent, "SkyboxShader");
-        skyboxMesh.m_base.m_meshDataRenderInfo.m_useFacesCulling = false;
-
-        auto& skyboxTransform = testScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(skyboxMeshEntity);
+        auto& skyboxTransform = testScene->getECSRegistry()->get<SGCore::Transform>(atmosphereEntity);
 
         skyboxTransform->m_ownTransform.m_scale = { 1150, 1150, 1150 };
+
+
     }
 
     // creating player ===================
-    std::vector<entity_t> playerEntities;
-    cubeModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
-                                      [&playerEntities](const entity_t& entity)
+    std::vector<ECS::entity_t> playerEntities;
+    cubeModel->m_rootNode->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
+                                      [&playerEntities](const ECS::entity_t& entity)
                                       {
                                           playerEntities.push_back(entity);
                                           //testScene->getECSRegistry()->emplace<EntityBaseInfo>(meshEntity);
@@ -190,13 +205,13 @@ void coreInit()
 
     // cameraBaseInfo.m_parent = testPlayerEntity;
 
-    auto playerTransform = testScene->getECSRegistry()->get<Ref<Transform>>(playerEntities[0]);
+    auto playerTransform = testScene->getECSRegistry()->get<Transform>(playerEntities[0]);
 
     playerTransform->m_ownTransform.m_position = { 0.8f, 10.0f, 0.0f };
     playerTransform->m_ownTransform.m_scale = { 1.0f, 1.8f, 1.0f };
 
     // creating rigidbody and box shape for player
-    auto playerRigidbody3D = testScene->getECSRegistry()->emplace<Ref<Rigidbody3D>>(playerEntities[0],
+    /*auto playerRigidbody3D = testScene->getECSRegistry()->emplace<Rigidbody3D>(playerEntities[0],
                                                                                     MakeRef<Rigidbody3D>(testScene->getSystem<PhysicsWorld3D>()));
     SGCore::Ref<btBoxShape> playerRigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(1.0, 1.8, 1.0));
     playerRigidbody3D->setShape(playerRigidbody3DShape);
@@ -208,35 +223,68 @@ void coreInit()
     playerRigidbody3D->m_body->getCollisionShape()->calculateLocalInertia(mass, inertia);
     playerRigidbody3D->m_body->setMassProps(mass, inertia);
     playerRigidbody3D->updateFlags();
-    playerRigidbody3D->reAddToWorld();
+    playerRigidbody3D->reAddToWorld();*/
 
     // ===================================
 
     // adding entities on scene ===================================
 
-    std::vector<entity_t> floorEntities;
-    cubeModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
-        [&floorEntities](const entity_t& entity)
+    std::vector<ECS::entity_t> floorEntities;
+    cubeModel->m_rootNode->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
+        [&floorEntities](const ECS::entity_t& entity)
         {
             floorEntities.push_back(entity);
             //testScene->getECSRegistry()->emplace<EntityBaseInfo>(meshEntity);
         }
     );
 
-    auto floorTransform = testScene->getECSRegistry()->get<Ref<Transform>>(floorEntities[0]);
+    auto floorTransform = testScene->getECSRegistry()->get<Transform>(floorEntities[0]);
 
     floorTransform->m_ownTransform.m_scale = { 1000.0f, 1.0f, 1000.0f };
     floorTransform->m_ownTransform.m_position = { 0, -50, 0 };
 
     // creating rigidbody and box shape for floor
-    auto floorRigidbody3D = testScene->getECSRegistry()->emplace<Ref<Rigidbody3D>>(floorEntities[0],
+    /*auto floorRigidbody3D = testScene->getECSRegistry()->emplace<Rigidbody3D>(floorEntities[0],
         MakeRef<Rigidbody3D>(testScene->getSystem<PhysicsWorld3D>()));
 
     SGCore::Ref<btBoxShape> floorRigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(250, 1, 250.0));
     floorRigidbody3D->setShape(floorRigidbody3DShape);
     floorRigidbody3D->m_body->setMassProps(100000000.0, btVector3(0, 0, 0));
     floorRigidbody3D->m_body->setRestitution(0.9);
-    floorRigidbody3D->reAddToWorld();
+    floorRigidbody3D->reAddToWorld();*/
+
+    // creating quad model for drawing camera framebuffer attachment to screen ======================================
+
+    quadMesh = SGCore::Ref<SGCore::IMeshData>(SGCore::CoreMain::getRenderer()->createMeshData());
+
+    quadMesh->m_vertices.resize(4);
+
+    quadMesh->m_vertices[0] = {
+        .m_position = { -1, -1, 0.0f }
+    };
+
+    quadMesh->m_vertices[1] = {
+        .m_position = { -1, 1, 0.0f }
+    };
+
+    quadMesh->m_vertices[2] = {
+        .m_position = { 1, 1, 0.0f }
+    };
+
+    quadMesh->m_vertices[3] = {
+        .m_position = { 1, -1, 0.0f }
+    };
+
+    quadMesh->m_indices.resize(6);
+
+    quadMesh->m_indices[0] = 0;
+    quadMesh->m_indices[1] = 2;
+    quadMesh->m_indices[2] = 1;
+    quadMesh->m_indices[3] = 0;
+    quadMesh->m_indices[4] = 3;
+    quadMesh->m_indices[5] = 2;
+
+    quadMesh->prepare();
 }
 
 void onUpdate(const double& dt, const double& fixedDt)
@@ -245,6 +293,23 @@ void onUpdate(const double& dt, const double& fixedDt)
     {
         Scene::getCurrentScene()->update(dt, fixedDt);
     }
+
+    // rendering frame buffer attachment from camera to screen
+    screenShader->bind();
+
+    // use this to flip screen output
+    screenShader->useInteger("u_flipOutput", false);
+
+    // someTexture->bind(0);
+    attachmentToDisplay->bind(0);
+    screenShader->useTextureBlock("u_bufferToDisplay", 0);
+
+    SGCore::CoreMain::getRenderer()->renderArray(
+        quadMesh->getVertexArray(),
+        quadMeshRenderState,
+        quadMesh->m_vertices.size(),
+        quadMesh->m_indices.size()
+    );
 
     if (InputManager::getMainInputListener()->keyboardKeyReleased(KeyboardKey::KEY_M))
     {
@@ -261,7 +326,7 @@ void onUpdate(const double& dt, const double& fixedDt)
 
     if (SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_4))
     {
-        auto& cameraTransform = testScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(testCameraEntity);
+        auto& cameraTransform = testScene->getECSRegistry()->get<SGCore::Transform>(testCameraEntity);
         createBallAndApplyImpulse(cameraTransform->m_ownTransform.m_position, cameraTransform->m_ownTransform.m_forward * 200000.0f / 10.0f);
     }
 }

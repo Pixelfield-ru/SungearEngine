@@ -95,12 +95,15 @@ void coreInit()
     mainCamera = ecsRegistry->create();
 
     // creating components for entity
-    ecsRegistry->emplace<SGCore::Transform>(mainCamera, SGCore::MakeRef<SGCore::Transform>());
+    auto cameraTransform = ecsRegistry->emplace<SGCore::Transform>(mainCamera, SGCore::MakeRef<SGCore::Transform>());
     ecsRegistry->emplace<SGCore::NonSavable>(mainCamera);
     ecsRegistry->emplace<SGCore::Camera3D>(mainCamera, SGCore::MakeRef<SGCore::Camera3D>());
     ecsRegistry->emplace<SGCore::RenderingBase>(mainCamera, SGCore::MakeRef<SGCore::RenderingBase>());
     ecsRegistry->emplace<SGCore::Controllable3D>(mainCamera);
     auto& cameraReceiver = ecsRegistry->emplace<SGCore::LayeredFrameReceiver>(mainCamera);
+
+    cameraTransform->m_ownTransform.m_position.z = 1.5f;
+    cameraTransform->m_ownTransform.m_position.y = 1.0f;
 
     attachmentToDisplay = cameraReceiver.m_layersFXFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7);
 
@@ -175,98 +178,107 @@ void coreInit()
     /*auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx");
     auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx/skeletons/mixamorig:Hips");*/
 
-    auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf");
-    auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf/skeletons/GLTF_created_0_rootJoint");
+    auto modelAsset = SGCore::AssetManager::getInstance()->createAsset<SGCore::ModelAsset>();
 
-    /*auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/tec/scene.gltf");
-    auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/tec/scene.gltf/skeletons/GLTF_created_0_rootJoint");*/
+    auto& modelAssetLoadSlot = modelAsset->onLazyLoadDone += [](SGCore::IAsset* thisAsset) {
+        auto* modelAsset = static_cast<SGCore::ModelAsset*>(thisAsset);
 
-    /*auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf");
-    auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf/skeletons/GLTF_created_0_rootJoint");*/
+        auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf/skeletons/GLTF_created_0_rootJoint");
 
-    std::vector<SGCore::ECS::entity_t> entities;
-    modelAsset->m_rootNode->addOnScene(SGCore::Scene::getCurrentScene(), SG_LAYER_OPAQUE_NAME, [&entities](const auto& entity) {
-        entities.push_back(entity);
-    });
+        /*auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/tec/scene.gltf");
+        auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/tec/scene.gltf/skeletons/GLTF_created_0_rootJoint");*/
 
-    // adding animation
-    {
-        /*auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/Walking.fbx");
-        auto animations1 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/Idle.fbx");
+        /*auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf");
+        auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf/skeletons/GLTF_created_0_rootJoint");*/
 
-        auto animations = SGCore::AssetManager::getInstance()->getAsset<SGCore::AnimationsFile, SGCore::AssetStorageType::BY_PATH>(
-                "${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx/animations"
-        );*/
+        std::vector<SGCore::ECS::entity_t> entities;
+        modelAsset->m_rootNode->addOnScene(SGCore::Scene::getCurrentScene(), SG_LAYER_OPAQUE_NAME,
+                                           [&entities](const auto& entity) { entities.push_back(entity); });
 
-        auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf/animations");
+        // adding animation
+        {
+            /*auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/Walking.fbx");
+            auto animations1 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/Idle.fbx");
 
-        // auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/tec/scene.gltf/animations");
+            auto animations = SGCore::AssetManager::getInstance()->getAsset<SGCore::AnimationsFile, SGCore::AssetStorageType::BY_PATH>(
+                    "${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx/animations"
+            );*/
 
-        // auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf/animations");
+            auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>(
+                "${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf/animations");
 
-        auto& motionPlanner = SGCore::Scene::getCurrentScene()->getECSRegistry()->emplace<SGCore::MotionPlanner>(entities[0]);
-        motionPlanner.m_skeleton = modelSkeletonAsset;
+            // auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/tec/scene.gltf/animations");
 
-        auto& copterAudioSource = SGCore::Scene::getCurrentScene()->getECSRegistry()->emplace<SGCore::AudioSource>(entities[0]);
-        copterAudioSource.create();
-        copterAudioSource.attachAudioTrack(copterSound);
-        copterAudioSource.setRolloffFactor(0.5f);
-        copterAudioSource.setIsLooping(true);
-        copterAudioSource.setState(SGCore::AudioSourceState::STOPPED);
-        copterAudioSource.setType(SGCore::AudioSourceType::POSITIONAL);
+            // auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf/animations");
 
-        // SGCore::Transform::reg_t& huTaoTransform = SGCore::Scene::getCurrentScene()->getECSRegistry()->get<SGCore::Transform>(entities[0]);
+            auto& motionPlanner = SGCore::Scene::getCurrentScene()->getECSRegistry()->emplace<SGCore::MotionPlanner>(
+                entities[0]);
+            motionPlanner.m_skeleton = modelSkeletonAsset;
 
-        // huTaoTransform->m_ownTransform.m_scale = { 0.01, 0.01, 0.01 };
+            auto& copterAudioSource = SGCore::Scene::getCurrentScene()->getECSRegistry()->emplace<SGCore::AudioSource>(
+                entities[0]);
+            copterAudioSource.create();
+            copterAudioSource.attachAudioTrack(copterSound);
+            copterAudioSource.setRolloffFactor(0.5f);
+            copterAudioSource.setIsLooping(true);
+            copterAudioSource.setState(SGCore::AudioSourceState::STOPPED);
+            copterAudioSource.setType(SGCore::AudioSourceType::POSITIONAL);
 
-        // sample skeleton
-        /*auto idleNode = SGCore::MotionPlannerNode::createNode();
-        idleNode->m_isRepeated = true;
-        idleNode->m_animationSpeed = 1.0f;
-        idleNode->m_skeletalAnimation = animations1->m_skeletalAnimations[0];
-        auto idleConnection = SGCore::MakeRef<SGCore::MotionPlannerConnection>();
-        idleConnection->m_blendTime = 2.0f;
-        idleConnection->m_doNotInterruptWhenInactive = true;
-        idleNode->m_anyState.m_toRootConnection = idleConnection;
+            // SGCore::Transform::reg_t& huTaoTransform = SGCore::Scene::getCurrentScene()->getECSRegistry()->get<SGCore::Transform>(entities[0]);
 
-        auto walkNode = SGCore::MotionPlannerNode::createNode();
-        walkNode->m_isRepeated = true;
-        walkNode->m_animationSpeed = 1.0f;
-        walkNode->m_skeletalAnimation = animations0->m_skeletalAnimations[0];
+            // huTaoTransform->m_ownTransform.m_scale = { 0.01, 0.01, 0.01 };
 
-        auto runNode = SGCore::MotionPlannerNode::createNode();
-        runNode->m_isRepeated = true;
-        runNode->m_animationSpeed = 0.1f;
-        runNode->m_skeletalAnimation = animations->m_skeletalAnimations[0];
+            // sample skeleton
+            /*auto idleNode = SGCore::MotionPlannerNode::createNode();
+            idleNode->m_isRepeated = true;
+            idleNode->m_animationSpeed = 1.0f;
+            idleNode->m_skeletalAnimation = animations1->m_skeletalAnimations[0];
+            auto idleConnection = SGCore::MakeRef<SGCore::MotionPlannerConnection>();
+            idleConnection->m_blendTime = 2.0f;
+            idleConnection->m_doNotInterruptWhenInactive = true;
+            idleNode->m_anyState.m_toRootConnection = idleConnection;
 
-        auto walkConnection = SGCore::MakeRef<SGCore::MotionPlannerConnection>();
-        walkConnection->m_previousNode = idleNode;
-        walkConnection->m_nextNode = walkNode;
-        walkConnection->m_blendTime = 0.2f;
-        auto walkActivationAction = SGCore::MakeRef<SGCore::KeyboardKeyDownAction>();
-        walkActivationAction->m_key = SGCore::KeyboardKey::KEY_W;
-        walkConnection->m_activationAction = walkActivationAction;
+            auto walkNode = SGCore::MotionPlannerNode::createNode();
+            walkNode->m_isRepeated = true;
+            walkNode->m_animationSpeed = 1.0f;
+            walkNode->m_skeletalAnimation = animations0->m_skeletalAnimations[0];
 
-        auto runConnection = SGCore::MakeRef<SGCore::MotionPlannerConnection>();
-        runConnection->m_previousNode = walkNode;
-        runConnection->m_nextNode = runNode;
-        runConnection->m_blendTime = 2.0f;
-        auto runActivationAction = SGCore::MakeRef<SGCore::KeyboardKeyDownAction>();
-        runActivationAction->m_key = SGCore::KeyboardKey::KEY_LEFT_SHIFT;
-        runConnection->m_activationAction = runActivationAction;
+            auto runNode = SGCore::MotionPlannerNode::createNode();
+            runNode->m_isRepeated = true;
+            runNode->m_animationSpeed = 0.1f;
+            runNode->m_skeletalAnimation = animations->m_skeletalAnimations[0];
 
-        idleNode->m_connections.push_back(walkConnection);
-        walkNode->m_connections.push_back(runConnection);*/
+            auto walkConnection = SGCore::MakeRef<SGCore::MotionPlannerConnection>();
+            walkConnection->m_previousNode = idleNode;
+            walkConnection->m_nextNode = walkNode;
+            walkConnection->m_blendTime = 0.2f;
+            auto walkActivationAction = SGCore::MakeRef<SGCore::KeyboardKeyDownAction>();
+            walkActivationAction->m_key = SGCore::KeyboardKey::KEY_W;
+            walkConnection->m_activationAction = walkActivationAction;
 
-        auto idleNode = SGCore::MotionPlannerNode::createNode();
-        idleNode->m_animationSpeed = 1.0f;
-        idleNode->m_isRepeated = true;
-        idleNode->m_skeletalAnimation = animations0->m_skeletalAnimations[0];
+            auto runConnection = SGCore::MakeRef<SGCore::MotionPlannerConnection>();
+            runConnection->m_previousNode = walkNode;
+            runConnection->m_nextNode = runNode;
+            runConnection->m_blendTime = 2.0f;
+            auto runActivationAction = SGCore::MakeRef<SGCore::KeyboardKeyDownAction>();
+            runActivationAction->m_key = SGCore::KeyboardKey::KEY_LEFT_SHIFT;
+            runConnection->m_activationAction = runActivationAction;
 
-        testIdleNode = idleNode;
+            idleNode->m_connections.push_back(walkConnection);
+            walkNode->m_connections.push_back(runConnection);*/
 
-        motionPlanner.m_rootNodes.push_back(idleNode);
-    }
+            auto idleNode = SGCore::MotionPlannerNode::createNode();
+            idleNode->m_animationSpeed = 1.0f;
+            idleNode->m_isRepeated = true;
+            idleNode->m_skeletalAnimation = animations0->m_skeletalAnimations[0];
+
+            testIdleNode = idleNode;
+
+            motionPlanner.m_rootNodes.push_back(idleNode);
+        }
+    };
+
+    SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf");
 
     // creating quad model for drawing camera framebuffer attachment to screen ======================================
 

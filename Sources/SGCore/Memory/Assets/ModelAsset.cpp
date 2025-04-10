@@ -8,6 +8,7 @@
 #include <SGCore/Logger/Logger.h>
 #include <assimp/version.h>
 #include <assimp/GltfMaterial.h>
+#include <meshoptimizer.h>
 
 #include "SGCore/Main/CoreSettings.h"
 #include "SGCore/Main/CoreMain.h"
@@ -445,6 +446,51 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(aiMesh* aiMe
     loadTextures(aiMat, sgMeshData->m_material, aiTextureType_SHININESS, SGTextureType::SGTT_SHININESS);
     loadTextures(aiMat, sgMeshData->m_material, aiTextureType_SPECULAR, SGTextureType::SGTT_SPECULAR);
     loadTextures(aiMat, sgMeshData->m_material, aiTextureType_TRANSMISSION, SGTextureType::SGTT_TRANSMISSION);
+
+    // optimizing mesh ================================================================================================
+
+    /*std::cout << fmt::format("MESH '{}' STATS BEFORE MESHOPT OPTIMIZATION: indices count: {}, vertices count: {}", sgMeshData->m_name, sgMeshData->m_indices.size(), sgMeshData->m_vertices.size()) << std::endl;
+
+    // generating remap buffer
+    std::vector<unsigned int> remap(sgMeshData->m_vertices.size());
+    size_t uniqueVertexCount = meshopt_generateVertexRemap(
+        remap.data(),
+        sgMeshData->m_indices.data(),
+        sgMeshData->m_indices.size(),
+        sgMeshData->m_vertices.data(),
+        sgMeshData->m_vertices.size(),
+        sizeof(Vertex)
+    );
+
+    // remapping indices
+    meshopt_remapIndexBuffer(
+        sgMeshData->m_indices.data(),
+        sgMeshData->m_indices.data(),
+        sgMeshData->m_indices.size(),
+        remap.data()
+    );
+
+    // remapping vertices
+    std::vector<Vertex> remappedVertices(uniqueVertexCount);
+    meshopt_remapVertexBuffer(
+        remappedVertices.data(),
+        sgMeshData->m_vertices.data(),
+        sgMeshData->m_vertices.size(),
+        sizeof(Vertex),
+        remap.data()
+    );
+
+    meshopt_optimizeVertexCache(sgMeshData->m_indices.data(), sgMeshData->m_indices.data(),
+                                sgMeshData->m_indices.size(), uniqueVertexCount);
+
+    std::vector<Vertex> optimizedVertices(uniqueVertexCount);
+    meshopt_optimizeVertexFetch(optimizedVertices.data(), sgMeshData->m_indices.data(),
+                                sgMeshData->m_indices.size(), remappedVertices.data(),
+                                uniqueVertexCount, sizeof(Vertex));
+
+    sgMeshData->m_vertices = std::move(optimizedVertices);
+
+    std::cout << fmt::format("MESH '{}' STATS AFTER MESHOPT OPTIMIZATION: indices count: {}, vertices count: {}", sgMeshData->m_name, sgMeshData->m_indices.size(), sgMeshData->m_vertices.size()) << std::endl;*/
 
     return sgMeshData;
 }

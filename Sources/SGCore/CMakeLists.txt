@@ -27,6 +27,7 @@
  find_package(RapidJSON CONFIG REQUIRED)
  find_package(antlr4-runtime CONFIG REQUIRED)
  find_package(gli CONFIG REQUIRED)
+ find_package(meshoptimizer CONFIG REQUIRED)
 
  include(FetchContent)
 
@@ -121,11 +122,11 @@
          rapidjson
          msdf-atlas-gen
          gli
+         meshoptimizer::meshoptimizer
 
          ${SG_BULLET_LIBS}
          ${FREETYPE_LIBRARIES}
-
-         )
+ )
 
  if(UNIX OR APPLE)
   find_library(Backtrace_LIBRARY backtrace)

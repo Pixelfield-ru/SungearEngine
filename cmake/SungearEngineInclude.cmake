@@ -143,3 +143,6 @@ list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}")
 
 find_package(gli CONFIG REQUIRED)
 list(APPEND SungearEngine_LIBS "gli")
+
+find_package(meshoptimizer CONFIG REQUIRED)
+list(APPEND SungearEngine_LIBS "meshoptimizer::meshoptimizer")

@@ -68,6 +68,9 @@
     "version>=" : "129#3"
   }, {
     "name" : "gli",
-    "version>=": "2021-07-06#2"
+    "version>=" : "2021-07-06#2"
+  }, {
+    "name" : "meshoptimizer",
+    "version>=" : "0.22"
   }]
 }

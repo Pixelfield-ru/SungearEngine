@@ -10,7 +10,9 @@
 
 #include "PhysicsDebugDraw.h"
 #include "Rigidbody3D.h"
+#include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "SGCore/Main/CoreMain.h"
+#include "SGCore/Render/LayeredFrameReceiver.h"
 #include "SGCore/Threading/WrappedObject.h"
 #include "SGCore/Transformations/TransformationsUpdater.h"
 #include "SGCore/Transformations/Transform.h"
@@ -238,14 +240,23 @@ void SGCore::PhysicsWorld3D::update(const double& dt, const double& fixedDt) noe
 {
     auto lockedScene = getScene();
 
-    if(lockedScene && m_debugDraw->getDebugMode() != btIDebugDraw::DBG_NoDebug)
-    {
-        // if(m_bodiesToAdd.getObject().empty() && m_bodiesToRemove.getObject().empty())
+    auto cameras = lockedScene->getECSRegistry()->view<LayeredFrameReceiver>();
+
+    cameras.each([lockedScene, this](const LayeredFrameReceiver& cameraLayeredFrameReceiver) {
+        cameraLayeredFrameReceiver.m_layersFrameBuffer->bind();
+        cameraLayeredFrameReceiver.m_layersFrameBuffer->bindAttachmentsToDrawIn(cameraLayeredFrameReceiver.m_attachmentToRenderIn);
+
+        if(lockedScene && m_debugDraw->getDebugMode() != btIDebugDraw::DBG_NoDebug)
         {
-            m_dynamicsWorld->debugDrawWorld();
+            // if(m_bodiesToAdd.getObject().empty() && m_bodiesToRemove.getObject().empty())
+            {
+                m_dynamicsWorld->debugDrawWorld();
+            }
+            m_debugDraw->drawAll(lockedScene);
         }
-        m_debugDraw->drawAll(lockedScene);
-    }
+
+        cameraLayeredFrameReceiver.m_layersFrameBuffer->unbind();
+    });
 }
 
 void SGCore::PhysicsWorld3D::onAddToScene(const Ref<Scene>& scene)
