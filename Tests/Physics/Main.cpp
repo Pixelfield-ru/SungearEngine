@@ -211,7 +211,7 @@ void coreInit()
     playerTransform->m_ownTransform.m_scale = { 1.0f, 1.8f, 1.0f };
 
     // creating rigidbody and box shape for player
-    /*auto playerRigidbody3D = testScene->getECSRegistry()->emplace<Rigidbody3D>(playerEntities[0],
+    auto playerRigidbody3D = testScene->getECSRegistry()->emplace<Rigidbody3D>(playerEntities[0],
                                                                                     MakeRef<Rigidbody3D>(testScene->getSystem<PhysicsWorld3D>()));
     SGCore::Ref<btBoxShape> playerRigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(1.0, 1.8, 1.0));
     playerRigidbody3D->setShape(playerRigidbody3DShape);
@@ -223,7 +223,7 @@ void coreInit()
     playerRigidbody3D->m_body->getCollisionShape()->calculateLocalInertia(mass, inertia);
     playerRigidbody3D->m_body->setMassProps(mass, inertia);
     playerRigidbody3D->updateFlags();
-    playerRigidbody3D->reAddToWorld();*/
+    playerRigidbody3D->reAddToWorld();
 
     // ===================================
 
@@ -240,18 +240,18 @@ void coreInit()
 
     auto floorTransform = testScene->getECSRegistry()->get<Transform>(floorEntities[0]);
 
-    floorTransform->m_ownTransform.m_scale = { 1000.0f, 1.0f, 1000.0f };
+    floorTransform->m_ownTransform.m_scale = { 250.0f, 1.0f, 250.0f };
     floorTransform->m_ownTransform.m_position = { 0, -50, 0 };
 
     // creating rigidbody and box shape for floor
-    /*auto floorRigidbody3D = testScene->getECSRegistry()->emplace<Rigidbody3D>(floorEntities[0],
+    auto floorRigidbody3D = testScene->getECSRegistry()->emplace<Rigidbody3D>(floorEntities[0],
         MakeRef<Rigidbody3D>(testScene->getSystem<PhysicsWorld3D>()));
 
     SGCore::Ref<btBoxShape> floorRigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(250, 1, 250.0));
     floorRigidbody3D->setShape(floorRigidbody3DShape);
     floorRigidbody3D->m_body->setMassProps(100000000.0, btVector3(0, 0, 0));
     floorRigidbody3D->m_body->setRestitution(0.9);
-    floorRigidbody3D->reAddToWorld();*/
+    floorRigidbody3D->reAddToWorld();
 
     // creating quad model for drawing camera framebuffer attachment to screen ======================================
 

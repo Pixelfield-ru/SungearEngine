@@ -34,8 +34,8 @@ void SGCore::Scene::createDefaultSystems()
     // physics ===================
 
     // ALWAYS BEFORE TRANSFORMATIONS UPDATER
-    /*auto physicsWorld = MakeRef<PhysicsWorld3D>();
-    addSystem(physicsWorld);*/
+    auto physicsWorld = MakeRef<PhysicsWorld3D>();
+    addSystem(physicsWorld);
 
     //std::cout << "dfdfdf" << std::endl;
     
@@ -76,8 +76,8 @@ void SGCore::Scene::createDefaultSystems()
     auto sphereGizmosUpdater = MakeRef<SphereGizmosUpdater>();
     addSystem(sphereGizmosUpdater);
     
-    auto debugDraw = MakeRef<DebugDraw>();
-    addSystem(debugDraw);
+    /*auto debugDraw = MakeRef<DebugDraw>();
+    addSystem(debugDraw);*/
 
     // ===================
     

@@ -855,7 +855,6 @@ struct SGCore::Serde::SerdeSpec<SGCore::ISystem, TFormatType> :
                 SGCore::BoxGizmosRenderer,
                 SGCore::LineGizmosRenderer,
                 SGCore::SphereGizmosUpdater,
-                SGCore::DebugDraw,
                 SGCore::OctreesSolver,
                 SGCore::AudioProcessor,
                 SGCore::MotionPlannersResolver
@@ -1041,29 +1040,6 @@ struct SGCore::Serde::SerdeSpec<SGCore::SphereGizmosUpdater, TFormatType> :
 };
 // =================================================================================
 
-
-
-
-// SERDE FORWARD DECL FOR struct 'SGCore::DebugDraw'
-// =================================================================================
-template<
-        SGCore::Serde::FormatType TFormatType
->
-struct SGCore::Serde::SerdeSpec<SGCore::DebugDraw, TFormatType> :
-        SGCore::Serde::BaseTypes<
-                SGCore::ISystem
-                                >,
-        SGCore::Serde::DerivedTypes<
-                                   >
-{
-    static inline const std::string type_name = "SGCore::DebugDraw";
-    static inline constexpr bool is_pointer_type = false;
-
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::DebugDraw, TFormatType>& valueView) noexcept;
-
-    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::DebugDraw, TFormatType>& valueView) noexcept;
-};
-// =================================================================================
 
 
 
@@ -3006,51 +2982,6 @@ void SGCore::Serde::SerdeSpec<SGCore::SphereGizmosUpdater, TFormatType>::deseria
 
 
 
-// SERDE IMPL FOR struct 'SGCore::DebugDraw'
-// =================================================================================
-template<
-        SGCore::Serde::FormatType TFormatType
->
-void SGCore::Serde::SerdeSpec<SGCore::DebugDraw, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::DebugDraw, TFormatType>& valueView) noexcept
-{
-
-
-    valueView.getValueContainer().addMember("m_mode", valueView.m_data->m_mode);
-
-
-
-
-    valueView.getValueContainer().addMember("m_meshRenderState", valueView.m_data->m_meshRenderState);
-
-
-}
-
-template<
-        SGCore::Serde::FormatType TFormatType
->
-void SGCore::Serde::SerdeSpec<SGCore::DebugDraw, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::DebugDraw, TFormatType>& valueView) noexcept
-{
-
-    const auto m_mode = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_mode)>("m_mode");
-
-    if(m_mode)
-    {
-        valueView.m_data->m_mode = *m_mode;
-    }
-
-
-    const auto m_meshRenderState = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_meshRenderState)>("m_meshRenderState");
-
-    if(m_meshRenderState)
-    {
-        valueView.m_data->m_meshRenderState = *m_meshRenderState;
-    }
-
-}
-// =================================================================================
-
-
-
 
 // SERDE IMPL FOR struct 'SGCore::OctreesSolver'
 // =================================================================================
@@ -4293,7 +4224,6 @@ namespace SGCore::Serde
                    SG_INSTANCEOF(systemPtr, BoxGizmosRenderer) ||
                    SG_INSTANCEOF(systemPtr, LineGizmosRenderer) ||
                    SG_INSTANCEOF(systemPtr, SphereGizmosUpdater) ||
-                   SG_INSTANCEOF(systemPtr, DebugDraw) ||
                    SG_INSTANCEOF(systemPtr, OctreesSolver) ||
                    SG_INSTANCEOF(systemPtr, AudioProcessor) ||
                    SG_INSTANCEOF(systemPtr, MotionPlannersResolver))

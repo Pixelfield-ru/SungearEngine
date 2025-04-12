@@ -17,6 +17,7 @@
 #include "SGCore/Transformations/TransformationsUpdater.h"
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
+#include "SGCore/Transformations/TransformUtils.h"
 #include "SGCore/Utils/Math/GLMExt.h"
 
 SGCore::PhysicsWorld3D::PhysicsWorld3D()
@@ -65,172 +66,95 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
 
     auto lockedScene = getScene();
 
-    if(lockedScene)
+    if(!lockedScene) return;
+
+    auto registry = lockedScene->getECSRegistry();
+
+    Ref<TransformationsUpdater> transformationsUpdater = lockedScene->getSystem<TransformationsUpdater>();
+
+    if(!transformationsUpdater) return;
+
+    std::vector<ECS::entity_t> entitiesToUpdate;
+    std::vector<ECS::entity_t> updatedEntities;
+
+    auto start = std::chrono::system_clock::now();
     {
-        auto registry = lockedScene->getECSRegistry();
+        std::lock_guard lock(transformationsUpdater->m_notTransformUpdatedEntitiesMutex);
 
-        Ref<TransformationsUpdater> transformationsUpdater = lockedScene->getSystem<TransformationsUpdater>();
+        entitiesToUpdate = transformationsUpdater->m_notTransformUpdatedEntities;
+    }
 
-        if(transformationsUpdater)
+    glm::mat4 rigidbody3DMatrix;
+
+    for(const auto e : entitiesToUpdate)
+    {
+        Ref<Rigidbody3D> rigidbody3D;
+        Ref<Transform> parentTransform;
+        auto transform = registry->get<Transform>(e);
+        auto& entityBaseInfo = registry->get<EntityBaseInfo>(e);
+
         {
-            if(transformationsUpdater->m_changedModelMatrices.isLocked())
-            {
-                auto& transformations = transformationsUpdater->m_changedModelMatrices.getWrapped();
+            auto tmpRigidbody3D = registry->tryGet<Rigidbody3D>(e);
+            rigidbody3D = tmpRigidbody3D ? *tmpRigidbody3D : nullptr;
+        }
 
-                for(size_t i = 0, n = transformations.size(); i < n; ++i)
-                {
-                    const auto& val = transformations[i];
-                    Ref<Rigidbody3D>* tmpRigidbody3D = lockedScene->getECSRegistry()->tryGet<Rigidbody3D>(val.m_owner);
-                    if (!tmpRigidbody3D) continue;
-                    Ref<Rigidbody3D> rigidbody3D = *tmpRigidbody3D;
+        if(!rigidbody3D) continue;
 
-                    btTransform initialTransform;
-                    initialTransform.setIdentity();
-                    initialTransform.setFromOpenGLMatrix(&val.m_memberValue[0][0]);
-                    rigidbody3D->m_body->setWorldTransform(initialTransform);
-                }
+        auto inversedParentTranslationMatrix = glm::mat4(1.0);
+        auto inversedParentRotationMatrix = glm::mat4(1.0);
+        auto inversedParentScaleMatrix = glm::mat4(1.0);
 
-                transformations.clear();
-                transformationsUpdater->m_changedModelMatrices.unlock();
-            }
+        if(entityBaseInfo.getParent() != entt::null)
+        {
+            auto tmpParentTransform = registry->tryGet<Transform>(entityBaseInfo.getParent());
+            parentTransform = tmpParentTransform ? *tmpParentTransform : nullptr;
+        }
 
-            if(transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.isLocked())
-            {
-                auto& entities = transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.getWrapped();
-                auto& calculatedEntities = transformationsUpdater->m_calculatedPhysicalEntities.getWrapped();
-                // auto start = std::chrono::system_clock::now();
-                /*
-                * Changed MisterElect (MisterChoose)
-                * 04.10.2024
-                */
+        if(parentTransform)
+        {
+            inversedParentTranslationMatrix = glm::inverse(
+                parentTransform->m_finalTransform.m_translationMatrix);
+            inversedParentRotationMatrix = glm::inverse(
+                parentTransform->m_finalTransform.m_rotationMatrix);
+            inversedParentScaleMatrix = glm::inverse(
+                parentTransform->m_finalTransform.m_scaleMatrix);
+        }
 
-                // A bit of optimization: no memcpy, only raw memory
-                float rigidbody3DMatrix[16];
-                size_t i = 0, n = entities.size();
+        rigidbody3D->m_body->getWorldTransform().getOpenGLMatrix(&rigidbody3DMatrix[0][0]);
 
-                // A lot of time is consumed by reallocating vector in cycle, just... allocate it in one pass
-                calculatedEntities.reserve(n);
-                for (i, n; i < n; ++i) 
-                {
-                    const auto& entity = entities[i];
-
-                    Ref<Rigidbody3D> rigidbody3D;
-                    {
-                        Ref<Rigidbody3D>* rb3d = registry->tryGet<Rigidbody3D>(entity);
-                        if (!rb3d) continue;
-
-                        rigidbody3D = *rb3d;
-                    }
-
-                    Ref<Transform> transform;
-                    {
-                        Ref<Transform>* tmpTransform = registry->tryGet<Transform>(entity);
-                        if(!tmpTransform) continue;
-
-                        transform = *tmpTransform;
-                    }
-
-                    TransformBase& ownTransform = transform->m_ownTransform;
-                    TransformBase& finalTransform = transform->m_finalTransform;
-
-                    auto& entityBaseInfo = registry->get<EntityBaseInfo::reg_t>(entity);
-                    Ref<Transform> parentTransform;
-
-                    {
-                        auto* tmp = registry->tryGet<Transform>(entityBaseInfo.getParent());
-                        parentTransform = (tmp ? *tmp : nullptr);
-                    }
-
-                    // ============================
-                    rigidbody3D->m_body->getWorldTransform().getOpenGLMatrix(rigidbody3DMatrix);
-                    glm::mat4& glmRigidbody3DOwnModelMatrix = (glm::mat4&)rigidbody3DMatrix;
-
-                    auto inversedParentTranslationMatrix = glm::mat4(1.0);
-                    auto inversedParentRotationMatrix = glm::mat4(1.0);
-                    auto inversedParentScaleMatrix = glm::mat4(1.0);
-
-                    if(parentTransform)
-                    {
-                        inversedParentTranslationMatrix = glm::inverse(
-                            parentTransform->m_finalTransform.m_translationMatrix);
-                        inversedParentRotationMatrix = glm::inverse(
-                            parentTransform->m_finalTransform.m_rotationMatrix);
-                        inversedParentScaleMatrix = glm::inverse(
-                            parentTransform->m_finalTransform.m_scaleMatrix);
-                    }
-
-                    glmRigidbody3DOwnModelMatrix =
+        // getting entity`s only own transform from rigidbody3d
+        rigidbody3DMatrix =
                         inversedParentScaleMatrix * inversedParentRotationMatrix *
                         inversedParentTranslationMatrix *
-                        glmRigidbody3DOwnModelMatrix;
+                        rigidbody3DMatrix;
 
-                    glm::vec3 scale;
-                    glm::quat rotation;
-                    glm::vec3 translation;
-                    glm::vec3 skew;
-                    glm::vec4 perspective;
+        glm::vec3 scale;
+        glm::quat rotation;
+        glm::vec3 translation;
+        glm::vec3 skew;
+        glm::vec4 perspective;
 
-                    glm::decompose(glmRigidbody3DOwnModelMatrix, scale, rotation, translation, skew,
-                        perspective);
+        glm::decompose(rigidbody3DMatrix, scale, rotation, translation, skew,
+                       perspective);
 
-                    ownTransform.m_position = translation;
-                    ownTransform.m_rotation = rotation;
+        if(rotation != transform->m_ownTransform.m_rotation ||
+           translation != transform->m_ownTransform.m_position)
+        {
+            transform->m_ownTransform.m_position = translation;
+            transform->m_ownTransform.m_rotation = rotation;
 
-                    bool translationChanged = false;
-                    bool rotationChanged = false;
+            TransformUtils::calculateTransform(*transform, parentTransform.get());
 
-                    if(ownTransform.m_position != ownTransform.m_lastPosition)
-                    {
-                        ownTransform.m_translationMatrix = glm::translate(glm::mat4(1.0),
-                            ownTransform.m_position);
-
-                        ownTransform.m_lastPosition = ownTransform.m_position;
-
-                        translationChanged = true;
-                    }
-
-                    if(ownTransform.m_rotation != ownTransform.m_lastRotation)
-                    {
-                        ownTransform.m_rotationMatrix = glm::toMat4(ownTransform.m_rotation);
-                        ownTransform.m_lastRotation = ownTransform.m_rotation;
-
-                        rotationChanged = true;
-                    }
-
-                    transform->m_transformChanged =
-                        transform->m_transformChanged || translationChanged || rotationChanged;
-
-                    if(transform->m_transformChanged)
-                    {
-                        ownTransform.m_modelMatrix =
-                            ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix *
-                            ownTransform.m_scaleMatrix;
-
-                        finalTransform.m_modelMatrix = (!parentTransform) ? ownTransform.m_modelMatrix :
-                            (parentTransform->m_finalTransform.m_modelMatrix * ownTransform.m_modelMatrix);
-
-                        calculatedEntities.push_back({ entity, transform });
-                    }
-                }
-
-                if(!transformationsUpdater->m_calculatedPhysicalEntitiesCopy.isLocked())
-                {
-                    std::lock_guard guard(transformationsUpdater->m_calculatedPhysicalEntitiesCopy);
-                    auto& vec = transformationsUpdater->m_calculatedPhysicalEntitiesCopy.getWrapped();
-                   
-                    if(vec.empty())
-                    {
-                        // #TODO some tests on optimization
-                        vec = std::move(calculatedEntities);
-                    }
-                }
-
-                // std::cout << "Elapsed: " << std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - start) << " for " << entities.size() << std::endl;
-
-                entities.clear();
-                transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.unlock();
-            }
+            transformationsUpdater->onTransformChanged(registry, e, transform);
         }
+    }
+
+    // std::cout << "Elapsed: " << std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - start) << " for updating transforms of entities (count: " << entitiesToUpdate.size() << ")" << std::endl;
+
+    {
+        std::lock_guard lock(transformationsUpdater->m_notTransformUpdatedEntitiesMutex);
+        transformationsUpdater->m_notTransformUpdatedEntities.clear();
+        transformationsUpdater->m_notTransformUpdatedEntitiesSet.clear();
     }
 
     m_dynamicsWorld->stepSimulation(dt, 12, dt);
@@ -240,23 +164,9 @@ void SGCore::PhysicsWorld3D::update(const double& dt, const double& fixedDt) noe
 {
     auto lockedScene = getScene();
 
-    auto cameras = lockedScene->getECSRegistry()->view<LayeredFrameReceiver>();
+    if(!lockedScene) return;
 
-    cameras.each([lockedScene, this](const LayeredFrameReceiver& cameraLayeredFrameReceiver) {
-        cameraLayeredFrameReceiver.m_layersFrameBuffer->bind();
-        cameraLayeredFrameReceiver.m_layersFrameBuffer->bindAttachmentsToDrawIn(cameraLayeredFrameReceiver.m_attachmentToRenderIn);
-
-        if(lockedScene && m_debugDraw->getDebugMode() != btIDebugDraw::DBG_NoDebug)
-        {
-            // if(m_bodiesToAdd.getObject().empty() && m_bodiesToRemove.getObject().empty())
-            {
-                m_dynamicsWorld->debugDrawWorld();
-            }
-            m_debugDraw->drawAll(lockedScene);
-        }
-
-        cameraLayeredFrameReceiver.m_layersFrameBuffer->unbind();
-    });
+    m_dynamicsWorld->debugDrawWorld();
 }
 
 void SGCore::PhysicsWorld3D::onAddToScene(const Ref<Scene>& scene)

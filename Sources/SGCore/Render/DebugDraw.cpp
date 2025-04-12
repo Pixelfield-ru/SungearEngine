@@ -4,6 +4,7 @@
 
 #include "DebugDraw.h"
 
+#include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/API/IVertexArray.h"
 #include "SGCore/Graphics/API/IVertexBuffer.h"
@@ -158,41 +159,44 @@ void SGCore::DebugDraw::drawAABB(const glm::vec3& min, const glm::vec3& max, con
     drawLine({ max.x, min.y, max.z }, { max.x, min.y, min.z }, color);
 }
 
-void SGCore::DebugDraw::update(const double& dt, const double& fixedDt)
+void SGCore::DebugDraw::render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) noexcept
 {
-    auto lockedScene = getScene();
-    
-    if(!m_linesShader || !lockedScene || m_mode == DebugDrawMode::NO_DEBUG) return;
-    
+    if(!m_linesShader || !scene || m_mode == DebugDrawMode::NO_DEBUG) return;
+
     auto subPassShader = m_linesShader;
-    
+
     if(!subPassShader || subPassShader->getAnalyzedFile()->getSubPassName() != "BatchedLinesPass") return;
-    
+
     size_t vCnt = std::min(m_currentDrawingLine * 6, m_maxLines * 6);
     size_t cCnt = std::min(m_currentDrawingLine * 8, m_maxLines * 8);
     size_t iCnt = std::min(m_currentDrawingLine * 2, m_maxLines * 2);
-    
+
     m_linesPositionsVertexBuffer->bind();
     m_linesPositionsVertexBuffer->subData(m_linesPositions.data(), vCnt, 0);
-    
+
     m_linesColorsVertexBuffer->bind();
     m_linesColorsVertexBuffer->subData(m_linesColors.data(), cCnt, 0);
-    
+
     subPassShader->bind();
-    
-    auto camerasView = lockedScene->getECSRegistry()->view<Camera3D, RenderingBase, Transform>();
+
+    auto camerasView = scene->getECSRegistry()->view<Camera3D, RenderingBase, Transform, LayeredFrameReceiver>();
 
     camerasView.each([this, &subPassShader, &vCnt, &iCnt](Camera3D::reg_t& camera3D,
                                                           RenderingBase::reg_t& renderingBase,
-                                                          Transform::reg_t& transform) {
+                                                          Transform::reg_t& transform,
+                                                          const LayeredFrameReceiver& cameraLayeredFrameReceiver) {
         // todo: make get receiver (postprocess or default) and render in them
-        
+        cameraLayeredFrameReceiver.m_layersFrameBuffer->bind();
+        cameraLayeredFrameReceiver.m_layersFrameBuffer->bindAttachmentsToDrawIn(cameraLayeredFrameReceiver.m_attachmentToRenderIn);
+
         CoreMain::getRenderer()->prepareUniformBuffers(renderingBase, transform);
         subPassShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
-        
+
         CoreMain::getRenderer()->renderArray(m_linesVertexArray, m_meshRenderState, vCnt, iCnt);
+
+        cameraLayeredFrameReceiver.m_layersFrameBuffer->unbind();
     });
-    
+
     m_currentDrawingLine = 0;
 }
 

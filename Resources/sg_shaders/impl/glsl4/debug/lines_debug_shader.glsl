@@ -24,13 +24,20 @@ void main()
 
 #fragment
 
-out vec4 fragColor;
+layout(location = 0) out vec4 layerVolume;
+layout(location = 1) out vec4 layerColor;
+layout(location = 2) out vec3 pickingColor;
+
+#include "sg_shaders/impl/glsl4/postprocessing/layered/utils.glsl"
 
 in vec4 fs_lineCol;
 
+uniform int SGPP_CurrentLayerIndex;
+
 void main()
 {
-    fragColor = fs_lineCol;
+    layerColor = vec4(fs_lineCol.rgb, 1.0);
+    layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
 }
 
 #end

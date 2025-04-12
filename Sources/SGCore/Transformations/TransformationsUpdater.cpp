@@ -28,172 +28,93 @@ SGCore::TransformationsUpdater::TransformationsUpdater()
     m_thread->start();
 }
 
-void SGCore::TransformationsUpdater::update(const double& dt, const double& fixedDt) noexcept
+void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const double& fixedDt) noexcept
 {
     auto lockedScene = getScene();
 
     if(!lockedScene) return;
-
-    // todo: fix!!!
-    if(m_changedModelMatrices.isLocked() || m_entitiesForPhysicsUpdateToCheck.isLocked()) return;
 
     auto registry = lockedScene->getECSRegistry();
 
     auto transformsView = registry->view<Transform>();
 
-    auto& matrices = m_changedModelMatrices.getWrapped();
-    auto& notPhysicalEntities = m_calculatedNotPhysicalEntities.getWrapped();
-    auto& physicEntitiesToCheck = m_entitiesForPhysicsUpdateToCheck.getWrapped();
+    std::vector<ECS::entity_t> notTransformUpdatedEntities;
+    std::unordered_set<ECS::entity_t> notTransformUpdatedEntitiesSet;
 
-    matrices.reserve(transformsView.size());
-    notPhysicalEntities.reserve(transformsView.size());
-    physicEntitiesToCheck.reserve(transformsView.size());
+    auto start = std::chrono::system_clock::now();
+    {
+        std::lock_guard lock(m_notTransformUpdatedEntitiesMutex);
 
-    transformsView.each([&registry, &matrices, &notPhysicalEntities, &physicEntitiesToCheck](const ECS::entity_t& entity, Transform::reg_t transform) {
-        if(transform)
+        notTransformUpdatedEntities = m_notTransformUpdatedEntities;
+        notTransformUpdatedEntitiesSet = m_notTransformUpdatedEntitiesSet;
+        // m_notTransformUpdatedEntities.clear();
+    }
+
+    // std::cout << "Elapsed: " << std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - start) << " for clearing notTransformUpdatedEntities and copying updatedByPhysicsEntities: " << updatedByPhysicsEntities.size() << std::endl;
+
+    // =======================================================================
+
+    transformsView.each([&registry, &notTransformUpdatedEntities, &notTransformUpdatedEntitiesSet, this](const ECS::entity_t& entity, Transform::reg_t transform) {
+        auto* entityBaseInfo = registry->tryGet<EntityBaseInfo>(entity);
+        Ref<Transform> parentTransform;
+        Ref<Rigidbody3D> rigidbody3D;
+
+        if(entityBaseInfo)
         {
-            auto* entityBaseInfo = registry->tryGet<EntityBaseInfo>(entity);
-            Ref<Transform> parentTransform;
+            auto* tmp = registry->tryGet<Transform>(entityBaseInfo->getParent());
+            parentTransform = (tmp ? *tmp : nullptr);
+        }
 
-            if(entityBaseInfo)
+        {
+            auto* tmpRigidbody3D = registry->tryGet<Rigidbody3D>(entity);
+            rigidbody3D = tmpRigidbody3D ? *tmpRigidbody3D : nullptr;
+        }
+
+        TransformBase& finalTransform = transform->m_finalTransform;
+
+        const bool isTransformChanged = TransformUtils::calculateTransform(*transform, parentTransform.get());
+
+        if(!isTransformChanged)
+        {
+            if(rigidbody3D)
             {
-                auto* tmp = registry->tryGet<Transform>(entityBaseInfo->getParent());
-                parentTransform = (tmp ? *tmp : nullptr);
+                if(!notTransformUpdatedEntitiesSet.contains(entity))
+                {
+                    notTransformUpdatedEntitiesSet.insert(entity);
+                    notTransformUpdatedEntities.push_back(entity);
+                }
+            }
+        }
+        else
+        {
+            // updating rigidbody3d =================================================
+
+            if(rigidbody3D)
+            {
+                auto& rigidbody3DTransform = rigidbody3D->m_body->getWorldTransform();
+
+                rigidbody3DTransform.setIdentity();
+                rigidbody3DTransform.setFromOpenGLMatrix(&finalTransform.m_modelMatrix[0][0]);
             }
 
-            TransformBase& finalTransform = transform->m_finalTransform;
+            // =====================================================================
 
-            const bool isTransformChanged = TransformUtils::calculateTransform(*transform, parentTransform.get());
-
-            if(isTransformChanged)
-            {
-                matrices.push_back({ entity, finalTransform.m_modelMatrix });
-                notPhysicalEntities.push_back({ entity, transform });
-            }
-            else
-            {
-                physicEntitiesToCheck.push_back(entity);
-            }
+            onTransformChanged(registry, entity, transform);
         }
     });
 
-    if(!m_calculatedNotPhysicalEntitiesCopy.isLocked())
+    // ==========================================================================================
+
     {
-        std::lock_guard guard(m_calculatedNotPhysicalEntitiesCopy);
-        auto& vec = m_calculatedNotPhysicalEntitiesCopy.getWrapped();
-        if(vec.empty())
-        {
-            // todo: fix
-            // vec = std::move(notPhysicalEntities);
-        }
+        std::lock_guard lock(m_notTransformUpdatedEntitiesMutex);
+        m_notTransformUpdatedEntities = std::move(notTransformUpdatedEntities);
+        m_notTransformUpdatedEntitiesSet = std::move(notTransformUpdatedEntitiesSet);
     }
 
-    // todo: fix!!!!
-    /*m_changedModelMatrices.lock();
-    m_entitiesForPhysicsUpdateToCheck.lock();*/
+    // std::cout << "Elapsed: " << std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - start) << " for updating transforms of entities" << std::endl;
 }
 
 void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double& fixedDt) noexcept
 {
-    auto lockedScene = getScene();
 
-    if(!lockedScene) return;
-    
-    if(!m_calculatedNotPhysicalEntitiesCopy.isLocked())
-    {
-        std::lock_guard guard(m_calculatedNotPhysicalEntitiesCopy);
-        
-        size_t i = 0;
-        
-        auto& entitiesCopy = m_calculatedNotPhysicalEntitiesCopy.getWrapped();
-        for(const auto& t : entitiesCopy)
-        {
-            auto* tmpNonConstTransform = lockedScene->getECSRegistry()->tryGet<Transform>(t.m_owner);
-            Ref<Transform> nonConstTransform = (tmpNonConstTransform ? *tmpNonConstTransform : nullptr);
-            Mesh* mesh = lockedScene->getECSRegistry()->tryGet<Mesh>(t.m_owner);
-            if(nonConstTransform && mesh)
-            {
-                auto& finalTransform = nonConstTransform->m_finalTransform;
-                auto& ownTransform = nonConstTransform->m_ownTransform;
-                
-                glm::vec3 scale;
-                glm::quat rotation;
-                glm::vec3 translation;
-                glm::vec3 skew;
-                glm::vec4 perspective;
-                
-                glm::decompose(finalTransform.m_modelMatrix, scale, rotation, translation, skew,
-                               perspective);
-
-                if(mesh->m_base.getMeshData())
-                {
-                    finalTransform.m_aabb.applyTransformations(translation, rotation, scale,
-                                                               mesh->m_base.getMeshData()->m_aabb);
-                }
-                
-                finalTransform.m_position = translation;
-                finalTransform.m_lastPosition = translation;
-                
-                finalTransform.m_rotation = rotation;
-                finalTransform.m_lastRotation = rotation;
-                
-                finalTransform.m_scale = scale;
-                finalTransform.m_lastScale = scale;
-                
-                ownTransform.m_aabb = finalTransform.m_aabb;
-            }
-            
-            onTransformChanged(lockedScene->getECSRegistry(), t.m_owner, t.m_memberValue);
-            
-            ++i;
-        }
-        
-        entitiesCopy.clear();
-    }
-    
-    // std::cout << "calculatedNotPhysEntitiesLastSize - 1: " << (calculatedNotPhysEntitiesLastSize - 1) << std::endl;
-    
-    if(!m_calculatedPhysicalEntitiesCopy.isLocked())
-    {
-        std::lock_guard guard(m_calculatedPhysicalEntitiesCopy);
-        auto& entitiesCopy = m_calculatedPhysicalEntitiesCopy.getWrapped();
-        for(const auto& t : entitiesCopy)
-        {
-            auto* tmpNonConstTransform = lockedScene->getECSRegistry()->tryGet<Transform>(t.m_owner);
-            Ref<Transform> nonConstTransform = (tmpNonConstTransform ? *tmpNonConstTransform : nullptr);
-            Mesh* mesh = lockedScene->getECSRegistry()->tryGet<Mesh>(t.m_owner);
-            if(nonConstTransform && mesh)
-            {
-                auto& finalTransform = nonConstTransform->m_finalTransform;
-                auto& ownTransform = nonConstTransform->m_ownTransform;
-                
-                glm::vec3 scale;
-                glm::quat rotation;
-                glm::vec3 translation;
-                glm::vec3 skew;
-                glm::vec4 perspective;
-                
-                glm::decompose(finalTransform.m_modelMatrix, scale, rotation, translation, skew,
-                               perspective);
-                
-                finalTransform.m_aabb.applyTransformations(translation, rotation, scale,
-                                                           mesh->m_base.getMeshData()->m_aabb);
-                
-                finalTransform.m_position = translation;
-                finalTransform.m_lastPosition = translation;
-                
-                finalTransform.m_rotation = rotation;
-                finalTransform.m_lastRotation = rotation;
-                
-                finalTransform.m_scale = scale;
-                finalTransform.m_lastScale = scale;
-                
-                ownTransform.m_aabb = finalTransform.m_aabb;
-            }
-            
-            onTransformChanged(lockedScene->getECSRegistry(), t.m_owner, t.m_memberValue);
-        }
-        
-        entitiesCopy.clear();
-    }
 }

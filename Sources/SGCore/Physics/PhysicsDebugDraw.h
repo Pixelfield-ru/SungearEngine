@@ -21,16 +21,6 @@ namespace SGCore
     
     struct PhysicsDebugDraw : btIDebugDraw
     {
-        PhysicsDebugDraw();
-        
-        Ref<IVertexArray> m_linesVertexArray;
-        Ref<IVertexBuffer> m_linesPositionsVertexBuffer;
-        Ref<IVertexBuffer> m_linesColorsVertexBuffer;
-        Ref<IIndexBuffer> m_linesIndexBuffer;
-        Ref<IShader> m_linesShader;
-        
-        MeshRenderState m_meshRenderState;
-        
         void drawLine(const btVector3& from, const btVector3& to, const btVector3& color) override;
         
         void drawContactPoint(const btVector3& PointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color) override;
@@ -42,26 +32,9 @@ namespace SGCore
         void setDebugMode(int debugMode) override;
         
         int getDebugMode() const override;
-        
-        void drawAll(const Ref<Scene>& scene);
-        
-        void resetRenderer() noexcept;
     
     private:
         int m_debugMode = 0;
-        
-        std::uint32_t m_maxLines = 100'000;
-        std::uint32_t m_currentDrawingLine = 0;
-        
-        std::vector<float> m_linesPositions;
-        std::vector<float> m_linesColors;
-        std::vector<std::uint32_t> m_linesIndices;
-
-        void onRenderPipelineSet() noexcept;
-
-        Slot<void()> m_onRenderPipelineSetEventListener = [this]() {
-            onRenderPipelineSet();
-        };
     };
 }
 

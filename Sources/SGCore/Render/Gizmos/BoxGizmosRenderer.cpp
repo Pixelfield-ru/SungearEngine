@@ -9,16 +9,19 @@
 #include "SGCore/Scene/Scene.h"
 #include "BoxGizmo.h"
 #include "SGCore/Render/MeshBuilder.h"
+#include "SGCore/Render/RenderPipelinesManager.h"
 
 void SGCore::BoxGizmosRenderer::fixedUpdate(const double& dt, const double& fixedDt)
 {
     auto lockedScene = getScene();
 
     if(!lockedScene) return;
-    
-    auto boxGizmosView = lockedScene->getECSRegistry()->view<BoxGizmo>();
 
-    auto debugDraw = lockedScene->getSystem<DebugDraw>();
+    auto debugDraw = RenderPipelinesManager::getCurrentRenderPipeline()->getRenderPass<DebugDraw>();
+
+    if(!debugDraw) return;
+
+    auto boxGizmosView = lockedScene->getECSRegistry()->view<BoxGizmo>();
     
     boxGizmosView.each([&debugDraw](BoxGizmo::reg_t& gizmo) {
         if(gizmo.m_size != gizmo.m_lastSize)

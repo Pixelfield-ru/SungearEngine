@@ -8,16 +8,19 @@
 #include "SGCore/Transformations/TransformBase.h"
 #include "SGCore/Render/MeshBuilder.h"
 #include "LineGizmo.h"
+#include "SGCore/Render/RenderPipelinesManager.h"
 
 void SGCore::LineGizmosRenderer::fixedUpdate(const double& dt, const double& fixedDt)
 {
     auto lockedScene = getScene();
 
     if(!lockedScene) return;
-    
+
+    auto debugDraw = RenderPipelinesManager::getCurrentRenderPipeline()->getRenderPass<DebugDraw>();
+
+    if(!debugDraw) return;
+
     auto lineGizmosView = lockedScene->getECSRegistry()->view<LineGizmo>();
-    
-    auto debugDraw = lockedScene->getSystem<DebugDraw>();
     
     lineGizmosView.each([&debugDraw](LineGizmo::reg_t& gizmo) {
         if(gizmo.m_start != gizmo.m_lastStart || gizmo.m_end != gizmo.m_lastEnd)

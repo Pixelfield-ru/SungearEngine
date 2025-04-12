@@ -9,6 +9,7 @@
 #include "SGCore/Render/PostProcess/PostProcessPass.h"
 #include "SGCore/Render/BaseRenderPasses/OutlinePass.h"
 #include "PBRRPDirectionalLightsPass.h"
+#include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/TextRenderPass.h"
 #include "SGCore/Render/BaseRenderPasses/UIRenderPass.h"
 #include "SGCore/Render/PostProcess/PostProcessBuffersClearPass.h"
@@ -77,6 +78,14 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
         // geometryPass->m_shader->m_uniformBuffer = Scope<IUniformBuffer>(CoreMain::getRenderer().createUniformBuffer());
 
         m_renderPasses.push_back(geometryPass);
+    }
+
+    {
+        auto debugDrawPass = MakeRef<DebugDraw>();
+
+        // geometryPass->m_shader->m_uniformBuffer = Scope<IUniformBuffer>(CoreMain::getRenderer().createUniformBuffer());
+
+        m_renderPasses.push_back(debugDrawPass);
     }
 
     {
