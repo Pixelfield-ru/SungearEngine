@@ -659,6 +659,7 @@ void SGCore::ModelAsset::initAndAddBoneToSkeleton(AssetRef<Bone>& skeletonBone,
 
         initAndAddBoneToSkeleton(childBone, childHierarchyBone, hierarchyBones, toSkeleton, inputMeshes);
 
+        childBone->m_parent = skeletonBone;
         skeletonBone->m_children.push_back(childBone);
     }
 }

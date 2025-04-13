@@ -99,19 +99,26 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
     childTransform.m_transformChanged =
             modelMatrixChanged || (parentTransform && parentTransform->m_transformChanged) || childTransform.m_isAnimated;
 
-    if(childTransform.m_transformChanged)
+    // todo: FIX! MAY PRODUCE INCORRECT RESULTS WHEN TransformationsUpdater WORKS IN PARALLEL.
+    // I THINK THAT PARENT UPDATES FIRST AND THEN WHEN CHILD WAS ADD AND IT HAS POSITION = BASIC POSITION (0.0), ROTATION = BASIC ROTATION (0.0) AND
+    // SCALE = BASIC SCALE (1.0) CHILD IS NOT UPDATED BECAUSE PARENT WAS UPDATED EARLIER AND CHILD HAS UNCHANGED TRANSFORMATIONS
+    // if(childTransform.m_transformChanged)
     {
         childOwnTransform.m_modelMatrix =
             childOwnTransform.m_translationMatrix * childOwnTransform.m_rotationMatrix * childOwnTransform.m_scaleMatrix;
+        childOwnTransform.m_testMatrix = childOwnTransform.m_modelMatrix;
 
         if(parentTransform)
         {
             childFinalTransform.m_modelMatrix =
                 parentTransform->m_finalTransform.m_modelMatrix * childTransform.m_boneMatrix * childOwnTransform.m_modelMatrix;
+
+            childFinalTransform.m_testMatrix = parentTransform->m_finalTransform.m_testMatrix * childOwnTransform.m_testMatrix;
         }
         else
         {
             childFinalTransform.m_modelMatrix = childTransform.m_boneMatrix * childOwnTransform.m_modelMatrix;
+            childFinalTransform.m_testMatrix = childOwnTransform.m_testMatrix;
         }
 
         // ================================================= getting final TRS

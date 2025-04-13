@@ -54,10 +54,14 @@ namespace SGCore
         std::string m_boneName;
         glm::mat4 m_offsetMatrix = glm::identity<glm::mat4>();
 
+        glm::vec3 m_currentPosition { 0.0f };
+
         // the meshes affected by this bone
         std::vector<MeshBoneData> m_affectedMeshesBoneData;
 
         std::vector<AssetRef<Bone>> m_children;
+        // todo: make parent bone resolving (loading) when scene loaded
+        AssetWeakRef<Bone> m_parent;
 
     protected:
         /// does nothing!!

@@ -35,7 +35,8 @@ namespace SGCore
         [this](const Ref<ECS::registry_t>& registry, const ECS::entity_t& entity, Ref<const Transform> transform) {
             onTransformChanged(entity, transform);
         };
-        
+
+        std::mutex m_changedTransformsMutex;
         std::vector<std::pair<ECS::entity_t, Transform::const_reg_t>> m_changedTransforms;
     };
 }

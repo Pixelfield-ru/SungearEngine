@@ -42,6 +42,7 @@ namespace SGCore
         bool m_scaleChanged = false;
 
         glm::mat4 m_modelMatrix = glm::mat4(1);
+        glm::mat4 m_testMatrix = glm::mat4(1);
 
         glm::mat4 m_boneAnimatedMatrix = glm::identity<glm::mat4>();
 

@@ -12,27 +12,31 @@
 
 namespace SGCore
 {
+    struct DebugDraw;
+
     struct MotionPlannersResolver : ISystem
     {
         void fixedUpdate(const double& dt, const double& fixedDt) final;
 
     private:
-        static void processMotionNodes(const double& dt,
-                                       SGCore::Ref<SGCore::ECS::registry_t>& inRegistry,
-                                       MotionPlanner& motionPlanner,
-                                       const std::vector<Ref<MotionPlannerNode>>& nodesToInterpolate,
-                                       const AssetRef<Skeleton>& skeleton,
-                                       const ECS::entity_t& currentEntity,
-                                       const EntityBaseInfo::reg_t& currentEntityBaseInfo,
-                                       const Transform::reg_t& currentEntityTransform,
-                                       const Transform::reg_t& parentEntityTransform,
-                                       std::int32_t& bonesCount) noexcept;
+        void processMotionNodes(const double& dt,
+                                SGCore::Ref<SGCore::ECS::registry_t>& inRegistry,
+                                MotionPlanner& motionPlanner,
+                                const std::vector<Ref<MotionPlannerNode>>& nodesToInterpolate,
+                                const AssetRef<Skeleton>& skeleton,
+                                const ECS::entity_t& currentEntity,
+                                const EntityBaseInfo::reg_t& currentEntityBaseInfo,
+                                const Transform::reg_t& currentEntityTransform,
+                                const Transform::reg_t& parentEntityTransform,
+                                std::int32_t& bonesCount) noexcept;
 
         static void collectAndUpdateNodesToInterpolate(const double& dt,
                                                        MotionPlanner& motionPlanner,
                                                        const Ref<MotionPlannerNode>& fromRootNode,
                                                        const Ref<MotionPlannerNode>& currentNode,
                                                        std::vector<Ref<MotionPlannerNode>>& nodesToInterpolate) noexcept;
+
+        Weak<DebugDraw> m_debugDrawPassRef;
     };
 }
 

@@ -116,5 +116,6 @@ void SGCore::OctreesSolver::fixedUpdate(const double& dt, const double& fixedDt)
 
 void SGCore::OctreesSolver::onTransformChanged(const ECS::entity_t& entity, const SGCore::Transform::const_reg_t& transform) noexcept
 {
+    std::lock_guard lock(m_changedTransformsMutex);
     m_changedTransforms.emplace_back(entity, transform);
 }

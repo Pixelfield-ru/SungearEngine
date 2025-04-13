@@ -251,6 +251,8 @@ void coreInit()
     floorRigidbody3D->setShape(floorRigidbody3DShape);
     floorRigidbody3D->m_body->setMassProps(100000000.0, btVector3(0, 0, 0));
     floorRigidbody3D->m_body->setRestitution(0.9);
+    playerRigidbody3D->m_bodyFlags.addFlag(btCollisionObject::CF_STATIC_OBJECT);
+    // playerRigidbody3D->m_bodyFlags.addFlag(btCollisionObject::CF_KINEMATIC_OBJECT);
     floorRigidbody3D->reAddToWorld();
 
     // creating quad model for drawing camera framebuffer attachment to screen ======================================

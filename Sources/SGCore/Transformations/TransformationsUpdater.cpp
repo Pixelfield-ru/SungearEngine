@@ -28,7 +28,7 @@ SGCore::TransformationsUpdater::TransformationsUpdater()
     m_thread->start();
 }
 
-void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const double& fixedDt) noexcept
+void SGCore::TransformationsUpdater::update(const double& dt, const double& fixedDt) noexcept
 {
     auto lockedScene = getScene();
 
@@ -55,14 +55,14 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
     // =======================================================================
 
     transformsView.each([&registry, &notTransformUpdatedEntities, &notTransformUpdatedEntitiesSet, this](const ECS::entity_t& entity, Transform::reg_t transform) {
-        auto* entityBaseInfo = registry->tryGet<EntityBaseInfo>(entity);
+        auto& entityBaseInfo = registry->get<EntityBaseInfo>(entity);
         Ref<Transform> parentTransform;
         Ref<Rigidbody3D> rigidbody3D;
 
-        if(entityBaseInfo)
+        if(entityBaseInfo.getParent() != entt::null)
         {
-            auto* tmp = registry->tryGet<Transform>(entityBaseInfo->getParent());
-            parentTransform = (tmp ? *tmp : nullptr);
+            auto* tmp = registry->tryGet<Transform>(entityBaseInfo.getParent());
+            parentTransform = tmp ? *tmp : nullptr;
         }
 
         {
@@ -76,13 +76,10 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
 
         if(!isTransformChanged)
         {
-            if(rigidbody3D)
+            if(!notTransformUpdatedEntitiesSet.contains(entity) && rigidbody3D)
             {
-                if(!notTransformUpdatedEntitiesSet.contains(entity))
-                {
-                    notTransformUpdatedEntitiesSet.insert(entity);
-                    notTransformUpdatedEntities.push_back(entity);
-                }
+                notTransformUpdatedEntitiesSet.insert(entity);
+                notTransformUpdatedEntities.push_back(entity);
             }
         }
         else

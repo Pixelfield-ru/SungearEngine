@@ -515,6 +515,8 @@ void main()
         }
     }
 
+    // discard;
+
     // layerColor.a = diffuseColor.a;
 
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);

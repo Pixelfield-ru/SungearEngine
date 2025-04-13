@@ -5,20 +5,31 @@
 #include "MotionPlannersResolver.h"
 #include "SGCore/Scene/Scene.h"
 #include "MotionPlannerConnection.h"
+#include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/Mesh.h"
+#include "SGCore/Render/RenderPipelinesManager.h"
 
 // omg
 
 void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double& fixedDt)
 {
-    auto registry = getScene()->getECSRegistry();
+    auto lockedScene = getScene();
+
+    if(!lockedScene) return;
+
+    if(m_debugDrawPassRef.expired())
+    {
+        m_debugDrawPassRef = RenderPipelinesManager::getCurrentRenderPipeline()->getRenderPass<DebugDraw>();
+    }
+
+    auto registry = lockedScene->getECSRegistry();
 
     auto motionPlannersView = registry->view<EntityBaseInfo, Transform, MotionPlanner>();
 
-    motionPlannersView.each([dt, &registry](const ECS::entity_t& entity,
-                                            const EntityBaseInfo::reg_t& entityBaseInfo,
-                                            const Transform::reg_t& transform,
-                                            MotionPlanner::reg_t& motionPlanner) {
+    motionPlannersView.each([dt, &registry, this](const ECS::entity_t& entity,
+                                                  const EntityBaseInfo::reg_t& entityBaseInfo,
+                                                  const Transform::reg_t& transform,
+                                                  MotionPlanner::reg_t& motionPlanner) {
         auto skeleton = motionPlanner.m_skeleton;
 
         std::vector<Ref<MotionPlannerNode>> nodesToInterpolate;
@@ -341,6 +352,26 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     // currentEntityTransform->m_boneMatrix = glm::identity<glm::mat4>();
 
     currentEntityTransform->m_isAnimated = isBoneAnimated;
+
+    if(currentBone)
+    {
+        auto modelMat =
+                    currentEntityTransform->m_finalTransform.m_translationMatrix * currentEntityTransform->m_finalTransform.m_rotationMatrix * currentEntityTransform->m_finalTransform.m_scaleMatrix;
+
+
+        // glm::vec3 translation = currentEntityTransform->m_finalTransform.m_modelMatrix[3];
+
+        currentBone->m_currentPosition = (currentEntityTransform->m_finalTransform.m_testMatrix * offsetMatrix * currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix)[3];
+
+        // std::cout << "bone '" << currentBone->m_boneName << "' pos: " << currentBone->m_currentPosition << std::endl;
+
+        auto parentBone = currentBone->m_parent.lock();
+        if(parentBone)
+        {
+            glm::vec3 startPos = parentBone->m_currentPosition;
+            m_debugDrawPassRef.lock()->drawLine(startPos, currentBone->m_currentPosition, { 1.0f, 1.0f, 0.0f, 1.0f });
+        }
+    }
 
     // updating current bone matrix data in m_bonesMatricesData
     // 16 is count of scalars in matrix

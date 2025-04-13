@@ -63,6 +63,8 @@ SGCore::ECS::entity_t mainCamera;
 
 SGCore::Ref<SGCore::MotionPlannerNode> testIdleNode;
 
+SGCore::ECS::entity_t characterEntity;
+
 void coreInit()
 {
     auto mainAssetManager = SGCore::AssetManager::getInstance();
@@ -185,6 +187,10 @@ void coreInit()
 
         auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf/skeletons/GLTF_created_0_rootJoint");
 
+        // auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf/skeletons/GLTF_created_0_rootJoint");
+
+        // auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx/skeletons/mixamorig:Hips");
+
         /*auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/tec/scene.gltf");
         auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/tec/scene.gltf/skeletons/GLTF_created_0_rootJoint");*/
 
@@ -197,6 +203,8 @@ void coreInit()
 
         // adding animation
         {
+            characterEntity = entities[0];
+
             /*auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/Walking.fbx");
             auto animations1 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/Idle.fbx");
 
@@ -268,7 +276,7 @@ void coreInit()
             walkNode->m_connections.push_back(runConnection);*/
 
             auto idleNode = SGCore::MotionPlannerNode::createNode();
-            idleNode->m_animationSpeed = 1.0f;
+            idleNode->m_animationSpeed = 2.0f;
             idleNode->m_isRepeated = true;
             idleNode->m_skeletalAnimation = animations0->m_skeletalAnimations[0];
 
@@ -279,6 +287,10 @@ void coreInit()
     };
 
     SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf");
+
+    // SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx");
+
+    // SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf");
 
     // creating quad model for drawing camera framebuffer attachment to screen ======================================
 
@@ -316,12 +328,35 @@ void coreInit()
 
 void onUpdate(const double& dt, const double& fixedDt)
 {
+    const auto& mainListener = SGCore::InputManager::getMainInputListener();
+
     if(SGCore::Scene::getCurrentScene())
     {
         auto& cameraTransform = SGCore::Scene::getCurrentScene()->getECSRegistry()->get<SGCore::Transform>(mainCamera);
 
         SGCore::AudioListener::setPosition(cameraTransform->m_finalTransform.m_position);
         SGCore::AudioListener::setOrientation(cameraTransform->m_finalTransform.m_forward, cameraTransform->m_finalTransform.m_up);
+
+        auto& characterTransform = SGCore::Scene::getCurrentScene()->getECSRegistry()->get<SGCore::Transform>(characterEntity);
+
+        const float characterSpeed = 3.0f;
+
+        if(mainListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_UP))
+        {
+            characterTransform->m_ownTransform.m_position += characterTransform->m_finalTransform.m_up * characterSpeed * dt;
+        }
+        if(mainListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_DOWN))
+        {
+            characterTransform->m_ownTransform.m_position -= characterTransform->m_finalTransform.m_up * characterSpeed * dt;
+        }
+        if(mainListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT))
+        {
+            characterTransform->m_ownTransform.m_position -= characterTransform->m_finalTransform.m_right * characterSpeed * dt;
+        }
+        if(mainListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_RIGHT))
+        {
+            characterTransform->m_ownTransform.m_position += characterTransform->m_finalTransform.m_right * characterSpeed * dt;
+        }
 
         SGCore::Scene::getCurrentScene()->update(dt, fixedDt);
     }
