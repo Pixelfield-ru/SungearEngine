@@ -185,9 +185,9 @@ void coreInit()
     auto& modelAssetLoadSlot = modelAsset->onLazyLoadDone += [](SGCore::IAsset* thisAsset) {
         auto* modelAsset = static_cast<SGCore::ModelAsset*>(thisAsset);
 
-        auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf/skeletons/GLTF_created_0_rootJoint");
+        // auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf/skeletons/GLTF_created_0_rootJoint");
 
-        // auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf/skeletons/GLTF_created_0_rootJoint");
+        auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf/skeletons/GLTF_created_0_rootJoint");
 
         // auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx/skeletons/mixamorig:Hips");
 
@@ -212,12 +212,12 @@ void coreInit()
                     "${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx/animations"
             );*/
 
-            auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>(
-                "${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf/animations");
+            /*auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>(
+                "${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf/animations");*/
 
             // auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/tec/scene.gltf/animations");
 
-            // auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf/animations");
+            auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf/animations");
 
             auto& motionPlanner = SGCore::Scene::getCurrentScene()->getECSRegistry()->emplace<SGCore::MotionPlanner>(
                 entities[0]);
@@ -278,7 +278,7 @@ void coreInit()
             auto idleNode = SGCore::MotionPlannerNode::createNode();
             idleNode->m_animationSpeed = 2.0f;
             idleNode->m_isRepeated = true;
-            idleNode->m_skeletalAnimation = animations0->m_skeletalAnimations[0];
+            idleNode->m_skeletalAnimation = animations0->m_skeletalAnimations[1];
 
             testIdleNode = idleNode;
 
@@ -286,11 +286,11 @@ void coreInit()
         }
     };
 
-    SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf");
+    // SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf");
 
     // SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx");
 
-    // SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf");
+    SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf");
 
     // creating quad model for drawing camera framebuffer attachment to screen ======================================
 

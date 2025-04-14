@@ -591,19 +591,9 @@ void SGCore::ModelAsset::initAndAddBoneToSkeleton(AssetRef<Bone>& skeletonBone,
     if(!tmpBone.m_aiBones.empty())
     {
         glm::mat4 offsetMatrix = AssimpUtils::aiToGLM(tmpBone.m_aiBones[0]->mOffsetMatrix);
-        // offsetMatrix = glm::inverse(offsetMatrix);
-        /*if(tmpBone.m_parent != -1)
-        {
-            glm::mat4 parentOffsetMatrix = AssimpUtils::aiToGLM(hierarchyBones[tmpBone.m_parent].m_aiBones[0]->mOffsetMatrix);
-
-            offsetMatrix = offsetMatrix * glm::inverse(parentOffsetMatrix);
-        }*/
-        // offsetMatrix
 
         // offset matrix is identical for each mesh that is affected by this bone
         skeletonBone->m_offsetMatrix = offsetMatrix;
-
-
     }
 
     for(size_t i = 0; i < tmpBone.m_aiBones.size(); ++i)

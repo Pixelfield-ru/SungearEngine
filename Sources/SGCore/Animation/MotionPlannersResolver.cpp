@@ -295,15 +295,15 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
         animatedMatrix = glm::translate(animatedMatrix, interpolatedPosition);
         animatedMatrix *= glm::toMat4(interpolatedRotation);
         animatedMatrix = glm::scale(animatedMatrix, interpolatedScale);
+    }
 
-        if(currentBone)
-        {
-            offsetMatrix = currentBone->m_offsetMatrix;
-        }
-        else
-        {
-            offsetMatrix = glm::inverse(currentEntityTransform->getInitialModelMatrix());
-        }
+    if(currentBone)
+    {
+        offsetMatrix = currentBone->m_offsetMatrix;
+    }
+    else
+    {
+        offsetMatrix = glm::inverse(currentEntityTransform->getInitialModelMatrix());
     }
 
     // if current entity has parent with bone
@@ -355,10 +355,6 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
 
     if(currentBone)
     {
-        auto modelMat =
-                    currentEntityTransform->m_finalTransform.m_translationMatrix * currentEntityTransform->m_finalTransform.m_rotationMatrix * currentEntityTransform->m_finalTransform.m_scaleMatrix;
-
-
         // glm::vec3 translation = currentEntityTransform->m_finalTransform.m_modelMatrix[3];
 
         currentBone->m_currentPosition = (currentEntityTransform->m_finalTransform.m_testMatrix * offsetMatrix * currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix)[3];
