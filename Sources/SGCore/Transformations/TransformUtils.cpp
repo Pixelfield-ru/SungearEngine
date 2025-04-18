@@ -104,21 +104,21 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
     // SCALE = BASIC SCALE (1.0) CHILD IS NOT UPDATED BECAUSE PARENT WAS UPDATED EARLIER AND CHILD HAS UNCHANGED TRANSFORMATIONS
     // if(childTransform.m_transformChanged)
     {
-        childOwnTransform.m_modelMatrix =
+        childOwnTransform.m_animatedModelMatrix =
             childOwnTransform.m_translationMatrix * childOwnTransform.m_rotationMatrix * childOwnTransform.m_scaleMatrix;
-        childOwnTransform.m_testMatrix = childOwnTransform.m_modelMatrix;
+        childOwnTransform.m_modelMatrix = childOwnTransform.m_animatedModelMatrix;
 
         if(parentTransform)
         {
-            childFinalTransform.m_modelMatrix =
-                parentTransform->m_finalTransform.m_modelMatrix * childTransform.m_boneMatrix * childOwnTransform.m_modelMatrix;
+            childFinalTransform.m_animatedModelMatrix =
+                parentTransform->m_finalTransform.m_animatedModelMatrix * childTransform.m_boneMatrix * childOwnTransform.m_animatedModelMatrix;
 
-            childFinalTransform.m_testMatrix = parentTransform->m_finalTransform.m_testMatrix * childOwnTransform.m_testMatrix;
+            childFinalTransform.m_modelMatrix = parentTransform->m_finalTransform.m_modelMatrix * childOwnTransform.m_modelMatrix;
         }
         else
         {
-            childFinalTransform.m_modelMatrix = childTransform.m_boneMatrix * childOwnTransform.m_modelMatrix;
-            childFinalTransform.m_testMatrix = childOwnTransform.m_testMatrix;
+            childFinalTransform.m_animatedModelMatrix = childTransform.m_boneMatrix * childOwnTransform.m_animatedModelMatrix;
+            childFinalTransform.m_modelMatrix = childOwnTransform.m_modelMatrix;
         }
 
         // ================================================= getting final TRS
@@ -129,7 +129,7 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
         glm::vec3 finalSkew;
         glm::vec4 finalPerspective;
 
-        glm::decompose(childFinalTransform.m_modelMatrix, finalScale, finalRotation, finalTranslation, finalSkew,
+        glm::decompose(childFinalTransform.m_animatedModelMatrix, finalScale, finalRotation, finalTranslation, finalSkew,
                        finalPerspective);
 
         childFinalTransform.m_position = finalTranslation;

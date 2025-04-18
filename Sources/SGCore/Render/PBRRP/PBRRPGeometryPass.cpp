@@ -227,7 +227,7 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
         
         {
             shaderToUse->useMatrix("objectTransform.modelMatrix",
-                                   meshTransform->m_finalTransform.m_modelMatrix);
+                                   meshTransform->m_finalTransform.m_animatedModelMatrix);
             shaderToUse->useVectorf("objectTransform.position", meshTransform->m_finalTransform.m_position);
 
             const auto* meshedEntityPickableComponent = registry->tryGet<Pickable>(meshEntity);

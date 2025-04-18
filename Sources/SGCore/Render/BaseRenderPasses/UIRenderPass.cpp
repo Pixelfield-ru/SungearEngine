@@ -71,7 +71,7 @@ void SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::reg_t& c
         uiElementShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
 
         uiElementShader->useMatrix("objectTransform.modelMatrix",
-                                   currentTransformNode.m_transform.m_finalTransform.m_modelMatrix);
+                                   currentTransformNode.m_transform.m_finalTransform.m_animatedModelMatrix);
         uiElementShader->useVectorf("objectTransform.position",
                                     currentTransformNode.m_transform.m_finalTransform.m_position);
 

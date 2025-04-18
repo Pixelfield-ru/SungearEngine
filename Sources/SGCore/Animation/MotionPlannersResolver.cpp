@@ -103,8 +103,6 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
         // updating count of bones in data vector
         motionPlanner.m_bonesMatricesData[0] = updatedBonesCount;
 
-        std::cout << "updatedBonesCount: " << updatedBonesCount << std::endl;
-
         // updating data in texture buffer after updating bones matrices
         motionPlanner.m_bonesMatricesBuffer->bind(0);
         motionPlanner.m_bonesMatricesBuffer->subTextureBufferData(motionPlanner.m_bonesMatricesData.data(),
@@ -300,16 +298,12 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     }
     else
     {
-        // if(!currentBone)
-        {
-            animatedMatrix = currentEntityTransform->m_ownTransform.m_testMatrix;
-        }
+        animatedMatrix = currentEntityTransform->m_ownTransform.m_modelMatrix;
     }
 
     if(currentBone)
     {
         offsetMatrix = currentBone->m_offsetMatrix;
-        // offsetMatrix = glm::inverse(currentEntityTransform->m_finalTransform.m_testMatrix);
     }
     else
     {
@@ -319,17 +313,8 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     // if current entity has parent with bone
     if(parentEntityTransform)
     {
-        // optimization
-        // if(isBoneAnimated)
-        {
-            currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix =
-                    parentEntityTransform->m_finalTransform.m_boneAnimatedMatrix * animatedMatrix;
-        }
-        /*else
-        {
-            currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix =
-                    parentEntityTransform->m_finalTransform.m_boneAnimatedMatrix;
-        }*/
+        currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix =
+                parentEntityTransform->m_finalTransform.m_boneAnimatedMatrix * animatedMatrix;
     }
     else
     {
@@ -338,31 +323,9 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
 
     currentEntityTransform->m_ownTransform.m_boneAnimatedMatrix = animatedMatrix;
 
-    /*if(!currentBone)
-    {
-        currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix = currentEntityTransform->m_finalTransform.m_testMatrix;
-    }*/
+    // calculating final bone matrix for animated mesh
 
-    // finally updating bone matrix in uniform buffer
-
-    // glm::mat4 boneFinalMatrix = currentEntityTransform->m_finalTransform.m_testMatrix;
-    // todo: !!!! FIX ANIMATED MATRIX currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix
     glm::mat4 boneFinalMatrix = currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix * offsetMatrix;
-    // glm::mat4 boneFinalMatrix = glm::identity<glm::mat4>();
-
-    // glm::mat4 boneFinalMatrix = currentEntityTransform->m_finalTransform.m_testMatrix * offsetMatrix * currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix;
-
-    // if(isBoneAnimated)
-    {
-        // boneFinalMatrix = (currentEntityTransform->m_finalTransform.m_testMatrix) * currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix * offsetMatrix;
-        // boneFinalMatrix *= offsetMatrix;
-    }
-    /*else
-    {
-        boneFinalMatrix *= currentEntityTransform->m_finalTransform.m_testMatrix * offsetMatrix;
-    }*/
-
-    // boneFinalMatrix = glm::identity<glm::mat4>();
 
     // if bone is not animated than we are set boneMatrix to identity to avoid incorrect position of node or mesh.
     // offset matrix will cancel the model matrix of node or mesh if bone is not animated
@@ -382,13 +345,10 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
 
     currentEntityTransform->m_isAnimated = isBoneAnimated;
 
+    // drawing skeleton ==============================================
     if(currentBone)
     {
-        // glm::vec3 translation = currentEntityTransform->m_finalTransform.m_modelMatrix[3];
-
-        currentBone->m_currentPosition = (currentEntityTransform->m_finalTransform.m_testMatrix * offsetMatrix * currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix)[3];
-
-        // std::cout << "bone '" << currentBone->m_boneName << "' pos: " << currentBone->m_currentPosition << std::endl;
+        currentBone->m_currentPosition = (currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix)[3];
 
         auto parentBone = currentBone->m_parent.lock();
         if(parentBone)
@@ -398,7 +358,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
         }
     }
 
-    // updating current bone matrix data in m_bonesMatricesData
+    // finally updating current bone matrix data in m_bonesMatricesData
     // 16 is count of scalars in matrix
     // 4 is count of scalars in vector. this vector contains count of bones
     if(currentBone)

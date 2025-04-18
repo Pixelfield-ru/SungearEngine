@@ -8,8 +8,9 @@
  * Requires vertex attribute: ivec4 bonesIDsAttribute1
  * Requires vertex attribute: vec4 bonesWeightsAttribute0
  * Requires vertex attribute: vec4 bonesWeightsAttribute1
+ * Returns is mesh affected by any bone.
  */
-void calculateVertexPosAndNormal(vec3 inVertexPos, vec3 inVertexNormal, out vec4 outVertexPos, out vec3 outVertexNormal)
+bool calculateVertexPosAndNormal(vec3 inVertexPos, vec3 inVertexNormal, out vec4 outVertexPos, out vec3 outVertexNormal)
 {
     outVertexPos = vec4(0.0);
     outVertexNormal = vec3(0.0);
@@ -71,4 +72,6 @@ void calculateVertexPosAndNormal(vec3 inVertexPos, vec3 inVertexNormal, out vec4
         outVertexPos = vec4(inVertexPos, 1.0);
         outVertexNormal = inVertexNormal;
     }
+
+    return isVertexAffected;
 }

@@ -58,21 +58,28 @@ void main()
     vec4 totalPosition = vec4(0.0);
     vec3 totalNormal = vec3(0.0);
 
-    calculateVertexPosAndNormal(positionsAttribute, normalsAttribute, totalPosition, totalNormal);
+    mat4 finalModelMatrix = objectTransform.modelMatrix;
+
+    bool isMeshAffectedByBones = calculateVertexPosAndNormal(positionsAttribute, normalsAttribute, totalPosition, totalNormal);
+
+    if(isMeshAffectedByBones)
+    {
+        finalModelMatrix = mat4(1.0);
+    }
 
     vsOut.UV = UVAttribute.xy;
     vsOut.normal = normalize(totalNormal);
-    vsOut.worldNormal = normalize(mat3(transpose(inverse(objectTransform.modelMatrix))) * totalNormal);
+    vsOut.worldNormal = normalize(mat3(transpose(inverse(finalModelMatrix))) * totalNormal);
 
     vsOut.vertexPos = totalPosition.xyz;
-    vsOut.fragPos = vec3(objectTransform.modelMatrix * totalPosition);
+    vsOut.fragPos = vec3(finalModelMatrix * totalPosition);
 
     vsOut.bonesWeights0 = bonesWeightsAttribute0;
     vsOut.bonesWeights1 = bonesWeightsAttribute1;
 
-    vec3 T = normalize(vec3(objectTransform.modelMatrix * vec4(tangentsAttribute, 0.0)));
-    vec3 B = normalize(vec3(objectTransform.modelMatrix * vec4(bitangentsAttribute, 0.0)));
-    vec3 N = normalize(vec3(objectTransform.modelMatrix * vec4(vsOut.normal, 0.0)));
+    vec3 T = normalize(vec3(finalModelMatrix * vec4(tangentsAttribute, 0.0)));
+    vec3 B = normalize(vec3(finalModelMatrix * vec4(bitangentsAttribute, 0.0)));
+    vec3 N = normalize(vec3(finalModelMatrix * vec4(vsOut.normal, 0.0)));
     vsOut.TBN = mat3(T, B, N);
 
     vsOut.vertexColor0 = vertexColor0Attribute;

@@ -91,7 +91,7 @@ void SGCore::TransformationsUpdater::update(const double& dt, const double& fixe
                 auto& rigidbody3DTransform = rigidbody3D->m_body->getWorldTransform();
 
                 rigidbody3DTransform.setIdentity();
-                rigidbody3DTransform.setFromOpenGLMatrix(&finalTransform.m_modelMatrix[0][0]);
+                rigidbody3DTransform.setFromOpenGLMatrix(&finalTransform.m_animatedModelMatrix[0][0]);
             }
 
             // =====================================================================
