@@ -135,7 +135,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     for(const auto& node : nodesToInterpolate)
     {
         // std::cout << "bones animations count: " << node->m_skeletalAnimation->getBonesAnimationsCount() << std::endl;
-        SkeletalBoneAnimation* boneAnimation = node->m_skeletalAnimation->getBoneAnimation(currentBone ? currentBone->m_boneName : currentEntityBaseInfo.getRawName());
+        SkeletalBoneAnimation* boneAnimation = node->m_skeletalAnimation->getBoneAnimation(currentBone ? currentBone->getName() : currentEntityBaseInfo.getRawName());
         if(boneAnimation)
         {
             currentBoneAnims.push_back(boneAnimation);

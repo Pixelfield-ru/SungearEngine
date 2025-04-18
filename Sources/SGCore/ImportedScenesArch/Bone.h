@@ -41,6 +41,7 @@ namespace SGCore
 
     // i think it must be asset because we can store this bone
     // in custom user code and this bone must to be resolved automatically. assets can do it!
+    // BONE MUST BE ATTACHED ONLY TO ONE SKELETON. DO NOT SHARE ONE INSTANCE OF BONE BETWEEN MULTIPLE SKELETONS!!!!
     struct Bone : public IAsset, public IAssetsRefsResolver<Bone>
     {
         sg_serde_as_friend()
@@ -49,9 +50,10 @@ namespace SGCore
 
         sg_assets_refs_resolver_as_friend
 
+        friend struct Skeleton;
+
         // MEANS IDX IN m_allBones VECTOR IN PARENT SKELETON
         std::int32_t m_id = -1;
-        std::string m_boneName;
         glm::mat4 m_offsetMatrix = glm::identity<glm::mat4>();
 
         glm::vec3 m_currentPosition { 0.0f };
@@ -62,6 +64,8 @@ namespace SGCore
         std::vector<AssetRef<Bone>> m_children;
         // todo: make parent bone resolving (loading) when scene loaded
         AssetWeakRef<Bone> m_parent;
+
+        const std::string& getName() const noexcept;
 
     protected:
         /// does nothing!!
@@ -74,6 +78,11 @@ namespace SGCore
         void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
 
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
+
+    private:
+        // can be changed only from skeleton
+        std::string m_boneName;
+        AssetWeakRef<Skeleton> m_parentSkeleton;
     };
 }
 

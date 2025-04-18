@@ -4,6 +4,11 @@
 #include "Bone.h"
 #include "SGCore/Memory/AssetManager.h"
 
+const std::string& SGCore::Bone::getName() const noexcept
+{
+    return m_boneName;
+}
+
 void SGCore::Bone::doLoad(const InterpolatedPath& path)
 {
     LOG_NOT_SUPPORTED_FUNC(SGCORE_TAG);

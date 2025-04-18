@@ -558,7 +558,9 @@ std::vector<SGCore::AssetRef<SGCore::Skeleton>> SGCore::ModelAsset::processSkele
                 LOG_W(SGCORE_TAG, "Loaded new skeleton by path '{}'!",
                       Utils::toUTF8(skeletonPath.resolved().u16string()));
 
-                initAndAddBoneToSkeleton(skeleton->m_rootBone, currentBoneHierarchyNode, bones, skeleton, inputMeshes);
+                AssetRef<Bone> rootBone;
+                initAndAddBoneToSkeleton(rootBone, currentBoneHierarchyNode, bones, skeleton, inputMeshes);
+                skeleton->setRootBone(rootBone, rootBone->getName());
 
                 outputSkeletons.push_back(skeleton);
             }
@@ -586,8 +588,9 @@ void SGCore::ModelAsset::initAndAddBoneToSkeleton(AssetRef<Bone>& skeletonBone,
     // creating skeleton bone =======================================================================================
 
     skeletonBone = toSkeleton->getParentAssetManager()->getOrAddAssetByPath<Bone>(toSkeleton->getPath() / "bones" / tmpBone.m_name);
-    skeletonBone->m_boneName = tmpBone.m_name;
-    skeletonBone->m_id = toSkeleton->m_allBones.size();
+    toSkeleton->addBone(skeletonBone, tmpBone.m_name);
+    skeletonBone->m_id = toSkeleton->bonesCount();
+
     if(!tmpBone.m_aiBones.empty())
     {
         glm::mat4 offsetMatrix = AssimpUtils::aiToGLM(tmpBone.m_aiBones[0]->mOffsetMatrix);
@@ -641,8 +644,6 @@ void SGCore::ModelAsset::initAndAddBoneToSkeleton(AssetRef<Bone>& skeletonBone,
 
         skeletonBone->m_affectedMeshesBoneData.emplace_back(std::move(meshBoneData));
     }
-
-    toSkeleton->m_allBones.push_back(skeletonBone);
 
     // =============================================================================================================
 

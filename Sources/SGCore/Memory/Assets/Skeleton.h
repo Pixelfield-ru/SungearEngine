@@ -7,10 +7,11 @@
 
 #include "IAsset.h"
 #include "SGCore/ImportedScenesArch/Bone.h"
+#include "SGCore/Memory/AssetRefFromThis.h"
 
 namespace SGCore
 {
-    struct Skeleton : public IAsset, public IAssetsRefsResolver<Skeleton>
+    struct Skeleton : public IAsset, public IAssetsRefsResolver<Skeleton>, public AssetRefFromThis<Skeleton>
     {
         sg_serde_as_friend()
 
@@ -18,13 +19,28 @@ namespace SGCore
 
         sg_assets_refs_resolver_as_friend
 
-        AssetRef<Bone> m_rootBone;
-        std::vector<AssetRef<Bone>> m_allBones;
         // std::vector<Ref<Bone>> m_bones;
 
-        [[nodiscard]] AssetRef<Bone> findBone(const std::string& boneName) const noexcept;
+        void addBone(AssetRef<Bone> bone, std::string boneName) noexcept;
+        // todo: impl
+        void removeBone(const std::string& name) noexcept;
+
+        void setRootBone(AssetRef<Bone> rootBone, std::string boneName) noexcept;
+        const Bone* getRootBone() const noexcept;
+
+        void renameBone(const std::string& lastBoneName, const std::string& newBoneName) noexcept;
+
+        [[nodiscard]] Bone* findBone(const std::string& boneName) const noexcept;
+
+        // const std::vector<AssetRef<Bone>>& getAllBones() const noexcept;
+        std::int64_t bonesCount() const noexcept;
 
     protected:
+        AssetRef<Bone> m_rootBone;
+        std::vector<AssetRef<Bone>> m_allBones;
+        // first - name of bone. second - index of bone in m_allBones vector.
+        std::unordered_map<std::string, std::int64_t> m_allBonesMap;
+
         /// does nothing for now
         void doLoad(const InterpolatedPath& path) override;
 
