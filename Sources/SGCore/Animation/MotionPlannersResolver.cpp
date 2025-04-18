@@ -103,6 +103,8 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
         // updating count of bones in data vector
         motionPlanner.m_bonesMatricesData[0] = updatedBonesCount;
 
+        std::cout << "updatedBonesCount: " << updatedBonesCount << std::endl;
+
         // updating data in texture buffer after updating bones matrices
         motionPlanner.m_bonesMatricesBuffer->bind(0);
         motionPlanner.m_bonesMatricesBuffer->subTextureBufferData(motionPlanner.m_bonesMatricesData.data(),
@@ -296,10 +298,18 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
         animatedMatrix *= glm::toMat4(interpolatedRotation);
         animatedMatrix = glm::scale(animatedMatrix, interpolatedScale);
     }
+    else
+    {
+        // if(!currentBone)
+        {
+            animatedMatrix = currentEntityTransform->m_ownTransform.m_testMatrix;
+        }
+    }
 
     if(currentBone)
     {
         offsetMatrix = currentBone->m_offsetMatrix;
+        // offsetMatrix = glm::inverse(currentEntityTransform->m_finalTransform.m_testMatrix);
     }
     else
     {
@@ -310,16 +320,16 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     if(parentEntityTransform)
     {
         // optimization
-        if(isBoneAnimated)
+        // if(isBoneAnimated)
         {
             currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix =
                     parentEntityTransform->m_finalTransform.m_boneAnimatedMatrix * animatedMatrix;
         }
-        else
+        /*else
         {
             currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix =
                     parentEntityTransform->m_finalTransform.m_boneAnimatedMatrix;
-        }
+        }*/
     }
     else
     {
@@ -328,13 +338,29 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
 
     currentEntityTransform->m_ownTransform.m_boneAnimatedMatrix = animatedMatrix;
 
-    // finally updating bone matrix in uniform buffer
-    glm::mat4 boneFinalMatrix = currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix;
-
-    if(isBoneAnimated)
+    /*if(!currentBone)
     {
-        boneFinalMatrix *= offsetMatrix;
+        currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix = currentEntityTransform->m_finalTransform.m_testMatrix;
+    }*/
+
+    // finally updating bone matrix in uniform buffer
+
+    // glm::mat4 boneFinalMatrix = currentEntityTransform->m_finalTransform.m_testMatrix;
+    // todo: !!!! FIX ANIMATED MATRIX currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix
+    glm::mat4 boneFinalMatrix = currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix * offsetMatrix;
+    // glm::mat4 boneFinalMatrix = glm::identity<glm::mat4>();
+
+    // glm::mat4 boneFinalMatrix = currentEntityTransform->m_finalTransform.m_testMatrix * offsetMatrix * currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix;
+
+    // if(isBoneAnimated)
+    {
+        // boneFinalMatrix = (currentEntityTransform->m_finalTransform.m_testMatrix) * currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix * offsetMatrix;
+        // boneFinalMatrix *= offsetMatrix;
     }
+    /*else
+    {
+        boneFinalMatrix *= currentEntityTransform->m_finalTransform.m_testMatrix * offsetMatrix;
+    }*/
 
     // boneFinalMatrix = glm::identity<glm::mat4>();
 
@@ -346,7 +372,10 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     }
     else
     {
-        currentEntityTransform->m_boneMatrix = animatedMatrix * offsetMatrix;
+        if(!currentBone)
+        {
+            currentEntityTransform->m_boneMatrix = animatedMatrix * offsetMatrix;
+        }
     }
 
     // currentEntityTransform->m_boneMatrix = glm::identity<glm::mat4>();
@@ -394,7 +423,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
         EntityBaseInfo::reg_t& childEntityBaseInfo = inRegistry->get<EntityBaseInfo>(childEntity);
         Transform::reg_t* childEntityTransform = inRegistry->tryGet<Transform>(childEntity);
 
-        if(!childEntityTransform) continue;
+        // if(!childEntityTransform) continue;
 
         processMotionNodes(dt,
                            inRegistry,

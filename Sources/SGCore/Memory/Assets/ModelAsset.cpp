@@ -594,6 +594,15 @@ void SGCore::ModelAsset::initAndAddBoneToSkeleton(AssetRef<Bone>& skeletonBone,
 
         // offset matrix is identical for each mesh that is affected by this bone
         skeletonBone->m_offsetMatrix = offsetMatrix;
+
+        /*if(tmpBone.m_aiBones.size() > 1)
+        {
+            std::cout << "stats for bones with name '" << tmpBone.m_name << "'" << std::endl;
+            for(const auto & b : tmpBone.m_aiBones)
+            {
+                std::cout << fmt::format("=============\nAI Bone name: '{}', offset matrix: \n{}\nNum weights: {}\n==============", b->mName.data, glm::to_string(AssimpUtils::aiToGLM(b->mOffsetMatrix)), b->mNumWeights);
+            }
+        }*/
     }
 
     for(size_t i = 0; i < tmpBone.m_aiBones.size(); ++i)
@@ -608,9 +617,9 @@ void SGCore::ModelAsset::initAndAddBoneToSkeleton(AssetRef<Bone>& skeletonBone,
         meshBoneData.m_affectedMesh = foundMeshIt != inputMeshes.end() ? foundMeshIt->second : nullptr;
 
         // prealloc
-        meshBoneData.m_weights.reserve(tmpBone.m_aiBones[i]->mNumWeights);
+        meshBoneData.m_weights.reserve(curAiBone->mNumWeights);
 
-        for(size_t j = 0; j < tmpBone.m_aiBones[i]->mNumWeights; ++j)
+        for(size_t j = 0; j < curAiBone->mNumWeights; ++j)
         {
             const auto& aiWeight = curAiBone->mWeights[j];
 

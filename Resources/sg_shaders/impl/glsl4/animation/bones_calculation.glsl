@@ -24,7 +24,7 @@ void calculateVertexPosAndNormal(vec3 inVertexPos, vec3 inVertexNormal, out vec4
 
     bool isVertexAffected = false;
 
-    for(int i = 0 ; i < SG_MAX_BONES_PER_VERTEX && i < bonesCount; ++i)
+    for(int i = 0; i < SG_MAX_BONES_PER_VERTEX && i < bonesCount; ++i)
     {
         int curBoneID = -1;
         float curBoneWeight = 0.0f;

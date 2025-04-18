@@ -23,6 +23,7 @@ namespace SGCore
 
         /// Can be glm::identity or boneAnimatedMatrix * boneOffsetMatrix.
         glm::mat4 m_boneMatrix = glm::identity<glm::mat4>();
+        glm::mat4 m_boneFinalOffsetMatrix = glm::identity<glm::mat4>();
 
         // will transform follow parent entity`s translation, rotation and scale
         // x - follow translation

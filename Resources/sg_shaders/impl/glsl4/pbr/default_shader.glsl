@@ -534,7 +534,12 @@ void main()
             bonesColor[i] += vsIn.bonesWeights[i];
         }
     }*/
-    // layerColor.rgb = vsIn.bonesWeights.rgb;
+    /*vec3 debugColor = vec3(0.0);
+    vec3 d = vec3(1.0, 1.0, 1.0);
+
+    debugColor += vsIn.bonesWeights0.rgb * d;
+
+    layerColor.rgb = debugColor;*/
     //  layerColor = bonesColor;
     // layerColor.rgb = vec3(vsIn.bonesIDs);
 

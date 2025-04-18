@@ -44,8 +44,11 @@ namespace SGCore
         struct BoneHierarchyNode
         {
             std::string m_name;
-            // bones with that name. IT IS GUARANTEED THAT m_aiBones.size() == m_affectedMeshes.size() AFTER COLLECTING BONES
+            /** bones with that name. IT IS GUARANTEED THAT m_aiBones.size() == m_affectedMeshes.size() AFTER COLLECTING BONES
+             * BONES ARE DIFFERENT IN THIS VECTOR.
+             **/
             std::vector<const aiBone*> m_aiBones { };
+            // const aiBone* m_aiBone = nullptr;
             // the meshes affected by this bone. IT IS GUARANTEED THAT m_aiBones.size() == m_affectedMeshes.size() AFTER COLLECTING BONES
             std::vector<const aiMesh*> m_affectedMeshes { };
             std::vector<std::int32_t> m_children;
