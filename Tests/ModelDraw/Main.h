@@ -2,7 +2,7 @@
 // Created by stuka on 06.02.2025.
 //
 
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef SUNGEARENGINE_MODELTEST_MAIN_H
+#define SUNGEARENGINE_MODELTEST_MAIN_H
 
-#endif //MAIN_H
+#endif // SUNGEARENGINE_MODELTEST_MAIN_H

@@ -27,10 +27,10 @@ namespace GLGraphicsTypesCaster
                 return GL_POINTS;
             case SGDrawMode::SGG_TRIANGLE_STRIP:
                 return GL_TRIANGLE_STRIP;
-                break;
             case SGDrawMode::SGG_TRIANGLE_FAN:
                 return GL_TRIANGLE_FAN;
-                break;
+            case SGDrawMode::SGG_PATCHES:
+                return GL_PATCHES;
             
             default:
                 return GL_TRIANGLES;

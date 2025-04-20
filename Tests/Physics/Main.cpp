@@ -46,7 +46,7 @@ ECS::entity_t testPlayerEntity;
 ECS::entity_t planeEntity;
 
 SGCore::Ref<SGCore::ITexture2D> attachmentToDisplay;
-SGCore::Ref<SGCore::IMeshData> quadMesh;
+SGCore::Ref<SGCore::IMeshData> quadMeshData;
 SGCore::MeshRenderState quadMeshRenderState;
 
 // ===========================================================
@@ -257,36 +257,36 @@ void coreInit()
 
     // creating quad model for drawing camera framebuffer attachment to screen ======================================
 
-    quadMesh = SGCore::Ref<SGCore::IMeshData>(SGCore::CoreMain::getRenderer()->createMeshData());
+    quadMeshData = SGCore::Ref<SGCore::IMeshData>(SGCore::CoreMain::getRenderer()->createMeshData());
 
-    quadMesh->m_vertices.resize(4);
+    quadMeshData->m_vertices.resize(4);
 
-    quadMesh->m_vertices[0] = {
+    quadMeshData->m_vertices[0] = {
         .m_position = { -1, -1, 0.0f }
     };
 
-    quadMesh->m_vertices[1] = {
+    quadMeshData->m_vertices[1] = {
         .m_position = { -1, 1, 0.0f }
     };
 
-    quadMesh->m_vertices[2] = {
+    quadMeshData->m_vertices[2] = {
         .m_position = { 1, 1, 0.0f }
     };
 
-    quadMesh->m_vertices[3] = {
+    quadMeshData->m_vertices[3] = {
         .m_position = { 1, -1, 0.0f }
     };
 
-    quadMesh->m_indices.resize(6);
+    quadMeshData->m_indices.resize(6);
 
-    quadMesh->m_indices[0] = 0;
-    quadMesh->m_indices[1] = 2;
-    quadMesh->m_indices[2] = 1;
-    quadMesh->m_indices[3] = 0;
-    quadMesh->m_indices[4] = 3;
-    quadMesh->m_indices[5] = 2;
+    quadMeshData->m_indices[0] = 0;
+    quadMeshData->m_indices[1] = 2;
+    quadMeshData->m_indices[2] = 1;
+    quadMeshData->m_indices[3] = 0;
+    quadMeshData->m_indices[4] = 3;
+    quadMeshData->m_indices[5] = 2;
 
-    quadMesh->prepare();
+    quadMeshData->prepare();
 }
 
 void onUpdate(const double& dt, const double& fixedDt)
@@ -307,10 +307,10 @@ void onUpdate(const double& dt, const double& fixedDt)
     screenShader->useTextureBlock("u_bufferToDisplay", 0);
 
     SGCore::CoreMain::getRenderer()->renderArray(
-        quadMesh->getVertexArray(),
+        quadMeshData->getVertexArray(),
         quadMeshRenderState,
-        quadMesh->m_vertices.size(),
-        quadMesh->m_indices.size()
+        quadMeshData->m_vertices.size(),
+        quadMeshData->m_indices.size()
     );
 
     if (InputManager::getMainInputListener()->keyboardKeyReleased(KeyboardKey::KEY_M))

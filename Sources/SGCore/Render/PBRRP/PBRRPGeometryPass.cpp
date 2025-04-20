@@ -27,6 +27,7 @@
 #include "SGCore/Render/Alpha/OpaqueEntityTag.h"
 #include "SGCore/Render/Alpha/TransparentEntityTag.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
+#include "SGCore/Render/Terrain.h"
 
 size_t renderedInOctrees = 0;
 
@@ -60,13 +61,14 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
     auto camerasView = registry->view<EntityBaseInfo, RenderingBase, Transform>();
     auto opaqueMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, OpaqueEntityTag>(ECS::ExcludeTypes<DisableMeshGeometryPass>{});
     auto transparentMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, TransparentEntityTag>(ECS::ExcludeTypes<DisableMeshGeometryPass>{});
+    auto terrainsView = registry->view<EntityBaseInfo, Mesh, Transform, Terrain>(ECS::ExcludeTypes<DisableMeshGeometryPass>{});
 
     if(m_shader)
     {
         m_shader->bind();
     }
     
-    camerasView.each([&opaqueMeshesView, &transparentMeshesView, &renderPipeline, &scene, &registry, this]
+    camerasView.each([&opaqueMeshesView, &transparentMeshesView, &terrainsView, &renderPipeline, &scene, &registry, this]
                              (const ECS::entity_t& cameraEntity,
                               const EntityBaseInfo::reg_t& camera3DBaseInfo,
                               RenderingBase::reg_t& cameraRenderingBase, Transform::reg_t& cameraTransform) {
@@ -88,6 +90,33 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
         }
 
         m_opaqueEntitiesRenderState.use();
+
+        terrainsView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, this](
+            const ECS::entity_t& terrainEntity,
+            EntityBaseInfo::reg_t& meshedEntityBaseInfo,
+            Mesh::reg_t& mesh,
+            Transform::reg_t& meshTransform,
+            const Terrain::reg_t& terrain) {
+                Ref<PostProcessLayer> meshPPLayer = mesh.m_base.m_layeredFrameReceiversMarkup[cameraLayeredFrameReceiver].lock();
+
+                if(cameraLayeredFrameReceiver)
+                {
+                    if(!meshPPLayer)
+                    {
+                        meshPPLayer = cameraLayeredFrameReceiver->getDefaultLayer();
+                    }
+                }
+
+                SG_ASSERT(meshPPLayer != nullptr,
+                          "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
+
+                renderMesh(registry, terrainEntity, meshTransform, mesh,
+                           meshedEntityBaseInfo, camera3DBaseInfo, meshPPLayer, true, cameraLayeredFrameReceiver);
+            });
+
+        // =====================================================================================================
+        // =====================================================================================================
+        // =====================================================================================================
 
         opaqueMeshesView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, this]
                                 (const ECS::entity_t& meshEntity, EntityBaseInfo::reg_t& meshedEntityBaseInfo,

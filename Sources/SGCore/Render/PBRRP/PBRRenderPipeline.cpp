@@ -55,6 +55,11 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
             "BatchingShader",
             "${enginePath}/Resources/sg_shaders/features/pbr/batching.sgshader"
     );
+
+    m_shadersPaths.addPath(
+            "StandardTerrainShader",
+            "${enginePath}/Resources/sg_shaders/features/terrain.sgshader"
+    );
     
     // configure render passes --------
 

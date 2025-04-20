@@ -50,7 +50,7 @@ extern "C" {
 
 SGCore::AssetRef<SGCore::IShader> screenShader;
 SGCore::Ref<SGCore::Scene> scene;
-SGCore::Ref<SGCore::IMeshData> quadMesh;
+SGCore::Ref<SGCore::IMeshData> quadMeshData;
 SGCore::AssetRef<SGCore::ITexture2D> someTexture;
 SGCore::AssetRef<SGCore::AudioTrackAsset> copterSound;
 SGCore::MeshRenderState quadMeshRenderState;
@@ -185,11 +185,11 @@ void coreInit()
     auto& modelAssetLoadSlot = modelAsset->onLazyLoadDone += [](SGCore::IAsset* thisAsset) {
         auto* modelAsset = static_cast<SGCore::ModelAsset*>(thisAsset);
 
-        // auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf/skeletons/GLTF_created_0_rootJoint");
+        auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf/skeletons/GLTF_created_0_rootJoint");
 
         // auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf/skeletons/GLTF_created_0_rootJoint");
 
-        auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf/skeletons/_rootJoint");
+        // auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf/skeletons/_rootJoint");
 
         // auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx/skeletons/mixamorig:Hips");
 
@@ -214,13 +214,13 @@ void coreInit()
                     "${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx/animations"
             );*/
 
-            /*auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>(
-                "${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf/animations");*/
+            auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>(
+                "${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf/animations");
 
             // auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/tec/scene.gltf/animations");
 
             // auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf/animations");
-            auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf/animations");
+            // auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf/animations");
 
             auto& motionPlanner = SGCore::Scene::getCurrentScene()->getECSRegistry()->emplace<SGCore::MotionPlanner>(
                 entities[0]);
@@ -289,46 +289,48 @@ void coreInit()
         }
     };
 
-    // SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf");
+    SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf");
 
     // SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx");
 
     // SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf");
 
-    SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf");
+    // SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf");
+
+    // SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Models/vss/scene.gltf");
 
     // creating quad model for drawing camera framebuffer attachment to screen ======================================
 
-    quadMesh = SGCore::Ref<SGCore::IMeshData>(SGCore::CoreMain::getRenderer()->createMeshData());
+    quadMeshData = SGCore::Ref<SGCore::IMeshData>(SGCore::CoreMain::getRenderer()->createMeshData());
 
-    quadMesh->m_vertices.resize(4);
+    quadMeshData->m_vertices.resize(4);
 
-    quadMesh->m_vertices[0] = {
+    quadMeshData->m_vertices[0] = {
         .m_position = { -1, -1, 0.0f }
     };
 
-    quadMesh->m_vertices[1] = {
+    quadMeshData->m_vertices[1] = {
         .m_position = { -1, 1, 0.0f }
     };
 
-    quadMesh->m_vertices[2] = {
+    quadMeshData->m_vertices[2] = {
         .m_position = { 1, 1, 0.0f }
     };
 
-    quadMesh->m_vertices[3] = {
+    quadMeshData->m_vertices[3] = {
         .m_position = { 1, -1, 0.0f }
     };
 
-    quadMesh->m_indices.resize(6);
+    quadMeshData->m_indices.resize(6);
 
-    quadMesh->m_indices[0] = 0;
-    quadMesh->m_indices[1] = 2;
-    quadMesh->m_indices[2] = 1;
-    quadMesh->m_indices[3] = 0;
-    quadMesh->m_indices[4] = 3;
-    quadMesh->m_indices[5] = 2;
+    quadMeshData->m_indices[0] = 0;
+    quadMeshData->m_indices[1] = 2;
+    quadMeshData->m_indices[2] = 1;
+    quadMeshData->m_indices[3] = 0;
+    quadMeshData->m_indices[4] = 3;
+    quadMeshData->m_indices[5] = 2;
 
-    quadMesh->prepare();
+    quadMeshData->prepare();
 }
 
 void onUpdate(const double& dt, const double& fixedDt)
@@ -377,10 +379,10 @@ void onUpdate(const double& dt, const double& fixedDt)
     screenShader->useTextureBlock("u_bufferToDisplay", 0);
 
     SGCore::CoreMain::getRenderer()->renderArray(
-        quadMesh->getVertexArray(),
+        quadMeshData->getVertexArray(),
         quadMeshRenderState,
-        quadMesh->m_vertices.size(),
-        quadMesh->m_indices.size()
+        quadMeshData->m_vertices.size(),
+        quadMeshData->m_indices.size()
     );
 
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_2))

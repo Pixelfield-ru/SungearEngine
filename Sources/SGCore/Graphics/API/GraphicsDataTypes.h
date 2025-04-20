@@ -71,7 +71,8 @@ enum class SGDrawMode
     SGG_TRIANGLE_FAN,
     SGG_LINES,
     SGG_QUADS,
-    SGG_POINTS
+    SGG_POINTS,
+    SGG_PATCHES
 };
 
 enum class SGFaceType
