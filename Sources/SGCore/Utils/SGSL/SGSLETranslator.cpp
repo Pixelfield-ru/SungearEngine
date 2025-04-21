@@ -13,6 +13,30 @@ void SGCore::SGSLETranslator::processCode(const std::filesystem::path& path, con
     // std::cout << preprocessedCode << std::endl;
 
     translateCode(path, preprocessedCode, toAnalyzedFile);
+
+    std::string savePath = Utils::toUTF8(path.u16string());
+
+    std::replace(savePath.begin(), savePath.end(), '/', '_');
+    std::replace(savePath.begin(), savePath.end(), '\\', '_');
+    std::replace(savePath.begin(), savePath.end(), '.', '_');
+    std::replace(savePath.begin(), savePath.end(), ':', '_');
+
+    for(auto& s : toAnalyzedFile->getSubShaders())
+    {
+        std::string subShaderType;
+        switch(s.getType())
+        {
+            case SST_NONE: subShaderType = "none"; break;
+            case SST_VERTEX: subShaderType = "vertex"; break;
+            case SST_FRAGMENT: subShaderType = "fragment"; break;
+            case SST_GEOMETRY: subShaderType = "geometry"; break;
+            case SST_COMPUTE: subShaderType = "compute"; break;
+            case SST_TESS_CONTROL: subShaderType = "tesselation-control"; break;
+            case SST_TESS_EVALUATION: subShaderType = "tesselation-evalution"; break;
+        }
+
+        FileUtils::writeToFile(std::filesystem::path("SGSLETranslatorDebug") / (savePath + "_" + subShaderType + ".shader"), s.getCode(), false, true);
+    }
 }
 
 std::string SGCore::SGSLETranslator::preprocessorPass(const std::filesystem::path& path, const std::string& code) noexcept

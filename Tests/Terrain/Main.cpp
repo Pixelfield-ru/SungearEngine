@@ -41,13 +41,18 @@ SGCore::Ref<SGCore::Scene> scene;
 SGCore::AssetRef<SGCore::IShader> screenShader;
 SGCore::Ref<SGCore::IMeshData> quadMeshData;
 SGCore::AssetRef<SGCore::IMeshData> terrainMeshData;
+SGCore::AssetRef<SGCore::ModelAsset> testModelAsset;
 SGCore::MeshRenderState quadMeshRenderState;
 
 SGCore::Ref<SGCore::ITexture2D> attachmentToDisplay;
 
 SGCore::ECS::entity_t mainCamera;
+SGCore::ECS::entity_t terrainEntity;
 
 SGCore::AssetRef<SGCore::ITexture2D> terrainDiffuseTex;
+SGCore::AssetRef<SGCore::ITexture2D> terrainDisplacementTex;
+SGCore::AssetRef<SGCore::ITexture2D> terrainNormalsTex;
+SGCore::AssetRef<SGCore::ITexture2D> terrainAORoughnessMetalTex;
 SGCore::AssetRef<SGCore::ITexture2D> terrainHeightmapTex;
 
 void generateTerrain(const SGCore::AssetRef<SGCore::IMeshData>& terrainMesh, int patchesCountX, int patchesCountY, int patchSize) noexcept
@@ -63,35 +68,37 @@ void generateTerrain(const SGCore::AssetRef<SGCore::IMeshData>& terrainMesh, int
         for(int x = 0; x < patchesCountX; ++x)
         {
             terrainMesh->m_vertices.push_back({
-                .m_position = glm::vec3 { -1, 0, -1.0f } * patchSize + glm::vec3(curPos.x, 0.0, curPos.y)
+                .m_position = glm::vec3 { -1, 0, -1.0f } * patchSize + glm::vec3(curPos.x, 0.0, curPos.y),
+                .m_uv = { x / (float) patchesCountX, y / (float) patchesCountY, 0.0 }
             });
 
             terrainMesh->m_vertices.push_back({
-                .m_position = glm::vec3 { -1, 0, 1.0f } * patchSize + glm::vec3(curPos.x, 0.0, curPos.y)
+                .m_position = glm::vec3 { -1, 0, 1.0f } * patchSize + glm::vec3(curPos.x, 0.0, curPos.y),
+                .m_uv = { x / (float) patchesCountX, (y + 1) / (float) patchesCountY, 0.0f }
             });
 
             terrainMesh->m_vertices.push_back({
-                .m_position = glm::vec3 { 1, 0, 1.0f } * patchSize + glm::vec3(curPos.x, 0.0, curPos.y)
+                .m_position = glm::vec3 { 1, 0, 1.0f } * patchSize + glm::vec3(curPos.x, 0.0, curPos.y),
+                .m_uv = { (x + 1) / (float) patchesCountX, (y + 1) / (float) patchesCountY, 0.0f }
             });
 
             terrainMesh->m_vertices.push_back({
-                .m_position = glm::vec3 { 1, 0, -1.0f } * patchSize + glm::vec3(curPos.x, 0.0, curPos.y)
+                .m_position = glm::vec3 { 1, 0, -1.0f } * patchSize + glm::vec3(curPos.x, 0.0, curPos.y),
+                .m_uv = { (x + 1) / (float) patchesCountX, y / (float) patchesCountY, 0.0f }
             });
 
-            terrainMeshData->m_indices.push_back(currentIdx + 0);
-            terrainMeshData->m_indices.push_back(currentIdx + 2);
-            terrainMeshData->m_indices.push_back(currentIdx + 1);
             terrainMeshData->m_indices.push_back(currentIdx + 0);
             terrainMeshData->m_indices.push_back(currentIdx + 3);
             terrainMeshData->m_indices.push_back(currentIdx + 2);
+            terrainMeshData->m_indices.push_back(currentIdx + 1);
 
             currentIdx += 4;
 
-            curPos.x += patchSize + patchHalfSize.x;
+            curPos.x += patchSize + patchHalfSize.x * 2.0f;
         }
 
         curPos.x = 0;
-        curPos.y += patchSize + patchHalfSize.y;
+        curPos.y += patchSize + patchHalfSize.y * 2.0f;
     }
 }
 
@@ -120,7 +127,10 @@ void coreInit()
 
     screenShader = mainAssetManager->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
 
-    terrainDiffuseTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/chess.jpg");
+    terrainDiffuseTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test_terrain/diffuse.png");
+    terrainDisplacementTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test_terrain/displacement.png");
+    terrainNormalsTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test_terrain/normals.png");
+    terrainAORoughnessMetalTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test_terrain/ao_roughness_metal.png");
     terrainHeightmapTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test_heightmap0.png");
 
     // creating camera entity
@@ -214,14 +224,39 @@ void coreInit()
     standardTerrainMaterial->m_shader =
             mainAssetManager->loadAsset<SGCore::IShader>(
                     *SGCore::RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["StandardTerrainShader"]);
-    standardTerrainMaterial->m_meshRenderState.m_useFacesCulling = true;
+    standardTerrainMaterial->m_meshRenderState.m_useFacesCulling = false;
+    standardTerrainMaterial->m_meshRenderState.m_facesCullingPolygonsOrder = SGPolygonsOrder::SGG_CCW;
+    //standardTerrainMaterial->m_meshRenderState.m_useIndices = false;
     standardTerrainMaterial->m_meshRenderState.m_drawMode = SGDrawMode::SGG_PATCHES;
-    standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE, terrainHeightmapTex);
+    standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE, terrainDiffuseTex);
+    standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_DISPLACEMENT, terrainDisplacementTex);
+    standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_NORMALS, terrainNormalsTex);
+    standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_LIGHTMAP, terrainAORoughnessMetalTex);
+    standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE_ROUGHNESS, terrainAORoughnessMetalTex);
+    standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_METALNESS, terrainAORoughnessMetalTex);
     standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_HEIGHT, terrainHeightmapTex);
+
+    // creating terrain material ==============================
+
+    auto testMaterial = mainAssetManager->getOrAddAssetByAlias<SGCore::IMaterial>("test_material_0");
+    testMaterial->m_shader =
+            mainAssetManager->loadAsset<SGCore::IShader>(
+                    *SGCore::RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["StandardMeshShader"]);
+    testMaterial->m_meshRenderState.m_useFacesCulling = false;
+    testMaterial->m_meshRenderState.m_facesCullingPolygonsOrder = SGPolygonsOrder::SGG_CCW;
+    //standardTerrainMaterial->m_meshRenderState.m_useIndices = false;
+    testMaterial->m_meshRenderState.m_drawMode = SGDrawMode::SGG_TRIANGLES;
+    testMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE, terrainDiffuseTex);
+    testMaterial->addTexture2D(SGTextureType::SGTT_DISPLACEMENT, terrainDisplacementTex);
+    testMaterial->addTexture2D(SGTextureType::SGTT_NORMALS, terrainNormalsTex);
+    testMaterial->addTexture2D(SGTextureType::SGTT_LIGHTMAP, terrainAORoughnessMetalTex);
+    testMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE_ROUGHNESS, terrainAORoughnessMetalTex);
+    testMaterial->addTexture2D(SGTextureType::SGTT_METALNESS, terrainAORoughnessMetalTex);
+    testMaterial->addTexture2D(SGTextureType::SGTT_HEIGHT, terrainHeightmapTex);
 
     // creating terrain entity ================================
 
-    const auto terrainEntity = ecsRegistry->create();
+    terrainEntity = ecsRegistry->create();
 
     auto& terrainTransform = ecsRegistry->emplace<SGCore::Transform>(terrainEntity, SGCore::MakeRef<SGCore::Transform>());
     ecsRegistry->emplace<SGCore::NonSavable>(terrainEntity);
@@ -232,6 +267,31 @@ void coreInit()
 
     terrainMesh.m_base.setMeshData(terrainMeshData);
     terrainMesh.m_base.setMaterial(standardTerrainMaterial);
+
+    // =================================================================
+    // ================================================================= test
+    // =================================================================
+
+    testModelAsset = mainAssetManager->loadAssetWithAlias<SGCore::ModelAsset>(
+        "quad_test",
+        "${enginePath}/Resources/models/standard/cube.obj"
+    );
+
+    std::vector<SGCore::ECS::entity_t> testQuadEntities;
+    testModelAsset->m_rootNode->addOnScene(scene, SG_LAYER_OPAQUE_NAME, [&testQuadEntities, &testMaterial](const auto& entity) {
+        testQuadEntities.push_back(entity);
+        scene->getECSRegistry()->emplace<SGCore::IgnoreOctrees>(entity);
+        scene->getECSRegistry()->remove<SGCore::Pickable>(entity);
+        scene->getECSRegistry()->remove<SGCore::TransparentEntityTag>(entity);
+
+        auto* meshComponent = scene->getECSRegistry()->tryGet<SGCore::Mesh>(entity);
+        if(meshComponent)
+        {
+            meshComponent->m_base.setMaterial(testMaterial);
+        }
+    });
+
+    scene->getECSRegistry()->get<SGCore::Transform>(testQuadEntities[0])->m_ownTransform.m_position.y += 10.0f;
 
     // =================================================================
     // =================================================================
@@ -286,6 +346,14 @@ void onUpdate(const double& dt, const double& fixedDt)
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_RIGHT))
     {
         scene->getECSRegistry()->get<SGCore::Transform>(mainCamera)->m_ownTransform.m_yawPitchRoll.y += 0.5f;
+    }
+
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_3))
+    {
+        auto terrainTransform = scene->getECSRegistry()->get<SGCore::Transform>(terrainEntity);
+        // terrainTransform->m_ownTransform.m_rotation = glm::identity<glm::quat>();
+        terrainTransform->m_ownTransform.m_rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(0, 0, 1)) * terrainTransform->m_ownTransform.m_rotation;
+
     }
 
     // rendering frame buffer attachment from camera to screen

@@ -110,8 +110,10 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
                 SG_ASSERT(meshPPLayer != nullptr,
                           "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
 
+                glPatchParameteri(GL_PATCH_VERTICES, 4);
+
                 renderMesh(registry, terrainEntity, meshTransform, mesh,
-                           meshedEntityBaseInfo, camera3DBaseInfo, meshPPLayer, true, cameraLayeredFrameReceiver);
+                           meshedEntityBaseInfo, camera3DBaseInfo, meshPPLayer, false, cameraLayeredFrameReceiver);
             });
 
         // =====================================================================================================

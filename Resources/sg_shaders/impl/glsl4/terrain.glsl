@@ -17,18 +17,16 @@ out VSOut
 {
     vec3 vertexPos;
     vec3 fragPos;
+    vec2 UV;
 } vsOut;
 
 void main()
 {
-    /*vsOut.UV = UVAttribute.xy;
-    vsOut.normal = normalize(normalsAttribute);
-    vsOut.worldNormal = normalize(mat3(transpose(inverse(objectTransform.modelMatrix))) * normalsAttribute);*/
-
     vsOut.vertexPos = positionsAttribute;
     vsOut.fragPos = vec3(objectTransform.modelMatrix * vec4(positionsAttribute, 1.0));
+    vsOut.UV = UVAttribute.xy;
 
-    gl_Position = objectTransform.modelMatrix * vec4(positionsAttribute.xyz, 1.0);
+    gl_Position = vec4(positionsAttribute.xyz, 1.0);
 }
 
 #end
@@ -37,11 +35,29 @@ void main()
 
 #tess_control
 
-layout(vertices = 3) out;
+layout(vertices = 4) out;
+
+out TessControlOut
+{
+    vec2 UV;
+} tessControlOut[];
+
+in VSOut
+{
+    vec3 vertexPos;
+    vec3 fragPos;
+    vec2 UV;
+} vsIn[];
+
+int getTessLevel(vec3 p, float maxLevel, float maxDistance){
+    float l=distance(p,camera.position);
+    return int((maxLevel-1)*(1.0-clamp(l,0,maxDistance)/maxDistance))+1;
+}
 
 void main()
 {
     gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
+    tessControlOut[gl_InvocationID].UV = vsIn[gl_InvocationID].UV;
 
     const int MIN_TESS_LEVEL = 5;
     const int MAX_TESS_LEVEL = 70;
@@ -53,24 +69,30 @@ void main()
         vec4 eye0 = camera.viewMatrix * objectTransform.modelMatrix * gl_in[0].gl_Position;
         vec4 eye1 = camera.viewMatrix * objectTransform.modelMatrix * gl_in[1].gl_Position;
         vec4 eye2 = camera.viewMatrix * objectTransform.modelMatrix * gl_in[2].gl_Position;
+        vec4 eye3 = camera.viewMatrix * objectTransform.modelMatrix * gl_in[3].gl_Position;
 
         eye0.z = int(eye0.z / 100.0) * 100.0;
         eye1.z = int(eye1.z / 100.0) * 100.0;
         eye2.z = int(eye2.z / 100.0) * 100.0;
+        eye3.z = int(eye3.z / 100.0) * 100.0;
 
-        float dist0 = clamp((abs(eye0.z) - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE), 0.0, 1.0);
-        float dist1 = clamp((abs(eye1.z) - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE), 0.0, 1.0);
-        float dist2 = clamp((abs(eye2.z) - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE), 0.0, 1.0);
+        float distance00 = clamp((abs(eye0.z) - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE), 0.0, 1.0);
+        float distance01 = clamp((abs(eye1.z) - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE), 0.0, 1.0);
+        float distance10 = clamp((abs(eye2.z) - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE), 0.0, 1.0);
+        float distance11 = clamp((abs(eye3.z) - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE), 0.0, 1.0);
 
-        float tessLevel0 = mix(MAX_TESS_LEVEL, MIN_TESS_LEVEL, min(dist0, dist1));
-        float tessLevel1 = mix(MAX_TESS_LEVEL, MIN_TESS_LEVEL, min(dist1, dist2));
-        float tessLevel2 = mix(MAX_TESS_LEVEL, MIN_TESS_LEVEL, min(dist2, dist0));
+        float tessLevel0 = mix(MAX_TESS_LEVEL, MIN_TESS_LEVEL, min(distance10, distance00));
+        float tessLevel1 = mix(MAX_TESS_LEVEL, MIN_TESS_LEVEL, min(distance00, distance01));
+        float tessLevel2 = mix(MAX_TESS_LEVEL, MIN_TESS_LEVEL, min(distance01, distance11));
+        float tessLevel3 = mix(MAX_TESS_LEVEL, MIN_TESS_LEVEL, min(distance11, distance10));
 
         gl_TessLevelOuter[0] = tessLevel0;
         gl_TessLevelOuter[1] = tessLevel1;
         gl_TessLevelOuter[2] = tessLevel2;
+        gl_TessLevelOuter[3] = tessLevel3;
 
-        gl_TessLevelInner[0] = max(max(tessLevel0, tessLevel1), tessLevel2);
+        gl_TessLevelInner[0] = max(tessLevel1, tessLevel3);
+        gl_TessLevelInner[1] = max(tessLevel0, tessLevel2);
     }
 }
 
@@ -80,7 +102,7 @@ void main()
 
 #tess_eval
 
-layout(triangles, fractional_odd_spacing, ccw) in;
+layout(quads, fractional_odd_spacing, cw) in;
 
 out TessEvalOut
 {
@@ -90,83 +112,91 @@ out TessEvalOut
 
     vec3 vertexPos;
     vec3 fragPos;
+    vec3 tangent;
+    vec3 bitangent;
     mat3 TBN;
 } tessEvalOut;
+
+in TessControlOut
+{
+    vec2 UV;
+} tessControlIn[];
 
 uniform sampler2D mat_heightSamplers[1];
 uniform int mat_heightSamplers_CURRENT_COUNT;
 
 float getHeight(vec2 xz)
 {
-    return texture(mat_heightSamplers[0], xz).r * 128.0 - 16.0;
+    return texture(mat_heightSamplers[0], xz).r * 100;
+    // return 0;
 }
 
 void main()
 {
-    vec3 p0 = gl_in[0].gl_Position.xyz;
-    vec3 p1 = gl_in[1].gl_Position.xyz;
-    vec3 p2 = gl_in[2].gl_Position.xyz;
+    float u = gl_TessCoord.x;
+    float v = gl_TessCoord.y;
 
-    // Интерполяция с помощью барицентрических координат
-    vec3 pos = gl_TessCoord.x * p0 +
-               gl_TessCoord.y * p1 +
-               gl_TessCoord.z * p2;
+    vec4 p00 = gl_in[0].gl_Position;
+    vec4 p01 = gl_in[1].gl_Position;
+    vec4 p10 = gl_in[2].gl_Position;
+    vec4 p11 = gl_in[3].gl_Position;
 
-    // generating normal
-    /*float eps = 0.05;
-    float hL = getHeight(pos.xz - vec2(eps, 0.0));
-    float hR = getHeight(pos.xz + vec2(eps, 0.0));
-    float hD = getHeight(pos.xz - vec2(0.0, eps));
-    float hU = getHeight(pos.xz + vec2(0.0, eps));
+    vec4 p_0 = (p01 - p00) * u + p00;
+    vec4 p_1 = (p11 - p10) * u + p10;
 
+    // vec4 pos = (p_1 - p_0) * v + p_0;
+    vec4 pos = mix(mix(p00, p01, u), mix(p11, p10, u), v);
+
+    vec2 heightSamplePos = (pos.xz * 0.001 - 2.0) / 2.0;
+
+    vec2 uv0 = tessControlIn[0].UV * 100.0;
+    vec2 uv1 = tessControlIn[1].UV * 100.0;
+    vec2 uv2 = tessControlIn[2].UV * 100.0;
+    vec2 uv3 = tessControlIn[3].UV * 100.0;
+
+    vec3 dp1 = p01.xyz - p00.xyz;
+    vec3 dp2 = p11.xyz - p00.xyz;
+
+    vec2 duv1 = uv1 - uv0;
+    vec2 duv2 = uv3 - uv0;
+
+    float r = 1.0 / (duv1.x * duv2.y - duv1.y * duv2.x);
+    vec3 tangent = normalize((dp1 * duv2.y - dp2 * duv1.y) * r);
+    vec3 bitangent = normalize((dp2 * duv1.x - dp1 * duv2.x) * r);
+
+    // read neightbor heights using an arbitrary small offset
+    vec3 off = vec3(0.001, 0.001, 0);
+    float hL = getHeight(heightSamplePos - off.xz);
+    float hR = getHeight(heightSamplePos + off.xz);
+    float hD = getHeight(heightSamplePos - off.zy);
+    float hU = getHeight(heightSamplePos + off.zy);
+
+    // deduce terrain normal
     vec3 normal;
     normal.x = hL - hR;
-    normal.y = 2.0 * eps;
-    normal.z = hD - hU;*/
+    normal.y = 2.0;
+    normal.z = hD - hU;
+    normal = normalize(normal);
 
-    tessEvalOut.vertexPos = pos;
-    tessEvalOut.fragPos = vec3(objectTransform.modelMatrix * vec4(pos, 1.0));
-
-    float eps = 0.01;
-
-    // Позиции сдвинутые по x и z
-    vec2 offsetX = vec2(eps, 0.0);
-    vec2 offsetZ = vec2(0.0, eps);
-
-    // Высоты вокруг текущей точки
-    float hL = getHeight(pos.xz - offsetX);
-    float hR = getHeight(pos.xz + offsetX);
-    float hD = getHeight(pos.xz - offsetZ);
-    float hU = getHeight(pos.xz + offsetZ);
-
-    // Позиции с высотой
-    vec3 pL = vec3(pos.x - eps, hL, pos.z);
-    vec3 pR = vec3(pos.x + eps, hR, pos.z);
-    vec3 pD = vec3(pos.x, hD, pos.z - eps);
-    vec3 pU = vec3(pos.x, hU, pos.z + eps);
-
-    // Векторы касаний поверхности
-    vec3 dx = pR - pL;
-    vec3 dz = pU - pD;
-
-    // Крестовое произведение — нормаль
-    vec3 normal = normalize(cross(dz, dx));
-
-    // tessEvalOut.UV = UVAttribute.xy;
-    tessEvalOut.normal = normalize(normal);
+    tessEvalOut.normal = normal;
+    tessEvalOut.tangent = -normalize(tangent - normal * dot(normal, tangent));
+    tessEvalOut.bitangent = -cross(normal, tessEvalOut.tangent);
     tessEvalOut.worldNormal = normalize(mat3(transpose(inverse(objectTransform.modelMatrix))) * tessEvalOut.normal);
-    // tessEvalOut.UV = (pos.xz * 0.001 + 20.0) / 2.0;
-    tessEvalOut.UV = (pos.xz * 0.001 - 1.5) / 2.0;
+    tessEvalOut.vertexPos = pos.xyz;
+    tessEvalOut.fragPos = vec3(objectTransform.modelMatrix * pos);
 
-    /*vec3 T = normalize(vec3(objectTransform.modelMatrix * vec4(tangentsAttribute, 0.0)));
-    vec3 B = normalize(vec3(objectTransform.modelMatrix * vec4(bitangentsAttribute, 0.0)));
-    vec3 N = normalize(vec3(objectTransform.modelMatrix * vec4(vsOut.normal, 0.0)));
-    vsOut.TBN = mat3(T, B, N);*/
+    // generating uv
+    vec2 uv_ = mix(mix(uv0, uv3, gl_TessCoord.y), mix(uv1, uv2, gl_TessCoord.y), gl_TessCoord.x);
+    tessEvalOut.UV = uv_;
 
-    // pos.y += getHeight(pos.xz);
-    pos.y = getHeight(tessEvalOut.UV);
+    vec3 T = normalize(vec3(objectTransform.modelMatrix * vec4(tessEvalOut.tangent, 0.0)));
+    vec3 B = normalize(vec3(objectTransform.modelMatrix * vec4(tessEvalOut.bitangent, 0.0)));
+    vec3 N = normalize(vec3(objectTransform.modelMatrix * vec4(tessEvalOut.normal, 0.0)));
+    tessEvalOut.TBN = mat3(T, B, N);
 
-    gl_Position = camera.projectionSpaceMatrix *vec4(pos, 1.0);
+    pos.y += getHeight(heightSamplePos);
+
+    gl_Position = camera.projectionSpaceMatrix * objectTransform.modelMatrix * pos;
 }
 
 #end
@@ -209,6 +239,7 @@ in VSOut
 {
     vec3 vertexPos;
     vec3 fragPos;
+    vec2 UV;
 } vsIn;
 
 in TessEvalOut
@@ -219,6 +250,8 @@ in TessEvalOut
 
     vec3 vertexPos;
     vec3 fragPos;
+    vec3 tangent;
+    vec3 bitangent;
     mat3 TBN;
 } tessEvalIn;
 
@@ -232,7 +265,7 @@ void main()
     vec3 normalMapColor = vec3(0);
     vec3 finalNormal = vec3(0);
 
-    vec2 finalUV = tessEvalIn.UV;
+    vec2 finalUV = 1.0 - tessEvalIn.UV;
     #ifdef FLIP_TEXTURES_Y
     finalUV.y = 1.0 - tessEvalIn.UV.y;
     #endif
@@ -352,6 +385,10 @@ void main()
     float roughness     = aoRoughnessMetallic.g;
     float metalness     = aoRoughnessMetallic.b;
 
+    roughness = 0.5;
+    metalness = 0.2;
+    // specularCoeff = 0.1;
+
     // для формулы Шлика-Френеля
     vec3 F0 = vec3(0.04);
     F0 = mix(F0, albedo, metalness);
@@ -415,6 +452,20 @@ void main()
     float exposure = 0.7;
     finalCol = ACESTonemap(finalCol, exposure);
     // finalCol = vec3(tessEvalIn.UV, 0.0);
+
+    // finalCol = vec3(tessEvalIn.UV.xy, 0.0);
+    // finalCol = tessEvalIn.vertexPos;
+    // finalCol = vsIn.vertexPos.xyz;
+    // finalCol = tessEvalIn.normal;
+    // finalCol = tessEvalIn.tangent;
+    // finalCol = tessEvalIn.bitangent;
+    // finalCol = tessEvalIn.worldNormal;
+    // finalCol = normalMapColor;
+    // finalCol = finalNormal;
+    // finalCol = vec3(aoRoughnessMetallic.r);
+    // finalCol = vec3(aoRoughnessMetallic.g);
+    // finalCol = vec3(aoRoughnessMetallic.b);
+    // finalCol = aoRoughnessMetallic.rgb;
 
     layerColor = vec4(finalCol, 1.0);
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);

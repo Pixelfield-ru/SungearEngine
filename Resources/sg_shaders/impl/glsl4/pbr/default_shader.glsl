@@ -296,6 +296,9 @@ void main()
     float roughness     = aoRoughnessMetallic.g;
     float metalness     = aoRoughnessMetallic.b;
 
+    roughness = 0.5;
+    metalness = 1.0;
+
     // для формулы Шлика-Френеля
     vec3 F0 = vec3(0.04);
     F0 = mix(F0, albedo, metalness);
@@ -444,7 +447,8 @@ void main()
     // finalCol.rgb = vec3(roughness); // PASSED
     // finalCol.rgb = vec3(specularCoeff); // PASSED
     // finalCol.rgb = vec3(u_materialSpecularCol.r); // PASSED
-    // finalCol.rgb = finalNormal;
+    finalCol.rgb = finalNormal;
+    // finalCol.rgb = vsIn.worldNormal;
     // finalCol.rgb = normalizedNormal;
     // finalCol.rgb = normalMapColor; // PASSED
     // finalCol.rgb = vec3(ao); // PASSED
