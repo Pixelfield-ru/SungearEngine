@@ -48,12 +48,7 @@ SGCore::Ref<SGCore::ITexture2D> attachmentToDisplay;
 
 SGCore::ECS::entity_t mainCamera;
 SGCore::ECS::entity_t terrainEntity;
-
-SGCore::AssetRef<SGCore::ITexture2D> terrainDiffuseTex;
-SGCore::AssetRef<SGCore::ITexture2D> terrainDisplacementTex;
-SGCore::AssetRef<SGCore::ITexture2D> terrainNormalsTex;
-SGCore::AssetRef<SGCore::ITexture2D> terrainAORoughnessMetalTex;
-SGCore::AssetRef<SGCore::ITexture2D> terrainHeightmapTex;
+SGCore::ECS::entity_t atmosphereEntity;
 
 void generateTerrain(const SGCore::AssetRef<SGCore::IMeshData>& terrainMesh, int patchesCountX, int patchesCountY, int patchSize) noexcept
 {
@@ -68,22 +63,22 @@ void generateTerrain(const SGCore::AssetRef<SGCore::IMeshData>& terrainMesh, int
         for(int x = 0; x < patchesCountX; ++x)
         {
             terrainMesh->m_vertices.push_back({
-                .m_position = glm::vec3 { -1, 0, -1.0f } * patchSize + glm::vec3(curPos.x, 0.0, curPos.y),
+                .m_position = glm::vec3 { -1, 0, -1.0f } * patchSize / 2.0f + glm::vec3(curPos.x, 0.0, curPos.y),
                 .m_uv = { x / (float) patchesCountX, y / (float) patchesCountY, 0.0 }
             });
 
             terrainMesh->m_vertices.push_back({
-                .m_position = glm::vec3 { -1, 0, 1.0f } * patchSize + glm::vec3(curPos.x, 0.0, curPos.y),
+                .m_position = glm::vec3 { -1, 0, 1.0f } * patchSize / 2.0f + glm::vec3(curPos.x, 0.0, curPos.y),
                 .m_uv = { x / (float) patchesCountX, (y + 1) / (float) patchesCountY, 0.0f }
             });
 
             terrainMesh->m_vertices.push_back({
-                .m_position = glm::vec3 { 1, 0, 1.0f } * patchSize + glm::vec3(curPos.x, 0.0, curPos.y),
+                .m_position = glm::vec3 { 1, 0, 1.0f } * patchSize / 2.0f + glm::vec3(curPos.x, 0.0, curPos.y),
                 .m_uv = { (x + 1) / (float) patchesCountX, (y + 1) / (float) patchesCountY, 0.0f }
             });
 
             terrainMesh->m_vertices.push_back({
-                .m_position = glm::vec3 { 1, 0, -1.0f } * patchSize + glm::vec3(curPos.x, 0.0, curPos.y),
+                .m_position = glm::vec3 { 1, 0, -1.0f } * patchSize / 2.0f + glm::vec3(curPos.x, 0.0, curPos.y),
                 .m_uv = { (x + 1) / (float) patchesCountX, y / (float) patchesCountY, 0.0f }
             });
 
@@ -94,16 +89,22 @@ void generateTerrain(const SGCore::AssetRef<SGCore::IMeshData>& terrainMesh, int
 
             currentIdx += 4;
 
-            curPos.x += patchSize + patchHalfSize.x * 2.0f;
+            curPos.x += patchSize;
         }
 
         curPos.x = 0;
-        curPos.y += patchSize + patchHalfSize.y * 2.0f;
+        curPos.y += patchSize;
     }
 }
 
 void coreInit()
 {
+    SGCore::AssetRef<SGCore::ITexture2D> terrainDiffuseTex;
+    SGCore::AssetRef<SGCore::ITexture2D> terrainDisplacementTex;
+    SGCore::AssetRef<SGCore::ITexture2D> terrainNormalsTex;
+    SGCore::AssetRef<SGCore::ITexture2D> terrainAORoughnessMetalTex;
+    SGCore::AssetRef<SGCore::ITexture2D> terrainHeightmapTex;
+
     auto mainAssetManager = SGCore::AssetManager::getInstance();
 
     // setting pipeline that will render our scene
@@ -184,8 +185,6 @@ void coreInit()
 
     // ======
 
-    SGCore::ECS::entity_t atmosphereEntity;
-
     std::vector<SGCore::ECS::entity_t> skyboxEntities;
     auto cubeModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("cube_model");
     cubeModel->m_rootNode->addOnScene(scene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities](const auto& entity) {
@@ -199,7 +198,7 @@ void coreInit()
 
     auto& skyboxMesh = scene->getECSRegistry()->get<SGCore::Mesh>(atmosphereEntity);
     auto& atmosphereScattering = scene->getECSRegistry()->emplace<SGCore::Atmosphere>(atmosphereEntity);
-    atmosphereScattering.m_sunRotation.z = 90.0;
+    atmosphereScattering.m_sunRotation.x = 0.0;
     skyboxMesh.m_base.setMaterial(standardCubemapMaterial);
 
     auto& skyboxTransform = scene->getECSRegistry()->get<SGCore::Transform>(atmosphereEntity);
@@ -214,7 +213,7 @@ void coreInit()
 
     terrainMeshData = mainAssetManager->createAsset<SGCore::IMeshData>();
 
-    generateTerrain(terrainMeshData, 10, 10, 100);
+    generateTerrain(terrainMeshData, 20, 20, 100);
 
     terrainMeshData->prepare();
 
@@ -354,6 +353,18 @@ void onUpdate(const double& dt, const double& fixedDt)
         // terrainTransform->m_ownTransform.m_rotation = glm::identity<glm::quat>();
         terrainTransform->m_ownTransform.m_rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(0, 0, 1)) * terrainTransform->m_ownTransform.m_rotation;
 
+    }
+
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_9))
+    {
+        auto& atmosphereScattering = scene->getECSRegistry()->get<SGCore::Atmosphere>(atmosphereEntity);
+        atmosphereScattering.m_sunRotation.x += 10.0f * dt;
+    }
+
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_0))
+    {
+        auto& atmosphereScattering = scene->getECSRegistry()->get<SGCore::Atmosphere>(atmosphereEntity);
+        atmosphereScattering.m_sunRotation.x -= 10.0f * dt;
     }
 
     // rendering frame buffer attachment from camera to screen

@@ -128,7 +128,8 @@ uniform int mat_heightSamplers_CURRENT_COUNT;
 float getHeight(vec2 xz)
 {
     return texture(mat_heightSamplers[0], xz).r * 100;
-    // return 0;
+
+    return 0;
 }
 
 void main()
@@ -212,7 +213,7 @@ layout(location = 2) out vec3 pickingColor;
 #include "sg_shaders/impl/glsl4/math.glsl"
 #include "sg_shaders/impl/glsl4/pbr_base.glsl"
 
-uniform sampler2D mat_diffuseSamplers[3];
+uniform sampler2D mat_diffuseSamplers[1];
 uniform int mat_diffuseSamplers_CURRENT_COUNT;
 
 uniform sampler2D mat_metalnessSamplers[1];
@@ -230,17 +231,13 @@ uniform int mat_lightmapSamplers_CURRENT_COUNT;
 uniform sampler2D mat_diffuseRoughnessSamplers[1];
 uniform int mat_diffuseRoughnessSamplers_CURRENT_COUNT;
 
+uniform sampler2D mat_displacementSamplers[1];
+uniform int mat_displacementSamplers_CURRENT_COUNT;
+
 // REQUIRED UNIFORM!!
 uniform vec3 u_pickingColor;
 
 uniform int SGPP_CurrentLayerIndex;
-
-in VSOut
-{
-    vec3 vertexPos;
-    vec3 fragPos;
-    vec2 UV;
-} vsIn;
 
 in TessEvalOut
 {
@@ -255,6 +252,38 @@ in TessEvalOut
     mat3 TBN;
 } tessEvalIn;
 
+vec2 parallaxMapping(vec2 UV, vec3 viewDir, float heightScale)
+{
+    const float minLayers = 8.0;
+    const float maxLayers = 64.0;
+    float numLayers = mix(maxLayers, minLayers, abs(dot(vec3(0.0, 0.0, 1.0), viewDir)));
+
+    float layerDepth = 1.0 / numLayers;
+    float currentLayerDepth = 0.0;
+    vec2 P = viewDir.xy * heightScale;
+    vec2 deltaTexCoords = P / numLayers;
+
+    vec2  currentTexCoords     = UV;
+    float currentDepthMapValue = texture(mat_displacementSamplers[0], currentTexCoords).r;
+
+    while(currentLayerDepth < currentDepthMapValue)
+    {
+        currentTexCoords -= deltaTexCoords;
+        currentDepthMapValue = texture(mat_displacementSamplers[0], currentTexCoords).r;
+        currentLayerDepth += layerDepth;
+    }
+
+    vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
+
+    float afterDepth  = currentDepthMapValue - currentLayerDepth;
+    float beforeDepth = (texture(mat_displacementSamplers[0], prevTexCoords).r) - currentLayerDepth + layerDepth;
+
+    float weight = afterDepth / (afterDepth - beforeDepth);
+    vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
+
+    return finalTexCoords;
+}
+
 void main()
 {
     vec3 normalizedNormal = tessEvalIn.normal;
@@ -264,6 +293,8 @@ void main()
     float specularCoeff = 0.0f;
     vec3 normalMapColor = vec3(0);
     vec3 finalNormal = vec3(0);
+    float parallaxHeight = 0.0;
+    vec3 normalizedNormalMapColor = vec3(0);
 
     vec2 finalUV = 1.0 - tessEvalIn.UV;
     #ifdef FLIP_TEXTURES_Y
@@ -273,6 +304,28 @@ void main()
     // ===============================================================================================
     // ===============================        loading textures       =================================
     // ===============================================================================================
+
+    /*{
+        if(mat_displacementSamplers_CURRENT_COUNT > 0)
+        {
+            float mixCoeff = 1.0 / mat_displacementSamplers_CURRENT_COUNT;
+
+            parallaxHeight = 0.0;
+
+            for (int i = 0; i < mat_displacementSamplers_CURRENT_COUNT; ++i)
+            {
+                parallaxHeight += texture(mat_displacementSamplers[i], finalUV).r * mixCoeff;
+            }
+        }
+    }*/
+
+    if(mat_displacementSamplers_CURRENT_COUNT > 0)
+    {
+        vec3 viewDirToParallax = normalize(transpose(tessEvalIn.TBN) * camera.position - transpose(tessEvalIn.TBN) * tessEvalIn.fragPos);
+        finalUV = parallaxMapping(finalUV, viewDirToParallax, 0.3);
+
+        // if(finalUV.x > 1.0 || finalUV.y > 1.0 || finalUV.x < 0.0 || finalUV.y < 0.0) discard;
+    }
 
     {
         if(mat_diffuseSamplers_CURRENT_COUNT > 0)
@@ -368,10 +421,12 @@ void main()
         }
 
         finalNormal = normalize(tessEvalIn.TBN * (normalMapColor * 2.0 - 1.0));
+        normalizedNormalMapColor = normalize(normalMapColor * 2.0 - 1.0);
     }
     else
     {
         finalNormal = tessEvalIn.worldNormal;
+        normalizedNormalMapColor = tessEvalIn.worldNormal;
     }
 
     vec3 viewDir = normalize(camera.position - tessEvalIn.fragPos);
@@ -385,8 +440,8 @@ void main()
     float roughness     = aoRoughnessMetallic.g;
     float metalness     = aoRoughnessMetallic.b;
 
-    roughness = 0.5;
-    metalness = 0.2;
+    /*roughness = 0.5;
+    metalness = 0.2;*/
     // specularCoeff = 0.1;
 
     // для формулы Шлика-Френеля
@@ -451,11 +506,11 @@ void main()
     vec3 finalCol = ambient * u_materialAmbientCol.rgb * materialAmbientFactor + lo + ambient;
     float exposure = 0.7;
     finalCol = ACESTonemap(finalCol, exposure);
+
     // finalCol = vec3(tessEvalIn.UV, 0.0);
 
     // finalCol = vec3(tessEvalIn.UV.xy, 0.0);
     // finalCol = tessEvalIn.vertexPos;
-    // finalCol = vsIn.vertexPos.xyz;
     // finalCol = tessEvalIn.normal;
     // finalCol = tessEvalIn.tangent;
     // finalCol = tessEvalIn.bitangent;
@@ -466,6 +521,9 @@ void main()
     // finalCol = vec3(aoRoughnessMetallic.g);
     // finalCol = vec3(aoRoughnessMetallic.b);
     // finalCol = aoRoughnessMetallic.rgb;
+    // finalCol = vec3(albedo.rgb);
+
+    // finalCol = vec3(1.0);
 
     layerColor = vec4(finalCol, 1.0);
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
@@ -487,6 +545,8 @@ in TessEvalOut
 
     vec3 vertexPos;
     vec3 fragPos;
+    vec3 tangent;
+    vec3 bitangent;
     mat3 TBN;
 } tessEvalIn[];
 
