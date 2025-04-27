@@ -9,6 +9,7 @@
 
 namespace SGCore
 {
+    // todo: copying instance of this struct is extremely heavy!!!!! optimize! maybe do own implementation of shared pointer for assets
     template<typename AssetT>
     struct AssetRef
     {

@@ -50,6 +50,10 @@ SGCore::ECS::entity_t mainCamera;
 SGCore::ECS::entity_t terrainEntity;
 SGCore::ECS::entity_t atmosphereEntity;
 
+SGCore::AssetRef<SGCore::ITexture2D> terrainHeightmapTex;
+
+std::vector<char> terrainHeightmapData;
+
 void generateTerrain(const SGCore::AssetRef<SGCore::IMeshData>& terrainMesh, int patchesCountX, int patchesCountY, int patchSize) noexcept
 {
     size_t currentIdx = 0;
@@ -103,7 +107,6 @@ void coreInit()
     SGCore::AssetRef<SGCore::ITexture2D> terrainDisplacementTex;
     SGCore::AssetRef<SGCore::ITexture2D> terrainNormalsTex;
     SGCore::AssetRef<SGCore::ITexture2D> terrainAORoughnessMetalTex;
-    SGCore::AssetRef<SGCore::ITexture2D> terrainHeightmapTex;
 
     auto mainAssetManager = SGCore::AssetManager::getInstance();
 
@@ -132,7 +135,17 @@ void coreInit()
     terrainDisplacementTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test_terrain/displacement.png");
     terrainNormalsTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test_terrain/normals.png");
     terrainAORoughnessMetalTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test_terrain/ao_roughness_metal.png");
-    terrainHeightmapTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test_heightmap0.png");
+    // terrainHeightmapTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test_heightmap0.png");
+    terrainHeightmapTex = mainAssetManager->getOrAddAssetByAlias<SGCore::ITexture2D>("test_heightmap");
+
+    terrainHeightmapData.resize(1000 * 1000);
+
+    terrainHeightmapData[0] = 20;
+    terrainHeightmapData[1] = 20;
+    terrainHeightmapData[2] = 20;
+    terrainHeightmapData[3] = 20;
+
+    terrainHeightmapTex->create(terrainHeightmapData.data(), 1000, 1000, 1, SGGColorInternalFormat::SGG_R8, SGGColorFormat::SGG_R);
 
     // creating camera entity
     mainCamera = ecsRegistry->create();

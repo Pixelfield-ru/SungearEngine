@@ -59,7 +59,7 @@ void main()
     gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
     tessControlOut[gl_InvocationID].UV = vsIn[gl_InvocationID].UV;
 
-    const int MIN_TESS_LEVEL = 5;
+    const int MIN_TESS_LEVEL = 10;
     const int MAX_TESS_LEVEL = 70;
     const float MIN_DISTANCE = 0;
     const float MAX_DISTANCE = 800;
@@ -129,7 +129,7 @@ float getHeight(vec2 xz)
 {
     return texture(mat_heightSamplers[0], xz).r * 100;
 
-    return 0;
+    // return 0;
 }
 
 void main()
@@ -148,12 +148,14 @@ void main()
     // vec4 pos = (p_1 - p_0) * v + p_0;
     vec4 pos = mix(mix(p00, p01, u), mix(p11, p10, u), v);
 
-    vec2 heightSamplePos = (pos.xz * 0.001 - 2.0) / 2.0;
+    vec2 uv0 = tessControlIn[0].UV;
+    vec2 uv1 = tessControlIn[1].UV;
+    vec2 uv2 = tessControlIn[2].UV;
+    vec2 uv3 = tessControlIn[3].UV;
 
-    vec2 uv0 = tessControlIn[0].UV * 100.0;
-    vec2 uv1 = tessControlIn[1].UV * 100.0;
-    vec2 uv2 = tessControlIn[2].UV * 100.0;
-    vec2 uv3 = tessControlIn[3].UV * 100.0;
+    // generating uv
+    vec2 uv_ = mix(mix(uv0, uv3, gl_TessCoord.y), mix(uv1, uv2, gl_TessCoord.y), gl_TessCoord.x);
+    vec2 heightSamplePos = uv_;
 
     vec3 dp1 = p01.xyz - p00.xyz;
     vec3 dp2 = p11.xyz - p00.xyz;
@@ -179,6 +181,8 @@ void main()
     normal.z = hD - hU;
     normal = normalize(normal);
 
+    pos.y += getHeight(heightSamplePos);
+
     tessEvalOut.normal = normal;
     tessEvalOut.tangent = -normalize(tangent - normal * dot(normal, tangent));
     tessEvalOut.bitangent = -cross(normal, tessEvalOut.tangent);
@@ -186,16 +190,12 @@ void main()
     tessEvalOut.vertexPos = pos.xyz;
     tessEvalOut.fragPos = vec3(objectTransform.modelMatrix * pos);
 
-    // generating uv
-    vec2 uv_ = mix(mix(uv0, uv3, gl_TessCoord.y), mix(uv1, uv2, gl_TessCoord.y), gl_TessCoord.x);
-    tessEvalOut.UV = uv_;
+    tessEvalOut.UV = uv_ * 100.0;
 
     vec3 T = normalize(vec3(objectTransform.modelMatrix * vec4(tessEvalOut.tangent, 0.0)));
     vec3 B = normalize(vec3(objectTransform.modelMatrix * vec4(tessEvalOut.bitangent, 0.0)));
     vec3 N = normalize(vec3(objectTransform.modelMatrix * vec4(tessEvalOut.normal, 0.0)));
     tessEvalOut.TBN = mat3(T, B, N);
-
-    pos.y += getHeight(heightSamplePos);
 
     gl_Position = camera.projectionSpaceMatrix * objectTransform.modelMatrix * pos;
 }
@@ -321,8 +321,8 @@ void main()
 
     if(mat_displacementSamplers_CURRENT_COUNT > 0)
     {
-        vec3 viewDirToParallax = normalize(transpose(tessEvalIn.TBN) * camera.position - transpose(tessEvalIn.TBN) * tessEvalIn.fragPos);
-        finalUV = parallaxMapping(finalUV, viewDirToParallax, 0.3);
+        vec3 viewDirToParallax = normalize(transpose(tessEvalIn.TBN) * (camera.position - tessEvalIn.fragPos));
+        finalUV = parallaxMapping(finalUV, viewDirToParallax, 0.05);
 
         // if(finalUV.x > 1.0 || finalUV.y > 1.0 || finalUV.x < 0.0 || finalUV.y < 0.0) discard;
     }

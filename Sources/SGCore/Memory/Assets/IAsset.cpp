@@ -40,6 +40,27 @@ bool SGCore::IAsset::isSavedBinaryFile() const noexcept
     return m_isSavedInBinaryFile;
 }
 
+size_t SGCore::IAsset::getHash() const noexcept
+{
+    if(m_hash != 0) return m_hash;
+
+    switch(m_storedBy)
+    {
+        case AssetStorageType::BY_PATH:
+        {
+            m_hash = std::hash<std::filesystem::path>{}(m_path.resolved());
+            return m_hash;
+        };
+        case AssetStorageType::BY_ALIAS:
+        {
+            m_hash = std::hash<std::string>{}(m_alias);
+            return m_hash;
+        }
+    }
+
+    return m_hash;
+}
+
 void SGCore::IAsset::reloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept
 {
     auto lockedAssetManager = m_parentAssetManager.lock();

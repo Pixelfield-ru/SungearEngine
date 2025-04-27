@@ -114,7 +114,15 @@ namespace SGCore
 
         [[nodiscard]] bool isSavedBinaryFile() const noexcept;
 
+        /**
+         * When called first time - hashes asset and returns hash. When called again returns cached hash.
+         * @return A hash of asset. It can be hashed path or alias (depending on the storage method (BY_PATH or BY_ALIAS)).
+         */
+        size_t getHash() const noexcept;
+        
     protected:
+        /// Not serializable.
+        mutable size_t m_hash = 0;
 
         /// In the implementation of the \p doLoad function, you must implement all the logic of loading an asset, which can be executed in parallel (for example: loading an asset from disk).
         /// The \p doLoad function can be called in parallel.

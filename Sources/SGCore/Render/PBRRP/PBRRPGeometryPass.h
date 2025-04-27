@@ -46,6 +46,11 @@ namespace SGCore
                               const ECS::entity_t& forCamera,
                               LayeredFrameReceiver* cameraLayeredFrameReceiver,
                               const Ref<OctreeNode>& node) noexcept;
+
+        // contains only unique materials. first - hash of material
+        std::unordered_set<size_t> m_collectedDecalsUniqueMaterialsHashes;
+        std::vector<AssetRef<IMaterial>> m_collectedDecalsUniqueMaterials;
+        Ref<IUniformBuffer> m_collectedDecalsUniformBuffer;
     };
 }
 

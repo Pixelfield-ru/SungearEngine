@@ -28,6 +28,7 @@
 #include "SGCore/Render/Alpha/TransparentEntityTag.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Render/Terrain.h"
+#include "SGCore/Render/Decals/Decal.h"
 
 size_t renderedInOctrees = 0;
 
@@ -62,11 +63,23 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
     auto opaqueMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, OpaqueEntityTag>(ECS::ExcludeTypes<DisableMeshGeometryPass>{});
     auto transparentMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, TransparentEntityTag>(ECS::ExcludeTypes<DisableMeshGeometryPass>{});
     auto terrainsView = registry->view<EntityBaseInfo, Mesh, Transform, Terrain>(ECS::ExcludeTypes<DisableMeshGeometryPass>{});
+    auto decalsView = registry->view<EntityBaseInfo, Transform, Decal>(ECS::ExcludeTypes<DisableMeshGeometryPass>{});
 
     if(m_shader)
     {
         m_shader->bind();
     }
+
+    // collecting decals
+    m_collectedDecalsUniqueMaterialsHashes.clear();
+    decalsView.each([this](const EntityBaseInfo::reg_t& decalBaseInfo, const Transform::reg_t& decalTransform, const Decal::reg_t& decal) {
+        const size_t decalMaterialHash = decal.m_material->getHash();
+        if(!m_collectedDecalsUniqueMaterialsHashes.contains(decalMaterialHash))
+        {
+            m_collectedDecalsUniqueMaterials.push_back(decal.m_material);
+            m_collectedDecalsUniqueMaterialsHashes.insert(decalMaterialHash);
+        }
+    });
     
     camerasView.each([&opaqueMeshesView, &transparentMeshesView, &terrainsView, &renderPipeline, &scene, &registry, this]
                              (const ECS::entity_t& cameraEntity,
