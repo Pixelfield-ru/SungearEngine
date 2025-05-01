@@ -242,6 +242,8 @@ uniform vec3 u_pickingColor;
 
 uniform int SGPP_CurrentLayerIndex;
 
+const float PARALLAX_FACTOR = 0.05;
+
 in TessEvalOut
 {
     vec2 UV;
@@ -304,6 +306,8 @@ void main()
     finalUV.y = 1.0 - tessEvalIn.UV.y;
     #endif
 
+    vec2 originalUV = finalUV;
+
     // ===============================================================================================
     // ===============================        loading textures       =================================
     // ===============================================================================================
@@ -325,7 +329,7 @@ void main()
     if(mat_displacementSamplers_CURRENT_COUNT > 0)
     {
         vec3 viewDirToParallax = normalize(transpose(tessEvalIn.TBN) * (camera.position - tessEvalIn.fragPos));
-        finalUV = parallaxMapping(finalUV, viewDirToParallax, 0.05);
+        finalUV = parallaxMapping(finalUV, viewDirToParallax, PARALLAX_FACTOR);
 
         // if(finalUV.x > 1.0 || finalUV.y > 1.0 || finalUV.x < 0.0 || finalUV.y < 0.0) discard;
     }
@@ -528,10 +532,15 @@ void main()
 
     // finalCol = vec3(1.0);
 
+    vec2 parallaxOffset = (finalUV - originalUV) * (1.0 / PARALLAX_FACTOR); // в texel space
+    vec3 offsetTangent = vec3(parallaxOffset, 0.0);
+
+    vec3 offsetWorld = tessEvalIn.TBN * offsetTangent;
+
     layerColor = vec4(finalCol, 1.0);
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
     pickingColor = vec3(u_pickingColor);
-    layerWorldPosColor = tessEvalIn.fragPos;
+    layerWorldPosColor = tessEvalIn.fragPos + offsetWorld;
 }
 
 #end

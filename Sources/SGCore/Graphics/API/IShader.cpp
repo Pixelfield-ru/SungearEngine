@@ -216,9 +216,9 @@ SGCore::IShader& SGCore::IShader::operator=(const SGCore::IShader& other) noexce
     return *this;
 }
 
-size_t SGCore::IShader::bindMaterialTextures(const SGCore::AssetRef<SGCore::IMaterial>& material) noexcept
+size_t SGCore::IShader::bindMaterialTextures(const SGCore::AssetRef<SGCore::IMaterial>& material, std::uint8_t samplersOffset) noexcept
 {
-    size_t offset = 0;
+    size_t offset = samplersOffset;
 
     std::string preallocUniformName;
     preallocUniformName.resize(64);

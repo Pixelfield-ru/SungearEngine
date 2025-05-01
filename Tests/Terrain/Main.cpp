@@ -4,6 +4,7 @@
 
 #include "Main.h"
 
+#include "SGCore/ECS/Utils.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Memory/Assets/ModelAsset.h"
@@ -49,6 +50,7 @@ SGCore::Ref<SGCore::ITexture2D> attachmentToDisplay;
 SGCore::ECS::entity_t mainCamera;
 SGCore::ECS::entity_t terrainEntity;
 SGCore::ECS::entity_t atmosphereEntity;
+SGCore::ECS::entity_t terrainDecalEntity;
 
 SGCore::AssetRef<SGCore::ITexture2D> terrainHeightmapTex;
 
@@ -305,6 +307,12 @@ void coreInit()
 
     scene->getECSRegistry()->get<SGCore::Transform>(testQuadEntities[0])->m_ownTransform.m_position.y += 10.0f;
 
+    // creating decal !!! ==============================================
+
+    terrainDecalEntity = SGCore::ECS::Utils::createDecal(*ecsRegistry.get());
+
+    // =================================================================
+
     // =================================================================
     // =================================================================
     // =================================================================
@@ -350,7 +358,7 @@ void onUpdate(const double& dt, const double& fixedDt)
         SGCore::Scene::getCurrentScene()->update(dt, fixedDt);
     }
 
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT))
+    /*if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT))
     {
         scene->getECSRegistry()->get<SGCore::Transform>(mainCamera)->m_ownTransform.m_yawPitchRoll.y -= 0.5f;
     }
@@ -358,6 +366,27 @@ void onUpdate(const double& dt, const double& fixedDt)
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_RIGHT))
     {
         scene->getECSRegistry()->get<SGCore::Transform>(mainCamera)->m_ownTransform.m_yawPitchRoll.y += 0.5f;
+    }*/
+
+    auto& decalTransform = scene->getECSRegistry()->get<SGCore::Transform>(terrainDecalEntity);
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT))
+    {
+        decalTransform->m_ownTransform.m_position.x -= 10.0f * dt;
+    }
+
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_RIGHT))
+    {
+        decalTransform->m_ownTransform.m_position.x += 10.0f * dt;
+    }
+
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_UP))
+    {
+        decalTransform->m_ownTransform.m_position.z -= 10.0f * dt;
+    }
+
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_DOWN))
+    {
+        decalTransform->m_ownTransform.m_position.z += 10.0f * dt;
     }
 
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_3))

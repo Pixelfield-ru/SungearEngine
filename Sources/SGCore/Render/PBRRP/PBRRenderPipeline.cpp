@@ -3,6 +3,8 @@
 //
 
 #include "PBRRenderPipeline.h"
+
+#include "PBRRPDecalsPass.h"
 #include "PBRRPGeometryPass.h"
 
 #include "SGCore/Main/CoreMain.h"
@@ -58,7 +60,12 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
 
     m_shadersPaths.addPath(
             "StandardTerrainShader",
-            "${enginePath}/Resources/sg_shaders/features/terrain.sgshader"
+            "${enginePath}/Resources/sg_shaders/features/pbr/terrain.sgshader"
+    );
+
+    m_shadersPaths.addPath(
+            "StandardDecalShader",
+            "${enginePath}/Resources/sg_shaders/features/pbr/decal.sgshader"
     );
     
     // configure render passes --------
@@ -83,6 +90,15 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
         // geometryPass->m_shader->m_uniformBuffer = Scope<IUniformBuffer>(CoreMain::getRenderer().createUniformBuffer());
 
         m_renderPasses.push_back(geometryPass);
+    }
+
+    // ALWAYS AFTER GEOMETRY PASS
+    {
+        auto decalsPass = MakeRef<PBRRPDecalsPass>();
+
+        // geometryPass->m_shader->m_uniformBuffer = Scope<IUniformBuffer>(CoreMain::getRenderer().createUniformBuffer());
+
+        m_renderPasses.push_back(decalsPass);
     }
 
     {

@@ -1,0 +1,7 @@
+#ifdef SG_GLSL4
+    #include "sg_shaders/impl/glsl4/pbr/terrain.glsl"
+#else
+    #ifdef SG_HLSL
+        #error "Standard PBR terrain shader is not implemented for HLSL!"
+    #endif
+#endif

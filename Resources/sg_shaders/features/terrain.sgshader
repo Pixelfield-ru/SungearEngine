@@ -1,7 +1,0 @@
-#ifdef SG_GLSL4
-    #include "sg_shaders/impl/glsl4/terrain.glsl"
-#else
-    #ifdef SG_HLSL
-        #error "Standard terrain shader is not implemented for HLSL!"
-    #endif
-#endif

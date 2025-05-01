@@ -117,7 +117,7 @@ namespace SGCore
          * @param material - Material to bind textures.
          * @return Offset of samplers.
          */
-        size_t bindMaterialTextures(const AssetRef<IMaterial>& material) noexcept;
+        size_t bindMaterialTextures(const AssetRef<IMaterial>& material, std::uint8_t samplersOffset = 0) noexcept;
         
         void unbindMaterialTextures(const AssetRef<IMaterial>& material) noexcept;
         

@@ -5,12 +5,15 @@
 #include "PBRRPDecalsPass.h"
 
 #include "SGCore/ECS/Registry.h"
+#include "SGCore/Graphics/API/IFrameBuffer.h"
+#include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Render/DisableMeshGeometryPass.h"
 #include "SGCore/Render/IRenderPipeline.h"
 #include "SGCore/Render/Decals/Decal.h"
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Render/RenderingBase.h"
+#include "SGCore/Render/Picking/Pickable.h"
 
 void SGCore::PBRRPDecalsPass::create(const Ref<IRenderPipeline>& parentRenderPipeline)
 {
@@ -24,17 +27,132 @@ void SGCore::PBRRPDecalsPass::render(const Ref<Scene>& scene, const Ref<IRenderP
 {
     auto registry = scene->getECSRegistry();
 
-    auto camerasView = registry->view<EntityBaseInfo, RenderingBase, Transform>();
+    auto camerasView = registry->view<EntityBaseInfo, LayeredFrameReceiver, RenderingBase, Transform>();
     auto decalsView = registry->view<EntityBaseInfo, Transform, Decal, Mesh>(ECS::ExcludeTypes<DisableMeshGeometryPass>{});
 
-    camerasView.each([decalsView, this](const ECS::entity_t& cameraEntity,
-                                        const EntityBaseInfo::reg_t& camera3DBaseInfo,
-                                        RenderingBase::reg_t& cameraRenderingBase, Transform::reg_t& cameraTransform) {
-        decalsView.each([this](const EntityBaseInfo::reg_t& decalInfo,
-                               const Transform::reg_t& decalTransform,
-                               const Decal::reg_t& decal,
-                               const Mesh::reg_t& decalMesh) {
+    if(m_shader)
+    {
+        m_shader->bind();
+    }
 
+    camerasView.each([&decalsView, &registry, this](const ECS::entity_t& cameraEntity,
+                                                    const EntityBaseInfo::reg_t& camera3DBaseInfo,
+                                                    LayeredFrameReceiver& cameraLayeredFrameReceiver,
+                                                    RenderingBase::reg_t& cameraRenderingBase,
+                                                    Transform::reg_t& cameraTransform) {
+
+        CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
+
+        if(m_shader)
+        {
+            m_shader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+            m_shader->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
+        }
+
+        cameraLayeredFrameReceiver.m_layersFrameBuffer->bind();
+        cameraLayeredFrameReceiver.m_layersFrameBuffer->bindAttachmentsToDrawIn(
+                cameraLayeredFrameReceiver.m_attachmentToRenderIn
+        );
+        cameraLayeredFrameReceiver.m_layersFrameBuffer->bindAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4, 0);
+
+        decalsView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, this](
+        const ECS::entity_t& decalEntity,
+        const EntityBaseInfo::reg_t& decalInfo,
+        const Transform::reg_t& decalTransform,
+        const Decal::reg_t& decal,
+        Mesh::reg_t& decalMesh) {
+
+            Ref<PostProcessLayer> meshPPLayer =
+                decalMesh.m_base.m_layeredFrameReceiversMarkup[&cameraLayeredFrameReceiver].lock();
+
+            if(!meshPPLayer)
+            {
+                meshPPLayer = cameraLayeredFrameReceiver.getDefaultLayer();
+            }
+
+            SG_ASSERT(meshPPLayer != nullptr,
+                          "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
+
+            if(!decalMesh.m_base.getMeshData() ||
+               !decalMesh.m_base.getMaterial()) return;
+
+            const auto& meshGeomShader = decalMesh.m_base.getMaterial()->m_shader;
+            const auto& shaderToUse = meshGeomShader ? meshGeomShader : m_shader;
+
+            if(shaderToUse)
+            {
+                // binding shaderToUse only if it is custom shader
+                if(shaderToUse == meshGeomShader)
+                {
+                    shaderToUse->bind();
+                    shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+                    shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
+                }
+
+                {
+                    shaderToUse->useMatrix("objectTransform.modelMatrix",
+                                           decalTransform->m_finalTransform.m_animatedModelMatrix);
+                    shaderToUse->useVectorf("objectTransform.position", decalTransform->m_finalTransform.m_position);
+
+                    const auto* meshedEntityPickableComponent = registry->tryGet<Pickable>(decalEntity);
+                    // enable picking
+                    if(meshedEntityPickableComponent &&
+                       meshedEntityPickableComponent->isPickableForCamera(camera3DBaseInfo.getThisEntity()))
+                    {
+                        shaderToUse->useVectorf("u_pickingColor", decalInfo.getUniqueColor());
+                    }
+                    else
+                    {
+                        shaderToUse->useVectorf("u_pickingColor", { 0, 0, 0 });
+                    }
+                }
+
+                shaderToUse->useInteger("u_isTransparentPass", 0);
+                shaderToUse->useInteger("u_verticesColorsAttributesCount", decalMesh.m_base.getMeshData()->m_verticesColors.size());
+
+                if(meshPPLayer)
+                {
+                    shaderToUse->useInteger("SGPP_CurrentLayerIndex", meshPPLayer->getIndex());
+                }
+
+                // 1 because we bind SGG_COLOR_ATTACHMENT4 (gbuffer world pos) to 0 location
+                size_t texUnitOffset = shaderToUse->bindMaterialTextures(decalMesh.m_base.getMaterial(), 1);
+                texUnitOffset = shaderToUse->bindTextureBindings(texUnitOffset);
+                shaderToUse->useTextureBlock("u_GBufferWorldPos", 0);
+                shaderToUse->useMaterialFactors(decalMesh.m_base.getMaterial().get());
+
+                auto uniformBuffsIt = m_uniformBuffersToUse.begin();
+                while(uniformBuffsIt != m_uniformBuffersToUse.end())
+                {
+                    if(auto lockedUniformBuf = uniformBuffsIt->lock())
+                    {
+                        shaderToUse->useUniformBuffer(lockedUniformBuf);
+
+                        ++uniformBuffsIt;
+                    }
+                    else
+                    {
+                        uniformBuffsIt = m_uniformBuffersToUse.erase(uniformBuffsIt);
+                    }
+                }
+
+                // 15 ms for map loc0 IN DEBUG
+                CoreMain::getRenderer()->renderMeshData(
+                        decalMesh.m_base.getMeshData().get(),
+                        decalMesh.m_base.getMaterial()->m_meshRenderState
+                );
+
+                // if we used custom shader then we must bind standard pipeline shader
+                if(shaderToUse == meshGeomShader)
+                {
+                    if(m_shader)
+                    {
+                        m_shader->bind();
+                    }
+                }
+            }
         });
+
+        cameraLayeredFrameReceiver.m_layersFrameBuffer->unbind();
     });
 }
