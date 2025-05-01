@@ -29,11 +29,6 @@ namespace SGCore
 
         std::string m_name;
         
-        ~PostProcessLayer()
-        {
-            std::cout << "LAYER DELETED!!!!!!!!!!!!!!!!!!!!! WTF?????????\n";
-        }
-        
         template<typename EffectT>
         requires(std::is_base_of_v<PostProcessEffect, EffectT>)
         void addEffect(const Ref<EffectT>& effect) noexcept
@@ -137,7 +132,8 @@ namespace SGCore
         std::set<SGFrameBufferAttachmentType> m_attachmentToRenderIn { SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
                                                                        SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1,
                                                                        SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2,
-                                                                       SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3 };
+                                                                       SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3,
+                                                                       SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4 };
         
         Ref<PostProcessLayer> addOrGetLayer(const std::string& name,
                                             const std::uint16_t& fbWidth,

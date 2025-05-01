@@ -79,6 +79,13 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             0,
             0
     );
+    m_layersFrameBuffer->addAttachment(
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4, // WORLD POS
+            SGGColorFormat::SGG_RGB,
+            SGGColorInternalFormat::SGG_RGB32_FLOAT,
+            0,
+            0
+    );
 
     auto colorAttachment2 = m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2);
     colorAttachment2->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ONE;

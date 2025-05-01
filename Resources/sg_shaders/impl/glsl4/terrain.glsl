@@ -206,9 +206,12 @@ void main()
 
 #fragment
 
+// REQUIRED COLORS!!! ===========
 layout(location = 0) out vec4 layerVolume;
 layout(location = 1) out vec4 layerColor;
 layout(location = 2) out vec3 pickingColor;
+layout(location = 4) out vec3 layerWorldPosColor;
+// REQUIRED COLORS!!! ===========
 
 #include "sg_shaders/impl/glsl4/math.glsl"
 #include "sg_shaders/impl/glsl4/pbr_base.glsl"
@@ -528,6 +531,7 @@ void main()
     layerColor = vec4(finalCol, 1.0);
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
     pickingColor = vec3(u_pickingColor);
+    layerWorldPosColor = tessEvalIn.fragPos;
 }
 
 #end

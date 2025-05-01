@@ -96,12 +96,14 @@ void main()
 
 #fragment
 
-// REQUIRED COLORS!!!
+// REQUIRED COLORS!!! ===========
 layout(location = 0) out vec4 layerVolume;
 layout(location = 1) out vec4 layerColor;
 layout(location = 2) out vec3 pickingColor;
 // COLOR FOR STOCHASTIC TRANSPARNCY
 layout(location = 3) out vec4 layerSTColor;
+layout(location = 4) out vec3 layerWorldPosColor;
+// REQUIRED COLORS!!! ===========
 
 #include "sg_shaders/impl/glsl4/pbr_base.glsl"
 
@@ -470,6 +472,8 @@ void main()
     {
         pickingColor = vec3(u_pickingColor);
     }
+
+    layerWorldPosColor = vsIn.fragPos;
 
     vec4 bonesColor = vec4(0.0);
     /*for(int i = 0; i < 4; ++i)

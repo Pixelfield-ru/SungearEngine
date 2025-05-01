@@ -38,12 +38,14 @@ void main()
 #include "sg_shaders/impl/glsl4/alpha_resolving/stochastic_transparency.glsl"
 #include "sg_shaders/impl/glsl4/color_correction/aces.glsl"
 
-// REQUIRED COLORS!!!
+// REQUIRED COLORS!!! ===========
 layout(location = 0) out vec4 layerVolume;
 layout(location = 1) out vec4 layerColor;
 layout(location = 2) out vec3 pickingColor;
 // COLOR FOR STOCHASTIC TRANSPARNCY
 layout(location = 3) out vec4 layerSTColor;
+layout(location = 4) out vec3 layerWorldPosColor;
+// REQUIRED COLORS!!! ===========
 
 uniform samplerCube mat_skyboxSamplers[1];
 uniform int mat_skyboxSamplers_CURRENT_COUNT;
@@ -108,6 +110,8 @@ void main()
     }
 
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
+
+    layerWorldPosColor = vs_fragWorldPos;
 }
 
 #end

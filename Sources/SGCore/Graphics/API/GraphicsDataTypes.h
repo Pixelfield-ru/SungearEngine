@@ -271,6 +271,8 @@ enum class SGTextureType
     SGTT_COUNT = SGTT_NONE
 };
 
+static constexpr std::uint16_t texture_types_count = std::to_underlying(SGTextureType::SGTT_COUNT);
+
 template<typename DataType>
 requires(std::is_scalar_v<DataType>)
 static constexpr SGGDataType getSGDataTypeFromCPPType() noexcept

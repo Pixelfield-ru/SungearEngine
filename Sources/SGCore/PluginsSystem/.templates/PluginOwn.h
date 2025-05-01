@@ -8,7 +8,7 @@
 
 struct ${pluginName}$ : public SGCore::IPlugin
 {
-    SGCore::Event<void()> onConstructed;
+    SGCore::Signal<void()> onConstructed;
 
     ~${pluginName}$() override;
 

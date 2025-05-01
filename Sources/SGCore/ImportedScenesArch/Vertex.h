@@ -10,7 +10,6 @@
 
 #include "SGCore/Utils/Utils.h"
 
-
 namespace SGCore
 {
     // 92
