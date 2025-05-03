@@ -118,19 +118,69 @@ namespace SGCore
         requires(std::is_scalar_v<DataType>)
         void subTextureBufferData(const DataType* data, const size_t& elementsCount, const size_t& elementsOffset)
         {
-            std::memcpy(m_textureData.get() + elementsOffset * sizeof(DataType), data, elementsCount * sizeof(DataType));
+            static constexpr int dataTypeSize = sizeof(DataType);
+
+            if(m_frameBufferAttachmentType != SGFrameBufferAttachmentType::SGG_NOT_ATTACHMENT || !m_isTextureBuffer) return;
+
+            if((elementsOffset + elementsCount) * dataTypeSize > m_width * m_height * getSGGDataTypeSizeInBytes(m_dataType))
+            {
+                SG_ASSERT(false,
+                          fmt::format("Can not do subTextureBufferData(...): out of bounds of texture size!\n"
+                              "Texture path: '{}'\n"
+                              "Texture alias: '{}'\n"
+                              "Texture size: {}x{}\n"
+                              "Offset to subdata: {}\n"
+                              "Elements count to subdata: {}",
+                              Utils::toUTF8(getPath().resolved().u16string()),
+                              getAlias(),
+                              m_width,
+                              m_height,
+                              elementsOffset,
+                              elementsCount).c_str());
+
+                return;
+            }
+
+            std::memcpy(m_textureData.get() + elementsOffset * dataTypeSize, data, elementsCount * dataTypeSize);
             
-            subTextureBufferDataOnGAPISide(elementsCount * sizeof(DataType), elementsOffset * sizeof(DataType));
+            subTextureBufferDataOnGAPISide(elementsCount * dataTypeSize, elementsOffset * dataTypeSize);
         }
         
         // todo:
         template<typename DataType = std::uint8_t>
         requires(std::is_scalar_v<DataType>)
-        void subTextureData(const DataType* data, const size_t& elementsCount, const size_t& elementsOffset)
+        void subTextureData(const DataType* data, std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY)
         {
-            /*std::memcpy(m_textureData.get() + elementsOffset * sizeof(DataType), data, elementsCount * sizeof(DataType));
+            static constexpr int dataTypeSize = sizeof(DataType);
+
+            if(m_frameBufferAttachmentType != SGFrameBufferAttachmentType::SGG_NOT_ATTACHMENT || m_isTextureBuffer) return;
+
+            if((areaOffsetX * areaOffsetY + areaWidth * areaHeight) * dataTypeSize > m_width * m_height * getSGGDataTypeSizeInBytes(m_dataType))
+            {
+                SG_ASSERT(false,
+                          fmt::format("Can not do subTextureBufferData(...): out of bounds of texture size (by bytes)!\n"
+                              "Texture path: '{}'\n"
+                              "Texture alias: '{}'\n"
+                              "Texture size: width: {}, height: {}\n"
+                              "Area offset to subdata: x: {}, y: {}\n"
+                              "Area size to subdata: width: {}, height: {}",
+                              Utils::toUTF8(getPath().resolved().u16string()),
+                              getAlias(),
+                              m_width,
+                              m_height,
+                              areaOffsetX,
+                              areaOffsetY,
+                              areaWidth,
+                              areaHeight).c_str());
+
+                return;
+            }
+
+            std::memcpy(m_textureData.get() + (areaOffsetX + areaOffsetY * m_width) * dataTypeSize,
+                        data,
+                        areaWidth * areaHeight * dataTypeSize);
             
-            subTextureDataOnGAPISide(elementsCount * sizeof(DataType), elementsOffset * sizeof(DataType));*/
+            subTextureDataOnGAPISide(areaWidth, areaHeight, areaOffsetX, areaOffsetY, dataTypeSize);
         }
         
         virtual void destroy() = 0;
@@ -174,7 +224,7 @@ namespace SGCore
         SGFrameBufferAttachmentType m_frameBufferAttachmentType = SGFrameBufferAttachmentType::SGG_NOT_ATTACHMENT;
 
         virtual void subTextureBufferDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) { }
-        virtual void subTextureDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) = 0;
+        virtual void subTextureDataOnGAPISide(std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY, int dataTypeSize) = 0;
 
     private:
         std::streamsize m_textureDataOffsetInPackage = 0;

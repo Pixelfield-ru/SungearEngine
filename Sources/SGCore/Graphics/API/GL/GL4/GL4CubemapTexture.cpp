@@ -43,9 +43,14 @@ void SGCore::GL4CubemapTexture::subTextureBufferDataOnGAPISide(const size_t& byt
     ITexture2D::subTextureBufferDataOnGAPISide(bytesCount, bytesOffset);
 }
 
-void SGCore::GL4CubemapTexture::subTextureDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset)
+void SGCore::GL4CubemapTexture::subTextureDataOnGAPISide(std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY, int dataTypeSize)
 {
-
+    SG_ASSERT(false,
+              fmt::format("OPENGL: Can not do subTextureDataOnGAPISide(...) for cubemap texture: not supported now.\n"
+                  "Texture path: '{}'\n"
+                  "Texture alias: '{}'",
+                  Utils::toUTF8(getPath().resolved().u16string()),
+                  getAlias()).c_str());
 }
 
 void SGCore::GL4CubemapTexture::createAsFrameBufferAttachment

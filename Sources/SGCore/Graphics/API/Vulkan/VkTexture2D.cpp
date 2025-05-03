@@ -20,7 +20,7 @@ void SGCore::VkTexture2D::createAsFrameBufferAttachment(const SGCore::Ref<SGCore
 
 }
 
-void SGCore::VkTexture2D::subTextureDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) noexcept
+void SGCore::VkTexture2D::subTextureDataOnGAPISide(std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY, int dataTypeSize) noexcept
 {
 
 }

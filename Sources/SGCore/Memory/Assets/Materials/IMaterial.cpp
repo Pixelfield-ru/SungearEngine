@@ -47,6 +47,18 @@ SGCore::IMaterial::addTexture2D(const SGTextureType& textureType, const SGCore::
     m_textures[std::to_underlying(textureType)].push_back(tex);
 }
 
+void SGCore::IMaterial::replaceTexture(SGTextureType textureType, int textureIndex, const AssetRef<ITexture2D>& newTex)
+{
+    const auto textureTypeUnderlying = std::to_underlying(textureType);
+    if(textureTypeUnderlying >= m_textures.size()) return;
+
+    auto& texturesWithType = m_textures[textureTypeUnderlying];
+
+    if(textureIndex >= texturesWithType.size()) return;
+
+    texturesWithType[textureIndex] = newTex;
+}
+
 void SGCore::IMaterial::copyTexturesRefs(IMaterial* to) const noexcept
 {
     to->m_textures = m_textures;

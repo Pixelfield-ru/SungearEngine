@@ -42,8 +42,8 @@ namespace SGCore
 
         /**
         * Adds texture2D. Method is copying texture. This method is looking for texture asset by path.
-        * @param type - Material type of texture
-        * @param path - Path to texture.
+        * @param type Material type of texture
+        * @param path Path to texture.
         * @return this
         */
         AssetRef<ITexture2D> findAndAddTexture2D(const SGTextureType& textureType,
@@ -52,11 +52,19 @@ namespace SGCore
 
         /**
          * Adds texture2D.
-         * @param textureType - Material type of texture
-         * @param tex - Texture to add.
+         * @param textureType Material type of texture
+         * @param tex Texture to add.
          */
         void addTexture2D(const SGTextureType& textureType,
                           const AssetRef<ITexture2D>& tex);
+
+        /**
+         * Replaces old texture in textures array by new texture.
+         * @param textureType Type of texture to replace.
+         * @param textureIndex  Index of texture in vector of texture with type \ptextureType . Array of textures can contain multiple texture with same type.
+         * @param newTex New texture that will replace old texture.
+         */
+        void replaceTexture(SGTextureType textureType, int textureIndex, const AssetRef<ITexture2D>& newTex);
 
         void copyTexturesRefs(IMaterial* to) const noexcept;
 

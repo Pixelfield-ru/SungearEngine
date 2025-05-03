@@ -247,18 +247,20 @@ void SGCore::GL4Texture2D::createAsFrameBufferAttachment(const SGCore::Ref<SGCor
 
 void SGCore::GL4Texture2D::subTextureBufferDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) noexcept
 {
-    glBufferSubData(GL_TEXTURE_BUFFER, bytesOffset, bytesCount, m_textureData.get());
+    glBufferSubData(GL_TEXTURE_BUFFER, bytesOffset, bytesCount, m_textureData.get() + bytesOffset);
 }
 
-void SGCore::GL4Texture2D::subTextureDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) noexcept
+void SGCore::GL4Texture2D::subTextureDataOnGAPISide(std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY, int dataTypeSize) noexcept
 {
-    /*const size_t bytesWidth = m_width * getSGGDataTypeSizeInBytes(m_dataType);
-    
-    const size_t y = bytesOffset % bytesWidth;
-    const size_t x = bytesOffset - y * bytesWidth;
-    
-    glBindTexture(GL_TEXTURE_2D, m_textureHandler);
-    glTextureSubImage2D()*/
+    glTexSubImage2D(
+        GL_TEXTURE_2D, // target
+        0, // mimpmap level todo: make level choose
+        areaOffsetX, areaOffsetY, // x and y offsets
+        areaWidth, areaHeight, // subdata area size
+        GLGraphicsTypesCaster::sggFormatToGL(m_format), // pixels format
+        GLGraphicsTypesCaster::sggDataTypeToGL(m_dataType), // data type
+        m_textureData.get() + (areaOffsetX + areaOffsetY * m_width) * dataTypeSize // new data with offsets
+    );
 }
 
 void SGCore::GL4Texture2D::destroy() noexcept
