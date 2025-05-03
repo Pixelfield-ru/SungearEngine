@@ -326,26 +326,37 @@ void SGCore::GL4FrameBuffer::attachAttachment(const SGCore::Ref<SGCore::ITexture
 glm::vec3 SGCore::GL4FrameBuffer::readPixelsFromAttachment(const glm::vec2& mousePos,
                                                            SGFrameBufferAttachmentType attachmentType) const noexcept
 {
-    GLubyte pixel[3];
+    GLfloat pixel[3];
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_handler);
 
-    glReadBuffer(GL_COLOR_ATTACHMENT0 + (std::to_underlying(attachmentType) -
-                                         std::to_underlying(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)));
+    if(isColorAttachment(attachmentType))
+    {
+        glReadBuffer(GL_COLOR_ATTACHMENT0 + (std::to_underlying(attachmentType) -
+                                             std::to_underlying(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)));
+    }
 
     auto attachment = getAttachment(attachmentType);
 
+    GLenum format = GL_RGB;
+    if(isDepthAttachment(attachmentType))
+    {
+        format = GL_DEPTH_COMPONENT;
+    }
+    else if(isDepthStencilAttachment(attachmentType))
+    {
+        format = GL_DEPTH_STENCIL;
+    }
+
     glReadPixels(mousePos.x, mousePos.y, 1, 1,
                  // GLGraphicsTypesCaster::sggFormatToGL(attachment->m_format),
-                 GL_RGB,
-                 GL_UNSIGNED_BYTE, pixel);
+                 format,
+                 GL_FLOAT, pixel);
 
     glReadBuffer(GL_NONE);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    return { pixel[0] / 255.0f, pixel[1] / 255.0f, pixel[2] / 255.0f };
-
-    return { };
+    return { pixel[0], pixel[1], pixel[2] };
 }
 

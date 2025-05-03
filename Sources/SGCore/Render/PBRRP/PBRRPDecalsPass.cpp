@@ -54,6 +54,7 @@ void SGCore::PBRRPDecalsPass::render(const Ref<Scene>& scene, const Ref<IRenderP
                 cameraLayeredFrameReceiver.m_attachmentToRenderIn
         );
         cameraLayeredFrameReceiver.m_layersFrameBuffer->bindAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4, 0);
+        cameraLayeredFrameReceiver.m_layersFrameBuffer->bindAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT5, 1);
 
         decalsView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, this](
         const ECS::entity_t& decalEntity,
@@ -115,10 +116,11 @@ void SGCore::PBRRPDecalsPass::render(const Ref<Scene>& scene, const Ref<IRenderP
                     shaderToUse->useInteger("SGPP_CurrentLayerIndex", meshPPLayer->getIndex());
                 }
 
-                // 1 because we bind SGG_COLOR_ATTACHMENT4 (gbuffer world pos) to 0 location
-                size_t texUnitOffset = shaderToUse->bindMaterialTextures(decalMesh.m_base.getMaterial(), 1);
+                // 2 because we bound SGG_COLOR_ATTACHMENT4 (gbuffer world pos) and SGG_COLOR_ATTACHMENT5 (gbuffer normal) to 0 and 1 location
+                size_t texUnitOffset = shaderToUse->bindMaterialTextures(decalMesh.m_base.getMaterial(), 2);
                 texUnitOffset = shaderToUse->bindTextureBindings(texUnitOffset);
                 shaderToUse->useTextureBlock("u_GBufferWorldPos", 0);
+                shaderToUse->useTextureBlock("u_GBufferNormal", 1);
                 shaderToUse->useMaterialFactors(decalMesh.m_base.getMaterial().get());
 
                 auto uniformBuffsIt = m_uniformBuffersToUse.begin();

@@ -19,6 +19,8 @@
 #include "SGCore/Render/BaseRenderPasses/IGeometryPass.h"
 #include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"
 #include "AtmosphereUtils.h"
+#include "SGCore/Render/BaseRenderPasses/IDecalsPass.h"
+#include "SGCore/Render/PBRRP/PBRRPDecalsPass.h"
 
 SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
 {
@@ -58,6 +60,12 @@ SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
         if(geomPass)
         {
             geomPass->m_uniformBuffersToUse.push_back(m_uniformBuffer);
+        }
+
+        auto decalsPass = renderPipeline->getRenderPass<IDecalsPass>();
+        if(decalsPass)
+        {
+            decalsPass->m_uniformBuffersToUse.push_back(m_uniformBuffer);
         }
     }
     

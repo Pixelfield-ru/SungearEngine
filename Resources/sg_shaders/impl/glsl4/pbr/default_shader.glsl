@@ -103,6 +103,8 @@ layout(location = 2) out vec3 pickingColor;
 // COLOR FOR STOCHASTIC TRANSPARNCY
 layout(location = 3) out vec4 layerSTColor;
 layout(location = 4) out vec3 layerWorldPosColor;
+layout(location = 5) out vec3 layerFragmentNormalColor;
+layout(location = 6) out vec3 layerVertexNormalColor;
 // REQUIRED COLORS!!! ===========
 
 #include "sg_shaders/impl/glsl4/pbr_base.glsl"
@@ -429,8 +431,6 @@ void main()
     // finalCol = neutral(finalCol);
     // finalCol = filmic(finalCol);
 
-    finalCol = finalCol;
-
     if(u_verticesColorsAttributesCount > 0)
     {
         finalCol.rgb = finalCol * vsIn.vertexColor0.rgb;
@@ -474,6 +474,8 @@ void main()
     }
 
     layerWorldPosColor = vsIn.fragPos;
+    layerFragmentNormalColor = finalNormal;
+    layerVertexNormalColor = vsIn.worldNormal;
 
     vec4 bonesColor = vec4(0.0);
     /*for(int i = 0; i < 4; ++i)

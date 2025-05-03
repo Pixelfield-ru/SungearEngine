@@ -5,11 +5,11 @@
 #ifndef SUNGEARENGINE_PBRRPDECALSPASS_H
 #define SUNGEARENGINE_PBRRPDECALSPASS_H
 
-#include "SGCore/Render/BaseRenderPasses/IGeometryPass.h"
+#include "SGCore/Render/BaseRenderPasses/IDecalsPass.h"
 
 namespace SGCore
 {
-    struct PBRRPDecalsPass : public IGeometryPass
+    struct PBRRPDecalsPass : public IDecalsPass
     {
         void create(const Ref<IRenderPipeline>& parentRenderPipeline) final;
 

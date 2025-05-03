@@ -16,7 +16,8 @@ namespace SGCore
     
     struct IGeometryPass : public IRenderPass
     {
-        std::vector<Weak<IUniformBuffer>> m_uniformBuffersToUse;
+    private:
+        bool m_dummy = false;
     };
 }
 

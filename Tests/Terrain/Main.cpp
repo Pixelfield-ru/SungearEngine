@@ -54,7 +54,14 @@ SGCore::ECS::entity_t terrainDecalEntity;
 
 SGCore::AssetRef<SGCore::ITexture2D> terrainHeightmapTex;
 
-std::vector<char> terrainHeightmapData;
+SGCore::AssetRef<SGCore::ITexture2D> terrainDecalDiffuseTex;
+SGCore::AssetRef<SGCore::ITexture2D> terrainDecalAOTex;
+SGCore::AssetRef<SGCore::ITexture2D> terrainDecalHeightTex;
+SGCore::AssetRef<SGCore::ITexture2D> terrainDecalMetallicTex;
+SGCore::AssetRef<SGCore::ITexture2D> terrainDecalNormalTex;
+SGCore::AssetRef<SGCore::ITexture2D> terrainDecalRoughnessTex;
+
+std::vector<char> terrainDisplacementData;
 
 void generateTerrain(const SGCore::AssetRef<SGCore::IMeshData>& terrainMesh, int patchesCountX, int patchesCountY, int patchSize) noexcept
 {
@@ -133,21 +140,29 @@ void coreInit()
 
     screenShader = mainAssetManager->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
 
-    terrainDiffuseTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test_terrain/diffuse.png");
-    terrainDisplacementTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test_terrain/displacement.png");
-    terrainNormalsTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test_terrain/normals.png");
-    terrainAORoughnessMetalTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test_terrain/ao_roughness_metal.png");
-    // terrainHeightmapTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test_heightmap0.png");
-    terrainHeightmapTex = mainAssetManager->getOrAddAssetByAlias<SGCore::ITexture2D>("test_heightmap");
+    // terrainDecalDiffuseTex = mainAssetManager->loadAsset<SGCore::ITexture2D>(SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Resources/textures/spotted_rust/spotted-rust_albedo.png");
+    terrainDecalDiffuseTex = mainAssetManager->loadAsset<SGCore::ITexture2D>(SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Resources/textures/terrain_editor/grow.png");
+    terrainDecalAOTex = mainAssetManager->loadAsset<SGCore::ITexture2D>(SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Resources/textures/spotted_rust/spotted-rust_ao.png");
+    terrainDecalHeightTex = mainAssetManager->loadAsset<SGCore::ITexture2D>(SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Resources/textures/spotted_rust/spotted-rust_height.png");
+    terrainDecalMetallicTex = mainAssetManager->loadAsset<SGCore::ITexture2D>(SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Resources/textures/spotted_rust/spotted-rust_metallic.png");
+    terrainDecalNormalTex = mainAssetManager->loadAsset<SGCore::ITexture2D>(SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Resources/textures/spotted_rust/spotted-rust_normal-ogl.png");
+    terrainDecalRoughnessTex = mainAssetManager->loadAsset<SGCore::ITexture2D>(SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Resources/textures/spotted_rust/spotted-rust_roughness.png");
 
-    terrainHeightmapData.resize(1000 * 1000);
+    terrainDiffuseTex = mainAssetManager->loadAsset<SGCore::ITexture2D>(SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Resources/textures/test_terrain/diffuse.png");
+    terrainHeightmapTex = mainAssetManager->loadAsset<SGCore::ITexture2D>(SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Resources/textures/test_terrain/displacement.png");
+    terrainNormalsTex = mainAssetManager->loadAsset<SGCore::ITexture2D>(SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Resources/textures/test_terrain/normals.png");
+    terrainAORoughnessMetalTex = mainAssetManager->loadAsset<SGCore::ITexture2D>(SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Resources/textures/test_terrain/ao_roughness_metal.png");
+    terrainDisplacementTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test_heightmap0.png");
+    // terrainDisplacementTex = mainAssetManager->getOrAddAssetByAlias<SGCore::ITexture2D>("test_heightmap");
 
-    terrainHeightmapData[0] = 20;
-    terrainHeightmapData[1] = 20;
-    terrainHeightmapData[2] = 20;
-    terrainHeightmapData[3] = 20;
+    /*terrainDisplacementData.resize(1000 * 1000);
 
-    terrainHeightmapTex->create(terrainHeightmapData.data(), 1000, 1000, 1, SGGColorInternalFormat::SGG_R8, SGGColorFormat::SGG_R);
+    terrainDisplacementData[0] = 20;
+    terrainDisplacementData[1] = 20;
+    terrainDisplacementData[2] = 20;
+    terrainDisplacementData[3] = 20;
+
+    terrainDisplacementTex->create(terrainDisplacementData.data(), 1000, 1000, 1, SGGColorInternalFormat::SGG_R8, SGGColorFormat::SGG_R);*/
 
     // creating camera entity
     mainCamera = ecsRegistry->create();
@@ -260,13 +275,13 @@ void coreInit()
     testMaterial->m_meshRenderState.m_facesCullingPolygonsOrder = SGPolygonsOrder::SGG_CCW;
     //standardTerrainMaterial->m_meshRenderState.m_useIndices = false;
     testMaterial->m_meshRenderState.m_drawMode = SGDrawMode::SGG_TRIANGLES;
-    testMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE, terrainDiffuseTex);
+    /*testMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE, terrainDiffuseTex);
     testMaterial->addTexture2D(SGTextureType::SGTT_DISPLACEMENT, terrainDisplacementTex);
     testMaterial->addTexture2D(SGTextureType::SGTT_NORMALS, terrainNormalsTex);
     testMaterial->addTexture2D(SGTextureType::SGTT_LIGHTMAP, terrainAORoughnessMetalTex);
     testMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE_ROUGHNESS, terrainAORoughnessMetalTex);
     testMaterial->addTexture2D(SGTextureType::SGTT_METALNESS, terrainAORoughnessMetalTex);
-    testMaterial->addTexture2D(SGTextureType::SGTT_HEIGHT, terrainHeightmapTex);
+    testMaterial->addTexture2D(SGTextureType::SGTT_HEIGHT, terrainHeightmapTex);*/
 
     // creating terrain entity ================================
 
@@ -310,6 +325,25 @@ void coreInit()
     // creating decal !!! ==============================================
 
     terrainDecalEntity = SGCore::ECS::Utils::createDecal(*ecsRegistry.get());
+
+    auto terrainDecalMaterial = mainAssetManager->getOrAddAssetByAlias<SGCore::IMaterial>("terrain_decal_material_0");
+    terrainDecalMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE, terrainDecalDiffuseTex);
+    /*terrainDecalMaterial->addTexture2D(SGTextureType::SGTT_LIGHTMAP, terrainDecalAOTex);
+    terrainDecalMaterial->addTexture2D(SGTextureType::SGTT_HEIGHT, terrainDecalHeightTex);
+    terrainDecalMaterial->addTexture2D(SGTextureType::SGTT_METALNESS, terrainDecalMetallicTex);
+    terrainDecalMaterial->addTexture2D(SGTextureType::SGTT_NORMALS, terrainDecalNormalTex);
+    terrainDecalMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE_ROUGHNESS, terrainDecalRoughnessTex);*/
+    terrainDecalMaterial->setMetallicFactor(0.0f);
+    terrainDecalMaterial->setShininess(0.0f);
+    terrainDecalMaterial->setRoughnessFactor(1.0f);
+
+    auto& decalMesh = ecsRegistry->get<SGCore::Mesh>(terrainDecalEntity);
+    decalMesh.m_base.setMaterial(terrainDecalMaterial);
+
+    auto& decalTransform = ecsRegistry->get<SGCore::Transform>(terrainDecalEntity);
+    // decalTransform->m_ownTransform.m_scale.x *= 10.0;
+    // decalTransform->m_ownTransform.m_scale.z *= 10.0;
+    // decalTransform->m_ownTransform.m_scale.y = 5.0;
 
     // =================================================================
 
@@ -369,29 +403,10 @@ void onUpdate(const double& dt, const double& fixedDt)
     }*/
 
     auto& decalTransform = scene->getECSRegistry()->get<SGCore::Transform>(terrainDecalEntity);
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT))
-    {
-        decalTransform->m_ownTransform.m_position.x -= 10.0f * dt;
-    }
-
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_RIGHT))
-    {
-        decalTransform->m_ownTransform.m_position.x += 10.0f * dt;
-    }
-
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_UP))
-    {
-        decalTransform->m_ownTransform.m_position.z -= 10.0f * dt;
-    }
-
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_DOWN))
-    {
-        decalTransform->m_ownTransform.m_position.z += 10.0f * dt;
-    }
+    auto& terrainTransform = scene->getECSRegistry()->get<SGCore::Transform>(terrainEntity);
 
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_3))
     {
-        auto terrainTransform = scene->getECSRegistry()->get<SGCore::Transform>(terrainEntity);
         // terrainTransform->m_ownTransform.m_rotation = glm::identity<glm::quat>();
         terrainTransform->m_ownTransform.m_rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(0, 0, 1)) * terrainTransform->m_ownTransform.m_rotation;
 
@@ -407,6 +422,51 @@ void onUpdate(const double& dt, const double& fixedDt)
     {
         auto& atmosphereScattering = scene->getECSRegistry()->get<SGCore::Atmosphere>(atmosphereEntity);
         atmosphereScattering.m_sunRotation.x -= 10.0f * dt;
+    }
+
+    {
+        auto& layeredFrameReceiver = scene->getECSRegistry()->get<SGCore::LayeredFrameReceiver>(mainCamera);
+
+        int windowSizeX;
+        int windowSizeY;
+        SGCore::CoreMain::getWindow().getSize(windowSizeX, windowSizeY);
+
+        const glm::vec2 cursorPos {
+            SGCore::InputManager::getMainInputListener()->getCursorPositionX(),
+            windowSizeY - SGCore::InputManager::getMainInputListener()->getCursorPositionY()
+        };
+
+        const auto& attachment4 = layeredFrameReceiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4);
+
+        const glm::vec2 cursorRelativePos = {
+            cursorPos.x / windowSizeX * (attachment4->getWidth()),
+            cursorPos.y / windowSizeY * (attachment4->getHeight())
+        };
+
+        const auto worldPos = layeredFrameReceiver.m_layersFrameBuffer->readPixelsFromAttachment(cursorRelativePos, SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4);
+        const auto surfaceNormal = layeredFrameReceiver.m_layersFrameBuffer->readPixelsFromAttachment(cursorRelativePos, SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT6);
+
+        std::cout << "pos: " << worldPos << ", cursor pos: " << cursorRelativePos <<
+                ", attachment4->getWidth(): " << attachment4->getWidth() <<
+                ", attachment4->getHeight(): " << attachment4->getHeight() <<
+                ", surface normal: " << surfaceNormal <<
+                std::endl;
+
+        glm::vec3 zDir = glm::normalize(surfaceNormal);
+        glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+        // Если normal почти совпадает с up, переопредели up
+        if (glm::abs(glm::dot(zDir, up)) > 0.999f)
+            up = glm::vec3(1.0f, 0.0f, 0.0f);
+
+        glm::vec3 xDir = glm::normalize(glm::cross(up, zDir));
+        glm::vec3 yDir = glm::cross(zDir, xDir);
+
+        glm::mat3 rotationMatrix(xDir, yDir, zDir);
+        glm::quat rotation = glm::quat_cast(rotationMatrix);
+
+        decalTransform->m_ownTransform.m_position = worldPos;
+        decalTransform->m_ownTransform.m_rotation = rotation * glm::angleAxis(glm::radians(-90.0f), glm::vec3 { 1.0f, 0.0f, 0.0f });
     }
 
     // rendering frame buffer attachment from camera to screen

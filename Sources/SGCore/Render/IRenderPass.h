@@ -27,6 +27,8 @@ namespace SGCore
         RenderState m_renderState;
         MeshRenderState m_meshRenderState;
 
+        std::vector<Weak<IUniformBuffer>> m_uniformBuffersToUse;
+
         virtual void create(const Ref<IRenderPipeline>& parentRenderPipeline) { };
         
         virtual void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) = 0;

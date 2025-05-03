@@ -80,7 +80,21 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             0
     );
     m_layersFrameBuffer->addAttachment(
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4, // WORLD POS
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4, // GBUFFER WORLD POS
+            SGGColorFormat::SGG_RGB,
+            SGGColorInternalFormat::SGG_RGB32_FLOAT,
+            0,
+            0
+    );
+    m_layersFrameBuffer->addAttachment(
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT5, // GBUFFER FRAGMENT NORMAL
+            SGGColorFormat::SGG_RGB,
+            SGGColorInternalFormat::SGG_RGB32_FLOAT,
+            0,
+            0
+    );
+    m_layersFrameBuffer->addAttachment(
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT6, // GBUFFER VERTEX NORMAL
             SGGColorFormat::SGG_RGB,
             SGGColorInternalFormat::SGG_RGB32_FLOAT,
             0,
