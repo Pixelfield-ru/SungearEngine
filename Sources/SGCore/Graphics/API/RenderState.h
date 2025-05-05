@@ -22,6 +22,9 @@ namespace SGCore
 
         SGDrawMode m_drawMode = SGDrawMode::SGG_TRIANGLES;
 
+        // if tesselation used
+        int m_patchVerticesCount = 4;
+
         float m_linesWidth = 3.0f;
         float m_pointsSize = 3.0f;
 

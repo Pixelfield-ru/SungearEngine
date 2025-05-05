@@ -94,6 +94,11 @@ namespace SGCore
         // ----------------
         virtual void prepare();
 
+        /**
+         * Destroys/clears all buffers of mesh on GPU and CPU. Settings saved.
+         */
+        virtual void destroy() noexcept;
+
         void setVertexPosition(const std::uint64_t& vertexIdx, const float& x, const float& y, const float& z) noexcept;
         void getVertexPosition(const std::uint64_t& vertexIdx, float& outX, float& outY, float& outZ) noexcept;
 

@@ -124,9 +124,12 @@ in TessControlOut
 uniform sampler2D mat_displacementSamplers[1];
 uniform int mat_displacementSamplers_CURRENT_COUNT;
 
+uniform float u_terrainHeightScale;
+uniform vec2 u_terrainUVScale;
+
 float getHeight(vec2 xz)
 {
-    return texture(mat_displacementSamplers[0], xz).r * 100;
+    return texture(mat_displacementSamplers[0], xz).r * u_terrainHeightScale;
 
     // return 0;
 }
@@ -189,7 +192,7 @@ void main()
     tessEvalOut.vertexPos = pos.xyz;
     tessEvalOut.fragPos = vec3(objectTransform.modelMatrix * pos);
 
-    tessEvalOut.UV = uv_ * 100.0;
+    tessEvalOut.UV = uv_ * u_terrainUVScale;
 
     vec3 T = normalize(vec3(objectTransform.modelMatrix * vec4(tessEvalOut.tangent, 0.0)));
     vec3 B = normalize(vec3(objectTransform.modelMatrix * vec4(tessEvalOut.bitangent, 0.0)));

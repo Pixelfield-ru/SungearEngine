@@ -8,12 +8,11 @@
 #include <SGCore/pch.h>
 
 #include "SGCore/Render/IRenderPass.h"
-#include "SGCore/Transformations/TransformBase.h"
 #include "SGCore/Render/BaseRenderPasses/IGeometryPass.h"
-#include "SGCore/Math/Frustum.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
+#include "SGCore/Render/Terrain/Terrain.h"
 
 namespace SGCore
 {
@@ -40,6 +39,15 @@ namespace SGCore
                         const Ref<PostProcessLayer>& meshPPLayer,
                         bool isTransparentPass,
                         LayeredFrameReceiver::reg_t* forLayeredFrameReceiver) noexcept;
+
+        void renderTerrainMesh(const Ref<ECS::registry_t>& registry,
+                               const ECS::entity_t& terrainEntity,
+                               const Transform::reg_t& terrainTransform,
+                               Mesh::reg_t& mesh,
+                               const Terrain::reg_t& terrain,
+                               EntityBaseInfo::reg_t& terrainEntityBaseInfo,
+                               const EntityBaseInfo::reg_t& forCamera3DBaseInfo,
+                               const Ref<PostProcessLayer>& terrainPPLayer) noexcept;
 
         void renderOctreeNode(const Ref<ECS::registry_t>& registry,
                               const EntityBaseInfo::reg_t& forCamera3DBaseInfo,

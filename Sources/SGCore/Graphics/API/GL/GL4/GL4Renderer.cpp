@@ -579,6 +579,10 @@ SGCore::GL4Renderer::useMeshRenderState(const SGCore::MeshRenderState& newMeshRe
 
         m_cachedMeshRenderState.m_linesWidth = newMeshRenderState.m_linesWidth;
         m_cachedMeshRenderState.m_pointsSize = newMeshRenderState.m_pointsSize;
+
+        glPatchParameteri(GL_PATCH_VERTICES, newMeshRenderState.m_patchVerticesCount);
+
+        m_cachedMeshRenderState.m_patchVerticesCount = newMeshRenderState.m_patchVerticesCount;
     }
     else
     {
@@ -622,6 +626,15 @@ SGCore::GL4Renderer::useMeshRenderState(const SGCore::MeshRenderState& newMeshRe
         {
             glPointSize(newMeshRenderState.m_pointsSize);
             m_cachedMeshRenderState.m_pointsSize = newMeshRenderState.m_pointsSize;
+        }
+
+        if(newMeshRenderState.m_drawMode == SGDrawMode::SGG_PATCHES)
+        {
+            if(m_cachedMeshRenderState.m_patchVerticesCount != newMeshRenderState.m_patchVerticesCount)
+            {
+                glPatchParameteri(GL_PATCH_VERTICES, newMeshRenderState.m_patchVerticesCount);
+                m_cachedMeshRenderState.m_patchVerticesCount = newMeshRenderState.m_patchVerticesCount;
+            }
         }
     }
 }

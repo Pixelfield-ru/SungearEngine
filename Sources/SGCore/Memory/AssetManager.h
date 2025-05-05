@@ -33,7 +33,6 @@ namespace SGCore
         template<AssetStorageType AssetStorage>
         using asset_key = std::conditional_t<AssetStorage == AssetStorageType::BY_ALIAS, std::string, InterpolatedPath>;
 
-        using assets_container_t = std::unordered_map<size_t, std::unordered_map<size_t, Ref<IAsset>>>;
         using assets_refs_container_t = std::unordered_map<size_t, std::unordered_map<size_t, AssetRef<IAsset>>>;
 
         static void init() noexcept;

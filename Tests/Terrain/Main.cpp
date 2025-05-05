@@ -23,7 +23,7 @@
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
 #include "SGCore/Render/Mesh.h"
-#include "SGCore/Render/Terrain.h"
+#include "SGCore/Render/Terrain/Terrain.h"
 #include "SGCore/Render/Atmosphere/Atmosphere.h"
 
 #ifdef PLATFORM_OS_WINDOWS
@@ -81,53 +81,6 @@ enum class TerrainOp
 };
 
 TerrainOp currentTerrainOp = TerrainOp::TERRAIN_GROW;
-
-void generateTerrain(const SGCore::AssetRef<SGCore::IMeshData>& terrainMesh, int patchesCountX, int patchesCountY, int patchSize) noexcept
-{
-    size_t currentIdx = 0;
-
-    glm::vec2 curPos = { 0.0, 0.0 };
-
-    const glm::vec2 patchHalfSize = glm::vec2(patchSize, patchSize) / 2.0f;
-
-    for(int y = 0; y < patchesCountY; ++y)
-    {
-        for(int x = 0; x < patchesCountX; ++x)
-        {
-            terrainMesh->m_vertices.push_back({
-                .m_position = glm::vec3 { -1, 0, -1.0f } * patchSize / 2.0f + glm::vec3(curPos.x, 0.0, curPos.y),
-                .m_uv = { x / (float) patchesCountX, y / (float) patchesCountY, 0.0 }
-            });
-
-            terrainMesh->m_vertices.push_back({
-                .m_position = glm::vec3 { -1, 0, 1.0f } * patchSize / 2.0f + glm::vec3(curPos.x, 0.0, curPos.y),
-                .m_uv = { x / (float) patchesCountX, (y + 1) / (float) patchesCountY, 0.0f }
-            });
-
-            terrainMesh->m_vertices.push_back({
-                .m_position = glm::vec3 { 1, 0, 1.0f } * patchSize / 2.0f + glm::vec3(curPos.x, 0.0, curPos.y),
-                .m_uv = { (x + 1) / (float) patchesCountX, (y + 1) / (float) patchesCountY, 0.0f }
-            });
-
-            terrainMesh->m_vertices.push_back({
-                .m_position = glm::vec3 { 1, 0, -1.0f } * patchSize / 2.0f + glm::vec3(curPos.x, 0.0, curPos.y),
-                .m_uv = { (x + 1) / (float) patchesCountX, y / (float) patchesCountY, 0.0f }
-            });
-
-            terrainMeshData->m_indices.push_back(currentIdx + 0);
-            terrainMeshData->m_indices.push_back(currentIdx + 3);
-            terrainMeshData->m_indices.push_back(currentIdx + 2);
-            terrainMeshData->m_indices.push_back(currentIdx + 1);
-
-            currentIdx += 4;
-
-            curPos.x += patchSize;
-        }
-
-        curPos.x = 0;
-        curPos.y += patchSize;
-    }
-}
 
 void coreInit()
 {
@@ -247,16 +200,6 @@ void coreInit()
 
     // =================================================================
 
-    // creating terrain mesh ==================================
-
-    const float terrainScale = 100.0f;
-
-    terrainMeshData = mainAssetManager->createAsset<SGCore::IMeshData>();
-
-    generateTerrain(terrainMeshData, 20, 20, 100);
-
-    terrainMeshData->prepare();
-
     // creating terrain material ==============================
 
     auto standardTerrainMaterial = mainAssetManager->getOrAddAssetByAlias<SGCore::IMaterial>("standard_terrain_material");
@@ -300,7 +243,14 @@ void coreInit()
     auto& terrainTransform = ecsRegistry->emplace<SGCore::Transform>(terrainEntity, SGCore::MakeRef<SGCore::Transform>());
     ecsRegistry->emplace<SGCore::NonSavable>(terrainEntity);
     auto& terrainMesh = ecsRegistry->emplace<SGCore::Mesh>(terrainEntity);
-    ecsRegistry->emplace<SGCore::Terrain>(terrainEntity);
+    auto& terrainComponent = ecsRegistry->emplace<SGCore::Terrain>(terrainEntity);
+
+    // creating terrain mesh ====
+    terrainMeshData = mainAssetManager->createAsset<SGCore::IMeshData>();
+
+    SGCore::Terrain::generate(terrainComponent, terrainMeshData, 40, 40, 100);
+
+    // ==========================
 
     // terrainTransform->m_ownTransform.m_scale = { 1.0f, 1.0f, 1.0f };
 
@@ -416,6 +366,7 @@ void onUpdate(const double& dt, const double& fixedDt)
 
     auto& decalTransform = scene->getECSRegistry()->get<SGCore::Transform>(terrainDecalEntity);
     auto& terrainTransform = scene->getECSRegistry()->get<SGCore::Transform>(terrainEntity);
+    auto& terrain = scene->getECSRegistry()->get<SGCore::Terrain>(terrainEntity);
 
     if(mainInputListener->keyboardKeyReleased(SGCore::KeyboardKey::KEY_3))
     {
@@ -482,14 +433,18 @@ void onUpdate(const double& dt, const double& fixedDt)
 
         if(mainInputListener->mouseButtonDown(SGCore::MouseButton::MOUSE_BUTTON_LEFT))
         {
-            const glm::vec3 decalRelativePos = worldPos - terrainTransform->m_finalTransform.m_position + glm::vec3 { 50.0f, 0.0f, 50.0f };
+            const glm::vec3 decalRelativePos = worldPos - terrainTransform->m_finalTransform.m_position + glm::vec3 { terrain.getPatchSize() / 2.0f, 0.0f, terrain.getPatchSize() / 2.0f };
 
-            const glm::vec2 pixelSize { 2000.0f / terrainDisplacementTex->getWidth(), 2000.0f / terrainDisplacementTex->getHeight() };
+            const glm::vec2 pixelSize {
+                (terrain.getPatchSize() * terrain.getSize().x) / (float) terrainDisplacementTex->getWidth(),
+                (terrain.getPatchSize() * terrain.getSize().y) / (float) terrainDisplacementTex->getHeight()
+            };
 
             const glm::ivec2 indices { std::floor(decalRelativePos.x / pixelSize.x), std::floor(decalRelativePos.z / pixelSize.y) };
 
-            const int growRegionHalfSizeX = (int) (decalTransform->m_ownTransform.m_scale.x / 2.0f);
-            const int growRegionHalfSizeY = (int) (decalTransform->m_ownTransform.m_scale.z / 2.0f);
+            const float paintRadius = (decalTransform->m_ownTransform.m_scale.x / pixelSize.x);
+            const int growRegionHalfSizeX = (int) paintRadius;
+            const int growRegionHalfSizeY = (int) paintRadius;
 
             switch(currentTerrainOp)
             {
@@ -499,9 +454,9 @@ void onUpdate(const double& dt, const double& fixedDt)
                     {
                         for(int x = -growRegionHalfSizeX; x < growRegionHalfSizeX + 1; ++x)
                         {
-                            if(glm::length(glm::vec2 { x, y }) < decalTransform->m_ownTransform.m_scale.x / 2.0f)
+                            if(glm::length(glm::vec2 { x, y }) < paintRadius)
                             {
-                                const size_t finalIndex = indices.x + x + (indices.y + y) * 1000;
+                                const size_t finalIndex = indices.x + x + (indices.y + y) * terrainDisplacementTex->getWidth();
                                 if(finalIndex > 0 && finalIndex < terrainDisplacementData.size())
                                 {
                                     terrainDisplacementData[finalIndex] += terrainGrowSpeed;
@@ -518,9 +473,9 @@ void onUpdate(const double& dt, const double& fixedDt)
                     {
                         for(int x = -growRegionHalfSizeX; x < growRegionHalfSizeX + 1; ++x)
                         {
-                            if(glm::length(glm::vec2 { x, y }) < decalTransform->m_ownTransform.m_scale.x / 2.0f)
+                            if(glm::length(glm::vec2 { x, y }) < paintRadius)
                             {
-                                const size_t finalIndex = indices.x + x + (indices.y + y) * 1000;
+                                const size_t finalIndex = indices.x + x + (indices.y + y) * terrainDisplacementTex->getWidth();
                                 if(finalIndex > 0 && finalIndex < terrainDisplacementData.size())
                                 {
                                     terrainDisplacementData[finalIndex] -= terrainLowerSpeed;
@@ -534,7 +489,7 @@ void onUpdate(const double& dt, const double& fixedDt)
             }
 
             terrainDisplacementTex->bind(0);
-            terrainDisplacementTex->subTextureData(terrainDisplacementData.data(), 1000, 1000, 0, 0);
+            terrainDisplacementTex->subTextureData(terrainDisplacementData.data(), terrainDisplacementTex->getWidth(), terrainDisplacementTex->getHeight(), 0, 0);
         }
 
         if(mainInputListener->keyboardKeyReleased(SGCore::KeyboardKey::KEY_F1))

@@ -202,6 +202,27 @@ void SGCore::IMeshData::prepare()
     // --------------------------------------------
 }
 
+void SGCore::IMeshData::destroy() noexcept
+{
+    if(m_vertexArray) m_vertexArray->destroy();
+
+    for(const auto& colorsBuf : m_verticesColorsBuffers)
+    {
+        if(colorsBuf)
+        {
+            colorsBuf->destroy();
+        }
+    }
+
+    if(m_verticesBuffer) m_verticesBuffer->destroy();
+    if(m_indicesBuffer) m_indicesBuffer->destroy();
+
+    m_vertices.clear();
+    m_indices.clear();
+    m_tmpVertexWeights.clear();
+    m_verticesColors.clear();
+}
+
 void SGCore::IMeshData::setVertexPosition
 (const std::uint64_t& vertexIdx, const float& x, const float& y, const float& z) noexcept
 {

@@ -14,7 +14,6 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Render/IRenderPipeline.h"
 #include "SGCore/Scene/Scene.h"
-#include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/Picking/Pickable.h"
@@ -27,8 +26,8 @@
 #include "SGCore/Render/Alpha/OpaqueEntityTag.h"
 #include "SGCore/Render/Alpha/TransparentEntityTag.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
-#include "SGCore/Render/Terrain.h"
 #include "SGCore/Render/Decals/Decal.h"
+#include "SGCore/Render/Terrain/Terrain.h"
 
 size_t renderedInOctrees = 0;
 
@@ -94,9 +93,9 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
 
         terrainsView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, this](
             const ECS::entity_t& terrainEntity,
-            EntityBaseInfo::reg_t& meshedEntityBaseInfo,
+            EntityBaseInfo::reg_t& terrainEntityBaseInfo,
             Mesh::reg_t& mesh,
-            Transform::reg_t& meshTransform,
+            Transform::reg_t& terrainTransform,
             const Terrain::reg_t& terrain) {
                 Ref<PostProcessLayer> meshPPLayer = mesh.m_base.m_layeredFrameReceiversMarkup[cameraLayeredFrameReceiver].lock();
 
@@ -111,10 +110,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
                 SG_ASSERT(meshPPLayer != nullptr,
                           "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
 
-                glPatchParameteri(GL_PATCH_VERTICES, 4);
-
-                renderMesh(registry, terrainEntity, meshTransform, mesh,
-                           meshedEntityBaseInfo, camera3DBaseInfo, meshPPLayer, false, cameraLayeredFrameReceiver);
+                renderTerrainMesh(registry, terrainEntity, terrainTransform, mesh, terrain, terrainEntityBaseInfo, camera3DBaseInfo, meshPPLayer);
             });
 
         // =====================================================================================================
@@ -277,11 +273,8 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
 
         shaderToUse->useInteger("u_isTransparentPass", isTransparentPass ? 1 : 0);
         shaderToUse->useInteger("u_verticesColorsAttributesCount", mesh.m_base.getMeshData()->m_verticesColors.size());
-
-        if(meshPPLayer)
-        {
-            shaderToUse->useInteger("SGPP_CurrentLayerIndex", meshPPLayer->getIndex());
-        }
+        // meshPPLayer is always valid
+        shaderToUse->useInteger("SGPP_CurrentLayerIndex", meshPPLayer->getIndex());
 
         // 14 MS FOR loc0 IN DEBUG
         size_t offset0 = shaderToUse->bindMaterialTextures(mesh.m_base.getMaterial());
@@ -336,6 +329,90 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
 
         // HOLY SHMOLY!! 10 MS FOR MAP loc0 IN DEBUG. DO NOT USE THIS!!!
         // shaderToUse->unbindMaterialTextures(mesh.m_base.getMaterial());
+
+        // if we used custom shader then we must bind standard pipeline shader
+        if(shaderToUse == meshGeomShader)
+        {
+            if(m_shader)
+            {
+                m_shader->bind();
+            }
+        }
+    }
+}
+
+void SGCore::PBRRPGeometryPass::renderTerrainMesh(const Ref<ECS::registry_t>& registry,
+                                                  const ECS::entity_t& terrainEntity,
+                                                  const Transform::reg_t& terrainTransform,
+                                                  Mesh::reg_t& mesh,
+                                                  const Terrain::reg_t& terrain,
+                                                  EntityBaseInfo::reg_t& terrainEntityBaseInfo,
+                                                  const EntityBaseInfo::reg_t& forCamera3DBaseInfo,
+                                                  const Ref<PostProcessLayer>& terrainPPLayer) noexcept
+{
+    if(!mesh.m_base.getMeshData() ||
+       !mesh.m_base.getMaterial()) return;
+
+    const auto& meshGeomShader = mesh.m_base.getMaterial()->m_shader;
+    const auto& shaderToUse = meshGeomShader ? meshGeomShader : m_shader;
+
+    if(shaderToUse)
+    {
+        // binding shaderToUse only if it is custom shader
+        if(shaderToUse == meshGeomShader)
+        {
+            shaderToUse->bind();
+            shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+        }
+
+        {
+            shaderToUse->useMatrix("objectTransform.modelMatrix",
+                                   terrainTransform->m_finalTransform.m_animatedModelMatrix);
+            shaderToUse->useVectorf("objectTransform.position", terrainTransform->m_finalTransform.m_position);
+
+            const auto* meshedEntityPickableComponent = registry->tryGet<Pickable>(terrainEntity);
+            // enable picking
+            if(meshedEntityPickableComponent &&
+               meshedEntityPickableComponent->isPickableForCamera(forCamera3DBaseInfo.getThisEntity()))
+            {
+                shaderToUse->useVectorf("u_pickingColor", terrainEntityBaseInfo.getUniqueColor());
+            }
+            else
+            {
+                shaderToUse->useVectorf("u_pickingColor", { 0, 0, 0 });
+            }
+        }
+
+        shaderToUse->useInteger("u_verticesColorsAttributesCount", mesh.m_base.getMeshData()->m_verticesColors.size());
+        // meshPPLayer is always valid
+        shaderToUse->useInteger("SGPP_CurrentLayerIndex", terrainPPLayer->getIndex());
+        shaderToUse->useFloat("u_terrainHeightScale", terrain.m_heightScale);
+        shaderToUse->useVectorf("u_terrainUVScale", terrain.m_uvScale);
+
+        // 14 MS FOR loc0 IN DEBUG
+        size_t offset0 = shaderToUse->bindMaterialTextures(mesh.m_base.getMaterial());
+        shaderToUse->bindTextureBindings(offset0);
+        shaderToUse->useMaterialFactors(mesh.m_base.getMaterial().get());
+
+        auto uniformBuffsIt = m_uniformBuffersToUse.begin();
+        while(uniformBuffsIt != m_uniformBuffersToUse.end())
+        {
+            if(auto lockedUniformBuf = uniformBuffsIt->lock())
+            {
+                shaderToUse->useUniformBuffer(lockedUniformBuf);
+
+                ++uniformBuffsIt;
+            }
+            else
+            {
+                uniformBuffsIt = m_uniformBuffersToUse.erase(uniformBuffsIt);
+            }
+        }
+
+        CoreMain::getRenderer()->renderMeshData(
+                mesh.m_base.getMeshData().get(),
+                mesh.m_base.getMaterial()->m_meshRenderState
+        );
 
         // if we used custom shader then we must bind standard pipeline shader
         if(shaderToUse == meshGeomShader)
