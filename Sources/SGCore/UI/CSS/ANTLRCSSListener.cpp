@@ -15,6 +15,7 @@
 #include "PropertiesProcessors/CSSBorderRadiusPropertyProcessor.h"
 #include "PropertiesProcessors/CSSGapPropertyProcessor.h"
 #include "PropertiesProcessors/CSSPaddingPropertyProcessor.h"
+#include "PropertiesProcessors/CSSFontFamilyPropertyProcessor.h"
 
 void SGCore::UI::ANTLRCSSListener::enterSelector(css3Parser::SelectorContext* ctx)
 {
@@ -138,7 +139,6 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
 
             break;
         }
-        case CSSPropertyType::PT_UNKNOWN:break;
         case CSSPropertyType::PT_PADDING:
         {
             CSSPropertyProcessor<CSSPropertyType::PT_PADDING>::processProperty(this,
@@ -148,6 +148,16 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
 
             break;
         }
+        case CSSPropertyType::PT_FONT_FAMILY:
+        {
+            CSSPropertyProcessor<CSSPropertyType::PT_FONT_FAMILY>::processProperty(this,
+                            ctx,
+                            propertyName,
+                            propertyStringValue);
+
+            break;
+        }
+        case CSSPropertyType::PT_UNKNOWN:break;
     }
 }
 

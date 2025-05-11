@@ -8,7 +8,7 @@
 SGCore::UI::CSSSelector::CSSSelector() noexcept
 {
     // setting default font
-    m_font = FontsManager::getInstance().getAssetManager()->getAsset<Font, AssetStorageType::BY_ALIAS>("JetBrainsMono-Regular");
+    m_font = FontsManager::getInstance().getAssetManager()->getAsset<Font, AssetStorageType::BY_ALIAS>("JetBrains Mono");
 
     m_fontSpecializationSettings.m_height = 20;
     setFontSpecializationSettings(m_fontSpecializationSettings);
@@ -173,6 +173,11 @@ void SGCore::UI::CSSSelector::setFontSpecializationSettings(const FontSpecializa
 const SGCore::UI::FontSpecializationSettings& SGCore::UI::CSSSelector::getFontSpecializationSettings() const noexcept
 {
     return m_fontSpecializationSettings;
+}
+
+void SGCore::UI::CSSSelector::updateFontSettings() noexcept
+{
+    setFontSpecializationSettings(m_fontSpecializationSettings);
 }
 
 SGCore::Ref<SGCore::UI::FontSpecialization> SGCore::UI::CSSSelector::getFontSpecialization() const noexcept

@@ -26,6 +26,7 @@ namespace SGCore::UI
         PT_BACKGROUND_COLOR,
         PT_BORDER_RADIUS,
         PT_PADDING,
+        PT_FONT_FAMILY,
 
         PT_UNKNOWN
     };

@@ -49,8 +49,10 @@ namespace SGCore::UI
                         else
                         {
                             // todo: maybe setting some default selector??
-                            element->m_selector = nullptr;
+                            element->m_selector = AssetManager::getInstance()->getOrAddAssetByAlias<CSSSelector>("sgui_default_text_style");
                         }
+
+                        element->clearGlyphs();
 
                         break;
                     }

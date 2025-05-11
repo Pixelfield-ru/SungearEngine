@@ -66,6 +66,10 @@ SGCore::UI::CSSPropertyType SGCore::UI::getPropertyTypeFromName(const std::strin
     {
         return CSSPropertyType::PT_PADDING;
     }
+    if(propertyName == "font-family")
+    {
+        return CSSPropertyType::PT_FONT_FAMILY;
+    }
 
     return CSSPropertyType::PT_UNKNOWN;
 }

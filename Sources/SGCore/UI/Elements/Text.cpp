@@ -28,8 +28,7 @@ bool SGCore::UI::Text::draw(const LayeredFrameReceiver::reg_t& cameraReceiver,
             // filling the glyphs vector if vector does not match ===
             if(m_glyphs.size() != m_text.size())
             {
-                m_glyphs.clear();
-                m_lineBreaks.clear();
+                clearGlyphs();
 
                 for(size_t i = 0; i < m_text.size(); ++i)
                 {
@@ -43,9 +42,7 @@ bool SGCore::UI::Text::draw(const LayeredFrameReceiver::reg_t& cameraReceiver,
         }
         else
         {
-            // if font specialization was deleted than clearing the glyphs vector
-            m_glyphs.clear();
-            m_lineBreaks.clear();
+            clearGlyphs();
         }
     }
 
@@ -60,6 +57,12 @@ const SGCore::UI::FontGlyph* SGCore::UI::Text::getGlyph(std::size_t glyphIndex) 
 size_t SGCore::UI::Text::getGlyphsCount() const noexcept
 {
     return m_glyphs.size();
+}
+
+void SGCore::UI::Text::clearGlyphs() noexcept
+{
+    m_glyphs.clear();
+    m_lineBreaks.clear();
 }
 
 void SGCore::UI::Text::doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,

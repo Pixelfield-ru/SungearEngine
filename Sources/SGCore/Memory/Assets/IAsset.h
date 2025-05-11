@@ -121,9 +121,6 @@ namespace SGCore
         size_t getHash() const noexcept;
         
     protected:
-        /// Not serializable.
-        mutable size_t m_hash = 0;
-
         /// In the implementation of the \p doLoad function, you must implement all the logic of loading an asset, which can be executed in parallel (for example: loading an asset from disk).
         /// The \p doLoad function can be called in parallel.
         virtual void doLoad(const InterpolatedPath& path) = 0;
@@ -156,6 +153,9 @@ namespace SGCore
         long m_lastModified = -1;
 
     private:
+        /// Not serializable.
+        mutable size_t m_hash = 0;
+
         Weak<AssetManager> m_parentAssetManager;
 
         // we are generating UUID for these fields to guarantee uniqueness for every asset even the one that wasn`t added to AssetManager

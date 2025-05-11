@@ -33,6 +33,8 @@ namespace SGCore::UI
         const FontGlyph* getGlyph(std::size_t glyphIndex) const noexcept;
         size_t getGlyphsCount() const noexcept;
 
+        void clearGlyphs() noexcept;
+
     protected:
 
 

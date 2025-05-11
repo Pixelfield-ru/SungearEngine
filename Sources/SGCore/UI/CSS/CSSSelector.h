@@ -67,6 +67,8 @@ namespace SGCore::UI
         void setFontSpecializationSettings(const FontSpecializationSettings& settings) noexcept;
         const FontSpecializationSettings& getFontSpecializationSettings() const noexcept;
 
+        void updateFontSettings() noexcept;
+
         Ref<FontSpecialization> getFontSpecialization() const noexcept;
 
     protected:
