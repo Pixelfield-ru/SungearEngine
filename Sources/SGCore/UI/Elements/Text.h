@@ -14,6 +14,7 @@ namespace SGCore::UI
     struct Text : UIElement
     {
         friend struct FontSpecializationRenderer;
+        friend struct UILayoutCalculator;
 
         Text() noexcept;
 
@@ -39,6 +40,10 @@ namespace SGCore::UI
         /// todo: so i need to hold this variable
         glm::vec2 m_textSize { };
         std::vector<const FontGlyph*> m_glyphs;
+
+        /// Used when whole text does not fit in parent element.
+        /// Every element in this vector represents if glyph at index I in m_glyphs will be moved to new line.
+        std::vector<bool> m_lineBreaks;
 
         void doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,
                                const Transform* parentTransform, Transform& ownTransform) noexcept final;

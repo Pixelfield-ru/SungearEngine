@@ -27,7 +27,7 @@
 
 .window-header-1 {
     width: 10px;
-    height: 200px;
+    height: 100px;
     background-color: rgb(0 100 0 / 255);
     gap: 10%;
     padding: 5px;
@@ -38,10 +38,13 @@
 .window-header-test {
     display: flex;
     flex-direction: row;
-    width: 50px;
+    width: 50%;
     background-color: rgb(255 0 100 / 255);
 
-    border-radius: 0px;
+    gap: 0px;
+    padding: 0px;
+
+    border-radius: 50px / 50px;
 }
 
 .window-body, .class1 {

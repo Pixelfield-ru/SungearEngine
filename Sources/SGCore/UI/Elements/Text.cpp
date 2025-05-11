@@ -29,10 +29,12 @@ bool SGCore::UI::Text::draw(const LayeredFrameReceiver::reg_t& cameraReceiver,
             if(m_glyphs.size() != m_text.size())
             {
                 m_glyphs.clear();
+                m_lineBreaks.clear();
 
                 for(size_t i = 0; i < m_text.size(); ++i)
                 {
                     m_glyphs.push_back(fontSpec->tryGetGlyph(m_text[i]));
+                    m_lineBreaks.push_back(false);
                 }
             }
             // ======================================================
@@ -43,6 +45,7 @@ bool SGCore::UI::Text::draw(const LayeredFrameReceiver::reg_t& cameraReceiver,
         {
             // if font specialization was deleted than clearing the glyphs vector
             m_glyphs.clear();
+            m_lineBreaks.clear();
         }
     }
 

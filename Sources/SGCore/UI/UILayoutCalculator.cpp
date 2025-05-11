@@ -4,6 +4,7 @@
 
 #include "UILayoutCalculator.h"
 
+#include "Elements/Text.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Transformations/TransformUtils.h"
 
@@ -126,9 +127,11 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
 
     if(!parentSelector) return;
 
-    if(parentSelector->m_display == UI::DisplayKeyword::KW_FLEX)
+    const UIElementType currentUIElementType = currentUIElement->getType();
+
+    if(parentSelector->m_display == DisplayKeyword::KW_FLEX)
     {
-        if(parentSelector->m_flexDirection == UI::FlexboxKeyword::KW_ROW)
+        if(parentSelector->m_flexDirection == FlexboxKeyword::KW_ROW)
         {
             // moving cursor to a new line if current element is bigger than (containerSize.x / 2 - rightPadding)
             if(parentElementCache.m_curLocalPositionForElements.x + currentElementCache.m_finalSize.x > parentElementCache.m_finalSize.x / 2.0f - parentElementCache.m_rightPadding &&
@@ -141,13 +144,53 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
                 parentElementCache.m_lastRowSize.y = 0.0f;
             }
 
+            if(currentUIElementType == UIElementType::ET_TEXT)
+            {
+                auto* asTextElement = static_cast<Text*>(currentUIElement.get());
+
+                const auto lockedFont = asTextElement->m_selector->m_font.lock();
+                if(!lockedFont) return;
+
+                float curGlyphXPos = parentElementCache.m_curLocalPositionForElements.x;
+                float textFinalWidth = 0;
+
+                const auto fontSpec =
+                    lockedFont->getSpecialization(asTextElement->m_selector->getFontSpecializationSettings());
+
+                // iterating through all characters :(
+                for(size_t i = 0; i < asTextElement->m_text.size() && i < asTextElement->m_glyphs.size(); ++i)
+                {
+                    const auto* glyph = asTextElement->m_glyphs[i];
+                    if(!glyph) continue;
+
+                    const float offset = fontSpec->getGlyphsHeightScale() * glyph->m_geometry.getAdvance();
+
+                    // i > 0 to prevent line break on first character
+                    if(curGlyphXPos + offset > parentElementCache.m_finalSize.x / 2.0f - parentElementCache.m_rightPadding &&
+                       i > 0)
+                    {
+                        curGlyphXPos = parentElementCache.m_curLocalPositionForElements.x;
+                        textFinalWidth = 0;
+                        asTextElement->m_lineBreaks[i] = true;
+                    }
+                    else
+                    {
+                        asTextElement->m_lineBreaks[i] = false;
+                    }
+
+                    textFinalWidth += offset;
+
+                    curGlyphXPos += offset;
+                }
+            }
+
             if(currentElementCache.m_finalSize.y > parentElementCache.m_lastRowSize.y)
             {
                 parentElementCache.m_lastRowSize.y = currentElementCache.m_finalSize.y;
             }
 
             glm::vec3 currentElementPos = parentElementCache.m_curLocalPositionForElements;
-            if(currentUIElement->getType() != UIElementType::ET_TEXT)
+            if(currentUIElementType != UIElementType::ET_TEXT)
             {
                 currentElementPos += glm::vec3 { currentElementCache.m_finalSize, 0.0 } / 2.0f;
             }
@@ -164,7 +207,7 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
                 parentElementTransform.m_transform.m_ownTransform.m_position.y += (parentElementCache.m_finalSize.y - lastParentElementCache.m_finalSize.y) / 2.0f;
             }
         }
-        else if(parentSelector->m_flexDirection == UI::FlexboxKeyword::KW_COLUMN)
+        else if(parentSelector->m_flexDirection == FlexboxKeyword::KW_COLUMN)
         {
 
         }
@@ -172,7 +215,7 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
     else if(parentSelector->m_display == DisplayKeyword::KW_BLOCK)
     {
         glm::vec3 currentElementPos = parentElementCache.m_curLocalPositionForElements;
-        if(currentUIElement->getType() != UIElementType::ET_TEXT)
+        if(currentUIElementType != UIElementType::ET_TEXT)
         {
             currentElementPos += glm::vec3 { currentElementCache.m_finalSize, 0.0 } / 2.0f;
         }

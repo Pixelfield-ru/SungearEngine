@@ -228,14 +228,18 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
 
         if(m_currentDrawingCharacter >= m_maxCharactersCount - 1) return;
 
-        if(c == '\n')
+        if(c == '\n' || text->m_lineBreaks[i])
         {
             curX = 0.0f;
             curY -= lineHeight;
 
             text->m_textSize.y += lineHeight;
 
-            continue;
+            // if we will continue always then character with line break will not be drawn
+            if(c == '\n')
+            {
+                continue;
+            }
         }
 
         const FontGlyph* glyph = text->getGlyph(i);
@@ -380,28 +384,25 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
 
             ++m_currentDrawingCharacter;
 
-            if(i < text->m_text.size() - 1)
+            // float kerningOffset = 0.0f;
+
+            double advance = 0.0f;
+            // const float advance = glyph->getAdvance();
+            // TODO: VERY HEAVY OPERATIONS =====
+            /*auto nextChar = text->m_text[i + 1];
+            if(!lockedSpec->tryGetGlyph(nextChar))
             {
-                // float kerningOffset = 0.0f;
+                nextChar = '?';
+            }
+            specGeometry.getAdvance(advance, c, nextChar);*/
+            // =================================
+            advance = glyph->m_geometry.getAdvance();
 
-                double advance = 0.0f;
-                // const float advance = glyph->getAdvance();
-                // TODO: VERY HEAVY OPERATIONS =====
-                /*auto nextChar = text->m_text[i + 1];
-                if(!lockedSpec->tryGetGlyph(nextChar))
-                {
-                    nextChar = '?';
-                }
-                specGeometry.getAdvance(advance, c, nextChar);*/
-                // =================================
-                advance = glyph->m_geometry.getAdvance();
+            curX += glyphsHeightScale * advance;
 
-                curX += glyphsHeightScale * advance;
-
-                if(curX > text->m_textSize.x)
-                {
-                    text->m_textSize.x = curX;
-                }
+            if(curX > text->m_textSize.x)
+            {
+                text->m_textSize.x = curX;
             }
         }
     }
