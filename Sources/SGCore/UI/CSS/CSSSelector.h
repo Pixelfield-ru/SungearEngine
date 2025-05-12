@@ -59,6 +59,9 @@ namespace SGCore::UI
 
         AssetWeakRef<Font> m_font;
 
+        /// Used as scale.
+        CSSPropertyValue<FontSizeKeyword::KW_UNSET, Ref<CSSMathNode>> m_fontSize;
+
         [[nodiscard]] const std::string& getName() const noexcept;
 
         void calculateCache(const UIElementCache* parentElementCache,

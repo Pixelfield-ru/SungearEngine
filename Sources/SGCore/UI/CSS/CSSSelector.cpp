@@ -10,7 +10,8 @@ SGCore::UI::CSSSelector::CSSSelector() noexcept
     // setting default font
     m_font = FontsManager::getInstance().getAssetManager()->getAsset<Font, AssetStorageType::BY_ALIAS>("JetBrains Mono");
 
-    m_fontSpecializationSettings.m_height = 20;
+    // using 64 to generate big MSDF atlas
+    m_fontSpecializationSettings.m_height = 64;
     setFontSpecializationSettings(m_fontSpecializationSettings);
 }
 
@@ -129,6 +130,15 @@ void SGCore::UI::CSSSelector::calculateCache(const UIElementCache* parentElement
         thisElementCache.m_borderRadiusCache[3].x = alternativeValue.m_radiusX->calculate(&thisElementCache.m_finalSize.x);
 
         thisElementCache.m_borderRadiusCache[3].y = alternativeValue.m_radiusY->calculate(&thisElementCache.m_finalSize.y);
+    }
+
+    if(m_fontSize.containsAlternative())
+    {
+        thisElementCache.m_fontSize = m_fontSize.getFromAlternativeValue<0>()->calculate(parentElementCache ? &parentElementCache->m_fontSize : nullptr);
+    }
+    else if(m_fontSize.containsKeyword())
+    {
+        // todo: make for keyword
     }
 }
 

@@ -45,7 +45,7 @@ namespace SGCore::UI
         KW_CURRENT_COLOR
     };
 
-    enum struct FontKeyword
+    enum struct FontFamilyKeyword
     {
         CSS_DECLARE_UNIVERSAL_KEYWORDS,
 
@@ -60,6 +60,21 @@ namespace SGCore::UI
         KW_LIGHTER,
         KW_ITALIC,
         KW_OBLIQUE
+    };
+
+    enum struct FontSizeKeyword
+    {
+        CSS_DECLARE_UNIVERSAL_KEYWORDS,
+
+        KW_XX_SMALL,
+        KW_X_SMALL,
+        KW_SMALL,
+        KW_MEDIUM,
+        KW_LARGE,
+        KW_X_LARGE,
+        KW_XX_LARGE,
+        KW_SMALLER,
+        KW_LARGER
     };
 
     enum struct DisplayKeyword // prop: display

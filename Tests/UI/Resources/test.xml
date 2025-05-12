@@ -25,11 +25,12 @@
 
             </div>
 
-            <text>djisaudahioshdioahsi</text>
+            <text class="test-text-0">djisaudahioshdioahsi</text>
         </div>
 
-        <text class="test-text">тестовое</text>
+        <text class="test-text-1">тестовое</text>
         <div class="window-header-1">
+
 
         </div>
     </div>
@@ -59,10 +60,14 @@
 
             </div>
 
-            <text class="test-text">--------------------------всем привет я только проснулся</text>
+            <text class="test-text-0">--------------------------всем привет я только проснулся</text>
+
+            <div class="window-header-1">
+
+            </div>
         </div>
     </div>
-    <text class="test-text">бебебе ляляля</text>
+    <text class="test-text-1">бебебе ляляля</text>
     <div class="window-header">
         <div class="window-header-1">
 

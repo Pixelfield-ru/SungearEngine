@@ -20,8 +20,14 @@
     border-radius: 100px / 200px;
 }
 
-.test-text {
+.test-text-0 {
     font-family: "Arial", "JetBrains Mono";
+    font-size: 32px;
+}
+
+.test-text-1 {
+    font-family: "JetBrains Mono", "Times New Roman";
+    font-size: calc(20px);
 }
 
 .window-header-1 {

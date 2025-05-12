@@ -27,8 +27,9 @@ namespace SGCore::UI
         PT_BORDER_RADIUS,
         PT_PADDING,
         PT_FONT_FAMILY,
+        PT_FONT_SIZE,
 
-        PT_UNKNOWN
+        PT_UNKNOWN,
     };
 
     [[nodiscard]] CSSPropertyType getPropertyTypeFromName(const std::string& propertyName) noexcept;

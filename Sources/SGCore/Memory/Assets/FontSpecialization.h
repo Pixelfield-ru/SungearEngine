@@ -27,6 +27,7 @@ namespace SGCore::UI
 {
     struct FontSpecializationSettings
     {
+        /// PLEASE, CHANGE THIS ONLY IF YOU WANT TO RESIZE MSDF ATLAS. GENERATION OF MSDF ATLAS IS SLOW OPERATION.
         size_t m_height = 16;
         std::string m_name = "default";
         

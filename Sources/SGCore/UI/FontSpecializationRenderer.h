@@ -36,7 +36,7 @@ namespace SGCore::UI
         Ref<IVertexBuffer> m_charactersMatricesVertexBuffer;
         Ref<IVertexBuffer> m_charactersColorsVertexBuffer;
         Ref<IVertexBuffer> m_charactersUVsVertexBuffer;
-        Ref<IVertexBuffer> m_charactersLayerVertexBuffer;
+        Ref<IVertexBuffer> m_charactersAdditionalParamsVertexBuffer;
 
         AssetRef<IShader> m_textShader;
         
@@ -62,7 +62,7 @@ namespace SGCore::UI
         std::vector<float> m_charactersColors;
         std::vector<float> m_charactersUVs;
         std::vector<float> m_charactersVerticesPositions;
-        std::vector<std::int32_t> m_charactersLayer;
+        std::vector<float> m_charactersAdditionalParams;
         // ------------------------------------
 
         void onRenderPipelineSet() noexcept;

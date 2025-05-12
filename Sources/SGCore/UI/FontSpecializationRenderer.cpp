@@ -33,7 +33,7 @@ SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
     m_charactersVerticesPositions.resize(m_maxCharactersCount * 18);
 
     // 6 vertices * 1 int
-    m_charactersLayer.resize(m_maxCharactersCount * 6);
+    m_charactersAdditionalParams.resize(m_maxCharactersCount * 6);
 
     // creating buffers
     
@@ -157,19 +157,19 @@ SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
 
         // =========================
 
-        m_charactersLayerVertexBuffer = std::shared_ptr<IVertexBuffer>(
+        m_charactersAdditionalParamsVertexBuffer = std::shared_ptr<IVertexBuffer>(
                 CoreMain::getRenderer()->createVertexBuffer()
         );
 
-        m_charactersLayerVertexBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(
-                m_charactersLayer);
+        m_charactersAdditionalParamsVertexBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(
+                m_charactersAdditionalParams);
 
         bufferLayout->reset();
         bufferLayout
                 ->addAttribute(std::shared_ptr<IVertexAttribute>(
                         bufferLayout->createVertexAttribute(7,
-                                                            "characterLayer",
-                                                            SGGDataType::SGG_INT,
+                                                            "characterAdditionalParams",
+                                                            SGGDataType::SGG_FLOAT2,
                                                             (size_t) 0))
                 )
                 ->prepare()->enableAttributes();
@@ -214,10 +214,12 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
 
     const auto& specGeometry = lockedSpec->getGeometry();
 
-    const float lineHeight = lockedSpec->getLineHeight();
-    const float glyphsHeightScale = lockedSpec->getGlyphsHeightScale();
+    const float fontScale = textCache.m_fontSize / (float) lockedSpec->getSettings().m_height;
 
-    text->m_textSize.y = lineHeight + (lockedSpec->getAscenderYPos() - lockedSpec->getDescenderYPos());
+    const float lineHeight = lockedSpec->getLineHeight() * fontScale;
+    const float glyphsHeightScale = lockedSpec->getGlyphsHeightScale() * fontScale;
+
+    text->m_textSize.y = lineHeight + (lockedSpec->getAscenderYPos() - lockedSpec->getDescenderYPos()) * fontScale;
 
     const FontGlyph* unknownGlyph = lockedSpec->tryGetGlyph('?');
     const FontGlyph* spaceGlyph = lockedSpec->tryGetGlyph(' ');
@@ -257,19 +259,30 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
             glyph = spaceGlyph;
         }
 
-        std::int32_t* characterLayerBuf = &m_charactersLayer[m_currentDrawingCharacter * 6];
+        float* characterAdditionalParamsBuf = &m_charactersAdditionalParams[m_currentDrawingCharacter * 6 * 2];
 
-        characterLayerBuf[0] = textCache.m_layer;
-        characterLayerBuf[1] = textCache.m_layer;
-        characterLayerBuf[2] = textCache.m_layer;
-        characterLayerBuf[3] = textCache.m_layer;
-        characterLayerBuf[4] = textCache.m_layer;
-        characterLayerBuf[5] = textCache.m_layer;
+        characterAdditionalParamsBuf[0] = textCache.m_layer;
+        characterAdditionalParamsBuf[1] = textCache.m_fontSize;
+
+        characterAdditionalParamsBuf[2] = textCache.m_layer;
+        characterAdditionalParamsBuf[3] = textCache.m_fontSize;
+
+        characterAdditionalParamsBuf[4] = textCache.m_layer;
+        characterAdditionalParamsBuf[5] = textCache.m_fontSize;
+
+        characterAdditionalParamsBuf[6] = textCache.m_layer;
+        characterAdditionalParamsBuf[7] = textCache.m_fontSize;
+
+        characterAdditionalParamsBuf[8] = textCache.m_layer;
+        characterAdditionalParamsBuf[9] = textCache.m_fontSize;
+
+        characterAdditionalParamsBuf[10] = textCache.m_layer;
+        characterAdditionalParamsBuf[11] = textCache.m_fontSize;
 
         if(glyph)
         {
-            const glm::vec2 quadMin = glyph->getQuadMin() + glm::vec2(curX, -curY);
-            const glm::vec2 quadMax = glyph->getQuadMax() + glm::vec2(curX, -curY);
+            const glm::vec2 quadMin = glyph->getQuadMin() * fontScale + glm::vec2(curX, -curY);
+            const glm::vec2 quadMax = glyph->getQuadMax() * fontScale + glm::vec2(curX, -curY);
 
             // colors =====================================================
 #pragma region Colors
@@ -434,8 +447,8 @@ void SGCore::UI::FontSpecializationRenderer::drawAll() noexcept
     m_charactersPositionsBuffer->bind();
     m_charactersPositionsBuffer->subData(m_charactersVerticesPositions.data(), charsCount * 18, 0);
 
-    m_charactersLayerVertexBuffer->bind();
-    m_charactersLayerVertexBuffer->subData(m_charactersLayer.data(), charsCount * 6, 0);
+    m_charactersAdditionalParamsVertexBuffer->bind();
+    m_charactersAdditionalParamsVertexBuffer->subData(m_charactersAdditionalParams.data(), charsCount * 12, 0);
     
     subPassShader->bind();
     subPassShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);

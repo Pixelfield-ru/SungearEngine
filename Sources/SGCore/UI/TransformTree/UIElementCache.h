@@ -36,6 +36,8 @@ namespace SGCore::UI
         /// bottom-left, top-left, top-right, bottom-right
         std::array<glm::vec2, 4> m_borderRadiusCache;
 
+        float m_fontSize = 16.0f;
+
         // ===================================== tmp values! DO NOT CHANGE EXTERNALLY!
 
         glm::vec2 m_contentSize { };

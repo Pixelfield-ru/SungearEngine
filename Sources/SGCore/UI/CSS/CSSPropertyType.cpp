@@ -70,6 +70,10 @@ SGCore::UI::CSSPropertyType SGCore::UI::getPropertyTypeFromName(const std::strin
     {
         return CSSPropertyType::PT_FONT_FAMILY;
     }
+    if(propertyName == "font-size")
+    {
+        return CSSPropertyType::PT_FONT_SIZE;
+    }
 
     return CSSPropertyType::PT_UNKNOWN;
 }

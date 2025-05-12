@@ -16,7 +16,7 @@ namespace SGCore::UI
     template<>
     struct CSSPropertyProcessor<CSSPropertyType::PT_FONT_FAMILY>
     {
-        static constexpr FontKeyword property_default_value = FontKeyword::KW_UNKNOWN;
+        static constexpr FontFamilyKeyword property_default_value = FontFamilyKeyword::KW_UNKNOWN;
         static inline const std::string property_default_value_str = "unknown";
 
         static void processProperty(ANTLRCSSListener* antlrcssListener,

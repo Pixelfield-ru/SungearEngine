@@ -152,7 +152,6 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
                 if(!lockedFont) return;
 
                 float curGlyphXPos = parentElementCache.m_curLocalPositionForElements.x;
-                float textFinalWidth = 0;
 
                 const auto fontSpec =
                     lockedFont->getSpecialization(asTextElement->m_selector->getFontSpecializationSettings());
@@ -163,22 +162,24 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
                     const auto* glyph = asTextElement->m_glyphs[i];
                     if(!glyph) continue;
 
-                    const float offset = fontSpec->getGlyphsHeightScale() * glyph->m_geometry.getAdvance();
+                    const float fontScale = currentElementCache.m_fontSize / (float) asTextElement->m_selector->getFontSpecializationSettings().m_height;
+
+                    const float offset =
+                            fontSpec->getGlyphsHeightScale() *
+                            glyph->m_geometry.getAdvance() *
+                            fontScale;
 
                     // i > 0 to prevent line break on first character
                     if(curGlyphXPos + offset > parentElementCache.m_finalSize.x / 2.0f - parentElementCache.m_rightPadding &&
                        i > 0)
                     {
                         curGlyphXPos = parentElementCache.m_curLocalPositionForElements.x;
-                        textFinalWidth = 0;
                         asTextElement->m_lineBreaks[i] = true;
                     }
                     else
                     {
                         asTextElement->m_lineBreaks[i] = false;
                     }
-
-                    textFinalWidth += offset;
 
                     curGlyphXPos += offset;
                 }
