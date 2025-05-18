@@ -16,6 +16,7 @@
 #include "SGCore/Physics/PhysicsWorld3D.h"
 #include "SGCore/UI/FontsManager.h"
 #include "SGCore/Audio/AudioDevice.h"
+#include "SGCore/Coro/CoroScheduler.h"
 #include "SGCore/ImGuiWrap/ImGuiLayer.h"
 #include "SGCore/PluginsSystem/PluginsManager.h"
 #include "SGCore/MetaInfo/MetaInfo.h"
@@ -136,6 +137,8 @@ void SGCore::CoreMain::start()
         
         m_fixedTimer.startFrame();
         m_renderTimer.startFrame();
+
+        Coro::CoroScheduler::process();
     }
     
     spdlog::shutdown();

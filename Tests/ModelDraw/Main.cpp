@@ -19,6 +19,7 @@
 #include "SGCore/Animation/MotionPlannerConnection.h"
 #include "SGCore/Audio/AudioListener.h"
 #include "SGCore/Audio/AudioSource.h"
+#include "SGCore/Coro/CoroScheduler.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Input/InputManager.h"
@@ -333,8 +334,29 @@ void coreInit()
     quadMeshData->prepare();
 }
 
+double g_dt = 0.0f;
+
+SGCore::Coro::Task<> moveSmoothly(SGCore::ECS::entity_t entity, glm::vec3 to, float speed)
+{
+    using namespace std::chrono_literals;
+
+    auto transform = scene->getECSRegistry()->get<SGCore::Transform>(entity);
+
+    while(glm::distance(transform->m_ownTransform.m_position, to) > 0.5f)
+    {
+        co_await 1ms;
+
+        std::cout << transform->m_ownTransform.m_position << std::endl;
+
+        const auto dif = to - transform->m_ownTransform.m_position;
+        transform->m_ownTransform.m_position += dif * speed * g_dt;
+    }
+}
+
 void onUpdate(const double& dt, const double& fixedDt)
 {
+    g_dt = dt;
+
     const auto& mainListener = SGCore::InputManager::getMainInputListener();
 
     if(SGCore::Scene::getCurrentScene())
@@ -363,6 +385,11 @@ void onUpdate(const double& dt, const double& fixedDt)
         if(mainListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_RIGHT))
         {
             characterTransform->m_ownTransform.m_position += characterTransform->m_finalTransform.m_right * characterSpeed * dt;
+        }
+
+        if(mainListener->keyboardKeyReleased(SGCore::KeyboardKey::KEY_M))
+        {
+            moveSmoothly(characterEntity, characterTransform->m_ownTransform.m_position + characterTransform->m_ownTransform.m_up * 10.0f, 1.0f).run();
         }
 
         SGCore::Scene::getCurrentScene()->update(dt, fixedDt);
