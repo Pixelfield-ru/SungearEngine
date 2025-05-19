@@ -129,7 +129,7 @@ void regenerateTerrainPhysicalMesh(SGCore::ECS::entity_t terrainEntity)
     auto& terrainRigidbody = scene->getECSRegistry()->get<SGCore::Rigidbody3D>(terrainEntity);
 
     // generating terrain physical mesh
-    SGCore::Terrain::generatePhysicalMesh(terrainComponent, terrainMesh, 7);
+    SGCore::Terrain::generatePhysicalMesh(terrainComponent, terrainMesh, 5);
 
     SGCore::Ref<btBvhTriangleMeshShape> terrainRigidbodyShape = SGCore::MakeRef<btBvhTriangleMeshShape>(terrainMeshData->m_physicalMesh.get(), true);
     terrainRigidbody->setShape(terrainRigidbodyShape);
