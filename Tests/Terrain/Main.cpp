@@ -17,6 +17,7 @@
 #include "SGCore/Graphics/API/ICubemapTexture.h"
 #include "SGCore/Input/InputManager.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
+#include "SGCore/Physics/Rigidbody3D.h"
 #include "SGCore/Render/Alpha/TransparentEntityTag.h"
 #include "SGCore/Render/Picking/Pickable.h"
 #include "SGCore/Render/SpacePartitioning/IgnoreOctrees.h"
@@ -25,6 +26,9 @@
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/Terrain/Terrain.h"
 #include "SGCore/Render/Atmosphere/Atmosphere.h"
+#include "SGCore/Physics/PhysicsWorld3D.h"
+
+#include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
 
 #ifdef PLATFORM_OS_WINDOWS
 #ifdef __cplusplus
@@ -82,6 +86,56 @@ enum class TerrainOp
 
 TerrainOp currentTerrainOp = TerrainOp::TERRAIN_GROW;
 
+void createBallAndApplyImpulse(const glm::vec3& spherePos,
+    const glm::vec3& impulse) noexcept
+{
+    auto sphereModel = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("sphere_model");
+
+    std::vector<SGCore::ECS::entity_t> sphereEntities;
+    sphereModel->m_rootNode->addOnScene(scene, SG_LAYER_OPAQUE_NAME,
+        [&sphereEntities](const SGCore::ECS::entity_t& entity)
+        {
+            sphereEntities.push_back(entity);
+        }
+    );
+
+    auto sphereRigidbody3D = scene->getECSRegistry()->emplace<SGCore::Rigidbody3D>(sphereEntities[2],
+        SGCore::MakeRef<SGCore::Rigidbody3D>(
+            scene->getSystem<SGCore::PhysicsWorld3D>()));
+
+    SGCore::Ref<btSphereShape> sphereRigidbody3DShape = SGCore::MakeRef<btSphereShape>(1.0);
+    sphereRigidbody3D->setShape(sphereRigidbody3DShape);
+    sphereRigidbody3D->m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
+    sphereRigidbody3D->m_bodyFlags.addFlag(btCollisionObject::CF_DYNAMIC_OBJECT);
+    sphereRigidbody3D->m_body->setRestitution(0.9);
+    btScalar mass = 100.0f;
+    btVector3 inertia(0, 0, 0);
+    sphereRigidbody3D->m_body->getCollisionShape()->calculateLocalInertia(mass, inertia);
+    sphereRigidbody3D->m_body->setMassProps(mass, inertia);
+    sphereRigidbody3D->updateFlags();
+    sphereRigidbody3D->reAddToWorld();
+
+    glm::vec3 finalImpulse = impulse;
+    sphereRigidbody3D->m_body->applyCentralImpulse({ finalImpulse.x, finalImpulse.y, finalImpulse.z });
+
+    SGCore::Ref<SGCore::Transform>& sphereTransform = scene->getECSRegistry()->get<SGCore::Transform>(sphereEntities[0]);
+    sphereTransform->m_ownTransform.m_position = spherePos;
+}
+
+void regenerateTerrainPhysicalMesh(SGCore::ECS::entity_t terrainEntity)
+{
+    auto& terrainComponent = scene->getECSRegistry()->get<SGCore::Terrain>(terrainEntity);
+    auto& terrainMesh = scene->getECSRegistry()->get<SGCore::Mesh>(terrainEntity);
+    auto& terrainRigidbody = scene->getECSRegistry()->get<SGCore::Rigidbody3D>(terrainEntity);
+
+    // generating terrain physical mesh
+    SGCore::Terrain::generatePhysicalMesh(terrainComponent, terrainMesh, 7);
+
+    SGCore::Ref<btBvhTriangleMeshShape> terrainRigidbodyShape = SGCore::MakeRef<btBvhTriangleMeshShape>(terrainMeshData->m_physicalMesh.get(), true);
+    terrainRigidbody->setShape(terrainRigidbodyShape);
+    terrainRigidbody->reAddToWorld();
+}
+
 void coreInit()
 {
     auto mainAssetManager = SGCore::AssetManager::getInstance();
@@ -98,11 +152,18 @@ void coreInit()
     // setting this scene as current
     SGCore::Scene::setCurrentScene(scene);
 
+    scene->getSystem<SGCore::PhysicsWorld3D>()->getDebugDraw()->setDebugMode(btIDebugDraw::DBG_NoDebug);
+
     auto ecsRegistry = scene->getECSRegistry();
 
     mainAssetManager->loadAssetWithAlias<SGCore::ModelAsset>(
         "cube_model",
         "${enginePath}/Resources/models/standard/cube.obj"
+    );
+
+    mainAssetManager->loadAssetWithAlias<SGCore::ModelAsset>(
+        "sphere_model",
+        "${enginePath}/Resources/models/standard/sphere.obj"
     );
 
     screenShader = mainAssetManager->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
@@ -250,12 +311,26 @@ void coreInit()
 
     SGCore::Terrain::generate(terrainComponent, terrainMeshData, 40, 40, 100);
 
+    terrainMesh.m_base.setMeshData(terrainMeshData);
+    terrainMesh.m_base.setMaterial(standardTerrainMaterial);
+
+    // creating rigidbody for terrain
+    auto terrainRigidbody = scene->getECSRegistry()->emplace<SGCore::Rigidbody3D>(terrainEntity,
+        SGCore::MakeRef<SGCore::Rigidbody3D>(scene->getSystem<SGCore::PhysicsWorld3D>()));
+
+    // generating terrain physical mesh
+    SGCore::Terrain::generatePhysicalMesh(terrainComponent, terrainMesh, 10);
+
+    SGCore::Ref<btBvhTriangleMeshShape> terrainRigidbodyShape = SGCore::MakeRef<btBvhTriangleMeshShape>(terrainMeshData->m_physicalMesh.get(), true);
+    terrainRigidbody->setShape(terrainRigidbodyShape);
+    btScalar mass = 0.0f;
+    btVector3 inertia(0, 0, 0);
+    terrainRigidbody->m_body->setMassProps(mass, inertia);
+    terrainRigidbody->reAddToWorld();
+
     // ==========================
 
     // terrainTransform->m_ownTransform.m_scale = { 1.0f, 1.0f, 1.0f };
-
-    terrainMesh.m_base.setMeshData(terrainMeshData);
-    terrainMesh.m_base.setMaterial(standardTerrainMaterial);
 
     // =================================================================
     // ================================================================= test
@@ -574,6 +649,29 @@ void onUpdate(const double& dt, const double& fixedDt)
         for(const auto& shader : shaders)
         {
             shader->reloadFromDisk();
+        }
+    }
+
+    if (SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_4))
+    {
+        auto& cameraTransform = scene->getECSRegistry()->get<SGCore::Transform>(mainCamera);
+        createBallAndApplyImpulse(cameraTransform->m_ownTransform.m_position, cameraTransform->m_ownTransform.m_forward * 200000.0f / 10.0f);
+    }
+
+    if (SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_5))
+    {
+        regenerateTerrainPhysicalMesh(terrainEntity);
+    }
+
+    if (SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_6))
+    {
+        if(scene->getSystem<SGCore::PhysicsWorld3D>()->getDebugDraw()->getDebugMode() != btIDebugDraw::DBG_NoDebug)
+        {
+            scene->getSystem<SGCore::PhysicsWorld3D>()->getDebugDraw()->setDebugMode(btIDebugDraw::DBG_NoDebug);
+        }
+        else
+        {
+            scene->getSystem<SGCore::PhysicsWorld3D>()->getDebugDraw()->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
         }
     }
 }

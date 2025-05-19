@@ -198,7 +198,25 @@ namespace SGCore
         // TODO: do documentation
         void resize(std::int32_t newWidth, std::int32_t newHeight, bool noDataResize = false) noexcept;
 
-        [[nodiscard]] virtual glm::vec3 pickColor(const glm::vec2& inPosition) const noexcept = 0;
+        template<typename DataType>
+        [[nodiscard]] glm::vec<4, DataType> sampleRAM(const glm::ivec2& inPosition) const noexcept
+        {
+            const std::uint16_t texDataTypeSize = getSGGDataTypeSizeInBytes(m_dataType);
+            const std::uint16_t perPixelOffset = texDataTypeSize * m_channelsCount;
+
+            const std::int32_t finalPosition = (inPosition.y * m_width + inPosition.x) * perPixelOffset;
+
+            glm::vec<4, DataType> result { };
+
+            auto* data = m_textureData.get();
+
+            if(m_channelsCount >= 1) result.r = *reinterpret_cast<DataType*>(&data[finalPosition]);
+            if(m_channelsCount >= 2) result.g = *reinterpret_cast<DataType*>(&data[finalPosition + 1 * texDataTypeSize]);
+            if(m_channelsCount >= 3) result.b = *reinterpret_cast<DataType*>(&data[finalPosition + 2 * texDataTypeSize]);
+            if(m_channelsCount == 4) result.w = *reinterpret_cast<DataType*>(&data[finalPosition + 3 * texDataTypeSize]);
+
+            return result;
+        }
 
         [[nodiscard]] std::int32_t getWidth() const noexcept;
         [[nodiscard]] std::int32_t getHeight() const noexcept;

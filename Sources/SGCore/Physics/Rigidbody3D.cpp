@@ -11,11 +11,11 @@ SGCore::Rigidbody3D::Rigidbody3D(const SGCore::Ref<PhysicsWorld3D>& parentWorld)
     
     btTransform initialTransform;
     initialTransform.setIdentity();
-    m_state = MakeScope<btDefaultMotionState>(initialTransform);
-    m_shape = MakeScope<btEmptyShape>();
+    m_state = MakeRef<btDefaultMotionState>(initialTransform);
+    m_shape = MakeRef<btEmptyShape>();
     btRigidBody::btRigidBodyConstructionInfo constructionInfo =
-            btRigidBody::btRigidBodyConstructionInfo(250, m_state.get(), m_shape.get(), btVector3(0, 0, 0));
-    m_body = MakeScope<btRigidBody>(constructionInfo);
+            btRigidBody::btRigidBodyConstructionInfo(1, m_state.get(), m_shape.get(), btVector3(0, 0, 0));
+    m_body = MakeRef<btRigidBody>(constructionInfo);
     m_body->setFlags(m_body->getFlags() |  btCollisionObject::CF_STATIC_OBJECT);
     
     m_bodyFlags.m_flags |= m_body->getFlags();

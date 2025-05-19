@@ -27,8 +27,6 @@ namespace SGCore
         void* getTextureNativeHandler() const noexcept override;
         void* getTextureBufferNativeHandler() const noexcept override;
 
-        [[nodiscard]] glm::vec3 pickColor(const glm::vec2& inPosition) const noexcept final;
-
         VkTexture2D& operator=(const Ref<ITexture2D>& other) final;
     };
 }

@@ -353,13 +353,7 @@ void SGCore::IMeshData::migrateAndSetNewMaterial
 
 void SGCore::IMeshData::generatePhysicalMesh() noexcept
 {
-    std::vector<glm::vec3> positions;
-    for(const auto& vertex : m_vertices)
-    {
-        positions.push_back(vertex.m_position);
-    }
-
-    m_physicalMesh = generatePhysicalMesh(positions, m_indices);
+    m_physicalMesh = generatePhysicalMesh(m_vertices, m_indices);
 }
 
 void SGCore::IMeshData::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept

@@ -123,8 +123,9 @@ namespace SGCore
          */
         void migrateAndSetNewMaterial(const AssetRef<IMaterial>& newMaterial) noexcept;
         
-        template<typename VScalarT, typename IScalarT>
-        static Ref<btTriangleMesh> generatePhysicalMesh(const std::vector<glm::vec<3, VScalarT>>& vertices, const std::vector<IScalarT>& indices) noexcept
+        template<typename VertexT, typename IndexScalarT>
+        requires(requires { VertexT::m_position; })
+        static Ref<btTriangleMesh> generatePhysicalMesh(const std::vector<VertexT>& vertices, const std::vector<IndexScalarT>& indices) noexcept
         {
             auto physicalMesh = MakeRef<btTriangleMesh>();
             
@@ -134,9 +135,9 @@ namespace SGCore
                 size_t ti1 = indices[i + 1] * 3;
                 size_t ti2 = indices[i + 2] * 3;
                 
-                physicalMesh->addTriangle(btVector3(vertices[ti0].x, vertices[ti0].y, vertices[ti0].z),
-                                          btVector3(vertices[ti1].x, vertices[ti1].y, vertices[ti1].z),
-                                          btVector3(vertices[ti2].x, vertices[ti2].y, vertices[ti2].z));
+                physicalMesh->addTriangle(btVector3(vertices[ti0].m_position.x, vertices[ti0].m_position.y, vertices[ti0].m_position.z),
+                                          btVector3(vertices[ti1].m_position.x, vertices[ti1].m_position.y, vertices[ti1].m_position.z),
+                                          btVector3(vertices[ti2].m_position.x, vertices[ti2].m_position.y, vertices[ti2].m_position.z));
             }
             
             return physicalMesh;

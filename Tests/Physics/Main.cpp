@@ -29,6 +29,9 @@
 #include "SGCore/Render/SpacePartitioning/IgnoreOctrees.h"
 #include "SGCore/Serde/Components/NonSavable.h"
 
+
+#include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
+
 using namespace SGCore;
 
 // VARIABLES =================================================

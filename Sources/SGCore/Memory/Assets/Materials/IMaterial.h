@@ -66,6 +66,8 @@ namespace SGCore
          */
         void replaceTexture(SGTextureType textureType, int textureIndex, const AssetRef<ITexture2D>& newTex);
 
+        AssetRef<ITexture2D> getTexture(const SGTextureType& textureType, int textureIndex) noexcept;
+
         void copyTexturesRefs(IMaterial* to) const noexcept;
 
         void setDiffuseColor(const glm::vec4& col) noexcept;

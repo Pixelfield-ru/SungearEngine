@@ -49,8 +49,3 @@ SGCore::VkTexture2D& SGCore::VkTexture2D::operator=(const Ref<ITexture2D>& other
 {
     return *this;
 }
-
-glm::vec3 SGCore::VkTexture2D::pickColor(const glm::vec2& inPosition) const noexcept
-{
-    return glm::vec3();
-}

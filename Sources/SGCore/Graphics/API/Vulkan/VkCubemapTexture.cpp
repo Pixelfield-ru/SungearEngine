@@ -45,11 +45,6 @@ void* SGCore::VkCubemapTexture::getTextureBufferNativeHandler() const noexcept
     return nullptr;
 }
 
-glm::vec3 SGCore::VkCubemapTexture::pickColor(const glm::vec2& inPosition) const noexcept
-{
-    return glm::vec3();
-}
-
 SGCore::VkCubemapTexture& SGCore::VkCubemapTexture::operator=(const Ref<ITexture2D>& other)
 {
 	return *this;

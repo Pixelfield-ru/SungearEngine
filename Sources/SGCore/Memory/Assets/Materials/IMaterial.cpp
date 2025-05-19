@@ -59,6 +59,15 @@ void SGCore::IMaterial::replaceTexture(SGTextureType textureType, int textureInd
     texturesWithType[textureIndex] = newTex;
 }
 
+SGCore::AssetRef<SGCore::ITexture2D> SGCore::IMaterial::getTexture(const SGTextureType& textureType,
+    int textureIndex) noexcept
+{
+    const auto& texVec = m_textures[std::to_underlying(textureType)];
+    if(textureIndex >= texVec.size()) return nullptr;
+
+    return texVec[textureIndex];
+}
+
 void SGCore::IMaterial::copyTexturesRefs(IMaterial* to) const noexcept
 {
     to->m_textures = m_textures;

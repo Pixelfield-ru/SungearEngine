@@ -349,7 +349,7 @@ SGCore::Coro::Task<> moveSmoothly(SGCore::ECS::entity_t entity, glm::vec3 to, fl
         std::cout << transform->m_ownTransform.m_position << std::endl;
 
         const auto dif = to - transform->m_ownTransform.m_position;
-        transform->m_ownTransform.m_position += dif * speed * g_dt;
+        transform->m_ownTransform.m_position += dif * speed;
     }
 }
 
@@ -389,7 +389,7 @@ void onUpdate(const double& dt, const double& fixedDt)
 
         if(mainListener->keyboardKeyReleased(SGCore::KeyboardKey::KEY_M))
         {
-            moveSmoothly(characterEntity, characterTransform->m_ownTransform.m_position + characterTransform->m_ownTransform.m_up * 10.0f, 1.0f).run();
+            moveSmoothly(characterEntity, characterTransform->m_ownTransform.m_position + characterTransform->m_ownTransform.m_up * 10.0f, 0.01f).run();
         }
 
         SGCore::Scene::getCurrentScene()->update(dt, fixedDt);

@@ -20,6 +20,9 @@ namespace SGCore::Coro
     template<typename T, template<typename> typename PromiseT>
     struct PromiseBase
     {
+        template<typename>
+        friend struct Task;
+
         using value_type = T;
         using task_type = Task<T>;
         using promise_type = PromiseT<T>;
@@ -48,6 +51,9 @@ namespace SGCore::Coro
         {
             return task_type { std::coroutine_handle<promise_type>::from_promise(*static_cast<promise_type*>(this)) };
         }
+
+    protected:
+        std::function<void()> onDone;
     };
 
     template<typename T>
@@ -78,7 +84,7 @@ namespace SGCore::Coro
 
             if(onStep) { onStep(this->m_value); }
 
-            if(onDone) { onDone(); }
+            if(this->onDone) { this->onDone(); }
         }
 
         T get_value() { return m_value; }
@@ -87,7 +93,6 @@ namespace SGCore::Coro
         T m_value;
 
         std::function<void(T nextResult)> onStep;
-        std::function<void()> onDone;
     };
 
     template<typename T>
@@ -95,6 +100,10 @@ namespace SGCore::Coro
     {
         void return_void()
         {
+            if(this->onDone)
+            {
+                this->onDone();
+            }
         }
     };
 
