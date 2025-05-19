@@ -234,9 +234,9 @@ void SGCore::UI::FontSpecialization::createAtlas() noexcept
         // generating texture
 
         // TODO: saving to texture...
-        const msdf_atlas::BitmapAtlasStorage<byte, 3>& atlasStorage = m_atlas.atlasStorage();
-        msdfgen::Bitmap<byte, 3> bitmap(atlasStorage);
-        const byte* atlasBytes(bitmap);
+        const msdf_atlas::BitmapAtlasStorage<msdfgen::byte, 3>& atlasStorage = m_atlas.atlasStorage();
+        msdfgen::Bitmap<msdfgen::byte, 3> bitmap(atlasStorage);
+        const msdfgen::byte* atlasBytes(bitmap);
 
         m_atlasTexture = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
 

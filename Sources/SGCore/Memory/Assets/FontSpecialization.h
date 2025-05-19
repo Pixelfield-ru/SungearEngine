@@ -77,7 +77,7 @@ namespace SGCore::UI
     {
         friend struct Font;
 
-        using AtlasT = msdf_atlas::ImmediateAtlasGenerator<float, 3, msdf_atlas::msdfGenerator, msdf_atlas::BitmapAtlasStorage<byte, 3>>;
+        using AtlasT = msdf_atlas::ImmediateAtlasGenerator<float, 3, msdf_atlas::msdfGenerator, msdf_atlas::BitmapAtlasStorage<msdfgen::byte, 3>>;
         
         FontSpecialization();
         

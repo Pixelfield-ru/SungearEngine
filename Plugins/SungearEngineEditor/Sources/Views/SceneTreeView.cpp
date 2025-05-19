@@ -111,7 +111,7 @@ void SGE::SceneTreeView::renderBody()
 
         for(const auto& skeleton : skeletonsAssets)
         {
-            drawSkeletonNode(skeleton->m_rootBone);
+            drawSkeletonNode(skeleton->getRootBone());
         }
 
         ImGui::TreePop();
@@ -196,11 +196,11 @@ void SGE::SceneTreeView::drawTreeNode(const SGCore::ECS::entity_t& parentEntity,
     }
 }
 
-void SGE::SceneTreeView::drawSkeletonNode(const SGCore::AssetRef<SGCore::Bone>& parentBone) noexcept
+void SGE::SceneTreeView::drawSkeletonNode(const SGCore::Bone* parentBone) noexcept
 {
-    ImGui::PushID(std::hash<decltype(parentBone.get())>()(parentBone.get()));
+    ImGui::PushID(std::hash<decltype(parentBone)>()(parentBone));
 
-    if(ImGui::TreeNode(parentBone->m_boneName.c_str()))
+    if(ImGui::TreeNode(parentBone->getName().c_str()))
     {
         const auto& offsetMatrix = parentBone->m_offsetMatrix;
         ImGui::Text("Offset matrix: %s", glm::to_string(offsetMatrix).c_str());
@@ -251,7 +251,7 @@ void SGE::SceneTreeView::drawSkeletonNode(const SGCore::AssetRef<SGCore::Bone>& 
         {
             for(const auto& child: parentBone->m_children)
             {
-                drawSkeletonNode(child);
+                drawSkeletonNode(child.get());
             }
 
             ImGui::TreePop();

@@ -2,6 +2,9 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$/../.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../Externals/msdf-atlas-gen" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../Externals/msdf-atlas-gen/artery-font-format" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../Externals/msdf-atlas-gen/msdfgen" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../vcpkg" vcs="Git" />
   </component>
 </project>
