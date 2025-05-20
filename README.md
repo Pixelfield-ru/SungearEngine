@@ -105,7 +105,7 @@ git submodule update --init --recursive
 5) Build chosen target.
 
 ### Running with Editor
-1) Build the `SungearEngine CMake target.
+1) Build the `SungearEngine` CMake target.
 2) Run executable file: `<output-dir>/Sources/SGEntry/SungearEngine`
 
 ## Contributors 🌟
