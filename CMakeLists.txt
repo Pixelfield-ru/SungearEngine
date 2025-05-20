@@ -118,12 +118,6 @@ set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition -Wno-return-type")
 set(SG_BUILD_TESTS ON)
 set(SG_BUILD_ENTRY ON)
 
-set(SG_RESOURCES_COPY_MODELS ON)
-set(SG_RESOURCES_COPY_SHADERS ON)
-set(SG_RESOURCES_COPY_TEXTURES ON)
-set(SG_RESOURCES_COPY_UI ON)
-set(SG_RESOURCES_COPY_FONTS ON)
-
 # ----------------------------------
 # including msdf-atlas-gen ========================================
 

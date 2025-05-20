@@ -1,61 +1,56 @@
 <img src="./documentation/images/mainLogo.png" width="100%">
-<p align="center">🎮 An Open Source Engine Written in C++! 🎮</p>
+<h1 align="center"> A cross-platform Game Engine written in C++ </h1>
 
-# <p align="center"> Features </p>
+# <p align="center"> Features Overview </p>
 
 -   **General:**
-    - ECS
-    - Audio (OpenAL)
-    - Parallel thread-safety physics (colliders of different forms, rigidbodies)
-    - Octree with automatic subdivision
-    - Support input from keyboard and mouse
-    - Annotations and code generation
-        > More information about annotations, see the source code: [Annotation](https://github.com/Pixelfield-ru/SungearEngine/tree/main/Sources/SGCore/Annotations)  
-        > Example annotation
-        ```cpp
-        sg_struct()
-        struct MyStruct
-        {
-            sg_member()
-            float m_myMember = 3.0f;
-        }
-        ```
-    - A set of classes for parallel computing
-      > More information about parallel computing, see the source code: [Parallel computing](https://github.com/Pixelfield-ru/SungearEngine/tree/main/Sources/SGCore/Threading)
-    - Small developments in the in-game UI (loading TTF fonts, creating text)
+    - ECS.
+    - 2D and 3D audio (OpenAL).
+    - Parallel physics and transformations.
+    - Octree with automatic subdivision.
+    - Input (only PC).
+    - Code generation using meta info and custom code generator language.
+    - A set of classes for parallel and async computing.
+    - UI (XML & CSS).
+    - Plugins system.
+    - Skeletons and skeletal animations with state blending.
+    - Serde (serialization & deserialization) with support for polymorphic classes and data sharing.
+
+
 -   **Graphics Rendering:**
-    - Preparation for multi-GAPI (GAPI - graphics API) (using only abstractions and avoiding native API functions in external code (outside the implementation of abstract classes for different GAPI))
-    - Аn additional add-on to the GLSL shader language for dividing shaders into render passes, specifying pass parameters, including shaders, as well as writing different shaders (fragment, vertex, geometric, etc.) in one file
-    - PBR (Physically Based Rendering) using Cook-Torrance BRDF. Different maps are supporting:
-        - Albedo Map
-        - Normal Map
-        - Roughness Map
-        - Metallic Map
-        - Ambient Occlusion Map
-        - Emission Map
-    - Shadows (Directional Light only)
+    - Add-on for GLSL.
+    - Forward PBR (Physically Based Rendering) using Cook-Torrance BRDF:
+        - Objects.
+        - Decals.
+        - Terrains.
+    - Terrains tesselation and vertex bump using displacement texture.
     - Atmosphere Scattering
-      
--   **Post Processing:**
-    - Layered postprocessing (you can add different objects to different layers and apply different postprocessing to them, be it blur, bloom, etc.)
+    - Stochastic transparency
+    - Volume postprocessing.
+    - Entities picking.
+    - Debug render.
 
--   **Asset Pipeline:**
-    - Plugin Systems(generating a plugin project, connecting plugins to the engine in runtime)
-    - Load Textures and svg files
-    - Load many model formats such as .fbx, .obj, etc.
 
-| **Octree** | **PBR** |
-|:-:|:-:|
-| <img src="./documentation/images/octree.jpg"/><br>Octree demonstartion | <img src="./documentation/images/pbr2.jpg"/><br>Demonstration pbr shading with shadows |
-| **Post-Processing** | **Post-Processing** |
-| <img src="./documentation/images/pp.jpg"/><br> Demonstration of layered post-processing (bloom) | <img src="./documentation/images/pp2.jpg"/><br> Demonstration of layered post-processing |
+-   **Assets Pipeline:**
+    - Large formats support:
+        - Vector graphics: SVG, TTF.
+        - Raster graphics: JPG, PNG, DDS
+        - External scenes formats such as: FBX, OBJ, GLTF, etc.
+    - Creating and loading packages with assets.
+    - Scenes saving and loading.
+
+|                   **Octree**                    |                               **PBR**                                |
+|:-----------------------------------------------:|:--------------------------------------------------------------------:|
+| <img src="./documentation/images/octree.jpg"/>  |             <img src="./documentation/images/pbr2.jpg"/>             |
+|               **Post-Processing**               |                             **Terrain**                              |
+|   <img src="./documentation/images/pp.jpg"/>    | <img src="./documentation/images/terrain.png"/> Terrain with physics |
 
 ### Platforms
 - 🛠️ Cross Platform
     - ✔️ Windows
-    - ❌ MacOS
+    - 🔨 MacOS
     - ✔️ Linux
-    - ❌ Andriod
+    - ❌ Android
     - ❌ iOS
     - ❌ Web
 
@@ -65,34 +60,69 @@
 - [Nikita (8bitniksis)](https://github.com/8bitniksis)
 - [Vlad (MisterChoose)](https://github.com/MisterChoose)
 
+# Cloning the repository using console commands
+### If you are cloning from github
+
+```bash
+
+cd <Path to your folder>
+
+git clone --recurse-submodules -j8 https://github.com/Pixelfield-ru/SungearEngine
+
+cd SungearEngine
+
+git checkout main (or the latest tag: tags/<latest-tag>)
+```
+
+### If you downloaded release archive with sources
+
+```bash
+
+cd <Path to Sungear Engine>
+
+git submodule update --init --recursive 
+```
+
+# CMake
+## Variables and Flags
+- Flag `SG_BUILD_TESTS`: enables building of test targets.
+- Flag `SG_BUILD_ENRY`: enables building the entry executable with editor plugin loading.
+
+## Presets
+- `debug-host`: debug build for host platform (no optimizations, includes debug info).
+- `release-host`: release build for host platform (with optimizations, no debug info).
+
+# How to build and run
+### Building Sungear Engine Core
+1) Bootstrap vcpkg.
+2) Set SUNGEAR_SOURCES_ROOT system variable to the root of your Sungear Engine installation.
+3) Restart your PC (required for the environment variable).
+4) Open IDE, select a CMake preset and load the root `CMakeLists.txt`.
+5) After loading select the desired CMake target.
+6) Build the selected target.
+7) On Windows: copy `<output-dir>/Sources/SGCore/SGCore.dll` to the same directory as the `.exe` file you're running  
+(for example: `<output-dir>/Tests/Terrain/SGTerrainTest.exe`).
+
+### Building Sungear Engine Editor
+1) Make sure you are using the **same CMake preset** for both Sungear Engine Core and Editor.
+2) Open Editor project in IDE (editor is in `Plugins/SungearEngineEditor`).
+3) Load CMake Project.
+4) After loading choose target to build.
+5) Build chosen target.
+
+### Running with Editor
+1) Build the `SungearEngine CMake target.
+2) Run executable file: `<output-dir>/Sources/SGEntry/SungearEngine`
+
 # License 📜
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 # Contributing
-## Cloning the repository using console commands:
-Open your console application of choice and run the following console commands:
-
-```
-\> cd <Path to your folder>
-
-\> git clone --recurse-submodules -j8 https://github.com/Pixelfield-ru/SungearEngine
-
-\> cd SungearEngine
-
-\> git checkout main (or the latest tag)
-```
-
-# Reporting Issues
+## Reporting Issues
 
 If you encounter any bugs when using Sungear Engine, please report them in the bug tracker. This is hosted at:
 
 https://github.com/Pixelfield-ru/SungearEngine/issues
 
-Make sure to first use the search function to see if the bug has already been reported. When filling out a bug report, make sure that you include as much information as possible to help the developers track down the issue, such as your version of SungearEngine, operating system, architecture, and any code and models that are necessary for the developers to reproduce the issue.
-
-# How to build
-To build up make sure to:
-1) Build and bootstrap vcpkg.
-2) Set SUNGEAR_LLVM_MINGW_PATH system variable to your MinGW (cygwin/other-cross-compiler?..) compiler.
-
-Be sure to set up the correct path without illegal-characters (use / in path instead of \ for obvious reasons).
+Make sure to first use the search function to see if the bug has already been reported.  
+When filling out a bug report, make sure that you include as much information as possible to help the developers track down the issue, such as your version of SungearEngine, operating system, architecture, and any code and models that are necessary for the developers to reproduce the issue.
