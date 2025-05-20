@@ -1,51 +1,72 @@
 <img src="./documentation/images/mainLogo.png" width="100%">
 <h1 align="center"> A cross-platform Game Engine written in C++ </h1>
 
-# <p align="center"> Features Overview </p>
-
--   **General:**
-    - ECS.
-    - 2D and 3D audio (OpenAL).
-    - Parallel physics and transformations.
-    - Octree with automatic subdivision.
-    - Input (only PC).
-    - Code generation using meta info and custom code generator language.
-    - A set of classes for parallel and async computing.
-    - UI (XML & CSS).
-    - Plugins system.
-    - Skeletons and skeletal animations with state blending.
-    - Serde (serialization & deserialization) with support for polymorphic classes and data sharing.
-
-
--   **Graphics Rendering:**
-    - Add-on for GLSL.
-    - Forward PBR (Physically Based Rendering) using Cook-Torrance BRDF:
-        - Objects.
-        - Decals.
-        - Terrains.
-    - Terrains tesselation and vertex bump using displacement texture.
-    - Atmosphere Scattering
-    - Stochastic transparency
-    - Volume postprocessing.
-    - Entities picking.
-    - Debug render.
-
-
--   **Assets Pipeline:**
-    - Large formats support:
-        - Vector graphics: SVG, TTF.
-        - Raster graphics: JPG, PNG, DDS
-        - External scenes formats such as: FBX, OBJ, GLTF, etc.
-    - Creating and loading packages with assets.
-    - Scenes saving and loading.
-
 |                   **Octree**                    |                               **PBR**                                |
 |:-----------------------------------------------:|:--------------------------------------------------------------------:|
 | <img src="./documentation/images/octree.jpg"/>  |             <img src="./documentation/images/pbr2.jpg"/>             |
 |               **Post-Processing**               |                             **Terrain**                              |
 |   <img src="./documentation/images/pp.jpg"/>    | <img src="./documentation/images/terrain.png"/> Terrain with physics |
 
-### Platforms
+<h1> Table of Contents </h1>
+
+- [Features Overview](#features-overview)
+  - [General](#general)
+  - [Graphics Rendering](#graphics-rendering)
+  - [Assets Pipeline](#assets-pipeline)
+- [Platforms](#platforms)
+- [Cloning](#cloning-the-repository-using-console-commands)
+  - [From GitHub](#if-you-are-cloning-the-repository-from-github)
+  - [If you downloaded a release archive](#if-you-downloaded-a-release-archive-with-sources)
+- [CMake](#cmake)
+  - [Variables and Flags](#variables-and-flags)
+  - [Presets](#presets)
+- [How to build and run](#how-to-build-and-run)
+  - [Sungear Engine Core](#building-sungear-engine-core)
+  - [Sungear Engine Editor](#building-sungear-engine-editor)
+  - [Running with Editor](#running-with-editor)
+- [Contributors](#contributors-)
+- [Contributing](#contributing)
+  - [Reporting Issues](#reporting-issues)
+- [License](#license-)
+
+# Features Overview
+### **General**
+- ECS.
+- 2D and 3D audio (OpenAL).
+- Parallel physics and transformations.
+- Octree with automatic subdivision.
+- Input (only PC).
+- Code generation using meta info and custom code generator language.
+- A set of classes for parallel and async computing.
+- UI (XML & CSS).
+- Plugins system.
+- Skeletons and skeletal animations with state blending.
+- Serde (serialization & deserialization) with support for polymorphic classes and data sharing.
+
+
+### **Graphics Rendering**
+- Add-on for GLSL.
+- Forward PBR (Physically Based Rendering) using Cook-Torrance BRDF:
+    - Objects.
+    - Decals.
+    - Terrains.
+- Terrains tesselation and vertex bump using displacement texture.
+- Atmosphere Scattering
+- Stochastic transparency
+- Volume postprocessing.
+- Entities picking.
+- Debug render.
+
+
+### **Assets Pipeline**
+- Large formats support:
+    - Vector graphics: SVG, TTF.
+    - Raster graphics: JPG, PNG, DDS
+    - External scenes formats such as: FBX, OBJ, GLTF, etc.
+- Creating and loading packages with assets.
+- Scenes saving and loading.
+
+# Platforms
 - 🛠️ Cross Platform
     - ✔️ Windows
     - 🔨 MacOS
@@ -55,7 +76,7 @@
     - ❌ Web
 
 # Cloning the repository using console commands
-### If you are cloning from github
+### If you are cloning the repository from GitHub
 
 ```bash
 
@@ -68,7 +89,7 @@ cd SungearEngine
 git checkout main (or the latest tag: tags/<latest-tag>)
 ```
 
-### If you downloaded release archive with sources
+### If you downloaded a release archive with sources
 
 ```bash
 
@@ -78,11 +99,11 @@ git submodule update --init --recursive
 ```
 
 # CMake
-## Variables and Flags
+### Variables and Flags
 - Flag `SG_BUILD_TESTS`: enables building of test targets.
 - Flag `SG_BUILD_ENRY`: enables building the entry executable with editor plugin loading.
 
-## Presets
+### Presets
 - `debug-host`: debug build for host platform (no optimizations, includes debug info).
 - `release-host`: release build for host platform (with optimizations, no debug info).
 
@@ -108,14 +129,14 @@ git submodule update --init --recursive
 1) Build the `SungearEngine` CMake target.
 2) Run executable file: `<output-dir>/Sources/SGEntry/SungearEngine`
 
-## Contributors 🌟
+# Contributors 🌟
 
 - [Ilya (pfhgil)](https://github.com/pfhgil)
 - [Nikita (8bitniksis)](https://github.com/8bitniksis)
 - [Vlad (MisterChoose)](https://github.com/MisterChoose)
 
 # Contributing
-## Reporting Issues
+### Reporting Issues
 
 If you encounter any bugs when using Sungear Engine, please report them in the bug tracker. This is hosted at:
 
