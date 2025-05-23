@@ -220,6 +220,7 @@ layout(location = 6) out vec3 layerVertexNormalColor;
 #include "sg_shaders/impl/glsl4/math.glsl"
 #include "sg_shaders/impl/glsl4/pbr_base.glsl"
 #include "sg_shaders/impl/glsl4/color_correction/aces.glsl"
+#include "sg_shaders/impl/glsl4/random.glsl"
 
 uniform sampler2D mat_diffuseSamplers[1];
 uniform int mat_diffuseSamplers_CURRENT_COUNT;
@@ -242,6 +243,9 @@ uniform int mat_diffuseRoughnessSamplers_CURRENT_COUNT;
 uniform sampler2D mat_heightSamplers[1];
 uniform int mat_heightSamplers_CURRENT_COUNT;
 
+uniform sampler2D mat_noiseSamplers[1];
+uniform int mat_noiseSamplers_CURRENT_COUNT;
+
 // REQUIRED UNIFORM!!
 uniform vec3 u_pickingColor;
 
@@ -262,8 +266,44 @@ in TessEvalOut
     mat3 TBN;
 } tessEvalIn;
 
+float sum( vec3 v ) { return v.x+v.y+v.z; }
+float sum( vec4 v ) { return v.x+v.y+v.z + v.a; }
+
+vec4 textureNoTile(in sampler2D tex, in vec2 x, float v)
+{
+    // float k = random(0.005 * x);
+    float k = texture(mat_noiseSamplers[0], 0.05 * x).x; // cheap (cache friendly) lookup
+
+    vec2 duvdx = dFdx(x);
+    vec2 duvdy = dFdy(x);
+
+    float l = k * 8.0;
+    float f = fract(l);
+
+    #if 0
+    float ia = floor(l); // my method
+    float ib = ia + 1.0;
+    #else
+    float ia = floor(l + 0.5); // suslik's method (see comments)
+    float ib = floor(l);
+    f = min(f, 1.0 - f) * 2.0;
+    #endif
+
+    vec2 offa = sin(vec2(3.0, 7.0) * ia); // can replace with any other hash
+    vec2 offb = sin(vec2(3.0, 7.0) * ib); // can replace with any other hash
+
+    vec4 cola = textureGrad(tex, x + v * offa, duvdx, duvdy);
+    vec4 colb = textureGrad(tex, x + v * offb, duvdx, duvdy);
+
+    return mix(cola, colb, smoothstep(0.2, 0.8, f - 0.1 * sum(cola - colb)));
+    // return texture(tex, x);
+}
+
 vec2 parallaxMapping(vec2 UV, vec3 viewDir, float heightScale)
 {
+    float f = smoothstep(0.4, 0.6, sin(1.0));
+    float s = smoothstep(0.4, 0.6, sin(1.0 * 0.5));
+
     const float minLayers = 8.0;
     const float maxLayers = 64.0;
     float numLayers = mix(maxLayers, minLayers, abs(dot(vec3(0.0, 0.0, 1.0), viewDir)));
@@ -294,6 +334,47 @@ vec2 parallaxMapping(vec2 UV, vec3 viewDir, float heightScale)
     return finalTexCoords;
 }
 
+vec2 rotateUV(vec2 uv, float angle, vec2 pivot) {
+    uv -= pivot;
+    float s = sin(angle);
+    float c = cos(angle);
+    mat2 rotation = mat2(c, -s, s, c);
+    uv = rotation * uv;
+    uv += pivot;
+    return uv;
+}
+
+vec3 hash3(vec2 p) {
+    return fract(sin(vec3(p.x + 0.0, p.x + 1.0, p.x + 2.0) * 127.1 +
+    vec3(p.y + 0.0, p.y + 1.0, p.y + 2.0) * 311.7) * 43758.5453);
+}
+
+vec3 voronoiColor(vec2 uv) {
+    vec2 p = floor(uv);
+    vec2 f = fract(uv);
+
+    float minDist = 1000.0;
+    vec2 closest;
+
+    for (int j = -1; j <= 1; ++j) {
+        for (int i = -1; i <= 1; ++i) {
+            vec2 neighbor = vec2(i, j);
+            vec2 point = vec2(i, j) + hash3(p + neighbor).xy;
+            float d = length(point - f);
+            if (d < minDist) {
+                minDist = d;
+                closest = p + neighbor;
+            }
+        }
+    }
+
+    return hash3(closest);
+}
+
+vec3 hashColor(float x) {
+    return fract(sin(vec3(x, x + 1.0, x + 2.0)) * 43758.5453);
+}
+
 void main()
 {
     vec3 normalizedNormal = tessEvalIn.normal;
@@ -311,6 +392,11 @@ void main()
     finalUV.y = 1.0 - tessEvalIn.UV.y;
     #endif
 
+    float voronoi = texture(mat_noiseSamplers[0], finalUV * 1.0).r;
+    vec3 voronoiCol = voronoiColor(finalUV * 10.0);
+    finalUV = rotateUV(tessEvalIn.fragPos.xz, voronoiCol.r * voronoiCol.g * voronoiCol.b, vec2(0.0)) * 0.05;
+
+
     vec2 originalUV = finalUV;
 
     // ===============================================================================================
@@ -321,8 +407,6 @@ void main()
     {
         vec3 viewDirToParallax = normalize(transpose(tessEvalIn.TBN) * (camera.position - tessEvalIn.fragPos));
         finalUV = parallaxMapping(finalUV, viewDirToParallax, PARALLAX_FACTOR);
-
-        // if(finalUV.x > 1.0 || finalUV.y > 1.0 || finalUV.x < 0.0 || finalUV.y < 0.0) discard;
     }
 
     {
@@ -336,6 +420,8 @@ void main()
             {
                 diffuseColor += texture(mat_diffuseSamplers[i], finalUV) * mixCoeff;
             }
+
+            diffuseColor.a = 1.0;
         }
     }
 
@@ -490,8 +576,6 @@ void main()
     // ambient = ambient * albedo.rgb * ao;
     ambient = albedo.rgb * ao;
     vec3 finalCol = ambient * u_materialAmbientCol.rgb * materialAmbientFactor + lo + ambient;
-    float exposure = 0.7;
-    finalCol = ACESTonemap(finalCol, exposure);
 
     // finalCol = vec3(tessEvalIn.UV, 0.0);
 
@@ -508,6 +592,9 @@ void main()
     // finalCol = vec3(aoRoughnessMetallic.b);
     // finalCol = aoRoughnessMetallic.rgb;
     // finalCol = vec3(albedo.rgb);
+    // finalCol = diffuseColor.rgb;
+    // finalCol = voronoiCol;
+    // finalCol = hashColor(voronoi * 256.0);
 
     // finalCol = vec3(1.0);
 

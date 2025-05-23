@@ -37,6 +37,7 @@ void main()
 #include "sg_shaders/impl/glsl4/alpha_resolving/wboit.glsl"
 #include "sg_shaders/impl/glsl4/alpha_resolving/stochastic_transparency.glsl"
 #include "sg_shaders/impl/glsl4/color_correction/aces.glsl"
+#include "sg_shaders/impl/glsl4/color_correction/filmic.glsl"
 
 // REQUIRED COLORS!!! ===========
 layout(location = 0) out vec4 layerVolume;
@@ -71,11 +72,13 @@ void main()
                 atmosphere.miePreferredScatteringDirection          // Mie preferred scattering direction
     );
 
+    // atmosphereCol = pow(atmosphereCol, vec3(10.0));
+
     vec4 skyboxCol = vec4(0.0);
 
     if(mat_skyboxSamplers_CURRENT_COUNT > 0)
     {
-        float mixCoeff = 1.0 / mat_skyboxSamplers_CURRENT_COUNT;
+        /*float mixCoeff = 1.0 / mat_skyboxSamplers_CURRENT_COUNT;
         for (int i = 0; i < mat_skyboxSamplers_CURRENT_COUNT; i++)
         {
             skyboxCol += texture(mat_skyboxSamplers[i], vs_UVAttribute.xyz) * mixCoeff;
@@ -83,15 +86,16 @@ void main()
 
         float a = dot(skyboxCol.rgb, atmosphereCol.rgb);
         skyboxCol.rgb += atmosphereCol.rgb * (1.0 - skyboxCol.rgb);
-        skyboxCol.rgb *= a * atmosphereCol.rgb;
+        skyboxCol.rgb *= a * atmosphereCol.rgb;*/
+
+        skyboxCol.rgb = atmosphereCol;
     }
     else
     {
         skyboxCol = vec4(atmosphereCol, 1.0);
     }
 
-    float exposure = 0.7;
-    skyboxCol.rgb = ACESTonemap(skyboxCol.rgb, exposure);
+    // skyboxCol.rgb = filmic(skyboxCol.rgb);
 
     // if(u_isStochasticTransparencyEnabled) // todo: impl
     {
@@ -111,7 +115,9 @@ void main()
 
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
 
-    layerWorldPosColor = vs_fragWorldPos;
+    layerWorldPosColor = vec3(vs_fragWorldPos) * 10.0;
+
+    // layerWorldPosColor = vec3(1.0);
 }
 
 #end

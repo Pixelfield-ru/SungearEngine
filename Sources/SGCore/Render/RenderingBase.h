@@ -19,7 +19,7 @@ namespace SGCore
         float m_fov = 75.0f;
         float m_aspect = 16.0f / 9.0f;
         float m_zNear = 0.1;
-        float m_zFar = 2000.0;
+        float m_zFar = 2500.0;
 
         float m_left = -1280.0f;
         float m_right = 1280.0f;

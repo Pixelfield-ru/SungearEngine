@@ -310,8 +310,6 @@ void main()
     // ambient = ambient * albedo.rgb * ao;
     ambient = albedo.rgb * ao;
     vec3 finalCol = ambient * u_materialAmbientCol.rgb * materialAmbientFactor + lo + ambient;
-    float exposure = 0.7;
-    finalCol = ACESTonemap(finalCol, exposure);
 
     // finalCol = vec3(tessEvalIn.UV.xy, 0.0);
     // finalCol = tessEvalIn.vertexPos;

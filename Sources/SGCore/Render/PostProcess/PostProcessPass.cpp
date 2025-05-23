@@ -14,6 +14,8 @@
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
 #include "SGCore/Render/RenderingBase.h"
+#include "SGCore/Render/RenderPipelinesManager.h"
+#include "SGCore/Render/Atmosphere/AtmosphereUpdater.h"
 
 SGCore::PostProcessPass::PostProcessPass()
 {
@@ -42,6 +44,9 @@ void SGCore::PostProcessPass::render(const Ref<Scene>& scene, const Ref<IRenderP
 
     receiversView.each([this](LayeredFrameReceiver::reg_t& receiver, RenderingBase::reg_t& renderingBase,
                               Transform::reg_t& transform) {
+
+        CoreMain::getRenderer()->prepareUniformBuffers(renderingBase, transform);
+
         layersFX(receiver);
     });
 
@@ -89,6 +94,11 @@ void SGCore::PostProcessPass::layersFX(LayeredFrameReceiver& receiver) noexcept
 void SGCore::PostProcessPass::bindCommonUniforms(LayeredFrameReceiver& receiver,
                                                  const AssetRef<IShader>& subPassShader) const noexcept
 {
+    Scene::getCurrentScene()->getSystem<AtmosphereUpdater>()->m_uniformBuffer->bind();
+
+    subPassShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+    subPassShader->useUniformBuffer(Scene::getCurrentScene()->getSystem<AtmosphereUpdater>()->m_uniformBuffer);
+
     for(std::uint8_t i = 0; i < receiver.getLayers().size(); ++i)
     {
         const auto layer = receiver.getLayers()[i];
@@ -100,8 +110,10 @@ void SGCore::PostProcessPass::bindCommonUniforms(LayeredFrameReceiver& receiver,
     subPassShader->useTextureBlock("SGPP_LayersVolumes", 0);
     subPassShader->useTextureBlock("SGPP_LayersColors", 1);
     subPassShader->useTextureBlock("SGPP_LayersSTColor", 2);
+    subPassShader->useTextureBlock("u_GBufferWorldPos", 3);
 
     receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)->bind(0);
     receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1)->bind(1);
     receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3)->bind(2);
+    receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4)->bind(3);
 }

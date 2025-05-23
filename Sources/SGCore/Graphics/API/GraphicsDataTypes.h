@@ -263,6 +263,7 @@ enum class SGTextureType
     SGTT_SPECULAR,
     SGTT_TRANSMISSION,
     SGTT_SKYBOX,
+    SGTT_NOISE,
 
     SGTT_SHADOW_MAP2D,
 
@@ -307,91 +308,95 @@ static SGTextureType sgStandardTextureFromString(const std::string& textureType)
     {
         return SGTextureType::SGTT_EMISSIVE;
     }
-    else if(textureType == "SGTT_AMBIENT_OCCLUSION")
+    if(textureType == "SGTT_AMBIENT_OCCLUSION")
     {
         return SGTextureType::SGTT_AMBIENT_OCCLUSION;
     }
-    else if(textureType == "SGTT_AMBIENT")
+    if(textureType == "SGTT_AMBIENT")
     {
         return SGTextureType::SGTT_AMBIENT;
     }
-    else if(textureType == "SGTT_DIFFUSE_ROUGHNESS")
+    if(textureType == "SGTT_DIFFUSE_ROUGHNESS")
     {
         return SGTextureType::SGTT_DIFFUSE_ROUGHNESS;
     }
-    else if(textureType == "SGTT_DIFFUSE")
+    if(textureType == "SGTT_DIFFUSE")
     {
         return SGTextureType::SGTT_DIFFUSE;
     }
-    else if(textureType == "SGTT_DISPLACEMENT")
+    if(textureType == "SGTT_DISPLACEMENT")
     {
         return SGTextureType::SGTT_DISPLACEMENT;
     }
-    else if(textureType == "SGTT_HEIGHT")
+    if(textureType == "SGTT_HEIGHT")
     {
         return SGTextureType::SGTT_HEIGHT;
     }
-    else if(textureType == "SGTT_NORMALS")
+    if(textureType == "SGTT_NORMALS")
     {
         return SGTextureType::SGTT_NORMALS;
     }
-    else if(textureType == "SGTT_BASE_COLOR")
+    if(textureType == "SGTT_BASE_COLOR")
     {
         return SGTextureType::SGTT_BASE_COLOR;
     }
-    else if(textureType == "SGTT_CLEARCOAT")
+    if(textureType == "SGTT_CLEARCOAT")
     {
         return SGTextureType::SGTT_CLEARCOAT;
     }
-    else if(textureType == "SGTT_EMISSION_COLOR")
+    if(textureType == "SGTT_EMISSION_COLOR")
     {
         return SGTextureType::SGTT_EMISSION_COLOR;
     }
-    else if(textureType == "SGTT_LIGHTMAP")
+    if(textureType == "SGTT_LIGHTMAP")
     {
         return SGTextureType::SGTT_LIGHTMAP;
     }
-    else if(textureType == "SGTT_METALNESS")
+    if(textureType == "SGTT_METALNESS")
     {
         return SGTextureType::SGTT_METALNESS;
     }
-    else if(textureType == "SGTT_NORMAL_CAMERA")
+    if(textureType == "SGTT_NORMAL_CAMERA")
     {
         return SGTextureType::SGTT_NORMAL_CAMERA;
     }
-    else if(textureType == "SGTT_OPACITY")
+    if(textureType == "SGTT_OPACITY")
     {
         return SGTextureType::SGTT_OPACITY;
     }
-    else if(textureType == "SGTT_REFLECTION")
+    if(textureType == "SGTT_REFLECTION")
     {
         return SGTextureType::SGTT_REFLECTION;
     }
-    else if(textureType == "SGTT_SHEEN")
+    if(textureType == "SGTT_SHEEN")
     {
         return SGTextureType::SGTT_SHEEN;
     }
-    else if(textureType == "SGTT_SHININESS")
+    if(textureType == "SGTT_SHININESS")
     {
         return SGTextureType::SGTT_SHININESS;
     }
-    else if(textureType == "SGTT_SPECULAR")
+    if(textureType == "SGTT_SPECULAR")
     {
         return SGTextureType::SGTT_SPECULAR;
     }
-    else if(textureType == "SGTT_TRANSMISSION")
+    if(textureType == "SGTT_TRANSMISSION")
     {
         return SGTextureType::SGTT_TRANSMISSION;
     }
-    else if(textureType == "SGTT_SKYBOX")
+    if(textureType == "SGTT_SKYBOX")
     {
         return SGTextureType::SGTT_SKYBOX;
     }
-    else if(textureType == "SGTT_SHADOW_MAP2D")
+    if(textureType == "SGTT_NOISE")
+    {
+        return SGTextureType::SGTT_NOISE;
+    }
+    if(textureType == "SGTT_SHADOW_MAP2D")
     {
         return SGTextureType::SGTT_SHADOW_MAP2D;
     }
-    else if(textureType == "SGTT_NONE")
+    if(textureType == "SGTT_NONE")
     {
         return SGTextureType::SGTT_NONE;
     }
@@ -424,6 +429,7 @@ static std::string sgStandardTextureTypeToString(const SGTextureType& sgMaterial
         case SGTextureType::SGTT_SPECULAR: return "SGTT_SPECULAR";
         case SGTextureType::SGTT_TRANSMISSION: return "SGTT_TRANSMISSION";
         case SGTextureType::SGTT_SKYBOX: return "SGTT_SKYBOX";
+        case SGTextureType::SGTT_NOISE: return "SGTT_NOISE";
 
         case SGTextureType::SGTT_SHADOW_MAP2D: return "SGTT_SHADOW_MAP2D";
 
@@ -540,6 +546,11 @@ static const std::string& sgStandardTextureTypeNameToStandardUniformName(const S
         case SGTextureType::SGTT_SKYBOX:
         {
             static std::string name = "mat_skyboxSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_NOISE:
+        {
+            static std::string name = "mat_noiseSamplers";
             return name;
         }
         

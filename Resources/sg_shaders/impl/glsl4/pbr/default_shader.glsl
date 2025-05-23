@@ -417,20 +417,6 @@ void main()
     ambient = albedo.rgb * ao;
     vec3 finalCol = ambient * vec3(1.0) * materialAmbientFactor + lo + ambient;
 
-    float exposure = 0.7;
-
-    // finalCol *= dirLightsShadowCoeff;
-
-    // HDR standard tonemapper
-    /*finalCol = finalCol / (finalCol + vec3(1.0));
-    finalCol = pow(finalCol, vec3(1.0 / exposure));*/
-    finalCol = ACESTonemap(finalCol, exposure);
-    // finalCol = lottes(finalCol);
-    // finalCol = reinhard2(finalCol);
-    // finalCol = reinhard(finalCol);
-    // finalCol = neutral(finalCol);
-    // finalCol = filmic(finalCol);
-
     if(u_verticesColorsAttributesCount > 0)
     {
         finalCol.rgb = finalCol * vsIn.vertexColor0.rgb;

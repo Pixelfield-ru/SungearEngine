@@ -130,13 +130,13 @@ namespace SGCore
         Ref<IFrameBuffer> m_layersFXFrameBuffer;
         // ATTACHMENT THAT ARE USED TO RENDER IN THEM.
         std::set<SGFrameBufferAttachmentType> m_attachmentToRenderIn {
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1,
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2,
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3,
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4,
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT5,
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT6
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // BY DEFAULT CONTAINS LAYERS VOLUMES
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1, // BY DEFAULT CONTAINS COLORS FROM LAYERS
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2, // BY DEFAULT CONTAINS PICKING COLORS
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3, // BY DEFAULT COLOR FOR STOCHASTIC TRANSPARENCY
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4, // BY DEFAULT GBUFFER WORLD POS
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT5, // BY DEFAULT GBUFFER FRAGMENT NORMAL
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT6 // BY DEFAULT GBUFFER VERTEX NORMAL
         };
 
         Ref<PostProcessLayer> addOrGetLayer(const std::string& name,

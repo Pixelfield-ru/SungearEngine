@@ -72,6 +72,7 @@ SGCore::AssetRef<SGCore::ITexture2D> terrainDiffuseTex;
 SGCore::AssetRef<SGCore::ITexture2D> terrainDisplacementTex;
 SGCore::AssetRef<SGCore::ITexture2D> terrainNormalsTex;
 SGCore::AssetRef<SGCore::ITexture2D> terrainAORoughnessMetalTex;
+SGCore::AssetRef<SGCore::ITexture2D> terrainTilingNoiseTex;
 
 std::vector<float> terrainDisplacementData;
 
@@ -181,6 +182,7 @@ void coreInit()
     terrainHeightmapTex = mainAssetManager->loadAsset<SGCore::ITexture2D>(SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Resources/textures/test_terrain/displacement.png");
     terrainNormalsTex = mainAssetManager->loadAsset<SGCore::ITexture2D>(SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Resources/textures/test_terrain/normals.png");
     terrainAORoughnessMetalTex = mainAssetManager->loadAsset<SGCore::ITexture2D>(SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Resources/textures/test_terrain/ao_roughness_metal.png");
+    terrainTilingNoiseTex = mainAssetManager->loadAsset<SGCore::ITexture2D>(SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Resources/textures/test_terrain/tiling_noise.png");
     // terrainDisplacementTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test_heightmap0.png");
     terrainDisplacementTex = mainAssetManager->getOrAddAssetByAlias<SGCore::ITexture2D>("test_heightmap");
 
@@ -240,7 +242,7 @@ void coreInit()
     // ======
 
     std::vector<SGCore::ECS::entity_t> skyboxEntities;
-    auto cubeModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("cube_model");
+    auto cubeModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("sphere_model");
     cubeModel->m_rootNode->addOnScene(scene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities](const auto& entity) {
         skyboxEntities.push_back(entity);
         scene->getECSRegistry()->emplace<SGCore::IgnoreOctrees>(entity);
@@ -257,7 +259,7 @@ void coreInit()
 
     auto& skyboxTransform = scene->getECSRegistry()->get<SGCore::Transform>(atmosphereEntity);
 
-    skyboxTransform->m_ownTransform.m_scale = { 1150, 1150, 1150 };
+    skyboxTransform->m_ownTransform.m_scale = { 2000, 2000, 2000 };
 
     // =================================================================
 
@@ -278,6 +280,7 @@ void coreInit()
     standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE_ROUGHNESS, terrainAORoughnessMetalTex);
     standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_METALNESS, terrainAORoughnessMetalTex);
     standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_HEIGHT, terrainHeightmapTex);
+    standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_NOISE, terrainTilingNoiseTex);
 
     // creating terrain material ==============================
 
@@ -616,13 +619,13 @@ void onUpdate(const double& dt, const double& fixedDt)
             }
         }
 
-        if(mainInputListener->keyboardKeyReleased(SGCore::KeyboardKey::KEY_EQUAL))
+        if(mainInputListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_EQUAL))
         {
-            decalTransform->m_ownTransform.m_scale += 1.0f;
+            decalTransform->m_ownTransform.m_scale += 0.1f;
         }
-        else if(mainInputListener->keyboardKeyReleased(SGCore::KeyboardKey::KEY_MINUS))
+        else if(mainInputListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_MINUS))
         {
-            decalTransform->m_ownTransform.m_scale -= 1.0f;
+            decalTransform->m_ownTransform.m_scale -= 0.1f;
         }
     }
 

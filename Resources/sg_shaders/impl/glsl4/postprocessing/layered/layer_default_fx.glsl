@@ -12,6 +12,7 @@
 #include "sg_shaders/impl/glsl4/color_correction/reinhard.glsl"
 #include "sg_shaders/impl/glsl4/color_correction/filmic.glsl"
 #include "sg_shaders/impl/glsl4/color_correction/neutral.glsl"
+#include "sg_shaders/impl/glsl4/uniform_bufs_decl.glsl"
 
 // ===================================================
 // !! - TO GET INDICES OF ALL LAYERS USE UNIFORM ARRAY 'SGPP_LayersIndices' (UNIFORM INT)
@@ -37,40 +38,52 @@ uniform sampler2D SGPP_LayersColors;
 uniform sampler2D SGPP_LayersSTColor;
 uniform int SGPP_CurrentLayerIndex;
 
+uniform sampler2D u_GBufferWorldPos;
+
 // epsilon number
 const float EPSILON = 0.00001f;
 
 out vec4 fragColor;
 
-// calculate floating point numbers equality accurately
-bool isApproximatelyEqual(float a, float b)
+uniform float u_FogDensity = 0.00025;
+
+vec3 Uncharted2Tonemap(vec3 x)
 {
-    return abs(a - b) <= (abs(a) < abs(b) ? abs(b) : abs(a)) * EPSILON;
+    const float A = 0.15;
+    const float B = 0.50;
+    const float C = 0.10;
+    const float D = 0.20;
+    const float E = 0.02;
+    const float F = 0.30;
+    return ((x*(A*x+C*B)+D*E)/(x*(A*x+B)+D*F)) - E/F;
 }
 
-// get the max value between three values
-float max3(vec3 v)
+vec3 ToneMap_Uncharted2(vec3 color)
 {
-    return max(max(v.x, v.y), v.z);
+    float exposureBias = 0.5;
+    color *= exposureBias;
+
+    vec3 curr = Uncharted2Tonemap(color);
+
+    // White point normalization (to map 11.2 to 1.0)
+    const float W = 0.5;
+    vec3 whiteScale = 1.0 / Uncharted2Tonemap(vec3(W));
+    return curr * whiteScale;
 }
 
-vec4 gaussianBlur(in sampler2D inputTexture, vec2 uv) {
-    vec2 offsets[5] = vec2[](
-        vec2(-2.0, 0.0),
-        vec2(-1.0, 0.0),
-        vec2(0.0, 0.0),
-        vec2(1.0, 0.0),
-        vec2(2.0, 0.0)
-    );
+vec3 applyFog(in vec3 col,   // color of pixel
+              in float t,     // distance to point
+              in vec3 rd,    // camera to point
+              in vec3 lig)  // sun direction
+{
+    float sunAmount = clamp(dot(rd, lig), 0.0, 1.0);
+    float fogAmount = 1.0 - exp(-t * u_FogDensity);
+    // float fogFactor = exp(-distance * mix(be, be * 0.3, sunAmount));
+    vec3  fogColor  = mix(vec3(0.5,0.6,0.7), // blue
+                          vec3(1.0,0.9,0.7), // yellow
+                          pow(sunAmount, 8.0));
 
-    float weights[5] = float[](0.05, 0.2, 0.5, 0.2, 0.05);
-
-    vec4 result = vec4(0.0);
-    for (int i = 0; i < 5; i++)
-    {
-        result += texture(inputTexture, uv + offsets[i] * 0.001) * weights[i];
-    }
-    return result;
+    return mix(col, fogColor, fogAmount);
 }
 
 void main()
@@ -104,10 +117,6 @@ void main()
 
             vec4 STColor = vec4(0.0, 0.0, 0.0, 0.0);
 
-            const int BOX_SIZE = 1;
-
-            int passesCount = 0;
-
             vec2 STColorTexSize = vec2(0.0, 0.0);
 
             {
@@ -115,21 +124,7 @@ void main()
                 STColorTexSize = vec2(float(tmpSize.x), float(tmpSize.y));
             }
 
-            /*for(int x = -BOX_SIZE; x <= BOX_SIZE; ++x)
-            {
-                for(int y = -BOX_SIZE; y <= BOX_SIZE; ++y)
-                {
-                    float tmpRevealage = texelFetch(SGPP_LayersWBOITReveal, texelCoord + ivec2(x, y), 0).r;
-
-                    if(tmpRevealage != 0.0)
-                    {
-                        wboitAccumulation.rgb += gaussianBlur(SGPP_LayersWBOITColorAccum, (gl_FragCoord.xy + vec2(float(x), float(y)) / 1.0) / wboitAccumulationTexSize).rgb;
-                        ++passesCount;
-                    }
-                }
-            }*/
-
-            STColor.rgba = gaussianBlur(SGPP_LayersSTColor, gl_FragCoord.xy / STColorTexSize).rgba;
+            // STColor.rgba = gaussianBlur(SGPP_LayersSTColor, gl_FragCoord.xy / STColorTexSize).rgba;
 
             // STColor.rgba = texture(SGPP_LayersWBOITColorAccum, (gl_FragCoord.xy) / wboitAccumulationTexSize).rgba;
             // STColor.rgba = texelFetch(SGPP_LayersSTColor, texelCoord, 0).rgba;
@@ -139,6 +134,26 @@ void main()
             // layerColor.rgb = ACESTonemap(layerColor.rgb);
 
             fragColor = vec4(layerColor.rgb * (1.0 - STColor.a) + STColor.rgb * (STColor.a), 1.0);
+
+            vec3 fragPos = texture(u_GBufferWorldPos, finalUV).xyz;
+
+            /*float f_distance = length(fragPos - camera.position);
+            float f_height = fragPos.y;
+
+            float fogFactorDist = smoothstep(uFogStart, uFogEnd, f_distance);
+
+            float fogFactorHeight = exp(f_height * uFogHeightFalloff);
+            fogFactorHeight = clamp(1.0 - fogFactorHeight, 0.0, 1.0);
+
+            float fogFactor = fogFactorDist;*/
+
+            float exposure = 0.7;
+            // fragColor.rgb = ACESTonemap(fragColor.rgb, exposure);
+
+            // fragColor.rgb = ToneMap_Uncharted2(fragColor.rgb);
+
+            vec3 viewDir = normalize(fragPos - camera.position);
+            fragColor.rgb = applyFog(fragColor.rgb, distance(fragPos, camera.position), viewDir, atmosphere.sunPosition);
         }
     }
 }
