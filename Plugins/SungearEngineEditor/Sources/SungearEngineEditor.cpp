@@ -58,7 +58,7 @@ std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>
 
 void SGE::SungearEngineEditor::update(const double& dt, const double& fixedDt)
 {
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_Y))
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_Y) && !ImGui::GetIO().WantTextInput)
     {
         SGCore::AssetManager::getInstance()->createPackage("./", "assets");
 
@@ -81,7 +81,7 @@ void SGE::SungearEngineEditor::update(const double& dt, const double& fixedDt)
         StylesManager::init();*/
     }
 
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_L))
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_L) && !ImGui::GetIO().WantTextInput)
     {
         SGCore::AssetManager::getInstance()->loadPackage("./", "assets");
     }

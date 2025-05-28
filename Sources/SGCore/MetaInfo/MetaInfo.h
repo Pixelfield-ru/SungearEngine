@@ -276,27 +276,6 @@ namespace SGCore
                 m_meta["structs"].push_back(meta);
             }
 
-            // SGCore::MeshDataRenderInfo
-            {
-                Meta meta;
-                meta["fullName"] = "SGCore::MeshDataRenderInfo";
-                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/ImportedScenesArch/MeshDataRenderInfo.h";
-
-                meta["annotations"]["doNotGenerateSerdeSpec"];
-                meta["annotations"]["doNotGenerateSerializationLogic"];
-                meta["annotations"]["doNotGenerateDeserializationLogic"];
-
-                meta["members"]["m_useIndices"];
-                meta["members"]["m_useFacesCulling"];
-                meta["members"]["m_facesCullingFaceType"];
-                meta["members"]["m_facesCullingPolygonsOrder"];
-                meta["members"]["m_drawMode"];
-                meta["members"]["m_linesWidth"];
-                meta["members"]["m_pointsSize"];
-
-                m_meta["structs"].push_back(meta);
-            }
-
             // SGCore::RenderingBase
             {
                 Meta meta;
@@ -738,22 +717,6 @@ namespace SGCore
                 meta["members"]["m_mode"];
                 meta["members"]["m_linesRenderInfo"];
                 // meta["members"]["m_maxLines"];
-
-                meta["baseTypes"]["SGCore::ISystem"];
-
-                m_meta["structs"].push_back(meta);
-            }
-
-            // SGCore::BatchesRenderer
-            {
-                Meta meta;
-                meta["fullName"] = "SGCore::BatchesRenderer";
-                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Batching/BatchesRenderer.h";
-                meta["type"] = "system";
-
-                meta["annotations"]["doNotGenerateSerdeSpec"];
-                meta["annotations"]["doNotGenerateSerializationLogic"];
-                meta["annotations"]["doNotGenerateDeserializationLogic"];
 
                 meta["baseTypes"]["SGCore::ISystem"];
 

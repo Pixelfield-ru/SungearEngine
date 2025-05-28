@@ -305,6 +305,7 @@ void coreInit()
     terrainEntity = ecsRegistry->create();
 
     auto& terrainTransform = ecsRegistry->emplace<SGCore::Transform>(terrainEntity, SGCore::MakeRef<SGCore::Transform>());
+    // terrainTransform->m_ownTransform.m_scale = { 0.1, 0.1, 0.1 };
     ecsRegistry->emplace<SGCore::NonSavable>(terrainEntity);
     auto& terrainMesh = ecsRegistry->emplace<SGCore::Mesh>(terrainEntity);
     auto& terrainComponent = ecsRegistry->emplace<SGCore::Terrain>(terrainEntity);

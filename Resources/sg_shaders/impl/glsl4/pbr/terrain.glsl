@@ -394,7 +394,7 @@ void main()
 
     float voronoi = texture(mat_noiseSamplers[0], finalUV * 1.0).r;
     vec3 voronoiCol = voronoiColor(finalUV * 10.0);
-    finalUV = rotateUV(tessEvalIn.fragPos.xz, voronoiCol.r * voronoiCol.g * voronoiCol.b, vec2(0.0)) * 0.05;
+    // finalUV = rotateUV(tessEvalIn.fragPos.xz, voronoiCol.r * voronoiCol.g * voronoiCol.b, vec2(0.0)) * 0.05;
 
 
     vec2 originalUV = finalUV;
@@ -618,7 +618,7 @@ void main()
 layout(triangles) in;
 layout(line_strip, max_vertices = 6) out;
 
-*//*in TessEvalOut
+in TessEvalOut
 {
     vec2 UV;
     vec3 normal;
@@ -629,7 +629,7 @@ layout(line_strip, max_vertices = 6) out;
     vec3 tangent;
     vec3 bitangent;
     mat3 TBN;
-} tessEvalIn[];*//*
+} tessEvalIn[];
 
 void main()
 {

@@ -1,0 +1,32 @@
+{
+    "version": "1",
+    "typeName": "SGCore::Config",
+    "value": {
+        "m_loadablePlugins": {
+            "typeName": "std::vector",
+            "value": [
+                {
+                    "typeName": "SGCore::LoadablePluginConfig",
+                    "value": {
+                        "m_pluginName": {
+                            "typeName": "std::basic_string",
+                            "value": "SungearEngineEditor"
+                        },
+                        "m_pluginPath": {
+                            "typeName": "SGCore::InterpolatedPath",
+                            "value": "${enginePath}/Plugins/SungearEngineEditor"
+                        },
+                        "m_pluginEntryArgs": {
+                            "typeName": "std::vector",
+                            "value": []
+                        },
+                        "m_pluginCMakeBuildDir": {
+                            "typeName": "std::basic_string",
+                            "value": "cmake-build-release"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

@@ -7,14 +7,22 @@
 
 #include <string>
 
+#include "SGCore/Utils/StringInterpolation/InterpolatedPath.h"
+
 namespace SGCore
 {
+    struct LoadablePluginConfig
+    {
+        std::string m_pluginName;
+        InterpolatedPath m_pluginPath;
+        std::vector<std::string> m_pluginEntryArgs;
+        std::string m_pluginCMakeBuildDir;
+    };
+
     struct Config
     {
-        std::string m_cmakePath;
-        
-        void save(const std::string& path) const noexcept;
-        void load(const std::string& path) const noexcept;
+        /// Plugins that will be loaded at start of SungearEngine executable.
+        std::vector<LoadablePluginConfig> m_loadablePlugins;
     };
 }
 

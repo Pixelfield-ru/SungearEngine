@@ -176,38 +176,70 @@ void onInspectorViewRender()
     }
 }
 
+template<SGCore::Serde::FormatType TFormatType>
+SGCore::Slot<void(
+    SGCore::Serde::SerializableValueView<SGCore::SceneEntitySaveInfo, SGCore::Serde::FormatType::JSON>& entityView,
+    const SGCore::Scene& serializableScene,
+    const SGCore::ECS::entity_t& serializableEntity)>
+onEntitySerializeSlot = onEntitySerialize<TFormatType>;
+
+template<SGCore::Serde::FormatType TFormatType>
+SGCore::Slot<void(
+    SGCore::Serde::DeserializableValueView<SGCore::SceneEntitySaveInfo, SGCore::Serde::FormatType::JSON>& entityView,
+    const SGCore::Serde::FormatInfo<SGCore::Serde::FormatType::JSON>::array_iterator_t& componentsIterator,
+    SGCore::ECS::registry_t& toRegistry)>
+onEntityDeserializeSlot = onEntityDeserialize<TFormatType>;
+
+template<SGCore::Serde::FormatType TFormatType>
+SGCore::Slot<void(
+    SGCore::Serde::SerializableValueView<SGCore::Scene::systems_container_t, SGCore::Serde::FormatType::JSON>& systemsContainerView,
+    const SGCore::Scene& serializableScene,
+    const SGCore::Ref<SGCore::ISystem>& serializableSystem)>
+onSystemSerializeSlot = onSystemSerialize<TFormatType>;
+
+template<SGCore::Serde::FormatType TFormatType>
+SGCore::Slot<void(
+    SGCore::Serde::DeserializableValueView<SGCore::Scene::systems_container_t, SGCore::Serde::FormatType::JSON>& systemsContainerView,
+    const SGCore::Serde::FormatInfo<SGCore::Serde::FormatType::JSON>::array_iterator_t& systemsIterator)>
+onSystemDeserializeSlot = onSystemDeserialize<TFormatType>;
+
+SGCore::Slot<void()> onInspectorViewRenderSlot = onInspectorViewRender;
+SGCore::Slot<void()> onInitSlot = onInit;
+SGCore::Slot<void(const double& dt, const double& fixedDt)> onFixedUpdateSlot = fixedUpdate;
+SGCore::Slot<void(const double& dt, const double& fixedDt)> onUpdateSlot = update;
+
 SG_NOMANGLING SG_DLEXPORT void editorGeneratedCodeEntry()
 {
     LOG_I("GENERATED", "Calling editorGeneratedCodeEntry()...");
 
-    SGCore::Scene::getOnEntitySerializeEvent<SGCore::Serde::FormatType::JSON>() += onEntitySerialize<SGCore::Serde::FormatType::JSON>;
-    SGCore::Scene::getOnEntityDeserializeEvent<SGCore::Serde::FormatType::JSON>() += onEntityDeserialize<SGCore::Serde::FormatType::JSON>;
-    SGCore::Scene::getOnSystemSerializeEvent<SGCore::Serde::FormatType::JSON>() += onSystemSerialize<SGCore::Serde::FormatType::JSON>;
-    SGCore::Scene::getOnSystemDeserializeEvent<SGCore::Serde::FormatType::JSON>() += onSystemDeserialize<SGCore::Serde::FormatType::JSON>;
+    SGCore::Scene::getOnEntitySerializeEvent<SGCore::Serde::FormatType::JSON>() += onEntitySerializeSlot<SGCore::Serde::FormatType::JSON>;
+    SGCore::Scene::getOnEntityDeserializeEvent<SGCore::Serde::FormatType::JSON>() += onEntityDeserializeSlot<SGCore::Serde::FormatType::JSON>;
+    SGCore::Scene::getOnSystemSerializeEvent<SGCore::Serde::FormatType::JSON>() += onSystemSerializeSlot<SGCore::Serde::FormatType::JSON>;
+    SGCore::Scene::getOnSystemDeserializeEvent<SGCore::Serde::FormatType::JSON>() += onSystemDeserializeSlot<SGCore::Serde::FormatType::JSON>;
     // TODO: supporting BSON and YAML
     /*SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::BSON>() += onEntitySave<SGCore::Serde::FormatType::BSON>;
     SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::YAML>() += onEntitySave<SGCore::Serde::FormatType::YAML>;*/
 
-    SGE::SungearEngineEditor::getInstance()->getMainView()->getInspectorView()->onRenderBody += onInspectorViewRender;
+    SGE::SungearEngineEditor::getInstance()->getMainView()->getInspectorView()->onRenderBody += onInspectorViewRenderSlot;
 
-    SGCore::CoreMain::onInit += onInit;
-    SGCore::CoreMain::getFixedTimer().onUpdate += fixedUpdate;
-    SGCore::CoreMain::getRenderTimer().onUpdate += update;
+    SGCore::CoreMain::onInit += onInitSlot;
+    SGCore::CoreMain::getFixedTimer().onUpdate += onFixedUpdateSlot;
+    SGCore::CoreMain::getRenderTimer().onUpdate += onUpdateSlot;
 }
 
 SG_NOMANGLING SG_DLEXPORT void editorGeneratedCodeExit()
 {
-    SGCore::Scene::getOnEntitySerializeEvent<SGCore::Serde::FormatType::JSON>() -= onEntitySerialize<SGCore::Serde::FormatType::JSON>;
-    SGCore::Scene::getOnEntityDeserializeEvent<SGCore::Serde::FormatType::JSON>() -= onEntityDeserialize<SGCore::Serde::FormatType::JSON>;
-    SGCore::Scene::getOnSystemSerializeEvent<SGCore::Serde::FormatType::JSON>() -= onSystemSerialize<SGCore::Serde::FormatType::JSON>;
-    SGCore::Scene::getOnSystemDeserializeEvent<SGCore::Serde::FormatType::JSON>() -= onSystemDeserialize<SGCore::Serde::FormatType::JSON>;
+    SGCore::Scene::getOnEntitySerializeEvent<SGCore::Serde::FormatType::JSON>() -= onEntitySerializeSlot<SGCore::Serde::FormatType::JSON>;
+    SGCore::Scene::getOnEntityDeserializeEvent<SGCore::Serde::FormatType::JSON>() -= onEntityDeserializeSlot<SGCore::Serde::FormatType::JSON>;
+    SGCore::Scene::getOnSystemSerializeEvent<SGCore::Serde::FormatType::JSON>() -= onSystemSerializeSlot<SGCore::Serde::FormatType::JSON>;
+    SGCore::Scene::getOnSystemDeserializeEvent<SGCore::Serde::FormatType::JSON>() -= onSystemDeserializeSlot<SGCore::Serde::FormatType::JSON>;
     // TODO: supporting BSON and YAML
     /*SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::BSON>() -= onEntitySave<SGCore::Serde::FormatType::BSON>;
     SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::YAML>() -= onEntitySave<SGCore::Serde::FormatType::YAML>;*/
 
-    SGE::SungearEngineEditor::getInstance()->getMainView()->getInspectorView()->onRenderBody -= onInspectorViewRender;
+    SGE::SungearEngineEditor::getInstance()->getMainView()->getInspectorView()->onRenderBody -= onInspectorViewRenderSlot;
 
-    SGCore::CoreMain::onInit -= onInit;
-    SGCore::CoreMain::getFixedTimer().onUpdate -= fixedUpdate;
-    SGCore::CoreMain::getRenderTimer().onUpdate -= update;
+    SGCore::CoreMain::onInit -= onInitSlot;
+    SGCore::CoreMain::getFixedTimer().onUpdate -= onFixedUpdateSlot;
+    SGCore::CoreMain::getRenderTimer().onUpdate -= onUpdateSlot;
 }

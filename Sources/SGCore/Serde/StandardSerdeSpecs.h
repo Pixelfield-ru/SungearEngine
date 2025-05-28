@@ -70,6 +70,8 @@
 #include "SGCore/Animation/MotionPlannerConnection.h"
 #include "SGCore/Animation/MotionPlannersResolver.h"
 
+#include "SGCore/Main/Config.h"
+
 // =========================================================================================
 // STANDARD SerdeSpec IMPLEMENTATIONS
 // =========================================================================================
@@ -3072,6 +3074,69 @@ void SGCore::Serde::SerdeSpec<SGCore::EntityRef, TFormatType>::deserialize(SGCor
 
 namespace SGCore::Serde
 {
+    template<FormatType TFormatType>
+    struct SerdeSpec<LoadablePluginConfig, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::LoadablePluginConfig";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<LoadablePluginConfig, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().addMember("m_pluginName", valueView.m_data->m_pluginName);
+            valueView.getValueContainer().addMember("m_pluginPath", valueView.m_data->m_pluginPath);
+            valueView.getValueContainer().addMember("m_pluginEntryArgs", valueView.m_data->m_pluginEntryArgs);
+            valueView.getValueContainer().addMember("m_pluginCMakeBuildDir", valueView.m_data->m_pluginCMakeBuildDir);
+        }
+
+        static void deserialize(DeserializableValueView<LoadablePluginConfig, TFormatType>& valueView)
+        {
+            auto m_pluginName = valueView.getValueContainer().template getMember<std::string>("m_pluginName");
+            if(m_pluginName)
+            {
+                valueView.m_data->m_pluginName = std::move(*m_pluginName);
+            }
+
+            auto m_pluginPath = valueView.getValueContainer().template getMember<InterpolatedPath>("m_pluginPath");
+            if(m_pluginPath)
+            {
+                valueView.m_data->m_pluginPath = std::move(*m_pluginPath);
+            }
+
+            auto m_pluginEntryArgs = valueView.getValueContainer().template getMember<std::vector<std::string>>("m_pluginEntryArgs");
+            if(m_pluginEntryArgs)
+            {
+                valueView.m_data->m_pluginEntryArgs = std::move(*m_pluginEntryArgs);
+            }
+
+            auto m_pluginCMakeBuildDir = valueView.getValueContainer().template getMember<std::string>("m_pluginCMakeBuildDir");
+            if(m_pluginCMakeBuildDir)
+            {
+                valueView.m_data->m_pluginCMakeBuildDir = std::move(*m_pluginCMakeBuildDir);
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<Config, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::Config";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<Config, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().addMember("m_loadablePlugins", valueView.m_data->m_loadablePlugins);
+        }
+
+        static void deserialize(DeserializableValueView<Config, TFormatType>& valueView)
+        {
+            auto m_loadablePlugins = valueView.getValueContainer().template getMember<std::vector<LoadablePluginConfig>>("m_loadablePlugins");
+            if(m_loadablePlugins)
+            {
+                valueView.m_data->m_loadablePlugins = std::move(*m_loadablePlugins);
+            }
+        }
+    };
+
     template<typename T, FormatType TFormatType>
     struct SerdeSpec<std::unique_ptr<T>, TFormatType> : BaseTypes<>, DerivedTypes<>
     {
@@ -3641,7 +3706,7 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     struct SerdeSpec<InterpolatedPath, TFormatType> : BaseTypes<>, DerivedTypes<>
     {
-        static inline const std::string type_name = "InterpolatedPath";
+        static inline const std::string type_name = "SGCore::InterpolatedPath";
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<InterpolatedPath, TFormatType>& valueView)
