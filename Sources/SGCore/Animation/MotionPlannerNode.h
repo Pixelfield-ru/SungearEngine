@@ -48,6 +48,9 @@ namespace SGCore
         /// Minimum blend factor. Helpful for blending root nodes.
         float m_staticBlendFactor = 0.0f;
 
+        /// Called when animation ends.
+        Ref<IAction<void(MotionPlannerNode& thisNode)>> onEnd;
+
         [[nodiscard]] Ref<MotionPlannerNode> copyStructure() const noexcept;
 
         [[nodiscard]] SGCORE_EXPORT static Ref<MotionPlannerNode> createNode() noexcept;

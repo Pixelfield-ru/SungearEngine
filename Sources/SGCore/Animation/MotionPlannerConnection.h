@@ -24,7 +24,7 @@ namespace SGCore
         // parent node is playing (m_isPlaying == true) and active (m_isActive == true)
         // 2) if not connected to other node as child (it means that this node is root),
         // then calls if this node is playing (m_isPlaying == true) and active (m_isActive == true)
-        Ref<IAction<bool>> m_activationAction = MakeRef<AlwaysTrueAction>();
+        Ref<IAction<bool()>> m_activationAction = MakeRef<AlwaysTrueAction>();
 
         bool m_doNotInterruptWhenInactive = true;
 

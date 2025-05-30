@@ -31,10 +31,10 @@ void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double&
 
         if(!ownTransform.m_blockRotation)
         {
-            ownTransform.m_yawPitchRoll.x +=
+            ownTransform.m_yawPitchRoll.x -=
                     (float) mainListener->getCursorPositionDeltaY() *
                     controllable3D.m_rotationSensitive;
-            ownTransform.m_yawPitchRoll.y +=
+            ownTransform.m_yawPitchRoll.y -=
                     (float) mainListener->getCursorPositionDeltaX() *
                     controllable3D.m_rotationSensitive;
         }
@@ -67,11 +67,11 @@ void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double&
         }
         if(mainListener->keyboardKeyDown(KeyboardKey::KEY_A))
         {
-            ownTransform.m_position -= finalTransform.m_right * finalCameraSpeed * finalDt;
+            ownTransform.m_position += finalTransform.m_right * finalCameraSpeed * finalDt;
         }
         if(mainListener->keyboardKeyDown(KeyboardKey::KEY_D))
         {
-            ownTransform.m_position += finalTransform.m_right * finalCameraSpeed * finalDt;
+            ownTransform.m_position -= finalTransform.m_right * finalCameraSpeed * finalDt;
         }
 
         if(mainListener->keyboardKeyReleased(KeyboardKey::KEY_ESCAPE))

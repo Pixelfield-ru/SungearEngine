@@ -10,7 +10,7 @@
 
 namespace SGCore
 {
-    struct KeyboardKeyReleasedAction : IAction<bool>
+    struct KeyboardKeyReleasedAction : IAction<bool()>
     {
         KeyboardKey m_key = KeyboardKey::KEY_FIRST;
 
@@ -19,9 +19,12 @@ namespace SGCore
             return InputManager::getMainInputListener()->keyboardKeyReleased(m_key);
         }
 
-        Ref<IAction<bool>> copy() noexcept final
+        Ref<IAction> copy() noexcept final
         {
-            return MakeRef<KeyboardKeyDownAction>();
+            auto newAction = MakeRef<KeyboardKeyDownAction>();
+            newAction->m_key = m_key;
+
+            return newAction;
         }
     };
 }

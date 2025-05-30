@@ -67,14 +67,17 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
             {
                 if(node->m_isRepeated)
                 {
-                    // node->m_currentAnimationTime -= node->m_skeletalAnimation->m_duration;
-                    node->m_currentAnimationTime = 0.0f;
-                    // node->m_currentAnimationTime = std::fmod(node->m_currentAnimationTime, node->m_skeletalAnimation->m_duration);
+                    node->m_currentAnimationTime = 1.0f;
                 }
                 else
                 {
                     node->m_currentAnimationTime = node->m_skeletalAnimation->m_duration - 1;
                     node->m_isPaused = true;
+
+                    if(node->onEnd)
+                    {
+                        node->onEnd->execute(*node);
+                    }
                 }
             }
 
@@ -345,8 +348,10 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
 
     currentEntityTransform->m_isAnimated = isBoneAnimated;
 
+    auto debugRenderPass = RenderPipelinesManager::getCurrentRenderPipeline()->getRenderPass<DebugDraw>();
+
     // drawing skeleton ==============================================
-    if(currentBone)
+    if(currentBone && debugRenderPass && debugRenderPass->m_mode != DebugDrawMode::NO_DEBUG)
     {
         currentBone->m_currentPosition = (currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix)[3];
 
@@ -436,7 +441,7 @@ void SGCore::MotionPlannersResolver::collectAndUpdateNodesToInterpolate(const do
         // calling activation function to understand if this connection of currentNode is must be active
         if(previousNode &&
            previousNode->m_isActive &&
-           previousNode->m_isPlaying &&
+           // previousNode->m_isPlaying &&
            connection->m_nextNode->m_isActive &&
            isConnectionActivated)
         {

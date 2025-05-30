@@ -18,7 +18,7 @@ namespace SGCore
         KA_NONE
     };
 
-    struct KeyboardKeyAction : IAction<KeyboardKeyActionType>
+    struct KeyboardKeyAction : IAction<KeyboardKeyActionType()>
     {
         KeyboardKey m_key = KeyboardKey::KEY_FIRST;
 
@@ -40,7 +40,7 @@ namespace SGCore
             return KeyboardKeyActionType::KA_NONE;
         }
 
-        Ref<IAction<KeyboardKeyActionType>> copy() noexcept final
+        Ref<IAction> copy() noexcept final
         {
             return MakeRef<KeyboardKeyAction>();
         }

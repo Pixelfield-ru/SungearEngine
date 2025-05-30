@@ -5554,8 +5554,8 @@ namespace SGCore::Serde
         }
     };
 
-    template<typename ActionReturnT, FormatType TFormatType>
-    struct SerdeSpec<IAction<ActionReturnT>, TFormatType> :
+    template<typename ActionReturnT, typename... ExecuteArgs, FormatType TFormatType>
+    struct SerdeSpec<IAction<ActionReturnT(ExecuteArgs...)>, TFormatType> :
             BaseTypes<>,
             DerivedTypes<
                     AlwaysTrueAction,
@@ -5569,12 +5569,12 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::IAction";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<IAction<ActionReturnT>, TFormatType>& valueView)
+        static void serialize(SerializableValueView<IAction<ActionReturnT(ExecuteArgs...)>, TFormatType>& valueView)
         {
 
         }
 
-        static void deserialize(DeserializableValueView<IAction<ActionReturnT>, TFormatType>& valueView)
+        static void deserialize(DeserializableValueView<IAction<ActionReturnT(ExecuteArgs...)>, TFormatType>& valueView)
         {
 
         }
@@ -5582,7 +5582,7 @@ namespace SGCore::Serde
 
     template<FormatType TFormatType>
     struct SerdeSpec<AlwaysTrueAction, TFormatType> :
-            BaseTypes<IAction<bool>>,
+            BaseTypes<IAction<bool()>>,
             DerivedTypes<>
     {
         static inline const std::string type_name = "SGCore::AlwaysTrueAction";
@@ -5601,7 +5601,7 @@ namespace SGCore::Serde
 
     template<FormatType TFormatType>
     struct SerdeSpec<AlwaysFalseAction, TFormatType> :
-            BaseTypes<IAction<bool>>,
+            BaseTypes<IAction<bool()>>,
             DerivedTypes<>
     {
         static inline const std::string type_name = "SGCore::AlwaysFalseAction";
@@ -5620,7 +5620,7 @@ namespace SGCore::Serde
 
     template<FormatType TFormatType>
     struct SerdeSpec<KeyboardKeyAction, TFormatType> :
-            BaseTypes<IAction<KeyboardKeyActionType>>,
+            BaseTypes<IAction<KeyboardKeyActionType()>>,
             DerivedTypes<>
     {
         static inline const std::string type_name = "SGCore::KeyboardKeyAction";
@@ -5643,7 +5643,7 @@ namespace SGCore::Serde
 
     template<FormatType TFormatType>
     struct SerdeSpec<KeyboardKeyDownAction, TFormatType> :
-            BaseTypes<IAction<bool>>,
+            BaseTypes<IAction<bool()>>,
             DerivedTypes<>
     {
         static inline const std::string type_name = "SGCore::KeyboardKeyDownAction";
@@ -5666,7 +5666,7 @@ namespace SGCore::Serde
 
     template<FormatType TFormatType>
     struct SerdeSpec<KeyboardKeyPressedAction, TFormatType> :
-            BaseTypes<IAction<bool>>,
+            BaseTypes<IAction<bool()>>,
             DerivedTypes<>
     {
         static inline const std::string type_name = "SGCore::KeyboardKeyPressedAction";
@@ -5689,7 +5689,7 @@ namespace SGCore::Serde
 
     template<FormatType TFormatType>
     struct SerdeSpec<KeyboardKeyReleasedAction, TFormatType> :
-            BaseTypes<IAction<bool>>,
+            BaseTypes<IAction<bool()>>,
             DerivedTypes<>
     {
         static inline const std::string type_name = "SGCore::KeyboardKeyReleasedAction";

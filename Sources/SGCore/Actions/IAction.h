@@ -13,12 +13,17 @@ namespace SGCore
      * It is just wrapper of functions.
      * @tparam ReturnT
      */
-    template<typename ReturnT>
-    struct IAction
-    {
-        virtual ReturnT execute() = 0;
+    template<typename ReturnT, typename... ExecuteArgs>
+    struct IAction;
 
-        virtual Ref<IAction<ReturnT>> copy() = 0;
+    template<typename ReturnT, typename... ExecuteArgs>
+    struct IAction<ReturnT(ExecuteArgs...)>
+    {
+        virtual ~IAction() = default;
+
+        virtual ReturnT execute(const ExecuteArgs&... args) = 0;
+
+        virtual Ref<IAction> copy() = 0;
     };
 }
 

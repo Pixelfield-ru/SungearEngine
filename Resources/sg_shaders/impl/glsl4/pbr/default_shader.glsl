@@ -62,6 +62,10 @@ void main()
 
     bool isMeshAffectedByBones = calculateVertexPosAndNormal(positionsAttribute, normalsAttribute, totalPosition, totalNormal);
 
+    /*totalPosition.xyz = positionsAttribute;
+    totalPosition.w = 1.0;
+    totalNormal = normalsAttribute;*/
+
     if(isMeshAffectedByBones)
     {
         finalModelMatrix = mat4(1.0);

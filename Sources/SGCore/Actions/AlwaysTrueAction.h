@@ -9,14 +9,14 @@
 
 namespace SGCore
 {
-    struct AlwaysTrueAction : IAction<bool>
+    struct AlwaysTrueAction : IAction<bool()>
     {
         bool execute() noexcept final
         {
             return true;
         }
 
-        Ref<IAction<bool>> copy() noexcept final
+        Ref<IAction> copy() noexcept final
         {
             return MakeRef<AlwaysTrueAction>();
         }

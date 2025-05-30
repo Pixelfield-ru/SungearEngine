@@ -7,6 +7,7 @@
 
 #include <sgcore_export.h>
 #include <coroutine>
+#include <vector>
 
 namespace SGCore::Coro
 {

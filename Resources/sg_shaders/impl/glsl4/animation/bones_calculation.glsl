@@ -21,6 +21,7 @@ bool calculateVertexPosAndNormal(vec3 inVertexPos, vec3 inVertexNormal, out vec4
     {
         outVertexPos = vec4(inVertexPos, 1.0);
         outVertexNormal = inVertexNormal;
+        return false;
     }
 
     bool isVertexAffected = false;
@@ -58,6 +59,7 @@ bool calculateVertexPosAndNormal(vec3 inVertexPos, vec3 inVertexNormal, out vec4
         if(curBoneID >= SG_MAX_BONES_PER_MESH)
         {
             outVertexPos = vec4(inVertexPos, 1.0);
+            isVertexAffected = false;
             break;
         }
 

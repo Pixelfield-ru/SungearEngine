@@ -97,15 +97,8 @@ void SGCore::ModelAsset::processNode(const aiNode* aiNode,
 
 SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(aiMesh* aiMesh, const aiScene* aiScene, const meshes_map& inputMeshes) noexcept
 {
-    auto sgMeshData = AssetManager::getInstance()->getOrAddAssetByPath<IMeshData>(getPath() / "meshes" / aiMesh->mName.data);
-
-    sgMeshData->m_vertices.clear();
-
-    sgMeshData->m_vertices.reserve(aiMesh->mNumVertices * 3);
-
-    sgMeshData->m_verticesColors.clear();
-
     std::string meshName = aiMesh->mName.C_Str();
+
     // OMG IT IS SO FUCKING DUMMY BUT I NEED THIS TO DO RELATIONSHIPS BETWEEN BONES AND MESHES (see initAndAddBoneToSkeleton and mesh finding in it)
     // GENERATING UNIQUE NAME FOR MESH IN ALL SCENE
     if(inputMeshes.contains(meshName))
@@ -115,6 +108,15 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(aiMesh* aiMe
 
         std::cout << "not unique name... assigning new name: " << meshName << std::endl;
     }
+
+    auto sgMeshData = AssetManager::getInstance()->getOrAddAssetByPath<IMeshData>(getPath() / "meshes" / meshName);
+
+    sgMeshData->m_vertices.clear();
+
+    sgMeshData->m_vertices.reserve(aiMesh->mNumVertices * 3);
+
+    sgMeshData->m_verticesColors.clear();
+
     sgMeshData->m_name = meshName;
     
     /*sgMeshData->m_aabbMin = SGUtils::AssimpUtils::aiVectorToGLM(aiMesh->mAABB.mMin);
@@ -635,9 +637,12 @@ void SGCore::ModelAsset::initAndAddBoneToSkeleton(AssetRef<Bone>& skeletonBone,
 
             if(weight.m_weight != 0.0f)
             {
-                meshBoneData.m_affectedMesh->m_vertices[weight.m_vertexIdx].addWeightData(weight.m_weight,
-                                                                                          skeletonBone->m_id);
-                meshBoneData.m_weights.push_back(weight);
+                if(weight.m_vertexIdx < meshBoneData.m_affectedMesh->m_vertices.size())
+                {
+                    meshBoneData.m_affectedMesh->m_vertices[weight.m_vertexIdx].addWeightData(weight.m_weight,
+                                                                                              skeletonBone->m_id);
+                    meshBoneData.m_weights.push_back(weight);
+                }
             }
 
         }
