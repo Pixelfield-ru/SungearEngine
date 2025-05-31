@@ -20,7 +20,7 @@ SGE::SungearEngineEditor::~SungearEngineEditor()
 
 std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>& args)
 {
-    SGCore::PathInterpolationMarkup::getGlobalMarkup()["sgEditorPath"] = getLocalPath();
+    SGCore::PathInterpolationMarkupSpec::setKey("sgEditorPath", getLocalPath());
 
     ImGui::SetCurrentContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());
     ImGuizmo::SetImGuiContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());

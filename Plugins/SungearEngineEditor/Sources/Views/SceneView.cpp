@@ -288,7 +288,9 @@ void SGE::SceneView::acceptFilesFromDirectoryExplorer() noexcept
 
 void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) const noexcept
 {
-    const SGCore::InterpolatedPath relativeModelPath = std::filesystem::relative(modelPath, SGCore::PathInterpolationMarkup::getGlobalMarkup()["projectPath"]);
+    std::cout << "project path: " << *SGCore::PathInterpolationMarkupData::getByKey("projectPath") << std::endl;
+
+    const SGCore::InterpolatedPath relativeModelPath = std::filesystem::relative(modelPath, *SGCore::PathInterpolationMarkupData::getByKey("projectPath"));
     auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${projectPath}" / relativeModelPath);
 
     if(!modelAsset)

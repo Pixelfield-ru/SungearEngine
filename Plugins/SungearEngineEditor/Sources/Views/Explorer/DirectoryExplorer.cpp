@@ -38,7 +38,7 @@ SGE::DirectoryExplorer::DirectoryExplorer()
         if(SungearEngineEditor::getInstance()->getMainView()
                    ->getTopToolbarView()->m_fileCreateDialog->m_ext == ".sgmat" && !canceled)
         {
-            const SGCore::InterpolatedPath interpolatedPath = std::filesystem::relative(byPath, SGCore::PathInterpolationMarkup::getGlobalMarkup()["projectPath"]);
+            const SGCore::InterpolatedPath interpolatedPath = std::filesystem::relative(byPath, *SGCore::PathInterpolationMarkupData::getByKey("projectPath"));
             auto createdMaterial = SGCore::AssetManager::getInstance()->getOrAddAssetByPath<SGCore::IMaterial>("${projectPath}" / interpolatedPath);
 
             const std::string serializedMaterialRef = SGCore::Serde::Serializer::toFormat(createdMaterial);

@@ -70,7 +70,7 @@ void SGCore::CoreMain::start()
         s_sungearEngineRootPath = sungearEngineRootPath;
     }
 
-    PathInterpolationMarkup::getGlobalMarkup()["enginePath"] = s_sungearEngineRootPath;
+    PathInterpolationMarkupSpec::setKey("enginePath", s_sungearEngineRootPath);
 
     std::cout << "core init" << std::endl;
 

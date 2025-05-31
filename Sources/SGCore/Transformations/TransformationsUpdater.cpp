@@ -54,7 +54,7 @@ void SGCore::TransformationsUpdater::update(const double& dt, const double& fixe
 
     // =======================================================================
 
-    transformsView.each([&registry, &notTransformUpdatedEntities, &notTransformUpdatedEntitiesSet, this](const ECS::entity_t& entity, Transform::reg_t transform) {
+    transformsView.each([&registry, &notTransformUpdatedEntities, &notTransformUpdatedEntitiesSet, this](ECS::entity_t entity, Transform::reg_t transform) {
         auto& entityBaseInfo = registry->get<EntityBaseInfo>(entity);
         Ref<Transform> parentTransform;
         Ref<Rigidbody3D> rigidbody3D;

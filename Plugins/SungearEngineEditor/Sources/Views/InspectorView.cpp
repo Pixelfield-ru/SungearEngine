@@ -6,6 +6,7 @@
 #include <imgui_internal.h>
 #include "InspectorView.h"
 #include <SGCore/Render/RenderPipelinesManager.h>
+#include <SGCore/Scene/Scene.h>
 
 bool SGE::InspectorView::begin()
 {
@@ -34,8 +35,24 @@ void SGE::InspectorView::renderBody()
         ImGui::Text("Render pass '%s' execution time: %f", typeid(*renderPass).name(), renderPass->getExecutionTime());
     }
 
+    if(SGCore::Scene::getCurrentScene())
+    {
+        ImGui::Separator();
+
+        ImGui::Text("Scene systems");
+
+        for(const auto& system : SGCore::Scene::getCurrentScene()->getAllSystems())
+        {
+            ImGui::Text("System '%s'. 'update' execution time: %f, 'parallelUpdate' execution time: %f, 'fixedUpdate' execution time: %f",
+                typeid(*system).name(),
+                system->m_executionTimes["update"],
+                system->m_executionTimes["parallelUpdate"],
+                system->m_executionTimes["fixedUpdate"]);
+        }
+    }
+
     ImGui::End();
-    
+
     ImGui::PopStyleVar(2);
 }
 

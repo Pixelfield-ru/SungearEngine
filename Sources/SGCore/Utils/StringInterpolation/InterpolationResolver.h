@@ -12,16 +12,51 @@
 
 namespace SGCore
 {
+    template<typename>
+    struct InterpolationMarkupSpec;
+
     template<typename T>
-    struct SGCORE_EXPORT InterpolationMarkup
+    struct InterpolationMarkupData
     {
-        static SG_NOINLINE auto& getGlobalMarkup() noexcept
+        template<typename>
+        friend struct InterpolationMarkupSpec;
+
+        static SG_NOINLINE const auto& getGlobalMarkup() noexcept
         {
             return s_globalMarkup;
         }
 
+        static const T* getByKey(const std::string& key) noexcept
+        {
+            auto it = s_globalMarkup.find(key);
+            if (it == s_globalMarkup.end()) return nullptr;
+
+            return &it->second;
+        }
+
     private:
-        static inline std::unordered_map<std::string, T> s_globalMarkup;
+        SGCORE_EXPORT static inline std::unordered_map<std::string, T> s_globalMarkup;
+    };
+
+    template<typename T>
+    struct InterpolationMarkupSpec
+    {
+        static_assert(always_false<T>::value, "Implement InterpolationMarkupSpec for this type!");
+
+        /// Required.
+        static void setKey(const std::string& key, const T& value) noexcept
+        {
+
+        }
+    };
+
+    template<>
+    struct InterpolationMarkupSpec<std::filesystem::path>
+    {
+        static void setKey(const std::string& key, const std::filesystem::path& asValue) noexcept
+        {
+            InterpolationMarkupData<std::filesystem::path>::s_globalMarkup[key] = Utils::normalizePath(asValue);
+        }
     };
 
     template<typename T>
@@ -37,7 +72,7 @@ namespace SGCore
     {
         [[nodiscard]] static std::filesystem::path resolve(const std::filesystem::path& raw) noexcept
         {
-            const auto& globalMarkup = InterpolationMarkup<std::filesystem::path>::getGlobalMarkup();
+            const auto& globalMarkup = InterpolationMarkupData<std::filesystem::path>::getGlobalMarkup();
 
             std::filesystem::path output;
             const std::string rawAsString = Utils::toUTF8(raw.u16string());
@@ -98,7 +133,7 @@ namespace SGCore
     {
         [[nodiscard]] static std::string resolve(const std::string& raw) noexcept
         {
-            const auto& globalMarkup = InterpolationMarkup<std::string>::getGlobalMarkup();
+            const auto& globalMarkup = InterpolationMarkupData<std::string>::getGlobalMarkup();
 
             std::string output;
 
@@ -153,7 +188,8 @@ namespace SGCore
         }
     };
 
-    using PathInterpolationMarkup = InterpolationMarkup<std::filesystem::path>;
+    using PathInterpolationMarkupSpec = InterpolationMarkupSpec<std::filesystem::path>;
+    using PathInterpolationMarkupData = InterpolationMarkupData<std::filesystem::path>;
     using PathInterpolationResolver = InterpolationResolver<std::filesystem::path>;
     using StringInterpolationResolver = InterpolationResolver<std::string>;
 }
