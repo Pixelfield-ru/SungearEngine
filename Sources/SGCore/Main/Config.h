@@ -17,6 +17,8 @@ namespace SGCore
         InterpolatedPath m_pluginPath;
         std::vector<std::string> m_pluginEntryArgs;
         std::string m_pluginCMakeBuildDir;
+
+        bool m_enabled = true;
     };
 
     struct Config

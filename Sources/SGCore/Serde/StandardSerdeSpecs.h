@@ -3086,6 +3086,7 @@ namespace SGCore::Serde
             valueView.getValueContainer().addMember("m_pluginPath", valueView.m_data->m_pluginPath);
             valueView.getValueContainer().addMember("m_pluginEntryArgs", valueView.m_data->m_pluginEntryArgs);
             valueView.getValueContainer().addMember("m_pluginCMakeBuildDir", valueView.m_data->m_pluginCMakeBuildDir);
+            valueView.getValueContainer().addMember("m_enabled", valueView.m_data->m_enabled);
         }
 
         static void deserialize(DeserializableValueView<LoadablePluginConfig, TFormatType>& valueView)
@@ -3112,6 +3113,12 @@ namespace SGCore::Serde
             if(m_pluginCMakeBuildDir)
             {
                 valueView.m_data->m_pluginCMakeBuildDir = std::move(*m_pluginCMakeBuildDir);
+            }
+
+            auto m_enabled = valueView.getValueContainer().template getMember<bool>("m_enabled");
+            if(m_enabled)
+            {
+                valueView.m_data->m_enabled = *m_enabled;
             }
         }
     };

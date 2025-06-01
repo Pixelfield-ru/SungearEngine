@@ -4,8 +4,8 @@ struct ProgramData
 {
     vec2 windowSize;
     vec2 primaryMonitorSize;
-    float currentTime;
     float p0;
+    float currentTime;
 };
 
 struct ObjectTransform

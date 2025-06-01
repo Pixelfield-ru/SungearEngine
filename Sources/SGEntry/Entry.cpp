@@ -79,6 +79,8 @@ void coreInit()
     {
         for(const auto& loadablePluginConfig : loadedConfig.m_loadablePlugins)
         {
+            if(!loadablePluginConfig.m_enabled) continue;
+
             SGCore::PluginsManager::loadPlugin(loadablePluginConfig.m_pluginName,
                                                loadablePluginConfig.m_pluginPath.resolved(),
                                                loadablePluginConfig.m_pluginEntryArgs,

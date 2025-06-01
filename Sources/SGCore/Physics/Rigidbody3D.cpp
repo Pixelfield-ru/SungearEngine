@@ -2,6 +2,9 @@
 // Created by ilya on 19.02.24.
 //
 #include "Rigidbody3D.h"
+
+#include <BulletCollision/CollisionShapes/btCompoundShape.h>
+
 #include "PhysicsWorld3D.h"
 #include "BulletCollision/CollisionShapes/btEmptyShape.h"
 
@@ -12,9 +15,9 @@ SGCore::Rigidbody3D::Rigidbody3D(const SGCore::Ref<PhysicsWorld3D>& parentWorld)
     btTransform initialTransform;
     initialTransform.setIdentity();
     m_state = MakeRef<btDefaultMotionState>(initialTransform);
-    m_shape = MakeRef<btEmptyShape>();
+    m_finalShape = MakeRef<btCompoundShape>();
     btRigidBody::btRigidBodyConstructionInfo constructionInfo =
-            btRigidBody::btRigidBodyConstructionInfo(1, m_state.get(), m_shape.get(), btVector3(0, 0, 0));
+            btRigidBody::btRigidBodyConstructionInfo(1, m_state.get(), m_finalShape.get(), btVector3(0, 0, 0));
     m_body = MakeRef<btRigidBody>(constructionInfo);
     m_body->setFlags(m_body->getFlags() |  btCollisionObject::CF_STATIC_OBJECT);
     
@@ -49,16 +52,54 @@ SGCore::Rigidbody3D::~Rigidbody3D()
     }
 }
 
-void SGCore::Rigidbody3D::setShape(const SGCore::Ref<btCollisionShape>& shape) noexcept
+/*void SGCore::Rigidbody3D::setShape(const SGCore::Ref<btCollisionShape>& shape) noexcept
 {
     m_shape = shape;
     
     m_body->setCollisionShape(m_shape.get());
+}*/
+
+SGCore::Ref<const btCompoundShape> SGCore::Rigidbody3D::getFinalShape() const noexcept
+{
+    return m_finalShape;
 }
 
-SGCore::Ref<btCollisionShape>& SGCore::Rigidbody3D::getShape() noexcept
+void SGCore::Rigidbody3D::addShape(const btTransform& shapeTransform, const Ref<btCollisionShape>& shape) noexcept
 {
-    return m_shape;
+    m_shapes.push_back(shape);
+
+    m_finalShape->addChildShape(shapeTransform, shape.get());
+}
+
+void SGCore::Rigidbody3D::removeShape(const Ref<btCollisionShape>& shape) noexcept
+{
+    size_t i = 0;
+    for(; i < m_shapes.size(); ++i)
+    {
+        const auto& s = m_shapes[i];
+
+        if(s == shape)
+        {
+            m_finalShape->removeChildShapeByIndex(i);
+            break;
+        }
+    }
+
+    m_shapes.erase(m_shapes.begin() + i);
+}
+
+void SGCore::Rigidbody3D::removeAllShapes() noexcept
+{
+    m_shapes.clear();
+    for(int i = m_finalShape->getNumChildShapes() - 1; i >= 0; --i)
+    {
+        m_finalShape->removeChildShapeByIndex(i);
+    }
+}
+
+size_t SGCore::Rigidbody3D::getShapesCount() const noexcept
+{
+    return m_shapes.size();
 }
 
 void SGCore::Rigidbody3D::setParentWorld(const SGCore::Ref<SGCore::PhysicsWorld3D>& world) noexcept

@@ -48,6 +48,10 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 		endif ()
 	endif()
 
+	if(MSVC)
+		set(CXX_COMPILER_FLAGS "${CXX_COMPILER_FLAGS} /EHsc")
+	endif()
+
 	message("cxx compiler flags: ${CXX_COMPILER_FLAGS}, C compiler flags: ${C_COMPILER_FLAGS}")
 
 	set(CMAKE_CXX_FLAGS ${CXX_COMPILER_FLAGS})

@@ -29,6 +29,7 @@
 #include "SGCore/Physics/PhysicsWorld3D.h"
 
 #include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
+#include <BulletCollision/CollisionShapes/btCompoundShape.h>
 
 #ifdef PLATFORM_OS_WINDOWS
 #ifdef __cplusplus
@@ -105,7 +106,9 @@ void createBallAndApplyImpulse(const glm::vec3& spherePos,
             scene->getSystem<SGCore::PhysicsWorld3D>()));
 
     SGCore::Ref<btSphereShape> sphereRigidbody3DShape = SGCore::MakeRef<btSphereShape>(1.0);
-    sphereRigidbody3D->setShape(sphereRigidbody3DShape);
+    btTransform sphereShapeTransform;
+    sphereShapeTransform.setIdentity();
+    sphereRigidbody3D->addShape(sphereShapeTransform, sphereRigidbody3DShape);
     sphereRigidbody3D->m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
     sphereRigidbody3D->m_bodyFlags.addFlag(btCollisionObject::CF_DYNAMIC_OBJECT);
     sphereRigidbody3D->m_body->setRestitution(0.9);
@@ -129,11 +132,17 @@ void regenerateTerrainPhysicalMesh(SGCore::ECS::entity_t terrainEntity)
     auto& terrainMesh = scene->getECSRegistry()->get<SGCore::Mesh>(terrainEntity);
     auto& terrainRigidbody = scene->getECSRegistry()->get<SGCore::Rigidbody3D>(terrainEntity);
 
+    terrainRigidbody->removeFromWorld();
+
     // generating terrain physical mesh
     SGCore::Terrain::generatePhysicalMesh(terrainComponent, terrainMesh, 5);
 
     SGCore::Ref<btBvhTriangleMeshShape> terrainRigidbodyShape = SGCore::MakeRef<btBvhTriangleMeshShape>(terrainMeshData->m_physicalMesh.get(), true);
-    terrainRigidbody->setShape(terrainRigidbodyShape);
+    btTransform terrainShapeTransform;
+    terrainShapeTransform.setIdentity();
+    terrainRigidbody->removeAllShapes();
+    terrainRigidbody->addShape(terrainShapeTransform, terrainRigidbodyShape);
+
     terrainRigidbody->reAddToWorld();
 }
 
@@ -326,7 +335,9 @@ void coreInit()
     SGCore::Terrain::generatePhysicalMesh(terrainComponent, terrainMesh, 10);
 
     SGCore::Ref<btBvhTriangleMeshShape> terrainRigidbodyShape = SGCore::MakeRef<btBvhTriangleMeshShape>(terrainMeshData->m_physicalMesh.get(), true);
-    terrainRigidbody->setShape(terrainRigidbodyShape);
+    btTransform terrainShapeTransform;
+    terrainShapeTransform.setIdentity();
+    terrainRigidbody->addShape(terrainShapeTransform, terrainRigidbodyShape);
     btScalar mass = 0.0f;
     btVector3 inertia(0, 0, 0);
     terrainRigidbody->m_body->setMassProps(mass, inertia);

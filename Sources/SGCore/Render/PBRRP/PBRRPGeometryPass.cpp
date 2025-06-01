@@ -77,6 +77,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
         if(m_shader)
         {
             m_shader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+            m_shader->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
         }
         
         LayeredFrameReceiver* cameraLayeredFrameReceiver = registry->tryGet<LayeredFrameReceiver>(cameraEntity);
@@ -205,6 +206,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
         if(m_shader)
         {
             m_shader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+            m_shader->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
         }
         
         LayeredFrameReceiver* cameraLayeredFrameReceiver = registry->tryGet<LayeredFrameReceiver>(cameraEntity);
@@ -251,6 +253,7 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
         {
             shaderToUse->bind();
             shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+            shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
         }
         
         {
@@ -363,6 +366,7 @@ void SGCore::PBRRPGeometryPass::renderTerrainMesh(const Ref<ECS::registry_t>& re
         {
             shaderToUse->bind();
             shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+            shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
         }
 
         {

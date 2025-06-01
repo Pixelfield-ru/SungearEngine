@@ -72,7 +72,9 @@ void createBallAndApplyImpulse(const glm::vec3& spherePos,
             testScene->getSystem<SGCore::PhysicsWorld3D>()));
 
     SGCore::Ref<btSphereShape> sphereRigidbody3DShape = SGCore::MakeRef<btSphereShape>(1.0);
-    sphereRigidbody3D->setShape(sphereRigidbody3DShape);
+    btTransform shapeTransform;
+    shapeTransform.setIdentity();
+    sphereRigidbody3D->addShape(shapeTransform, sphereRigidbody3DShape);
     sphereRigidbody3D->m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
     sphereRigidbody3D->m_bodyFlags.addFlag(btCollisionObject::CF_DYNAMIC_OBJECT);
     sphereRigidbody3D->m_body->setRestitution(0.9);
@@ -217,7 +219,9 @@ void coreInit()
     auto playerRigidbody3D = testScene->getECSRegistry()->emplace<Rigidbody3D>(playerEntities[0],
                                                                                     MakeRef<Rigidbody3D>(testScene->getSystem<PhysicsWorld3D>()));
     SGCore::Ref<btBoxShape> playerRigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(1.0, 1.8, 1.0));
-    playerRigidbody3D->setShape(playerRigidbody3DShape);
+    btTransform playerShapeTransform;
+    playerShapeTransform.setIdentity();
+    playerRigidbody3D->addShape(playerShapeTransform, playerRigidbody3DShape);
     playerRigidbody3D->m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
     playerRigidbody3D->m_bodyFlags.addFlag(btCollisionObject::CF_DYNAMIC_OBJECT);
     playerRigidbody3D->m_body->setRestitution(0.1);
@@ -251,11 +255,12 @@ void coreInit()
         MakeRef<Rigidbody3D>(testScene->getSystem<PhysicsWorld3D>()));
 
     SGCore::Ref<btBoxShape> floorRigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(250, 1, 250.0));
-    floorRigidbody3D->setShape(floorRigidbody3DShape);
-    floorRigidbody3D->m_body->setMassProps(100000000.0, btVector3(0, 0, 0));
-    floorRigidbody3D->m_body->setRestitution(0.9);
-    playerRigidbody3D->m_bodyFlags.addFlag(btCollisionObject::CF_STATIC_OBJECT);
-    // playerRigidbody3D->m_bodyFlags.addFlag(btCollisionObject::CF_KINEMATIC_OBJECT);
+    btTransform floorShapeTransform;
+    btScalar floorMass = 0.0f;
+    btVector3 floorInertia(0, 0, 0);
+    floorRigidbody3D->m_body->setMassProps(floorMass, floorInertia);
+    floorShapeTransform.setIdentity();
+    floorRigidbody3D->addShape(floorShapeTransform, floorRigidbody3DShape);
     floorRigidbody3D->reAddToWorld();
 
     // creating quad model for drawing camera framebuffer attachment to screen ======================================

@@ -5,6 +5,7 @@
 #ifndef SUNGEARENGINE_RIGIDBODY3D_H
 #define SUNGEARENGINE_RIGIDBODY3D_H
 
+#include <BulletCollision/CollisionShapes/btCompoundShape.h>
 #include <SGCore/pch.h>
 
 #include "SGCore/Main/CoreGlobals.h"
@@ -21,7 +22,8 @@ namespace SGCore
         Ref<btRigidBody> m_body;
         
     private:
-        Ref<btCollisionShape> m_shape;
+        std::vector<Ref<btCollisionShape>> m_shapes;
+        Ref<btCompoundShape> m_finalShape;
         
     public:
         Rigidbody3D(const Ref<PhysicsWorld3D>& physicsWorld);
@@ -33,16 +35,12 @@ namespace SGCore
         Ref<btMotionState> m_state;
         Marker<int> m_bodyFlags;
         
-        void setShape(const Ref<btCollisionShape>& shape) noexcept;
-        
-        [[nodiscard]] Ref<btCollisionShape>& getShape() noexcept;
-        
-        template<typename ShapeT>
-        requires(std::is_base_of_v<btCollisionShape, ShapeT>)
-        [[nodiscard]] Ref<ShapeT> getShapeAs() const noexcept
-        {
-            return std::dynamic_pointer_cast<ShapeT>(m_shape);
-        }
+        [[nodiscard]] Ref<const btCompoundShape> getFinalShape() const noexcept;
+
+        void addShape(const btTransform& shapeTransform, const Ref<btCollisionShape>& shape) noexcept;
+        void removeShape(const Ref<btCollisionShape>& shape) noexcept;
+        void removeAllShapes() noexcept;
+        size_t getShapesCount() const noexcept;
         
         void setParentWorld(const Ref<PhysicsWorld3D>& world) noexcept;
         [[nodiscard]] Weak<PhysicsWorld3D> getParentPhysicsWorld() const noexcept;

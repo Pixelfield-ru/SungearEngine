@@ -121,6 +121,8 @@ void SGE::SceneView::renderBody()
                 }
                 else if(camera3D && pickedEntity != entt::null)
                 {
+                    auto inspectorView = SungearEngineEditor::getInstance()->getMainView()->getInspectorView();
+
                     auto& entityBaseInfo =
                             currentEditorScene->m_scene->getECSRegistry()->get<SGCore::EntityBaseInfo::reg_t>(pickedEntity);
 
@@ -150,6 +152,8 @@ void SGE::SceneView::renderBody()
                             m_entitiesManipulator.m_isWholeModelPicking = false;
 
                             entityBaseInfo.m_outlineColor = SGCore::EntityBaseInfo::s_outlineColor0;
+
+                            inspectorView->m_currentChosenEntity = pickedEntity;
                         }
                         else
                         {
@@ -164,6 +168,8 @@ void SGE::SceneView::renderBody()
                             }
                             m_entitiesManipulator.m_manipulatingEntities.insert(rootEntity);
                             m_entitiesManipulator.m_isWholeModelPicking = true;
+
+                            inspectorView->m_currentChosenEntity = rootEntity;
                         }
                     }
                     else

@@ -13,6 +13,7 @@
 #include "sg_shaders/impl/glsl4/color_correction/filmic.glsl"
 #include "sg_shaders/impl/glsl4/color_correction/neutral.glsl"
 #include "sg_shaders/impl/glsl4/uniform_bufs_decl.glsl"
+#include "sg_shaders/impl/glsl4/random.glsl"
 
 // ===================================================
 // !! - TO GET INDICES OF ALL LAYERS USE UNIFORM ARRAY 'SGPP_LayersIndices' (UNIFORM INT)
@@ -45,7 +46,7 @@ const float EPSILON = 0.00001f;
 
 out vec4 fragColor;
 
-uniform float u_FogDensity = 0.0005;
+uniform float u_FogDensity = 0.05;
 
 vec3 Uncharted2Tonemap(vec3 x)
 {
@@ -86,6 +87,21 @@ vec3 applyFog(in vec3 col,   // color of pixel
     return mix(col, fogColor, fogAmount);
 }
 
+vec2 sampleOffset(int i) {
+    // Можно использовать фиксированный набор оффсетов
+    const vec2 offsets[8] = vec2[](
+    vec2(-0.375, -0.375),
+    vec2( 0.375, -0.375),
+    vec2(-0.375,  0.375),
+    vec2( 0.375,  0.375),
+    vec2(-0.125, -0.125),
+    vec2( 0.125, -0.125),
+    vec2(-0.125,  0.125),
+    vec2( 0.125,  0.125)
+    );
+    return offsets[i % 8];
+}
+
 void main()
 {
     vec2 finalUV = vs_UVAttribute.xy;
@@ -115,7 +131,7 @@ void main()
             // vec4 layerColor = texelFetch(SGPP_LayersColors, texelCoord, 0);
             vec4 layerColor = texture(SGPP_LayersColors, finalUV);
 
-            vec4 STColor = vec4(0.0, 0.0, 0.0, 0.0);
+            vec4 STColor = texture(SGPP_LayersSTColor, finalUV);
 
             vec2 STColorTexSize = vec2(0.0, 0.0);
 
@@ -123,6 +139,45 @@ void main()
                 ivec2 tmpSize = textureSize(SGPP_LayersSTColor, 0);
                 STColorTexSize = vec2(float(tmpSize.x), float(tmpSize.y));
             }
+
+            /*vec3 accumulated = vec3(0.0);
+            int samples = 16;
+            float sampledSamples = 0.0;
+
+            for (int i = 0; i < samples; ++i)
+            {
+                vec2 jitteredUV = finalUV + sampleOffset(i) * 0.001;
+                float alpha = texture(SGPP_LayersSTColor, jitteredUV).a;
+                float randVal = random(gl_FragCoord.xy + vec2(i));
+
+                if (randVal <= alpha)
+                {
+                    accumulated += texture(SGPP_LayersSTColor, jitteredUV).rgb;
+                    sampledSamples += 1.0;
+                }
+            }
+
+            if(sampledSamples > 0.0) accumulated /= sampledSamples;*/
+
+            STColor.a = 0.0;
+
+            int samples = 16;
+            float sampledSamples = 0.01;
+
+            for(int i = 0; i < samples; ++i)
+            {
+                vec2 jitteredUV = finalUV + sampleOffset(i) * 0.001;
+                float randVal = random(gl_FragCoord.xy + programData.currentTime);
+                float alpha = texture(SGPP_LayersSTColor, jitteredUV).a;
+
+                if (randVal <= alpha)
+                {
+                    STColor.a += alpha;
+                    sampledSamples += 1.0;
+                }
+            }
+
+            STColor.a /= sampledSamples;
 
             // STColor.rgba = gaussianBlur(SGPP_LayersSTColor, gl_FragCoord.xy / STColorTexSize).rgba;
 
@@ -134,6 +189,7 @@ void main()
             // layerColor.rgb = ACESTonemap(layerColor.rgb);
 
             fragColor = vec4(layerColor.rgb * (1.0 - STColor.a) + STColor.rgb * (STColor.a), 1.0);
+            // fragColor = vec4(layerColor.rgb + accumulated, 1.0);
 
             vec3 fragPos = texture(u_GBufferWorldPos, finalUV).xyz;
 
@@ -147,13 +203,14 @@ void main()
 
             float fogFactor = fogFactorDist;*/
 
-            float exposure = 0.7;
-            // fragColor.rgb = ACESTonemap(fragColor.rgb, exposure);
+            /*float exposure = 1.0;
+            fragColor.rgb = ACESTonemap(fragColor.rgb, exposure);*/
 
             // fragColor.rgb = ToneMap_Uncharted2(fragColor.rgb);
 
-            vec3 viewDir = normalize(fragPos - camera.position);
-            // fragColor.rgb = applyFog(fragColor.rgb, distance(fragPos, camera.position), viewDir, atmosphere.sunPosition);
+            /*vec3 viewDir = normalize(fragPos - camera.position);
+            fragColor.rgb = applyFog(fragColor.rgb, distance(fragPos, camera.position), viewDir, atmosphere.sunPosition);*/
+            // fragColor.rgb = fragPos;
         }
     }
 }

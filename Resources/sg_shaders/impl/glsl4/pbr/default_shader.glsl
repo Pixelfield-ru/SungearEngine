@@ -446,11 +446,17 @@ void main()
     // todo: make
     // if(u_isStochasticTransparencyEnabled) // todo: impl
     {
-        if(calculateStochasticTransparencyComponents(finalCol.rgb, diffuseColor.a, layerSTColor, layerColor, vsIn.UV, u_isTransparentPass))
+        bool isSTNotPassed = calculateStochasticTransparencyComponents(finalCol.rgb, diffuseColor.a, layerSTColor, layerColor, vsIn.UV, u_isTransparentPass);
+
+        // gl_SampleMask[0] = coverage;
+
+        if(isSTNotPassed)
         {
             discard;
         }
     }
+
+
 
     // discard;
 

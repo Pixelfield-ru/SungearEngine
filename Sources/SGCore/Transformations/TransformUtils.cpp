@@ -50,9 +50,13 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
         const glm::vec3& column2 = childOwnTransform.m_rotationMatrix[1];
         const glm::vec3& column3 = childOwnTransform.m_rotationMatrix[2];
 
-        childOwnTransform.m_up = glm::vec3(column1.y, column2.y, column3.y);
+        childOwnTransform.m_right = column1;             // X ось
+        childOwnTransform.m_up = column2;             // Y ось
+        childOwnTransform.m_forward = -column3;
+
+        /*childOwnTransform.m_up = glm::vec3(column1.y, column2.y, column3.y);
         childOwnTransform.m_forward = -glm::vec3(column1.z, column2.z, column3.z);
-        childOwnTransform.m_right = glm::vec3(column1.x, column2.x, column3.x);
+        childOwnTransform.m_right = glm::vec3(column1.x, column2.x, column3.x);*/
 
         childOwnTransform.m_lastRotation = childOwnTransform.m_rotation;
 
