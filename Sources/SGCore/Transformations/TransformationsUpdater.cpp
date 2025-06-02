@@ -90,8 +90,12 @@ void SGCore::TransformationsUpdater::update(const double& dt, const double& fixe
             {
                 auto& rigidbody3DTransform = rigidbody3D->m_body->getWorldTransform();
 
+                const auto noScaleMatrix = glm::mat4(glm::mat3(finalTransform.m_animatedModelMatrix));
+
                 rigidbody3DTransform.setIdentity();
-                rigidbody3DTransform.setFromOpenGLMatrix(&finalTransform.m_animatedModelMatrix[0][0]);
+                rigidbody3DTransform.setOrigin({ finalTransform.m_position.x, finalTransform.m_position.y, finalTransform.m_position.z });
+                rigidbody3DTransform.setRotation({ finalTransform.m_rotation.x, finalTransform.m_rotation.y, finalTransform.m_rotation.z, finalTransform.m_rotation.w });
+                // rigidbody3DTransform.setFromOpenGLMatrix(&noScaleMatrix[0][0]);
             }
 
             // =====================================================================

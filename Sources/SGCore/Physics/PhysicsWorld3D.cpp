@@ -3,14 +3,10 @@
 //
 #include "PhysicsWorld3D.h"
 
-#include <glm/gtx/rotate_vector.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
-#include <glm/gtx/quaternion.hpp>
 
 #include "PhysicsDebugDraw.h"
 #include "Rigidbody3D.h"
-#include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
 #include "SGCore/Threading/WrappedObject.h"
@@ -18,7 +14,6 @@
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Transformations/TransformUtils.h"
-#include "SGCore/Utils/Math/GLMExt.h"
 
 SGCore::PhysicsWorld3D::PhysicsWorld3D()
 {
@@ -137,11 +132,15 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
         glm::decompose(rigidbody3DMatrix, scale, rotation, translation, skew,
                        perspective);
 
+        std::cout << "trying to change transform by physics for entity " << std::to_underlying(e) << std::endl;
+
         if(rotation != transform->m_ownTransform.m_rotation ||
            translation != transform->m_ownTransform.m_position)
         {
             transform->m_ownTransform.m_position = translation;
             transform->m_ownTransform.m_rotation = rotation;
+
+            std::cout << "transform changed by physics for entity " << std::to_underlying(e) << std::endl;
 
             TransformUtils::calculateTransform(*transform, parentTransform.get());
 

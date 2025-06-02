@@ -109,14 +109,12 @@ void createBallAndApplyImpulse(const glm::vec3& spherePos,
     btTransform sphereShapeTransform;
     sphereShapeTransform.setIdentity();
     sphereRigidbody3D->addShape(sphereShapeTransform, sphereRigidbody3DShape);
-    sphereRigidbody3D->m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
-    sphereRigidbody3D->m_bodyFlags.addFlag(btCollisionObject::CF_DYNAMIC_OBJECT);
+    sphereRigidbody3D->setType(SGCore::PhysicalObjectType::OT_DYNAMIC);
     sphereRigidbody3D->m_body->setRestitution(0.9);
     btScalar mass = 100.0f;
     btVector3 inertia(0, 0, 0);
     sphereRigidbody3D->m_body->getCollisionShape()->calculateLocalInertia(mass, inertia);
     sphereRigidbody3D->m_body->setMassProps(mass, inertia);
-    sphereRigidbody3D->updateFlags();
     sphereRigidbody3D->reAddToWorld();
 
     glm::vec3 finalImpulse = impulse;

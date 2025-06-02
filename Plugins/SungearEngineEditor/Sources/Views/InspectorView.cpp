@@ -9,6 +9,10 @@
 #include <SGCore/Render/DebugDraw.h>
 #include <SGCore/Render/RenderPipelinesManager.h>
 #include <SGCore/Scene/Scene.h>
+#include <SGCore/Physics/Rigidbody3D.h>
+#include <SGCore/Physics/PhysicsWorld3D.h>
+
+#include <BulletCollision/CollisionShapes/btBoxShape.h>
 
 bool SGE::InspectorView::begin()
 {
@@ -74,32 +78,122 @@ void SGE::InspectorView::renderBody()
     if(m_currentChosenEntity != entt::null && SGCore::Scene::getCurrentScene())
     {
         auto ecsRegistry = SGCore::Scene::getCurrentScene()->getECSRegistry();
+        auto currentScene = SGCore::Scene::getCurrentScene();
 
         ImGui::Text("Entity: %d", m_currentChosenEntity);
 
-        ImGui::Text("Components");
-
-        auto& entityBaseInfo = ecsRegistry->get<SGCore::EntityBaseInfo>(m_currentChosenEntity);
-        if(ImGui::CollapsingHeader("Entity Base Info"))
+        if(ImGui::CollapsingHeader("Components"))
         {
-            ImGui::Text("Name: %s", entityBaseInfo.getName().c_str());
-            if(entityBaseInfo.getParent() != entt::null)
+            const auto entityUnderlying = std::to_underlying(m_currentChosenEntity);
+
+            auto& entityBaseInfo = ecsRegistry->get<SGCore::EntityBaseInfo>(m_currentChosenEntity);
+            if(ImGui::CollapsingHeader("Entity Base Info"))
             {
-                auto& parentBaseInfo = ecsRegistry->get<SGCore::EntityBaseInfo>(entityBaseInfo.getParent());
-                ImGui::Text("Parent: %llu (name: %s)", entityBaseInfo.getParent(), parentBaseInfo.getName().c_str());
+                ImGui::Text("Name: %s", entityBaseInfo.getName().c_str());
+                if(entityBaseInfo.getParent() != entt::null)
+                {
+                    auto& parentBaseInfo = ecsRegistry->get<SGCore::EntityBaseInfo>(entityBaseInfo.getParent());
+                    ImGui::Text("Parent: %llu (name: %s)", entityBaseInfo.getParent(), parentBaseInfo.getName().c_str());
+                }
+                else
+                {
+                    ImGui::Text("Parent: null");
+                }
             }
-            else
+
+            auto* tmpTransform = ecsRegistry->tryGet<SGCore::Transform>(m_currentChosenEntity);
+            if(tmpTransform && ImGui::CollapsingHeader("Transform"))
             {
-                ImGui::Text("Parent: null");
+                auto& transform = *tmpTransform;
+
+                ImGui::DragFloat3("Position", &transform->m_ownTransform.m_position.x);
+                ImGui::DragFloat3("Scale", &transform->m_ownTransform.m_scale.x);
+
+                glm::vec3 euler = glm::degrees(glm::eulerAngles(transform->m_ownTransform.m_rotation));
+                if(ImGui::DragFloat3("Rotation", &euler.x))
+                {
+                    transform->m_ownTransform.m_rotation = glm::quat(glm::radians(euler));
+                }
+            }
+
+            auto* tmpRigidbody3D = ecsRegistry->tryGet<SGCore::Rigidbody3D>(m_currentChosenEntity);
+            if(tmpRigidbody3D && ImGui::CollapsingHeader("Rigidbody3D"))
+            {
+                auto& rigidbody = *tmpRigidbody3D;
+
+                ImGui::BeginGroup();
+
+                ImGui::Text("Rigidbody type");
+
+                if(ImGui::RadioButton("Static", rigidbody->getType() == SGCore::PhysicalObjectType::OT_STATIC))
+                {
+                    rigidbody->setType(SGCore::PhysicalObjectType::OT_STATIC);
+                }
+                if(ImGui::RadioButton("Dynamic", rigidbody->getType() == SGCore::PhysicalObjectType::OT_DYNAMIC))
+                {
+                    rigidbody->setType(SGCore::PhysicalObjectType::OT_DYNAMIC);
+                    rigidbody->reAddToWorld();
+                }
+                if(ImGui::RadioButton("Kinematic", rigidbody->getType() == SGCore::PhysicalObjectType::OT_KINEMATIC))
+                {
+                    rigidbody->setType(SGCore::PhysicalObjectType::OT_KINEMATIC);
+                }
+
+                ImGui::EndGroup();
+
+                ImGui::Text("Body mass");
+                ImGui::SameLine();
+                btScalar bodyMass = rigidbody->m_body->getMass();
+                if(ImGui::DragFloat(fmt::format("##BodyMass_{}", entityUnderlying).c_str(), &bodyMass))
+                {
+                    btVector3 localInertia(0, 0, 0);
+                    rigidbody->m_body->getCollisionShape()->calculateLocalInertia(bodyMass, localInertia);
+                    rigidbody->m_body->setMassProps(bodyMass, localInertia);
+                    rigidbody->reAddToWorld();
+                    /*for(const auto& shape : rigidbody->getShapes())
+                    {
+                        btVector3 shapeInertia;
+                        shape->calculateLocalInertia(bodyMass, shapeInertia);
+                    }*/
+                }
+
+                for(size_t i = 0; i < rigidbody->getShapesCount(); ++i)
+                {
+                    if(ImGui::CollapsingHeader(fmt::format("Shape {}", i).c_str()))
+                    {
+                        auto& shape = rigidbody->getShapes()[i];
+                        auto& shapeTransform = rigidbody->getShapeTransform(i);
+                        ImGui::Text("Shape pos");
+                        ImGui::DragFloat3(fmt::format("##ShapePos_{}_{}", entityUnderlying, i).c_str(), shapeTransform.getOrigin().m_floats);
+                        // ImGui::DragFloat3("Shape rotation", shapeTransform.getRotation().m_floats);
+                    }
+                }
+
+                if(ImGui::Button("Add Box Shape"))
+                {
+                    auto boxShape = SGCore::MakeRef<btBoxShape>(btVector3(1, 1, 1));
+                    btTransform boxTransform;
+                    boxTransform.setIdentity();
+                    rigidbody->addShape(boxTransform, boxShape);
+                    rigidbody->reAddToWorld();
+                }
             }
         }
 
-        auto* tmpTransform = ecsRegistry->tryGet<SGCore::Transform>(m_currentChosenEntity);
-        if(tmpTransform != nullptr && ImGui::CollapsingHeader("Transform"))
+        if(ImGui::Button("Add Transform"))
         {
-            auto& transform = *tmpTransform;
+            if(!ecsRegistry->allOf<SGCore::Transform>(m_currentChosenEntity))
+            {
+                ecsRegistry->emplace<SGCore::Transform>(m_currentChosenEntity);
+            }
+        }
 
-            ImGui::DragFloat3("Position", &transform->m_ownTransform.m_position.x);
+        if(ImGui::Button("Add Rigidbody3D"))
+        {
+            if(!ecsRegistry->allOf<SGCore::Rigidbody3D>(m_currentChosenEntity))
+            {
+                ecsRegistry->emplace<SGCore::Rigidbody3D>(m_currentChosenEntity, SGCore::MakeRef<SGCore::Rigidbody3D>(currentScene->getSystem<SGCore::PhysicsWorld3D>()));
+            }
         }
     }
 

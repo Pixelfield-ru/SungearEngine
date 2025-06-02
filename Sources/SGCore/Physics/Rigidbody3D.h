@@ -11,6 +11,7 @@
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/Marker.h"
 #include "SGCore/ECS/Component.h"
+#include "Common.h"
 
 namespace SGCore
 {
@@ -21,10 +22,6 @@ namespace SGCore
     public:
         Ref<btRigidBody> m_body;
         
-    private:
-        std::vector<Ref<btCollisionShape>> m_shapes;
-        Ref<btCompoundShape> m_finalShape;
-        
     public:
         Rigidbody3D(const Ref<PhysicsWorld3D>& physicsWorld);
         Rigidbody3D(const Rigidbody3D& other) noexcept = default;
@@ -33,7 +30,6 @@ namespace SGCore
         ~Rigidbody3D();
         
         Ref<btMotionState> m_state;
-        Marker<int> m_bodyFlags;
         
         [[nodiscard]] Ref<const btCompoundShape> getFinalShape() const noexcept;
 
@@ -41,12 +37,17 @@ namespace SGCore
         void removeShape(const Ref<btCollisionShape>& shape) noexcept;
         void removeAllShapes() noexcept;
         size_t getShapesCount() const noexcept;
-        
+        [[nodiscard]] const std::vector<Ref<btCollisionShape>>& getShapes() const noexcept;
+
+        [[nodiscard]] btTransform& getShapeTransform(size_t index) noexcept;
+        [[nodiscard]] const btTransform& getShapeTransform(size_t index) const noexcept;
+
         void setParentWorld(const Ref<PhysicsWorld3D>& world) noexcept;
         [[nodiscard]] Weak<PhysicsWorld3D> getParentPhysicsWorld() const noexcept;
-        
-        void updateFlags() noexcept;
-        
+
+        void setType(PhysicalObjectType type) noexcept;
+        PhysicalObjectType getType() const noexcept;
+
         void reAddToWorld() const noexcept;
         void removeFromWorld() const noexcept;
         
@@ -54,7 +55,11 @@ namespace SGCore
         Rigidbody3D& operator=(Rigidbody3D&& other) noexcept = default;
         
     private:
+        std::vector<Ref<btCollisionShape>> m_shapes;
+        Ref<btCompoundShape> m_finalShape;
         Weak<PhysicsWorld3D> m_parentPhysicsWorld;
+
+        PhysicalObjectType m_type = PhysicalObjectType::OT_STATIC;
     };
 }
 

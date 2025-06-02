@@ -19,11 +19,10 @@ SGCore::Rigidbody3D::Rigidbody3D(const SGCore::Ref<PhysicsWorld3D>& parentWorld)
     btRigidBody::btRigidBodyConstructionInfo constructionInfo =
             btRigidBody::btRigidBodyConstructionInfo(1, m_state.get(), m_finalShape.get(), btVector3(0, 0, 0));
     m_body = MakeRef<btRigidBody>(constructionInfo);
-    m_body->setFlags(m_body->getFlags() |  btCollisionObject::CF_STATIC_OBJECT);
-    
-    m_bodyFlags.m_flags |= m_body->getFlags();
     
     parentWorld->addBody(m_body);
+
+    setType(m_type);
 }
 
 SGCore::Rigidbody3D::~Rigidbody3D()
@@ -102,6 +101,21 @@ size_t SGCore::Rigidbody3D::getShapesCount() const noexcept
     return m_shapes.size();
 }
 
+const std::vector<SGCore::Ref<btCollisionShape>>& SGCore::Rigidbody3D::getShapes() const noexcept
+{
+    return m_shapes;
+}
+
+btTransform& SGCore::Rigidbody3D::getShapeTransform(size_t index) noexcept
+{
+    return m_finalShape->getChildTransform(index);
+}
+
+const btTransform& SGCore::Rigidbody3D::getShapeTransform(size_t index) const noexcept
+{
+    return m_finalShape->getChildTransform(index);
+}
+
 void SGCore::Rigidbody3D::setParentWorld(const SGCore::Ref<SGCore::PhysicsWorld3D>& world) noexcept
 {
     auto lockedWorld = m_parentPhysicsWorld.lock();
@@ -123,9 +137,54 @@ SGCore::Weak<SGCore::PhysicsWorld3D> SGCore::Rigidbody3D::getParentPhysicsWorld(
     return m_parentPhysicsWorld;
 }
 
-void SGCore::Rigidbody3D::updateFlags() noexcept
+void SGCore::Rigidbody3D::setType(PhysicalObjectType type) noexcept
 {
-    m_body->setFlags(m_bodyFlags.m_flags);
+    switch(m_type)
+    {
+        case PhysicalObjectType::OT_DYNAMIC:
+        {
+            m_body->setFlags(m_body->getFlags() & ~btCollisionObject::CF_DYNAMIC_OBJECT);
+            break;
+        }
+        case PhysicalObjectType::OT_STATIC:
+        {
+            m_body->setFlags(m_body->getFlags() & ~btCollisionObject::CF_STATIC_OBJECT);
+            break;
+        }
+        case PhysicalObjectType::OT_KINEMATIC:
+        {
+            m_body->setFlags(m_body->getFlags() & ~btCollisionObject::CF_KINEMATIC_OBJECT);
+            break;
+        }
+    }
+
+    m_type = type;
+
+    switch(m_type)
+    {
+        case PhysicalObjectType::OT_DYNAMIC:
+        {
+            m_body->setFlags(m_body->getFlags() | btCollisionObject::CF_DYNAMIC_OBJECT);
+            break;
+        }
+        case PhysicalObjectType::OT_STATIC:
+        {
+            m_body->setFlags(m_body->getFlags() | btCollisionObject::CF_STATIC_OBJECT);
+            m_body->setMassProps(0.0f, m_body->getLocalInertia());
+            break;
+        }
+        case PhysicalObjectType::OT_KINEMATIC:
+        {
+            m_body->setFlags(m_body->getFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+            m_body->setMassProps(0.0f, m_body->getLocalInertia());
+            break;
+        }
+    }
+}
+
+SGCore::PhysicalObjectType SGCore::Rigidbody3D::getType() const noexcept
+{
+    return m_type;
 }
 
 void SGCore::Rigidbody3D::reAddToWorld() const noexcept
