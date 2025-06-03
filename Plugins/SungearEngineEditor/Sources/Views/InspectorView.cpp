@@ -119,24 +119,27 @@ void SGE::InspectorView::renderBody()
             auto* tmpRigidbody3D = ecsRegistry->tryGet<SGCore::Rigidbody3D>(m_currentChosenEntity);
             if(tmpRigidbody3D && ImGui::CollapsingHeader("Rigidbody3D"))
             {
-                auto& rigidbody = *tmpRigidbody3D;
+                auto rigidbody = *tmpRigidbody3D;
 
                 ImGui::BeginGroup();
 
                 ImGui::Text("Rigidbody type");
 
-                if(ImGui::RadioButton("Static", rigidbody->getType() == SGCore::PhysicalObjectType::OT_STATIC))
+                if(ImGui::RadioButton(fmt::format("Static {}", entityUnderlying).c_str(), rigidbody->getType() == SGCore::PhysicalObjectType::OT_STATIC))
                 {
                     rigidbody->setType(SGCore::PhysicalObjectType::OT_STATIC);
+                    rigidbody->stop();
                 }
-                if(ImGui::RadioButton("Dynamic", rigidbody->getType() == SGCore::PhysicalObjectType::OT_DYNAMIC))
+                if(ImGui::RadioButton(fmt::format("Dynamic {}", entityUnderlying).c_str(), rigidbody->getType() == SGCore::PhysicalObjectType::OT_DYNAMIC))
                 {
                     rigidbody->setType(SGCore::PhysicalObjectType::OT_DYNAMIC);
-                    rigidbody->reAddToWorld();
+                    rigidbody->m_body->setActivationState(DISABLE_DEACTIVATION);
+                    // rigidbody->reAddToWorld();
                 }
-                if(ImGui::RadioButton("Kinematic", rigidbody->getType() == SGCore::PhysicalObjectType::OT_KINEMATIC))
+                if(ImGui::RadioButton(fmt::format("Kinematic {}", entityUnderlying).c_str(), rigidbody->getType() == SGCore::PhysicalObjectType::OT_KINEMATIC))
                 {
                     rigidbody->setType(SGCore::PhysicalObjectType::OT_KINEMATIC);
+                    rigidbody->stop();
                 }
 
                 ImGui::EndGroup();
@@ -149,7 +152,13 @@ void SGE::InspectorView::renderBody()
                     btVector3 localInertia(0, 0, 0);
                     rigidbody->m_body->getCollisionShape()->calculateLocalInertia(bodyMass, localInertia);
                     rigidbody->m_body->setMassProps(bodyMass, localInertia);
-                    rigidbody->reAddToWorld();
+                    rigidbody->m_body->activate();
+
+                    if(bodyMass == 0.0f)
+                    {
+                        rigidbody->stop();
+                    }
+                    // rigidbody->reAddToWorld();
                     /*for(const auto& shape : rigidbody->getShapes())
                     {
                         btVector3 shapeInertia;
@@ -164,18 +173,32 @@ void SGE::InspectorView::renderBody()
                         auto& shape = rigidbody->getShapes()[i];
                         auto& shapeTransform = rigidbody->getShapeTransform(i);
                         ImGui::Text("Shape pos");
-                        ImGui::DragFloat3(fmt::format("##ShapePos_{}_{}", entityUnderlying, i).c_str(), shapeTransform.getOrigin().m_floats);
+                        if(ImGui::DragFloat3(fmt::format("##ShapePos_{}_{}", entityUnderlying, i).c_str(), shapeTransform.getOrigin().m_floats, 0.1f))
+                        {
+                            rigidbody->updateShapeTransform(0);
+                        }
+
+                        if(shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
+                        {
+                            auto* boxShape = static_cast<btBoxShape*>(shape.get());
+
+                            auto boxLocalScaling = boxShape->getLocalScaling();
+                            if(ImGui::DragFloat3(fmt::format("##BoxShapeSize_{}_{}", entityUnderlying, i).c_str(), boxLocalScaling.m_floats, 0.1f, 0.001f))
+                            {
+                                boxShape->setLocalScaling(boxLocalScaling);
+                                rigidbody->updateShapeTransform(0);
+                            }
+                        }
                         // ImGui::DragFloat3("Shape rotation", shapeTransform.getRotation().m_floats);
                     }
                 }
 
                 if(ImGui::Button("Add Box Shape"))
                 {
-                    auto boxShape = SGCore::MakeRef<btBoxShape>(btVector3(1, 1, 1));
+                    auto boxShape = SGCore::MakeRef<btBoxShape>(btVector3(0.5f, 0.5f, 0.5f));
                     btTransform boxTransform;
                     boxTransform.setIdentity();
                     rigidbody->addShape(boxTransform, boxShape);
-                    rigidbody->reAddToWorld();
                 }
             }
         }

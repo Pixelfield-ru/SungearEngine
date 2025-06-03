@@ -12,6 +12,9 @@
 #include "SGCore/Utils/Marker.h"
 #include "SGCore/ECS/Component.h"
 #include "Common.h"
+#include "SGCore/Serde/Defines.h"
+
+sg_predeclare_serde()
 
 namespace SGCore
 {
@@ -19,11 +22,14 @@ namespace SGCore
 
     struct Rigidbody3D : ECS::Component<Ref<Rigidbody3D>, Ref<const Rigidbody3D>>
     {
+        sg_serde_as_friend()
+
     public:
         Ref<btRigidBody> m_body;
         
     public:
         Rigidbody3D(const Ref<PhysicsWorld3D>& physicsWorld);
+        Rigidbody3D();
         Rigidbody3D(const Rigidbody3D& other) noexcept = default;
         Rigidbody3D(Rigidbody3D&& other) noexcept = default;
         
@@ -41,6 +47,8 @@ namespace SGCore
 
         [[nodiscard]] btTransform& getShapeTransform(size_t index) noexcept;
         [[nodiscard]] const btTransform& getShapeTransform(size_t index) const noexcept;
+        void updateShapeTransform(size_t index, const btTransform& newTransform, bool recalculateLocalAABB = true) noexcept;
+        void updateShapeTransform(size_t index, bool recalculateLocalAABB = true) noexcept;
 
         void setParentWorld(const Ref<PhysicsWorld3D>& world) noexcept;
         [[nodiscard]] Weak<PhysicsWorld3D> getParentPhysicsWorld() const noexcept;
@@ -50,6 +58,8 @@ namespace SGCore
 
         void reAddToWorld() const noexcept;
         void removeFromWorld() const noexcept;
+
+        void stop() const noexcept;
         
         Rigidbody3D& operator=(const Rigidbody3D& other) noexcept = default;
         Rigidbody3D& operator=(Rigidbody3D&& other) noexcept = default;

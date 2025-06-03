@@ -33,6 +33,8 @@
 #include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
 #include <BulletCollision/CollisionShapes/btStaticPlaneShape.h>
 
+#include "SGCore/Coro/CoroScheduler.h"
+
 using namespace SGCore;
 
 // VARIABLES =================================================
@@ -47,7 +49,7 @@ Ref<Scene> testScene;
 ECS::entity_t testCameraEntity;
 ECS::entity_t testPlayerEntity;
 
-ECS::entity_t planeEntity;
+ECS::entity_t floorEntity;
 
 SGCore::Ref<SGCore::ITexture2D> attachmentToDisplay;
 SGCore::Ref<SGCore::IMeshData> quadMeshData;
@@ -211,8 +213,11 @@ void coreInit()
 
     auto playerTransform = testScene->getECSRegistry()->get<Transform>(playerEntities[0]);
 
-    playerTransform->m_ownTransform.m_position = { 0.8f, 10.0f, 0.0f };
+    playerTransform->m_ownTransform.m_position = { 300, 10.0f, 0.0f };
     playerTransform->m_ownTransform.m_scale = { 1.0f, 1.8f, 1.0f };
+
+    auto playerRigidbody3D = testScene->getECSRegistry()->emplace<Rigidbody3D>(testPlayerEntity,
+                                                                                        MakeRef<Rigidbody3D>(testScene->getSystem<PhysicsWorld3D>()));
 
     // creating rigidbody and box shape for player
     /*auto playerRigidbody3D = testScene->getECSRegistry()->emplace<Rigidbody3D>(playerEntities[0],
@@ -242,6 +247,8 @@ void coreInit()
         }
     );
 
+    floorEntity = floorEntities[0];
+
     auto floorTransform = testScene->getECSRegistry()->get<Transform>(floorEntities[0]);
 
     floorTransform->m_ownTransform.m_scale = { 250.0f, 1.0f, 250.0f };
@@ -253,11 +260,7 @@ void coreInit()
 
     // floorRigidbody3D->removeFromWorld();
 
-    SGCore::Ref<btBoxShape> floorRigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(250.0, 1.0, 250.0));
-    btTransform floorShapeTransform;
-    floorShapeTransform.setIdentity();
-    floorRigidbody3D->addShape(floorShapeTransform, floorRigidbody3DShape);
-    floorRigidbody3D->reAddToWorld();
+    // floorRigidbody3D->reAddToWorld();
 
     // creating quad model for drawing camera framebuffer attachment to screen ======================================
 
@@ -293,8 +296,70 @@ void coreInit()
     quadMeshData->prepare();
 }
 
+SGCore::Coro::Task<> addMass(SGCore::Rigidbody3D::reg_t rigidbody3D)
+{
+    using namespace std::chrono_literals;
+
+    co_await 1s;
+
+    btScalar mass = 70.0f;
+    btVector3 inertia(0, 0, 0);
+    rigidbody3D->m_body->getCollisionShape()->calculateLocalInertia(mass, inertia);
+    rigidbody3D->m_body->setMassProps(mass, inertia);
+}
+
 void onUpdate(const double& dt, const double& fixedDt)
 {
+    if(InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_5))
+    {
+        auto playerRigidbody3D = testScene->getECSRegistry()->get<Rigidbody3D>(testPlayerEntity);
+
+        SGCore::Ref<btBoxShape> playerRigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(0.5, 0.5, 0.5));
+        btTransform playerShapeTransform;
+        playerShapeTransform.setIdentity();
+        playerRigidbody3D->addShape(playerShapeTransform, playerRigidbody3DShape);
+
+        // playerRigidbody3D->m_body->setRestitution(0.1);
+
+        // addMass(playerRigidbody3D).run();
+        static auto c = [playerRigidbody3D]() -> SGCore::Coro::Task<> {
+            using namespace std::chrono_literals;
+
+            co_await 4s;
+
+            playerRigidbody3D->setType(SGCore::PhysicalObjectType::OT_DYNAMIC);
+
+            btScalar mass = 1.0f;
+            btVector3 inertia(0, 0, 0);
+            playerRigidbody3D->m_body->getCollisionShape()->calculateLocalInertia(mass, inertia);
+            playerRigidbody3D->m_body->setMassProps(mass, inertia);
+
+            playerRigidbody3D->m_body->activate();
+        };
+
+        c().run();
+
+        auto floorRigidbody3D = testScene->getECSRegistry()->get<Rigidbody3D>(floorEntity);
+
+        SGCore::Ref<btBoxShape> floorRigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(1.0, 1.0, 1.0));
+        btTransform floorShapeTransform;
+        floorShapeTransform.setIdentity();
+        // floorShapeTransform.getOrigin().m_floats[0] = 100;
+        floorRigidbody3D->addShape(floorShapeTransform, floorRigidbody3DShape);
+
+        floorRigidbody3D->getShapeTransform(0).setOrigin(btVector3(100, 0, 0));
+        floorRigidbody3DShape->setLocalScaling({ 250, 1, 250 });
+
+        floorRigidbody3D->updateShapeTransform(0);
+
+        // floorRigidbody3D->m_body->activate();
+        floorRigidbody3D->stop();
+        /*btScalar mass = 70.0f;
+        btVector3 inertia(0, 0, 0);
+        playerRigidbody3D->m_body->getCollisionShape()->calculateLocalInertia(mass, inertia);
+        playerRigidbody3D->m_body->setMassProps(mass, inertia);*/
+    }
+
     if (Scene::getCurrentScene())
     {
         Scene::getCurrentScene()->update(dt, fixedDt);
@@ -334,22 +399,6 @@ void onUpdate(const double& dt, const double& fixedDt)
     {
         auto& cameraTransform = testScene->getECSRegistry()->get<SGCore::Transform>(testCameraEntity);
         createBallAndApplyImpulse(cameraTransform->m_ownTransform.m_position, cameraTransform->m_ownTransform.m_forward * 200000.0f / 10.0f);
-    }
-
-    if(InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_5))
-    {
-        auto playerRigidbody3D = testScene->getECSRegistry()->emplace<Rigidbody3D>(testPlayerEntity,
-                                                                                    MakeRef<Rigidbody3D>(testScene->getSystem<PhysicsWorld3D>()));
-        SGCore::Ref<btBoxShape> playerRigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(1.0, 1.8, 1.0));
-        btTransform playerShapeTransform;
-        playerShapeTransform.setIdentity();
-        // playerRigidbody3D->addShape(playerShapeTransform, playerRigidbody3DShape);
-        playerRigidbody3D->setType(SGCore::PhysicalObjectType::OT_DYNAMIC);
-        // playerRigidbody3D->m_body->setRestitution(0.1);
-        btScalar mass = 70.0f;
-        btVector3 inertia(0, 0, 0);
-        playerRigidbody3D->m_body->getCollisionShape()->calculateLocalInertia(mass, inertia);
-        playerRigidbody3D->m_body->setMassProps(mass, inertia);
     }
 }
 

@@ -5,6 +5,8 @@
 #ifndef SUNGEARENGINE_STANDARDSERDESPECS_H
 #define SUNGEARENGINE_STANDARDSERDESPECS_H
 
+#include <BulletCollision/CollisionShapes/btBoxShape.h>
+
 #include "Serde.h"
 #include <glm/glm.hpp>
 
@@ -71,6 +73,7 @@
 #include "SGCore/Animation/MotionPlannersResolver.h"
 
 #include "SGCore/Main/Config.h"
+#include "SGCore/Physics/Rigidbody3D.h"
 
 // =========================================================================================
 // STANDARD SerdeSpec IMPLEMENTATIONS
@@ -93,7 +96,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::UniqueNameWrapper, TFormatType> :
     static inline const std::string type_name = "SGCore::UniqueNameWrapper";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::UniqueNameWrapper, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::UniqueNameWrapper, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::UniqueNameWrapper, TFormatType>& valueView) noexcept;
 };
@@ -115,7 +118,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::ShaderTextureBinding, TFormatType> :
     static inline const std::string type_name = "SGCore::ShaderTextureBinding";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::ShaderTextureBinding, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::ShaderTextureBinding, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::ShaderTextureBinding, TFormatType>& valueView) noexcept;
 };
@@ -136,7 +139,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::ShaderDefine, TFormatType> :
     static inline const std::string type_name = "SGCore::ShaderDefine";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::ShaderDefine, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::ShaderDefine, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::ShaderDefine, TFormatType>& valueView) noexcept;
 };
@@ -157,7 +160,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::EntityRef, TFormatType> :
     static inline const std::string type_name = "SGCore::EntityRef";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::EntityRef, TFormatType>& valueView,
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::EntityRef, TFormatType>& valueView,
                           const ECS::entity_t& deserializedEntity,
                           ECS::registry_t& toRegistry) noexcept;
 
@@ -183,12 +186,378 @@ struct SGCore::Serde::SerdeSpec<SGCore::AudioSource, TFormatType> :
     static inline const std::string type_name = "SGCore::AudioSource";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::AudioSource, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::AudioSource, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::AudioSource, TFormatType>& valueView) noexcept;
 };
 // =================================================================================
 
+
+
+// SERDE FORWARD DECL FOR struct 'SGCore::Rigidbody3D'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+struct SGCore::Serde::SerdeSpec<SGCore::Rigidbody3D, TFormatType> :
+        SGCore::Serde::BaseTypes<
+
+                                >,
+        SGCore::Serde::DerivedTypes<
+                                   >
+{
+    static inline const std::string type_name = "SGCore::Rigidbody3D";
+    static inline constexpr bool is_pointer_type = false;
+
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::Rigidbody3D, TFormatType>& valueView) noexcept;
+
+    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::Rigidbody3D, TFormatType>& valueView) noexcept;
+};
+// =================================================================================
+
+// SERDE FORWARD DECL FOR struct 'btBoxShape'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+struct SGCore::Serde::SerdeSpec<btBoxShape, TFormatType> :
+        SGCore::Serde::BaseTypes<
+            btCollisionShape
+                                >,
+        SGCore::Serde::DerivedTypes<
+
+                                   >
+{
+    static inline const std::string type_name = "btBoxShape";
+    static inline constexpr bool is_pointer_type = false;
+
+    static void serialize(SGCore::Serde::SerializableValueView<const btBoxShape, TFormatType>& valueView,
+                          const btTransform& shapeTransform,
+                          const Rigidbody3D& parentRigidbody3D) noexcept;
+
+    static void deserialize(SGCore::Serde::DeserializableValueView<btBoxShape, TFormatType>& valueView,
+                            btTransform& shapeTransform,
+                            Rigidbody3D& parentRigidbody3D) noexcept;
+
+    static btBoxShape* allocateObject() noexcept
+    {
+        // shitty because can not pass constructor args
+        return new btBoxShape(btVector3(0.5f, 0.5f, 0.5f));
+    }
+};
+
+
+// SERDE FORWARD DECL FOR struct 'btCompoundShape'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+struct SGCore::Serde::SerdeSpec<btCompoundShape, TFormatType> :
+        SGCore::Serde::BaseTypes<
+            btCollisionShape
+                                >,
+        SGCore::Serde::DerivedTypes<
+
+                                   >
+{
+    static inline const std::string type_name = "btCompoundShape";
+    static inline constexpr bool is_pointer_type = false;
+
+    static void serialize(SGCore::Serde::SerializableValueView<const btCompoundShape, TFormatType>& valueView,
+                          const btTransform& shapeTransform,
+                          const Rigidbody3D& parentRigidbody3D) noexcept;
+
+    static void deserialize(SGCore::Serde::DeserializableValueView<btCompoundShape, TFormatType>& valueView,
+                            btTransform& shapeTransform,
+                            Rigidbody3D& parentRigidbody3D) noexcept;
+};
+
+
+// SERDE FORWARD DECL FOR struct 'btCollisionShape'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+struct SGCore::Serde::SerdeSpec<btCollisionShape, TFormatType> :
+        SGCore::Serde::BaseTypes<
+
+                                >,
+        SGCore::Serde::DerivedTypes<
+            btBoxShape,
+            btCompoundShape
+                                   >
+{
+    static inline const std::string type_name = "btCollisionShape";
+    static inline constexpr bool is_pointer_type = false;
+
+    template<typename... SharedDataT>
+    static void serialize(SGCore::Serde::SerializableValueView<const btCollisionShape, TFormatType>& valueView, SharedDataT&&...) noexcept;
+
+    template<typename... SharedDataT>
+    static void deserialize(SGCore::Serde::DeserializableValueView<btCollisionShape, TFormatType>& valueView, SharedDataT&&...) noexcept;
+
+    template<typename... SharedDataT>
+    static void serialize(SGCore::Serde::SerializableValueView<const btCollisionShape, TFormatType>& valueView, const btTransform& shapeTransform, SharedDataT&&...) noexcept;
+
+    template<typename... SharedDataT>
+    static void deserialize(SGCore::Serde::DeserializableValueView<btCollisionShape, TFormatType>& valueView, btTransform& shapeTransform, SharedDataT&&...) noexcept;
+};
+
+
+// SERDE FOR struct 'btTransform'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+struct SGCore::Serde::SerdeSpec<btTransform, TFormatType> :
+        SGCore::Serde::BaseTypes<
+
+                                >,
+        SGCore::Serde::DerivedTypes<
+
+                                   >
+{
+    static inline const std::string type_name = "btTransform";
+    static inline constexpr bool is_pointer_type = false;
+
+    static void serialize(SGCore::Serde::SerializableValueView<const btTransform, TFormatType>& valueView) noexcept
+    {
+        valueView.getValueContainer().addMember("m_origin", valueView.m_data->getOrigin());
+
+        valueView.getValueContainer().addMember("m_rotation", valueView.m_data->getRotation());
+    }
+
+    static void deserialize(SGCore::Serde::DeserializableValueView<btTransform, TFormatType>& valueView) noexcept
+    {
+        const auto origin = valueView.getValueContainer().template getMember<btVector3>("m_origin");
+        if(origin)
+        {
+            valueView.m_data->setOrigin(*origin);
+        }
+
+        const auto rotation = valueView.getValueContainer().template getMember<btQuaternion>("m_rotation");
+        if(rotation)
+        {
+            valueView.m_data->setRotation(*rotation);
+        }
+    }
+};
+
+
+// SERDE FOR struct 'btVector3'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+struct SGCore::Serde::SerdeSpec<btVector3, TFormatType> :
+        SGCore::Serde::BaseTypes<
+
+                                >,
+        SGCore::Serde::DerivedTypes<
+
+                                   >
+{
+    static inline const std::string type_name = "btVector3";
+    static inline constexpr bool is_pointer_type = false;
+
+    static void serialize(SGCore::Serde::SerializableValueView<const btVector3, TFormatType>& valueView) noexcept
+    {
+        valueView.getValueContainer().addMember("x", valueView.m_data->getX());
+        valueView.getValueContainer().addMember("y", valueView.m_data->getY());
+        valueView.getValueContainer().addMember("z", valueView.m_data->getZ());
+    }
+
+    static void deserialize(SGCore::Serde::DeserializableValueView<btVector3, TFormatType>& valueView) noexcept
+    {
+        const auto x = valueView.getValueContainer().template getMember<btScalar>("x");
+        if(x)
+        {
+            valueView.m_data->setX(*x);
+        }
+
+        const auto y = valueView.getValueContainer().template getMember<btScalar>("y");
+        if(y)
+        {
+            valueView.m_data->setY(*y);
+        }
+
+        const auto z = valueView.getValueContainer().template getMember<btScalar>("z");
+        if(z)
+        {
+            valueView.m_data->setZ(*z);
+        }
+    }
+};
+
+// SERDE FOR struct 'btQuaternion'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+struct SGCore::Serde::SerdeSpec<btQuaternion, TFormatType> :
+        SGCore::Serde::BaseTypes<
+
+                                >,
+        SGCore::Serde::DerivedTypes<
+
+                                   >
+{
+    static inline const std::string type_name = "btQuaternion";
+    static inline constexpr bool is_pointer_type = false;
+
+    static void serialize(SGCore::Serde::SerializableValueView<const btQuaternion, TFormatType>& valueView) noexcept
+    {
+        valueView.getValueContainer().addMember("x", valueView.m_data->getX());
+        valueView.getValueContainer().addMember("y", valueView.m_data->getY());
+        valueView.getValueContainer().addMember("z", valueView.m_data->getZ());
+        valueView.getValueContainer().addMember("w", valueView.m_data->getW());
+    }
+
+    static void deserialize(SGCore::Serde::DeserializableValueView<btQuaternion, TFormatType>& valueView) noexcept
+    {
+        const auto x = valueView.getValueContainer().template getMember<btScalar>("x");
+        if(x)
+        {
+            valueView.m_data->setX(*x);
+        }
+
+        const auto y = valueView.getValueContainer().template getMember<btScalar>("y");
+        if(y)
+        {
+            valueView.m_data->setY(*y);
+        }
+
+        const auto z = valueView.getValueContainer().template getMember<btScalar>("z");
+        if(z)
+        {
+            valueView.m_data->setZ(*z);
+        }
+
+        const auto w = valueView.getValueContainer().template getMember<btScalar>("w");
+        if(w)
+        {
+            valueView.m_data->setW(*w);
+        }
+    }
+};
+
+
+// SERDE IMPL FOR struct 'btCompoundShape'
+// =================================================================================
+template<SGCore::Serde::FormatType TFormatType>
+void SGCore::Serde::SerdeSpec<btCompoundShape, TFormatType>::serialize(
+    SGCore::Serde::SerializableValueView<const btCompoundShape, TFormatType>& valueView,
+    const btTransform& shapeTransform,
+    const Rigidbody3D& parentRigidbody3D) noexcept
+{
+    const auto* value = valueView.m_data;
+
+    valueView.getValueContainer().setAsArray();
+
+    for(size_t i = 0; i < value->getNumChildShapes(); ++i)
+    {
+        const btCollisionShape* shape = value->getChildShape(i);
+
+        // todo: fix this. SG10
+        valueView.getValueContainer().pushBack(shape, value->getChildTransform(i), parentRigidbody3D);
+    }
+}
+
+template<SGCore::Serde::FormatType TFormatType>
+void SGCore::Serde::SerdeSpec<btCompoundShape, TFormatType>::deserialize(
+    SGCore::Serde::DeserializableValueView<btCompoundShape, TFormatType>& valueView,
+    btTransform& shapeTransform,
+    Rigidbody3D& parentRigidbody3D) noexcept
+{
+    btTransform childShapeTransform;
+
+    const auto& value = valueView.m_data;
+
+    for(auto it = valueView.getValueContainer().begin(); it != valueView.getValueContainer().end(); ++it)
+    {
+        childShapeTransform.setIdentity();
+        const auto shape = valueView.getValueContainer().template getMember<Ref<btCollisionShape>>(it, childShapeTransform, parentRigidbody3D);
+
+        if(shape)
+        {
+            parentRigidbody3D.addShape(childShapeTransform, *shape);
+        }
+    }
+}
+// =================================================================================
+
+
+// SERDE IMPL FOR struct 'btBoxShape'
+// =================================================================================
+template<SGCore::Serde::FormatType TFormatType>
+void SGCore::Serde::SerdeSpec<btBoxShape, TFormatType>::serialize(
+    SGCore::Serde::SerializableValueView<const btBoxShape, TFormatType>& valueView,
+    const btTransform& shapeTransform,
+    const Rigidbody3D& parentRigidbody3D) noexcept
+{
+
+}
+
+template<SGCore::Serde::FormatType TFormatType>
+void SGCore::Serde::SerdeSpec<btBoxShape, TFormatType>::deserialize(
+    SGCore::Serde::DeserializableValueView<btBoxShape, TFormatType>& valueView,
+    btTransform& shapeTransform,
+    Rigidbody3D& parentRigidbody3D) noexcept
+{
+
+}
+// =================================================================================
+
+
+// SERDE IMPL FOR struct 'btCollisionShape'
+// =================================================================================
+
+template<SGCore::Serde::FormatType TFormatType>
+template<typename... SharedDataT>
+void SGCore::Serde::SerdeSpec<btCollisionShape, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const btCollisionShape, TFormatType>& valueView, SharedDataT&&...) noexcept
+{
+    valueView.getValueContainer().addMember("m_localScaling", valueView.m_data->getLocalScaling());
+}
+
+template<SGCore::Serde::FormatType TFormatType>
+template<typename... SharedDataT>
+void SGCore::Serde::SerdeSpec<btCollisionShape, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<btCollisionShape, TFormatType>& valueView, SharedDataT&&...) noexcept
+{
+    const auto localScaling = valueView.getValueContainer().template getMember<btVector3>("m_localScaling");
+    if(localScaling)
+    {
+        valueView.m_data->setLocalScaling(*localScaling);
+    }
+}
+
+template<SGCore::Serde::FormatType TFormatType>
+template<typename... SharedDataT>
+void SGCore::Serde::SerdeSpec<btCollisionShape, TFormatType>::serialize(
+    SGCore::Serde::SerializableValueView<const btCollisionShape, TFormatType>& valueView,
+    const btTransform& shapeTransform,
+    SharedDataT&&... sharedData) noexcept
+{
+    serialize(valueView);
+
+    valueView.getValueContainer().addMember("m_transform", shapeTransform);
+}
+
+template<SGCore::Serde::FormatType TFormatType>
+template<typename... SharedDataT>
+void SGCore::Serde::SerdeSpec<btCollisionShape, TFormatType>::deserialize(
+    SGCore::Serde::DeserializableValueView<btCollisionShape, TFormatType>& valueView,
+    btTransform& shapeTransform,
+    SharedDataT&&... sharedData) noexcept
+{
+    deserialize(valueView);
+
+    const auto transform = valueView.getValueContainer().template getMember<btTransform>("m_transform");
+    if(transform)
+    {
+        shapeTransform = *transform;
+    }
+}
+// =================================================================================
 
 
 
@@ -207,7 +576,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::Transform, TFormatType> :
     static inline const std::string type_name = "SGCore::Transform";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::Transform, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::Transform, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::Transform, TFormatType>& valueView) noexcept;
 };
@@ -231,7 +600,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::UniqueName, TFormatType> :
     static inline const std::string type_name = "SGCore::UniqueName";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::UniqueName, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::UniqueName, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::UniqueName, TFormatType>& valueView) noexcept;
 };
@@ -256,7 +625,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::AABB<ScalarT>, TFormatType> :
     static inline const std::string type_name = "SGCore::AABB";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::AABB<ScalarT>, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::AABB<ScalarT>, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::AABB<ScalarT>, TFormatType>& valueView) noexcept;
 };
@@ -280,7 +649,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::Layer, TFormatType> :
     static inline const std::string type_name = "SGCore::Layer";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::Layer, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::Layer, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::Layer, TFormatType>& valueView) noexcept;
 };
@@ -304,7 +673,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::TransformBase, TFormatType> :
     static inline const std::string type_name = "SGCore::TransformBase";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::TransformBase, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::TransformBase, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::TransformBase, TFormatType>& valueView) noexcept;
 };
@@ -328,7 +697,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::EntityBaseInfo, TFormatType> :
     static inline const std::string type_name = "SGCore::EntityBaseInfo";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::EntityBaseInfo, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::EntityBaseInfo, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::EntityBaseInfo, TFormatType>& valueView) noexcept;
 };
@@ -350,7 +719,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::Pickable, TFormatType> :
     static inline const std::string type_name = "SGCore::Pickable";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::Pickable, TFormatType>& valueView,
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::Pickable, TFormatType>& valueView,
                           const ECS::entity_t& deserializableEntity,
                           ECS::registry_t& toRegistry) noexcept;
 
@@ -377,7 +746,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::RenderState, TFormatType> :
     static inline const std::string type_name = "SGCore::RenderState";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::RenderState, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::RenderState, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::RenderState, TFormatType>& valueView) noexcept;
 };
@@ -400,7 +769,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::MeshRenderState, TFormatType> :
     static inline const std::string type_name = "SGCore::MeshRenderState";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::MeshRenderState, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::MeshRenderState, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::MeshRenderState, TFormatType>& valueView) noexcept;
 };
@@ -423,7 +792,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::BlendingState, TFormatType> :
     static inline const std::string type_name = "SGCore::BlendingState";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::BlendingState, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::BlendingState, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::BlendingState, TFormatType>& valueView) noexcept;
 };
@@ -446,7 +815,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::RenderingBase, TFormatType> :
     static inline const std::string type_name = "SGCore::RenderingBase";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::RenderingBase, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::RenderingBase, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::RenderingBase, TFormatType>& valueView) noexcept;
 };
@@ -472,7 +841,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::Camera3D, TFormatType> :
     static inline const std::string type_name = "SGCore::Camera3D";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::Camera3D, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::Camera3D, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::Camera3D, TFormatType>& valueView) noexcept;
 };
@@ -496,7 +865,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::GizmoBase, TFormatType> :
     static inline const std::string type_name = "SGCore::GizmoBase";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::GizmoBase, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::GizmoBase, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::GizmoBase, TFormatType>& valueView) noexcept;
 };
@@ -520,7 +889,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::SphereGizmo, TFormatType> :
     static inline const std::string type_name = "SGCore::SphereGizmo";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::SphereGizmo, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::SphereGizmo, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::SphereGizmo, TFormatType>& valueView) noexcept;
 };
@@ -544,7 +913,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::BoxGizmo, TFormatType> :
     static inline const std::string type_name = "SGCore::BoxGizmo";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::BoxGizmo, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::BoxGizmo, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::BoxGizmo, TFormatType>& valueView) noexcept;
 };
@@ -568,7 +937,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::LineGizmo, TFormatType> :
     static inline const std::string type_name = "SGCore::LineGizmo";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::LineGizmo, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::LineGizmo, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::LineGizmo, TFormatType>& valueView) noexcept;
 };
@@ -592,7 +961,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::Atmosphere, TFormatType> :
     static inline const std::string type_name = "SGCore::Atmosphere";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::Atmosphere, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::Atmosphere, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::Atmosphere, TFormatType>& valueView) noexcept;
 };
@@ -616,7 +985,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::MeshBase, TFormatType> :
     static inline const std::string type_name = "SGCore::MeshBase";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::MeshBase, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::MeshBase, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::MeshBase, TFormatType>& valueView) noexcept;
 };
@@ -637,7 +1006,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::Mesh, TFormatType> :
     static inline const std::string type_name = "SGCore::Mesh";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::Mesh, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::Mesh, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::Mesh, TFormatType>& valueView) noexcept;
 };
@@ -661,7 +1030,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::AtmosphereUpdater, TFormatType> :
     static inline const std::string type_name = "SGCore::AtmosphereUpdater";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::AtmosphereUpdater, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::AtmosphereUpdater, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::AtmosphereUpdater, TFormatType>& valueView) noexcept;
 };
@@ -685,7 +1054,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::LightBase, TFormatType> :
     static inline const std::string type_name = "SGCore::LightBase";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::LightBase, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::LightBase, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::LightBase, TFormatType>& valueView) noexcept;
 };
@@ -709,7 +1078,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::Controllables3DUpdater, TFormatType> :
     static inline const std::string type_name = "SGCore::Controllables3DUpdater";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::Controllables3DUpdater, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::Controllables3DUpdater, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::Controllables3DUpdater, TFormatType>& valueView) noexcept;
 };
@@ -730,7 +1099,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::IShader, TFormatType> :
     static inline const std::string type_name = "SGCore::IShader";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::IShader, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::IShader, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::IShader, TFormatType>& valueView) noexcept;
 
@@ -757,7 +1126,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::DirectionalLight, TFormatType> :
     static inline const std::string type_name = "SGCore::DirectionalLight";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::DirectionalLight, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::DirectionalLight, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::DirectionalLight, TFormatType>& valueView) noexcept;
 };
@@ -781,7 +1150,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::PhysicsWorld3D, TFormatType> :
     static inline const std::string type_name = "SGCore::PhysicsWorld3D";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::PhysicsWorld3D, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::PhysicsWorld3D, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::PhysicsWorld3D, TFormatType>& valueView) noexcept;
 };
@@ -805,7 +1174,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::Controllable3D, TFormatType> :
     static inline const std::string type_name = "SGCore::Controllable3D";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::Controllable3D, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::Controllable3D, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::Controllable3D, TFormatType>& valueView) noexcept;
 };
@@ -829,7 +1198,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::UICamera, TFormatType> :
     static inline const std::string type_name = "SGCore::UICamera";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::UICamera, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::UICamera, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::UICamera, TFormatType>& valueView) noexcept;
 };
@@ -865,7 +1234,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::ISystem, TFormatType> :
     static inline const std::string type_name = "SGCore::ISystem";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::ISystem, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::ISystem, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::ISystem, TFormatType>& valueView) noexcept;
 };
@@ -892,7 +1261,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::IParallelSystem<ParallelSystemT>, TForma
     static inline const std::string type_name = "SGCore::IParallelSystem";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::IParallelSystem<ParallelSystemT>, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::IParallelSystem<ParallelSystemT>, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::IParallelSystem<ParallelSystemT>, TFormatType>& valueView) noexcept;
 };
@@ -916,7 +1285,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::RenderingBasesUpdater, TFormatType> :
     static inline const std::string type_name = "SGCore::RenderingBasesUpdater";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::RenderingBasesUpdater, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::RenderingBasesUpdater, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::RenderingBasesUpdater, TFormatType>& valueView) noexcept;
 };
@@ -940,7 +1309,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::DirectionalLightsUpdater, TFormatType> :
     static inline const std::string type_name = "SGCore::DirectionalLightsUpdater";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::DirectionalLightsUpdater, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::DirectionalLightsUpdater, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::DirectionalLightsUpdater, TFormatType>& valueView) noexcept;
 };
@@ -964,7 +1333,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::TransformationsUpdater, TFormatType> :
     static inline const std::string type_name = "SGCore::TransformationsUpdater";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::TransformationsUpdater, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::TransformationsUpdater, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::TransformationsUpdater, TFormatType>& valueView) noexcept;
 };
@@ -988,7 +1357,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::BoxGizmosRenderer, TFormatType> :
     static inline const std::string type_name = "SGCore::BoxGizmosRenderer";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::BoxGizmosRenderer, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::BoxGizmosRenderer, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::BoxGizmosRenderer, TFormatType>& valueView) noexcept;
 };
@@ -1012,7 +1381,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::LineGizmosRenderer, TFormatType> :
     static inline const std::string type_name = "SGCore::LineGizmosRenderer";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::LineGizmosRenderer, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::LineGizmosRenderer, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::LineGizmosRenderer, TFormatType>& valueView) noexcept;
 };
@@ -1036,7 +1405,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::SphereGizmosUpdater, TFormatType> :
     static inline const std::string type_name = "SGCore::SphereGizmosUpdater";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::SphereGizmosUpdater, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::SphereGizmosUpdater, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::SphereGizmosUpdater, TFormatType>& valueView) noexcept;
 };
@@ -1061,7 +1430,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::OctreesSolver, TFormatType> :
     static inline const std::string type_name = "SGCore::OctreesSolver";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::OctreesSolver, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::OctreesSolver, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::OctreesSolver, TFormatType>& valueView) noexcept;
 };
@@ -1087,7 +1456,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::AudioProcessor, TFormatType> :
     static inline const std::string type_name = "SGCore::AudioProcessor";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::AudioProcessor, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const SGCore::AudioProcessor, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::AudioProcessor, TFormatType>& valueView) noexcept;
 };
@@ -1104,7 +1473,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::AudioProcessor, TFormatType> :
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::UniqueNameWrapper, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::UniqueNameWrapper, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::UniqueNameWrapper, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::UniqueNameWrapper, TFormatType>& valueView) noexcept
 {
 
 
@@ -1137,7 +1506,7 @@ void SGCore::Serde::SerdeSpec<SGCore::UniqueNameWrapper, TFormatType>::deseriali
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::AudioSource, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::AudioSource, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::AudioSource, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::AudioSource, TFormatType>& valueView) noexcept
 {
 
 
@@ -1267,6 +1636,52 @@ void SGCore::Serde::SerdeSpec<SGCore::AudioSource, TFormatType>::deserialize(SGC
 // =================================================================================
 
 
+// SERDE IMPL FOR struct 'SGCore::Rigidbody3D'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+void SGCore::Serde::SerdeSpec<SGCore::Rigidbody3D, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::Rigidbody3D, TFormatType>& valueView) noexcept
+{
+    auto& valueContainer = valueView.getValueContainer();
+    auto& value = valueView.m_data;
+
+    valueContainer.addMember("m_mass", value->m_body->getMass());
+
+    const auto inertia = value->m_body->getLocalInertia();
+    valueContainer.addMember("m_inertia", glm::vec3 { inertia.x(), inertia.y(), inertia.z() });
+
+    valueContainer.addMember("m_finalShape", value->m_finalShape, btTransform {}, *valueView.m_data);
+
+    valueContainer.addMember("m_type", value->getType());
+}
+
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+void SGCore::Serde::SerdeSpec<SGCore::Rigidbody3D, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::Rigidbody3D, TFormatType>& valueView) noexcept
+{
+    const auto mass = valueView.getValueContainer().template getMember<btScalar>("m_mass");
+    const auto localInertia = valueView.getValueContainer().template getMember<btVector3>("m_inertia");
+
+    if(mass && localInertia)
+    {
+        valueView.m_data->m_body->setMassProps(*mass, *localInertia);
+    }
+
+    // deserializing final shape (compound shape)
+    btTransform finalShapeTransform; // unused
+    valueView.getValueContainer().template getMember<Ref<btCompoundShape>>("m_finalShape", finalShapeTransform, *valueView.m_data);
+
+    const auto type = valueView.getValueContainer().template getMember<PhysicalObjectType>("m_type");
+    if(type)
+    {
+        valueView.m_data->setType(*type);
+    }
+}
+
+// =================================================================================
+
 
 
 // SERDE IMPL FOR struct 'SGCore::Transform'
@@ -1274,7 +1689,7 @@ void SGCore::Serde::SerdeSpec<SGCore::AudioSource, TFormatType>::deserialize(SGC
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::Transform, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::Transform, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::Transform, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::Transform, TFormatType>& valueView) noexcept
 {
 
 
@@ -1333,7 +1748,7 @@ void SGCore::Serde::SerdeSpec<SGCore::Transform, TFormatType>::deserialize(SGCor
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::UniqueName, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::UniqueName, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::UniqueName, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::UniqueName, TFormatType>& valueView) noexcept
 {
 
 
@@ -1393,7 +1808,7 @@ template<
         typename ScalarT,
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::AABB<ScalarT>, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::AABB<ScalarT>, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::AABB<ScalarT>, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::AABB<ScalarT>, TFormatType>& valueView) noexcept
 {
 
 
@@ -1440,7 +1855,7 @@ void SGCore::Serde::SerdeSpec<SGCore::AABB<ScalarT>, TFormatType>::deserialize(S
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::Layer, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::Layer, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::Layer, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::Layer, TFormatType>& valueView) noexcept
 {
 
 
@@ -1499,7 +1914,7 @@ void SGCore::Serde::SerdeSpec<SGCore::Layer, TFormatType>::deserialize(SGCore::S
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::TransformBase, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::TransformBase, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::TransformBase, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::TransformBase, TFormatType>& valueView) noexcept
 {
 
 
@@ -1662,7 +2077,7 @@ void SGCore::Serde::SerdeSpec<SGCore::TransformBase, TFormatType>::deserialize(S
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::EntityBaseInfo, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::EntityBaseInfo, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::EntityBaseInfo, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::EntityBaseInfo, TFormatType>& valueView) noexcept
 {
     valueView.getValueContainer().addMember("m_thisEntity", valueView.m_data->getThisEntity());
 }
@@ -1687,7 +2102,7 @@ void SGCore::Serde::SerdeSpec<SGCore::EntityBaseInfo, TFormatType>::deserialize(
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::Pickable, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::Pickable, TFormatType>& valueView,
+void SGCore::Serde::SerdeSpec<SGCore::Pickable, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::Pickable, TFormatType>& valueView,
                                                                         const ECS::entity_t& deserializableEntity,
                                                                         ECS::registry_t& toRegistry) noexcept
 {
@@ -1719,7 +2134,7 @@ void SGCore::Serde::SerdeSpec<SGCore::Pickable, TFormatType>::deserialize(SGCore
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::RenderState, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::RenderState, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::RenderState, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::RenderState, TFormatType>& valueView) noexcept
 {
     valueView.getValueContainer().addMember("m_globalBlendingState", valueView.m_data->m_globalBlendingState);
 
@@ -1826,7 +2241,7 @@ void SGCore::Serde::SerdeSpec<SGCore::RenderState, TFormatType>::deserialize(SGC
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::MeshRenderState, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::MeshRenderState, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::MeshRenderState, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::MeshRenderState, TFormatType>& valueView) noexcept
 {
     valueView.getValueContainer().addMember("m_useIndices", valueView.m_data->m_useIndices);
 
@@ -1896,7 +2311,7 @@ void SGCore::Serde::SerdeSpec<SGCore::MeshRenderState, TFormatType>::deserialize
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::BlendingState, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::BlendingState, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::BlendingState, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::BlendingState, TFormatType>& valueView) noexcept
 {
     valueView.getValueContainer().addMember("m_useBlending", valueView.m_data->m_useBlending);
 
@@ -1951,7 +2366,7 @@ void SGCore::Serde::SerdeSpec<SGCore::BlendingState, TFormatType>::deserialize(S
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::RenderingBase, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::RenderingBase, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::RenderingBase, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::RenderingBase, TFormatType>& valueView) noexcept
 {
     valueView.getValueContainer().addMember("m_zFar", valueView.m_data->m_zFar);
     valueView.getValueContainer().addMember("m_fov", valueView.m_data->m_fov);
@@ -2063,7 +2478,7 @@ void SGCore::Serde::SerdeSpec<SGCore::RenderingBase, TFormatType>::deserialize(S
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::Camera3D, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::Camera3D, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::Camera3D, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::Camera3D, TFormatType>& valueView) noexcept
 {
 
 }
@@ -2085,7 +2500,7 @@ void SGCore::Serde::SerdeSpec<SGCore::Camera3D, TFormatType>::deserialize(SGCore
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::GizmoBase, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::GizmoBase, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::GizmoBase, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::GizmoBase, TFormatType>& valueView) noexcept
 {
 
 
@@ -2131,7 +2546,7 @@ void SGCore::Serde::SerdeSpec<SGCore::GizmoBase, TFormatType>::deserialize(SGCor
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::SphereGizmo, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::SphereGizmo, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::SphereGizmo, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::SphereGizmo, TFormatType>& valueView) noexcept
 {
 
 
@@ -2190,7 +2605,7 @@ void SGCore::Serde::SerdeSpec<SGCore::SphereGizmo, TFormatType>::deserialize(SGC
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::BoxGizmo, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::BoxGizmo, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::BoxGizmo, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::BoxGizmo, TFormatType>& valueView) noexcept
 {
     valueView.getValueContainer().addMember("m_base", valueView.m_data->m_base);
 
@@ -2233,7 +2648,7 @@ void SGCore::Serde::SerdeSpec<SGCore::BoxGizmo, TFormatType>::deserialize(SGCore
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::LineGizmo, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::LineGizmo, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::LineGizmo, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::LineGizmo, TFormatType>& valueView) noexcept
 {
 
 
@@ -2292,7 +2707,7 @@ void SGCore::Serde::SerdeSpec<SGCore::LineGizmo, TFormatType>::deserialize(SGCor
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::Atmosphere, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::Atmosphere, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::Atmosphere, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::Atmosphere, TFormatType>& valueView) noexcept
 {
 
 
@@ -2466,7 +2881,7 @@ void SGCore::Serde::SerdeSpec<SGCore::Atmosphere, TFormatType>::deserialize(SGCo
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::Mesh, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::Mesh, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::Mesh, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::Mesh, TFormatType>& valueView) noexcept
 {
     valueView.getValueContainer().addMember("m_base", valueView.m_data->m_base);
 }
@@ -2492,7 +2907,7 @@ void SGCore::Serde::SerdeSpec<SGCore::Mesh, TFormatType>::deserialize(SGCore::Se
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::MeshBase, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::MeshBase, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::MeshBase, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::MeshBase, TFormatType>& valueView) noexcept
 {
     valueView.getValueContainer().addMember("m_material", valueView.m_data->getMaterial());
 
@@ -2547,7 +2962,7 @@ void SGCore::Serde::SerdeSpec<SGCore::MeshBase, TFormatType>::deserialize(SGCore
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::IShader, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::IShader, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::IShader, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::IShader, TFormatType>& valueView) noexcept
 {
     valueView.getValueContainer().addMember("m_fileAssetPath", valueView.m_data->getFile()->getPath());
     valueView.getValueContainer().addMember("m_autoRecompile", valueView.m_data->m_autoRecompile);
@@ -2596,7 +3011,7 @@ void SGCore::Serde::SerdeSpec<SGCore::IShader, TFormatType>::deserialize(SGCore:
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::AtmosphereUpdater, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::AtmosphereUpdater, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::AtmosphereUpdater, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::AtmosphereUpdater, TFormatType>& valueView) noexcept
 {
 }
 
@@ -2616,7 +3031,7 @@ void SGCore::Serde::SerdeSpec<SGCore::AtmosphereUpdater, TFormatType>::deseriali
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::LightBase, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::LightBase, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::LightBase, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::LightBase, TFormatType>& valueView) noexcept
 {
 
 
@@ -2675,7 +3090,7 @@ void SGCore::Serde::SerdeSpec<SGCore::LightBase, TFormatType>::deserialize(SGCor
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::Controllables3DUpdater, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::Controllables3DUpdater, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::Controllables3DUpdater, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::Controllables3DUpdater, TFormatType>& valueView) noexcept
 {
 }
 
@@ -2695,7 +3110,7 @@ void SGCore::Serde::SerdeSpec<SGCore::Controllables3DUpdater, TFormatType>::dese
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::DirectionalLight, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::DirectionalLight, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::DirectionalLight, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::DirectionalLight, TFormatType>& valueView) noexcept
 {
 
 
@@ -2728,7 +3143,7 @@ void SGCore::Serde::SerdeSpec<SGCore::DirectionalLight, TFormatType>::deserializ
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::PhysicsWorld3D, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::PhysicsWorld3D, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::PhysicsWorld3D, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::PhysicsWorld3D, TFormatType>& valueView) noexcept
 {
 }
 
@@ -2748,7 +3163,7 @@ void SGCore::Serde::SerdeSpec<SGCore::PhysicsWorld3D, TFormatType>::deserialize(
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::Controllable3D, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::Controllable3D, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::Controllable3D, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::Controllable3D, TFormatType>& valueView) noexcept
 {
 
 
@@ -2794,7 +3209,7 @@ void SGCore::Serde::SerdeSpec<SGCore::Controllable3D, TFormatType>::deserialize(
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::UICamera, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::UICamera, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::UICamera, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::UICamera, TFormatType>& valueView) noexcept
 {
 }
 
@@ -2814,7 +3229,7 @@ void SGCore::Serde::SerdeSpec<SGCore::UICamera, TFormatType>::deserialize(SGCore
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::ISystem, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::ISystem, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::ISystem, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::ISystem, TFormatType>& valueView) noexcept
 {
 }
 
@@ -2837,7 +3252,7 @@ template<
         typename ParallelSystemT,
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::IParallelSystem<ParallelSystemT>, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::IParallelSystem<ParallelSystemT>, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::IParallelSystem<ParallelSystemT>, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::IParallelSystem<ParallelSystemT>, TFormatType>& valueView) noexcept
 {
 }
 
@@ -2858,7 +3273,7 @@ void SGCore::Serde::SerdeSpec<SGCore::IParallelSystem<ParallelSystemT>, TFormatT
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::RenderingBasesUpdater, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::RenderingBasesUpdater, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::RenderingBasesUpdater, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::RenderingBasesUpdater, TFormatType>& valueView) noexcept
 {
 }
 
@@ -2878,7 +3293,7 @@ void SGCore::Serde::SerdeSpec<SGCore::RenderingBasesUpdater, TFormatType>::deser
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::DirectionalLightsUpdater, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::DirectionalLightsUpdater, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::DirectionalLightsUpdater, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::DirectionalLightsUpdater, TFormatType>& valueView) noexcept
 {
 
 
@@ -2911,7 +3326,7 @@ void SGCore::Serde::SerdeSpec<SGCore::DirectionalLightsUpdater, TFormatType>::de
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::TransformationsUpdater, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::TransformationsUpdater, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::TransformationsUpdater, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::TransformationsUpdater, TFormatType>& valueView) noexcept
 {
 }
 
@@ -2931,7 +3346,7 @@ void SGCore::Serde::SerdeSpec<SGCore::TransformationsUpdater, TFormatType>::dese
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::BoxGizmosRenderer, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::BoxGizmosRenderer, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::BoxGizmosRenderer, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::BoxGizmosRenderer, TFormatType>& valueView) noexcept
 {
 }
 
@@ -2951,7 +3366,7 @@ void SGCore::Serde::SerdeSpec<SGCore::BoxGizmosRenderer, TFormatType>::deseriali
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::LineGizmosRenderer, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::LineGizmosRenderer, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::LineGizmosRenderer, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::LineGizmosRenderer, TFormatType>& valueView) noexcept
 {
 }
 
@@ -2969,7 +3384,7 @@ void SGCore::Serde::SerdeSpec<SGCore::LineGizmosRenderer, TFormatType>::deserial
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::SphereGizmosUpdater, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::SphereGizmosUpdater, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::SphereGizmosUpdater, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::SphereGizmosUpdater, TFormatType>& valueView) noexcept
 {
 }
 
@@ -2990,7 +3405,7 @@ void SGCore::Serde::SerdeSpec<SGCore::SphereGizmosUpdater, TFormatType>::deseria
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::OctreesSolver, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::OctreesSolver, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::OctreesSolver, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::OctreesSolver, TFormatType>& valueView) noexcept
 {
 }
 
@@ -3012,7 +3427,7 @@ void SGCore::Serde::SerdeSpec<SGCore::OctreesSolver, TFormatType>::deserialize(S
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::AudioProcessor, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::AudioProcessor, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::AudioProcessor, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::AudioProcessor, TFormatType>& valueView) noexcept
 {
 }
 
@@ -3030,7 +3445,7 @@ void SGCore::Serde::SerdeSpec<SGCore::AudioProcessor, TFormatType>::deserialize(
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::EntityRef, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::EntityRef, TFormatType>& valueView,
+void SGCore::Serde::SerdeSpec<SGCore::EntityRef, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::EntityRef, TFormatType>& valueView,
                                                                          const ECS::entity_t& deserializedEntity,
                                                                          ECS::registry_t& toRegistry) noexcept
 {
@@ -3080,7 +3495,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::LoadablePluginConfig";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<LoadablePluginConfig, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const LoadablePluginConfig, TFormatType>& valueView)
         {
             valueView.getValueContainer().addMember("m_pluginName", valueView.m_data->m_pluginName);
             valueView.getValueContainer().addMember("m_pluginPath", valueView.m_data->m_pluginPath);
@@ -3129,7 +3544,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::Config";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<Config, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const Config, TFormatType>& valueView)
         {
             valueView.getValueContainer().addMember("m_loadablePlugins", valueView.m_data->m_loadablePlugins);
         }
@@ -3237,6 +3652,36 @@ namespace SGCore::Serde
         }
     };
 
+    template<typename T, FormatType TFormatType>
+    struct SerdeSpec<T const*, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = SerdeSpec<T, TFormatType>::type_name;
+        static inline constexpr bool is_pointer_type = true;
+        using element_type = T;
+
+        template<typename ValueViewT>
+        static const T* getObjectRawPointer(ValueViewT& valueView)
+        {
+            return (*valueView.m_data);
+        }
+
+        template<typename ValueViewT, typename T0>
+        static void setObjectRawPointer(ValueViewT& valueView, T0* pointer) noexcept
+        {
+            if(*valueView.m_data)
+            {
+                delete *valueView.m_data;
+                *valueView.m_data = nullptr;
+            }
+            *valueView.m_data = pointer;
+        }
+
+        static T* allocateObject()
+        {
+            return new T();
+        }
+    };
+
     // ====================================================================================
 
     template<FormatType TFormatType>
@@ -3245,7 +3690,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::AssetsPackage::DataMarkup";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<AssetsPackage::DataMarkup, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const AssetsPackage::DataMarkup, TFormatType>& valueView)
         {
             valueView.getValueContainer().addMember("m_offset", valueView.m_data->m_offset);
             valueView.getValueContainer().addMember("m_sizeInBytes", valueView.m_data->m_sizeInBytes);
@@ -3275,7 +3720,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "float";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<FloatingT, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const FloatingT, TFormatType>& valueView)
         {
             valueView.getValueContainer().setAsFloat(*valueView.m_data);
         }
@@ -3295,7 +3740,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "int";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<IntegerT, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const IntegerT, TFormatType>& valueView)
         {
             valueView.getValueContainer().setAsInt64(*valueView.m_data);
         }
@@ -3315,7 +3760,7 @@ namespace SGCore::Serde
         static inline constexpr bool is_pointer_type = false;
 
         template<typename... SharedDataT>
-        static void serialize(SerializableValueView<std::vector<T>, TFormatType>& valueView, SharedDataT&&... sharedData)
+        static void serialize(SerializableValueView<const std::vector<T>, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             valueView.getValueContainer().setAsArray();
 
@@ -3347,7 +3792,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::TransparentEntityTag";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SGCore::Serde::SerializableValueView<SGCore::TransparentEntityTag, TFormatType>& valueView) noexcept
+        static void serialize(SGCore::Serde::SerializableValueView<const SGCore::TransparentEntityTag, TFormatType>& valueView) noexcept
         {
 
         }
@@ -3373,7 +3818,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::OpaqueEntityTag";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SGCore::Serde::SerializableValueView<SGCore::OpaqueEntityTag, TFormatType>& valueView) noexcept
+        static void serialize(SGCore::Serde::SerializableValueView<const SGCore::OpaqueEntityTag, TFormatType>& valueView) noexcept
         {
 
         }
@@ -3393,7 +3838,7 @@ namespace SGCore::Serde
         static inline constexpr bool is_pointer_type = false;
 
         template<typename... SharedDataT>
-        static void serialize(SerializableValueView<std::array<T, Size>, TFormatType>& valueView, SharedDataT&&... sharedData)
+        static void serialize(SerializableValueView<const std::array<T, Size>, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             valueView.getValueContainer().setAsArray();
 
@@ -3425,7 +3870,7 @@ namespace SGCore::Serde
         static inline constexpr bool is_pointer_type = false;
 
         template<typename... SharedDataT>
-        static void serialize(SerializableValueView<collection_t, TFormatType>& valueView, SharedDataT&&... sharedData)
+        static void serialize(SerializableValueView<const collection_t, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             valueView.getValueContainer().setAsArray();
 
@@ -3455,7 +3900,7 @@ namespace SGCore::Serde
         static inline constexpr bool is_pointer_type = false;
 
         template<typename... SharedDataT>
-        static void serialize(SerializableValueView<std::list<T>, TFormatType>& valueView, SharedDataT&&... sharedData)
+        static void serialize(SerializableValueView<const std::list<T>, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             valueView.getValueContainer().setAsArray();
 
@@ -3480,7 +3925,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "std::basic_string";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<std::basic_string<CharT>, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const std::basic_string<CharT>, TFormatType>& valueView)
         {
             valueView.getValueContainer().setAsString(*valueView.m_data);
         }
@@ -3499,7 +3944,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "glm::vec";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<glm::vec<Length, T, Qualifier>, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const glm::vec<Length, T, Qualifier>, TFormatType>& valueView)
         {
             valueView.getValueContainer().setAsArray();
 
@@ -3529,7 +3974,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "glm::qua";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<glm::qua<T, Qualifier>, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const glm::qua<T, Qualifier>, TFormatType>& valueView)
         {
             valueView.getValueContainer().setAsArray();
 
@@ -3559,7 +4004,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "glm::mat";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<glm::mat<C, R, T, Qualifier>, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const glm::mat<C, R, T, Qualifier>, TFormatType>& valueView)
         {
             valueView.getValueContainer().setAsArray();
 
@@ -3604,7 +4049,7 @@ namespace SGCore::Serde
         static inline constexpr bool is_pointer_type = false;
 
         template<typename... SharedDataT>
-        static void serialize(SerializableValueView<std::unordered_map<KeyT, ValueT>, TFormatType>& valueView, SharedDataT&&... sharedData)
+        static void serialize(SerializableValueView<const std::unordered_map<KeyT, ValueT>, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             for(auto& [key, value] : *valueView.m_data)
             {
@@ -3658,7 +4103,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "bool";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<bool, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const bool, TFormatType>& valueView)
         {
             valueView.getValueContainer().setAsBool(*valueView.m_data);
         }
@@ -3678,9 +4123,9 @@ namespace SGCore::Serde
         static inline const std::string type_name = "enum";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<T, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const T, TFormatType>& valueView)
         {
-            valueView.getValueContainer().setAsInt64(static_cast<std::underlying_type_t<T>>(*valueView.m_data));
+            valueView.getValueContainer().setAsInt64(std::to_underlying(*valueView.m_data));
         }
 
         static void deserialize(DeserializableValueView<T, TFormatType>& valueView)
@@ -3697,7 +4142,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "std::filesystem::path";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<std::filesystem::path, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const std::filesystem::path, TFormatType>& valueView)
         {
             const std::string u8Path = SGCore::Utils::toUTF8(valueView.m_data->u16string());
             valueView.getValueContainer().setAsString(u8Path);
@@ -3716,7 +4161,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::InterpolatedPath";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<InterpolatedPath, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const InterpolatedPath, TFormatType>& valueView)
         {
             const std::string u8Path = SGCore::Utils::toUTF8(valueView.m_data->raw().u16string());
             valueView.getValueContainer().setAsString(u8Path);
@@ -3735,7 +4180,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::SceneEntitySaveInfo";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<SceneEntitySaveInfo, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const SceneEntitySaveInfo, TFormatType>& valueView)
         {
             valueView.getValueContainer().setAsArray();
 
@@ -3909,6 +4354,16 @@ namespace SGCore::Serde
 
             {
                 auto* component = serializableScene.getECSRegistry()->template tryGet<SGCore::MotionPlanner>(serializableEntity);
+
+                if(component)
+                {
+                    valueView.getValueContainer().pushBack(*component,
+                                                           serializableEntity, *serializableScene.getECSRegistry());
+                }
+            }
+
+            {
+                auto* component = serializableScene.getECSRegistry()->template tryGet<SGCore::Rigidbody3D>(serializableEntity);
 
                 if(component)
                 {
@@ -4189,6 +4644,19 @@ namespace SGCore::Serde
                     }
                 }
 
+                if(currentElementTypeName == SerdeSpec<SGCore::Rigidbody3D, TFormatType>::type_name)
+                {
+                    const auto component = valueView.getValueContainer().template getMember<SGCore::Rigidbody3D::reg_t>(componentsIt);
+
+                    if(component)
+                    {
+                        toRegistry.emplace<SGCore::Rigidbody3D>(entity, *component);
+                        (*component)->setParentWorld(valueView.m_data->m_serializableScene->template getSystem<PhysicsWorld3D>());
+
+                        continue;
+                    }
+                }
+
                 #pragma endregion Components
 
                 // ==================================================================================
@@ -4220,7 +4688,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::ECS::registry_t";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<ECS::registry_t, TFormatType>& valueView, const Scene& serializableScene)
+        static void serialize(SerializableValueView<const ECS::registry_t, TFormatType>& valueView, const Scene& serializableScene)
         {
             valueView.getValueContainer().setAsArray();
 
@@ -4276,7 +4744,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::Scene::systems_container_t";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<Scene::systems_container_t, TFormatType>& valueView, const Scene& serializableScene)
+        static void serialize(SerializableValueView<const Scene::systems_container_t, TFormatType>& valueView, const Scene& serializableScene)
         {
             valueView.getValueContainer().setAsArray();
 
@@ -4336,7 +4804,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::SceneMetaInfo";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<SceneMetaInfo, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const SceneMetaInfo, TFormatType>& valueView)
         {
             valueView.getValueContainer().addMember("m_sceneName", valueView.m_data->m_sceneName);
             valueView.getValueContainer().addMember("m_sceneLocalPath", valueView.m_data->m_sceneLocalPath);
@@ -4366,11 +4834,11 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::Scene";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<Scene, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const Scene, TFormatType>& valueView)
         {
             valueView.getValueContainer().addMember("m_metaInfo", valueView.m_data->m_metaInfo);
-            valueView.getValueContainer().addMember("m_ecsRegistry", *valueView.m_data->m_ecsRegistry, *valueView.m_data);
             valueView.getValueContainer().addMember("m_systems", valueView.m_data->m_systems, *valueView.m_data);
+            valueView.getValueContainer().addMember("m_ecsRegistry", *valueView.m_data->m_ecsRegistry, *valueView.m_data);
         }
 
         static void deserialize(DeserializableValueView<Scene, TFormatType>& valueView)
@@ -4381,12 +4849,6 @@ namespace SGCore::Serde
                 valueView.m_data->m_metaInfo = std::move(*metaInfo);
             }
 
-            auto ecsRegistry = valueView.getValueContainer().template getMember<ECS::registry_t>("m_ecsRegistry", *valueView.m_data);
-            if(ecsRegistry)
-            {
-                (*valueView.m_data->getECSRegistry()) = std::move(*ecsRegistry);
-            }
-
             auto systems = valueView.getValueContainer().template getMember<Scene::systems_container_t>("m_systems");
             if(systems)
             {
@@ -4394,6 +4856,12 @@ namespace SGCore::Serde
                 {
                     valueView.m_data->addSystem(system);
                 }
+            }
+
+            auto ecsRegistry = valueView.getValueContainer().template getMember<ECS::registry_t>("m_ecsRegistry", *valueView.m_data);
+            if(ecsRegistry)
+            {
+                (*valueView.m_data->getECSRegistry()) = std::move(*ecsRegistry);
             }
         }
     };
@@ -4410,7 +4878,7 @@ namespace SGCore::Serde
 
         // WE ARE SERIALIZING ONLY META INFO OF ASSET BECAUSE IT IS ASSET REFERENCE. WE DO NOT NEED TO DO SERIALIZATION OF DATA
         template<typename... SharedDataT>
-        static void serialize(SerializableValueView<AssetRef<AssetT>, TFormatType>& valueView, SharedDataT&&...)
+        static void serialize(SerializableValueView<const AssetRef<AssetT>, TFormatType>& valueView, SharedDataT&&...)
         {
             if(!valueView.m_data->m_asset)
             {
@@ -4550,7 +5018,7 @@ namespace SGCore::Serde
         static inline constexpr bool is_pointer_type = false;
 
         template<typename... SharedDataT>
-        static void serialize(SerializableValueView<IAsset, TFormatType>& valueView, SharedDataT&&...)
+        static void serialize(SerializableValueView<const IAsset, TFormatType>& valueView, SharedDataT&&...)
         {
             valueView.getValueContainer().addMember("m_path", valueView.m_data->getPath());
             valueView.getValueContainer().addMember("m_alias", valueView.m_data->getAlias());
@@ -4636,7 +5104,7 @@ namespace SGCore::Serde
         /// Required function: This function is ONLY used when serializing assets into a package.\n
         /// You can implement serialize function that does not accept AssetsPackage for serializing asset directly to file.\n
         /// The second argument is the current package being serialized.
-        static void serialize(SerializableValueView<ITexture2D, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        static void serialize(SerializableValueView<const ITexture2D, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             /// Next, we serialize the heavy data (in this case, \p m_data )
             /// into a binary package file and get the output markup,
@@ -4661,7 +5129,7 @@ namespace SGCore::Serde
         }
 
         /// You should never implement this function.
-        // static void serialize(SerializableValueView<ITexture2D, TFormatType>& valueView);
+        // static void serialize(SerializableValueView<const ITexture2D, TFormatType>& valueView);
 
         /// Required function: This function is ONLY used when deserializing assets from a package.\n\n
         /// The second argument is the current package being deserialized.\n\n
@@ -4744,7 +5212,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::ICubemapTexture";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<ICubemapTexture, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        static void serialize(SerializableValueView<const ICubemapTexture, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             valueView.getValueContainer().addMember("m_parts", valueView.m_data->m_parts, assetsPackage);
         }
@@ -4770,7 +5238,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::TextFileAsset";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<TextFileAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        static void serialize(SerializableValueView<const TextFileAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             AssetsPackage::DataMarkup textureDataMarkup = assetsPackage.addData(valueView.m_data->m_data);
 
@@ -4801,7 +5269,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::SGSLESubShader";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<SGSLESubShader, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        static void serialize(SerializableValueView<const SGSLESubShader, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             valueView.getValueContainer().addMember("m_type", valueView.m_data->m_type);
 
@@ -4840,7 +5308,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::ShaderAnalyzedFile";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<ShaderAnalyzedFile, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        static void serialize(SerializableValueView<const ShaderAnalyzedFile, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             valueView.getValueContainer().addMember("m_subPassName", valueView.m_data->m_subPassName);
             valueView.getValueContainer().addMember("m_attributes", valueView.m_data->m_attributes);
@@ -4876,7 +5344,7 @@ namespace SGCore::Serde
         static inline constexpr bool is_pointer_type = false;
 
         template<typename... SharedDataT>
-        static void serialize(SerializableValueView<IMaterial, TFormatType>& valueView, SharedDataT&&... sharedData)
+        static void serialize(SerializableValueView<const IMaterial, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
             valueView.getValueContainer().addMember("m_transparencyType", valueView.m_data->m_transparencyType);
@@ -4984,7 +5452,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::IMeshData";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<IMeshData, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        static void serialize(SerializableValueView<const IMeshData, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             valueView.getValueContainer().addMember("m_aabb", valueView.m_data->m_aabb);
             valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
@@ -5090,7 +5558,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::Node";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<Node, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        static void serialize(SerializableValueView<const Node, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
             valueView.getValueContainer().addMember("m_children", valueView.m_data->m_children, assetsPackage);
@@ -5146,7 +5614,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::ModelAsset";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<ModelAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        static void serialize(SerializableValueView<const ModelAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             valueView.getValueContainer().addMember("m_importerFlags", valueView.m_data->m_importerFlags);
             valueView.getValueContainer().addMember("m_modelName", valueView.m_data->m_modelName);
@@ -5181,7 +5649,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::Skeleton";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<Skeleton, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        static void serialize(SerializableValueView<const Skeleton, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             valueView.getValueContainer().addMember("m_rootBone", valueView.m_data->m_rootBone, assetsPackage);
             valueView.getValueContainer().addMember("m_allBones", valueView.m_data->m_allBones, assetsPackage);
@@ -5209,7 +5677,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::Bone";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<Bone, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        static void serialize(SerializableValueView<const Bone, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             valueView.getValueContainer().addMember("m_id", valueView.m_data->m_id);
             valueView.getValueContainer().addMember("m_boneName", valueView.m_data->m_boneName);
@@ -5258,7 +5726,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::MeshBoneData";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<MeshBoneData, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        static void serialize(SerializableValueView<const MeshBoneData, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             valueView.getValueContainer().addMember("m_affectedMesh", valueView.m_data->m_affectedMesh, assetsPackage);
 
@@ -5296,7 +5764,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::AnimationsFile";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<AnimationsFile, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        static void serialize(SerializableValueView<const AnimationsFile, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             valueView.getValueContainer().addMember("m_skeletalAnimations", valueView.m_data->m_skeletalAnimations, assetsPackage);
         }
@@ -5317,7 +5785,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::SkeletalAnimationAsset";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<SkeletalAnimationAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        static void serialize(SerializableValueView<const SkeletalAnimationAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             valueView.getValueContainer().addMember("m_animationName", valueView.m_data->m_animationName);
             valueView.getValueContainer().addMember("m_duration", valueView.m_data->m_duration);
@@ -5359,7 +5827,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::SkeletalBoneAnimation";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<SkeletalBoneAnimation, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        static void serialize(SerializableValueView<const SkeletalBoneAnimation, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             valueView.getValueContainer().addMember("m_boneName", valueView.m_data->m_boneName);
 
@@ -5431,7 +5899,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::MotionPlanner";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<MotionPlanner, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const MotionPlanner, TFormatType>& valueView)
         {
             valueView.getValueContainer().addMember("m_rootNodes", valueView.m_data->m_rootNodes);
             valueView.getValueContainer().addMember("m_skeleton", valueView.m_data->m_skeleton);
@@ -5466,7 +5934,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::MotionPlannerNode";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<MotionPlannerNode, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const MotionPlannerNode, TFormatType>& valueView)
         {
             valueView.getValueContainer().addMember("m_connections", valueView.m_data->m_connections);
             valueView.getValueContainer().addMember("m_skeletalAnimation", valueView.m_data->m_skeletalAnimation);
@@ -5524,7 +5992,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::MotionPlannerConnection";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<MotionPlannerConnection, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const MotionPlannerConnection, TFormatType>& valueView)
         {
             valueView.getValueContainer().addMember("m_blendTime", valueView.m_data->m_blendTime);
             valueView.getValueContainer().addMember("m_blendSpeed", valueView.m_data->m_blendSpeed);
@@ -5576,7 +6044,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::IAction";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<IAction<ActionReturnT(ExecuteArgs...)>, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const IAction<ActionReturnT(ExecuteArgs...)>, TFormatType>& valueView)
         {
 
         }
@@ -5595,7 +6063,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::AlwaysTrueAction";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<AlwaysTrueAction, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const AlwaysTrueAction, TFormatType>& valueView)
         {
 
         }
@@ -5614,7 +6082,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::AlwaysFalseAction";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<AlwaysFalseAction, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const AlwaysFalseAction, TFormatType>& valueView)
         {
 
         }
@@ -5633,7 +6101,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::KeyboardKeyAction";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<KeyboardKeyAction, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const KeyboardKeyAction, TFormatType>& valueView)
         {
             valueView.getValueContainer().addMember("m_key", valueView.m_data->m_key);
         }
@@ -5656,7 +6124,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::KeyboardKeyDownAction";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<KeyboardKeyDownAction, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const KeyboardKeyDownAction, TFormatType>& valueView)
         {
             valueView.getValueContainer().addMember("m_key", valueView.m_data->m_key);
         }
@@ -5679,7 +6147,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::KeyboardKeyPressedAction";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<KeyboardKeyPressedAction, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const KeyboardKeyPressedAction, TFormatType>& valueView)
         {
             valueView.getValueContainer().addMember("m_key", valueView.m_data->m_key);
         }
@@ -5702,7 +6170,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::KeyboardKeyReleasedAction";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<KeyboardKeyReleasedAction, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const KeyboardKeyReleasedAction, TFormatType>& valueView)
         {
             valueView.getValueContainer().addMember("m_key", valueView.m_data->m_key);
         }
@@ -5725,7 +6193,7 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::MotionPlannersResolver";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<MotionPlannersResolver, TFormatType>& valueView)
+        static void serialize(SerializableValueView<const MotionPlannersResolver, TFormatType>& valueView)
         {
 
         }
@@ -5739,7 +6207,7 @@ namespace SGCore::Serde
     // SERDE IMPL FOR struct 'SGCore::ShaderTextureBinding'
     // =================================================================================
     template<SGCore::Serde::FormatType TFormatType>
-    void SGCore::Serde::SerdeSpec<SGCore::ShaderTextureBinding, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::ShaderTextureBinding, TFormatType>& valueView) noexcept
+    void SGCore::Serde::SerdeSpec<SGCore::ShaderTextureBinding, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::ShaderTextureBinding, TFormatType>& valueView) noexcept
     {
         valueView.getValueContainer().addMember("m_bindingName", valueView.m_data->m_bindingName);
         // todo:
@@ -5761,7 +6229,7 @@ namespace SGCore::Serde
     // SERDE IMPL FOR struct 'SGCore::ShaderDefine'
     // =================================================================================
     template<SGCore::Serde::FormatType TFormatType>
-    void SGCore::Serde::SerdeSpec<SGCore::ShaderDefine, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::ShaderDefine, TFormatType>& valueView) noexcept
+    void SGCore::Serde::SerdeSpec<SGCore::ShaderDefine, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::ShaderDefine, TFormatType>& valueView) noexcept
     {
         valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
         valueView.getValueContainer().addMember("m_expression", valueView.m_data->m_expression);

@@ -132,15 +132,11 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
         glm::decompose(rigidbody3DMatrix, scale, rotation, translation, skew,
                        perspective);
 
-        std::cout << "trying to change transform by physics for entity " << std::to_underlying(e) << std::endl;
-
         if(rotation != transform->m_ownTransform.m_rotation ||
            translation != transform->m_ownTransform.m_position)
         {
             transform->m_ownTransform.m_position = translation;
             transform->m_ownTransform.m_rotation = rotation;
-
-            std::cout << "transform changed by physics for entity " << std::to_underlying(e) << std::endl;
 
             TransformUtils::calculateTransform(*transform, parentTransform.get());
 

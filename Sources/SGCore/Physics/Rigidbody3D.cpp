@@ -25,6 +25,19 @@ SGCore::Rigidbody3D::Rigidbody3D(const SGCore::Ref<PhysicsWorld3D>& parentWorld)
     setType(m_type);
 }
 
+SGCore::Rigidbody3D::Rigidbody3D()
+{
+    btTransform initialTransform;
+    initialTransform.setIdentity();
+    m_state = MakeRef<btDefaultMotionState>(initialTransform);
+    m_finalShape = MakeRef<btCompoundShape>();
+    btRigidBody::btRigidBodyConstructionInfo constructionInfo =
+            btRigidBody::btRigidBodyConstructionInfo(1, m_state.get(), m_finalShape.get(), btVector3(0, 0, 0));
+    m_body = MakeRef<btRigidBody>(constructionInfo);
+
+    setType(m_type);
+}
+
 SGCore::Rigidbody3D::~Rigidbody3D()
 {
     /*if(m_state.use_count() == 1 && m_state)
@@ -116,6 +129,16 @@ const btTransform& SGCore::Rigidbody3D::getShapeTransform(size_t index) const no
     return m_finalShape->getChildTransform(index);
 }
 
+void SGCore::Rigidbody3D::updateShapeTransform(size_t index, const btTransform& newTransform, bool recalculateLocalAABB) noexcept
+{
+    m_finalShape->updateChildTransform(index, newTransform, recalculateLocalAABB);
+}
+
+void SGCore::Rigidbody3D::updateShapeTransform(size_t index, bool recalculateLocalAABB) noexcept
+{
+    m_finalShape->updateChildTransform(index, m_finalShape->getChildTransform(index), recalculateLocalAABB);
+}
+
 void SGCore::Rigidbody3D::setParentWorld(const SGCore::Ref<SGCore::PhysicsWorld3D>& world) noexcept
 {
     auto lockedWorld = m_parentPhysicsWorld.lock();
@@ -203,4 +226,11 @@ void SGCore::Rigidbody3D::removeFromWorld() const noexcept
     {
         lockedWorld->removeBody(m_body);
     }
+}
+
+void SGCore::Rigidbody3D::stop() const noexcept
+{
+    m_body->setLinearVelocity({ 0, 0, 0 });
+    m_body->setAngularVelocity({ 0, 0, 0 });
+    m_body->clearForces();
 }

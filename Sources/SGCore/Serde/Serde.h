@@ -17,7 +17,7 @@
 /**
  *  Sungear Engine Core Serde.\n\n
  *  Please note that all serialization functions accept a const reference to an object,
- *  but the authors of Serde do not guarantee the unchanged state of the object after serialization of the object.
+ *  but the author of Serde do not guarantee the unchanged state of the object after serialization of the object.
  */
 namespace SGCore::Serde
 {
@@ -255,7 +255,7 @@ namespace SGCore::Serde
      * @tparam TFormatType
      */
     template<FormatType TFormatType>
-    class SerializerImpl
+    struct SerializerImpl
     {
         friend struct Serializer;
 
@@ -268,7 +268,7 @@ namespace SGCore::Serde
          * @param value
          * @return
          */
-        template<typename... SharedDataT, typename T>
+        template<typename T, typename... SharedDataT>
         static std::string to(const T& value,
                               SharedDataT&&... sharedData) noexcept
         {
@@ -311,7 +311,7 @@ namespace SGCore::Serde
         friend struct DeserializableValueContainer;
 
         template<FormatType TFormatType>
-        friend class SerializerImpl;
+        friend struct SerializerImpl;
         
         /**
          * Converts object to some format (JSON, BSON, YAML, etc)
@@ -327,7 +327,7 @@ namespace SGCore::Serde
             {
                 case FormatType::JSON:
                 {
-                    return SerializerImpl<FormatType::JSON>::to(value, std::forward<SharedDataT>(sharedData)...);
+                    return SerializerImpl<FormatType::JSON>::to<leave_pointers_t<T, false>>(value, std::forward<SharedDataT>(sharedData)...);
                 }
                 case FormatType::BSON:
                     break;
@@ -369,7 +369,7 @@ namespace SGCore::Serde
             {
                 case FormatType::JSON:
                 {
-                    SerializerImpl<FormatType::JSON>::from(formattedText, outputLog, outValue, std::forward<SharedDataT>(sharedData)...);
+                    SerializerImpl<FormatType::JSON>::from<leave_pointers_t<T, false>>(formattedText, outputLog, outValue, std::forward<SharedDataT>(sharedData)...);
 
                     break;
                 }
@@ -397,7 +397,7 @@ namespace SGCore::Serde
         }
 
         template<typename T, FormatType TFormatType, typename... SharedDataT>
-        static void invokeSerdeSpecSerialize(SerializableValueView<T, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
+        static void invokeSerdeSpecSerialize(SerializableValueView<const T, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
             // if we can call SerdeSpec<T, TFormatType>::serialize with passing sharedData
             if constexpr(requires {
@@ -502,8 +502,13 @@ namespace SGCore::Serde
         template<typename T,
                  FormatType TFormatType,
                  typename... SharedDataT>
-        static void serializeWithDynamicChecksImpl(SerializableValueView<T, TFormatType>& valueView, SharedDataT&&... sharedData)
+        static void serializeWithDynamicChecksImpl(SerializableValueView<const T, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
+            if constexpr(std::is_same_v<T, const btCollisionShape**>)
+            {
+                static_assert(always_false<T>::value, "fsfsfsdfsfssdfsdf");
+            }
+
             if constexpr(SerdeSpec<T, TFormatType>::is_pointer_type) // serializing value using dynamic checks
             {
                 // if value of passed pointer equals to nullptr
@@ -518,12 +523,12 @@ namespace SGCore::Serde
                 using ptr_element_type = typename SerdeSpec<T, TFormatType>::element_type;
                 
                 // creating view that contains element_type object
-                SerializableValueView<ptr_element_type, TFormatType> tmpView { };
+                SerializableValueView<const ptr_element_type, TFormatType> tmpView { };
                 tmpView.getValueContainer() = valueView.getValueContainer();
                 tmpView.m_version = valueView.m_version;
                 tmpView.m_data = SerdeSpec<T, TFormatType>::getObjectRawPointer(valueView);
 
-                // trying to serialize as one of derived types o ptr_element_type
+                // trying to serialize as one of derived types of ptr_element_type
                 tryToSerializeAsDerivedType<ptr_element_type, TFormatType>(tmpView, std::forward<SharedDataT>(sharedData)...);
             }
             else
@@ -550,7 +555,7 @@ namespace SGCore::Serde
         template<typename T,
                  FormatType TFormatType,
                  typename... SharedDataT>
-        static void serializeWithDynamicChecks(SerializableValueView<T, TFormatType>& valueView, SharedDataT&&... sharedData)
+        static void serializeWithDynamicChecks(SerializableValueView<const T, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             serializeWithDynamicChecksImpl<T, TFormatType, SharedDataT...>(valueView, std::forward<SharedDataT>(sharedData)...);
         }
@@ -690,7 +695,7 @@ namespace SGCore::Serde
          * @param valueView
          */
         template<typename OriginalT, FormatType TFormatType, size_t CurrentDerivedIdx, typename... SharedDataT>
-        static void trySerializeAsDerivedType(SerializableValueView<OriginalT, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
+        static void trySerializeAsDerivedType(SerializableValueView<const OriginalT, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
             if constexpr(Utils::isDerivedTypesProvided<OriginalT, TFormatType>())
             {
@@ -706,7 +711,7 @@ namespace SGCore::Serde
 
                     if(derivedTypeObj)
                     {
-                        SerializableValueView<CurrentDerivedT, TFormatType> tmpView {};
+                        SerializableValueView<const CurrentDerivedT, TFormatType> tmpView {};
                         tmpView.getValueContainer() = valueView.getValueContainer();
                         tmpView.m_version = valueView.m_version;
                         tmpView.m_data = derivedTypeObj;
@@ -753,13 +758,13 @@ namespace SGCore::Serde
         }
 
         template<typename BaseType, typename OriginalT, FormatType TFormatType, typename... SharedDataT>
-        static void serializeBaseType(SerializableValueView<OriginalT, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
+        static void serializeBaseType(SerializableValueView<const OriginalT, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
             // Casting object to base type
             const auto* baseObj = static_cast<const BaseType*>(valueView.m_data);
 
             // Creating container for base type
-            SerializableValueView<BaseType, TFormatType> tmpView {};
+            SerializableValueView<const BaseType, TFormatType> tmpView {};
             tmpView.getValueContainer() = valueView.getValueContainer();
             tmpView.m_version = valueView.m_version;
             tmpView.m_data = baseObj;
@@ -792,7 +797,7 @@ namespace SGCore::Serde
          * @param sharedData
          */
         template<typename TypeToSerialize, FormatType TFormatType, typename... SharedDataT>
-        static void serializeObjectStraightDownByTree(SerializableValueView<TypeToSerialize, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
+        static void serializeObjectStraightDownByTree(SerializableValueView<const TypeToSerialize, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
             using base_types = typename collect_all_base_types<TypeToSerialize, TFormatType>::type;
 
@@ -813,7 +818,7 @@ namespace SGCore::Serde
          * @param valueView
          */
         template<typename T, FormatType TFormatType, typename... SharedDataT>
-        static void tryToSerializeAsDerivedType(SerializableValueView<T, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
+        static void tryToSerializeAsDerivedType(SerializableValueView<const T, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
             // serializing derived types only if information of them was provided and count of derived types > 0
             if constexpr(Utils::isDerivedTypesProvided<T, TFormatType>())
@@ -922,7 +927,7 @@ namespace SGCore::Serde
                 {
                     // allocating object of DerivedT
                     DerivedT* derivedObject {};
-                    if constexpr(!std::is_abstract_v<DerivedT>)
+                    if constexpr(!std::is_abstract_v<DerivedT> && std::is_default_constructible_v<DerivedT>)
                     {
                         derivedObject = new DerivedT();
                     }
@@ -935,7 +940,7 @@ namespace SGCore::Serde
                         else
                         {
                             static_assert(always_false<DerivedT>::value,
-                                          "Can not allocate object of abstract type (using new expression or SerdeSpec<AbstractType, TFormatType>::allocateObject()."
+                                          "Can not allocate object of abstract type (or type does not have default constructor) (using new expression or SerdeSpec<AbstractType, TFormatType>::allocateObject()."
                             );
                         }
                     }
@@ -1014,7 +1019,7 @@ namespace SGCore::Serde
     struct DeserializableValueContainer
     {
         template<FormatType>
-        friend class SerializerImpl;
+        friend struct SerializerImpl;
 
         friend struct Serializer;
 
@@ -1186,7 +1191,7 @@ namespace SGCore::Serde
     struct SerializableValueContainer
     {
         template<FormatType>
-        friend class SerializerImpl;
+        friend struct SerializerImpl;
 
         friend struct Serializer;
 
@@ -1338,7 +1343,7 @@ namespace SGCore::Serde
     public:
 
         template<FormatType>
-        friend class SerializerImpl;
+        friend struct SerializerImpl;
 
         friend struct Serializer;
 
@@ -1402,7 +1407,7 @@ namespace SGCore::Serde
     struct DeserializableValueView
     {
         template<FormatType>
-        friend class SerializerImpl;
+        friend struct SerializerImpl;
 
         friend struct Serializer;
 

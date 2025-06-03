@@ -58,7 +58,7 @@ struct SGCore::Serde::SerdeSpec<SGE::EditorSceneData, TFormatType> : SGCore::Ser
     static inline const std::string type_name = "SGE::EditorSceneData";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SerializableValueView<SGE::EditorSceneData, TFormatType>& valueView, const Scene& scene)
+    static void serialize(SerializableValueView<const SGE::EditorSceneData, TFormatType>& valueView, const Scene& scene)
     {
         {
             SceneEntitySaveInfo entitySaveInfo;

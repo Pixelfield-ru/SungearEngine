@@ -14,6 +14,7 @@
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/Picking/Pickable.h"
+#include "SGCore/Utils/Assert.h"
 
 void SGCore::PBRRPDecalsPass::create(const Ref<IRenderPipeline>& parentRenderPipeline)
 {

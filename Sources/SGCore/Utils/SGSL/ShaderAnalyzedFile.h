@@ -18,8 +18,7 @@ namespace SGCore
 
         sg_implement_type_id(ShaderAnalyzedFile, 4)
 
-        friend class SGSLETranslator;
-        friend class SGSLETranslator;
+        friend struct SGSLETranslator;
         friend class AssetManager;
 
         [[nodiscard]] const auto& getSubPassName() const noexcept

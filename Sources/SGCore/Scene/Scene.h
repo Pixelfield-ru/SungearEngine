@@ -43,7 +43,7 @@ namespace SGCore
         template<Serde::FormatType TFormatType>
         struct SGCORE_EXPORT SceneSerdeEvents
         {
-            static inline Signal<void(Serde::SerializableValueView<SceneEntitySaveInfo, TFormatType>& entityView,
+            static inline Signal<void(Serde::SerializableValueView<const SceneEntitySaveInfo, TFormatType>& entityView,
                                       const Scene& serializableScene,
                                       const ECS::entity_t& serializableEntity)> onEntitySerialize;
 
@@ -51,7 +51,7 @@ namespace SGCore
                                       const typename Serde::FormatInfo<TFormatType>::array_iterator_t& componentsIterator,
                                       ECS::registry_t& toRegistry)> onEntityDeserialize;
 
-            static inline Signal<void(Serde::SerializableValueView<Scene::systems_container_t, TFormatType>& systemsContainerView,
+            static inline Signal<void(Serde::SerializableValueView<const Scene::systems_container_t, TFormatType>& systemsContainerView,
                                       const Scene& serializableScene,
                                       const Ref<ISystem>& serializableSystem)> onSystemSerialize;
 
@@ -75,7 +75,7 @@ namespace SGCore
 
         template<typename SystemT>
         // requires(std::is_base_of_v<ISystem, SystemT>)
-        Ref<SystemT> getSystem()
+        Ref<SystemT> getSystem() const noexcept
         {
             for(auto& system : m_systems)
             {
@@ -90,7 +90,7 @@ namespace SGCore
 
         template<typename SystemT>
         // requires(std::is_base_of_v<SystemT, ISystem>)
-        std::vector<Ref<SystemT>> getSystems()
+        std::vector<Ref<SystemT>> getSystems() const noexcept
         {
             std::vector<Ref<SystemT>> foundSystems;
 
@@ -108,7 +108,7 @@ namespace SGCore
         [[nodiscard]] bool isSystemExists(const Ref<ISystem>& system) const noexcept;
 
         void addSystem(const Ref<ISystem>& system) noexcept;
-        const std::vector<Ref<ISystem>>& getAllSystems() noexcept;
+        const std::vector<Ref<ISystem>>& getAllSystems() const noexcept;
 
         auto getUniqueNamesManager() const noexcept
         {

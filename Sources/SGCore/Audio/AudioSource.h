@@ -11,7 +11,6 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 
-#include "SGCore/Serde/Serde.h"
 #include "SGCore/Memory/Assets/AudioTrackAsset.h"
 #include "SGCore/Serde/Defines.h"
 #include "SGCore/ECS/Component.h"

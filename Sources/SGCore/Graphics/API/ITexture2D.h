@@ -16,6 +16,8 @@
 
 #include <gli/gli.hpp>
 
+#include "SGCore/Utils/Assert.h"
+
 namespace SGCore
 {
     class IFrameBuffer;

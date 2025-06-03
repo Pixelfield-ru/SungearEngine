@@ -7,7 +7,8 @@
 
 #include "SGCore/Utils/SGSL/SGSLESubShaderType.h"
 #include "SGCore/Serde/Defines.h"
-#include "SGCore/Serde/Serde.h"
+
+sg_predeclare_serde()
 
 namespace SGCore
 {

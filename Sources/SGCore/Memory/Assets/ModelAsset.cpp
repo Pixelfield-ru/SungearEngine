@@ -16,6 +16,7 @@
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "AnimationsFile.h"
+#include "SGCore/Utils/Assert.h"
 
 size_t polygonsNumber = 0;
 

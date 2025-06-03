@@ -19,7 +19,7 @@ class SerializerImpl<FormatType::JSON>
      * @param value
      * @return
      */
-    template<typename... SharedDataT, typename T>
+    template<typename T, typename... SharedDataT>
     static std::string to(const T& value,
                           SharedDataT&& ... sharedData) noexcept;
 

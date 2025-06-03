@@ -17,7 +17,7 @@ struct SGCore::Serde::SerdeSpec<SGE::Toolchain, TFormatType> : BaseTypes<>, Deri
     static inline const std::string type_name = "SGE::Toolchain";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SerializableValueView<SGE::Toolchain, TFormatType>& valueView)
+    static void serialize(SerializableValueView<const SGE::Toolchain, TFormatType>& valueView)
     {
         valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
         valueView.getValueContainer().addMember("m_type", valueView.m_data->m_type);
@@ -82,7 +82,7 @@ struct SGCore::Serde::SerdeSpec<SGE::VisualStudioToolchain, TFormatType> : BaseT
     static inline const std::string type_name = "SGE::VisualStudioToolchain";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SerializableValueView<SGE::VisualStudioToolchain, TFormatType>& valueView)
+    static void serialize(SerializableValueView<const SGE::VisualStudioToolchain, TFormatType>& valueView)
     {
         valueView.getValueContainer().addMember("m_archType", valueView.m_data->m_archType);
         valueView.getValueContainer().addMember("m_platformType", valueView.m_data->m_platformType);
@@ -126,7 +126,7 @@ struct SGCore::Serde::SerdeSpec<SGE::EngineSettings, TFormatType> : BaseTypes<>,
     static inline const std::string type_name = "SGE::EngineSettings";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SerializableValueView<SGE::EngineSettings, TFormatType>& valueView)
+    static void serialize(SerializableValueView<const SGE::EngineSettings, TFormatType>& valueView)
     {
         valueView.getValueContainer().addMember("m_toolchains", valueView.m_data->m_toolchains);
     }

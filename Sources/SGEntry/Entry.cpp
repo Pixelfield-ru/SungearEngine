@@ -52,6 +52,8 @@ public:
     }
 };*/
 
+#include <BulletCollision/btBulletCollisionCommon.h>
+
 void coreInit()
 {
     ImGui::SetCurrentContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());

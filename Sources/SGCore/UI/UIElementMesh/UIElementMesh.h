@@ -7,6 +7,7 @@
 
 #include "SGCore/Math/AABB.h"
 #include "UIVertex.h"
+#include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
 {

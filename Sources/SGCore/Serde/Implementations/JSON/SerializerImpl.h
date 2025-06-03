@@ -8,10 +8,13 @@
 #include "SGCore/Serde/Common.h"
 
 
-template<typename... SharedDataT, typename T>
+template<typename T, typename... SharedDataT>
 std::string SerializerImpl<FormatType::JSON>::to(const T& value,
                                                  SharedDataT&& ... sharedData) noexcept
 {
+    using clean_t = leave_pointers_t<T, false>;
+    using value_view_t = leave_pointers_t<T, true>;
+
     rapidjson::Document toDocument;
     toDocument.SetObject();
 
@@ -20,8 +23,8 @@ std::string SerializerImpl<FormatType::JSON>::to(const T& value,
 
     // adding type name of T
     rapidjson::Value typeNameSectionValue(rapidjson::kStringType);
-    typeNameSectionValue.SetString(SerdeSpec<T, FormatType::JSON>::type_name.c_str(),
-                                   SerdeSpec<T, FormatType::JSON>::type_name.length());
+    typeNameSectionValue.SetString(SerdeSpec<clean_t, FormatType::JSON>::type_name.c_str(),
+                                   SerdeSpec<clean_t, FormatType::JSON>::type_name.length());
 
     // creating section that will contain all members of T
     rapidjson::Value valueSectionValue(rapidjson::kObjectType);
@@ -29,7 +32,7 @@ std::string SerializerImpl<FormatType::JSON>::to(const T& value,
     // ==== serialization code
 
     // creating view of value with format pointers
-    SerializableValueView<T, FormatType::JSON> valueView {};
+    SerializableValueView<const value_view_t, FormatType::JSON> valueView {};
     valueView.m_data = &value;
     valueView.m_version = "1";
     valueView.getValueContainer().m_document = &toDocument;
@@ -37,7 +40,7 @@ std::string SerializerImpl<FormatType::JSON>::to(const T& value,
     valueView.getValueContainer().m_typeNameValue = &typeNameSectionValue;
 
     // serializing value with attempt at dynamic casts to derived types
-    Serializer::serializeWithDynamicChecks<T, FormatType::JSON, SharedDataT...>(valueView,
+    Serializer::serializeWithDynamicChecks<clean_t, FormatType::JSON, SharedDataT...>(valueView,
                                                                                 std::forward<SharedDataT>(
                                                                                         sharedData
                                                                                 )...

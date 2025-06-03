@@ -8,7 +8,6 @@
 #include "SGCore/pch.h"
 
 #include "MathUtils.h"
-#include "SGCore/Serde/Serde.h"
 #include "SGCore/ECS/Component.h"
 #include "SGCore/ImportedScenesArch/Vertex.h"
 

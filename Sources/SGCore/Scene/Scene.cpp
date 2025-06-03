@@ -166,7 +166,7 @@ void SGCore::Scene::addSystem(const Ref<ISystem>& system) noexcept
     m_systems.push_back(system);
 }
 
-const std::vector<SGCore::Ref<SGCore::ISystem>>& SGCore::Scene::getAllSystems() noexcept
+const std::vector<SGCore::Ref<SGCore::ISystem>>& SGCore::Scene::getAllSystems() const noexcept
 {
     return m_systems;
 }

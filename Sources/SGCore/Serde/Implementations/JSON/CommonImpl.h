@@ -4,6 +4,7 @@
 
 #ifndef SUNGEARENGINE_JSON_COMMONIMPL_H
 #define SUNGEARENGINE_JSON_COMMONIMPL_H
+#include "SGCore/Utils/TypeTraits.h"
 
 namespace SGCore::Serde
 {
@@ -18,7 +19,7 @@ namespace SGCore::Serde
     struct DeserializableValueContainer<FormatType::JSON>
     {
         template<FormatType>
-        friend class SerializerImpl;
+        friend struct SerializerImpl;
 
         friend struct Serializer;
 
@@ -429,6 +430,9 @@ namespace SGCore::Serde
         template<typename T, typename... SharedDataT>
         void addMember(const std::string& name, const T& value, SharedDataT&&... sharedData) noexcept
         {
+            using clean_t = leave_pointers_t<T, false>;
+            using value_view_t = leave_pointers_t<T, true>;
+
             if (!(m_thisValue || m_document)) return;
 
             // removing member with this name if it is already exists
@@ -447,8 +451,8 @@ namespace SGCore::Serde
 
             // creating type name of T value
             rapidjson::Value typeNameSectionValue(rapidjson::kStringType);
-            typeNameSectionValue.SetString(SerdeSpec<T, FormatType::JSON>::type_name.c_str(),
-                                           SerdeSpec<T, FormatType::JSON>::type_name.length());
+            typeNameSectionValue.SetString(SerdeSpec<clean_t, FormatType::JSON>::type_name.c_str(),
+                                           SerdeSpec<clean_t, FormatType::JSON>::type_name.length());
 
             // creating section that will contain all members of T0
             rapidjson::Value valueSectionValue(rapidjson::kObjectType);
@@ -456,7 +460,8 @@ namespace SGCore::Serde
             // ==== value serialization code
 
             // creating view of value with format pointers
-            SerializableValueView<T, FormatType::JSON> valueView {};
+            SerializableValueView<const value_view_t, FormatType::JSON> valueView {};
+            // static_assert(!std::is_same_v<const btCollisionShape**, decltype(*valueView.m_data)>, "sasi");
             valueView.m_data = &value;
             valueView.getValueContainer().m_document = m_document;
             valueView.getValueContainer().m_thisValue = &valueSectionValue;
@@ -464,7 +469,7 @@ namespace SGCore::Serde
             valueView.getValueContainer().m_parent = this;
 
             // serializing value with attempt at dynamic casts to derived types
-            Serializer::serializeWithDynamicChecks<T, FormatType::JSON>(valueView, std::forward<SharedDataT>(sharedData)...);
+            Serializer::serializeWithDynamicChecks<value_view_t, FormatType::JSON>(valueView, std::forward<SharedDataT>(sharedData)...);
 
             // =======================
 
@@ -491,7 +496,7 @@ namespace SGCore::Serde
         template<typename T, typename... SharedDataT>
         void pushBack(const T& value, SharedDataT&&... sharedData) noexcept
         {
-            addMember("", value, std::forward<SharedDataT>(sharedData)...);
+            addMember<T, SharedDataT...>("", value, std::forward<SharedDataT>(sharedData)...);
         }
 
         void setAsNull() noexcept

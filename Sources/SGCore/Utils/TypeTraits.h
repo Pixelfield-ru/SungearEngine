@@ -484,6 +484,38 @@ namespace SGCore
         { col.data() } -> std::same_as<const typename CollectionT::value_type*>;
         typename CollectionT::value_type;
     };
+
+    template<typename T, int PointersCount, bool AddConst, int CurrentPointersCount = 0>
+    struct add_pointers
+    {
+        using type = typename add_pointers<std::conditional_t<AddConst, T const*, T*>, PointersCount, AddConst, CurrentPointersCount + 1>::type;
+    };
+
+    template<typename T, int PointersCount, bool AddConst>
+    struct add_pointers<T, PointersCount, AddConst, PointersCount>
+    {
+        using type = T;
+    };
+
+    template<typename T, int PointersCount, bool AddConst>
+    using add_pointers_t = typename add_pointers<T, PointersCount, AddConst>::type;
+
+    template<typename T, int PointersToReturn, bool AddConst>
+    struct leave_pointers
+    {
+        using type = add_pointers_t<std::remove_cvref_t<T>, PointersToReturn, AddConst>;
+        static constexpr int pointers_count = PointersToReturn;
+    };
+
+    template<typename T, int PointersToReturn, bool AddConst>
+    struct leave_pointers<T*, PointersToReturn, AddConst>
+    {
+        using type = std::remove_reference_t<typename leave_pointers<T, PointersToReturn + 1, AddConst>::type>;
+        static constexpr int pointers_count = leave_pointers<T, PointersToReturn + 1, AddConst>::pointers_count;
+    };
+
+    template<typename T, bool AddConst>
+    using leave_pointers_t = typename leave_pointers<T, 0, AddConst>::type;
     
     template <typename T>
     struct func_return_type;
