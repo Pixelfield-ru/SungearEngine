@@ -43,13 +43,12 @@ namespace SGCore
         template<Serde::FormatType TFormatType>
         struct SGCORE_EXPORT SceneSerdeEvents
         {
-            static inline Signal<void(Serde::SerializableValueView<const SceneEntitySaveInfo, TFormatType>& entityView,
-                                      const Scene& serializableScene,
-                                      const ECS::entity_t& serializableEntity)> onEntitySerialize;
+            static inline Signal<void(Serde::SerializableValueView<const ECS::entity_t, TFormatType>& entityView,
+                                      const Scene& serializableScene)> onEntitySerialize;
 
-            static inline Signal<void(Serde::DeserializableValueView<SceneEntitySaveInfo, TFormatType>& entityView,
+            static inline Signal<void(Serde::DeserializableValueView<ECS::entity_t, TFormatType>& entityView,
                                       const typename Serde::FormatInfo<TFormatType>::array_iterator_t& componentsIterator,
-                                      ECS::registry_t& toRegistry)> onEntityDeserialize;
+                                      Scene& deserializableScene)> onEntityDeserialize;
 
             static inline Signal<void(Serde::SerializableValueView<const Scene::systems_container_t, TFormatType>& systemsContainerView,
                                       const Scene& serializableScene,

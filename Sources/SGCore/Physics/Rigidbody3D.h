@@ -65,6 +65,7 @@ namespace SGCore
         Rigidbody3D& operator=(Rigidbody3D&& other) noexcept = default;
         
     private:
+        // contains ALL shapes in ALL COMPOUND SHAPES
         std::vector<Ref<btCollisionShape>> m_shapes;
         Ref<btCompoundShape> m_finalShape;
         Weak<PhysicsWorld3D> m_parentPhysicsWorld;

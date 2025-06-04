@@ -222,7 +222,7 @@ template<
 >
 struct SGCore::Serde::SerdeSpec<btBoxShape, TFormatType> :
         SGCore::Serde::BaseTypes<
-            btCollisionShape
+
                                 >,
         SGCore::Serde::DerivedTypes<
 
@@ -238,12 +238,6 @@ struct SGCore::Serde::SerdeSpec<btBoxShape, TFormatType> :
     static void deserialize(SGCore::Serde::DeserializableValueView<btBoxShape, TFormatType>& valueView,
                             btTransform& shapeTransform,
                             Rigidbody3D& parentRigidbody3D) noexcept;
-
-    static btBoxShape* allocateObject() noexcept
-    {
-        // shitty because can not pass constructor args
-        return new btBoxShape(btVector3(0.5f, 0.5f, 0.5f));
-    }
 };
 
 
@@ -254,7 +248,7 @@ template<
 >
 struct SGCore::Serde::SerdeSpec<btCompoundShape, TFormatType> :
         SGCore::Serde::BaseTypes<
-            btCollisionShape
+
                                 >,
         SGCore::Serde::DerivedTypes<
 
@@ -283,24 +277,50 @@ struct SGCore::Serde::SerdeSpec<btCollisionShape, TFormatType> :
 
                                 >,
         SGCore::Serde::DerivedTypes<
-            btBoxShape,
-            btCompoundShape
+
                                    >
 {
     static inline const std::string type_name = "btCollisionShape";
     static inline constexpr bool is_pointer_type = false;
 
     template<typename... SharedDataT>
-    static void serialize(SGCore::Serde::SerializableValueView<const btCollisionShape, TFormatType>& valueView, SharedDataT&&...) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const btCollisionShape, TFormatType>& valueView, const Rigidbody3D& parentRigidbody3D) noexcept;
 
     template<typename... SharedDataT>
-    static void deserialize(SGCore::Serde::DeserializableValueView<btCollisionShape, TFormatType>& valueView, SharedDataT&&...) noexcept;
+    static void deserialize(SGCore::Serde::DeserializableValueView<btCollisionShape, TFormatType>& valueView, Rigidbody3D& parentRigidbody3D) noexcept;
 
     template<typename... SharedDataT>
-    static void serialize(SGCore::Serde::SerializableValueView<const btCollisionShape, TFormatType>& valueView, const btTransform& shapeTransform, SharedDataT&&...) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<const btCollisionShape, TFormatType>& valueView, const btTransform& shapeTransform, const Rigidbody3D& parentRigidbody3D) noexcept;
 
     template<typename... SharedDataT>
-    static void deserialize(SGCore::Serde::DeserializableValueView<btCollisionShape, TFormatType>& valueView, btTransform& shapeTransform, SharedDataT&&...) noexcept;
+    static void deserialize(SGCore::Serde::DeserializableValueView<btCollisionShape, TFormatType>& valueView, btTransform& shapeTransform, Rigidbody3D& parentRigidbody3D) noexcept;
+
+    static btCollisionShape* allocateObject(DeserializableValueView<btCollisionShape, TFormatType>& valueView) noexcept
+    {
+        const auto shapeType = valueView.getValueContainer().template getMember<int>("m_shapeType");
+
+        if(!shapeType)
+        {
+            SG_ASSERT(false, "Can not allocate btCollisionShape: can not detect field 'm_shapeType'!");
+            return nullptr;
+        }
+
+        if(*shapeType == COMPOUND_SHAPE_PROXYTYPE)
+        {
+            return new btCompoundShape;
+        }
+        if(*shapeType == BOX_SHAPE_PROXYTYPE)
+        {
+            return new btBoxShape(btVector3(0.5f, 0.5f, 0.5f));
+        }
+        if(*shapeType == SPHERE_SHAPE_PROXYTYPE)
+        {
+            return new btSphereShape(1.0f);
+        }
+
+        SG_ASSERT(false, fmt::format("Can not allocate btCollisionShape: unknown shape type: '{}'!", *shapeType).c_str());
+        return nullptr;
+    }
 };
 
 
@@ -480,7 +500,10 @@ void SGCore::Serde::SerdeSpec<btCompoundShape, TFormatType>::deserialize(
 
         if(shape)
         {
-            parentRigidbody3D.addShape(childShapeTransform, *shape);
+            valueView.m_data->addChildShape(childShapeTransform, shape.get());
+            parentRigidbody3D.m_shapes.push_back(shape);
+            // WRONG!
+            // parentRigidbody3D.addShape(childShapeTransform, *shape);
         }
     }
 }
@@ -514,19 +537,76 @@ void SGCore::Serde::SerdeSpec<btBoxShape, TFormatType>::deserialize(
 
 template<SGCore::Serde::FormatType TFormatType>
 template<typename... SharedDataT>
-void SGCore::Serde::SerdeSpec<btCollisionShape, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const btCollisionShape, TFormatType>& valueView, SharedDataT&&...) noexcept
+void SGCore::Serde::SerdeSpec<btCollisionShape, TFormatType>::serialize(
+    SGCore::Serde::SerializableValueView<const btCollisionShape, TFormatType>& valueView,
+    const Rigidbody3D& parentRigidbody3D) noexcept
 {
+    const btCollisionShape* data = valueView.m_data;
+    const auto shapeType = data->getShapeType();
+
     valueView.getValueContainer().addMember("m_localScaling", valueView.m_data->getLocalScaling());
+    valueView.getValueContainer().addMember("m_shapeType", shapeType);
+
+    // direct saving shape of actual type
+
+    if(shapeType == COMPOUND_SHAPE_PROXYTYPE)
+    {
+        const auto* compoundShape = static_cast<const btCompoundShape*>(data);
+
+        valueView.getValueContainer().addMember("m_shapeObject", *compoundShape, btTransform {}, parentRigidbody3D);
+    }
+    else if(shapeType == BOX_SHAPE_PROXYTYPE)
+    {
+        const auto* boxShape = static_cast<const btBoxShape*>(data);
+
+        valueView.getValueContainer().addMember("m_shapeObject", *boxShape, btTransform {}, parentRigidbody3D);
+    }
+    else if(shapeType == SPHERE_SHAPE_PROXYTYPE)
+    {
+        const auto* sphereShape = static_cast<const btSphereShape*>(data);
+
+        // todo: add saving
+    }
+    else
+    {
+        LOG_E(SGCORE_TAG, "Error while serializing physical collision shape: unknown shape type: '{}'", shapeType);
+    }
 }
 
 template<SGCore::Serde::FormatType TFormatType>
 template<typename... SharedDataT>
-void SGCore::Serde::SerdeSpec<btCollisionShape, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<btCollisionShape, TFormatType>& valueView, SharedDataT&&...) noexcept
+void SGCore::Serde::SerdeSpec<btCollisionShape, TFormatType>::deserialize(
+    SGCore::Serde::DeserializableValueView<btCollisionShape, TFormatType>& valueView,
+    Rigidbody3D& parentRigidbody3D) noexcept
 {
     const auto localScaling = valueView.getValueContainer().template getMember<btVector3>("m_localScaling");
     if(localScaling)
     {
         valueView.m_data->setLocalScaling(*localScaling);
+    }
+
+    const auto shapeType = valueView.getValueContainer().template getMember<int>("m_shapeType");
+    if(!shapeType)
+    {
+        LOG_E(SGCORE_TAG, "Error while deserializing physical collision shape: not 'm_shapeType' field detected!");
+        return;
+    }
+
+    if(*shapeType == COMPOUND_SHAPE_PROXYTYPE)
+    {
+
+    }
+    else if(*shapeType == BOX_SHAPE_PROXYTYPE)
+    {
+
+    }
+    else if(*shapeType == SPHERE_SHAPE_PROXYTYPE)
+    {
+
+    }
+    else
+    {
+        LOG_E(SGCORE_TAG, "Error while deserializing physical collision shape: unknown shape type: '{}'", *shapeType);
     }
 }
 
@@ -535,9 +615,9 @@ template<typename... SharedDataT>
 void SGCore::Serde::SerdeSpec<btCollisionShape, TFormatType>::serialize(
     SGCore::Serde::SerializableValueView<const btCollisionShape, TFormatType>& valueView,
     const btTransform& shapeTransform,
-    SharedDataT&&... sharedData) noexcept
+    const Rigidbody3D& parentRigidbody3D) noexcept
 {
-    serialize(valueView);
+    serialize(valueView, parentRigidbody3D);
 
     valueView.getValueContainer().addMember("m_transform", shapeTransform);
 }
@@ -547,9 +627,9 @@ template<typename... SharedDataT>
 void SGCore::Serde::SerdeSpec<btCollisionShape, TFormatType>::deserialize(
     SGCore::Serde::DeserializableValueView<btCollisionShape, TFormatType>& valueView,
     btTransform& shapeTransform,
-    SharedDataT&&... sharedData) noexcept
+    Rigidbody3D& parentRigidbody3D) noexcept
 {
-    deserialize(valueView);
+    deserialize(valueView, parentRigidbody3D);
 
     const auto transform = valueView.getValueContainer().template getMember<btTransform>("m_transform");
     if(transform)
@@ -1103,7 +1183,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::IShader, TFormatType> :
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::IShader, TFormatType>& valueView) noexcept;
 
-    static IShader* allocateObject() noexcept
+    static IShader* allocateObject(DeserializableValueView<IShader, TFormatType>& valueView) noexcept
     {
         return CoreMain::getRenderer()->createShader();
     }
@@ -1651,7 +1731,7 @@ void SGCore::Serde::SerdeSpec<SGCore::Rigidbody3D, TFormatType>::serialize(SGCor
     const auto inertia = value->m_body->getLocalInertia();
     valueContainer.addMember("m_inertia", glm::vec3 { inertia.x(), inertia.y(), inertia.z() });
 
-    valueContainer.addMember("m_finalShape", value->m_finalShape, btTransform {}, *valueView.m_data);
+    valueContainer.addMember("m_finalShape", static_cast<btCollisionShape*>(value->m_finalShape.get()), btTransform {}, *valueView.m_data);
 
     valueContainer.addMember("m_type", value->getType());
 }
@@ -1671,7 +1751,7 @@ void SGCore::Serde::SerdeSpec<SGCore::Rigidbody3D, TFormatType>::deserialize(SGC
 
     // deserializing final shape (compound shape)
     btTransform finalShapeTransform; // unused
-    valueView.getValueContainer().template getMember<Ref<btCompoundShape>>("m_finalShape", finalShapeTransform, *valueView.m_data);
+    valueView.getValueContainer().template getMember<Ref<btCollisionShape>>("m_finalShape", finalShapeTransform, *valueView.m_data);
 
     const auto type = valueView.getValueContainer().template getMember<PhysicalObjectType>("m_type");
     if(type)
@@ -2091,7 +2171,7 @@ void SGCore::Serde::SerdeSpec<SGCore::EntityBaseInfo, TFormatType>::deserialize(
 
     if(m_deserializedThisEntity)
     {
-        valueView.m_data->m_deserializedThisEntity = *m_deserializedThisEntity;
+        valueView.m_data->m_deserializedThisEntity = static_cast<ECS::entity_t>(*m_deserializedThisEntity);
     }
 }
 // =================================================================================
@@ -3578,7 +3658,7 @@ namespace SGCore::Serde
             *valueView.m_data = std::move(std::unique_ptr<T0>(pointer));
         }
 
-        static std::unique_ptr<T> allocateObject()
+        static std::unique_ptr<T> allocateObject(DeserializableValueView<std::unique_ptr<T>, TFormatType>& valueView)
         {
             return std::make_unique<T>();
         }
@@ -3605,7 +3685,7 @@ namespace SGCore::Serde
             *valueView.m_data = std::move(std::shared_ptr<T0>(pointer));
         }
 
-        static std::shared_ptr<T> allocateObject()
+        static std::shared_ptr<T> allocateObject(DeserializableValueView<std::shared_ptr<T>, TFormatType>& valueView)
         {
             // if we have public access to constructor of T
             if constexpr(requires { T::T(); })
@@ -3646,7 +3726,7 @@ namespace SGCore::Serde
             *valueView.m_data = pointer;
         }
 
-        static T* allocateObject()
+        static T* allocateObject(DeserializableValueView<T*, TFormatType>& valueView)
         {
             return new T();
         }
@@ -3676,7 +3756,7 @@ namespace SGCore::Serde
             *valueView.m_data = pointer;
         }
 
-        static T* allocateObject()
+        static T* allocateObject(DeserializableValueView<T const*, TFormatType>& valueView)
         {
             return new T();
         }
@@ -4175,17 +4255,29 @@ namespace SGCore::Serde
     };
 
     template<FormatType TFormatType>
-    struct SerdeSpec<SceneEntitySaveInfo, TFormatType> : BaseTypes<>, DerivedTypes<>
+    struct SerdeSpec<ECS::entity_t, TFormatType> : BaseTypes<>, DerivedTypes<>
     {
-        static inline const std::string type_name = "SGCore::SceneEntitySaveInfo";
+        static inline const std::string type_name = "SGCore::ECS::entity_t";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<const SceneEntitySaveInfo, TFormatType>& valueView)
+        // behaviour as just enum value
+        static void serialize(SerializableValueView<const ECS::entity_t, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().setAsInt64(std::to_underlying(*valueView.m_data));
+        }
+
+        // behaviour as just enum value
+        static void deserialize(DeserializableValueView<ECS::entity_t, TFormatType>& valueView)
+        {
+            *valueView.m_data = static_cast<ECS::entity_t>(valueView.getValueContainer().getAsInt64());
+        }
+
+        // behaviour as serializable entity for scene
+        static void serialize(SerializableValueView<const ECS::entity_t, TFormatType>& valueView, const Scene& serializableScene)
         {
             valueView.getValueContainer().setAsArray();
 
-            auto& serializableScene = *valueView.m_data->m_serializableScene;
-            auto& serializableEntity = valueView.m_data->m_serializableEntity;
+            auto& serializableEntity = *valueView.m_data;
 
             auto* entityBaseInfo = serializableScene.getECSRegistry()->template tryGet<SGCore::EntityBaseInfo>(serializableEntity);
             if(entityBaseInfo)
@@ -4198,11 +4290,7 @@ namespace SGCore::Serde
 
                     LOG_I("GENERATED", "Saving CHILD entity '{}'...", std::to_underlying(childEntity));
 
-                    SGCore::SceneEntitySaveInfo childSaveInfo;
-                    childSaveInfo.m_serializableScene = &serializableScene;
-                    childSaveInfo.m_serializableEntity = childEntity;
-
-                    valueView.getValueContainer().pushBack(childSaveInfo);
+                    valueView.getValueContainer().pushBack(childEntity, serializableScene);
                 }
             }
 
@@ -4380,24 +4468,26 @@ namespace SGCore::Serde
             // calling event to serialize user-provided components
             Scene::getOnEntitySerializeEvent<TFormatType>()(
                     valueView,
-                    *valueView.m_data->m_serializableScene,
-                    valueView.m_data->m_serializableEntity
+                    serializableScene
             );
         }
 
-        static void deserialize(DeserializableValueView<SceneEntitySaveInfo, TFormatType>& valueView, ECS::registry_t& toRegistry)
+        // behaviour as deserializable entity for scene
+        static void deserialize(DeserializableValueView<ECS::entity_t, TFormatType>& valueView, Scene& deserializableScene)
         {
             std::vector<ECS::entity_t> childrenEntities;
+
+            auto& toRegistry = *deserializableScene.getECSRegistry();
 
             // creating entity
             auto entity = toRegistry.create();
             // storing created entity in value view to allow adding components to this entity in event subscriber`s functions
-            valueView.m_data->m_serializableEntity = entity;
+            *valueView.m_data = entity;
 
             // getting EntityBaseInfo of current entity to add all children entities
-            auto& entityBaseInfo = toRegistry.template get<EntityBaseInfo>(entity);
+            auto& entityBaseInfo = toRegistry.get<EntityBaseInfo>(entity);
 
-            LOG_D(SGCORE_TAG, "Loading entity: {}", std::to_underlying(valueView.m_data->m_serializableEntity));
+            LOG_I(SGCORE_TAG, "Loading entity: {}", std::to_underlying(*valueView.m_data));
 
             // iterating through all elements of entityView
             for(auto componentsIt = valueView.getValueContainer().begin(); componentsIt != valueView.getValueContainer().end(); ++componentsIt)
@@ -4408,14 +4498,14 @@ namespace SGCore::Serde
                 if(currentElementTypeName == type_name)
                 {
                     // trying to deserialize current element of array (valueView is array) as child SceneEntitySaveInfo
-                    const std::optional<SceneEntitySaveInfo> asChild =
-                            valueView.getValueContainer().template getMember<SceneEntitySaveInfo>(componentsIt,
-                                                                                                  toRegistry);
+                    const std::optional<ECS::entity_t> asChild =
+                            valueView.getValueContainer().template getMember<ECS::entity_t>(componentsIt,
+                                deserializableScene);
                     if(asChild)
                     {
-                        childrenEntities.push_back(asChild->m_serializableEntity);
-                        LOG_D(SGCORE_TAG, "Loaded child entity: {}",
-                              std::to_underlying(asChild->m_serializableEntity));
+                        childrenEntities.push_back(*asChild);
+                        LOG_E(SGCORE_TAG, "Loaded child entity: {}",
+                              std::to_underlying(*asChild));
 
                     }
                     continue;
@@ -4651,7 +4741,7 @@ namespace SGCore::Serde
                     if(component)
                     {
                         toRegistry.emplace<SGCore::Rigidbody3D>(entity, *component);
-                        (*component)->setParentWorld(valueView.m_data->m_serializableScene->template getSystem<PhysicsWorld3D>());
+                        (*component)->setParentWorld(deserializableScene.getSystem<PhysicsWorld3D>());
 
                         continue;
                     }
@@ -4666,7 +4756,7 @@ namespace SGCore::Serde
                 Scene::getOnEntityDeserializeEvent<TFormatType>()(
                         valueView,
                         componentsIt,
-                        toRegistry
+                        deserializableScene
                 );
             }
 
@@ -4692,9 +4782,6 @@ namespace SGCore::Serde
         {
             valueView.getValueContainer().setAsArray();
 
-            SceneEntitySaveInfo sceneEntitySaveInfo;
-            sceneEntitySaveInfo.m_serializableScene = &serializableScene;
-
             auto entitiesView = valueView.m_data->template view<EntityBaseInfo>();
             for(const auto& entity : entitiesView)
             {
@@ -4713,10 +4800,8 @@ namespace SGCore::Serde
                     continue;
                 }
 
-                sceneEntitySaveInfo.m_serializableEntity = entity;
-
                 LOG_I(SGCORE_TAG, "Saving ROOT entity '{}'", std::to_underlying(entity))
-                valueView.getValueContainer().pushBack(sceneEntitySaveInfo);
+                valueView.getValueContainer().pushBack(entity, serializableScene);
             }
 
             Scene::getOnSceneSavedEvent()(serializableScene);
@@ -4727,7 +4812,7 @@ namespace SGCore::Serde
             for(auto entityIt = valueView.getValueContainer().begin(); entityIt != valueView.getValueContainer().end(); ++entityIt)
             {
                 // deserializing entity and passing registry to getMember to put entity in scene
-                valueView.getValueContainer().template getMember<SceneEntitySaveInfo>(entityIt, *valueView.m_data);
+                valueView.getValueContainer().template getMember<ECS::entity_t>(entityIt, serializableScene);
             }
 
             // resolving all EntityRef`s after deserialization ================
@@ -4858,11 +4943,11 @@ namespace SGCore::Serde
                 }
             }
 
-            auto ecsRegistry = valueView.getValueContainer().template getMember<ECS::registry_t>("m_ecsRegistry", *valueView.m_data);
-            if(ecsRegistry)
+            valueView.getValueContainer().template getMember<ECS::registry_t>("m_ecsRegistry", *valueView.m_data);
+            /*if(ecsRegistry)
             {
                 (*valueView.m_data->getECSRegistry()) = std::move(*ecsRegistry);
-            }
+            }*/
         }
     };
 
@@ -5200,7 +5285,7 @@ namespace SGCore::Serde
         /// You should never implement this function.
         // static void deserialize(DeserializableValueView<ITexture2D, TFormatType>& valueView);
 
-        static ITexture2D* allocateObject() noexcept
+        static ITexture2D* allocateObject(DeserializableValueView<ITexture2D, TFormatType>& valueView) noexcept
         {
             return CoreMain::getRenderer()->createTexture2D();
         }
@@ -5226,7 +5311,7 @@ namespace SGCore::Serde
             }
         }
 
-        static ICubemapTexture* allocateObject() noexcept
+        static ICubemapTexture* allocateObject(DeserializableValueView<ICubemapTexture, TFormatType>& valueView) noexcept
         {
             return CoreMain::getRenderer()->createCubemapTexture();
         }
@@ -5546,7 +5631,7 @@ namespace SGCore::Serde
             }
         }
 
-        static IMeshData* allocateObject() noexcept
+        static IMeshData* allocateObject(DeserializableValueView<IMeshData, TFormatType>& valueView) noexcept
         {
             return CoreMain::getRenderer()->createMeshData();
         }

@@ -152,6 +152,7 @@ void SGCore::Rigidbody3D::setParentWorld(const SGCore::Ref<SGCore::PhysicsWorld3
     if(world)
     {
         world->addBody(m_body);
+        setType(m_type);
     }
 }
 

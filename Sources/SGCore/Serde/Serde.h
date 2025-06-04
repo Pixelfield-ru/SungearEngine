@@ -121,12 +121,16 @@ namespace SGCore::Serde
         }
 
         /**
-         * OPTIONAL (BUT NECESSARY IN IMPLEMENTATIONS OF SerdeSpec OF POINTER TYPES).
-         * Allocates object with type that is derived type of T or allocates T object.
+         * OPTIONAL (BUT NECESSARY IN IMPLEMENTATIONS OF SerdeSpec OF POINTER TYPES AND ABSTRACT TYPES).\n
+         * Allocates object with type that is derived type of T or allocates T object.\n
+         * Calls only if type is abstract.\n
+         * PLEASE, NOTE THAT m_data IN valueView IS EMPTY!
+         * VALUE CONTAINER OF THIS valueView CONTAINS DATA OF UNDERLYING TYPE OF POINTER.
+         * SO YOU CAN DESERIALIZE UNDERLYING TYPE`S DATA IN THIS FUNCTION.\n
          * Possible uses: allocation of the ITexture2D object depending on the currently used graphics API.
          * @return
          */
-        static int allocateObject()
+        static int allocateObject(DeserializableValueView<T, TFormatType>& valueView)
         {
 
         }
@@ -604,14 +608,17 @@ namespace SGCore::Serde
                     if constexpr(!std::is_abstract_v<ptr_element_type>)
                     {
                         // allocating object. all SerdeSpec for pointer types must provide this function
-                        *valueView.m_data = SerdeSpec<T, TFormatType>::allocateObject();
+                        // T is pointer type here. it can be shared pointer, just pointer, etc.
+                        *valueView.m_data = SerdeSpec<T, TFormatType>::allocateObject(valueView);
                     }
                     else
                     {
                         if constexpr(requires { SerdeSpec<ptr_element_type, TFormatType>::allocateObject; })
                         {
-                            auto* object = SerdeSpec<ptr_element_type, TFormatType>::allocateObject();
+                            // allocating ptr_element_type (underlying type of pointer type T)
+                            auto* object = SerdeSpec<ptr_element_type, TFormatType>::allocateObject(tmpView);
                             // setting raw pointer ('object') to 'valueView'
+                            // setting object of ptr_element_type to pointer of type T
                             SerdeSpec<T, TFormatType>::setObjectRawPointer(valueView, object);
                         }
                         else
@@ -935,7 +942,7 @@ namespace SGCore::Serde
                     {
                         if constexpr(requires { SerdeSpec<DerivedT, TFormatType>::allocateObject; })
                         {
-                            derivedObject = SerdeSpec<DerivedT, TFormatType>::allocateObject();
+                            derivedObject = SerdeSpec<DerivedT, TFormatType>::allocateObject(tmpView);
                         }
                         else
                         {
