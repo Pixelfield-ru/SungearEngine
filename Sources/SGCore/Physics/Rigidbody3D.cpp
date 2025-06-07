@@ -17,7 +17,7 @@ SGCore::Rigidbody3D::Rigidbody3D(const SGCore::Ref<PhysicsWorld3D>& parentWorld)
     m_state = MakeRef<btDefaultMotionState>(initialTransform);
     m_finalShape = MakeRef<btCompoundShape>();
     btRigidBody::btRigidBodyConstructionInfo constructionInfo =
-            btRigidBody::btRigidBodyConstructionInfo(1, m_state.get(), m_finalShape.get(), btVector3(0, 0, 0));
+            btRigidBody::btRigidBodyConstructionInfo(0, m_state.get(), m_finalShape.get(), btVector3(0, 0, 0));
     m_body = MakeRef<btRigidBody>(constructionInfo);
     
     parentWorld->addBody(m_body);
@@ -32,7 +32,7 @@ SGCore::Rigidbody3D::Rigidbody3D()
     m_state = MakeRef<btDefaultMotionState>(initialTransform);
     m_finalShape = MakeRef<btCompoundShape>();
     btRigidBody::btRigidBodyConstructionInfo constructionInfo =
-            btRigidBody::btRigidBodyConstructionInfo(1, m_state.get(), m_finalShape.get(), btVector3(0, 0, 0));
+            btRigidBody::btRigidBodyConstructionInfo(0, m_state.get(), m_finalShape.get(), btVector3(0, 0, 0));
     m_body = MakeRef<btRigidBody>(constructionInfo);
 
     setType(m_type);

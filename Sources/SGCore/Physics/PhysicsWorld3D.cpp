@@ -42,6 +42,7 @@ void SGCore::PhysicsWorld3D::addBody(const SGCore::Ref<btRigidBody>& rigidBody) 
 {
     std::lock_guard guard(m_bodiesCountChangeMutex);
     m_dynamicsWorld->addRigidBody(rigidBody.get());
+    rigidBody->activate();
 }
 
 void SGCore::PhysicsWorld3D::removeBody(const Ref<btRigidBody>& rigidBody) noexcept
@@ -57,6 +58,8 @@ void SGCore::PhysicsWorld3D::removeBody(const Ref<btRigidBody>& rigidBody) noexc
 
 void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixedDt) noexcept
 {
+    if(!m_simulate) return;
+
     std::lock_guard guard(m_bodiesCountChangeMutex);
 
     auto lockedScene = getScene();

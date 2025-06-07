@@ -98,6 +98,12 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::loadByPath(const std::filesystem
 
     loadedScene->m_scene->resolveAllEntitiesRefs();
 
+    const auto physicsSystem = loadedScene->m_scene->getSystem<SGCore::PhysicsWorld3D>();
+    if(physicsSystem)
+    {
+        physicsSystem->m_simulate = false;
+    }
+
     // resolving camera entities refs
     /*{
         auto* cameraBaseInfo = loadedScene->m_scene->getECSRegistry()->try_get<SGCore::EntityBaseInfo>(loadedScene->m_data.m_editorCamera);

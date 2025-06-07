@@ -71,6 +71,18 @@ void SGE::InspectorView::renderBody()
         };
 
         ImGui::Combo("Debug Draw Mode", (int*) &debugRenderPass->m_mode, debugModes, 2);
+
+        auto currentScene = SGCore::Scene::getCurrentScene();
+
+        if(currentScene)
+        {
+            const auto physicsWorldSystem = currentScene->getSystem<SGCore::PhysicsWorld3D>();
+
+            if(ImGui::RadioButton("Enable physics simulation", physicsWorldSystem->m_simulate))
+            {
+                physicsWorldSystem->m_simulate = !physicsWorldSystem->m_simulate;
+            }
+        }
     }
 
     ImGui::Separator();
@@ -127,19 +139,24 @@ void SGE::InspectorView::renderBody()
 
                 if(ImGui::RadioButton(fmt::format("Static {}", entityUnderlying).c_str(), rigidbody->getType() == SGCore::PhysicalObjectType::OT_STATIC))
                 {
+                    rigidbody->removeFromWorld();
                     rigidbody->setType(SGCore::PhysicalObjectType::OT_STATIC);
                     rigidbody->stop();
+                    rigidbody->reAddToWorld();
                 }
                 if(ImGui::RadioButton(fmt::format("Dynamic {}", entityUnderlying).c_str(), rigidbody->getType() == SGCore::PhysicalObjectType::OT_DYNAMIC))
                 {
                     rigidbody->setType(SGCore::PhysicalObjectType::OT_DYNAMIC);
                     rigidbody->m_body->setActivationState(DISABLE_DEACTIVATION);
+                    rigidbody->reAddToWorld();
                     // rigidbody->reAddToWorld();
                 }
                 if(ImGui::RadioButton(fmt::format("Kinematic {}", entityUnderlying).c_str(), rigidbody->getType() == SGCore::PhysicalObjectType::OT_KINEMATIC))
                 {
+                    rigidbody->removeFromWorld();
                     rigidbody->setType(SGCore::PhysicalObjectType::OT_KINEMATIC);
                     rigidbody->stop();
+                    rigidbody->reAddToWorld();
                 }
 
                 ImGui::EndGroup();
@@ -149,15 +166,20 @@ void SGE::InspectorView::renderBody()
                 btScalar bodyMass = rigidbody->m_body->getMass();
                 if(ImGui::DragFloat(fmt::format("##BodyMass_{}", entityUnderlying).c_str(), &bodyMass))
                 {
+                    rigidbody->removeFromWorld();
+
                     btVector3 localInertia(0, 0, 0);
                     rigidbody->m_body->getCollisionShape()->calculateLocalInertia(bodyMass, localInertia);
                     rigidbody->m_body->setMassProps(bodyMass, localInertia);
-                    rigidbody->m_body->activate();
+                    rigidbody->m_body->updateInertiaTensor();
+                    // rigidbody->m_body->activate();
 
                     if(bodyMass == 0.0f)
                     {
                         rigidbody->stop();
                     }
+
+                    rigidbody->reAddToWorld();
                     // rigidbody->reAddToWorld();
                     /*for(const auto& shape : rigidbody->getShapes())
                     {

@@ -478,7 +478,6 @@ void SGCore::Serde::SerdeSpec<btCompoundShape, TFormatType>::serialize(
     {
         const btCollisionShape* shape = value->getChildShape(i);
 
-        // todo: fix this. SG10
         valueView.getValueContainer().pushBack(shape, value->getChildTransform(i), parentRigidbody3D);
     }
 }
@@ -491,7 +490,7 @@ void SGCore::Serde::SerdeSpec<btCompoundShape, TFormatType>::deserialize(
 {
     btTransform childShapeTransform;
 
-    const auto& value = valueView.m_data;
+    auto* value = valueView.m_data;
 
     for(auto it = valueView.getValueContainer().begin(); it != valueView.getValueContainer().end(); ++it)
     {
@@ -500,8 +499,9 @@ void SGCore::Serde::SerdeSpec<btCompoundShape, TFormatType>::deserialize(
 
         if(shape)
         {
-            valueView.m_data->addChildShape(childShapeTransform, shape.get());
-            parentRigidbody3D.m_shapes.push_back(shape);
+            value->addChildShape(childShapeTransform, shape->get());
+            // saving reference to shape to avoid deletion of current child shape
+            parentRigidbody3D.m_shapes.push_back(*shape);
             // WRONG!
             // parentRigidbody3D.addShape(childShapeTransform, *shape);
         }
@@ -588,13 +588,28 @@ void SGCore::Serde::SerdeSpec<btCollisionShape, TFormatType>::deserialize(
     const auto shapeType = valueView.getValueContainer().template getMember<int>("m_shapeType");
     if(!shapeType)
     {
-        LOG_E(SGCORE_TAG, "Error while deserializing physical collision shape: not 'm_shapeType' field detected!");
+        LOG_E(SGCORE_TAG, "Error while deserializing physical collision shape: no 'm_shapeType' field detected!");
         return;
     }
 
+    btTransform shapeTransform; // unused
+
     if(*shapeType == COMPOUND_SHAPE_PROXYTYPE)
     {
+        const auto shape = valueView.getValueContainer().template getMember<Ref<btCompoundShape>>("m_shapeObject", shapeTransform, parentRigidbody3D);
+        if(!shape)
+        {
+            LOG_E(SGCORE_TAG, "Error while deserializing physical collision shape: no 'm_shapeObject' field detected!");
+            return;
+        }
 
+        auto* thisCompoundShape = static_cast<btCompoundShape*>(valueView.m_data);
+        auto* otherCompoundShape = shape->get();
+
+        for(int i = 0; i < otherCompoundShape->getNumChildShapes(); ++i)
+        {
+            thisCompoundShape->addChildShape(otherCompoundShape->getChildTransform(i), otherCompoundShape->getChildShape(i));
+        }
     }
     else if(*shapeType == BOX_SHAPE_PROXYTYPE)
     {
@@ -1729,7 +1744,7 @@ void SGCore::Serde::SerdeSpec<SGCore::Rigidbody3D, TFormatType>::serialize(SGCor
     valueContainer.addMember("m_mass", value->m_body->getMass());
 
     const auto inertia = value->m_body->getLocalInertia();
-    valueContainer.addMember("m_inertia", glm::vec3 { inertia.x(), inertia.y(), inertia.z() });
+    valueContainer.addMember("m_inertia", inertia);
 
     valueContainer.addMember("m_finalShape", static_cast<btCollisionShape*>(value->m_finalShape.get()), btTransform {}, *valueView.m_data);
 
@@ -1751,7 +1766,12 @@ void SGCore::Serde::SerdeSpec<SGCore::Rigidbody3D, TFormatType>::deserialize(SGC
 
     // deserializing final shape (compound shape)
     btTransform finalShapeTransform; // unused
-    valueView.getValueContainer().template getMember<Ref<btCollisionShape>>("m_finalShape", finalShapeTransform, *valueView.m_data);
+    auto finalShape = valueView.getValueContainer().template getMember<Ref<btCollisionShape>>("m_finalShape", finalShapeTransform, *valueView.m_data);
+    if(finalShape && (*finalShape)->getShapeType() == COMPOUND_SHAPE_PROXYTYPE)
+    {
+       valueView.m_data->m_finalShape = std::move(std::static_pointer_cast<btCompoundShape>(*finalShape));
+       valueView.m_data->m_body->setCollisionShape(finalShape->get());
+    }
 
     const auto type = valueView.getValueContainer().template getMember<PhysicalObjectType>("m_type");
     if(type)
@@ -4740,8 +4760,7 @@ namespace SGCore::Serde
 
                     if(component)
                     {
-                        toRegistry.emplace<SGCore::Rigidbody3D>(entity, *component);
-                        (*component)->setParentWorld(deserializableScene.getSystem<PhysicsWorld3D>());
+                        toRegistry.emplace<SGCore::Rigidbody3D>(entity, *component)->setParentWorld(deserializableScene.getSystem<PhysicsWorld3D>());
 
                         continue;
                     }

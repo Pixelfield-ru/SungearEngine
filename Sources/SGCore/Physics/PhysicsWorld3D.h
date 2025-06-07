@@ -24,6 +24,8 @@ namespace SGCore
         sg_implement_type_id(PhysicsWorld3D, 17)
 
         friend struct TransformationsUpdater;
+
+        bool m_simulate = true;
         
         PhysicsWorld3D();
 
