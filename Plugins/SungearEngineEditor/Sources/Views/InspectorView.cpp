@@ -81,6 +81,11 @@ void SGE::InspectorView::renderBody()
             if(ImGui::RadioButton("Enable physics simulation", physicsWorldSystem->m_simulate))
             {
                 physicsWorldSystem->m_simulate = !physicsWorldSystem->m_simulate;
+
+                const auto rigidbodies = currentScene->getECSRegistry()->view<SGCore::Rigidbody3D>();
+                rigidbodies.each([&](auto& rigidbody) {
+                    rigidbody->stop();
+                });
             }
         }
     }
@@ -207,6 +212,21 @@ void SGE::InspectorView::renderBody()
                             auto boxLocalScaling = boxShape->getLocalScaling();
                             if(ImGui::DragFloat3(fmt::format("##BoxShapeSize_{}_{}", entityUnderlying, i).c_str(), boxLocalScaling.m_floats, 0.1f, 0.001f))
                             {
+                                if(boxLocalScaling.x() <= 0.0f)
+                                {
+                                    boxLocalScaling.setX(0.0001f);
+                                }
+
+                                if(boxLocalScaling.y() <= 0.0f)
+                                {
+                                    boxLocalScaling.setY(0.0001f);
+                                }
+
+                                if(boxLocalScaling.z() <= 0.0f)
+                                {
+                                    boxLocalScaling.setZ(0.0001f);
+                                }
+
                                 boxShape->setLocalScaling(boxLocalScaling);
                                 rigidbody->updateShapeTransform(0);
                             }
@@ -238,6 +258,14 @@ void SGE::InspectorView::renderBody()
             if(!ecsRegistry->allOf<SGCore::Rigidbody3D>(m_currentChosenEntity))
             {
                 ecsRegistry->emplace<SGCore::Rigidbody3D>(m_currentChosenEntity, SGCore::MakeRef<SGCore::Rigidbody3D>(currentScene->getSystem<SGCore::PhysicsWorld3D>()));
+            }
+        }
+
+        if(ImGui::CollapsingHeader("Danger zone"))
+        {
+            if(ImGui::Button("Delete entity"))
+            {
+                ecsRegistry->get<SGCore::EntityBaseInfo>(m_currentChosenEntity).destroy(*ecsRegistry);
             }
         }
     }

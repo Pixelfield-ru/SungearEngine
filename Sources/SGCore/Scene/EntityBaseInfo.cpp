@@ -5,6 +5,7 @@
 #include "EntityBaseInfo.h"
 #include "SGCore/Logger/Logger.h"
 #include "SGCore/ECS/Registry.h"
+#include "SGCore/Utils/Assert.h"
 
 void SGCore::EntityBaseInfo::setParent(const SGCore::ECS::entity_t& parent,
                                        SGCore::ECS::registry_t& inRegistry) noexcept
@@ -179,6 +180,26 @@ const std::vector<SGCore::ECS::entity_t>& SGCore::EntityBaseInfo::getChildren() 
 SGCore::ECS::entity_t SGCore::EntityBaseInfo::getParent() const noexcept
 {
     return m_parent;
+}
+
+void SGCore::EntityBaseInfo::destroy(ECS::registry_t& inRegistry) const noexcept
+{
+    for(const auto& child : m_children)
+    {
+#ifndef SUNGEAR_DEBUG
+        inRegistry.get<EntityBaseInfo>(child).destroy(inRegistry);
+#else
+        auto* childEntityBaseInfo = inRegistry.tryGet<EntityBaseInfo>(child);
+        SG_ASSERT(childEntityBaseInfo != nullptr, fmt::format("Can not destroy child entity '{}' of parent entity '{}': child entity does not have component EntityBaseInfo.",
+            std::to_underlying(m_thisEntity),
+            std::to_underlying(child)).c_str());
+
+        childEntityBaseInfo->destroy(inRegistry);
+#endif
+    }
+
+    SG_ASSERT(inRegistry.valid(m_thisEntity), fmt::format("Can not destroy entity '{}': invalid entity.", std::to_underlying(m_thisEntity)).c_str());
+    inRegistry.destroy(m_thisEntity);
 }
 
 const glm::vec3& SGCore::EntityBaseInfo::getUniqueColor() const noexcept

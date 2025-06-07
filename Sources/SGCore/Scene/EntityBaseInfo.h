@@ -48,6 +48,11 @@ namespace SGCore
         [[nodiscard]] ECS::entity_t getParent() const noexcept;
 
         /**
+         * Removes this entity and all children entities.
+         */
+        void destroy(ECS::registry_t& inRegistry) const noexcept;
+
+        /**
          * @param allEntitiesInTree (OPTIONAL) The entities of the entire tree, starting from the root entity, ending with the entity for which this function was called.
          * @param inRegistry In which register the search will be performed.
          * @return The root parent, whose parent is the scene itself!
