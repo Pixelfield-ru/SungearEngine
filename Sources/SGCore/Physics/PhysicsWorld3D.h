@@ -69,6 +69,8 @@ namespace SGCore
         }
     
     private:
+        void updateWorld(double dt, double fixedDt) noexcept;
+
         Scope<btCollisionConfiguration> m_collisionConfig;
         Scope<btCollisionDispatcher> m_collisionDispatcher;
         Scope<btBroadphaseInterface> m_overlappingPairCache;

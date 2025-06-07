@@ -36,7 +36,7 @@ void SGCore::TransformationsUpdater::update(const double& dt, const double& fixe
 
     auto registry = lockedScene->getECSRegistry();
 
-    auto transformsView = registry->view<Transform>();
+    auto transformsView = registry->view<EntityBaseInfo, Transform>();
 
     std::vector<ECS::entity_t> notTransformUpdatedEntities;
     std::unordered_set<ECS::entity_t> notTransformUpdatedEntitiesSet;
@@ -54,9 +54,16 @@ void SGCore::TransformationsUpdater::update(const double& dt, const double& fixe
 
     // =======================================================================
 
-    transformsView.each([&registry, &notTransformUpdatedEntities, &notTransformUpdatedEntitiesSet, this](ECS::entity_t entity, Transform::reg_t transform) {
-        auto& entityBaseInfo = registry->get<EntityBaseInfo>(entity);
-        Ref<Transform> parentTransform;
+    transformsView.each([&registry, &notTransformUpdatedEntities, &notTransformUpdatedEntitiesSet, this](
+    ECS::entity_t entity,
+    EntityBaseInfo& entityBaseInfo,
+    const Transform::reg_t& transform) {
+        // starting only on root entities
+        if(entityBaseInfo.getParent() != entt::null) return;
+
+        updateTransform(entityBaseInfo, entity, transform, nullptr, registry, notTransformUpdatedEntities, notTransformUpdatedEntitiesSet);
+
+        /*Ref<Transform> parentTransform;
         Ref<Rigidbody3D> rigidbody3D;
 
         if(entityBaseInfo.getParent() != entt::null)
@@ -101,7 +108,7 @@ void SGCore::TransformationsUpdater::update(const double& dt, const double& fixe
             // =====================================================================
 
             onTransformChanged(registry, entity, transform);
-        }
+        }*/
     });
 
     // ==========================================================================================
@@ -118,4 +125,63 @@ void SGCore::TransformationsUpdater::update(const double& dt, const double& fixe
 void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double& fixedDt) noexcept
 {
 
+}
+
+void SGCore::TransformationsUpdater::updateTransform(const EntityBaseInfo::reg_t& currentEntityBaseInfo,
+                                                     const ECS::entity_t& currentEntity,
+                                                     const Transform::reg_t& currentEntityTransform,
+                                                     const Transform::reg_t& parentTransform,
+                                                     const Ref<ECS::registry_t>& inRegistry,
+                                                     std::vector<ECS::entity_t>& notTransformUpdatedEntities,
+                                                     std::unordered_set<ECS::entity_t>& notTransformUpdatedEntitiesSet)
+{
+    if(currentEntityTransform)
+    {
+        Ref<Rigidbody3D> rigidbody3D;
+
+        {
+            auto* tmpRigidbody3D = inRegistry->tryGet<Rigidbody3D>(currentEntity);
+            rigidbody3D = tmpRigidbody3D ? *tmpRigidbody3D : nullptr;
+        }
+
+        TransformBase& finalTransform = currentEntityTransform->m_finalTransform;
+
+        const bool isTransformChanged = TransformUtils::calculateTransform(*currentEntityTransform, parentTransform.get());
+
+        if(!isTransformChanged)
+        {
+            if(!notTransformUpdatedEntitiesSet.contains(currentEntity) && rigidbody3D)
+            {
+                notTransformUpdatedEntitiesSet.insert(currentEntity);
+                notTransformUpdatedEntities.push_back(currentEntity);
+            }
+        }
+        else
+        {
+            // updating rigidbody3d =================================================
+
+            if(rigidbody3D)
+            {
+                auto& rigidbody3DTransform = rigidbody3D->m_body->getWorldTransform();
+
+                rigidbody3DTransform.setIdentity();
+                rigidbody3DTransform.setOrigin({ finalTransform.m_position.x, finalTransform.m_position.y, finalTransform.m_position.z });
+                rigidbody3DTransform.setRotation({ finalTransform.m_rotation.x, finalTransform.m_rotation.y, finalTransform.m_rotation.z, finalTransform.m_rotation.w });
+                // rigidbody3DTransform.setFromOpenGLMatrix(&noScaleMatrix[0][0]);
+            }
+
+            // =====================================================================
+
+            onTransformChanged(inRegistry, currentEntity, currentEntityTransform);
+        }
+    }
+
+    for(const auto& childEntity : currentEntityBaseInfo.getChildren())
+    {
+        const auto& childBaseInfo = inRegistry->get<EntityBaseInfo>(childEntity);
+        const auto* childTransform = inRegistry->tryGet<Transform>(childEntity);
+        updateTransform(childBaseInfo, childEntity, childTransform ? *childTransform : nullptr,
+                        currentEntityTransform, inRegistry, notTransformUpdatedEntities,
+                        notTransformUpdatedEntitiesSet);
+    }
 }

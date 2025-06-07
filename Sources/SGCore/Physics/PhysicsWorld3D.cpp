@@ -58,6 +58,38 @@ void SGCore::PhysicsWorld3D::removeBody(const Ref<btRigidBody>& rigidBody) noexc
 
 void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixedDt) noexcept
 {
+    updateWorld(dt, fixedDt);
+}
+
+void SGCore::PhysicsWorld3D::update(const double& dt, const double& fixedDt) noexcept
+{
+    // updateWorld(dt, fixedDt);
+
+    auto lockedScene = getScene();
+
+    if(!lockedScene) return;
+
+    m_dynamicsWorld->debugDrawWorld();
+}
+
+void SGCore::PhysicsWorld3D::onAddToScene(const Ref<Scene>& scene)
+{
+    if (!scene) return;
+
+    auto rigidbodies3DView = scene->getECSRegistry()->view<Rigidbody3D>();
+
+    rigidbodies3DView.each([this](Ref<Rigidbody3D> rigidbody3D) {
+        this->addBody(rigidbody3D->m_body);
+    });
+}
+
+void SGCore::PhysicsWorld3D::onRemoveFromScene(const Ref<Scene>& scene)
+{
+
+}
+
+void SGCore::PhysicsWorld3D::updateWorld(double dt, double fixedDt) noexcept
+{
     if(!m_simulate) return;
 
     std::lock_guard guard(m_bodiesCountChangeMutex);
@@ -156,29 +188,4 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
     }
 
     m_dynamicsWorld->stepSimulation(dt, 12, dt);
-}
-
-void SGCore::PhysicsWorld3D::update(const double& dt, const double& fixedDt) noexcept
-{
-    auto lockedScene = getScene();
-
-    if(!lockedScene) return;
-
-    m_dynamicsWorld->debugDrawWorld();
-}
-
-void SGCore::PhysicsWorld3D::onAddToScene(const Ref<Scene>& scene)
-{
-    if (!scene) return;
-
-    auto rigidbodies3DView = scene->getECSRegistry()->view<Rigidbody3D>();
-
-    rigidbodies3DView.each([this](Ref<Rigidbody3D> rigidbody3D) {
-        this->addBody(rigidbody3D->m_body);
-    });
-}
-
-void SGCore::PhysicsWorld3D::onRemoveFromScene(const Ref<Scene>& scene)
-{
-
 }

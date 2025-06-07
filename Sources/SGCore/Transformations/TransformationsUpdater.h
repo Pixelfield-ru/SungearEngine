@@ -12,6 +12,7 @@
 #include "SGCore/Scene/EntityComponentMember.h"
 #include "SGCore/Utils/Signal.h"
 #include "Transform.h"
+#include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Scene/IParallelSystem.h"
 #include "SGCore/Threading/WrappedObject.h"
 
@@ -51,5 +52,13 @@ namespace SGCore
 
         // todo: replace unordered_set by sparse set
         std::unordered_set<ECS::entity_t> m_notTransformUpdatedEntitiesSet;
+
+        void updateTransform(const EntityBaseInfo::reg_t& currentEntityBaseInfo,
+                             const ECS::entity_t& currentEntity,
+                             const Transform::reg_t& currentEntityTransform,
+                             const Transform::reg_t& parentTransform,
+                             const Ref<ECS::registry_t>& inRegistry,
+                             std::vector<ECS::entity_t>& notTransformUpdatedEntities,
+                             std::unordered_set<ECS::entity_t>& notTransformUpdatedEntitiesSet);
     };
 }
