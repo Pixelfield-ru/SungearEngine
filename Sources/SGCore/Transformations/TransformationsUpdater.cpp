@@ -7,6 +7,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include "TransformationsUpdater.h"
 #include "TransformBase.h"
@@ -17,7 +18,7 @@
 #include "SGCore/Physics/PhysicsWorld3D.h"
 #include "Transform.h"
 #include "SGCore/Render/Mesh.h"
-#include <glm/gtx/string_cast.hpp>
+#include "SGCore/ECS/Registry.h"
 
 #include "TransformUtils.h"
 
@@ -38,86 +39,23 @@ void SGCore::TransformationsUpdater::update(const double& dt, const double& fixe
 
     auto transformsView = registry->view<EntityBaseInfo, Transform>();
 
-    std::vector<ECS::entity_t> notTransformUpdatedEntities;
-    std::unordered_set<ECS::entity_t> notTransformUpdatedEntitiesSet;
-
     auto start = std::chrono::system_clock::now();
-    {
-        std::lock_guard lock(m_notTransformUpdatedEntitiesMutex);
-
-        notTransformUpdatedEntities = m_notTransformUpdatedEntities;
-        notTransformUpdatedEntitiesSet = m_notTransformUpdatedEntitiesSet;
-        // m_notTransformUpdatedEntities.clear();
-    }
 
     // std::cout << "Elapsed: " << std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - start) << " for clearing notTransformUpdatedEntities and copying updatedByPhysicsEntities: " << updatedByPhysicsEntities.size() << std::endl;
 
     // =======================================================================
 
-    transformsView.each([&registry, &notTransformUpdatedEntities, &notTransformUpdatedEntitiesSet, this](
+    transformsView.each([&registry, this](
     ECS::entity_t entity,
     EntityBaseInfo& entityBaseInfo,
     const Transform::reg_t& transform) {
         // starting only on root entities
         if(entityBaseInfo.getParent() != entt::null) return;
 
-        updateTransform(entityBaseInfo, entity, transform, nullptr, registry, notTransformUpdatedEntities, notTransformUpdatedEntitiesSet);
-
-        /*Ref<Transform> parentTransform;
-        Ref<Rigidbody3D> rigidbody3D;
-
-        if(entityBaseInfo.getParent() != entt::null)
-        {
-            auto* tmp = registry->tryGet<Transform>(entityBaseInfo.getParent());
-            parentTransform = tmp ? *tmp : nullptr;
-        }
-
-        {
-            auto* tmpRigidbody3D = registry->tryGet<Rigidbody3D>(entity);
-            rigidbody3D = tmpRigidbody3D ? *tmpRigidbody3D : nullptr;
-        }
-
-        TransformBase& finalTransform = transform->m_finalTransform;
-
-        const bool isTransformChanged = TransformUtils::calculateTransform(*transform, parentTransform.get());
-
-        if(!isTransformChanged)
-        {
-            if(!notTransformUpdatedEntitiesSet.contains(entity) && rigidbody3D)
-            {
-                notTransformUpdatedEntitiesSet.insert(entity);
-                notTransformUpdatedEntities.push_back(entity);
-            }
-        }
-        else
-        {
-            // updating rigidbody3d =================================================
-
-            if(rigidbody3D)
-            {
-                auto& rigidbody3DTransform = rigidbody3D->m_body->getWorldTransform();
-
-                const auto noScaleMatrix = glm::mat4(glm::mat3(finalTransform.m_animatedModelMatrix));
-
-                rigidbody3DTransform.setIdentity();
-                rigidbody3DTransform.setOrigin({ finalTransform.m_position.x, finalTransform.m_position.y, finalTransform.m_position.z });
-                rigidbody3DTransform.setRotation({ finalTransform.m_rotation.x, finalTransform.m_rotation.y, finalTransform.m_rotation.z, finalTransform.m_rotation.w });
-                // rigidbody3DTransform.setFromOpenGLMatrix(&noScaleMatrix[0][0]);
-            }
-
-            // =====================================================================
-
-            onTransformChanged(registry, entity, transform);
-        }*/
+        updateTransform(entityBaseInfo, entity, transform, nullptr, registry);
     });
 
     // ==========================================================================================
-
-    {
-        std::lock_guard lock(m_notTransformUpdatedEntitiesMutex);
-        m_notTransformUpdatedEntities = std::move(notTransformUpdatedEntities);
-        m_notTransformUpdatedEntitiesSet = std::move(notTransformUpdatedEntitiesSet);
-    }
 
     // std::cout << "Elapsed: " << std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - start) << " for updating transforms of entities" << std::endl;
 }
@@ -131,9 +69,7 @@ void SGCore::TransformationsUpdater::updateTransform(const EntityBaseInfo::reg_t
                                                      const ECS::entity_t& currentEntity,
                                                      const Transform::reg_t& currentEntityTransform,
                                                      const Transform::reg_t& parentTransform,
-                                                     const Ref<ECS::registry_t>& inRegistry,
-                                                     std::vector<ECS::entity_t>& notTransformUpdatedEntities,
-                                                     std::unordered_set<ECS::entity_t>& notTransformUpdatedEntitiesSet)
+                                                     const Ref<ECS::registry_t>& inRegistry)
 {
     if(currentEntityTransform)
     {
@@ -145,33 +81,112 @@ void SGCore::TransformationsUpdater::updateTransform(const EntityBaseInfo::reg_t
         }
 
         TransformBase& finalTransform = currentEntityTransform->m_finalTransform;
+        TransformBase& ownTransform = currentEntityTransform->m_ownTransform;
 
-        const bool isTransformChanged = TransformUtils::calculateTransform(*currentEntityTransform, parentTransform.get());
-
-        if(!isTransformChanged)
+        bool isTransformChanged = false;
+        // if(!rigidbody3D)
         {
-            if(!notTransformUpdatedEntitiesSet.contains(currentEntity) && rigidbody3D)
-            {
-                notTransformUpdatedEntitiesSet.insert(currentEntity);
-                notTransformUpdatedEntities.push_back(currentEntity);
-            }
+            isTransformChanged = TransformUtils::calculateTransform(*currentEntityTransform, parentTransform.get());
         }
-        else
+
+        // updating rigidbody3d =================================================
+
+        if(rigidbody3D)
         {
-            // updating rigidbody3d =================================================
+            /*auto inversedParentTranslationMatrix = glm::mat4(1.0);
+            auto inversedParentRotationMatrix = glm::mat4(1.0);
+            auto inversedParentScaleMatrix = glm::mat4(1.0);
 
-            if(rigidbody3D)
+            // TransformUtils::calculateTransform(*transform, parentTransform.get());
+
+            if(parentTransform)
             {
-                auto& rigidbody3DTransform = rigidbody3D->m_body->getWorldTransform();
-
-                rigidbody3DTransform.setIdentity();
-                rigidbody3DTransform.setOrigin({ finalTransform.m_position.x, finalTransform.m_position.y, finalTransform.m_position.z });
-                rigidbody3DTransform.setRotation({ finalTransform.m_rotation.x, finalTransform.m_rotation.y, finalTransform.m_rotation.z, finalTransform.m_rotation.w });
-                // rigidbody3DTransform.setFromOpenGLMatrix(&noScaleMatrix[0][0]);
+                inversedParentTranslationMatrix = glm::inverse(
+                    parentTransform->m_finalTransform.m_translationMatrix);
+                inversedParentRotationMatrix = glm::inverse(
+                    parentTransform->m_finalTransform.m_rotationMatrix);
+                inversedParentScaleMatrix = glm::inverse(
+                    parentTransform->m_finalTransform.m_scaleMatrix);
             }
 
-            // =====================================================================
+            glm::mat4 rigidbody3DMatrix = glm::mat4(1.0);
 
+            rigidbody3D->m_body->getWorldTransform().getOpenGLMatrix(&rigidbody3DMatrix[0][0]);
+
+            // getting entity`s only own transform from rigidbody3d
+            rigidbody3DMatrix =
+                            inversedParentScaleMatrix * inversedParentRotationMatrix *
+                            inversedParentTranslationMatrix *
+                            rigidbody3DMatrix;
+
+            glm::vec3 scale;
+            glm::quat rotation;
+            glm::vec3 translation;
+            glm::vec3 skew;
+            glm::vec4 perspective;
+
+            glm::decompose(rigidbody3DMatrix, scale, rotation, translation, skew,
+                           perspective);*/
+
+            auto& bodyTransform = rigidbody3D->m_body->getWorldTransform();
+
+            const auto transformPosDif = finalTransform.m_position - rigidbody3D->m_lastPosition;
+            auto transformRotDif = finalTransform.m_rotation * glm::inverse(glm::normalize(rigidbody3D->m_lastRotation));
+
+            glm::vec3 localBodyPos = glm::vec3(bodyTransform.getOrigin().x(), bodyTransform.getOrigin().y(), bodyTransform.getOrigin().z());
+            if(parentTransform)
+            {
+                // localBodyPos = glm::inverse(parentTransform->m_finalTransform.m_animatedModelMatrix) * glm::vec4(localBodyPos, 1.0f);
+                localBodyPos = glm::inverse(parentTransform->m_finalTransform.m_rotation) * glm::vec4(localBodyPos, 1.0f);
+            }
+
+            glm::vec3 localLastBodyPos = rigidbody3D->m_lastPosition;
+            if(parentTransform)
+            {
+                // localLastBodyPos = glm::inverse(parentTransform->m_finalTransform.m_animatedModelMatrix) * glm::vec4(localLastBodyPos, 1.0f);
+                localLastBodyPos = glm::inverse(parentTransform->m_finalTransform.m_rotation) * glm::vec4(localLastBodyPos, 1.0f);
+            }
+
+            // calculating position delta of rigidbody (physical transform delta)
+            const auto posDif = localBodyPos - localLastBodyPos;
+
+            auto localBodyRot = glm::quat(bodyTransform.getRotation().w(), bodyTransform.getRotation().x(), bodyTransform.getRotation().y(), bodyTransform.getRotation().z());
+            if(parentTransform)
+            {
+                localBodyRot = glm::inverse(parentTransform->m_finalTransform.m_rotation) * localBodyRot;
+            }
+
+            auto localLastBodyRot = rigidbody3D->m_lastRotation;
+            if(parentTransform)
+            {
+                localLastBodyRot = glm::inverse(parentTransform->m_finalTransform.m_rotation) * localLastBodyRot;
+            }
+
+            // calculating rotation delta of rigidbody (physical transform delta)
+            const auto rotDif = localBodyRot * glm::inverse(glm::normalize(localLastBodyRot));
+
+            // applying transform component delta to rigidbody transform
+            bodyTransform.setOrigin(bodyTransform.getOrigin() + btVector3(transformPosDif.x, transformPosDif.y, transformPosDif.z));
+            bodyTransform.setRotation(btQuaternion(transformRotDif.x, transformRotDif.y, transformRotDif.z, transformRotDif.w) * bodyTransform.getRotation());
+
+            // applying rigidbody transform delta to transform component (applying physics)
+            ownTransform.m_position += posDif;
+            ownTransform.m_rotation = rotDif * ownTransform.m_rotation;
+
+            if(posDif != glm::vec3(0.0f) || rotDif != glm::identity<glm::quat>())
+            {
+                isTransformChanged = true;
+            }
+
+            // saving new rigidbody transform as last transform
+            rigidbody3D->m_lastPosition = glm::vec3 { bodyTransform.getOrigin().x(), bodyTransform.getOrigin().y(), bodyTransform.getOrigin().z() };
+            rigidbody3D->m_lastRotation = glm::quat { bodyTransform.getRotation().w(), bodyTransform.getRotation().x(), bodyTransform.getRotation().y(), bodyTransform.getRotation().z() };
+        }
+
+        // =====================================================================
+
+        if(isTransformChanged)
+        {
             onTransformChanged(inRegistry, currentEntity, currentEntityTransform);
         }
     }
@@ -181,7 +196,6 @@ void SGCore::TransformationsUpdater::updateTransform(const EntityBaseInfo::reg_t
         const auto& childBaseInfo = inRegistry->get<EntityBaseInfo>(childEntity);
         const auto* childTransform = inRegistry->tryGet<Transform>(childEntity);
         updateTransform(childBaseInfo, childEntity, childTransform ? *childTransform : nullptr,
-                        currentEntityTransform, inRegistry, notTransformUpdatedEntities,
-                        notTransformUpdatedEntitiesSet);
+                        currentEntityTransform, inRegistry);
     }
 }

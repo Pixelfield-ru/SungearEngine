@@ -3822,6 +3822,7 @@ namespace SGCore::Serde
 
         static void serialize(SerializableValueView<const FloatingT, TFormatType>& valueView)
         {
+            const FloatingT finalValue = std::isfinite(*valueView.m_data) ? *valueView.m_data : 0.0;
             valueView.getValueContainer().setAsFloat(*valueView.m_data);
         }
 
@@ -3842,7 +3843,9 @@ namespace SGCore::Serde
 
         static void serialize(SerializableValueView<const IntegerT, TFormatType>& valueView)
         {
-            valueView.getValueContainer().setAsInt64(*valueView.m_data);
+            const IntegerT finalVal = std::isfinite(*valueView.m_data) ? *valueView.m_data : 0;
+
+            valueView.getValueContainer().setAsInt64(finalVal);
         }
 
         static void deserialize(DeserializableValueView<IntegerT, TFormatType>& valueView)

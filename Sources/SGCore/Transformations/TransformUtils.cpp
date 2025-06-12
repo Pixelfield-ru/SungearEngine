@@ -136,6 +136,10 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
         glm::decompose(childFinalTransform.m_animatedModelMatrix, finalScale, finalRotation, finalTranslation, finalSkew,
                        finalPerspective);
 
+        childFinalTransform.m_lastPosition = childFinalTransform.m_position;
+        childFinalTransform.m_lastRotation = childFinalTransform.m_rotation;
+        childFinalTransform.m_lastScale = childFinalTransform.m_scale;
+
         childFinalTransform.m_position = finalTranslation;
         childFinalTransform.m_rotation = finalRotation;
         childFinalTransform.m_scale = finalScale;

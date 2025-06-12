@@ -24,10 +24,11 @@ namespace SGCore
     {
         sg_serde_as_friend()
 
-    public:
+        friend struct PhysicsWorld3D;
+        friend struct TransformationsUpdater;
+
         Ref<btRigidBody> m_body;
-        
-    public:
+
         Rigidbody3D(const Ref<PhysicsWorld3D>& physicsWorld);
         Rigidbody3D();
         Rigidbody3D(const Rigidbody3D& other) noexcept = default;
@@ -69,6 +70,11 @@ namespace SGCore
         std::vector<Ref<btCollisionShape>> m_shapes;
         Ref<btCompoundShape> m_finalShape;
         Weak<PhysicsWorld3D> m_parentPhysicsWorld;
+
+        // last rigidbody position
+        glm::vec3 m_lastPosition { };
+        // last rigidbody rotation
+        glm::quat m_lastRotation = glm::identity<glm::quat>();
 
         PhysicalObjectType m_type = PhysicalObjectType::OT_STATIC;
     };
