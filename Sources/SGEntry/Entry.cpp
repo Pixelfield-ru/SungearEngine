@@ -63,6 +63,8 @@ void coreInit()
     SGCore::RenderPipelinesManager::registerRenderPipeline(pbrrpPipeline);
     SGCore::RenderPipelinesManager::setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();
 
+    SGCore::AssetManager::getInstance()->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
+
     const std::filesystem::path configPath = "SungearEngineConfig.json";
     SGCore::Config loadedConfig;
     std::string configLoadLog;

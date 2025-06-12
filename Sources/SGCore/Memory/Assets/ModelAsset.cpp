@@ -558,7 +558,7 @@ std::vector<SGCore::AssetRef<SGCore::Skeleton>> SGCore::ModelAsset::processSkele
 
                 std::cout << "processed new skeleton: " << skeleton->getPath().resolved() << std::endl;
 
-                LOG_W(SGCORE_TAG, "Loaded new skeleton by path '{}'!",
+                LOG_I(SGCORE_TAG, "Loaded new skeleton by path '{}'!",
                       Utils::toUTF8(skeletonPath.resolved().u16string()));
 
                 AssetRef<Bone> rootBone;
@@ -665,7 +665,7 @@ void SGCore::ModelAsset::initAndAddBoneToSkeleton(AssetRef<Bone>& skeletonBone,
 
         initAndAddBoneToSkeleton(childBone, childHierarchyBone, hierarchyBones, toSkeleton, inputMeshes);
 
-        childBone->m_parent = skeletonBone;
+        childBone->m_parent = skeletonBone.get();
         skeletonBone->m_children.push_back(childBone);
     }
 }

@@ -7,7 +7,6 @@
 
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/Utils/FileUtils.h"
-#include "SGCore/Serde/Defines.h"
 
 namespace SGCore
 {

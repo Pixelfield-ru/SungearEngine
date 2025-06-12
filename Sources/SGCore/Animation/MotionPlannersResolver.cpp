@@ -355,7 +355,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     {
         currentBone->m_currentPosition = (currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix)[3];
 
-        auto parentBone = currentBone->m_parent.lock();
+        auto parentBone = currentBone->m_parent;
         if(parentBone)
         {
             glm::vec3 startPos = parentBone->m_currentPosition;

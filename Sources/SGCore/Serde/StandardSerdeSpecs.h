@@ -5118,7 +5118,8 @@ namespace SGCore::Serde
             Skeleton,
             AnimationsFile,
             Bone,
-            SkeletalAnimationAsset
+            SkeletalAnimationAsset,
+            ByteFileAsset
             >
     {
         static inline const std::string type_name = "SGCore::IAsset";
@@ -5310,6 +5311,100 @@ namespace SGCore::Serde
         static ITexture2D* allocateObject(DeserializableValueView<ITexture2D, TFormatType>& valueView) noexcept
         {
             return CoreMain::getRenderer()->createTexture2D();
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<ByteFileAsset, TFormatType> : BaseTypes<IAsset>, DerivedTypes<AudioTrackAsset>
+    {
+        static inline const std::string type_name = "SGCore::ByteFileAsset";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const ByteFileAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            const AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_dataBuffer, valueView.m_data->m_dataBufferSize);
+
+            valueView.getValueContainer().addMember("m_dataMarkupInPackage", dataMarkup);
+        }
+
+        static void deserialize(DeserializableValueView<ByteFileAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            const auto dataMarkup = valueView.getValueContainer().template getMember<AssetsPackage::DataMarkup>("m_dataMarkupInPackage");
+
+            if(dataMarkup)
+            {
+                valueView.m_data->m_dataMarkupInPackage = *dataMarkup;
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<AudioTrackAsset, TFormatType> : BaseTypes<ByteFileAsset>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::AudioTrackAsset";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const AudioTrackAsset, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().addMember("m_audioTrackType", valueView.m_data->m_audioTrackType);
+            valueView.getValueContainer().addMember("m_audioFormat", valueView.m_data->m_audioFormat);
+            valueView.getValueContainer().addMember("m_numChannels", valueView.m_data->m_numChannels);
+            valueView.getValueContainer().addMember("m_sampleRate", valueView.m_data->m_sampleRate);
+            valueView.getValueContainer().addMember("m_byteRate", valueView.m_data->m_byteRate);
+            valueView.getValueContainer().addMember("m_blockAlign", valueView.m_data->m_blockAlign);
+            valueView.getValueContainer().addMember("m_bitsPerSample", valueView.m_data->m_bitsPerSample);
+            valueView.getValueContainer().addMember("m_frequency", valueView.m_data->m_frequency);
+        }
+
+        static void deserialize(DeserializableValueView<AudioTrackAsset, TFormatType>& valueView)
+        {
+            const auto audioTrackType = valueView.getValueContainer().template getMember<AudioTrackType>("m_audioTrackType");
+            if(audioTrackType)
+            {
+                valueView.m_data->m_audioTrackType = *audioTrackType;
+            }
+
+            const auto audioFormat = valueView.getValueContainer().template getMember<std::int16_t>("m_audioFormat");
+            if(audioFormat)
+            {
+                valueView.m_data->m_audioFormat = *audioFormat;
+            }
+
+            const auto numChannels = valueView.getValueContainer().template getMember<std::int32_t>("m_numChannels");
+            if(numChannels)
+            {
+                valueView.m_data->m_numChannels = *numChannels;
+            }
+
+            const auto sampleRate = valueView.getValueContainer().template getMember<std::int32_t>("m_sampleRate");
+            if(sampleRate)
+            {
+                valueView.m_data->m_sampleRate = *sampleRate;
+            }
+
+            const auto byteRate = valueView.getValueContainer().template getMember<std::uint32_t>("m_byteRate");
+            if(byteRate)
+            {
+                valueView.m_data->m_byteRate = *byteRate;
+            }
+
+            const auto blockAlign = valueView.getValueContainer().template getMember<std::uint16_t>("m_blockAlign");
+            if(blockAlign)
+            {
+                valueView.m_data->m_blockAlign = *blockAlign;
+            }
+
+            const auto bitsPerSample = valueView.getValueContainer().template getMember<std::uint16_t>("m_bitsPerSample");
+            if(bitsPerSample)
+            {
+                valueView.m_data->m_bitsPerSample = *bitsPerSample;
+            }
+
+            const auto frequency = valueView.getValueContainer().template getMember<std::uint32_t>("m_frequency");
+            if(frequency)
+            {
+                valueView.m_data->m_frequency = *frequency;
+            }
         }
     };
 
@@ -5786,6 +5881,7 @@ namespace SGCore::Serde
 
         static void serialize(SerializableValueView<const Bone, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
+            // todo: is it correct?
             valueView.getValueContainer().addMember("m_id", valueView.m_data->m_id);
             valueView.getValueContainer().addMember("m_boneName", valueView.m_data->m_boneName);
             valueView.getValueContainer().addMember("m_offsetMatrix", valueView.m_data->m_offsetMatrix);
@@ -5795,6 +5891,7 @@ namespace SGCore::Serde
 
         static void deserialize(DeserializableValueView<Bone, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
+            // todo: is it correct?
             auto id = valueView.getValueContainer().template getMember<decltype(Bone::m_id)>("m_id");
             if(id)
             {
@@ -5878,11 +5975,15 @@ namespace SGCore::Serde
 
         static void deserialize(DeserializableValueView<AnimationsFile, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
+            std::cout << "AnimationsFile deserialize: skeletal animations count before deserialization: " << valueView.m_data->m_skeletalAnimations.size() << std::endl;
+
             auto skeletalAnimations = valueView.getValueContainer().template getMember<decltype(AnimationsFile::m_skeletalAnimations)>("m_skeletalAnimations", assetsPackage);
             if(skeletalAnimations)
             {
                 valueView.m_data->m_skeletalAnimations = std::move(*skeletalAnimations);
             }
+
+            std::cout << "AnimationsFile deserialize: skeletal animations count after deserialization: " << valueView.m_data->m_skeletalAnimations.size() << std::endl;
         }
     };
 

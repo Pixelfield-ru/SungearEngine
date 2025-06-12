@@ -31,6 +31,8 @@ namespace SGCore
     {
         sg_serde_as_friend()
 
+        sg_assets_refs_resolver_as_friend
+
         friend struct Bone;
 
         AssetRef<IMeshData> m_affectedMesh;
@@ -63,8 +65,7 @@ namespace SGCore
         std::vector<MeshBoneData> m_affectedMeshesBoneData;
 
         std::vector<AssetRef<Bone>> m_children;
-        // todo: make parent bone resolving (loading) when scene loaded
-        AssetWeakRef<Bone> m_parent;
+        Bone* m_parent { };
 
         const std::string& getName() const noexcept;
 

@@ -6,11 +6,13 @@
 #define SUNGEARENGINE_SKELETON_H
 
 #include "IAsset.h"
-#include "SGCore/ImportedScenesArch/Bone.h"
 #include "SGCore/Memory/AssetRefFromThis.h"
+#include "SGCore/Memory/IAssetsRefsResolver.h"
 
 namespace SGCore
 {
+    struct Bone;
+
     struct Skeleton : public IAsset, public IAssetsRefsResolver<Skeleton>, public AssetRefFromThis<Skeleton>
     {
         sg_serde_as_friend()

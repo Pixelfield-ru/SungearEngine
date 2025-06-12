@@ -8,6 +8,8 @@
 #include "ByteFileAsset.h"
 #include "al.h"
 
+sg_predeclare_serde()
+
 namespace SGCore
 {
     enum class AudioTrackType
@@ -20,6 +22,8 @@ namespace SGCore
 
     struct AudioTrackAsset : public ByteFileAsset
     {
+        sg_serde_as_friend()
+
         static constexpr inline size_t asset_type_id = 2;
 
         ~AudioTrackAsset();
@@ -87,6 +91,8 @@ namespace SGCore
 
         ALuint m_ALHandler = -1;
         bool m_isALHandlerValid = false;
+
+        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
     };
 }
 

@@ -40,7 +40,12 @@ void SGCore::AnimationsFile::doLoad(const SGCore::InterpolatedPath& path)
 
 void SGCore::AnimationsFile::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
 {
-    LOG_NOT_IMPLEMENTED(SGCORE_TAG);
+    std::cout << "AnimationsFile::doLoadFromBinaryFile: skeletal animations count: " << m_skeletalAnimations.size() << std::endl;
+
+    for(const auto& skeletalAnimation : m_skeletalAnimations)
+    {
+        skeletalAnimation->doLoadFromBinaryFile(parentAssetManager);
+    }
 }
 
 void SGCore::AnimationsFile::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolicy,
@@ -59,7 +64,11 @@ void SGCore::AnimationsFile::onMemberAssetsReferencesResolveImpl(SGCore::AssetMa
 
 void SGCore::AnimationsFile::readFromExistingAssimpScene(const aiScene& scene) noexcept
 {
+    if(scene.mNumAnimations == 0) return;
+
     auto parentAssetManager = getParentAssetManager();
+
+    m_skeletalAnimations.clear();
 
     for(std::uint32_t i = 0; i < scene.mNumAnimations; ++i)
     {

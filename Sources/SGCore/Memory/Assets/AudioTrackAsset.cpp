@@ -435,3 +435,41 @@ void SGCore::AudioTrackAsset::doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<
 {
     doLoad(getPath());
 }
+
+void SGCore::AudioTrackAsset::doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept
+{
+    ByteFileAsset::doLoadFromBinaryFile(parentAssetManager);
+
+    ALenum alFormat = 0;
+    if(m_numChannels == 1 && m_bitsPerSample == 8)
+    {
+        alFormat = AL_FORMAT_MONO8;
+    }
+    else if(m_numChannels == 1 && m_bitsPerSample == 16)
+    {
+        alFormat = AL_FORMAT_MONO16;
+    }
+    else if(m_numChannels == 2 && m_bitsPerSample == 8)
+    {
+        alFormat = AL_FORMAT_STEREO8;
+    }
+    else if(m_numChannels == 2 && m_bitsPerSample == 16)
+    {
+        alFormat = AL_FORMAT_STEREO16;
+    }
+
+    createALBuffer();
+
+    AL_CALL(alBufferData, m_ALHandler, alFormat, m_dataBuffer, m_dataBufferSize, m_sampleRate);
+
+    setFrequency(m_frequency);
+    setBitsPerSample(m_bitsPerSample);
+    setNumChannels(m_numChannels);
+
+    std::cout
+    << "loaded AudioTrackAsset from binary file. offset in package: " << m_dataMarkupInPackage.m_offset
+    << ", size in package: " << m_dataMarkupInPackage.m_sizeInBytes
+    << ", openal handler: " << m_ALHandler
+    << ", summary: " << getSummary()
+    << std::endl;
+}
