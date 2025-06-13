@@ -88,6 +88,8 @@ void SGCore::AtmosphereUpdater::updateAtmosphere() noexcept
     auto atmosphereScatteringsView = lockedScene->getECSRegistry()->view<Atmosphere, Mesh>();
     
     atmosphereScatteringsView.each([&lockedScene, this](const ECS::entity_t& entity, Atmosphere::reg_t& atmosphere, Mesh::reg_t& mesh) {
+        if(!mesh.m_base.getMaterial()) return;
+
         size_t hashedSunPos = MathUtils::hashVector(atmosphere.m_sunPosition);
 
         auto meshShader = mesh.m_base.getMaterial()->m_shader;

@@ -48,7 +48,7 @@ size_t SGCore::IAsset::getHash() const noexcept
     {
         case AssetStorageType::BY_PATH:
         {
-            m_hash = std::hash<std::filesystem::path>{}(m_path.resolved());
+            m_hash = std::hash<std::filesystem::path>{}(m_path.raw());
             return m_hash;
         };
         case AssetStorageType::BY_ALIAS:

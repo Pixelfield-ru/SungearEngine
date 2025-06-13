@@ -108,12 +108,12 @@ void SGCore::AssetManager::loadPackage(const InterpolatedPath& fromDirectory,
     // finding conflicting assets and adding assets that are not exist in current asset manager;
     for(auto& variantsIt : loadedAssets)
     {
-        const auto& pathOrAliasHash = variantsIt.first;
+        auto pathOrAliasHash = variantsIt.first;
         auto& assetsByPathOrAlias = variantsIt.second;
 
         if(!m_assets.contains(pathOrAliasHash))
         {
-            m_assets[pathOrAliasHash] = variantsIt.second;
+            m_assets[pathOrAliasHash] = assetsByPathOrAlias;
             continue;
         }
 

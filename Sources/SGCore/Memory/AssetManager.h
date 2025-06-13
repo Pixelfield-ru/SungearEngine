@@ -20,9 +20,12 @@
 #include "SGCore/Utils/Slot.h"
 #include "AssetsLoadPolicy.h"
 
+// WE ARE USING RESOLVED (.resolved()) PATHS OF ASSETS WHEN LOADING OR GETTING ASSET BY PATH. NOT RAW (.raw()) PATH!!!
+// BUT WE ARE USING .raw PATH WHEN HASHING INTERPOLATED PATH TO PROVIDE LOADING ASSETS FROM PACKAGE ON DIFFERENT DIVES.
+// FOR EXAMPLE ${enginePath}/Resources/my_resource.res IS SAME PATH ON DIFFERENT DEVICES (if loading from package, not from filesystem) REGARDLESS OF THE VALUE OF VARIABLE enginePath
+
 namespace SGCore
 {
-    // WE ARE USING RESOLVED (.resolved()) PATHS OF ASSETS WHEN LOADING OR GETTING ASSET BY PATH. NOT RAW (.raw()) PATH!!!
     class SGCORE_EXPORT AssetManager : public std::enable_shared_from_this<AssetManager>
     {
     public:
@@ -183,7 +186,7 @@ namespace SGCore
             // bringing the path to a single view
             auto normalizedPath = InterpolatedPath(Utils::normalizePath(path.raw()));
 
-            const size_t hashedAssetPath = hashString(Utils::toUTF8(normalizedPath.resolved().u16string()));
+            const size_t hashedAssetPath = hashString(Utils::toUTF8(normalizedPath.raw().u16string()));
 
             std::unordered_map<size_t, Ref<IAsset>> foundVariants { };
 
@@ -277,7 +280,7 @@ namespace SGCore
             // bringing the path to a single view
             auto normalizedPath = InterpolatedPath(Utils::normalizePath(path.raw()));
 
-            const size_t hashedAssetPath = hashString(Utils::toUTF8(normalizedPath.resolved().u16string()));
+            const size_t hashedAssetPath = hashString(Utils::toUTF8(normalizedPath.raw().u16string()));
 
             std::unordered_map<size_t, Ref<IAsset>> foundVariants { };
 
@@ -388,7 +391,7 @@ namespace SGCore
             {
                 case AssetStorageType::BY_PATH:
                 {
-                    hashedAssetPath = hashString(Utils::toUTF8(normalizedPath.resolved().u16string()));
+                    hashedAssetPath = hashString(Utils::toUTF8(normalizedPath.raw().u16string()));
                     break;
                 }
                 case AssetStorageType::BY_ALIAS:
@@ -705,7 +708,7 @@ namespace SGCore
             // bringing the path to a single view
             auto normalizedPath = InterpolatedPath(Utils::normalizePath(assetPath.raw()));
 
-            const size_t hashedAssetPath = hashString(Utils::toUTF8(normalizedPath.resolved().u16string()));
+            const size_t hashedAssetPath = hashString(Utils::toUTF8(normalizedPath.raw().u16string()));
 
             asset->m_path = normalizedPath;
             asset->m_storedBy = AssetStorageType::BY_PATH;
@@ -785,7 +788,7 @@ namespace SGCore
             {
                 case AssetStorageType::BY_PATH:
                 {
-                    pathOrAlias = Utils::toUTF8(asset->m_path.resolved().u16string());
+                    pathOrAlias = Utils::toUTF8(asset->m_path.raw().u16string());
                     break;
                 }
                 case AssetStorageType::BY_ALIAS:
@@ -873,7 +876,7 @@ namespace SGCore
             switch(asset->m_storedBy)
             {
                 case AssetStorageType::BY_PATH:
-                    pathOrAliasHash = hashString(Utils::toUTF8(asset->getPath().resolved().u16string()));
+                    pathOrAliasHash = hashString(Utils::toUTF8(asset->getPath().raw().u16string()));
                     break;
 
                 case AssetStorageType::BY_ALIAS:
@@ -921,7 +924,7 @@ namespace SGCore
             switch(byAsset->m_storedBy)
             {
                 case AssetStorageType::BY_PATH:
-                    pathOrAliasHash = hashString(Utils::toUTF8(byAsset->getPath().resolved().u16string()));
+                    pathOrAliasHash = hashString(Utils::toUTF8(byAsset->getPath().raw().u16string()));
                     break;
                 case AssetStorageType::BY_ALIAS:
                     pathOrAliasHash = hashString(byAsset->getAlias());
@@ -969,7 +972,7 @@ namespace SGCore
             // bringing the path to a single view
             auto normalizedPath = InterpolatedPath(Utils::normalizePath(path.raw()));
 
-            const size_t pathHash = hashString(Utils::toUTF8(normalizedPath.resolved().u16string()));
+            const size_t pathHash = hashString(Utils::toUTF8(normalizedPath.raw().u16string()));
 
             auto foundVariantsIt = m_assets.find(pathHash);
 
@@ -1045,7 +1048,7 @@ namespace SGCore
             {
                 // bringing the path to a single view
                 auto normalizedPath = InterpolatedPath(Utils::normalizePath(key.raw()));
-                return hashString(Utils::toUTF8(normalizedPath.resolved().u16string()));
+                return hashString(Utils::toUTF8(normalizedPath.raw().u16string()));
             }
             else
             {
@@ -1090,9 +1093,9 @@ namespace SGCore
         AssetRef<AssetT> createAssetWithPath(const InterpolatedPath& withPath, AssetCtorArgsT&&... assetCtorArgs) noexcept
         {
             Ref<AssetT> asset = createAssetInstance<AssetT>(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
-            asset->m_path = withPath;
+            asset->m_path = Utils::normalizePath(withPath.raw());
             asset->m_storedBy = AssetStorageType::BY_PATH;
-            m_assets[hashString(Utils::toUTF8(asset->getPath().resolved().u16string()))][AssetT::type_id] = asset;
+            m_assets[hashString(Utils::toUTF8(asset->getPath().raw().u16string()))][AssetT::type_id] = asset;
 
             return AssetRef<AssetT>(asset);
         }
@@ -1124,7 +1127,7 @@ namespace SGCore
             switch(storedBy)
             {
                 case AssetStorageType::BY_PATH:
-                    m_assets[hashString(Utils::toUTF8(asset->getPath().resolved().u16string()))][AssetT::type_id] = asset;
+                    m_assets[hashString(Utils::toUTF8(asset->getPath().raw().u16string()))][AssetT::type_id] = asset;
                     break;
                 case AssetStorageType::BY_ALIAS:
                     m_assets[hashString(asset->getAlias())][AssetT::type_id] = asset;

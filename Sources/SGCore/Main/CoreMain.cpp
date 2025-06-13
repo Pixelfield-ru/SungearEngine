@@ -72,7 +72,15 @@ void SGCore::CoreMain::start()
 
     if(sungearEngineRoot)
     {
-        s_sungearEngineRootPath = sungearEngineRoot;
+        if(std::strcmp(sungearEngineRoot, "") != 0)
+        {
+            s_sungearEngineRootPath = sungearEngineRoot;
+        }
+        else s_sungearEngineRootPath = ".";
+    }
+    else
+    {
+        s_sungearEngineRootPath = ".";
     }
 
     PathInterpolationMarkupSpec::setKey("enginePath", s_sungearEngineRootPath);
