@@ -189,6 +189,14 @@ void SGCore::TransformationsUpdater::updateTransform(const EntityBaseInfo::reg_t
         {
             onTransformChanged(inRegistry, currentEntity, currentEntityTransform);
         }
+
+        // calculating aabb
+        const auto* mesh = inRegistry->tryGet<Mesh>(currentEntity);
+        if(mesh && mesh->m_base.getMeshData())
+        {
+            finalTransform.m_aabb.applyTransformations(finalTransform.m_position, finalTransform.m_rotation, finalTransform.m_scale, mesh->m_base.getMeshData()->m_aabb);
+            ownTransform.m_aabb.applyTransformations(ownTransform.m_position, ownTransform.m_rotation, ownTransform.m_scale, mesh->m_base.getMeshData()->m_aabb);
+        }
     }
 
     for(const auto& childEntity : currentEntityBaseInfo.getChildren())
