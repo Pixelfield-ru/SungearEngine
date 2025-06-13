@@ -58,11 +58,6 @@ void coreInit()
 {
     ImGui::SetCurrentContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());
 
-    // fixme: FOR TEST
-    auto pbrrpPipeline = SGCore::RenderPipelinesManager::createRenderPipeline<SGCore::PBRRenderPipeline>();
-    SGCore::RenderPipelinesManager::registerRenderPipeline(pbrrpPipeline);
-    SGCore::RenderPipelinesManager::setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();
-
     SGCore::AssetManager::getInstance()->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
 
     const std::filesystem::path configPath = "SungearEngineConfig.json";

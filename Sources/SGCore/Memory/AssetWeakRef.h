@@ -14,7 +14,16 @@ namespace SGCore
     {
         template<typename OtherAssetT>
         requires(std::is_base_of_v<AssetT, OtherAssetT>)
-        AssetWeakRef(const AssetRef<OtherAssetT>& assetRef) noexcept : m_asset(assetRef.m_asset) { }
+        AssetWeakRef(const AssetRef<OtherAssetT>& assetRef) noexcept : m_asset(assetRef.m_asset)
+        {
+            m_isResolved = assetRef.m_isResolved;
+
+            m_deserializedAssetPath = assetRef.m_deserializedAssetPath;
+            m_deserializedAssetAlias = assetRef.m_deserializedAssetAlias;
+            m_deserializedAssetStoredBy = assetRef.m_deserializedAssetStoredBy;
+            m_deserializedAssetTypeID = assetRef.m_deserializedAssetTypeID;
+            m_deserializedParentAssetManager = assetRef.m_deserializedParentAssetManager;
+        }
 
         AssetWeakRef() = default;
         AssetWeakRef(const AssetWeakRef&) = default;
@@ -22,7 +31,17 @@ namespace SGCore
 
         AssetRef<AssetT> lock() const noexcept
         {
-            return AssetRef<AssetT>(m_asset.lock());
+            AssetRef<AssetT> strongRef(m_asset.lock());
+
+            strongRef.m_isResolved = m_isResolved;
+
+            strongRef.m_deserializedAssetPath = m_deserializedAssetPath;
+            strongRef.m_deserializedAssetAlias = m_deserializedAssetAlias;
+            strongRef.m_deserializedAssetStoredBy = m_deserializedAssetStoredBy;
+            strongRef.m_deserializedAssetTypeID = m_deserializedAssetTypeID;
+            strongRef.m_deserializedParentAssetManager = m_deserializedParentAssetManager;
+
+            return strongRef;
         }
 
         template<typename OtherAssetT>
@@ -30,6 +49,15 @@ namespace SGCore
         AssetWeakRef& operator=(const AssetRef<OtherAssetT>& assetRef) noexcept
         {
             m_asset = assetRef.m_asset;
+
+            m_isResolved = assetRef.m_isResolved;
+
+            m_deserializedAssetPath = assetRef.m_deserializedAssetPath;
+            m_deserializedAssetAlias = assetRef.m_deserializedAssetAlias;
+            m_deserializedAssetStoredBy = assetRef.m_deserializedAssetStoredBy;
+            m_deserializedAssetTypeID = assetRef.m_deserializedAssetTypeID;
+            m_deserializedParentAssetManager = assetRef.m_deserializedParentAssetManager;
+
             return *this;
         }
 
@@ -38,6 +66,17 @@ namespace SGCore
 
     private:
         Weak<AssetT> m_asset;
+
+        // optimization for copy, move, equals operators and ctors
+        bool m_isResolved = false;
+
+        // these fields are used for unresolved m_asset to avoid allocation instance of Asset with AssetT type.
+        // these fields can be edited only in SerdeSpec for AssetRef.
+        InterpolatedPath m_deserializedAssetPath;
+        std::string m_deserializedAssetAlias;
+        AssetStorageType m_deserializedAssetStoredBy = AssetStorageType::BY_ALIAS;
+        size_t m_deserializedAssetTypeID = 0;
+        Weak<AssetManager> m_deserializedParentAssetManager;
     };
 }
 

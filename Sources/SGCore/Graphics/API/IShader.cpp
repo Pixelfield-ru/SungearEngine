@@ -10,6 +10,11 @@
 
 void SGCore::IShader::compile(const SGCore::AssetRef<SGCore::TextFileAsset>& textFileAsset) noexcept
 {
+    if(!textFileAsset)
+    {
+        return;
+    }
+
     m_fileAsset = textFileAsset;
     auto shaderAnalyzedFile =
             textFileAsset->getParentAssetManager()->loadAsset<ShaderAnalyzedFile>(textFileAsset->getPath());
@@ -351,8 +356,10 @@ void SGCore::IShader::onMemberAssetsReferencesResolveImpl(SGCore::AssetManager* 
     }
 
     // todo: ????
-    /*AssetManager::resolveAssetReference(updatedAssetManager, m_shaderAnalyzedFile);
-    AssetManager::resolveWeakAssetReference(updatedAssetManager, m_fileAsset);*/
+    AssetManager::resolveWeakAssetReference(updatedAssetManager, m_shaderAnalyzedFile);
+    AssetManager::resolveWeakAssetReference(updatedAssetManager, m_fileAsset);
+
+    recompile();
 }
 
 SGCore::AssetRef<SGCore::ShaderAnalyzedFile> SGCore::IShader::getAnalyzedFile() const noexcept

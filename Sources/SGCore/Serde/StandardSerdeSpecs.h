@@ -3064,7 +3064,9 @@ template<
 >
 void SGCore::Serde::SerdeSpec<SGCore::IShader, TFormatType>::serialize(SGCore::Serde::SerializableValueView<const SGCore::IShader, TFormatType>& valueView) noexcept
 {
-    valueView.getValueContainer().addMember("m_fileAssetPath", valueView.m_data->getFile()->getPath());
+    // valueView.getValueContainer().addMember("m_fileAssetPath", valueView.m_data->getFile()->getPath());
+    valueView.getValueContainer().addMember("m_shaderAnalyzedFile", valueView.m_data->m_shaderAnalyzedFile.lock());
+    valueView.getValueContainer().addMember("m_fileAsset", valueView.m_data->m_fileAsset.lock());
     valueView.getValueContainer().addMember("m_autoRecompile", valueView.m_data->m_autoRecompile);
     valueView.getValueContainer().addMember("m_textureBindings", valueView.m_data->m_textureBindings);
     valueView.getValueContainer().addMember("m_defines", valueView.m_data->m_defines);
@@ -3075,7 +3077,7 @@ template<
 >
 void SGCore::Serde::SerdeSpec<SGCore::IShader, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::IShader, TFormatType>& valueView) noexcept
 {
-    const auto m_fileAssetPath = valueView.getValueContainer().template getMember<InterpolatedPath>("m_fileAssetPath");
+    /*const auto m_fileAssetPath = valueView.getValueContainer().template getMember<InterpolatedPath>("m_fileAssetPath");
 
     if(m_fileAssetPath)
     {
@@ -3083,6 +3085,18 @@ void SGCore::Serde::SerdeSpec<SGCore::IShader, TFormatType>::deserialize(SGCore:
         auto shaderAnalyzedFile = valueView.m_data->getParentAssetManager()->template loadAsset<ShaderAnalyzedFile>(*m_fileAssetPath);
         valueView.m_data->m_fileAsset = shaderFile;
         valueView.m_data->m_shaderAnalyzedFile = shaderAnalyzedFile;
+    }*/
+
+    const auto m_shaderAnalyzedFile = valueView.getValueContainer().template getMember<AssetRef<ShaderAnalyzedFile>>("m_shaderAnalyzedFile");
+    if(m_shaderAnalyzedFile)
+    {
+        valueView.m_data->m_shaderAnalyzedFile = *m_shaderAnalyzedFile;
+    }
+
+    const auto m_fileAsset = valueView.getValueContainer().template getMember<AssetRef<TextFileAsset>>("m_fileAsset");
+    if(m_fileAsset)
+    {
+        valueView.m_data->m_fileAsset = *m_fileAsset;
     }
 
     const auto m_autoRecompile = valueView.getValueContainer().template getMember<bool>("m_autoRecompile");

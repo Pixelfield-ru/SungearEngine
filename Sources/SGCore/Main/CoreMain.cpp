@@ -39,7 +39,7 @@ void SGCore::CoreMain::start()
     // ================================================================================
     
     const char* sungearEngineRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
-    if(!sungearEngineRoot)
+    /*if(!sungearEngineRoot)
     {
         const std::string errorMsg = "The 'SUNGEAR_SOURCES_ROOT' environment variable does not exist. "
                                      "Make sure that you have added 'SUNGEAR_SOURCES_ROOT' to the environment variables. "
@@ -68,6 +68,11 @@ void SGCore::CoreMain::start()
         }
 
         s_sungearEngineRootPath = sungearEngineRootPath;
+    }*/
+
+    if(sungearEngineRoot)
+    {
+        s_sungearEngineRootPath = sungearEngineRoot;
     }
 
     PathInterpolationMarkupSpec::setKey("enginePath", s_sungearEngineRootPath);
