@@ -10,8 +10,6 @@
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Main/CoreGlobals.h"
 #include "PhysicsDebugDraw.h"
-#include "SGCore/Utils/Timer.h"
-#include "SGCore/Scene/EntityComponentMember.h"
 #include "SGCore/Threading/WrappedObject.h"
 #include "SGCore/Scene/IParallelSystem.h"
 

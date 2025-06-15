@@ -17,7 +17,7 @@
 namespace SGCore
 {
     template<typename ParallelSystemT>
-    class IParallelSystem : public ISystem, public std::enable_shared_from_this<ParallelSystemT>
+    class IParallelSystem : public ISystem
     {
 
     public:
@@ -49,7 +49,7 @@ namespace SGCore
         {
             for(const auto& subprocess : m_subprocesses)
             {
-                subprocess->fixedUpdate(dt, fixedDt, this->shared_from_this());
+                subprocess->fixedUpdate(dt, fixedDt, static_cast<ParallelSystemT*>(this));
             }
         }
         
@@ -91,7 +91,7 @@ namespace SGCore
             std::lock_guard g(m_subprocessesVectorEditMutex);
             for(const auto& subprocess : m_subprocesses)
             {
-                subprocess->parallelUpdate(dt, fixedDt, this->shared_from_this());
+                subprocess->parallelUpdate(dt, fixedDt, static_cast<ParallelSystemT*>(this));
             }
             auto t1 = now();
             

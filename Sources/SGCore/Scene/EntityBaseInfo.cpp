@@ -7,6 +7,8 @@
 #include "SGCore/ECS/Registry.h"
 #include "SGCore/Utils/Assert.h"
 
+#include <wingdi.h>
+
 void SGCore::EntityBaseInfo::setParent(const SGCore::ECS::entity_t& parent,
                                        SGCore::ECS::registry_t& inRegistry) noexcept
 {

@@ -32,7 +32,7 @@ SGCore::PhysicsWorld3D::PhysicsWorld3D()
     m_debugDraw->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
     m_dynamicsWorld->setDebugDrawer(m_debugDraw.get());
 
-    m_dynamicsWorld->setGravity({ 0, -9.8, 0 });
+    m_dynamicsWorld->setGravity({ 0, -30.0, 0 });
 
     m_thread->setSleepTime(std::chrono::milliseconds(0));
     m_thread->start();

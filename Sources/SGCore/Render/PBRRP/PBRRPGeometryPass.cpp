@@ -437,55 +437,51 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<ECS::registry_t>& reg
 {
     bool isVisibleForCamera = node->m_visibleReceivers.contains(forCamera);
     
-    if(isVisibleForCamera)
+    if(!isVisibleForCamera) return;
+
+    if(cameraLayeredFrameReceiver)
     {
-        // render all entities
-        for(const auto& e : node->m_overlappedEntities)
+        cameraLayeredFrameReceiver->m_layersFrameBuffer->bind();
+
+        cameraLayeredFrameReceiver->m_layersFrameBuffer->bindAttachmentsToDrawIn(
+            cameraLayeredFrameReceiver->m_attachmentToRenderIn);
+    }
+
+    // render all entities
+    for(const auto& e : node->m_overlappedEntities)
+    {
+        /*auto* tmpCullableInfo = registry->tryGet<OctreeCullable>(e);
+        Ref<OctreeCullable> cullableInfo = (tmpCullableInfo ? *tmpCullableInfo : nullptr);*/
+
+        Mesh* mesh = registry->tryGet<Mesh>(e);
+        auto* tmpMeshTransform = registry->tryGet<Transform>(e);
+        auto meshTransform = (tmpMeshTransform ? *tmpMeshTransform : nullptr);
+
+        if(meshTransform && mesh)
         {
-            auto* tmpCullableInfo = registry->tryGet<OctreeCullable>(e);
-            Ref<OctreeCullable> cullableInfo = (tmpCullableInfo ? *tmpCullableInfo : nullptr);
-            
-            if(!cullableInfo) continue;
-            
-            Mesh* mesh = registry->tryGet<Mesh>(e);
-            auto* tmpMeshTransform = registry->tryGet<Transform>(e);
-            auto meshTransform = (tmpMeshTransform ? *tmpMeshTransform : nullptr);
-            
-            if(meshTransform && mesh)
+            ++renderedInOctrees;
+
+            auto* entityBaseInfo = registry->tryGet<EntityBaseInfo>(e);
+            SG_ASSERT(entityBaseInfo != nullptr, "In octree culling: can not render entity that contains mesh does not contain EntityBaseInfo.");
+            Ref<PostProcessLayer> meshPPLayer = mesh->m_base.m_layeredFrameReceiversMarkup[cameraLayeredFrameReceiver].lock();
+
+            if(cameraLayeredFrameReceiver)
             {
-                ++renderedInOctrees;
-                
-                auto* entityBaseInfo = registry->tryGet<EntityBaseInfo>(e);
-                SG_ASSERT(entityBaseInfo != nullptr, "In octree culling: can not render entity that contains mesh does not contain EntityBaseInfo.");
-                Ref<PostProcessLayer> meshPPLayer = mesh->m_base.m_layeredFrameReceiversMarkup[cameraLayeredFrameReceiver].lock();
-                
-                if(cameraLayeredFrameReceiver)
+                if(!meshPPLayer)
                 {
-                    if(!meshPPLayer)
-                    {
-                        meshPPLayer = cameraLayeredFrameReceiver->getDefaultLayer();
-                    }
-                }
-
-                if(cameraLayeredFrameReceiver)
-                {
-                    SG_ASSERT(meshPPLayer != nullptr,
-                              "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
-
-                    cameraLayeredFrameReceiver->m_layersFrameBuffer->bind();
-                    cameraLayeredFrameReceiver->m_layersFrameBuffer->bindAttachmentsToDrawIn(
-                            cameraLayeredFrameReceiver->m_attachmentToRenderIn
-                    );
-                }
-                
-                renderMesh(registry, e, meshTransform, *mesh, *entityBaseInfo, forCamera3DBaseInfo,
-                           meshPPLayer, false, cameraLayeredFrameReceiver);
-
-                if(cameraLayeredFrameReceiver)
-                {
-                    cameraLayeredFrameReceiver->m_layersFrameBuffer->unbind();
+                    meshPPLayer = cameraLayeredFrameReceiver->getDefaultLayer();
                 }
             }
+            SG_ASSERT(meshPPLayer != nullptr,
+                      "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
+
+            renderMesh(registry, e, meshTransform, *mesh, *entityBaseInfo, forCamera3DBaseInfo,
+                       meshPPLayer, false, cameraLayeredFrameReceiver);
         }
+    }
+
+    if(cameraLayeredFrameReceiver)
+    {
+        cameraLayeredFrameReceiver->m_layersFrameBuffer->unbind();
     }
 }

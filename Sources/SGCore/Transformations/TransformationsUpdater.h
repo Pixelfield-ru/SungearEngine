@@ -8,13 +8,10 @@
 
 #include "SGCore/Scene/ISystem.h"
 #include "SGCore/Utils/Utils.h"
-#include "SGCore/Utils/Timer.h"
-#include "SGCore/Scene/EntityComponentMember.h"
 #include "SGCore/Utils/Signal.h"
 #include "Transform.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Scene/IParallelSystem.h"
-#include "SGCore/Threading/WrappedObject.h"
 
 namespace SGCore
 {

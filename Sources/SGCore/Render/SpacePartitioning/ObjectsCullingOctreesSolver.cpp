@@ -10,7 +10,7 @@
 #include "OctreeCullable.h"
 #include "SGCore/Render/RenderingBase.h"
 
-void SGCore::ObjectsCullingOctreesSolver::fixedUpdate(const double& dt, const double& fixedDt, Ref<OctreesSolver> parent) noexcept
+void SGCore::ObjectsCullingOctreesSolver::fixedUpdate(const double& dt, const double& fixedDt, OctreesSolver* parent) noexcept
 {
     auto lockedScene = parent->getScene();
     

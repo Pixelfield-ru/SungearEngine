@@ -64,7 +64,7 @@ void SGCore::OctreesSolver::fixedUpdate(const double& dt, const double& fixedDt)
                             octree->m_notEmptyNodes.erase(lockedParentNode);
                         }
                     }
-                    auto foundNode =  octree->subdivideWhileOverlap(p.first, p.second->m_ownTransform.m_aabb, octree->m_root);
+                    auto foundNode =  octree->subdivideWhileOverlap(p.first, p.second->m_finalTransform.m_aabb, octree->m_root);
                     cullable->m_parentNode = foundNode;
                     if(foundNode)
                     {
@@ -96,7 +96,7 @@ void SGCore::OctreesSolver::fixedUpdate(const double& dt, const double& fixedDt)
                                 octree->m_notEmptyNodes.erase(lockedParentNode);
                             }
                         }
-                        auto foundNode =  octree->subdivideWhileOverlap(transformEntity, transform->m_ownTransform.m_aabb, octree->m_root);
+                        auto foundNode =  octree->subdivideWhileOverlap(transformEntity, transform->m_finalTransform.m_aabb, octree->m_root);
                         cullable->m_parentNode = foundNode;
                         if(foundNode)
                         {

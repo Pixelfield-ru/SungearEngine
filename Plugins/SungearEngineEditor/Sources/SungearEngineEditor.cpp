@@ -10,6 +10,8 @@
 #include <SGCore/Logger/Logger.h>
 #include <SGCore/Utils/StringInterpolation/InterpolationResolver.h>
 #include <SGCore/Graphics/API/IShader.h>
+#include <SGCore/Render/RenderPipelinesManager.h>
+#include <SGCore/Render/PBRRP/PBRRenderPipeline.h>
 
 #include "Resources.h"
 
@@ -20,6 +22,10 @@ SGE::SungearEngineEditor::~SungearEngineEditor()
 
 std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>& args)
 {
+    auto pbrrpPipeline = SGCore::RenderPipelinesManager::createRenderPipeline<SGCore::PBRRenderPipeline>();
+    SGCore::RenderPipelinesManager::registerRenderPipeline(pbrrpPipeline);
+    SGCore::RenderPipelinesManager::setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();
+
     SGCore::PathInterpolationMarkupSpec::setKey("sgEditorPath", getLocalPath());
 
     ImGui::SetCurrentContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());
