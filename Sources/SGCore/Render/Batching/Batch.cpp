@@ -11,6 +11,7 @@
 #include "SGCore/Graphics/API/IVertexAttribute.h"
 #include "SGCore/Graphics/API/IVertexBufferLayout.h"
 #include "SGCore/Render/Mesh.h"
+#include "SGCore/Render/RenderPipelinesManager.h"
 
 SGCore::Batch::Batch() noexcept
 {
@@ -54,16 +55,156 @@ SGCore::Batch::Batch() noexcept
     m_instancesTransformsBuffer->create<char>(reinterpret_cast<char*>(m_transforms.data()), m_transforms.size(), 1, 1,
                                               SGGColorInternalFormat::SGG_RGBA32_FLOAT,
                                               SGGColorFormat::SGG_RGBA);
+
+    auto currentRenderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
+    if(currentRenderPipeline)
+    {
+        m_shader = Ref<IShader>(CoreMain::getRenderer()->createShader());
+        m_shader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
+                *currentRenderPipeline->m_shadersPaths["BatchingShader"]));
+    }
 }
 
 void SGCore::Batch::addEntity(ECS::entity_t entity, const ECS::registry_t& fromRegistry) noexcept
 {
     const auto* tmpMesh = fromRegistry.tryGet<Mesh>(entity);
-    if(!tmpMesh) return;
+    if(!tmpMesh || !fromRegistry.allOf<Transform>(entity) || !tmpMesh->m_base.getMeshData()) return;
 
     const Mesh& mesh = *tmpMesh;
 
-    const size_t meshDataHash = mesh.m_base.getMeshData()->getHash();
+    const auto meshData = mesh.m_base.getMeshData();
 
+    const size_t meshDataHash = meshData->getHash();
 
+    auto it = m_usedMeshDatas.find(meshDataHash);
+    const bool meshDataMarkupFound = it != m_usedMeshDatas.end();
+    if(!meshDataMarkupFound)
+    {
+        // adding new meshdata
+
+        m_usedMeshDatas[meshDataHash] = {
+            .m_verticesOffset = m_vertices.size(),
+            .m_verticesCount = meshData->m_vertices.size(),
+
+            .m_indicesOffset = m_indices.size(),
+            .m_indicesCount = meshData->m_indices.size()
+        };
+
+        m_vertices.resize(m_vertices.size() + meshData->m_vertices.size());
+
+        for(const auto& meshVertex : meshData->m_vertices)
+        {
+            const BatchVertex batchVertex {
+                .m_position = meshVertex.m_position,
+                .m_uv = meshVertex.m_uv,
+                .m_normal = meshVertex.m_normal,
+                .m_tangent = meshVertex.m_tangent,
+                .m_bitangent = meshVertex.m_bitangent
+            };
+
+            m_vertices.push_back(batchVertex);
+        }
+
+        const bool hasIndices = !meshData->m_indices.empty();
+        const size_t indicesCount = hasIndices ? meshData->m_indices.size() : meshData->m_vertices.size() / 3;
+
+        for(size_t i = 0; i < indicesCount; ++i)
+        {
+            m_indices.push_back(meshData->m_indices[i]);
+        }
+    }
+
+    auto& meshDataMarkup = m_usedMeshDatas[meshDataHash];
+
+    for(size_t i = meshDataMarkup.m_indicesOffset; i < meshDataMarkup.m_indicesOffset + meshDataMarkup.m_indicesCount; i += 3)
+    {
+        const glm::ivec2 fakeVertex { m_entities.size(), i };
+
+        m_instanceTriangles.push_back(fakeVertex);
+    }
+
+    m_entities.push_back(entity);
+}
+
+void SGCore::Batch::update(const ECS::registry_t& inRegistry) noexcept
+{
+    m_fakeVerticesBuffer->bind();
+    m_fakeVerticesBuffer->putData(m_instanceTriangles);
+
+    m_verticesBuffer->bind(0);
+    if(m_verticesBuffer->getWidth() < m_vertices.size() * sizeof(BatchVertex))
+    {
+        m_verticesBuffer->resize(m_vertices.size() * sizeof(BatchVertex), 1);
+    }
+    m_verticesBuffer->subTextureBufferData(reinterpret_cast<char*>(m_vertices.data()), m_vertices.size() * sizeof(BatchVertex), 0);
+
+    m_indicesBuffer->bind(1);
+    if(m_indicesBuffer->getWidth() < m_indices.size() * sizeof(std::uint32_t))
+    {
+        m_indicesBuffer->resize(m_indices.size() * sizeof(std::uint32_t), 1);
+    }
+    m_indicesBuffer->subTextureBufferData(reinterpret_cast<char*>(m_indices.data()), m_indices.size() * sizeof(std::uint32_t), 0);
+
+    m_transforms.clear();
+
+    for(size_t i = 0; i < m_entities.size(); ++i)
+    {
+        const auto entity = m_entities[i];
+
+        const auto* tmpTransform = inRegistry.tryGet<Transform>(entity);
+        if(!tmpTransform) continue; // todo: maybe delete from batch?
+
+        const auto& transform = *tmpTransform;
+
+        const BatchInstanceTransform instanceTransform {
+            .m_modelMatrix = transform->m_finalTransform.m_animatedModelMatrix,
+            .m_position = transform->m_finalTransform.m_position,
+            .m_rotation = glm::degrees(glm::eulerAngles(transform->m_finalTransform.m_rotation)),
+            .m_scale = transform->m_finalTransform.m_scale
+        };
+
+        m_transforms.push_back(instanceTransform);
+    }
+
+    m_instancesTransformsBuffer->bind(2);
+    if(m_instancesTransformsBuffer->getWidth() < m_transforms.size() * sizeof(BatchInstanceTransform))
+    {
+        m_instancesTransformsBuffer->resize(m_transforms.size() * sizeof(BatchInstanceTransform), 1);
+    }
+    m_instancesTransformsBuffer->subTextureBufferData(reinterpret_cast<char*>(m_transforms.data()), m_transforms.size() * sizeof(BatchInstanceTransform), 0);
+}
+
+void SGCore::Batch::bind() const noexcept
+{
+    if(!m_shader) return;
+
+    m_shader->bind();
+
+    m_shader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+    m_shader->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
+
+    m_verticesBuffer->bind(0);
+    m_indicesBuffer->bind(1);
+    m_instancesTransformsBuffer->bind(2);
+
+    m_shader->useTexture("u_verticesTextureBuffer", 0);
+    m_shader->useTexture("u_indicesTextureBuffer", 1);
+    m_shader->useTexture("u_transformsTextureBuffer", 2);
+}
+
+SGCore::Ref<SGCore::IVertexArray> SGCore::Batch::getVertexArray() const noexcept
+{
+    return m_fakeVertexArray;
+}
+
+size_t SGCore::Batch::getTrianglesCount() const noexcept
+{
+    return m_instanceTriangles.size();
+}
+
+void SGCore::Batch::onRenderPipelineSet() noexcept
+{
+    m_shader = Ref<IShader>(CoreMain::getRenderer()->createShader());
+    m_shader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
+            *RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["BatchingShader"]));
 }

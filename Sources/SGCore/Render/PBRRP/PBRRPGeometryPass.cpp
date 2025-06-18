@@ -26,8 +26,10 @@
 #include "SGCore/Render/Alpha/OpaqueEntityTag.h"
 #include "SGCore/Render/Alpha/TransparentEntityTag.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
+#include "SGCore/Render/Batching/Batch.h"
 #include "SGCore/Render/Decals/Decal.h"
 #include "SGCore/Render/Terrain/Terrain.h"
+#include "SGCore/Render/Batching/Batch.h"
 
 size_t renderedInOctrees = 0;
 
@@ -62,13 +64,14 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
     auto opaqueMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, OpaqueEntityTag>(ECS::ExcludeTypes<DisableMeshGeometryPass, Decal>{});
     auto transparentMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, TransparentEntityTag>(ECS::ExcludeTypes<DisableMeshGeometryPass, Decal>{});
     auto terrainsView = registry->view<EntityBaseInfo, Mesh, Transform, Terrain>(ECS::ExcludeTypes<DisableMeshGeometryPass, Decal>{});
+    auto batchesView = registry->view<Batch>();
 
     if(m_shader)
     {
         m_shader->bind();
     }
     
-    camerasView.each([&opaqueMeshesView, &transparentMeshesView, &terrainsView, &renderPipeline, &scene, &registry, this]
+    camerasView.each([&opaqueMeshesView, &transparentMeshesView, &terrainsView, &batchesView, &registry, this]
                              (const ECS::entity_t& cameraEntity,
                               const EntityBaseInfo::reg_t& camera3DBaseInfo,
                               RenderingBase::reg_t& cameraRenderingBase, Transform::reg_t& cameraTransform) {
@@ -145,6 +148,22 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
                 renderMesh(registry, meshEntity, meshTransform, mesh, meshedEntityBaseInfo, camera3DBaseInfo,
                            meshPPLayer, false, cameraLayeredFrameReceiver);
             }
+        });
+
+        // rendering batches
+        batchesView.each([&cameraLayeredFrameReceiver, &registry](Batch& batch) {
+            // todo: add getting batch layer
+            Ref<PostProcessLayer> meshPPLayer = cameraLayeredFrameReceiver->getDefaultLayer();
+
+            batch.update(*registry);
+            batch.bind();
+
+            CoreMain::getRenderer()->renderArray(
+                batch.getVertexArray(),
+                batch.m_batchRenderState,
+                batch.getTrianglesCount(),
+                0
+            );
         });
 
         m_transparentEntitiesRenderState.use();
@@ -319,7 +338,6 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
             mesh.m_base.getMaterial()->m_meshRenderState.m_useFacesCulling = false;
         }
 
-        // 15 ms for map loc0 IN DEBUG
         CoreMain::getRenderer()->renderMeshData(
                 mesh.m_base.getMeshData().get(),
                 mesh.m_base.getMaterial()->m_meshRenderState
