@@ -1,6 +1,9 @@
 #subpass [GeometryPass]
 
+#include "sg_shaders/impl/glsl4/color_correction/aces.glsl"
 #include "sg_shaders/impl/glsl4/uniform_bufs_decl.glsl"
+#include "sg_shaders/impl/glsl4/math.glsl"
+#include "sg_shaders/impl/glsl4/defines.glsl"
 
 #vertex
 
@@ -43,7 +46,10 @@ void main()
 
     vec3 instanceScale = texelFetch(u_transformsTextureBuffer, vsOut.instanceIndex * transformJump + 6).xyz;
 
+    vsOut.instanceModelMatrix = instanceModelMatrix;
     vsOut.instancePosition = instancePosition;
+    vsOut.instanceRotation = instanceRotation;
+    vsOut.instanceScale = instanceScale;
 
     // =================================================================
 
@@ -72,6 +78,7 @@ out GSOut
     mat3 TBN;
 
     vec3 instancePosition;
+    vec3 verticesIndices;
 } gsOut;
 
 in VSOut
@@ -88,18 +95,18 @@ in VSOut
 // vertices of instances in batch
 uniform samplerBuffer u_verticesTextureBuffer;
 // indices of vertices of instances in batch
-uniform samplerBuffer u_indicesTextureBuffer;
+uniform isamplerBuffer u_indicesTextureBuffer;
 
 void main()
 {
     // 1 position, 1 uv, 1 normal, 1 tangent, 1 bitangent
     const int vertexJump = 1 + 1 + 1 + 1 + 1;
 
-    vec3 verticesIndices = texelFetch(u_indicesTextureBuffer, vsIn[0].triangleIndex * 3).xyz;
+    ivec3 verticesIndices = texelFetch(u_indicesTextureBuffer, vsIn[0].triangleIndex).xyz;
 
     for(int i = 0; i < 3; ++i)
     {
-        int vertexIndex = int(verticesIndices[i]);
+        int vertexIndex = verticesIndices[i];
 
         vec3 vertexPos = texelFetch(u_verticesTextureBuffer, vertexIndex * vertexJump).xyz;
         vec3 vertexUV = texelFetch(u_verticesTextureBuffer, vertexIndex * vertexJump + 1).xyz;
@@ -112,6 +119,7 @@ void main()
         gsOut.worldNormal = normalize(mat3(transpose(inverse(vsIn[0].instanceModelMatrix))) * vertexNormal);
         gsOut.vertexPos = vertexPos;
         gsOut.fragPos = vec3(vsIn[0].instanceModelMatrix * vec4(vertexPos, 1.0));
+        gsOut.verticesIndices = verticesIndices;
 
         vec3 T = normalize(vec3(vsIn[0].instanceModelMatrix * vec4(vertexTangent, 1.0)));
         vec3 B = normalize(vec3(vsIn[0].instanceModelMatrix * vec4(vertexBitangent, 1.0)));
@@ -156,16 +164,101 @@ in GSOut
     mat3 TBN;
 
     vec3 instancePosition;
+    vec3 verticesIndices;
 } gsIn;
+
+#include "sg_shaders/impl/glsl4/pbr_base.glsl"
 
 void main()
 {
+    vec3 normalizedNormal = gsIn.normal;
+
+    vec4 diffuseColor = vec4(1.0, 1.0, 1.0, 1.0);
+    vec4 aoRoughnessMetallic = vec4(0.1, 0.3, 0.7, 1.0);
+    float specularCoeff = 0.0f;
+    vec3 normalMapColor = vec3(0);
+    vec3 finalNormal = vec3(0);
+
     vec2 finalUV = gsIn.UV.xy;
     #ifdef FLIP_TEXTURES_Y
     finalUV.y = 1.0 - gsIn.UV.y;
     #endif
 
-    layerColor = vec4(finalUV, 0.0f, 1.0);
+    finalNormal = gsIn.worldNormal;
+
+    vec3 viewDir = normalize(camera.position - gsIn.fragPos);
+
+    vec3 albedo         = vec3(1.0);
+    float ao            = aoRoughnessMetallic.r;
+    float roughness     = aoRoughnessMetallic.g;
+    float metalness     = aoRoughnessMetallic.b;
+
+    // для формулы Шлика-Френеля
+    vec3 F0 = vec3(0.04);
+    F0 = mix(F0, albedo, metalness);
+
+    vec3 dirLightsShadowCoeff = vec3(0.0);
+
+    vec3 ambient = vec3(0.0);
+    vec3 lo = vec3(0.0);
+
+    // calculating sun
+    {
+        // ambient += atmosphere.sunAmbient;
+
+        vec3 lightDir = normalize(atmosphere.sunPosition);// TRUE
+        vec3 halfWayDir = normalize(lightDir + viewDir);// TRUE
+
+        // energy brightness coeff (коэфф. энергетической яркости)
+        float NdotL = saturate(dot(finalNormal, lightDir));
+        float NdotVD = abs(dot(finalNormal, viewDir)) + 1e-5f;
+
+        // ===================        shadows calc        =====================
+
+        /*dirLightsShadowCoeff += calcDirLightShadow(
+            directionalLights[i],
+            gsIn.fragPos,
+            finalNormal,
+            sgmat_shadowMap2DSamplers[i]
+        ) * finalRadiance;*/
+
+        // ====================================================================
+
+        // cooktorrance func: DFG /
+
+        // NDF (normal distribution func)
+        float D = GGXTR(
+        finalNormal,
+        halfWayDir,
+        roughness * (1.0 - specularCoeff)
+        );// TRUE
+
+        float cosTheta = saturate(dot(halfWayDir, viewDir));
+
+        // это по сути зеркальная часть (kS)
+        vec3 F = SchlickFresnel(cosTheta, F0);// kS
+        // geometry function
+        float G = GeometrySmith(NdotVD, NdotL, roughness * (1.0 - specularCoeff));// TRUE
+
+        vec3 diffuse = vec3(1.0) - F;
+        diffuse *= (1.0 - metalness);// check diffuse color higher
+
+        vec3 ctNumerator = D * F * G;
+        float ctDenominator = 1.0 * NdotVD * NdotL;
+        vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * u_materialSpecularCol.r;
+
+        lo += (diffuse * albedo.rgb / PI + specular) * max(atmosphere.sunColor.rgb, vec3(0, 0, 0)) * NdotL * 1.0;
+    }
+
+    ambient = albedo.rgb * ao;
+    vec3 finalCol = ambient * vec3(1.0) + lo + ambient;
+
+    layerColor = vec4(finalCol, 1.0);
+
+    // layerColor = vec4(finalUV, 0.0f, 1.0);
+
+    // debug
+    // layerColor = vec4(gsIn.worldNormal, 1.0f);
 }
 
 #end

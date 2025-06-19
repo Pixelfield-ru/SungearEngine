@@ -151,12 +151,27 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
         });
 
         // rendering batches
-        batchesView.each([&cameraLayeredFrameReceiver, &registry](Batch& batch) {
+        batchesView.each([&cameraLayeredFrameReceiver, &registry, this](Batch& batch) {
             // todo: add getting batch layer
             Ref<PostProcessLayer> meshPPLayer = cameraLayeredFrameReceiver->getDefaultLayer();
 
             batch.update(*registry);
             batch.bind();
+
+            auto uniformBuffsIt = m_uniformBuffersToUse.begin();
+            while(uniformBuffsIt != m_uniformBuffersToUse.end())
+            {
+                if(auto lockedUniformBuf = uniformBuffsIt->lock())
+                {
+                    batch.m_shader->useUniformBuffer(lockedUniformBuf);
+
+                    ++uniformBuffsIt;
+                }
+                else
+                {
+                    uniformBuffsIt = m_uniformBuffersToUse.erase(uniformBuffsIt);
+                }
+            }
 
             CoreMain::getRenderer()->renderArray(
                 batch.getVertexArray(),

@@ -7,6 +7,8 @@
 
 #include <SGCore/pch.h>
 
+#include "SGCore/Utils/TypeTraits.h"
+
 enum class SGStencilOp
 {
     SGG_KEEP,
@@ -297,6 +299,10 @@ static constexpr SGGDataType getSGDataTypeFromCPPType() noexcept
     else if constexpr(std::is_same_v<DataType, int>)
     {
         return SGGDataType::SGG_INT;
+    }
+    else
+    {
+        static_assert(SGCore::always_false<DataType>::value, "Unknown DataType");
     }
 
     return SGGDataType::SGG_NONE;

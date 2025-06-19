@@ -48,12 +48,24 @@ namespace SGCore
             size_t m_indicesCount = 0;
         };
 
+        struct TextureDataMarkup
+        {
+            std::uint8_t m_textureType = 0;
+
+            size_t m_bytesOffset = 0;
+            size_t m_bytesCount = 0;
+        };
+
+        static constexpr std::uint32_t max_texture_types = std::to_underlying(SGTextureType::SGTT_COUNT);
+
         Ref<IVertexArray> m_fakeVertexArray;
         Ref<IVertexBuffer> m_fakeVerticesBuffer;
 
         Ref<ITexture2D> m_verticesBuffer;
         Ref<ITexture2D> m_indicesBuffer;
         Ref<ITexture2D> m_instancesTransformsBuffer;
+
+        std::array<Ref<ITexture2D>, max_texture_types> m_texturesBuffers;
 
         // vertices for fake vertex buffer
         std::vector<glm::ivec2> m_instanceTriangles;
@@ -67,9 +79,14 @@ namespace SGCore
         // first - meshdata hash, second - data offset and size (in bytes)
         std::unordered_map<size_t, MeshDataMarkup> m_usedMeshDatas;
 
+        // first - texture hash, second - material textures markup
+        std::unordered_map<size_t, TextureDataMarkup> m_usedTextures;
+
         std::vector<ECS::entity_t> m_entities;
 
         void onRenderPipelineSet() noexcept;
+
+        void updateBuffers() noexcept;
 
         Slot<void()> m_onRenderPipelineSetEventListener = [this]() {
             onRenderPipelineSet();
