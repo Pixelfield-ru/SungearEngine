@@ -4,7 +4,9 @@
 
 #include "Atlas.h"
 
-void SGCore::Atlas::findBestRect(const glm::ivec2& textureSize, AtlasRect& outputRect) noexcept
+#include <stb_image_resize2.h>
+
+void SGCore::Atlas::findBestRect(glm::ivec2 textureSize, AtlasRect& outputRect) noexcept
 {
     // if no textures added
     if(m_atlasUsedRects.empty())
@@ -53,9 +55,14 @@ void SGCore::Atlas::findBestRect(const glm::ivec2& textureSize, AtlasRect& outpu
 
     // while texture not fits in the best atlas rect
     // finding best rect
-    while(bestAtlasRect->m_size.x < textureSize.x || bestAtlasRect->m_size.y < textureSize.y)
+    for(size_t i = 0; i < m_atlasFreeRects.size(); i++)
     {
         const auto* tmpRect = &m_atlasFreeRects[foundRectIdx];
+
+        /*if(tmpRect->m_size.x < textureSize.x || tmpRect->m_size.y < textureSize.y)
+        {
+            break;
+        }*/
 
         if(tmpRect->m_size.x < bestAtlasRect->m_size.x || tmpRect->m_size.y < bestAtlasRect->m_size.y)
         {
@@ -67,10 +74,40 @@ void SGCore::Atlas::findBestRect(const glm::ivec2& textureSize, AtlasRect& outpu
     }
 
     // if best rect not matches
-    // todo: return error or try to flip texture and try to find best rect again or resize atlas
+    // todo: maybe add return error or try to flip texture and try to find best rect again
     if(bestAtlasRect->m_size.x < textureSize.x || bestAtlasRect->m_size.y < textureSize.y)
     {
-        return;
+        const auto lastTotalSize = m_totalSize;
+
+        const auto sizesDif = glm::max(textureSize - lastTotalSize, glm::ivec2(0, 0));
+
+        if(sizesDif.x >= sizesDif.y)
+        {
+            // placing new free rect on right
+            m_totalSize += glm::ivec2(textureSize.x, sizesDif.y);
+
+            const AtlasRect newFreeRect {
+                .m_size = { textureSize.x, m_totalSize.y },
+                .m_position = { lastTotalSize.x, 0 }
+            };
+
+            m_atlasFreeRects.push_back(newFreeRect);
+        }
+        else if(sizesDif.y > sizesDif.x)
+        {
+            // placing new free rect on top
+            m_totalSize += glm::ivec2(sizesDif.x, textureSize.y);
+
+            const AtlasRect newFreeRect {
+                .m_size = { m_totalSize.x, textureSize.y },
+                .m_position = { 0, lastTotalSize.y }
+            };
+
+            m_atlasFreeRects.push_back(newFreeRect);
+        }
+
+        bestAtlasRect = &*m_atlasFreeRects.rbegin();
+        foundRectIdx = m_atlasFreeRects.size() - 1;
     }
 
     outputRect = *bestAtlasRect;
@@ -103,7 +140,56 @@ void SGCore::Atlas::findBestRect(const glm::ivec2& textureSize, AtlasRect& outpu
 
 void SGCore::Atlas::packTexture(const AtlasRect& inRect, const ITexture2D* texture) noexcept
 {
+    if(!m_atlasTexture)
+    {
+        m_atlasTexture = SGCore::Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
+        /*m_atlasTexture->m_format = SGGColorFormat::SGG_RGBA;
+        m_atlasTexture->m_internalFormat = SGGColorInternalFormat::SGG_RGBA8;*/
+        m_atlasTexture->m_channelsCount = 4;
+        m_atlasTexture->create();
+    }
 
+    if(m_totalSize.x > m_atlasTexture->getWidth() || m_totalSize.y > m_atlasTexture->getHeight())
+    {
+        m_atlasTexture->resizeDataBuffer(m_totalSize.x, m_totalSize.y);
+    }
+
+    // ===================================================================================================================
+    // ===================================================================================================================
+    // ===================================================================================================================
+
+    const std::uint8_t externalTextureChannelSize = getSGGInternalFormatChannelSizeInBytes(texture->m_internalFormat);
+
+    // adjusting the buffer internal format of input texture to internal format of atlas
+    std::vector<std::uint8_t> externalTextureData;
+    externalTextureData.reserve(texture->getWidth() * texture->getHeight() * texture->m_channelsCount * externalTextureChannelSize);
+    for(std::int32_t y = 0; y < texture->getHeight(); ++y)
+    {
+        for(std::int32_t x = 0; x < texture->getWidth(); ++x)
+        {
+            const std::int32_t posInExternalTexture = (y * texture->getWidth() + x) * 4 * externalTextureChannelSize;
+            // todo: externalTextureData
+        }
+    }
+
+    if(inRect.m_size.x != texture->getWidth() || inRect.m_size.y != texture->getHeight())
+    {
+        // resizing data buffer
+        std::vector<std::uint8_t> resizedDataBuffer;
+        resizedDataBuffer.reserve(inRect.m_size.x * inRect.m_size.y * texture->m_channelsCount * externalTextureChannelSize);
+        stbir_resize_uint8_linear(externalTextureData.data(), texture->getWidth(), texture->getHeight(), 0,
+                                  resizedDataBuffer.data(), inRect.m_size.x, inRect.m_size.y, 0, STBIR_RGBA);
+
+        externalTextureData = std::move(resizedDataBuffer);
+    }
+
+    m_atlasTexture->bind(0);
+    m_atlasTexture->subTextureData(externalTextureData.data(), externalTextureChannelSize, inRect.m_size.x, inRect.m_size.y, inRect.m_position.x, inRect.m_position.y);
+}
+
+SGCore::Ref<SGCore::ITexture2D> SGCore::Atlas::getTexture() const noexcept
+{
+    return m_atlasTexture;
 }
 
 void SGCore::Atlas::splitRect(const AtlasRect& rectToSplit, const AtlasRect& innerRect, AtlasRect& biggerSplit, AtlasRect& smallerSplit) noexcept

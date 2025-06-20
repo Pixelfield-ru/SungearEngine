@@ -12,14 +12,18 @@ namespace SGCore
 {
     struct Atlas
     {
-        void findBestRect(const glm::ivec2& textureSize, AtlasRect& outputRect) noexcept;
+        void findBestRect(glm::ivec2 textureSize, AtlasRect& outputRect) noexcept;
         void packTexture(const AtlasRect& inRect, const ITexture2D* texture) noexcept;
+
+        [[nodiscard]] Ref<ITexture2D> getTexture() const noexcept;
 
     private:
         std::vector<AtlasRect> m_atlasFreeRects;
         std::vector<AtlasRect> m_atlasUsedRects;
 
         glm::ivec2 m_totalSize { };
+
+        Ref<ITexture2D> m_atlasTexture;
 
         static void splitRect(const AtlasRect& rectToSplit, const AtlasRect& innerRect, AtlasRect& biggerSplit, AtlasRect& smallerSplit) noexcept;
     };

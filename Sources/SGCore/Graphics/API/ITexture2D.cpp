@@ -94,8 +94,15 @@ SGCore::Ref<std::uint8_t[]> SGCore::ITexture2D::getData() noexcept
     return m_textureData;
 }
 
+SGCore::Ref<const unsigned char[]> SGCore::ITexture2D::getData() const noexcept
+{
+    return m_textureData;
+}
+
 void SGCore::ITexture2D::resize(std::int32_t newWidth, std::int32_t newHeight, bool noDataResize) noexcept
 {
+    // TODO: почему я не умножаю на размер одного канала???
+
     if(!noDataResize)
     {
         Ref<std::uint8_t[]> newData = Ref<std::uint8_t[]>(new std::uint8_t[newWidth * newHeight * m_channelsCount],
@@ -124,6 +131,19 @@ void SGCore::ITexture2D::resize(std::int32_t newWidth, std::int32_t newHeight, b
     }
 }
 
+void SGCore::ITexture2D::resizeDataBuffer(std::int32_t newWidth, std::int32_t newHeight) noexcept
+{
+    Ref<std::uint8_t[]> newData = Ref<std::uint8_t[]>(new std::uint8_t[newWidth * newHeight * m_channelsCount],
+                                                              STBITextureDataDeleter {});
+
+    m_textureData = newData;
+
+    m_width = newWidth;
+    m_height = newHeight;
+
+    create();
+}
+
 std::int32_t SGCore::ITexture2D::getWidth() const noexcept
 {
     return m_width;
@@ -132,6 +152,11 @@ std::int32_t SGCore::ITexture2D::getWidth() const noexcept
 std::int32_t SGCore::ITexture2D::getHeight() const noexcept
 {
     return m_height;
+}
+
+SGGDataType SGCore::ITexture2D::getDataType() const noexcept
+{
+    return m_dataType;
 }
 
 void SGCore::ITexture2D::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
