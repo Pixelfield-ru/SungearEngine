@@ -993,6 +993,14 @@ enum class SGGColorFormat
     SGG_COLOR_FORMAT_NONE
 };
 
+enum class SGGChannelType
+{
+    SGG_R,
+    SGG_G,
+    SGG_B,
+    SGG_A
+};
+
 static std::int8_t getSGGFormatChannelsCount(const SGGColorFormat& sggFormat) noexcept
 {
     switch(sggFormat)
@@ -1018,6 +1026,17 @@ static std::int8_t getSGGFormatChannelsCount(const SGGColorFormat& sggFormat) no
 
         default: return -1;
     }
+}
+
+/**
+ * @param colorFormat Input color format.
+ * @param colorInternalFormat Input
+ * @return Size of every channel in bits in order of color format.\n
+ * Example: { { B, 8 }, { G, 8 }, { R, 8 }, { A, 8 } }.
+ */
+static std::vector<std::pair<SGGChannelType, std::uint8_t>> getSGGEveryChannelSizeInBits(SGGColorFormat colorFormat, SGGColorInternalFormat colorInternalFormat) noexcept
+{
+    if(getSGGInternalFormatChannelsCount(colorInternalFormat) != getSGGFormatChannelsCount(colorFormat)) return { };
 }
 
 #endif //SUNGEARENGINE_GRAPHICSDATATYPES_H

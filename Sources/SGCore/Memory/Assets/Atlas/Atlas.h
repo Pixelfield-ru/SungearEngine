@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_ATLAS_H
 
 #include "AtlasRect.h"
+#include "SGCore/Graphics/API/GraphicsDataTypes.h"
 #include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
@@ -28,6 +29,8 @@ namespace SGCore
         Ref<ITexture2D> m_atlasTexture;
 
         static void splitRect(const AtlasRect& rectToSplit, const AtlasRect& innerRect, AtlasRect& biggerSplit, AtlasRect& smallerSplit) noexcept;
+
+        static void convertTextureFormatToRGBA32INT(const std::uint8_t* srcBuffer, std::uint8_t* dstBuffer, size_t pixelsCount, const std::vector<std::pair<SGGChannelType, std::uint8_t>>& srcChannelsBits) noexcept;
     };
 }
 
