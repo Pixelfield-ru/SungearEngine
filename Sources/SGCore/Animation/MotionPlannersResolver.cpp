@@ -108,8 +108,9 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
 
         // updating data in texture buffer after updating bones matrices
         motionPlanner.m_bonesMatricesBuffer->bind(0);
-        motionPlanner.m_bonesMatricesBuffer->subTextureBufferData(motionPlanner.m_bonesMatricesData.data(),
-                                                                  motionPlanner.m_bonesMatricesData.size(), 0);
+        motionPlanner.m_bonesMatricesBuffer->subTextureBufferData(
+            reinterpret_cast<std::uint8_t*>(motionPlanner.m_bonesMatricesData.data()),
+            std::uint32_t(motionPlanner.m_bonesMatricesData.size() / 4) + 1, 0);
     });
 }
 
@@ -368,7 +369,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     // 4 is count of scalars in vector. this vector contains count of bones
     if(currentBone)
     {
-        std::memcpy(motionPlanner.m_bonesMatricesData.data() + 4 + currentBone->m_id * 16 * 4,
+        std::memcpy(motionPlanner.m_bonesMatricesData.data() + 4 + currentBone->m_id * 16,
                     glm::value_ptr(boneFinalMatrix), 16 * 4);
     }
 

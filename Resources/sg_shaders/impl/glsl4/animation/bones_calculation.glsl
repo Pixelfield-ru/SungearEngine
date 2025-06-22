@@ -44,10 +44,11 @@ bool calculateVertexPosAndNormal(vec3 inVertexPos, vec3 inVertexNormal, out vec4
 
         mat4 boneMatrix = mat4(1.0);
 
-        boneMatrix[0] = texelFetch(u_bonesMatricesUniformBuffer, curBoneID * 16 + 1);
-        boneMatrix[1] = texelFetch(u_bonesMatricesUniformBuffer, curBoneID * 16 + 2);
-        boneMatrix[2] = texelFetch(u_bonesMatricesUniformBuffer, curBoneID * 16 + 3);
-        boneMatrix[3] = texelFetch(u_bonesMatricesUniformBuffer, curBoneID * 16 + 4);
+        // 1 is first vector that contains bones count (in r component). 4 is count of rows in matrix
+        boneMatrix[0] = texelFetch(u_bonesMatricesUniformBuffer, 1 + curBoneID * 4 + 0);
+        boneMatrix[1] = texelFetch(u_bonesMatricesUniformBuffer, 1 + curBoneID * 4 + 1);
+        boneMatrix[2] = texelFetch(u_bonesMatricesUniformBuffer, 1 + curBoneID * 4 + 2);
+        boneMatrix[3] = texelFetch(u_bonesMatricesUniformBuffer, 1 + curBoneID * 4 + 3);
 
         if(curBoneID == -1)
         {

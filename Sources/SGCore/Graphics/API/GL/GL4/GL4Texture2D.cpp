@@ -28,7 +28,7 @@ void SGCore::GL4Texture2D::create() noexcept
     {
         glGenBuffers(1, &m_textureBufferHandler);
         glBindBuffer(GL_TEXTURE_BUFFER, m_textureBufferHandler);
-        glBufferData(GL_TEXTURE_BUFFER, m_width * m_height * getSGGDataTypeSizeInBytes(m_dataType), m_textureData.get(),
+        glBufferData(GL_TEXTURE_BUFFER, m_width * m_height * getSGGInternalFormatChannelsSizeInBytes(m_internalFormat), m_textureData.get(),
                      GLGraphicsTypesCaster::sggBufferUsageToGL(m_textureBufferUsage));
         
         glGenTextures(1, &m_textureHandler);
@@ -98,7 +98,7 @@ void SGCore::GL4Texture2D::create() noexcept
                          m_height,
                          0,
                          GLGraphicsTypesCaster::sggFormatToGL(m_format),
-                         GLGraphicsTypesCaster::sggDataTypeToGL(m_dataType),
+                         GL_UNSIGNED_BYTE,
                          m_textureData.get());
         }
         
@@ -250,7 +250,7 @@ void SGCore::GL4Texture2D::subTextureBufferDataOnGAPISide(const size_t& bytesCou
     glBufferSubData(GL_TEXTURE_BUFFER, bytesOffset, bytesCount, m_textureData.get() + bytesOffset);
 }
 
-void SGCore::GL4Texture2D::subTextureDataOnGAPISide(std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY, int dataTypeSize) noexcept
+void SGCore::GL4Texture2D::subTextureDataOnGAPISide(std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY, int dataChannelsSize) noexcept
 {
     glTexSubImage2D(
         GL_TEXTURE_2D, // target
@@ -258,8 +258,8 @@ void SGCore::GL4Texture2D::subTextureDataOnGAPISide(std::size_t areaWidth, std::
         areaOffsetX, areaOffsetY, // x and y offsets
         areaWidth, areaHeight, // subdata area size
         GLGraphicsTypesCaster::sggFormatToGL(m_format), // pixels format
-        GLGraphicsTypesCaster::sggDataTypeToGL(m_dataType), // data type
-        m_textureData.get() + (areaOffsetX + areaOffsetY * m_width) * dataTypeSize // new data with offsets
+        GL_UNSIGNED_BYTE,
+        m_textureData.get() + (areaOffsetX + areaOffsetY * m_width) * dataChannelsSize // new data with offsets
     );
 }
 

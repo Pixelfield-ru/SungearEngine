@@ -6,6 +6,10 @@
 #include "SGCore/Memory/AssetManager.h"
 
 #include <SGCore/Logger/Logger.h>
+
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+
 #include <stb_image.h>
 #include <stb_image_resize2.h>
 
@@ -84,7 +88,7 @@ void SGCore::ITexture2D::doLazyLoad()
           "Loaded texture (in lazy load). Width: {}, height: {}, MB size: {}, channels: {}, path: {}",
           m_width,
           m_height,
-          m_width * m_height * m_channelsCount / 1024.0 / 1024.0,
+          m_width * m_height * getSGGInternalFormatChannelsSizeInBytes(m_internalFormat) / 1024.0 / 1024.0,
           m_channelsCount,
           getPath().resolved().string());
 }
@@ -101,11 +105,9 @@ SGCore::Ref<const unsigned char[]> SGCore::ITexture2D::getData() const noexcept
 
 void SGCore::ITexture2D::resize(std::int32_t newWidth, std::int32_t newHeight, bool noDataResize) noexcept
 {
-    // TODO: почему я не умножаю на размер одного канала???
-
     if(!noDataResize)
     {
-        Ref<std::uint8_t[]> newData = Ref<std::uint8_t[]>(new std::uint8_t[newWidth * newHeight * m_channelsCount],
+        Ref<std::uint8_t[]> newData = Ref<std::uint8_t[]>(new std::uint8_t[newWidth * newHeight * getSGGInternalFormatChannelsSizeInBytes(m_internalFormat)],
                                                               STBITextureDataDeleter {});
 
         // stbir_resize()
@@ -133,8 +135,10 @@ void SGCore::ITexture2D::resize(std::int32_t newWidth, std::int32_t newHeight, b
 
 void SGCore::ITexture2D::resizeDataBuffer(std::int32_t newWidth, std::int32_t newHeight) noexcept
 {
-    Ref<std::uint8_t[]> newData = Ref<std::uint8_t[]>(new std::uint8_t[newWidth * newHeight * m_channelsCount],
+    Ref<std::uint8_t[]> newData = Ref<std::uint8_t[]>(new std::uint8_t[newWidth * newHeight * getSGGInternalFormatChannelsSizeInBytes(m_internalFormat)],
                                                               STBITextureDataDeleter {});
+
+    std::memcpy(newData.get(), m_textureData.get(), m_width * m_height * getSGGInternalFormatChannelsSizeInBytes(m_internalFormat));
 
     m_textureData = newData;
 
@@ -152,11 +156,6 @@ std::int32_t SGCore::ITexture2D::getWidth() const noexcept
 std::int32_t SGCore::ITexture2D::getHeight() const noexcept
 {
     return m_height;
-}
-
-SGGDataType SGCore::ITexture2D::getDataType() const noexcept
-{
-    return m_dataType;
 }
 
 void SGCore::ITexture2D::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept

@@ -40,21 +40,21 @@ SGCore::Batch::Batch() noexcept
     m_verticesBuffer = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
     m_verticesBuffer->m_textureBufferUsage = SGGUsage::SGG_DYNAMIC;
     m_verticesBuffer->m_isTextureBuffer = true;
-    m_verticesBuffer->create(reinterpret_cast<char*>(m_vertices.data()), m_vertices.size(), 1, 1,
+    m_verticesBuffer->create(m_vertices.data(), 0, 1, 1,
                              SGGColorInternalFormat::SGG_RGB32_FLOAT,
                              SGGColorFormat::SGG_RGB);
 
     m_indicesBuffer = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
     m_indicesBuffer->m_textureBufferUsage = SGGUsage::SGG_DYNAMIC;
     m_indicesBuffer->m_isTextureBuffer = true;
-    m_indicesBuffer->create(reinterpret_cast<char*>(m_indices.data()), m_indices.size(), 1, 1,
+    m_indicesBuffer->create(m_indices.data(), 0, 1, 1,
                             SGGColorInternalFormat::SGG_RGB32_UNSIGNED_INT,
-                            SGGColorFormat::SGG_RGB);
+                            SGGColorFormat::SGG_RGB_INTEGER);
 
     m_instancesTransformsBuffer = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
     m_instancesTransformsBuffer->m_textureBufferUsage = SGGUsage::SGG_DYNAMIC;
     m_instancesTransformsBuffer->m_isTextureBuffer = true;
-    m_instancesTransformsBuffer->create(reinterpret_cast<char*>(m_transforms.data()), m_transforms.size(), 1, 1,
+    m_instancesTransformsBuffer->create(m_transforms.data(), 0, 1, 1,
                                         SGGColorInternalFormat::SGG_RGBA32_FLOAT,
                                         SGGColorFormat::SGG_RGBA);
 
@@ -100,7 +100,7 @@ void SGCore::Batch::addEntity(ECS::entity_t entity, const ECS::registry_t& fromR
             .m_verticesOffset = m_vertices.size(),
             .m_verticesCount = meshData->m_vertices.size(),
 
-            .m_indicesOffset = m_indices.size(),
+            .m_indicesOffset = m_indices.size() * 3,
             .m_indicesCount = meshData->m_indices.size()
         };
 
@@ -126,10 +126,14 @@ void SGCore::Batch::addEntity(ECS::entity_t entity, const ECS::registry_t& fromR
         const bool hasIndices = !meshData->m_indices.empty();
         const size_t indicesCount = hasIndices ? meshData->m_indices.size() : meshData->m_vertices.size() / 3;
 
-        for(size_t i = 0; i < indicesCount; ++i)
+        for(size_t i = 0; i < indicesCount; i += 3)
         {
             // lastVertCount is offset for indices
-            m_indices.push_back(lastVertCount + meshData->m_indices[i]);
+            m_indices.push_back(glm::u32vec3 {
+                lastVertCount + meshData->m_indices[i],
+                lastVertCount + meshData->m_indices[i + 1],
+                lastVertCount + meshData->m_indices[i + 2]
+            });
         }
     }
 
@@ -170,12 +174,12 @@ void SGCore::Batch::update(const ECS::registry_t& inRegistry) noexcept
         m_transforms.push_back(instanceTransform);
     }
 
-    if(m_instancesTransformsBuffer->getWidth() < m_transforms.size() * sizeof(BatchInstanceTransform))
+    if(m_instancesTransformsBuffer->getWidth() < m_transforms.size() * BatchInstanceTransform::components_count)
     {
-        m_instancesTransformsBuffer->resize(m_transforms.size() * sizeof(BatchInstanceTransform), 1);
+        m_instancesTransformsBuffer->resizeDataBuffer(m_transforms.size() * BatchInstanceTransform::components_count, 1);
     }
     m_instancesTransformsBuffer->bind(2);
-    m_instancesTransformsBuffer->subTextureBufferData(reinterpret_cast<char*>(m_transforms.data()), m_transforms.size() * sizeof(BatchInstanceTransform), 0);
+    m_instancesTransformsBuffer->subTextureBufferData(reinterpret_cast<std::uint8_t*>(m_transforms.data()), m_transforms.size() * BatchInstanceTransform::components_count, 0);
 }
 
 void SGCore::Batch::bind() const noexcept
@@ -218,17 +222,17 @@ void SGCore::Batch::updateBuffers() noexcept
     m_fakeVerticesBuffer->bind();
     m_fakeVerticesBuffer->putData(m_instanceTriangles);
 
-    if(m_verticesBuffer->getWidth() < m_vertices.size() * sizeof(BatchVertex))
+    if(m_verticesBuffer->getWidth() < m_vertices.size() * BatchVertex::components_count)
     {
-        m_verticesBuffer->resize(m_vertices.size() * sizeof(BatchVertex), 1);
+        m_verticesBuffer->resizeDataBuffer(m_vertices.size() * BatchVertex::components_count, 1);
     }
     m_verticesBuffer->bind(0);
-    m_verticesBuffer->subTextureBufferData(reinterpret_cast<char*>(m_vertices.data()), m_vertices.size() * sizeof(BatchVertex), 0);
+    m_verticesBuffer->subTextureBufferData(reinterpret_cast<std::uint8_t*>(m_vertices.data()), m_vertices.size() * BatchVertex::components_count, 0);
 
-    if(m_indicesBuffer->getWidth() < m_indices.size() * sizeof(float))
+    if(m_indicesBuffer->getWidth() < m_indices.size())
     {
-        m_indicesBuffer->resize(m_indices.size() * sizeof(float), 1);
+        m_indicesBuffer->resizeDataBuffer(m_indices.size(), 1);
     }
     m_indicesBuffer->bind(1);
-    m_indicesBuffer->subTextureBufferData(reinterpret_cast<char*>(m_indices.data()), m_indices.size() * sizeof(float), 0);
+    m_indicesBuffer->subTextureBufferData(reinterpret_cast<std::uint8_t*>(m_indices.data()), m_indices.size(), 0);
 }

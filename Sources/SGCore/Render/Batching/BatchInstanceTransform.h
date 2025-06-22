@@ -12,6 +12,9 @@ namespace SGCore
 #pragma pack(push, 1)
     struct BatchInstanceTransform
     {
+        // 7 is rgba elements count in BatchInstanceTransform
+        static constexpr std::uint32_t components_count = 7;
+
         glm::mat4 m_modelMatrix = glm::mat4(1.0f);
         glm::vec3 m_position { 0.0f };
         float padding0;

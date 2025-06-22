@@ -63,8 +63,17 @@ namespace SGCore
 
         virtual void create() = 0;
 
+        /**
+         *
+         * @tparam DataType
+         * @param data
+         * @param width Width of texture (in pixels).
+         * @param height Height of texture (in pixels).
+         * @param channelsCount
+         * @param internalFormat
+         * @param format
+         */
         template<typename DataType = std::uint8_t>
-        requires(std::is_scalar_v<DataType>)
         void create(const DataType* data,
                     const size_t& width,
                     const size_t& height,
@@ -72,24 +81,31 @@ namespace SGCore
                     SGGColorInternalFormat internalFormat,
                     SGGColorFormat format)
         {
-            size_t byteSize = width * height * sizeof(DataType) * channelsCount;
+            size_t byteSize = width * height * getSGGInternalFormatChannelsSizeInBytes(internalFormat);
 
             m_width = width;
             m_height = height;
             m_channelsCount = channelsCount;
             m_internalFormat = internalFormat;
             m_format = format;
-            m_dataType = getSGDataTypeFromCPPType<DataType>();
 
             m_textureData = Ref<std::uint8_t[]>(new std::uint8_t[byteSize]);
-            std::memcpy(m_textureData.get(), data, byteSize);
+            std::memcpy(m_textureData.get(), reinterpret_cast<const std::uint8_t*>(data), byteSize);
 
             create();
         }
 
-        /// Moves 'data' to ITexture2D and now ITexture2D owns this data
+        /**
+         * Moves 'data' to ITexture2D and now ITexture2D owns this data
+         * @tparam DataType
+         * @param data
+         * @param width Width of texture (in pixels).
+         * @param height Height of texture (in pixels).
+         * @param channelsCount
+         * @param internalFormat
+         * @param format
+         */
         template<typename DataType = std::uint8_t>
-        requires(std::is_scalar_v<DataType>)
         void moveAndCreate(DataType* data,
                            const size_t& width,
                            const size_t& height,
@@ -104,28 +120,29 @@ namespace SGCore
             m_channelsCount = channelsCount;
             m_internalFormat = internalFormat;
             m_format = format;
-            m_dataType = getSGDataTypeFromCPPType<DataType>();
 
             // TODO: IS IT NOT MEMORY LEAK OR UB???
-            m_textureData = Ref<std::uint8_t[]>(data);
+            m_textureData = Ref<std::uint8_t[]>(reinterpret_cast<std::uint8_t*>(data));
 
             create();
         }
 
         virtual void createAsFrameBufferAttachment(const Ref<IFrameBuffer>& parentFrameBuffer, SGFrameBufferAttachmentType attachmentType) = 0;
-        
-        template<typename DataType = std::uint8_t>
-        requires(std::is_scalar_v<DataType>)
-        void subTextureBufferData(const DataType* data, const size_t& elementsCount, const size_t& elementsOffset)
-        {
-            static constexpr int dataTypeSize = sizeof(DataType);
 
-            // TODO: почему я не умножаю на кол-во каналов???
+        /**
+         * PLEASE NOTE THAT INTERNAL FORMAT OF data BUFFER MUST BE EQUAL TO INTERNAL FORMAT OF THIS TEXTURE.
+         * @param data Buffer with new data.
+         * @param elementsCount Count of elements in data buffer. Not in bytes!
+         * @param elementsOffset Offset in data buffer. Not in bytes!
+         */
+        void subTextureBufferData(const std::uint8_t* data, const size_t& elementsCount, const size_t& elementsOffset)
+        {
+            const int dataChannelsSize = getSGGInternalFormatChannelsSizeInBytes(m_internalFormat);
 
             if(m_frameBufferAttachmentType != SGFrameBufferAttachmentType::SGG_NOT_ATTACHMENT || !m_isTextureBuffer) return;
 
             // we are using size of data type to check if out of bounds. NOT SIZE OF CHANNEL
-            if((elementsOffset + elementsCount) * dataTypeSize > m_width * m_height * getSGGDataTypeSizeInBytes(m_dataType))
+            if((elementsOffset + elementsCount) * dataChannelsSize > m_width * m_height * dataChannelsSize)
             {
                 SG_ASSERT(false,
                           fmt::format("Can not do subTextureBufferData(...): out of bounds of texture size!\n"
@@ -144,32 +161,27 @@ namespace SGCore
                 return;
             }
 
-            std::memcpy(m_textureData.get() + elementsOffset * dataTypeSize, data, elementsCount * dataTypeSize);
+            std::memcpy(m_textureData.get() + elementsOffset * dataChannelsSize, data, elementsCount * dataChannelsSize);
             
-            subTextureBufferDataOnGAPISide(elementsCount * dataTypeSize, elementsOffset * dataTypeSize);
+            subTextureBufferDataOnGAPISide(elementsCount * dataChannelsSize, elementsOffset * dataChannelsSize);
         }
 
         /**
          * PLEASE NOTE THAT INTERNAL FORMAT OF data BUFFER MUST BE EQUAL TO INTERNAL FORMAT OF THIS TEXTURE.
          * @tparam DataType
-         * @param data
-         * @param areaWidth
-         * @param areaHeight
-         * @param areaOffsetX
-         * @param areaOffsetY
+         * @param data Buffer with new data.
+         * @param areaWidth Width of area to subdata. Not in bytes!
+         * @param areaHeight Height of area to subdata. Not in bytes!
+         * @param areaOffsetX X offset of area to subdata. Not in bytes!
+         * @param areaOffsetY Y offset of area to subdata. Not in bytes!
          */
-        template<typename DataType = std::uint8_t>
-        requires(std::is_scalar_v<DataType>)
-        void subTextureData(const DataType* data, std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY)
+        void subTextureData(const std::uint8_t* data, std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY)
         {
-            static constexpr int dataTypeSize = sizeof(DataType);
-
-            // TODO: почему я не умножаю на кол-во каналов???
+            const int dataChannelsSize = getSGGInternalFormatChannelsSizeInBytes(m_internalFormat);
 
             if(m_frameBufferAttachmentType != SGFrameBufferAttachmentType::SGG_NOT_ATTACHMENT || m_isTextureBuffer) return;
 
-            // we are using size of data type to check if out of bounds. NOT SIZE OF CHANNEL
-            if((areaOffsetX * areaOffsetY + areaWidth * areaHeight) * dataTypeSize > m_width * m_height * getSGGDataTypeSizeInBytes(m_dataType))
+            if((areaOffsetX * areaOffsetY + areaWidth * areaHeight) * dataChannelsSize > m_width * m_height * dataChannelsSize)
             {
                 SG_ASSERT(false,
                           fmt::format("Can not do subTextureBufferData(...): out of bounds of texture size (by bytes)!\n"
@@ -190,57 +202,11 @@ namespace SGCore
                 return;
             }
 
-            std::memcpy(m_textureData.get() + (areaOffsetX + areaOffsetY * m_width) * dataTypeSize,
+            std::memcpy(m_textureData.get() + (areaOffsetX + areaOffsetY * m_width) * dataChannelsSize,
                         data,
-                        areaWidth * areaHeight * dataTypeSize);
-            
-            subTextureDataOnGAPISide(areaWidth, areaHeight, areaOffsetX, areaOffsetY, dataTypeSize);
-        }
+                        areaWidth * areaHeight * dataChannelsSize);
 
-        /**
-         * PLEASE NOTE THAT INTERNAL FORMAT OF data BUFFER MUST BE EQUAL TO INTERNAL FORMAT OF THIS TEXTURE.
-         * @tparam DataType
-         * @param data
-         * @param channelByteSize
-         * @param areaWidth
-         * @param areaHeight
-         * @param areaOffsetX
-         * @param areaOffsetY
-         */
-        void subTextureData(const std::uint8_t* data, std::uint8_t channelByteSize, std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY)
-        {
-            const int dataTypeSize = channelByteSize;
-
-            // TODO: почему я не умножаю на кол-во каналов???
-
-            if(m_frameBufferAttachmentType != SGFrameBufferAttachmentType::SGG_NOT_ATTACHMENT || m_isTextureBuffer) return;
-
-            if((areaOffsetX * areaOffsetY + areaWidth * areaHeight) * dataTypeSize > m_width * m_height * getSGGDataTypeSizeInBytes(m_dataType))
-            {
-                SG_ASSERT(false,
-                          fmt::format("Can not do subTextureBufferData(...): out of bounds of texture size (by bytes)!\n"
-                              "Texture path: '{}'\n"
-                              "Texture alias: '{}'\n"
-                              "Texture size: width: {}, height: {}\n"
-                              "Area offset to subdata: x: {}, y: {}\n"
-                              "Area size to subdata: width: {}, height: {}",
-                              Utils::toUTF8(getPath().resolved().u16string()),
-                              getAlias(),
-                              m_width,
-                              m_height,
-                              areaOffsetX,
-                              areaOffsetY,
-                              areaWidth,
-                              areaHeight).c_str());
-
-                return;
-            }
-
-            std::memcpy(m_textureData.get() + (areaOffsetX + areaOffsetY * m_width) * dataTypeSize,
-                        data,
-                        areaWidth * areaHeight * dataTypeSize);
-
-            subTextureDataOnGAPISide(areaWidth, areaHeight, areaOffsetX, areaOffsetY, dataTypeSize);
+            subTextureDataOnGAPISide(areaWidth, areaHeight, areaOffsetX, areaOffsetY, dataChannelsSize);
         }
         
         virtual void destroy() = 0;
@@ -258,8 +224,8 @@ namespace SGCore
 
         /**
          * Stretches/compresses the texture to the desired size.
-         * @param newWidth New width of texture.
-         * @param newHeight New height of texture.
+         * @param newWidth New width of texture (in pixels).
+         * @param newHeight New height of texture (in pixels).
          * @param noDataResize Is it necessary to stretch/compress the texture to the required size? If the value is false, the width and height of the texture will be changed, but the data will not.
          */
         void resize(std::int32_t newWidth, std::int32_t newHeight, bool noDataResize = false) noexcept;
@@ -274,8 +240,8 @@ namespace SGCore
         template<typename DataType>
         [[nodiscard]] glm::vec<4, DataType> sampleRAM(const glm::ivec2& inPosition) const noexcept
         {
-            const std::uint16_t texDataTypeSize = getSGGDataTypeSizeInBytes(m_dataType);
-            const std::uint16_t perPixelOffset = texDataTypeSize * m_channelsCount;
+            const float texDataTypeSize = getSGGInternalFormatChannelsSizeInBytes(m_internalFormat) / m_channelsCount;
+            const std::uint16_t perPixelOffset = getSGGInternalFormatChannelsSizeInBytes(m_internalFormat);
 
             const std::int32_t finalPosition = (inPosition.y * m_width + inPosition.x) * perPixelOffset;
 
@@ -284,17 +250,15 @@ namespace SGCore
             auto* data = m_textureData.get();
 
             if(m_channelsCount >= 1) result.r = *reinterpret_cast<DataType*>(&data[finalPosition]);
-            if(m_channelsCount >= 2) result.g = *reinterpret_cast<DataType*>(&data[finalPosition + 1 * texDataTypeSize]);
-            if(m_channelsCount >= 3) result.b = *reinterpret_cast<DataType*>(&data[finalPosition + 2 * texDataTypeSize]);
-            if(m_channelsCount == 4) result.w = *reinterpret_cast<DataType*>(&data[finalPosition + 3 * texDataTypeSize]);
+            if(m_channelsCount >= 2) result.g = *reinterpret_cast<DataType*>(&data[finalPosition + std::int32_t(1 * texDataTypeSize)]);
+            if(m_channelsCount >= 3) result.b = *reinterpret_cast<DataType*>(&data[finalPosition + std::int32_t(2 * texDataTypeSize)]);
+            if(m_channelsCount == 4) result.w = *reinterpret_cast<DataType*>(&data[finalPosition + std::int32_t(3 * texDataTypeSize)]);
 
             return result;
         }
 
         [[nodiscard]] std::int32_t getWidth() const noexcept;
         [[nodiscard]] std::int32_t getHeight() const noexcept;
-
-        SGGDataType getDataType() const noexcept;
 
         /**
          * @return What type of framebuffer attachment is this texture.\n
@@ -317,14 +281,20 @@ namespace SGCore
         SGFrameBufferAttachmentType m_frameBufferAttachmentType = SGFrameBufferAttachmentType::SGG_NOT_ATTACHMENT;
 
         virtual void subTextureBufferDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) { }
-        virtual void subTextureDataOnGAPISide(std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY, int dataTypeSize) = 0;
+
+        /**
+         * Internal subdata. GAPI specific.
+         * @param areaWidth Width of area to subdata. Not in bytes!
+         * @param areaHeight Height of area to subdata. Not in bytes!
+         * @param areaOffsetX X offset of area to subdata. Not in bytes!
+         * @param areaOffsetY Y offset of area to subdata. Not in bytes!
+         * @param dataChannelsSize Size of channels in bytes.
+         */
+        virtual void subTextureDataOnGAPISide(std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY, int dataChannelsSize) = 0;
 
     private:
         std::streamsize m_textureDataOffsetInPackage = 0;
         std::streamsize m_textureDataSizeInPackage = 0;
-
-        // cpp data type of buffer passed to create() function
-        SGGDataType m_dataType = SGGDataType::SGG_UNSIGNED_BYTE;
 
         void doLoad(const InterpolatedPath& path) override;
         void doLazyLoad() override;

@@ -72,8 +72,8 @@ namespace SGCore
 
         // all vertices of all instances
         std::vector<BatchVertex> m_vertices;
-        // all indices of all instances
-        std::vector<std::uint32_t> m_indices;
+        // all indices of all instances. every instance contains 3 indices of one triangle
+        std::vector<glm::u32vec3> m_indices;
         std::vector<BatchInstanceTransform> m_transforms;
 
         // first - meshdata hash, second - data offset and size (in bytes)

@@ -227,6 +227,9 @@ enum class SGGDataType
     SGG_INT3,
     SGG_INT4,
 
+    SGG_SHORT,
+    SGG_UNSIGNED_SHORT,
+
     SGG_FLOAT,
     SGG_FLOAT2,
     SGG_FLOAT3,
@@ -652,8 +655,6 @@ enum class SGGUsage
 
 enum class SGGColorInternalFormat
 {
-    SGG_RED,
-    
     SGG_R8,
     SGG_R8_SIGNED_NORMALIZED,
 
@@ -770,8 +771,6 @@ static std::int8_t getSGGInternalFormatChannelsCount(const SGGColorInternalForma
 {
     switch(sggInternalFormat)
     {
-        case SGGColorInternalFormat::SGG_RED: return 1;
-
         case SGGColorInternalFormat::SGG_R8: return 1;
         case SGGColorInternalFormat::SGG_R8_SIGNED_NORMALIZED: return 1;
 
@@ -884,6 +883,89 @@ static std::int8_t getSGGInternalFormatChannelsCount(const SGGColorInternalForma
 
         default: return -1;
     }
+}
+
+static constexpr std::uint8_t getSGGInternalFormatChannelsSizeInBytes(SGGColorInternalFormat format) noexcept
+{
+    switch(format)
+    {
+        case SGGColorInternalFormat::SGG_R8: return 1;
+        case SGGColorInternalFormat::SGG_R8_SIGNED_NORMALIZED: return 1;
+        case SGGColorInternalFormat::SGG_R16: return 2;
+        case SGGColorInternalFormat::SGG_R16_SIGNED_NORMALIZED: return 2;
+        case SGGColorInternalFormat::SGG_RG8: return 2;
+        case SGGColorInternalFormat::SGG_RG8_SIGNED_NORMALIZED: return 2;
+        case SGGColorInternalFormat::SGG_RG16: return 4;
+        case SGGColorInternalFormat::SGG_RG16_SIGNED_NORMALIZED: return 4;
+        case SGGColorInternalFormat::SGG_R3_G3_B2: return 1;
+        case SGGColorInternalFormat::SGG_RGB4: return 2;
+        case SGGColorInternalFormat::SGG_RGB5: return 2;
+        case SGGColorInternalFormat::SGG_RGB8: return 3;
+        case SGGColorInternalFormat::SGG_RGB8_SIGNED_NORMALIZED: return 3;
+        case SGGColorInternalFormat::SGG_RGB10: return 4;
+        case SGGColorInternalFormat::SGG_RGB12: return 5;
+        case SGGColorInternalFormat::SGG_RGB16_SIGNED_NORMALIZED: return 6;
+        case SGGColorInternalFormat::SGG_RGBA2: return 1;
+        case SGGColorInternalFormat::SGG_RGBA4: return 2;
+        case SGGColorInternalFormat::SGG_RGB5_A1: return 2;
+        case SGGColorInternalFormat::SGG_RGBA8: return 4;
+        case SGGColorInternalFormat::SGG_RGBA8_SIGNED_NORMALIZED: return 4;
+        case SGGColorInternalFormat::SGG_RGB10_A2: return 4;
+        case SGGColorInternalFormat::SGG_RGB10_A2_UNSIGNED_INT: return 4;
+        case SGGColorInternalFormat::SGG_RGBA12: return 6;
+        case SGGColorInternalFormat::SGG_RGBA16: return 8;
+        case SGGColorInternalFormat::SGG_SRGB8: return 3;
+        case SGGColorInternalFormat::SGG_SRGB8_ALPHA8: return 4;
+        case SGGColorInternalFormat::SGG_R16_FLOAT: return 2;
+        case SGGColorInternalFormat::SGG_RG16_FLOAT: return 4;
+        case SGGColorInternalFormat::SGG_RGB16_FLOAT: return 6;
+        case SGGColorInternalFormat::SGG_RGBA16_FLOAT: return 8;
+        case SGGColorInternalFormat::SGG_R32_FLOAT: return 4;
+        case SGGColorInternalFormat::SGG_RG32_FLOAT: return 8;
+        case SGGColorInternalFormat::SGG_RGB32_FLOAT: return 12;
+        case SGGColorInternalFormat::SGG_RGBA32_FLOAT: return 16;
+        case SGGColorInternalFormat::SGG_R11_G11_B10_FLOAT: return 4;
+        case SGGColorInternalFormat::SGG_RGB9_E5: return 4;
+        case SGGColorInternalFormat::SGG_R8_INT: return 1;
+        case SGGColorInternalFormat::SGG_R8_UNSIGNED_INT: return 1;
+        case SGGColorInternalFormat::SGG_R16_INT: return 2;
+        case SGGColorInternalFormat::SGG_R16_UNSIGNED_INT: return 2;
+        case SGGColorInternalFormat::SGG_R32_INT: return 4;
+        case SGGColorInternalFormat::SGG_R32_UNSIGNED_INT: return 4;
+        case SGGColorInternalFormat::SGG_RG8_INT: return 2;
+        case SGGColorInternalFormat::SGG_RG8_UNSIGNED_INT: return 2;
+        case SGGColorInternalFormat::SGG_RG16_INT: return 4;
+        case SGGColorInternalFormat::SGG_RG16_UNSIGNED_INT: return 4;
+        case SGGColorInternalFormat::SGG_RG32_INT: return 8;
+        case SGGColorInternalFormat::SGG_RG32_UNSIGNED_INT: return 8;
+        case SGGColorInternalFormat::SGG_RGB8_INT: return 3;
+        case SGGColorInternalFormat::SGG_RGB8_UNSIGNED_INT: return 3;
+        case SGGColorInternalFormat::SGG_RGB16_INT: return 6;
+        case SGGColorInternalFormat::SGG_RGB16_UNSIGNED_INT: return 16;
+        case SGGColorInternalFormat::SGG_RGB32_INT: return 12;
+        case SGGColorInternalFormat::SGG_RGB32_UNSIGNED_INT: return 12;
+        case SGGColorInternalFormat::SGG_RGBA8_INT: return 4;
+        case SGGColorInternalFormat::SGG_RGBA8_UNSIGNED_INT: return 4;
+        case SGGColorInternalFormat::SGG_RGBA16_INT: return 8;
+        case SGGColorInternalFormat::SGG_RGBA16_UNSIGNED_INT: return 8;
+        case SGGColorInternalFormat::SGG_RGBA32_INT: return 16;
+        case SGGColorInternalFormat::SGG_RGBA32_UNSIGNED_INT: return 16;
+        case SGGColorInternalFormat::SGG_COMPRESSED_R: return 0;
+        case SGGColorInternalFormat::SGG_COMPRESSED_RG: return 0;
+        case SGGColorInternalFormat::SGG_COMPRESSED_RGB: return 0;
+        case SGGColorInternalFormat::SGG_COMPRESSED_RGBA: return 0;
+        case SGGColorInternalFormat::SGG_COMPRESSED_SRGB: return 0;
+        case SGGColorInternalFormat::SGG_COMPRESSED_SRGBA: return 0;
+        case SGGColorInternalFormat::SGG_STENCIL_INDEX8: return 1;
+        case SGGColorInternalFormat::SGG_DEPTH_COMPONENT16: return 2;
+        case SGGColorInternalFormat::SGG_DEPTH_COMPONENT24: return 3;
+        case SGGColorInternalFormat::SGG_DEPTH_COMPONENT32: return 4;
+        case SGGColorInternalFormat::SGG_DEPTH_COMPONENT32F: return 4;
+        case SGGColorInternalFormat::SGG_DEPTH24_STENCIL8: return 4;
+        case SGGColorInternalFormat::SGG_DEPTH32F_STENCIL8: return 5;
+    }
+
+    return 0;
 }
 
 enum class SGGColorFormat

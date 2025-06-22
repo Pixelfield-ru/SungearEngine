@@ -6,10 +6,12 @@
 #define SUNGEARENGINE_ATLAS_H
 
 #include "AtlasRect.h"
-#include "SGCore/Graphics/API/ITexture2D.h"
+#include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
 {
+    class ITexture2D;
+
     struct Atlas
     {
         void findBestRect(glm::ivec2 textureSize, AtlasRect& outputRect) noexcept;

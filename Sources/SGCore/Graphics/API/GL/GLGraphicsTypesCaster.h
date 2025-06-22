@@ -62,8 +62,6 @@ namespace GLGraphicsTypesCaster
     {
         switch(sggInternalFormat)
         {
-            case SGGColorInternalFormat::SGG_RED: return GL_RED;
-            
             case SGGColorInternalFormat::SGG_R8: return GL_R8;
             case SGGColorInternalFormat::SGG_R8_SIGNED_NORMALIZED: return GL_R8_SNORM;
 
@@ -342,8 +340,6 @@ namespace GLGraphicsTypesCaster
     {
         switch(glInternalFormat)
         {
-            case GL_RED: return SGGColorInternalFormat::SGG_RED;
-
             case GL_R8: return SGGColorInternalFormat::SGG_R8;
             case GL_R8_SNORM: return SGGColorInternalFormat::SGG_R8_SIGNED_NORMALIZED;
 

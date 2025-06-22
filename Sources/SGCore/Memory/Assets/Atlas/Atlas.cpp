@@ -6,6 +6,9 @@
 
 #include <stb_image_resize2.h>
 
+#include "SGCore/Graphics/API/ITexture2D.h"
+
+
 void SGCore::Atlas::findBestRect(glm::ivec2 textureSize, AtlasRect& outputRect) noexcept
 {
     // if no textures added
@@ -158,7 +161,7 @@ void SGCore::Atlas::packTexture(const AtlasRect& inRect, const ITexture2D* textu
     // ===================================================================================================================
     // ===================================================================================================================
 
-    const std::uint8_t externalTextureChannelSize = getSGGInternalFormatChannelSizeInBytes(texture->m_internalFormat);
+    const std::uint8_t externalTextureChannelSize = getSGGInternalFormatChannelsSizeInBytes(texture->m_internalFormat);
 
     // adjusting the buffer internal format of input texture to internal format of atlas
     std::vector<std::uint8_t> externalTextureData;
@@ -184,7 +187,7 @@ void SGCore::Atlas::packTexture(const AtlasRect& inRect, const ITexture2D* textu
     }
 
     m_atlasTexture->bind(0);
-    m_atlasTexture->subTextureData(externalTextureData.data(), externalTextureChannelSize, inRect.m_size.x, inRect.m_size.y, inRect.m_position.x, inRect.m_position.y);
+    // m_atlasTexture->subTextureData(externalTextureData.data(), externalTextureChannelSize, inRect.m_size.x, inRect.m_size.y, inRect.m_position.x, inRect.m_position.y);
 }
 
 SGCore::Ref<SGCore::ITexture2D> SGCore::Atlas::getTexture() const noexcept
