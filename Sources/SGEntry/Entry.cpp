@@ -1,4 +1,7 @@
 #include "Entry.h"
+
+#include <stb_image_write.h>
+
 #include "SGCore/Memory/Assets/AudioTrackAsset.h"
 #include "SGCore/Audio/AudioSource.h"
 #include "SGCore/Audio/AudioDevice.h"
@@ -18,6 +21,8 @@
 #include <SGCore/Memory/Assets/ModelAsset.h>
 #include <SGCore/UI/UIDocument.h>
 
+#include "SGCore/Memory/Assets/Atlas/Atlas.h"
+
 #ifdef PLATFORM_OS_WINDOWS
 #ifdef __cplusplus
 extern "C" {
@@ -29,6 +34,7 @@ extern "C" {
 }
 #endif
 #endif
+
 
 #include "SGCore/ImGuiWrap/ImGuiLayer.h"
 #include "SGCore/ImGuiWrap/Views/IView.h"
@@ -54,6 +60,9 @@ public:
 
 #include <BulletCollision/btBulletCollisionCommon.h>
 
+SGCore::Atlas testAtlas;
+std::vector<SGCore::AssetRef<SGCore::ITexture2D>> testTextures;
+
 void coreInit()
 {
     ImGui::SetCurrentContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());
@@ -67,6 +76,40 @@ void coreInit()
         SGCore::FileUtils::readFile(configPath),
         loadedConfig, SGCore::Serde::FormatType::JSON, configLoadLog);
 
+    std::vector<SGCore::InterpolatedPath> testTexturesPaths {
+        "${enginePath}/Resources/textures/no_material.png",
+        "${enginePath}/Resources/textures/test.png"
+    };
+
+    for(const auto& testTexturePath : testTexturesPaths)
+    {
+        const auto texture = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(testTexturePath);
+        testTextures.push_back(texture);
+
+        SGCore::AtlasRect rect;
+        testAtlas.findBestRect({ texture->getWidth(), texture->getHeight() }, rect);
+        testAtlas.packTexture(rect, texture.get());
+    }
+
+    if(testAtlas.getTexture())
+    {
+        // Целевой буфер: 4 байт/пиксель (RGBA8)
+        SGCore::Scope<uint8_t[]> rgba8 = std::make_unique<std::uint8_t[]>(
+            testAtlas.getTexture()->getWidth() * testAtlas.getTexture()->getHeight() * 4);
+
+        const float* srcBuffer = reinterpret_cast<float*>(testAtlas.getTexture()->getData().get());
+        std::uint32_t baseOffset = 0;
+        for(std::uint32_t i = 0; i < testAtlas.getTexture()->getWidth() * testAtlas.getTexture()->getHeight() * 4; ++i)
+        {
+            const std::uint8_t val = srcBuffer[baseOffset] * 255.0f;
+            rgba8[i] = val;
+            baseOffset += 1;
+        }
+
+        stbi_write_png("test_atlas.png", testAtlas.getTexture()->getWidth(), testAtlas.getTexture()->getHeight(), testAtlas.getTexture()->m_channelsCount,
+                       rgba8.get(),  4 * testAtlas.getTexture()->getWidth());
+    }
+
     if(!configLoadLog.empty())
     {
         LOG_E(SGCORE_TAG,
@@ -76,7 +119,7 @@ void coreInit()
     }
     else
     {
-        for(const auto& loadablePluginConfig : loadedConfig.m_loadablePlugins)
+        /*for(const auto& loadablePluginConfig : loadedConfig.m_loadablePlugins)
         {
             if(!loadablePluginConfig.m_enabled) continue;
 
@@ -84,7 +127,7 @@ void coreInit()
                                                loadablePluginConfig.m_pluginPath.resolved(),
                                                loadablePluginConfig.m_pluginEntryArgs,
                                                loadablePluginConfig.m_pluginCMakeBuildDir);
-        }
+        }*/
     }
 
     /*SGCore::CodeGen::Generator generator;

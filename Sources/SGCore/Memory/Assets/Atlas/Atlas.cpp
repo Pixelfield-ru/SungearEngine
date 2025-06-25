@@ -25,7 +25,8 @@ void SGCore::Atlas::findBestRect(glm::ivec2 textureSize, AtlasRect& outputRect) 
     // if no more free rects
     if(m_atlasFreeRects.empty())
     {
-        const auto lastTotalSize = m_totalSize;
+        resizeAtlasForTexture(textureSize);
+        /*const auto lastTotalSize = m_totalSize;
 
         // resizing atlas...
         m_totalSize.x = std::max(textureSize.x, m_totalSize.x);
@@ -50,7 +51,7 @@ void SGCore::Atlas::findBestRect(glm::ivec2 textureSize, AtlasRect& outputRect) 
         if(smallerSplit.area() != 0)
         {
             m_atlasFreeRects.push_back(smallerSplit);
-        }
+        }*/
     }
 
     std::int64_t foundRectIdx = m_atlasFreeRects.size() - 1;
@@ -58,9 +59,9 @@ void SGCore::Atlas::findBestRect(glm::ivec2 textureSize, AtlasRect& outputRect) 
 
     // while texture not fits in the best atlas rect
     // finding best rect
-    for(size_t i = 0; i < m_atlasFreeRects.size(); i++)
+    for(size_t i = m_atlasFreeRects.size() - 1; i != 0; i++)
     {
-        const auto* tmpRect = &m_atlasFreeRects[foundRectIdx];
+        const auto* tmpRect = &m_atlasFreeRects[i];
 
         /*if(tmpRect->m_size.x < textureSize.x || tmpRect->m_size.y < textureSize.y)
         {
@@ -70,9 +71,9 @@ void SGCore::Atlas::findBestRect(glm::ivec2 textureSize, AtlasRect& outputRect) 
         if(tmpRect->m_size.x < bestAtlasRect->m_size.x || tmpRect->m_size.y < bestAtlasRect->m_size.y)
         {
             bestAtlasRect = tmpRect;
+            foundRectIdx = i;
         }
 
-        --foundRectIdx;
         if(foundRectIdx < 0) break;
     }
 
@@ -80,34 +81,7 @@ void SGCore::Atlas::findBestRect(glm::ivec2 textureSize, AtlasRect& outputRect) 
     // todo: maybe add return error or try to flip texture and try to find best rect again
     if(bestAtlasRect->m_size.x < textureSize.x || bestAtlasRect->m_size.y < textureSize.y)
     {
-        const auto lastTotalSize = m_totalSize;
-
-        const auto sizesDif = glm::max(textureSize - lastTotalSize, glm::ivec2(0, 0));
-
-        if(sizesDif.x >= sizesDif.y)
-        {
-            // placing new free rect on right
-            m_totalSize += glm::ivec2(textureSize.x, sizesDif.y);
-
-            const AtlasRect newFreeRect {
-                .m_size = { textureSize.x, m_totalSize.y },
-                .m_position = { lastTotalSize.x, 0 }
-            };
-
-            m_atlasFreeRects.push_back(newFreeRect);
-        }
-        else if(sizesDif.y > sizesDif.x)
-        {
-            // placing new free rect on top
-            m_totalSize += glm::ivec2(sizesDif.x, textureSize.y);
-
-            const AtlasRect newFreeRect {
-                .m_size = { m_totalSize.x, textureSize.y },
-                .m_position = { 0, lastTotalSize.y }
-            };
-
-            m_atlasFreeRects.push_back(newFreeRect);
-        }
+        resizeAtlasForTexture(textureSize);
 
         bestAtlasRect = &*m_atlasFreeRects.rbegin();
         foundRectIdx = m_atlasFreeRects.size() - 1;
@@ -147,7 +121,7 @@ void SGCore::Atlas::packTexture(const AtlasRect& inRect, const ITexture2D* textu
     {
         m_atlasTexture = SGCore::Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
         m_atlasTexture->m_format = SGGColorFormat::SGG_RGBA;
-        m_atlasTexture->m_internalFormat = SGGColorInternalFormat::SGG_RGBA32_INT;
+        m_atlasTexture->m_internalFormat = SGGColorInternalFormat::SGG_RGBA32_FLOAT;
         m_atlasTexture->m_channelsCount = 4;
         m_atlasTexture->create();
     }
@@ -167,9 +141,9 @@ void SGCore::Atlas::packTexture(const AtlasRect& inRect, const ITexture2D* textu
     // adjusting the buffer internal format of input texture to internal format of atlas
     std::vector<std::uint8_t> externalTextureData;
     externalTextureData.resize(texture->getWidth() * texture->getHeight() * atlasTextureChannelsSize);
-    convertTextureFormatToRGBA32INT(texture->getData().get(), externalTextureData.data(), externalTextureData.size() / 16, getSGGEveryChannelSizeInBits(texture->m_format, texture->m_internalFormat));
+    convertTextureFormatToRGBA32INT(texture->getData().get(), externalTextureData.data(), externalTextureData.size() / 16, getSGGEveryChannelSizeInBits(texture->m_internalFormat));
 
-    if(inRect.m_size.x != texture->getWidth() || inRect.m_size.y != texture->getHeight())
+    if(inRect.m_size.x < texture->getWidth() || inRect.m_size.y < texture->getHeight())
     {
         // resizing data buffer
         std::vector<std::uint8_t> resizedDataBuffer;
@@ -181,7 +155,7 @@ void SGCore::Atlas::packTexture(const AtlasRect& inRect, const ITexture2D* textu
     }
 
     m_atlasTexture->bind(0);
-    m_atlasTexture->subTextureData(externalTextureData.data(), inRect.m_size.x, inRect.m_size.y, inRect.m_position.x, inRect.m_position.y);
+    m_atlasTexture->subTextureData(externalTextureData.data(), texture->getWidth(), texture->getHeight(), inRect.m_position.x, inRect.m_position.y);
 }
 
 SGCore::Ref<SGCore::ITexture2D> SGCore::Atlas::getTexture() const noexcept
@@ -211,12 +185,12 @@ void SGCore::Atlas::splitRect(const AtlasRect& rectToSplit, const AtlasRect& inn
 void SGCore::Atlas::convertTextureFormatToRGBA32INT(const std::uint8_t* srcBuffer,
                                                     std::uint8_t* dstBuffer,
                                                     size_t pixelsCount,
-                                                    const std::vector<std::pair<SGGChannelType, std::uint8_t>>& srcChannelsBits) noexcept
+                                                    const std::vector<std::uint8_t>& srcChannelsBits) noexcept
 {
     std::uint8_t srcBitsPerPixel = 0;
     const std::uint8_t channelsCount = srcChannelsBits.size();
 
-    for(const auto c : srcChannelsBits) srcBitsPerPixel += c.second;
+    for(const auto c : srcChannelsBits) srcBitsPerPixel += c;
 
     static const auto insertBitsToByte = [](uint8_t& dest, uint8_t srcBits, int bitsCount, int destBitPos) {
         // Маска для извлечения нужных бит
@@ -233,41 +207,64 @@ void SGCore::Atlas::convertTextureFormatToRGBA32INT(const std::uint8_t* srcBuffe
         dest |= shiftedBits; // вставить новые биты
     };
 
-    static const auto placeChannelFunc = [](std::uint8_t* dstBufferOffset, std::pair<SGGChannelType, std::uint8_t> channel, const std::uint8_t* srcBufferOffset) {
-        const auto bitsInChannel = channel.second;
-        const std::uint8_t bytesPerChannel = std::ceil(bitsInChannel / 8.0f);
-        switch(channel.first)
+    static const auto placeChannelFunc = [](std::uint8_t* dstBufferOffset, SGGChannelType channelType, std::uint8_t channelBitSize, const std::uint8_t* srcBufferOffset) {
+        const std::uint8_t bytesPerChannel = std::ceil(channelBitSize / 8.0f);
+        switch(channelType)
         {
             case SGGChannelType::SGG_R:
             {
                 for(std::uint8_t i = 0; i < bytesPerChannel; ++i)
                 {
-                    insertBitsToByte(*(dstBufferOffset + i), srcBufferOffset[i], bitsInChannel, 0);
+                    if(i == bytesPerChannel - 1)
+                    {
+                        insertBitsToByte(dstBufferOffset[i], srcBufferOffset[i], channelBitSize - i * 8, 0);
+                    }
+                    else insertBitsToByte(dstBufferOffset[i], srcBufferOffset[i], 8, 0);
                 }
+
+                // *reinterpret_cast<float*>(dstBufferOffset) = *srcBufferOffset;
                 break;
             }
             case SGGChannelType::SGG_G:
             {
                 for(std::uint8_t i = 0; i < bytesPerChannel; ++i)
                 {
-                    insertBitsToByte(*(dstBufferOffset + 4 + i), srcBufferOffset[i], bitsInChannel, 0);
+                    if(i == bytesPerChannel - 1)
+                    {
+                        insertBitsToByte(dstBufferOffset[4 + i], srcBufferOffset[i], channelBitSize - i * 8, 0);
+                    }
+                    else insertBitsToByte(dstBufferOffset[4 + i], srcBufferOffset[i], 8, 0);
                 }
+
+                // *reinterpret_cast<float*>(dstBufferOffset + 4) = *srcBufferOffset;
                 break;
             }
             case SGGChannelType::SGG_B:
             {
                 for(std::uint8_t i = 0; i < bytesPerChannel; ++i)
                 {
-                    insertBitsToByte(*(dstBufferOffset + 8 + i), srcBufferOffset[i], bitsInChannel, 0);
+                    if(i == bytesPerChannel - 1)
+                    {
+                        insertBitsToByte(dstBufferOffset[8 + i], srcBufferOffset[i], channelBitSize - i * 8, 0);
+                    }
+                    else insertBitsToByte(dstBufferOffset[8 + i], srcBufferOffset[i], 8, 0);
                 }
+
+                // *reinterpret_cast<float*>(dstBufferOffset + 8) = *srcBufferOffset;
                 break;
             }
             case SGGChannelType::SGG_A:
             {
                 for(std::uint8_t i = 0; i < bytesPerChannel; ++i)
                 {
-                    insertBitsToByte(*(dstBufferOffset + 12 + i), srcBufferOffset[i], bitsInChannel, 0);
+                    if(i == bytesPerChannel - 1)
+                    {
+                        insertBitsToByte(dstBufferOffset[12 + i], srcBufferOffset[i], channelBitSize - i * 8, 0);
+                    }
+                    else insertBitsToByte(dstBufferOffset[12 + i], srcBufferOffset[i], 8, 0);
                 }
+
+                // *reinterpret_cast<float*>(dstBufferOffset + 12) = *srcBufferOffset;
                 break;
             }
         }
@@ -276,23 +273,60 @@ void SGCore::Atlas::convertTextureFormatToRGBA32INT(const std::uint8_t* srcBuffe
     for(size_t i = 0; i < pixelsCount; ++i)
     {
         const size_t dstBufferOffset = i * 16;
-        const size_t srcBufferOffset = i * (srcBitsPerPixel / 8);
+        const size_t srcBufferOffset = i * (std::uint8_t) std::ceil(srcBitsPerPixel / 8.0f);
 
         if(channelsCount >= 1)
         {
-            placeChannelFunc(dstBuffer + dstBufferOffset, srcChannelsBits[0], srcBuffer + srcBufferOffset);
+            placeChannelFunc(dstBuffer + dstBufferOffset, SGGChannelType::SGG_R, srcChannelsBits[0], srcBuffer + srcBufferOffset);
         }
         if(channelsCount >= 2)
         {
-            placeChannelFunc(dstBuffer + dstBufferOffset, srcChannelsBits[1], srcBuffer + srcBufferOffset + (std::uint8_t) std::ceil(srcChannelsBits[0].second / 8.0f));
+            placeChannelFunc(dstBuffer + dstBufferOffset, SGGChannelType::SGG_G, srcChannelsBits[1], srcBuffer + srcBufferOffset + (std::uint8_t) std::ceil(srcChannelsBits[0] / 8.0f));
         }
         if(channelsCount >= 3)
         {
-            placeChannelFunc(dstBuffer + dstBufferOffset, srcChannelsBits[2], srcBuffer + srcBufferOffset + (std::uint8_t) std::ceil(srcChannelsBits[0].second / 8.0f) + (std::uint8_t) std::ceil(srcChannelsBits[1].second / 8.0f));
+            placeChannelFunc(dstBuffer + dstBufferOffset, SGGChannelType::SGG_B, srcChannelsBits[2], srcBuffer + srcBufferOffset + (std::uint8_t) std::ceil(srcChannelsBits[0] / 8.0f) + (std::uint8_t) std::ceil(srcChannelsBits[1] / 8.0f));
         }
         if(channelsCount >= 4)
         {
-            placeChannelFunc(dstBuffer + dstBufferOffset, srcChannelsBits[2], srcBuffer + srcBufferOffset + (std::uint8_t) std::ceil(srcChannelsBits[0].second / 8.0f) + (std::uint8_t) std::ceil(srcChannelsBits[1].second / 8.0f) + (std::uint8_t) std::ceil(srcChannelsBits[2].second / 8.0f));
+            placeChannelFunc(dstBuffer + dstBufferOffset, SGGChannelType::SGG_A, srcChannelsBits[3], srcBuffer + srcBufferOffset + (std::uint8_t) std::ceil(srcChannelsBits[0] / 8.0f) + (std::uint8_t) std::ceil(srcChannelsBits[1] / 8.0f) + (std::uint8_t) std::ceil(srcChannelsBits[2] / 8.0f));
         }
+        else
+        {
+            const float a = std::numeric_limits<float>::max();
+            std::memcpy(dstBuffer + dstBufferOffset + 12, &a, 4);
+        }
+    }
+}
+
+void SGCore::Atlas::resizeAtlasForTexture(glm::ivec2 textureSize) noexcept
+{
+    const auto lastTotalSize = m_totalSize;
+
+    const auto sizesDif = glm::max(textureSize - lastTotalSize, glm::ivec2(0, 0));
+
+    if(sizesDif.x >= sizesDif.y)
+    {
+        // placing new free rect on right
+        m_totalSize += glm::ivec2(textureSize.x, sizesDif.y);
+
+        const AtlasRect newFreeRect {
+            .m_size = { textureSize.x, m_totalSize.y },
+            .m_position = { lastTotalSize.x, 0 }
+        };
+
+        m_atlasFreeRects.push_back(newFreeRect);
+    }
+    else if(sizesDif.y > sizesDif.x)
+    {
+        // placing new free rect on top
+        m_totalSize += glm::ivec2(sizesDif.x, textureSize.y);
+
+        const AtlasRect newFreeRect {
+            .m_size = { m_totalSize.x, textureSize.y },
+            .m_position = { 0, lastTotalSize.y }
+        };
+
+        m_atlasFreeRects.push_back(newFreeRect);
     }
 }

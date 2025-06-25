@@ -30,7 +30,9 @@ namespace SGCore
 
         static void splitRect(const AtlasRect& rectToSplit, const AtlasRect& innerRect, AtlasRect& biggerSplit, AtlasRect& smallerSplit) noexcept;
 
-        static void convertTextureFormatToRGBA32INT(const std::uint8_t* srcBuffer, std::uint8_t* dstBuffer, size_t pixelsCount, const std::vector<std::pair<SGGChannelType, std::uint8_t>>& srcChannelsBits) noexcept;
+        static void convertTextureFormatToRGBA32INT(const std::uint8_t* srcBuffer, std::uint8_t* dstBuffer, size_t pixelsCount, const std::vector<std::uint8_t>& srcChannelsBits) noexcept;
+
+        void resizeAtlasForTexture(glm::ivec2 textureSize) noexcept;
     };
 }
 
