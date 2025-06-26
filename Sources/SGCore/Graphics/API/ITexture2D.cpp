@@ -135,10 +135,19 @@ void SGCore::ITexture2D::resize(std::int32_t newWidth, std::int32_t newHeight, b
 
 void SGCore::ITexture2D::resizeDataBuffer(std::int32_t newWidth, std::int32_t newHeight) noexcept
 {
-    Ref<std::uint8_t[]> newData = Ref<std::uint8_t[]>(new std::uint8_t[newWidth * newHeight * getSGGInternalFormatChannelsSizeInBytes(m_internalFormat)],
+    const std::uint8_t dataChannelsSize = getSGGInternalFormatChannelsSizeInBytes(m_internalFormat);
+
+    Ref<std::uint8_t[]> newData = Ref<std::uint8_t[]>(new std::uint8_t[newWidth * newHeight * dataChannelsSize],
                                                               STBITextureDataDeleter {});
 
-    std::memcpy(newData.get(), m_textureData.get(), m_width * m_height * getSGGInternalFormatChannelsSizeInBytes(m_internalFormat));
+    std::memset(newData.get(), 0, newWidth * newHeight * dataChannelsSize);
+
+    for(size_t y = 0; y < m_height; ++y)
+    {
+        std::memcpy(newData.get() + y * newWidth * dataChannelsSize,
+                m_textureData.get() + y * m_width * dataChannelsSize,
+                m_width * dataChannelsSize);
+    }
 
     m_textureData = newData;
 

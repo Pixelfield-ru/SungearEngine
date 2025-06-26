@@ -63,11 +63,15 @@ public:
 SGCore::Atlas testAtlas;
 std::vector<SGCore::AssetRef<SGCore::ITexture2D>> testTextures;
 
+SGCore::AssetRef<SGCore::IShader> screenShader;
+SGCore::Ref<SGCore::IMeshData> m_screenQuadMeshData;
+SGCore::MeshRenderState m_screenQuadMeshRenderState;
+
 void coreInit()
 {
     ImGui::SetCurrentContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());
 
-    SGCore::AssetManager::getInstance()->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
+    screenShader = SGCore::AssetManager::getInstance()->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
 
     const std::filesystem::path configPath = "SungearEngineConfig.json";
     SGCore::Config loadedConfig;
@@ -85,30 +89,35 @@ void coreInit()
     {
         const auto texture = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(testTexturePath);
         testTextures.push_back(texture);
+    }
 
+    for(const auto& texture : testTextures)
+    {
         SGCore::AtlasRect rect;
         testAtlas.findBestRect({ texture->getWidth(), texture->getHeight() }, rect);
         testAtlas.packTexture(rect, texture.get());
     }
-
-    if(testAtlas.getTexture())
+    /*for(const auto& texture : testTextures)
     {
-        // Целевой буфер: 4 байт/пиксель (RGBA8)
-        SGCore::Scope<uint8_t[]> rgba8 = std::make_unique<std::uint8_t[]>(
-            testAtlas.getTexture()->getWidth() * testAtlas.getTexture()->getHeight() * 4);
+        SGCore::AtlasRect rect;
+        testAtlas.findBestRect({ texture->getWidth(), texture->getHeight() }, rect);
+        testAtlas.packTexture(rect, texture.get());
+    }*/
 
-        const float* srcBuffer = reinterpret_cast<float*>(testAtlas.getTexture()->getData().get());
-        std::uint32_t baseOffset = 0;
-        for(std::uint32_t i = 0; i < testAtlas.getTexture()->getWidth() * testAtlas.getTexture()->getHeight() * 4; ++i)
-        {
-            const std::uint8_t val = srcBuffer[baseOffset] * 255.0f;
-            rgba8[i] = val;
-            baseOffset += 1;
-        }
+    // testAtlas.getTexture()->resizeDataBuffer(6000, 6000);
+
+    testTextures[0]->resizeDataBuffer(2000, 2000);
+    testTextures[0]->bind(0);
+    testTextures[0]->subTextureData(testTextures[1]->getData().get(), testTextures[1]->getWidth(), testTextures[1]->getHeight(), 1000, 0);
+
+    /*if(testAtlas.getTexture())
+    {
+        stbi_write_png("test_texture0.png", testTextures[0]->getWidth(), testTextures[0]->getHeight(), testTextures[0]->m_channelsCount,
+                               testTextures[0]->getData().get(),  3 * testTextures[0]->getWidth());
 
         stbi_write_png("test_atlas.png", testAtlas.getTexture()->getWidth(), testAtlas.getTexture()->getHeight(), testAtlas.getTexture()->m_channelsCount,
-                       rgba8.get(),  4 * testAtlas.getTexture()->getWidth());
-    }
+                       testAtlas.getTexture()->getData().get(),  16 * testAtlas.getTexture()->getWidth());
+    }*/
 
     if(!configLoadLog.empty())
     {
@@ -129,6 +138,37 @@ void coreInit()
                                                loadablePluginConfig.m_pluginCMakeBuildDir);
         }*/
     }
+
+    m_screenQuadMeshData = SGCore::Ref<SGCore::IMeshData>(SGCore::CoreMain::getRenderer()->createMeshData());
+
+    m_screenQuadMeshData->m_vertices.resize(4);
+
+    m_screenQuadMeshData->m_vertices[0] = {
+        .m_position = glm::vec3 { -1, -1, 0.0f }
+    };
+
+    m_screenQuadMeshData->m_vertices[1] = {
+        .m_position = glm::vec3 { -1, 1, 0.0f }
+    };
+
+    m_screenQuadMeshData->m_vertices[2] = {
+        .m_position = glm::vec3 { 1, 1, 0.0f }
+    };
+
+    m_screenQuadMeshData->m_vertices[3] = {
+        .m_position = glm::vec3 { 1, -1, 0.0f }
+    };
+
+    m_screenQuadMeshData->m_indices.resize(6);
+
+    m_screenQuadMeshData->m_indices[0] = 0;
+    m_screenQuadMeshData->m_indices[1] = 2;
+    m_screenQuadMeshData->m_indices[2] = 1;
+    m_screenQuadMeshData->m_indices[3] = 0;
+    m_screenQuadMeshData->m_indices[4] = 3;
+    m_screenQuadMeshData->m_indices[5] = 2;
+
+    m_screenQuadMeshData->prepare();
 
     /*SGCore::CodeGen::Generator generator;
     const std::string generated = generator.generate(SGCore::InterpolatedPath("${enginePath}/Sources/SGCore/CodeGeneration/SerdeGeneration/.templates/SerdeSpec.h").resolved());
@@ -177,20 +217,35 @@ void onUpdate(const double& dt, const double& fixedDt)
         SGCore::PluginsManager::unloadAllPlugins();
     }
 
+    screenShader->bind();
+
+    // use this to flip screen output
+    screenShader->useInteger("u_flipOutput", false);
+
+    // someTexture->bind(0);
+    if(testAtlas.getTexture())
+    {
+        testAtlas.getTexture()->bind(0);
+    }
+
+    /*if(testTextures[0])
+    {
+        testTextures[0]->bind(0);
+    }*/
+
+    screenShader->useTextureBlock("u_bufferToDisplay", 0);
+
+    SGCore::CoreMain::getRenderer()->renderArray(
+        m_screenQuadMeshData->getVertexArray(),
+        m_screenQuadMeshRenderState,
+        m_screenQuadMeshData->m_vertices.size(),
+        m_screenQuadMeshData->m_indices.size()
+    );
+
     if(SGCore::Scene::getCurrentScene())
     {
         SGCore::Scene::getCurrentScene()->update(dt, fixedDt);
     }
-    
-    /*try
-    {
-        void* ptr = nullptr;
-        *((int*) ptr) = 5;
-    }
-    catch(std::exception e)
-    {
-        std::cout << e.what() << std::endl;
-    }*/
 }
 
 int main()

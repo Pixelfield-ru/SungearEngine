@@ -250,7 +250,7 @@ void SGCore::GL4Texture2D::subTextureBufferDataOnGAPISide(const size_t& bytesCou
     glBufferSubData(GL_TEXTURE_BUFFER, bytesOffset, bytesCount, m_textureData.get() + bytesOffset);
 }
 
-void SGCore::GL4Texture2D::subTextureDataOnGAPISide(std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY, int dataChannelsSize) noexcept
+void SGCore::GL4Texture2D::subTextureDataOnGAPISide(const std::uint8_t* data, std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY) noexcept
 {
     glTexSubImage2D(
         GL_TEXTURE_2D, // target
@@ -259,7 +259,7 @@ void SGCore::GL4Texture2D::subTextureDataOnGAPISide(std::size_t areaWidth, std::
         areaWidth, areaHeight, // subdata area size
         GLGraphicsTypesCaster::sggFormatToGL(m_format), // pixels format
         GL_UNSIGNED_BYTE,
-        m_textureData.get() + (areaOffsetX + areaOffsetY * m_width) * dataChannelsSize // new data with offsets
+        data // new data with offsets
     );
 }
 

@@ -18,8 +18,6 @@ namespace SGCore
         void create() final;
         void createAsFrameBufferAttachment(const Ref<IFrameBuffer>& parentFrameBuffer, SGFrameBufferAttachmentType attachmentType) override;
         
-        void subTextureDataOnGAPISide(std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY, int dataTypeSize) noexcept override;
-        
         void destroy() noexcept final;
 
         void bind(const std::uint8_t& textureUnit) const noexcept final;
@@ -28,6 +26,9 @@ namespace SGCore
         void* getTextureBufferNativeHandler() const noexcept override;
 
         VkTexture2D& operator=(const Ref<ITexture2D>& other) final;
+
+    private:
+        void subTextureDataOnGAPISide(const std::uint8_t* data, std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY) noexcept override;
     };
 }
 

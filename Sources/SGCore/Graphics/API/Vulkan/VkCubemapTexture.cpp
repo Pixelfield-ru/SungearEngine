@@ -20,7 +20,7 @@ void SGCore::VkCubemapTexture::subTextureBufferDataOnGAPISide(const size_t& byte
     ITexture2D::subTextureBufferDataOnGAPISide(bytesCount, bytesOffset);
 }
 
-void SGCore::VkCubemapTexture::subTextureDataOnGAPISide(std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY, int dataTypeSize)
+void SGCore::VkCubemapTexture::subTextureDataOnGAPISide(const std::uint8_t* data, std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY)
 {
 
 }

@@ -202,11 +202,18 @@ namespace SGCore
                 return;
             }
 
-            std::memcpy(m_textureData.get() + (areaOffsetX + areaOffsetY * m_width) * dataChannelsSize,
-                        data,
-                        areaWidth * areaHeight * dataChannelsSize);
+            for(size_t y = 0; y < areaHeight; y++)
+            {
+                std::memcpy(m_textureData.get() + (areaOffsetX + (areaOffsetY + y) * m_width) * dataChannelsSize,
+                        data + (y * areaWidth) * dataChannelsSize,
+                        areaWidth * dataChannelsSize);
+            }
 
-            subTextureDataOnGAPISide(areaWidth, areaHeight, areaOffsetX, areaOffsetY, dataChannelsSize);
+            /*std::memcpy(m_textureData.get() + (areaOffsetX + areaOffsetY * m_width) * dataChannelsSize,
+                        data,
+                        areaWidth * areaHeight * dataChannelsSize);*/
+
+            subTextureDataOnGAPISide(data, areaWidth, areaHeight, areaOffsetX, areaOffsetY);
         }
         
         virtual void destroy() = 0;
@@ -290,7 +297,7 @@ namespace SGCore
          * @param areaOffsetY Y offset of area to subdata. Not in bytes!
          * @param dataChannelsSize Size of channels in bytes.
          */
-        virtual void subTextureDataOnGAPISide(std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY, int dataChannelsSize) = 0;
+        virtual void subTextureDataOnGAPISide(const std::uint8_t* data, std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY) = 0;
 
     private:
         std::streamsize m_textureDataOffsetInPackage = 0;
