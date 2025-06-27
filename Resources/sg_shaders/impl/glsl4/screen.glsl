@@ -50,7 +50,8 @@ void main()
         uvY = uvY - 1.0;
     }
 
-    gl_FragColor = vec4(texture(u_bufferToDisplay, vec2(vsIn.UV.x - 1.0, uvY) / 2.0).xyz, 1.0);
+    // gl_FragColor = vec4(texture(u_bufferToDisplay, vec2(vsIn.UV.x - 1.0, uvY) / 2.0).xyz, 1.0);
+    gl_FragColor = vec4(texture(u_bufferToDisplay, vec2(vsIn.UV.x - 1.0, uvY) / 2.0));
 }
 
 #end

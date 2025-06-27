@@ -44,7 +44,7 @@ void SGCore::GL4Texture2D::create() noexcept
 
         glBindTexture(GL_TEXTURE_2D, m_textureHandler);
 
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, getSGGInternalFormatChannelsSizeInBytes(m_internalFormat) / m_channelsCount);
 
         if(m_isCompressedFormat)
         {
@@ -98,7 +98,7 @@ void SGCore::GL4Texture2D::create() noexcept
                          m_height,
                          0,
                          GLGraphicsTypesCaster::sggFormatToGL(m_format),
-                         GL_UNSIGNED_BYTE,
+                         GLGraphicsTypesCaster::sggDataTypeToGL(m_dataType),
                          m_textureData.get());
         }
         
@@ -258,7 +258,7 @@ void SGCore::GL4Texture2D::subTextureDataOnGAPISide(const std::uint8_t* data, st
         areaOffsetX, areaOffsetY, // x and y offsets
         areaWidth, areaHeight, // subdata area size
         GLGraphicsTypesCaster::sggFormatToGL(m_format), // pixels format
-        GL_UNSIGNED_BYTE,
+        GLGraphicsTypesCaster::sggDataTypeToGL(m_dataType),
         data // new data with offsets
     );
 }

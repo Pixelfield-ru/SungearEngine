@@ -102,13 +102,25 @@ void coreInit()
         SGCore::AtlasRect rect;
         testAtlas.findBestRect({ texture->getWidth(), texture->getHeight() }, rect);
         testAtlas.packTexture(rect, texture.get());
+    }
+
+    {
+        SGCore::AtlasRect rect;
+        testAtlas.findBestRect({ testTextures[0]->getWidth(), testTextures[0]->getHeight() }, rect);
+        testAtlas.packTexture(rect, testTextures[0].get());
+    }
+
+    {
+        SGCore::AtlasRect rect;
+        testAtlas.findBestRect({ testTextures[1]->getWidth(), testTextures[1]->getHeight() }, rect);
+        testAtlas.packTexture(rect, testTextures[1].get());
     }*/
 
     // testAtlas.getTexture()->resizeDataBuffer(6000, 6000);
 
-    testTextures[0]->resizeDataBuffer(2000, 2000);
+    /*testTextures[0]->resizeDataBuffer(2000, 2000);
     testTextures[0]->bind(0);
-    testTextures[0]->subTextureData(testTextures[1]->getData().get(), testTextures[1]->getWidth(), testTextures[1]->getHeight(), 1000, 0);
+    testTextures[0]->subTextureData(testTextures[1]->getData().get(), testTextures[1]->getWidth(), testTextures[1]->getHeight(), 1000, 0);*/
 
     /*if(testAtlas.getTexture())
     {

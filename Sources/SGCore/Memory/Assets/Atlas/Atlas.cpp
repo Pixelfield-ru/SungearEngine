@@ -59,7 +59,7 @@ void SGCore::Atlas::findBestRect(glm::ivec2 textureSize, AtlasRect& outputRect) 
 
     // while texture not fits in the best atlas rect
     // finding best rect
-    for(size_t i = m_atlasFreeRects.size() - 1; i != 0; i++)
+    for(size_t i = m_atlasFreeRects.size() - 1; i != 0; --i)
     {
         const auto* tmpRect = &m_atlasFreeRects[i];
 
@@ -123,6 +123,7 @@ void SGCore::Atlas::packTexture(const AtlasRect& inRect, const ITexture2D* textu
         m_atlasTexture->m_format = SGGColorFormat::SGG_RGBA;
         m_atlasTexture->m_internalFormat = SGGColorInternalFormat::SGG_RGBA32_FLOAT;
         m_atlasTexture->m_channelsCount = 4;
+        m_atlasTexture->m_dataType = SGGDataType::SGG_FLOAT;
         m_atlasTexture->create();
     }
 
@@ -139,10 +140,12 @@ void SGCore::Atlas::packTexture(const AtlasRect& inRect, const ITexture2D* textu
     const std::uint8_t atlasTextureChannelsSize = getSGGInternalFormatChannelsSizeInBytes(m_atlasTexture->m_internalFormat);
 
     // adjusting the buffer internal format of input texture to internal format of atlas
-    std::vector<std::uint8_t> externalTextureData;
-    externalTextureData.resize(texture->getWidth() * texture->getHeight() * atlasTextureChannelsSize, 0);
-    std::cout << "externalTextureData.size(): " << externalTextureData.size() << ", texture size: " << (texture->getWidth() * texture->getHeight() * externalTextureChannelsSize) << std::endl;
-    convertTextureFormatToRGBA32INT(texture->getData().get(), externalTextureData.data(), externalTextureData.size() / 16, getSGGEveryChannelSizeInBits(texture->m_internalFormat));
+    /*std::vector<std::uint8_t> externalTextureData;
+    externalTextureData.resize(texture->getWidth() * texture->getHeight() * atlasTextureChannelsSize, 0);*/
+
+    Scope<std::uint8_t[]> externalTextureData = MakeScope<std::uint8_t[]>(texture->getWidth() * texture->getHeight() * atlasTextureChannelsSize);
+    std::cout << "externalTextureData.size(): " << (texture->getWidth() * texture->getHeight() * atlasTextureChannelsSize) << ", texture size: " << (texture->getWidth() * texture->getHeight() * externalTextureChannelsSize) << std::endl;
+    convertTextureFormatToRGBA32INT(texture->getData().get(), externalTextureData.get(), texture->getWidth() * texture->getHeight(), getSGGEveryChannelSizeInBits(texture->m_internalFormat));
 
     /*for(size_t p = 0; p < externalTextureData.size() / 16; ++p)
     {
@@ -166,7 +169,7 @@ void SGCore::Atlas::packTexture(const AtlasRect& inRect, const ITexture2D* textu
     }*/
 
     m_atlasTexture->bind(0);
-    m_atlasTexture->subTextureData(externalTextureData.data(), texture->getWidth(), texture->getHeight(), inRect.m_position.x, inRect.m_position.y);
+    m_atlasTexture->subTextureData(externalTextureData.get(), texture->getWidth(), texture->getHeight(), inRect.m_position.x, inRect.m_position.y);
 }
 
 SGCore::Ref<SGCore::ITexture2D> SGCore::Atlas::getTexture() const noexcept
@@ -203,19 +206,21 @@ void SGCore::Atlas::convertTextureFormatToRGBA32INT(const std::uint8_t* srcBuffe
 
     for(const auto c : srcChannelsBits) srcBitsPerPixel += c;
 
-    static const auto insertBitsToByte = [](uint8_t& dest, uint8_t srcBits, int bitsCount, int destBitPos) {
-        // Маска для извлечения нужных бит
-        uint8_t mask = ((1 << bitsCount) - 1);
-        // Отрезать нужные биты
-        uint8_t bitsToInsert = srcBits & mask;
+    static const auto insertBitsInByte = [](std::uint8_t& dstByte, std::uint8_t srcByte, std::uint8_t bitsCount, std::uint8_t bitsSrcPos, std::uint8_t bitsDestPos)
+    {
+        const std::uint8_t rightBitsCnt = 8 - (bitsSrcPos + bitsCount);
+        const std::uint8_t leftBitsCnt = bitsSrcPos;
+        const std::uint8_t last = dstByte;
+        dstByte |= srcByte;
+        dstByte >>= rightBitsCnt;
+        dstByte <<= rightBitsCnt;
+        dstByte <<= leftBitsCnt;
+        dstByte >>= leftBitsCnt;
 
-        // Сдвинуть биты на нужную позицию
-        uint8_t shiftedBits = bitsToInsert << destBitPos;
+        dstByte <<= bitsSrcPos;
+        dstByte >>= bitsDestPos;
 
-        // Очистить в dest позицию для вставки
-        uint8_t clearMask = ~(mask << destBitPos);
-        dest &= clearMask; // очистить нужные биты
-        dest |= shiftedBits; // вставить новые биты
+        dstByte |= last;
     };
 
     static const auto placeChannelFunc = [](std::uint8_t* dstBufferOffset, SGGChannelType channelType, std::uint8_t channelBitSize, const std::uint8_t* srcBufferOffset) {
@@ -228,9 +233,11 @@ void SGCore::Atlas::convertTextureFormatToRGBA32INT(const std::uint8_t* srcBuffe
                 {
                     if(i == bytesPerChannel - 1)
                     {
-                        insertBitsToByte(dstBufferOffset[i], srcBufferOffset[i], channelBitSize - i * 8, 0);
+                        insertBitsInByte(dstBufferOffset[i], srcBufferOffset[i], channelBitSize - i * 8, 0, 0);
                     }
-                    else insertBitsToByte(dstBufferOffset[i], srcBufferOffset[i], 8, 0);
+                    else insertBitsInByte(dstBufferOffset[i], srcBufferOffset[i], 8, 0, 0);
+
+
                 }
 
                 // *reinterpret_cast<float*>(dstBufferOffset) = *srcBufferOffset / 255.0f * std::numeric_limits<int>::max();
@@ -239,16 +246,16 @@ void SGCore::Atlas::convertTextureFormatToRGBA32INT(const std::uint8_t* srcBuffe
             }
             case SGGChannelType::SGG_G:
             {
-                /*for(std::uint8_t i = 0; i < bytesPerChannel; ++i)
+                for(std::uint8_t i = 0; i < bytesPerChannel; ++i)
                 {
                     if(i == bytesPerChannel - 1)
                     {
-                        insertBitsToByte(dstBufferOffset[4 + i], srcBufferOffset[i], channelBitSize - i * 8, 0);
+                        insertBitsInByte(dstBufferOffset[i + 4], srcBufferOffset[i], channelBitSize - i * 8, 0, 0);
                     }
-                    // else insertBitsToByte(dstBufferOffset[4 + i], srcBufferOffset[i], 8, 0);
-                }*/
+                    else insertBitsInByte(dstBufferOffset[i + 4], srcBufferOffset[i], 8, 0, 0);
+                }
 
-                std::memcpy(dstBufferOffset + 4, srcBufferOffset, 1);
+                // std::memcpy(dstBufferOffset + 1, srcBufferOffset, 1);
 
                 // *reinterpret_cast<float*>(dstBufferOffset + 4) = *srcBufferOffset / 255.0f * std::numeric_limits<int>::max();
                 // *reinterpret_cast<float*>(dstBufferOffset + 4) = *srcBufferOffset;
@@ -260,9 +267,9 @@ void SGCore::Atlas::convertTextureFormatToRGBA32INT(const std::uint8_t* srcBuffe
                 {
                     if(i == bytesPerChannel - 1)
                     {
-                        insertBitsToByte(dstBufferOffset[8 + i], srcBufferOffset[i], channelBitSize - i * 8, 0);
+                        insertBitsInByte(dstBufferOffset[i + 8], srcBufferOffset[i], channelBitSize - i * 8, 0, 0);
                     }
-                    else insertBitsToByte(dstBufferOffset[8 + i], srcBufferOffset[i], 8, 0);
+                    else insertBitsInByte(dstBufferOffset[i + 8], srcBufferOffset[i], 8, 0, 0);
                 }
 
                 // *reinterpret_cast<float*>(dstBufferOffset + 8) = *srcBufferOffset / 255.0f * std::numeric_limits<int>::max();
@@ -275,9 +282,9 @@ void SGCore::Atlas::convertTextureFormatToRGBA32INT(const std::uint8_t* srcBuffe
                 {
                     if(i == bytesPerChannel - 1)
                     {
-                        insertBitsToByte(dstBufferOffset[12 + i], srcBufferOffset[i], channelBitSize - i * 8, 0);
+                        insertBitsInByte(dstBufferOffset[i + 12], srcBufferOffset[i], channelBitSize - i * 8, 0, 0);
                     }
-                    else insertBitsToByte(dstBufferOffset[12 + i], srcBufferOffset[i], 8, 0);
+                    else insertBitsInByte(dstBufferOffset[i + 12], srcBufferOffset[i], 8, 0, 0);
                 }
 
                 // *reinterpret_cast<float*>(dstBufferOffset + 12) = *srcBufferOffset / 255.0f * std::numeric_limits<int>::max();
@@ -292,30 +299,48 @@ void SGCore::Atlas::convertTextureFormatToRGBA32INT(const std::uint8_t* srcBuffe
 
     for(size_t i = 0; i < pixelsCount; ++i)
     {
-        dstBufferOffset += 16;
-        srcBufferOffset += (std::uint8_t) std::ceil(srcBitsPerPixel / 8.0f);
+        /*reinterpret_cast<float&>(*(dstBuffer + dstBufferOffset)) = std::numeric_limits<float>::max();
+        reinterpret_cast<float&>(*(dstBuffer + dstBufferOffset + 4)) = std::numeric_limits<float>::max();
+        reinterpret_cast<float&>(*(dstBuffer + dstBufferOffset + 8)) = std::numeric_limits<float>::max();
+        reinterpret_cast<float&>(*(dstBuffer + dstBufferOffset + 12)) = std::numeric_limits<float>::max();*/
 
-        /*if(channelsCount >= 1)
+        /*// const float a = std::numeric_limits<float>::max();
+        const float a = 1.0f;
+        std::memcpy(dstBuffer + dstBufferOffset, &a, 4);
+        // const float b = std::numeric_limits<float>::max();
+        const float b = 1.0f;
+        std::memcpy(dstBuffer + dstBufferOffset + 4, &b, 4);
+        // const float c = std::numeric_limits<float>::max();
+        const float c = 1.0f;
+        std::memcpy(dstBuffer + dstBufferOffset + 8, &c, 4);*/
+        // const float d = std::numeric_limits<float>::max();
+        /*const float d = 1.0f;
+        std::memcpy(dstBuffer + dstBufferOffset + 12, &d, 4);*/
+
+        if(channelsCount >= 1)
         {
             placeChannelFunc(dstBuffer + dstBufferOffset, SGGChannelType::SGG_R, srcChannelsBits[0], srcBuffer + srcBufferOffset);
-        }*/
+        }
         if(channelsCount >= 2)
         {
             placeChannelFunc(dstBuffer + dstBufferOffset, SGGChannelType::SGG_G, srcChannelsBits[1], srcBuffer + srcBufferOffset + (std::uint8_t) std::ceil(srcChannelsBits[0] / 8.0f));
         }
-        /*if(channelsCount >= 3)
+        if(channelsCount >= 3)
         {
             placeChannelFunc(dstBuffer + dstBufferOffset, SGGChannelType::SGG_B, srcChannelsBits[2], srcBuffer + srcBufferOffset + (std::uint8_t) std::ceil(srcChannelsBits[0] / 8.0f) + (std::uint8_t) std::ceil(srcChannelsBits[1] / 8.0f));
-        }*/
-        /*if(channelsCount >= 4)
+        }
+        if(channelsCount >= 4)
         {
             placeChannelFunc(dstBuffer + dstBufferOffset, SGGChannelType::SGG_A, srcChannelsBits[3], srcBuffer + srcBufferOffset + (std::uint8_t) std::ceil(srcChannelsBits[0] / 8.0f) + (std::uint8_t) std::ceil(srcChannelsBits[1] / 8.0f) + (std::uint8_t) std::ceil(srcChannelsBits[2] / 8.0f));
         }
         else
         {
-            const int a = std::numeric_limits<int>::max();
+            const float a = std::numeric_limits<float>::max();
             std::memcpy(dstBuffer + dstBufferOffset + 12, &a, 4);
-        }*/
+        }
+
+        dstBufferOffset += 16;
+        srcBufferOffset += (std::uint8_t) std::ceil(srcBitsPerPixel / 8.0f);
     }
 
     std::cout << "dstBufferOffset: " << dstBufferOffset << ", srcBufferOffset: " << srcBufferOffset << std::endl;

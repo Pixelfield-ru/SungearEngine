@@ -42,6 +42,8 @@ namespace SGCore
         
         SGGColorInternalFormat m_internalFormat = SGGColorInternalFormat::SGG_RGBA8;
         SGGColorFormat m_format = SGGColorFormat::SGG_RGBA;
+        // type of data in buffer (m_internalFormat & m_format). MUST MATCH THE INTERNAL FORMAT AND THE FORMAT.
+        SGGDataType m_dataType = SGGDataType::SGG_UNSIGNED_BYTE;
         
         int m_channelsCount = 4;
 
