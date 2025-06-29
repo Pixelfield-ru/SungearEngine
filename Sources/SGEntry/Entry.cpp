@@ -82,8 +82,27 @@ void coreInit()
 
     std::vector<SGCore::InterpolatedPath> testTexturesPaths {
         "${enginePath}/Resources/textures/no_material.png",
+        "${enginePath}/Resources/textures/test.png",
         "${enginePath}/Resources/textures/test.png"
     };
+
+    {
+        std::filesystem::path p = "D:\\xampp\\phpMyAdmin\\themes\\pmahomme\\img\\designer";
+        for (const auto & entry : std::filesystem::directory_iterator(p))
+            testTexturesPaths.emplace_back(entry.path());
+    }
+
+    {
+        std::filesystem::path p = "D:\\Wireshark\\Wireshark User's Guide\\wsug_graphics\\toolbar";
+        for (const auto & entry : std::filesystem::directory_iterator(p))
+            testTexturesPaths.emplace_back(entry.path());
+    }
+
+    /*{
+        std::filesystem::path p = "D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Projects\\sample_shooter\\Resources\\loc0\\textures";
+        for (const auto & entry : std::filesystem::directory_iterator(p))
+            testTexturesPaths.emplace_back(entry.path());
+    }*/
 
     for(const auto& testTexturePath : testTexturesPaths)
     {
@@ -91,12 +110,18 @@ void coreInit()
         testTextures.push_back(texture);
     }
 
+    std::sort(testTextures.begin(), testTextures.end(),
+         [](const SGCore::AssetRef<SGCore::ITexture2D>& a, const SGCore::AssetRef<SGCore::ITexture2D>& b) {
+             return std::max(a->getWidth(), a->getHeight()) > std::max(b->getWidth(), b->getHeight());
+         });
+
     for(const auto& texture : testTextures)
     {
         SGCore::AtlasRect rect;
         testAtlas.findBestRect({ texture->getWidth(), texture->getHeight() }, rect);
         testAtlas.packTexture(rect, texture.get());
     }
+
     /*for(const auto& texture : testTextures)
     {
         SGCore::AtlasRect rect;
@@ -122,14 +147,14 @@ void coreInit()
     testTextures[0]->bind(0);
     testTextures[0]->subTextureData(testTextures[1]->getData().get(), testTextures[1]->getWidth(), testTextures[1]->getHeight(), 1000, 0);*/
 
-    /*if(testAtlas.getTexture())
+    if(testAtlas.getTexture())
     {
-        stbi_write_png("test_texture0.png", testTextures[0]->getWidth(), testTextures[0]->getHeight(), testTextures[0]->m_channelsCount,
-                               testTextures[0]->getData().get(),  3 * testTextures[0]->getWidth());
+        /*stbi_write_png("test_texture0.png", testTextures[0]->getWidth(), testTextures[0]->getHeight(), testTextures[0]->m_channelsCount,
+                               testTextures[0]->getData().get(),  3 * testTextures[0]->getWidth());*/
 
         stbi_write_png("test_atlas.png", testAtlas.getTexture()->getWidth(), testAtlas.getTexture()->getHeight(), testAtlas.getTexture()->m_channelsCount,
-                       testAtlas.getTexture()->getData().get(),  16 * testAtlas.getTexture()->getWidth());
-    }*/
+                       testAtlas.getTexture()->getData().get(),  0);
+    }
 
     if(!configLoadLog.empty())
     {

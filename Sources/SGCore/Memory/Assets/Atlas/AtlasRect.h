@@ -11,9 +11,9 @@ namespace SGCore
 {
     struct AtlasRect
     {
-        glm::ivec2 m_size { };
         // left bottom corner
         glm::ivec2 m_position { };
+        glm::ivec2 m_size { };
 
         [[nodiscard]] std::int32_t area() const noexcept
         {
