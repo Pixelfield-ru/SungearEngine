@@ -22,6 +22,7 @@
 #include <SGCore/UI/UIDocument.h>
 
 #include "SGCore/Memory/Assets/Atlas/Atlas.h"
+#include "SGCore/Render/Batching/Batch.h"
 
 #ifdef PLATFORM_OS_WINDOWS
 #ifdef __cplusplus
@@ -60,7 +61,8 @@ public:
 
 #include <BulletCollision/btBulletCollisionCommon.h>
 
-SGCore::Atlas testAtlas;
+// SGCore::Atlas testAtlas;
+const SGCore::Atlas* testAtlas { };
 std::vector<SGCore::AssetRef<SGCore::ITexture2D>> testTextures;
 
 SGCore::AssetRef<SGCore::IShader> screenShader;
@@ -104,7 +106,7 @@ void coreInit()
             testTexturesPaths.emplace_back(entry.path());
     }*/
 
-    for(const auto& testTexturePath : testTexturesPaths)
+    /*for(const auto& testTexturePath : testTexturesPaths)
     {
         const auto texture = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(testTexturePath);
         testTextures.push_back(texture);
@@ -120,7 +122,7 @@ void coreInit()
         SGCore::AtlasRect rect;
         testAtlas.findBestRect({ texture->getWidth(), texture->getHeight() }, rect);
         testAtlas.packTexture(rect, texture.get());
-    }
+    }*/
 
     /*for(const auto& texture : testTextures)
     {
@@ -147,15 +149,6 @@ void coreInit()
     testTextures[0]->bind(0);
     testTextures[0]->subTextureData(testTextures[1]->getData().get(), testTextures[1]->getWidth(), testTextures[1]->getHeight(), 1000, 0);*/
 
-    if(testAtlas.getTexture())
-    {
-        /*stbi_write_png("test_texture0.png", testTextures[0]->getWidth(), testTextures[0]->getHeight(), testTextures[0]->m_channelsCount,
-                               testTextures[0]->getData().get(),  3 * testTextures[0]->getWidth());*/
-
-        stbi_write_png("test_atlas.png", testAtlas.getTexture()->getWidth(), testAtlas.getTexture()->getHeight(), testAtlas.getTexture()->m_channelsCount,
-                       testAtlas.getTexture()->getData().get(),  0);
-    }
-
     if(!configLoadLog.empty())
     {
         LOG_E(SGCORE_TAG,
@@ -165,7 +158,7 @@ void coreInit()
     }
     else
     {
-        /*for(const auto& loadablePluginConfig : loadedConfig.m_loadablePlugins)
+        for(const auto& loadablePluginConfig : loadedConfig.m_loadablePlugins)
         {
             if(!loadablePluginConfig.m_enabled) continue;
 
@@ -173,8 +166,13 @@ void coreInit()
                                                loadablePluginConfig.m_pluginPath.resolved(),
                                                loadablePluginConfig.m_pluginEntryArgs,
                                                loadablePluginConfig.m_pluginCMakeBuildDir);
-        }*/
+        }
     }
+
+    const auto batchView = SGCore::Scene::getCurrentScene()->getECSRegistry()->view<SGCore::Batch>();
+    batchView.each([](const SGCore::Batch& batch) {
+        testAtlas = &batch.getAtlases()[std::to_underlying(SGTextureType::SGTT_DIFFUSE)];
+    });
 
     m_screenQuadMeshData = SGCore::Ref<SGCore::IMeshData>(SGCore::CoreMain::getRenderer()->createMeshData());
 
@@ -260,9 +258,9 @@ void onUpdate(const double& dt, const double& fixedDt)
     screenShader->useInteger("u_flipOutput", false);
 
     // someTexture->bind(0);
-    if(testAtlas.getTexture())
+    if(testAtlas->getTexture())
     {
-        testAtlas.getTexture()->bind(0);
+        testAtlas->getTexture()->bind(0);
     }
 
     /*if(testTextures[0])

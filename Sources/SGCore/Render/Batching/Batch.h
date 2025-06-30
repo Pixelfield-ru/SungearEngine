@@ -6,10 +6,12 @@
 #define SUNGEARENGINE_BATCH_H
 
 #include "BatchInstanceTransform.h"
+#include "BatchTriangle.h"
 #include "BatchVertex.h"
 #include "SGCore/ECS/Component.h"
 #include "SGCore/Graphics/API/RenderState.h"
 #include "SGCore/Memory/AssetsPackage.h"
+#include "SGCore/Memory/Assets/Atlas/Atlas.h"
 #include "SGCore/Utils/Slot.h"
 
 namespace SGCore
@@ -19,6 +21,7 @@ namespace SGCore
     class ITexture2D;
     class IVertexArray;
 
+    // DO NOT SIZE COMPRESSION FOR ATLASES OF BATCH
     // todo: add aabb for batch. add camera frame receiver target layer
     struct Batch : ECS::Component<Batch, const Batch>
     {
@@ -36,6 +39,8 @@ namespace SGCore
 
         Ref<IVertexArray> getVertexArray() const noexcept;
 
+        const std::array<Atlas, texture_types_count>& getAtlases() const noexcept;
+
         size_t getTrianglesCount() const noexcept;
 
     private:
@@ -52,11 +57,10 @@ namespace SGCore
         {
             std::uint8_t m_textureType = 0;
 
-            size_t m_bytesOffset = 0;
-            size_t m_bytesCount = 0;
+            // in atlas. can be uv offset
+            glm::ivec2 m_insertionPosition { };
+            glm::ivec2 m_insertionSize { };
         };
-
-        static constexpr std::uint32_t max_texture_types = std::to_underlying(SGTextureType::SGTT_COUNT);
 
         Ref<IVertexArray> m_fakeVertexArray;
         Ref<IVertexBuffer> m_fakeVerticesBuffer;
@@ -65,10 +69,10 @@ namespace SGCore
         Ref<ITexture2D> m_indicesBuffer;
         Ref<ITexture2D> m_instancesTransformsBuffer;
 
-        std::array<Ref<ITexture2D>, max_texture_types> m_texturesBuffers;
+        std::array<Ref<ITexture2D>, texture_types_count> m_texturesBuffers;
 
         // vertices for fake vertex buffer
-        std::vector<glm::ivec2> m_instanceTriangles;
+        std::vector<BatchTriangle> m_instanceTriangles;
 
         // all vertices of all instances
         std::vector<BatchVertex> m_vertices;
@@ -80,7 +84,9 @@ namespace SGCore
         std::unordered_map<size_t, MeshDataMarkup> m_usedMeshDatas;
 
         // first - texture hash, second - material textures markup
-        std::unordered_map<size_t, TextureDataMarkup> m_usedTextures;
+        // std::unordered_map<size_t, TextureDataMarkup> m_usedTextures;
+        std::array<std::unordered_map<size_t, TextureDataMarkup>, texture_types_count> m_usedTextures;
+        std::array<Atlas, texture_types_count> m_atlases;
 
         std::vector<ECS::entity_t> m_entities;
 
