@@ -41,44 +41,25 @@ SGCore::Batch::Batch() noexcept
 
     bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(instanceTriangleAttrib))->prepare()->enableAttributes();
 
-    // ---------- preparing uvs offsets0 ---------------
-    auto uvOffsetsAttrib0 = bufferLayout->createVertexAttribute(1,
-                                                               "uvOffsets0",
-                                                               SGGDataType::SGG_MAT4,
+    std::uint8_t currentVertexAttribID = 1;
+
+    // ---------- preparing uvs offsets ---------------
+    for(std::uint8_t i = 0; i < texture_types_count / 2; ++i)
+    {
+        auto uvOffsetsAttrib = bufferLayout->createVertexAttribute(currentVertexAttribID,
+                                                               "uvOffsets" + std::to_string(i),
+                                                               SGGDataType::SGG_FLOAT4,
                                                                4,
                                                                false,
                                                                sizeof(BatchTriangle),
-                                                               offsetof(BatchTriangle, m_atlasesUVsOffset),
+                                                               offsetof(BatchTriangle, m_atlasesUVsOffset) + i * sizeof(glm::vec4),
                                                                0);
 
-    bufferLayout->reset();
-    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(uvOffsetsAttrib0))->prepare()->enableAttributes();
+        bufferLayout->reset();
+        bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(uvOffsetsAttrib))->prepare()->enableAttributes();
 
-    // ---------- preparing uvs offsets0 ---------------
-    auto uvOffsetsAttrib1 = bufferLayout->createVertexAttribute(5,
-                                                               "uvOffsets1",
-                                                               SGGDataType::SGG_MAT4,
-                                                               4,
-                                                               false,
-                                                               sizeof(BatchTriangle),
-                                                               offsetof(BatchTriangle, m_atlasesUVsOffset) + 16 * sizeof(float),
-                                                               0);
-
-    bufferLayout->reset();
-    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(uvOffsetsAttrib1))->prepare()->enableAttributes();
-
-    // ---------- preparing uvs offsets0 ---------------
-    auto uvOffsetsAttrib2 = bufferLayout->createVertexAttribute(9,
-                                                               "uvOffsets2",
-                                                               SGGDataType::SGG_MAT4,
-                                                               4,
-                                                               false,
-                                                               sizeof(BatchTriangle),
-                                                               offsetof(BatchTriangle, m_atlasesUVsOffset) + 32 * sizeof(float),
-                                                               0);
-
-    bufferLayout->reset();
-    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(uvOffsetsAttrib2))->prepare()->enableAttributes();
+        ++currentVertexAttribID;
+    }
 
     // ==============================================================
     // creating true buffers
@@ -169,12 +150,12 @@ void SGCore::Batch::addEntity(ECS::entity_t entity, const ECS::registry_t& fromR
 
                     m_shader->useInteger(sgStandardTextureTypeNameToStandardUniformName(textureType) + "_CURRENT_COUNT", 1);
                     m_shader->useTextureBlock(sgStandardTextureTypeNameToStandardUniformName(textureType) + "[0]", 3 + i);
-                    m_shader->useVectorf(sgStandardTextureTypeNameToStandardUniformName(textureType) + "Sizes[0]", glm::vec2 { texture->getWidth(), texture->getHeight() } / glm::vec2 { atlas.getTexture()->getWidth(), atlas.getTexture()->getHeight() });
+                    m_shader->useVectorf(sgStandardTextureTypeNameToStandardUniformName(textureType) + "Sizes[0]", glm::vec2 { atlas.getTexture()->getWidth(), atlas.getTexture()->getHeight() });
                 }
 
                 const auto& textureMarkup = m_usedTextures[i][textureHash];
-                atlasesInsertionsPos[i].x = ((float) textureMarkup.m_insertionPosition.x) / (float) atlas.getTexture()->getWidth();
-                atlasesInsertionsPos[i].y = ((float) textureMarkup.m_insertionPosition.y) / (float) atlas.getTexture()->getHeight();
+                atlasesInsertionsPos[i].x = ((float) textureMarkup.m_insertionPosition.x);
+                atlasesInsertionsPos[i].y = ((float) textureMarkup.m_insertionPosition.y);
             }
         }
     }
@@ -185,6 +166,17 @@ void SGCore::Batch::addEntity(ECS::entity_t entity, const ECS::registry_t& fromR
     if(!meshDataMarkupFound)
     {
         // adding new meshdata
+
+        glm::vec3 diffuseTexSize { };
+        if(mesh.m_base.getMaterial())
+        {
+            const auto diffuseTex = mesh.m_base.getMaterial()->getTexture(SGTextureType::SGTT_DIFFUSE, 0);
+            if(diffuseTex)
+            {
+                diffuseTexSize.x = diffuseTex->getWidth();
+                diffuseTexSize.y = diffuseTex->getHeight();
+            }
+        }
 
         m_usedMeshDatas[meshDataHash] = {
             .m_verticesOffset = m_vertices.size(),
@@ -204,7 +196,7 @@ void SGCore::Batch::addEntity(ECS::entity_t entity, const ECS::registry_t& fromR
 
             const BatchVertex batchVertex {
                 .m_position = meshVertex.m_position,
-                .m_uv = meshVertex.m_uv,
+                .m_uv = meshVertex.m_uv * diffuseTexSize,
                 .m_normal = meshVertex.m_normal,
                 .m_tangent = meshVertex.m_tangent,
                 .m_bitangent = meshVertex.m_bitangent

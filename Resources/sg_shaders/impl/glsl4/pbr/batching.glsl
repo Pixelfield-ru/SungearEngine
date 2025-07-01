@@ -261,9 +261,9 @@ void main()
     vec3 finalNormal = vec3(0);
 
     vec2 finalUV = gsIn.UV.xy;
-    /*#ifdef FLIP_TEXTURES_Y
+    #ifdef FLIP_TEXTURES_Y
     finalUV.y = 1.0 - gsIn.UV.y;
-    #endif*/
+    #endif
 
     // ===============================================================================================
     // ===============================        load textures       ====================================
@@ -296,7 +296,26 @@ void main()
                 200
 
                 0.625*/
-                diffuseColor += texture(mat_diffuseSamplers[i], diffuseTexUVOffset + finalUV * mat_diffuseSamplersSizes[i]) * mixCoeff;
+
+                /*
+                25 - offset
+
+                10 - sample
+                10 / 124 = 0.08064516 - normalized sample
+
+                124 - texture width
+                200 - atlas width
+
+                0.175 - final normalized sample
+
+                35 = 10 * (25 / 10)
+
+                (124 / 200) * 0.08064516 + (25 / 200)
+                (124 * 0.08064516 + 25) / 200
+                12.4
+                */
+
+                diffuseColor += texture(mat_diffuseSamplers[i], (diffuseTexUVOffset + finalUV) / mat_diffuseSamplersSizes[i]) * mixCoeff;
                 // diffuseColor += texture(mat_diffuseSamplers[i], finalUV) * mixCoeff;
             }
         }
