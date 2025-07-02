@@ -81,9 +81,10 @@ void main()
     vsOut.bonesWeights0 = bonesWeightsAttribute0;
     vsOut.bonesWeights1 = bonesWeightsAttribute1;
 
-    vec3 T = normalize(vec3(finalModelMatrix * vec4(tangentsAttribute, 1.0)));
-    vec3 B = normalize(vec3(finalModelMatrix * vec4(bitangentsAttribute, 1.0)));
-    vec3 N = normalize(vec3(finalModelMatrix * vec4(vsOut.normal, 1.0)));
+    // 0.0 IN w COMPONENT IS CORRECT!!
+    vec3 T = normalize(vec3(finalModelMatrix * vec4(tangentsAttribute, 0.0)));
+    vec3 B = normalize(vec3(finalModelMatrix * vec4(bitangentsAttribute, 0.0)));
+    vec3 N = normalize(vec3(finalModelMatrix * vec4(vsOut.normal, 0.0)));
     vsOut.TBN = mat3(T, B, N);
 
     vsOut.vertexColor0 = vertexColor0Attribute;

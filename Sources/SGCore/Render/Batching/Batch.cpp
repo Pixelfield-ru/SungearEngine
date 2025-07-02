@@ -158,29 +158,19 @@ void SGCore::Batch::addEntity(ECS::entity_t entity, const ECS::registry_t& fromR
 
                 const glm::u32vec2 texSize { texture->getWidth(), texture->getHeight() };
 
-                /*atlasesInsertionsPos[i].x = textureMarkup.m_insertionPosition.x;
-                atlasesInsertionsPos[i].y = textureMarkup.m_insertionPosition.y;*/
-
-                static auto packPosition = [](uint16_t x, uint16_t y) -> std::uint32_t {
-                    // Little-endian: y в младшие, x в старшие
+                static auto pack2UInt16ToUInt32 = [](uint16_t x, uint16_t y) -> std::uint32_t {
                     return (static_cast<uint32_t>(x) << 16) + y;
                 };
 
-                atlasesInsertionsPos[i].x = packPosition(
+                atlasesInsertionsPos[i].x = pack2UInt16ToUInt32(
                     static_cast<std::uint16_t>(textureMarkup.m_insertionPosition.x),
                     static_cast<std::uint16_t>(textureMarkup.m_insertionPosition.y)
                 );
 
-                atlasesInsertionsPos[i].y = packPosition(
+                atlasesInsertionsPos[i].y = pack2UInt16ToUInt32(
                     static_cast<std::uint16_t>(texSize.x),
                     static_cast<std::uint16_t>(texSize.y)
                 );
-
-                /*std::memcpy(&atlasesInsertionsPos[i].x, &textureMarkup.m_insertionPosition.x, 2);
-                std::memcpy(reinterpret_cast<std::uint8_t*>(&atlasesInsertionsPos[i].x) + 2, &textureMarkup.m_insertionPosition.y, 2);
-
-                std::memcpy(&atlasesInsertionsPos[i].y, &texSize.x, 2);
-                std::memcpy(reinterpret_cast<std::uint8_t*>(&atlasesInsertionsPos[i].y) + 2, &texSize.y, 2);*/
             }
         }
     }
@@ -191,17 +181,6 @@ void SGCore::Batch::addEntity(ECS::entity_t entity, const ECS::registry_t& fromR
     if(!meshDataMarkupFound)
     {
         // adding new meshdata
-
-        glm::vec3 diffuseTexSize { };
-        if(mesh.m_base.getMaterial())
-        {
-            const auto diffuseTex = mesh.m_base.getMaterial()->getTexture(SGTextureType::SGTT_DIFFUSE, 0);
-            if(diffuseTex)
-            {
-                diffuseTexSize.x = diffuseTex->getWidth();
-                diffuseTexSize.y = diffuseTex->getHeight();
-            }
-        }
 
         m_usedMeshDatas[meshDataHash] = {
             .m_verticesOffset = m_vertices.size(),

@@ -111,22 +111,9 @@ void SGCore::Atlas::packTexture(const AtlasRect& inRect, const ITexture2D* textu
     const std::uint8_t atlasTextureChannelsSize = getSGGInternalFormatChannelsSizeInBytes(m_atlasTexture->m_internalFormat);
 
     // adjusting the buffer internal format of input texture to internal format of atlas
-    /*std::vector<std::uint8_t> externalTextureData;
-    externalTextureData.resize(texture->getWidth() * texture->getHeight() * atlasTextureChannelsSize, 0);*/
-
-    Scope<std::uint8_t[]> externalTextureData = MakeScope<std::uint8_t[]>(texture->getWidth() * texture->getHeight() * atlasTextureChannelsSize);
-    std::cout << "externalTextureData.size(): " << (texture->getWidth() * texture->getHeight() * atlasTextureChannelsSize) << ", texture size: " << (texture->getWidth() * texture->getHeight() * externalTextureChannelsSize) << std::endl;
-    convertTextureFormatToRGBA32INT(texture->getData().get(), externalTextureData.get(), texture->getWidth() * texture->getHeight(), getSGGEveryChannelSizeInBits(texture->m_internalFormat), texture->m_dataType);
-
-    /*for(size_t p = 0; p < externalTextureData.size() / 16; ++p)
-    {
-        std::cout << "pixel " << p << " color: "
-        << *(reinterpret_cast<float*>(externalTextureData.data()) + p * 4) << ", "
-        << *(reinterpret_cast<float*>(externalTextureData.data()) + 1 + p * 4) << ", "
-        << *(reinterpret_cast<float*>(externalTextureData.data()) + 2 + p * 4) << ", "
-        << *(reinterpret_cast<float*>(externalTextureData.data()) + 3 + p * 4) << ", "
-        << std::endl;
-    }*/
+    std::vector<std::uint8_t> externalTextureData;
+    externalTextureData.resize(texture->getWidth() * texture->getHeight() * atlasTextureChannelsSize, 0);
+    convertTextureFormatToRGBA32INT(texture->getData().get(), externalTextureData.data(), texture->getWidth() * texture->getHeight(), getSGGEveryChannelSizeInBits(texture->m_internalFormat), texture->m_dataType);
 
     /*if(inRect.m_size.x < texture->getWidth() || inRect.m_size.y < texture->getHeight())
     {
@@ -140,7 +127,7 @@ void SGCore::Atlas::packTexture(const AtlasRect& inRect, const ITexture2D* textu
     }*/
 
     m_atlasTexture->bind(0);
-    m_atlasTexture->subTextureData(externalTextureData.get(), texture->getWidth(), texture->getHeight(), inRect.m_position.x, inRect.m_position.y);
+    m_atlasTexture->subTextureData(externalTextureData.data(), texture->getWidth(), texture->getHeight(), inRect.m_position.x, inRect.m_position.y);
 }
 
 SGCore::Ref<SGCore::ITexture2D> SGCore::Atlas::getTexture() const noexcept
@@ -269,8 +256,6 @@ void SGCore::Atlas::convertTextureFormatToRGBA32INT(const std::uint8_t* srcBuffe
         dstBufferOffset += 16;
         srcBufferOffset += (std::uint8_t) std::ceil(srcBitsPerPixel / 8.0f);
     }
-
-    std::cout << "dstBufferOffset: " << dstBufferOffset << ", srcBufferOffset: " << srcBufferOffset << std::endl;
 }
 
 void SGCore::Atlas::resizeAtlasForTexture(glm::ivec2 textureSize) noexcept

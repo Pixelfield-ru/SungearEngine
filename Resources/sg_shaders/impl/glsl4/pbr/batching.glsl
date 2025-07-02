@@ -172,15 +172,16 @@ void main()
         vec3 vertexBitangent = texelFetch(u_verticesTextureBuffer, vertexIndex * vertexJump + 4).xyz;
 
         gsOut.UV = vertexUV.xy;
-        gsOut.normal = vertexNormal;
+        gsOut.normal = normalize(vertexNormal);
         gsOut.worldNormal = normalize(mat3(transpose(inverse(vsIn[0].instanceModelMatrix))) * vertexNormal);
         gsOut.vertexPos = vertexPos;
         gsOut.fragPos = vec3(vsIn[0].instanceModelMatrix * vec4(vertexPos, 1.0));
         gsOut.verticesIndices = verticesIndices;
 
-        vec3 T = normalize(vec3(vsIn[0].instanceModelMatrix * vec4(vertexTangent, 1.0)));
-        vec3 B = normalize(vec3(vsIn[0].instanceModelMatrix * vec4(vertexBitangent, 1.0)));
-        vec3 N = normalize(vec3(vsIn[0].instanceModelMatrix * vec4(vertexNormal, 1.0)));
+        // 0.0 IN w COMPONENT IS CORRECT!!
+        vec3 T = normalize(vec3(vsIn[0].instanceModelMatrix * vec4(vertexTangent, 0.0)));
+        vec3 B = normalize(vec3(vsIn[0].instanceModelMatrix * vec4(vertexBitangent, 0.0)));
+        vec3 N = normalize(vec3(vsIn[0].instanceModelMatrix * vec4(gsOut.normal, 0.0)));
         gsOut.TBN = mat3(T, B, N);
 
         gsOut.uvOffsets0 = vsIn[0].uvOffsets0;
@@ -287,8 +288,8 @@ void main()
     vec3 normalizedNormal = gsIn.normal;
 
     vec4 diffuseColor = vec4(1.0, 1.0, 1.0, 1.0);
-    vec4 aoRoughnessMetallic = vec4(0.1, 0.3, 0.3, 1.0);
-    float specularCoeff = 0.0f;
+    vec4 aoRoughnessMetallic = vec4(0.1, 0.1, 0.4, 1.0);
+    float specularCoeff = 0.5f;
     vec3 normalMapColor = vec3(0);
     vec3 finalNormal = vec3(0);
 
@@ -301,34 +302,112 @@ void main()
     // ===============================        load textures       ====================================
     // ===============================================================================================
 
-    vec2 diffuseTexUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.x);
-    vec2 diffuseTexSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.y);
-
-    /*vec2 diffuseTexUVOffset = vec2(diffuseTexUUVOffset.x, diffuseTexUUVOffset.y);
-    vec2 diffuseTexSize = vec2(diffuseTexUSize.x, diffuseTexUSize.y);*/
-
-    // vec2 diffuseTexUVOffset = vec2(gsIn.uvOffsets0[2].x, gsIn.uvOffsets0[2].y);
-    // vec2 diffuseTexSize = vec2(diffuseTexUSize.x, diffuseTexUSize.y);
-
     {
         if(mat_diffuseSamplers_CURRENT_COUNT > 0)
         {
+            vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.x);
+            vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.y);
+
             float mixCoeff = 1.0 / mat_diffuseSamplers_CURRENT_COUNT;
 
             diffuseColor.rgba = vec4(0.0, 0.0, 0.0, 0.0);
 
             for (int i = 0; i < mat_diffuseSamplers_CURRENT_COUNT; ++i)
             {
-                highp vec2 dfdx = dFdx(finalUV) / diffuseTexSize;
-                highp vec2 dfdy = dFdy(finalUV) / diffuseTexSize;
-                diffuseColor += textureGrad(mat_diffuseSamplers[i], (diffuseTexUVOffset + fract(finalUV) * diffuseTexSize) / mat_diffuseSamplersSizes[i], dfdx, dfdy) * mixCoeff;
+                highp vec2 dfdx = dFdx(finalUV) / texSize;
+                highp vec2 dfdy = dFdy(finalUV) / texSize;
+                diffuseColor += textureGrad(mat_diffuseSamplers[i], (texUVOffset + fract(finalUV) * texSize) / mat_diffuseSamplersSizes[i], dfdx, dfdy) * mixCoeff;
             }
         }
     }
 
     if(diffuseColor.a < 0.05) discard;
 
-    finalNormal = gsIn.worldNormal;
+    {
+        {
+            if(mat_lightmapSamplers_CURRENT_COUNT > 0)
+            {
+                vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets1.r1.z);
+                vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets1.r1.w);
+
+                float mixCoeff = 1.0 / mat_lightmapSamplers_CURRENT_COUNT;
+
+                aoRoughnessMetallic.r = 0.0;
+
+                for (int i = 0; i < mat_lightmapSamplers_CURRENT_COUNT; ++i)
+                {
+                    highp vec2 dfdx = dFdx(finalUV) / texSize;
+                    highp vec2 dfdy = dFdy(finalUV) / texSize;
+                    aoRoughnessMetallic.r += textureGrad(mat_lightmapSamplers[i], (texUVOffset + fract(finalUV) * texSize) / mat_lightmapSamplersSizes[i], dfdx, dfdy).r * mixCoeff;
+                }
+            }
+        }
+
+        {
+            if(mat_diffuseRoughnessSamplers_CURRENT_COUNT > 0)
+            {
+                vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r1.z);
+                vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r1.w);
+
+                float mixCoeff = 1.0 / mat_diffuseRoughnessSamplers_CURRENT_COUNT;
+
+                aoRoughnessMetallic.g = 0.0;
+
+                for (int i = 0; i < mat_diffuseRoughnessSamplers_CURRENT_COUNT; ++i)
+                {
+                    highp vec2 dfdx = dFdx(finalUV) / texSize;
+                    highp vec2 dfdy = dFdy(finalUV) / texSize;
+                    aoRoughnessMetallic.g += textureGrad(mat_diffuseRoughnessSamplers[i], (texUVOffset + fract(finalUV) * texSize) / mat_diffuseRoughnessSamplersSizes[i], dfdx, dfdy).g * mixCoeff;
+                }
+
+                aoRoughnessMetallic.g *= 1.0;
+            }
+        }
+
+        {
+            if(mat_metalnessSamplers_CURRENT_COUNT > 0)
+            {
+                vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets1.r2.x);
+                vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets1.r2.y);
+
+                float mixCoeff = 1.0 / mat_metalnessSamplers_CURRENT_COUNT;
+
+                aoRoughnessMetallic.b = 0.0;
+
+                for (int i = 0; i < mat_metalnessSamplers_CURRENT_COUNT; ++i)
+                {
+                    highp vec2 dfdx = dFdx(finalUV) / texSize;
+                    highp vec2 dfdy = dFdy(finalUV) / texSize;
+                    aoRoughnessMetallic.b += textureGrad(mat_metalnessSamplers[i], (texUVOffset + fract(finalUV) * texSize) / mat_metalnessSamplersSizes[i], dfdx, dfdy).b * mixCoeff;
+                }
+
+                aoRoughnessMetallic.b *= 1.0;
+            }
+        }
+    }
+
+    {
+        if(mat_normalsSamplers_CURRENT_COUNT > 0)
+        {
+            vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r3.z);
+            vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r3.w);
+
+            float mixCoeff = 1.0 / mat_normalsSamplers_CURRENT_COUNT;
+
+            for (int i = 0; i < mat_normalsSamplers_CURRENT_COUNT; ++i)
+            {
+                highp vec2 dfdx = dFdx(finalUV) / texSize;
+                highp vec2 dfdy = dFdy(finalUV) / texSize;
+                normalMapColor += textureGrad(mat_normalsSamplers[i], (texUVOffset + fract(finalUV) * texSize) / mat_normalsSamplersSizes[i], dfdx, dfdy).rgb * mixCoeff;
+            }
+
+            finalNormal = normalize(gsIn.TBN * (normalMapColor * 2.0 - 1.0));
+        }
+        else
+        {
+            finalNormal = gsIn.worldNormal;
+        }
+    }
 
     vec3 viewDir = normalize(camera.position - gsIn.fragPos);
 
@@ -372,9 +451,9 @@ void main()
 
         // NDF (normal distribution func)
         float D = GGXTR(
-        finalNormal,
-        halfWayDir,
-        roughness * (1.0 - specularCoeff)
+            finalNormal,
+            halfWayDir,
+            roughness * (1.0 - specularCoeff)
         );// TRUE
 
         float cosTheta = saturate(dot(halfWayDir, viewDir));
@@ -389,7 +468,8 @@ void main()
 
         vec3 ctNumerator = D * F * G;
         float ctDenominator = 1.0 * NdotVD * NdotL;
-        vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * u_materialSpecularCol.r;
+        // vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * u_materialSpecularCol.r;
+        vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * 0.5;
 
         lo += (diffuse * albedo.rgb / PI + specular) * max(atmosphere.sunColor.rgb, vec3(0, 0, 0)) * NdotL * 1.0;
     }
@@ -399,6 +479,10 @@ void main()
 
     layerColor = vec4(finalCol, 1.0);
     // layerColor = vec4(diffuseTexUVOffset, 1.0, 1.0);
+    // layerColor = vec4(gsIn.worldNormal, 1.0);
+    // layerColor = vec4(finalNormal, 1.0);
+    // layerColor = vec4(normalMapColor, 1.0);
+    // layerColor = vec4(1.0, aoRoughnessMetallic.g, aoRoughnessMetallic.b, 1.0);
 
     // layerColor = vec4(finalUV, 0.0f, 1.0);
 
