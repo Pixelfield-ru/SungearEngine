@@ -58,8 +58,8 @@ namespace SGCore
             std::uint8_t m_textureType = 0;
 
             // in atlas. can be uv offset
-            glm::ivec2 m_insertionPosition { };
-            glm::ivec2 m_insertionSize { };
+            glm::u32vec2 m_insertionPosition { };
+            glm::u32vec2 m_insertionSize { };
         };
 
         Ref<IVertexArray> m_fakeVertexArray;

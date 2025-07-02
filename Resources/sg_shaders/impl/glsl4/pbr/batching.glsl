@@ -5,24 +5,32 @@
 #include "sg_shaders/impl/glsl4/math.glsl"
 #include "sg_shaders/impl/glsl4/defines.glsl"
 
+struct umat4
+{
+    uvec4 r0;
+    uvec4 r1;
+    uvec4 r2;
+    uvec4 r3;
+};
+
 #vertex
 
 layout (location = 0) in ivec2 instanceTriangle;
 
-layout (location = 1) in vec4 uvOffsets0;
-layout (location = 2) in vec4 uvOffsets1;
-layout (location = 3) in vec4 uvOffsets2;
-layout (location = 4) in vec4 uvOffsets3;
+layout (location = 1) in uvec4 uvOffsets0;
+layout (location = 2) in uvec4 uvOffsets1;
+layout (location = 3) in uvec4 uvOffsets2;
+layout (location = 4) in uvec4 uvOffsets3;
 
-layout (location = 5) in vec4 uvOffsets4;
-layout (location = 6) in vec4 uvOffsets5;
-layout (location = 7) in vec4 uvOffsets6;
-layout (location = 8) in vec4 uvOffsets7;
+layout (location = 5) in uvec4 uvOffsets4;
+layout (location = 6) in uvec4 uvOffsets5;
+layout (location = 7) in uvec4 uvOffsets6;
+layout (location = 8) in uvec4 uvOffsets7;
 
-layout (location = 9) in vec4 uvOffsets8;
-layout (location = 10) in vec4 uvOffsets9;
-layout (location = 11) in vec4 uvOffsets10;
-layout (location = 12) in vec4 uvOffsets11;
+layout (location = 9) in uvec4 uvOffsets8;
+layout (location = 10) in uvec4 uvOffsets9;
+layout (location = 11) in uvec4 uvOffsets10;
+layout (location = 12) in uvec4 uvOffsets11;
 
 out VSOut
 {
@@ -34,9 +42,9 @@ out VSOut
     vec3 instanceRotation;
     vec3 instanceScale;
 
-    mat4 uvOffsets0;
-    mat4 uvOffsets1;
-    mat4 uvOffsets2;
+    flat umat4 uvOffsets0;
+    flat umat4 uvOffsets1;
+    flat umat4 uvOffsets2;
 } vsOut;
 
 // transforms of instances in batch
@@ -70,23 +78,23 @@ void main()
     vsOut.instanceRotation = instanceRotation;
     vsOut.instanceScale = instanceScale;
 
-    mat4 uvOffsetsMat0;
-    uvOffsetsMat0[0] = uvOffsets0;
-    uvOffsetsMat0[1] = uvOffsets1;
-    uvOffsetsMat0[2] = uvOffsets2;
-    uvOffsetsMat0[3] = uvOffsets3;
+    umat4 uvOffsetsMat0;
+    uvOffsetsMat0.r0 = uvOffsets0;
+    uvOffsetsMat0.r1 = uvOffsets1;
+    uvOffsetsMat0.r2 = uvOffsets2;
+    uvOffsetsMat0.r3 = uvOffsets3;
 
-    mat4 uvOffsetsMat1;
-    uvOffsetsMat1[0] = uvOffsets4;
-    uvOffsetsMat1[1] = uvOffsets5;
-    uvOffsetsMat1[2] = uvOffsets6;
-    uvOffsetsMat1[3] = uvOffsets7;
+    umat4 uvOffsetsMat1;
+    uvOffsetsMat1.r0 = uvOffsets4;
+    uvOffsetsMat1.r1 = uvOffsets5;
+    uvOffsetsMat1.r2 = uvOffsets6;
+    uvOffsetsMat1.r3 = uvOffsets7;
 
-    mat4 uvOffsetsMat2;
-    uvOffsetsMat2[0] = uvOffsets8;
-    uvOffsetsMat2[1] = uvOffsets9;
-    uvOffsetsMat2[2] = uvOffsets10;
-    uvOffsetsMat2[3] = uvOffsets11;
+    umat4 uvOffsetsMat2;
+    uvOffsetsMat2.r0 = uvOffsets8;
+    uvOffsetsMat2.r1 = uvOffsets9;
+    uvOffsetsMat2.r2 = uvOffsets10;
+    uvOffsetsMat2.r3 = uvOffsets11;
 
     vsOut.uvOffsets0 = uvOffsetsMat0;
     vsOut.uvOffsets1 = uvOffsetsMat1;
@@ -121,9 +129,9 @@ out GSOut
     vec3 instancePosition;
     vec3 verticesIndices;
 
-    mat4 uvOffsets0;
-    mat4 uvOffsets1;
-    mat4 uvOffsets2;
+    flat umat4 uvOffsets0;
+    flat umat4 uvOffsets1;
+    flat umat4 uvOffsets2;
 } gsOut;
 
 in VSOut
@@ -136,9 +144,9 @@ in VSOut
     vec3 instanceRotation;
     vec3 instanceScale;
 
-    mat4 uvOffsets0;
-    mat4 uvOffsets1;
-    mat4 uvOffsets2;
+    flat umat4 uvOffsets0;
+    flat umat4 uvOffsets1;
+    flat umat4 uvOffsets2;
 } vsIn[];
 
 // vertices of instances in batch
@@ -219,12 +227,13 @@ in GSOut
     vec3 instancePosition;
     vec3 verticesIndices;
 
-    mat4 uvOffsets0;
-    mat4 uvOffsets1;
-    mat4 uvOffsets2;
+    flat umat4 uvOffsets0;
+    flat umat4 uvOffsets1;
+    flat umat4 uvOffsets2;
 } gsIn;
 
 #include "sg_shaders/impl/glsl4/pbr_base.glsl"
+#include "sg_shaders/impl/glsl4/bit_utils.glsl"
 
 uniform sampler2D mat_diffuseSamplers[1];
 uniform vec2 mat_diffuseSamplersSizes[1];
@@ -250,27 +259,56 @@ uniform sampler2D mat_diffuseRoughnessSamplers[1];
 uniform vec2 mat_diffuseRoughnessSamplersSizes[1];
 uniform int mat_diffuseRoughnessSamplers_CURRENT_COUNT;
 
+vec2 repeatUV(vec2 uv, vec2 texSize)
+{
+    // return uv - floor(uv);
+    return fract(uv);
+}
+
+vec2 repeatInTileSafe(vec2 uv, vec2 tileOffset, vec2 tileSize, vec2 atlasResolution)
+{
+    // Размер одного пикселя в texture uv space
+    vec2 pixelSize = 1.0 / atlasResolution;
+
+    // Уменьшаем tileSize чуть-чуть, чтобы не доходить до границ
+    vec2 safeTileSize = tileSize - 2.0 * pixelSize;
+
+    // Смещаемся внутрь тайла
+    vec2 safeTileOffset = tileOffset + pixelSize;
+
+    // Повторение uv
+    vec2 repeated = fract(uv);
+
+    return safeTileOffset + repeated * safeTileSize;
+}
+
 void main()
 {
     vec3 normalizedNormal = gsIn.normal;
 
     vec4 diffuseColor = vec4(1.0, 1.0, 1.0, 1.0);
-    vec4 aoRoughnessMetallic = vec4(0.1, 0.3, 0.7, 1.0);
+    vec4 aoRoughnessMetallic = vec4(0.1, 0.3, 0.3, 1.0);
     float specularCoeff = 0.0f;
     vec3 normalMapColor = vec3(0);
     vec3 finalNormal = vec3(0);
 
     vec2 finalUV = gsIn.UV.xy;
     #ifdef FLIP_TEXTURES_Y
-    finalUV.y = 1.0 - gsIn.UV.y;
+    finalUV.y = 1.0 - finalUV.y;
     #endif
 
     // ===============================================================================================
     // ===============================        load textures       ====================================
     // ===============================================================================================
 
-    vec2 diffuseTexUVOffset = vec2(gsIn.uvOffsets0[2].x, gsIn.uvOffsets0[2].y);
-    // vec2 diffuseTexUVOffset = vec2(0.0);
+    vec2 diffuseTexUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.x);
+    vec2 diffuseTexSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.y);
+
+    /*vec2 diffuseTexUVOffset = vec2(diffuseTexUUVOffset.x, diffuseTexUUVOffset.y);
+    vec2 diffuseTexSize = vec2(diffuseTexUSize.x, diffuseTexUSize.y);*/
+
+    // vec2 diffuseTexUVOffset = vec2(gsIn.uvOffsets0[2].x, gsIn.uvOffsets0[2].y);
+    // vec2 diffuseTexSize = vec2(diffuseTexUSize.x, diffuseTexUSize.y);
 
     {
         if(mat_diffuseSamplers_CURRENT_COUNT > 0)
@@ -281,45 +319,14 @@ void main()
 
             for (int i = 0; i < mat_diffuseSamplers_CURRENT_COUNT; ++i)
             {
-                /*finalUV * diffuseTexSize / mat_diffuseSamplersSizes[i];
-                0.5
-                100
-                105
-                diffuseTexSize / mat_diffuseSamplersSizes[i];*/
-
-                /*50
-
-                75
-                0.5
-
-                150
-                200
-
-                0.625*/
-
-                /*
-                25 - offset
-
-                10 - sample
-                10 / 124 = 0.08064516 - normalized sample
-
-                124 - texture width
-                200 - atlas width
-
-                0.175 - final normalized sample
-
-                35 = 10 * (25 / 10)
-
-                (124 / 200) * 0.08064516 + (25 / 200)
-                (124 * 0.08064516 + 25) / 200
-                12.4
-                */
-
-                diffuseColor += texture(mat_diffuseSamplers[i], (diffuseTexUVOffset + finalUV) / mat_diffuseSamplersSizes[i]) * mixCoeff;
-                // diffuseColor += texture(mat_diffuseSamplers[i], finalUV) * mixCoeff;
+                highp vec2 dfdx = dFdx(finalUV) / diffuseTexSize;
+                highp vec2 dfdy = dFdy(finalUV) / diffuseTexSize;
+                diffuseColor += textureGrad(mat_diffuseSamplers[i], (diffuseTexUVOffset + fract(finalUV) * diffuseTexSize) / mat_diffuseSamplersSizes[i], dfdx, dfdy) * mixCoeff;
             }
         }
     }
+
+    if(diffuseColor.a < 0.05) discard;
 
     finalNormal = gsIn.worldNormal;
 

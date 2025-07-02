@@ -17,6 +17,7 @@
 SGCore::Batch::Batch() noexcept
 {
     m_batchRenderState.m_drawMode = SGDrawMode::SGG_POINTS;
+    m_batchRenderState.m_useFacesCulling = false;
     m_batchRenderState.m_useIndices = false;
 
     m_fakeVertexArray = Ref<IVertexArray>(CoreMain::getRenderer()->createVertexArray());
@@ -48,11 +49,11 @@ SGCore::Batch::Batch() noexcept
     {
         auto uvOffsetsAttrib = bufferLayout->createVertexAttribute(currentVertexAttribID,
                                                                "uvOffsets" + std::to_string(i),
-                                                               SGGDataType::SGG_FLOAT4,
+                                                               SGGDataType::SGG_INT4,
                                                                4,
                                                                false,
                                                                sizeof(BatchTriangle),
-                                                               offsetof(BatchTriangle, m_atlasesUVsOffset) + i * sizeof(glm::vec4),
+                                                               offsetof(BatchTriangle, m_atlasesUVsOffset) + i * sizeof(glm::u32vec4),
                                                                0);
 
         bufferLayout->reset();
@@ -106,7 +107,7 @@ void SGCore::Batch::addEntity(ECS::entity_t entity, const ECS::registry_t& fromR
     const size_t meshDataHash = meshData->getHash();
 
     // first - insertion position, second - insertion size
-    std::array<glm::vec2, texture_types_count> atlasesInsertionsPos { };
+    std::array<glm::u32vec2, texture_types_count> atlasesInsertionsPos { };
 
     // =====================================================================
     // packing textures
@@ -154,8 +155,32 @@ void SGCore::Batch::addEntity(ECS::entity_t entity, const ECS::registry_t& fromR
                 }
 
                 const auto& textureMarkup = m_usedTextures[i][textureHash];
-                atlasesInsertionsPos[i].x = ((float) textureMarkup.m_insertionPosition.x);
-                atlasesInsertionsPos[i].y = ((float) textureMarkup.m_insertionPosition.y);
+
+                const glm::u32vec2 texSize { texture->getWidth(), texture->getHeight() };
+
+                /*atlasesInsertionsPos[i].x = textureMarkup.m_insertionPosition.x;
+                atlasesInsertionsPos[i].y = textureMarkup.m_insertionPosition.y;*/
+
+                static auto packPosition = [](uint16_t x, uint16_t y) -> std::uint32_t {
+                    // Little-endian: y в младшие, x в старшие
+                    return (static_cast<uint32_t>(x) << 16) + y;
+                };
+
+                atlasesInsertionsPos[i].x = packPosition(
+                    static_cast<std::uint16_t>(textureMarkup.m_insertionPosition.x),
+                    static_cast<std::uint16_t>(textureMarkup.m_insertionPosition.y)
+                );
+
+                atlasesInsertionsPos[i].y = packPosition(
+                    static_cast<std::uint16_t>(texSize.x),
+                    static_cast<std::uint16_t>(texSize.y)
+                );
+
+                /*std::memcpy(&atlasesInsertionsPos[i].x, &textureMarkup.m_insertionPosition.x, 2);
+                std::memcpy(reinterpret_cast<std::uint8_t*>(&atlasesInsertionsPos[i].x) + 2, &textureMarkup.m_insertionPosition.y, 2);
+
+                std::memcpy(&atlasesInsertionsPos[i].y, &texSize.x, 2);
+                std::memcpy(reinterpret_cast<std::uint8_t*>(&atlasesInsertionsPos[i].y) + 2, &texSize.y, 2);*/
             }
         }
     }
@@ -196,7 +221,7 @@ void SGCore::Batch::addEntity(ECS::entity_t entity, const ECS::registry_t& fromR
 
             const BatchVertex batchVertex {
                 .m_position = meshVertex.m_position,
-                .m_uv = meshVertex.m_uv * diffuseTexSize,
+                .m_uv = meshVertex.m_uv,
                 .m_normal = meshVertex.m_normal,
                 .m_tangent = meshVertex.m_tangent,
                 .m_bitangent = meshVertex.m_bitangent

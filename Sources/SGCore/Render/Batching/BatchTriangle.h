@@ -17,7 +17,7 @@ namespace SGCore
     {
         std::int32_t m_meshInstanceID = 0;
         std::int32_t m_triangleID = 0;
-        std::array<glm::vec2, texture_types_count> m_atlasesUVsOffset { };
+        std::array<glm::u32vec2, texture_types_count> m_atlasesUVsOffset { };
         glm::vec2 padding0;
     };
 #pragma pack(pop)
