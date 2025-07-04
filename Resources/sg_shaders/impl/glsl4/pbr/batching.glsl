@@ -236,7 +236,7 @@ in GSOut
 #include "sg_shaders/impl/glsl4/pbr_base.glsl"
 #include "sg_shaders/impl/glsl4/bit_utils.glsl"
 
-uniform sampler2D mat_diffuseSamplers[1];
+/*uniform sampler2D mat_diffuseSamplers[1];
 uniform vec2 mat_diffuseSamplersSizes[1];
 uniform int mat_diffuseSamplers_CURRENT_COUNT;
 
@@ -258,7 +258,10 @@ uniform int mat_lightmapSamplers_CURRENT_COUNT;
 
 uniform sampler2D mat_diffuseRoughnessSamplers[1];
 uniform vec2 mat_diffuseRoughnessSamplersSizes[1];
-uniform int mat_diffuseRoughnessSamplers_CURRENT_COUNT;
+uniform int mat_diffuseRoughnessSamplers_CURRENT_COUNT;*/
+
+uniform sampler2D batchAtlas;
+uniform vec2 batchAtlasSize;
 
 vec2 repeatUV(vec2 uv, vec2 texSize)
 {
@@ -303,110 +306,78 @@ void main()
     // ===============================================================================================
 
     {
-        if(mat_diffuseSamplers_CURRENT_COUNT > 0)
-        {
-            vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.x);
-            vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.y);
+        vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.x);
+        vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.y);
 
-            float mixCoeff = 1.0 / mat_diffuseSamplers_CURRENT_COUNT;
+        diffuseColor.rgba = vec4(0.0, 0.0, 0.0, 0.0);
 
-            diffuseColor.rgba = vec4(0.0, 0.0, 0.0, 0.0);
+        highp vec2 dfdx = dFdx(finalUV) / texSize;
+        highp vec2 dfdy = dFdy(finalUV) / texSize;
 
-            for (int i = 0; i < mat_diffuseSamplers_CURRENT_COUNT; ++i)
-            {
-                highp vec2 dfdx = dFdx(finalUV) / texSize;
-                highp vec2 dfdy = dFdy(finalUV) / texSize;
-                diffuseColor += textureGrad(mat_diffuseSamplers[i], (texUVOffset + fract(finalUV) * texSize) / mat_diffuseSamplersSizes[i], dfdx, dfdy) * mixCoeff;
-            }
-        }
+        diffuseColor += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy);
     }
 
     if(diffuseColor.a < 0.05) discard;
 
     {
         {
-            if(mat_lightmapSamplers_CURRENT_COUNT > 0)
-            {
-                vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets1.r1.z);
-                vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets1.r1.w);
+            vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets1.r1.z);
+            vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets1.r1.w);
 
-                float mixCoeff = 1.0 / mat_lightmapSamplers_CURRENT_COUNT;
+            aoRoughnessMetallic.r = 0.0;
 
-                aoRoughnessMetallic.r = 0.0;
+            highp vec2 dfdx = dFdx(finalUV) / texSize;
+            highp vec2 dfdy = dFdy(finalUV) / texSize;
 
-                for (int i = 0; i < mat_lightmapSamplers_CURRENT_COUNT; ++i)
-                {
-                    highp vec2 dfdx = dFdx(finalUV) / texSize;
-                    highp vec2 dfdy = dFdy(finalUV) / texSize;
-                    aoRoughnessMetallic.r += textureGrad(mat_lightmapSamplers[i], (texUVOffset + fract(finalUV) * texSize) / mat_lightmapSamplersSizes[i], dfdx, dfdy).r * mixCoeff;
-                }
-            }
+            aoRoughnessMetallic.r += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy).r;
         }
 
         {
-            if(mat_diffuseRoughnessSamplers_CURRENT_COUNT > 0)
-            {
-                vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r1.z);
-                vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r1.w);
+            vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r1.z);
+            vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r1.w);
 
-                float mixCoeff = 1.0 / mat_diffuseRoughnessSamplers_CURRENT_COUNT;
+            aoRoughnessMetallic.g = 0.0;
 
-                aoRoughnessMetallic.g = 0.0;
+            highp vec2 dfdx = dFdx(finalUV) / texSize;
+            highp vec2 dfdy = dFdy(finalUV) / texSize;
 
-                for (int i = 0; i < mat_diffuseRoughnessSamplers_CURRENT_COUNT; ++i)
-                {
-                    highp vec2 dfdx = dFdx(finalUV) / texSize;
-                    highp vec2 dfdy = dFdy(finalUV) / texSize;
-                    aoRoughnessMetallic.g += textureGrad(mat_diffuseRoughnessSamplers[i], (texUVOffset + fract(finalUV) * texSize) / mat_diffuseRoughnessSamplersSizes[i], dfdx, dfdy).g * mixCoeff;
-                }
+            aoRoughnessMetallic.g += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy).g;
 
-                aoRoughnessMetallic.g *= 1.0;
-            }
+            aoRoughnessMetallic.g *= 1.0;
         }
 
         {
-            if(mat_metalnessSamplers_CURRENT_COUNT > 0)
-            {
-                vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets1.r2.x);
-                vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets1.r2.y);
+            vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets1.r2.x);
+            vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets1.r2.y);
 
-                float mixCoeff = 1.0 / mat_metalnessSamplers_CURRENT_COUNT;
+            aoRoughnessMetallic.b = 0.0;
 
-                aoRoughnessMetallic.b = 0.0;
+            highp vec2 dfdx = dFdx(finalUV) / texSize;
+            highp vec2 dfdy = dFdy(finalUV) / texSize;
 
-                for (int i = 0; i < mat_metalnessSamplers_CURRENT_COUNT; ++i)
-                {
-                    highp vec2 dfdx = dFdx(finalUV) / texSize;
-                    highp vec2 dfdy = dFdy(finalUV) / texSize;
-                    aoRoughnessMetallic.b += textureGrad(mat_metalnessSamplers[i], (texUVOffset + fract(finalUV) * texSize) / mat_metalnessSamplersSizes[i], dfdx, dfdy).b * mixCoeff;
-                }
+            aoRoughnessMetallic.b += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy).b;
 
-                aoRoughnessMetallic.b *= 1.0;
-            }
+            aoRoughnessMetallic.b *= 1.0;
         }
     }
 
     {
-        if(mat_normalsSamplers_CURRENT_COUNT > 0)
-        {
+        // if(mat_normalsSamplers_CURRENT_COUNT > 0)
+        // {
             vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r3.z);
             vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r3.w);
 
-            float mixCoeff = 1.0 / mat_normalsSamplers_CURRENT_COUNT;
+            highp vec2 dfdx = dFdx(finalUV) / texSize;
+            highp vec2 dfdy = dFdy(finalUV) / texSize;
 
-            for (int i = 0; i < mat_normalsSamplers_CURRENT_COUNT; ++i)
-            {
-                highp vec2 dfdx = dFdx(finalUV) / texSize;
-                highp vec2 dfdy = dFdy(finalUV) / texSize;
-                normalMapColor += textureGrad(mat_normalsSamplers[i], (texUVOffset + fract(finalUV) * texSize) / mat_normalsSamplersSizes[i], dfdx, dfdy).rgb * mixCoeff;
-            }
+            normalMapColor += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy).rgb;
 
             finalNormal = normalize(gsIn.TBN * (normalMapColor * 2.0 - 1.0));
-        }
-        else
-        {
-            finalNormal = gsIn.worldNormal;
-        }
+        // }
+        // else
+        // {
+        //     finalNormal = gsIn.worldNormal;
+        // }
     }
 
     vec3 viewDir = normalize(camera.position - gsIn.fragPos);

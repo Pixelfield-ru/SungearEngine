@@ -16,6 +16,7 @@
 
 #include <gli/gli.hpp>
 
+#include "TextureStorageMode.h"
 #include "SGCore/Utils/Assert.h"
 
 namespace SGCore
@@ -30,6 +31,8 @@ namespace SGCore
     class ITexture2D : public IAsset, public std::enable_shared_from_this<ITexture2D>
     {
         friend class IFrameBuffer;
+
+        using data_ptr = std::unique_ptr<std::uint8_t[], STBITextureDataDeleter>;
 
     public:
         friend class AssetManager;
@@ -83,7 +86,7 @@ namespace SGCore
                     SGGColorInternalFormat internalFormat,
                     SGGColorFormat format)
         {
-            size_t byteSize = width * height * getSGGInternalFormatChannelsSizeInBytes(internalFormat);
+            const size_t byteSize = width * height * getSGGInternalFormatChannelsSizeInBytes(internalFormat);
 
             m_width = width;
             m_height = height;
@@ -91,7 +94,7 @@ namespace SGCore
             m_internalFormat = internalFormat;
             m_format = format;
 
-            m_textureData = Ref<std::uint8_t[]>(new std::uint8_t[byteSize]);
+            m_textureData = data_ptr(new std::uint8_t[byteSize]);
             std::memcpy(m_textureData.get(), reinterpret_cast<const std::uint8_t*>(data), byteSize);
 
             create();
@@ -124,7 +127,7 @@ namespace SGCore
             m_format = format;
 
             // TODO: IS IT NOT MEMORY LEAK OR UB???
-            m_textureData = Ref<std::uint8_t[]>(reinterpret_cast<std::uint8_t*>(data));
+            m_textureData = data_ptr(reinterpret_cast<std::uint8_t*>(data));
 
             create();
         }
@@ -163,7 +166,7 @@ namespace SGCore
                 return;
             }
 
-            std::memcpy(m_textureData.get() + elementsOffset * dataChannelsSize, data, elementsCount * dataChannelsSize);
+            std::memcpy(m_textureData.get() + size_t(elementsOffset) * dataChannelsSize, data, size_t(elementsCount) * dataChannelsSize);
             
             subTextureBufferDataOnGAPISide(elementsCount * dataChannelsSize, elementsOffset * dataChannelsSize);
         }
@@ -183,7 +186,7 @@ namespace SGCore
 
             if(m_frameBufferAttachmentType != SGFrameBufferAttachmentType::SGG_NOT_ATTACHMENT || m_isTextureBuffer) return;
 
-            if((areaOffsetX * areaOffsetY + areaWidth * areaHeight) * dataChannelsSize > m_width * m_height * dataChannelsSize)
+            if(size_t(areaOffsetX * areaOffsetY + areaWidth * areaHeight) * dataChannelsSize > size_t(m_width * m_height) * dataChannelsSize)
             {
                 SG_ASSERT(false,
                           fmt::format("Can not do subTextureBufferData(...): out of bounds of texture size (by bytes)!\n"
@@ -206,8 +209,8 @@ namespace SGCore
 
             for(size_t y = 0; y < areaHeight; y++)
             {
-                std::memcpy(m_textureData.get() + (areaOffsetX + (areaOffsetY + y) * m_width) * dataChannelsSize,
-                        data + (y * areaWidth) * dataChannelsSize,
+                std::memcpy(m_textureData.get() + size_t(areaOffsetX + (areaOffsetY + y) * m_width) * dataChannelsSize,
+                        data + size_t(y * areaWidth) * dataChannelsSize,
                         areaWidth * dataChannelsSize);
             }
 
@@ -228,8 +231,8 @@ namespace SGCore
         virtual void* getTextureNativeHandler() const noexcept = 0;
         virtual void* getTextureBufferNativeHandler() const noexcept = 0;
 
-        [[nodiscard]] Ref<std::uint8_t[]> getData() noexcept;
-        [[nodiscard]] Ref<const std::uint8_t[]> getData() const noexcept;
+        [[nodiscard]] std::uint8_t* getData() noexcept;
+        [[nodiscard]] const std::uint8_t* getData() const noexcept;
 
         /**
          * Stretches/compresses the texture to the desired size.
@@ -243,8 +246,9 @@ namespace SGCore
          * Resizes data buffer and width and height of texture but not stretches/compresses texture to the desired size.
          * @param newWidth New width of data buffer.
          * @param newHeight New height of data buffer.
+         * @param saveData Is data of texture needs to be saved.
          */
-        void resizeDataBuffer(std::int32_t newWidth, std::int32_t newHeight) noexcept;
+        void resizeDataBuffer(std::int32_t newWidth, std::int32_t newHeight, bool saveData = true) noexcept;
 
         template<typename DataType>
         [[nodiscard]] glm::vec<4, DataType> sampleRAM(const glm::ivec2& inPosition) const noexcept
@@ -252,7 +256,7 @@ namespace SGCore
             const float texDataTypeSize = getSGGInternalFormatChannelsSizeInBytes(m_internalFormat) / m_channelsCount;
             const std::uint16_t perPixelOffset = getSGGInternalFormatChannelsSizeInBytes(m_internalFormat);
 
-            const std::int32_t finalPosition = (inPosition.y * m_width + inPosition.x) * perPixelOffset;
+            const size_t finalPosition = (size_t(inPosition.y * m_width) + inPosition.x) * perPixelOffset;
 
             glm::vec<4, DataType> result { };
 
@@ -284,7 +288,7 @@ namespace SGCore
         
         size_t m_pixelSize = 0;
 
-        Ref<std::uint8_t[]> m_textureData = nullptr;
+        data_ptr m_textureData = nullptr;
 
         // USED ONLY IF THIS TEXTURE IS FRAME BUFFER ATTACHMENT
         SGFrameBufferAttachmentType m_frameBufferAttachmentType = SGFrameBufferAttachmentType::SGG_NOT_ATTACHMENT;

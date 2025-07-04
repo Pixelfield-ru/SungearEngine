@@ -6,88 +6,53 @@
 
 #include <stb_image_resize2.h>
 
+#include "SGCore/Graphics/API/GPUDeviceInfo.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 
 
 void SGCore::Atlas::findBestRect(glm::ivec2 textureSize, AtlasRect& outputRect) noexcept
 {
-    // if no textures added
-    if(m_atlasUsedRects.empty())
-    {
-        m_atlasFreeRects.push_back({
-            .m_position = { 0, 0 },
-            .m_size = { textureSize.x, textureSize.y }
-        });
+    m_atlasRects.push_back({ 0, 0, textureSize.x, textureSize.y });
 
-        m_totalSize = { textureSize.x, textureSize.y };
+    const bool isPacked = tryPack(textureSize, outputRect);
+
+    if(!isPacked)
+    {
+        m_atlasRects.pop_back();
+        outputRect.m_position = { -1, -1 };
+        outputRect.m_size = { -1, -1 };
+
+        return;
     }
 
-    int bestScore = std::numeric_limits<int>::max();
-    std::int64_t bestRectIndex = -1;
+    const auto r = *m_atlasRects.rbegin();
 
-    AtlasRect bestRect { };
-
-    // while texture not fits in the best atlas rect
-    // finding best rect
-    for(size_t i = 0; i < m_atlasFreeRects.size(); i++)
-    {
-        const auto& free = m_atlasFreeRects[i];
-
-        // Проверка без поворота
-        if(free.m_size.x >= textureSize.x && free.m_size.y >= textureSize.y)
-        {
-            int score = free.area() - textureSize.x * textureSize.y; // Остаточная площадь
-
-            if(score < bestScore)
-            {
-                bestScore = score;
-                bestRect = free;
-
-                bestRectIndex = i;
-            }
-        }
-    }
-
-    // if best rect not matches
-    // todo: maybe add return error or try to flip texture and try to find best rect again
-    if(bestScore == std::numeric_limits<int>::max())
-    {
-        resizeAtlasForTexture(textureSize);
-
-        bestRect = *m_atlasFreeRects.rbegin();
-        bestRectIndex = m_atlasFreeRects.size() - 1;
-    }
-
-    outputRect = bestRect;
-
-    std::swap(m_atlasFreeRects[bestRectIndex], m_atlasFreeRects.back());
-    m_atlasFreeRects.pop_back();
-
-    // ==================================================================================
-    // splitting best rect
-    AtlasRect smallerSplit { };
-    AtlasRect biggerSplit { };
-    const AtlasRect textureRect {
-        .m_size = { textureSize.x, textureSize.y },
+    outputRect = {
+        .m_position = { r.x, r.y },
+        .m_size = { r.w, r.h },
     };
-    splitRect(outputRect, textureRect, biggerSplit, smallerSplit);
-
-    if(biggerSplit.area() != 0)
-    {
-        m_atlasFreeRects.push_back(biggerSplit);
-    }
-    if(smallerSplit.area() != 0)
-    {
-        m_atlasFreeRects.push_back(smallerSplit);
-    }
-
-    // ==================================================================================
-
-    m_atlasUsedRects.push_back(bestRect);
 }
 
 void SGCore::Atlas::packTexture(const AtlasRect& inRect, const ITexture2D* texture) noexcept
 {
+    if(inRect.m_position.x + inRect.m_size.x > m_maxSideSize || inRect.m_position.y + inRect.m_size.y > m_maxSideSize ||
+       inRect.m_position.x < 0 || inRect.m_position.y < 0 ||
+       inRect.m_size.x < 0 || inRect.m_size.y < 0)
+    {
+        LOG_E(SGCORE_TAG,
+              "Can not pack texture into atlas! Out of max texture size bounds!\n"
+              "\tCurrent atlas size: {}, {}.\n"
+              "\tPack position: {}, {}.\n"
+              "\tPack size: {}, {}.\n"
+              "\tMax texture size: {}, {}.",
+              m_currentSideSize, m_currentSideSize,
+              inRect.m_position.x, inRect.m_position.y,
+              inRect.m_size.x, inRect.m_size.y,
+              m_maxSideSize, m_maxSideSize);
+
+        return;
+    }
+
     if(!m_atlasTexture)
     {
         m_atlasTexture = SGCore::Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
@@ -98,9 +63,9 @@ void SGCore::Atlas::packTexture(const AtlasRect& inRect, const ITexture2D* textu
         m_atlasTexture->create();
     }
 
-    if(m_totalSize.x > m_atlasTexture->getWidth() || m_totalSize.y > m_atlasTexture->getHeight())
+    if(m_currentSideSize > m_atlasTexture->getWidth() || m_currentSideSize > m_atlasTexture->getHeight())
     {
-        m_atlasTexture->resizeDataBuffer(m_totalSize.x, m_totalSize.y);
+        m_atlasTexture->resizeDataBuffer(m_currentSideSize, m_currentSideSize);
     }
 
     // ===================================================================================================================
@@ -113,7 +78,7 @@ void SGCore::Atlas::packTexture(const AtlasRect& inRect, const ITexture2D* textu
     // adjusting the buffer internal format of input texture to internal format of atlas
     std::vector<std::uint8_t> externalTextureData;
     externalTextureData.resize(texture->getWidth() * texture->getHeight() * atlasTextureChannelsSize, 0);
-    convertTextureFormatToRGBA32INT(texture->getData().get(), externalTextureData.data(), texture->getWidth() * texture->getHeight(), getSGGEveryChannelSizeInBits(texture->m_internalFormat), texture->m_dataType);
+    convertTextureFormatToRGBA32INT(texture->getData(), externalTextureData.data(), texture->getWidth() * texture->getHeight(), getSGGEveryChannelSizeInBits(texture->m_internalFormat), texture->m_dataType);
 
     /*if(inRect.m_size.x < texture->getWidth() || inRect.m_size.y < texture->getHeight())
     {
@@ -135,23 +100,58 @@ SGCore::Ref<SGCore::ITexture2D> SGCore::Atlas::getTexture() const noexcept
     return m_atlasTexture;
 }
 
-void SGCore::Atlas::splitRect(const AtlasRect& rectToSplit, const AtlasRect& innerRect, AtlasRect& biggerSplit, AtlasRect& smallerSplit) noexcept
+bool SGCore::Atlas::tryPack(glm::ivec2 textureSize, AtlasRect& outputRect) noexcept
 {
-    // splitting using left bottom corner
-    smallerSplit.m_size.x = innerRect.m_size.x;
-    smallerSplit.m_size.y = rectToSplit.m_size.y - innerRect.m_size.y;
-    smallerSplit.m_position.x = rectToSplit.m_position.x;
-    smallerSplit.m_position.y = rectToSplit.m_position.y + innerRect.m_size.y;
+    bool isSuccessful = true;
 
-    biggerSplit.m_size.x = rectToSplit.m_size.x - innerRect.m_size.x;
-    biggerSplit.m_size.y = innerRect.m_size.y;
-    biggerSplit.m_position.x = rectToSplit.m_position.x + innerRect.m_size.x;
-    biggerSplit.m_position.y = rectToSplit.m_position.y;
+    bool isPacked = true;
 
-    if(smallerSplit.area() > biggerSplit.area())
-    {
-        std::swap(biggerSplit, smallerSplit);
-    }
+    auto report_successful = [](rect_type&) {
+        return rectpack2D::callback_result::CONTINUE_PACKING;
+    };
+
+    auto report_unsuccessful = [&isSuccessful](rect_type&) {
+        isSuccessful = false;
+        return rectpack2D::callback_result::ABORT_PACKING;
+    };
+
+    auto report_result = [&isSuccessful, &textureSize, &outputRect, &isPacked, this](const rectpack2D::rect_wh& result_size) {
+        std::cout << "Resultant bin: " << result_size.w << " " << result_size.h << std::endl;
+
+        if(!isSuccessful)
+        {
+            m_currentSideSize += textureSize.x;
+
+            if(m_currentSideSize > m_maxSideSize)
+            {
+                isPacked = false;
+                return;
+            }
+
+            isPacked = tryPack(textureSize, outputRect);
+        }
+        else
+        {
+            std::cout << "Packing successful!" << std::endl;
+        }
+    };
+
+    const auto discardStep = -4;
+
+    const auto result_size = rectpack2D::find_best_packing_dont_sort<spaces_type>(
+        m_atlasRects,
+        rectpack2D::make_finder_input(
+            m_currentSideSize,
+            discardStep,
+            report_successful,
+            report_unsuccessful,
+            rectpack2D::flipping_option::DISABLED
+        )
+    );
+
+    report_result(result_size);
+
+    return isPacked;
 }
 
 void SGCore::Atlas::convertTextureFormatToRGBA32INT(const std::uint8_t* srcBuffer,
@@ -255,37 +255,5 @@ void SGCore::Atlas::convertTextureFormatToRGBA32INT(const std::uint8_t* srcBuffe
 
         dstBufferOffset += 16;
         srcBufferOffset += (std::uint8_t) std::ceil(srcBitsPerPixel / 8.0f);
-    }
-}
-
-void SGCore::Atlas::resizeAtlasForTexture(glm::ivec2 textureSize) noexcept
-{
-    const auto lastTotalSize = m_totalSize;
-
-    const auto sizesDif = glm::max(textureSize - lastTotalSize, glm::ivec2(0, 0));
-
-    if(sizesDif.x >= sizesDif.y)
-    {
-        // placing new free rect on right
-        m_totalSize += glm::ivec2(textureSize.x, sizesDif.y);
-
-        const AtlasRect newFreeRect {
-            .m_position = { lastTotalSize.x, 0 },
-            .m_size = { textureSize.x, m_totalSize.y }
-        };
-
-        m_atlasFreeRects.push_back(newFreeRect);
-    }
-    else if(sizesDif.y > sizesDif.x)
-    {
-        // placing new free rect on top
-        m_totalSize += glm::ivec2(sizesDif.x, textureSize.y);
-
-        const AtlasRect newFreeRect {
-            .m_position = { 0, lastTotalSize.y },
-            .m_size = { m_totalSize.x, textureSize.y }
-        };
-
-        m_atlasFreeRects.push_back(newFreeRect);
     }
 }

@@ -171,7 +171,7 @@ void coreInit()
 
     const auto batchView = SGCore::Scene::getCurrentScene()->getECSRegistry()->view<SGCore::Batch>();
     batchView.each([](const SGCore::Batch& batch) {
-        testAtlas = &batch.getAtlases()[std::to_underlying(SGTextureType::SGTT_METALNESS)];
+        testAtlas = &batch.getAtlas();
     });
 
     m_screenQuadMeshData = SGCore::Ref<SGCore::IMeshData>(SGCore::CoreMain::getRenderer()->createMeshData());
@@ -255,27 +255,27 @@ void onUpdate(const double& dt, const double& fixedDt)
     screenShader->bind();
 
     // use this to flip screen output
-    /*screenShader->useInteger("u_flipOutput", false);
+    screenShader->useInteger("u_flipOutput", false);
 
     // someTexture->bind(0);
     if(testAtlas->getTexture())
     {
         testAtlas->getTexture()->bind(0);
-    }*/
+    }
 
     /*if(testTextures[0])
     {
         testTextures[0]->bind(0);
     }*/
 
-    /*screenShader->useTextureBlock("u_bufferToDisplay", 0);
+    screenShader->useTextureBlock("u_bufferToDisplay", 0);
 
     SGCore::CoreMain::getRenderer()->renderArray(
         m_screenQuadMeshData->getVertexArray(),
         m_screenQuadMeshRenderState,
         m_screenQuadMeshData->m_vertices.size(),
         m_screenQuadMeshData->m_indices.size()
-    );*/
+    );
 
     if(SGCore::Scene::getCurrentScene())
     {

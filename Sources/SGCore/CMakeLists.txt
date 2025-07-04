@@ -123,6 +123,7 @@
          msdf-atlas-gen
          gli
          meshoptimizer::meshoptimizer
+         rectpack2D::rectpack2D
 
          ${SG_BULLET_LIBS}
          ${FREETYPE_LIBRARIES}

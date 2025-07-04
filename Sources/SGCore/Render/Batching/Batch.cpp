@@ -93,6 +93,8 @@ SGCore::Batch::Batch() noexcept
         m_shader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
                 *currentRenderPipeline->m_shadersPaths["BatchingShader"]));
     }
+
+    m_atlas.m_maxSideSize = 10000;
 }
 
 void SGCore::Batch::addEntity(ECS::entity_t entity, const ECS::registry_t& fromRegistry) noexcept
@@ -121,7 +123,7 @@ void SGCore::Batch::addEntity(ECS::entity_t entity, const ECS::registry_t& fromR
             const auto textureType = static_cast<SGTextureType>(i);
             const auto& texturesVec = mesh.m_base.getMaterial()->getTextures()[i];
 
-            auto& atlas = m_atlases[i];
+            // auto& atlas = m_atlases[i];
 
             for(const auto& texture : texturesVec)
             {
@@ -129,13 +131,13 @@ void SGCore::Batch::addEntity(ECS::entity_t entity, const ECS::registry_t& fromR
 
                 const size_t textureHash = texture->getHash();
 
-                if(!m_usedTextures[i].contains(textureHash))
+                if(!m_usedTextures.contains(textureHash))
                 {
                     AtlasRect rect;
-                    atlas.findBestRect({ texture->getWidth(), texture->getHeight() }, rect);
-                    atlas.packTexture(rect, texture.get());
+                    m_atlas.findBestRect({ texture->getWidth(), texture->getHeight() }, rect);
+                    m_atlas.packTexture(rect, texture.get());
 
-                    m_usedTextures[i][textureHash] = {
+                    m_usedTextures[textureHash] = {
                         .m_textureType = i,
                         .m_insertionPosition = rect.m_position,
                         .m_insertionSize = rect.m_size
@@ -149,12 +151,11 @@ void SGCore::Batch::addEntity(ECS::entity_t entity, const ECS::registry_t& fromR
                         rect.m_size.y,
                         Utils::toUTF8(texture->getPath().resolved().u16string())) << std::endl;
 
-                    m_shader->useInteger(sgStandardTextureTypeNameToStandardUniformName(textureType) + "_CURRENT_COUNT", 1);
-                    m_shader->useTextureBlock(sgStandardTextureTypeNameToStandardUniformName(textureType) + "[0]", 3 + i);
-                    m_shader->useVectorf(sgStandardTextureTypeNameToStandardUniformName(textureType) + "Sizes[0]", glm::vec2 { atlas.getTexture()->getWidth(), atlas.getTexture()->getHeight() });
+                    m_shader->useTextureBlock("batchAtlas", 4);
+                    m_shader->useVectorf("batchAtlasSize", glm::vec2 { m_atlas.getTexture()->getWidth(), m_atlas.getTexture()->getHeight() });
                 }
 
-                const auto& textureMarkup = m_usedTextures[i][textureHash];
+                const auto& textureMarkup = m_usedTextures[textureHash];
 
                 const glm::u32vec2 texSize { texture->getWidth(), texture->getHeight() };
 
@@ -289,7 +290,8 @@ void SGCore::Batch::bind() const noexcept
     m_shader->useTextureBlock("u_indicesTextureBuffer", 1);
     m_shader->useTextureBlock("u_transformsTextureBuffer", 2);
 
-    for(std::uint8_t i = 0; i < m_atlases.size(); ++i)
+    m_atlas.getTexture()->bind(4);
+    /*for(std::uint8_t i = 0; i < m_atlases.size(); ++i)
     {
         const auto& atlas = m_atlases[i];
 
@@ -297,7 +299,7 @@ void SGCore::Batch::bind() const noexcept
         {
             atlas.getTexture()->bind(3 + i);
         }
-    }
+    }*/
 }
 
 SGCore::Ref<SGCore::IVertexArray> SGCore::Batch::getVertexArray() const noexcept
@@ -305,9 +307,9 @@ SGCore::Ref<SGCore::IVertexArray> SGCore::Batch::getVertexArray() const noexcept
     return m_fakeVertexArray;
 }
 
-const std::array<SGCore::Atlas, texture_types_count>& SGCore::Batch::getAtlases() const noexcept
+const SGCore::Atlas& SGCore::Batch::getAtlas() const noexcept
 {
-    return m_atlases;
+    return m_atlas;
 }
 
 size_t SGCore::Batch::getTrianglesCount() const noexcept

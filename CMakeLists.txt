@@ -131,6 +131,7 @@ set(MSDF_ATLAS_BUILD_STANDALONE OFF)
 set(MSDF_ATLAS_DYNAMIC_RUNTIME ON)
 
 add_subdirectory(Externals/msdf-atlas-gen)
+add_subdirectory(Externals/rectpack2D)
 
 # =================================================================
 

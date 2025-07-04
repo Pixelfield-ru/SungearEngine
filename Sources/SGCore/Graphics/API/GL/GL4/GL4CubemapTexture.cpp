@@ -25,7 +25,7 @@ void SGCore::GL4CubemapTexture::create()
                      0,
                      GLGraphicsTypesCaster::sggFormatToGL(part->m_format),
                      GL_UNSIGNED_BYTE,
-                     part->getData().get()
+                     part->getData()
         );
 
         currentPartId++;

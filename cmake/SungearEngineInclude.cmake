@@ -31,6 +31,8 @@ add_definitions(-DMSDFGEN_PUBLIC=)
 list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}/Externals/msdf-atlas-gen")
 list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}/Externals/msdf-atlas-gen/msdfgen")
 
+list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}/Externals/rectpack2D/src")
+
 #if(${SG_INCLUDE_BULLET})
     find_package(Bullet REQUIRED)
 

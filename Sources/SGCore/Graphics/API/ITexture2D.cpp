@@ -36,11 +36,10 @@ void SGCore::ITexture2D::doLoad(const InterpolatedPath& path)
     {
         /*stbi_load_from_memory(m_textureData.get(), readBytes, &m_width, &m_height,
                               &m_channelsCount, channelsDesired);*/
-        m_textureData = Ref<std::uint8_t[]>(
-                stbi_load(getPath().resolved().string().data(),
-                          &m_width, &m_height,
-                          &m_channelsCount, channelsDesired),
-                STBITextureDataDeleter {});
+        m_textureData = data_ptr(
+            stbi_load(getPath().resolved().string().data(),
+                      &m_width, &m_height,
+                      &m_channelsCount, channelsDesired));
         
         if(m_channelsCount == 4)
         {
@@ -90,27 +89,27 @@ void SGCore::ITexture2D::doLazyLoad()
           "Loaded texture (in lazy load). Width: {}, height: {}, MB size: {}, channels: {}, path: {}",
           m_width,
           m_height,
-          m_width * m_height * getSGGInternalFormatChannelsSizeInBytes(m_internalFormat) / 1024.0 / 1024.0,
+          size_t(m_width * m_height) * getSGGInternalFormatChannelsSizeInBytes(m_internalFormat) / 1024.0 / 1024.0,
           m_channelsCount,
           getPath().resolved().string());
 }
 
-SGCore::Ref<std::uint8_t[]> SGCore::ITexture2D::getData() noexcept
+std::uint8_t* SGCore::ITexture2D::getData() noexcept
 {
-    return m_textureData;
+    return m_textureData.get();
 }
 
-SGCore::Ref<const unsigned char[]> SGCore::ITexture2D::getData() const noexcept
+const std::uint8_t* SGCore::ITexture2D::getData() const noexcept
 {
-    return m_textureData;
+    return m_textureData.get();
 }
 
 void SGCore::ITexture2D::resize(std::int32_t newWidth, std::int32_t newHeight, bool noDataResize) noexcept
 {
     if(!noDataResize)
     {
-        Ref<std::uint8_t[]> newData = Ref<std::uint8_t[]>(new std::uint8_t[newWidth * newHeight * getSGGInternalFormatChannelsSizeInBytes(m_internalFormat)],
-                                                              STBITextureDataDeleter {});
+        const size_t newSize = size_t(newWidth * newHeight) * getSGGInternalFormatChannelsSizeInBytes(m_internalFormat);
+        data_ptr newData = data_ptr(new std::uint8_t[newSize]);
 
         // stbir_resize()
         
@@ -123,7 +122,7 @@ void SGCore::ITexture2D::resize(std::int32_t newWidth, std::int32_t newHeight, b
             stbir_resize_uint8_linear(m_textureData.get(), m_width, m_height, 0, newData.get(), newWidth, newHeight, 0, STBIR_RGB);
         }
         
-        m_textureData = newData;
+        m_textureData = std::move(newData);
     }
     
     m_width = newWidth;
@@ -135,23 +134,32 @@ void SGCore::ITexture2D::resize(std::int32_t newWidth, std::int32_t newHeight, b
     }
 }
 
-void SGCore::ITexture2D::resizeDataBuffer(std::int32_t newWidth, std::int32_t newHeight) noexcept
+void SGCore::ITexture2D::resizeDataBuffer(std::int32_t newWidth, std::int32_t newHeight, bool saveData) noexcept
 {
-    const std::uint8_t dataChannelsSize = getSGGInternalFormatChannelsSizeInBytes(m_internalFormat);
-
-    Ref<std::uint8_t[]> newData = Ref<std::uint8_t[]>(new std::uint8_t[newWidth * newHeight * dataChannelsSize],
-                                                              STBITextureDataDeleter {});
-
-    std::memset(newData.get(), 0, newWidth * newHeight * dataChannelsSize);
-
-    for(size_t y = 0; y < m_height; ++y)
+    if(!saveData)
     {
-        std::memcpy(newData.get() + y * newWidth * dataChannelsSize,
-                m_textureData.get() + y * m_width * dataChannelsSize,
-                m_width * dataChannelsSize);
+        delete[] m_textureData.get();
+        m_textureData = nullptr;
     }
 
-    m_textureData = newData;
+    const std::uint8_t dataChannelsSize = getSGGInternalFormatChannelsSizeInBytes(m_internalFormat);
+
+    const size_t newSize = size_t(newWidth * newHeight) * dataChannelsSize;
+    data_ptr newData = data_ptr(new std::uint8_t[newSize]);
+
+    std::memset(newData.get(), 0, newSize);
+
+    if(saveData)
+    {
+        for(size_t y = 0; y < m_height; ++y)
+        {
+            std::memcpy(newData.get() + std::ptrdiff_t(y * newWidth) * dataChannelsSize,
+                    m_textureData.get() + std::ptrdiff_t(y * m_width) * dataChannelsSize,
+                    m_width * dataChannelsSize);
+        }
+    }
+
+    m_textureData = std::move(newData);
 
     m_width = newWidth;
     m_height = newHeight;
@@ -173,7 +181,7 @@ void SGCore::ITexture2D::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetM
 {
     auto textureData = parentAssetManager->getPackage().readBytes(m_textureDataOffsetInPackage, m_textureDataSizeInPackage);
 
-    m_textureData = Ref<std::uint8_t[]>(reinterpret_cast<std::uint8_t*>(textureData));
+    m_textureData = data_ptr(reinterpret_cast<std::uint8_t*>(textureData));
 }
 
 SGFrameBufferAttachmentType SGCore::ITexture2D::getFrameBufferAttachmentType() const noexcept

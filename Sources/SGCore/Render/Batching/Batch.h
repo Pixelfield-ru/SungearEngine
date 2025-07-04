@@ -39,7 +39,7 @@ namespace SGCore
 
         Ref<IVertexArray> getVertexArray() const noexcept;
 
-        const std::array<Atlas, texture_types_count>& getAtlases() const noexcept;
+        const Atlas& getAtlas() const noexcept;
 
         size_t getTrianglesCount() const noexcept;
 
@@ -84,9 +84,10 @@ namespace SGCore
         std::unordered_map<size_t, MeshDataMarkup> m_usedMeshDatas;
 
         // first - texture hash, second - material textures markup
-        // std::unordered_map<size_t, TextureDataMarkup> m_usedTextures;
-        std::array<std::unordered_map<size_t, TextureDataMarkup>, texture_types_count> m_usedTextures;
-        std::array<Atlas, texture_types_count> m_atlases;
+        std::unordered_map<size_t, TextureDataMarkup> m_usedTextures;
+        // std::array<std::unordered_map<size_t, TextureDataMarkup>, texture_types_count> m_usedTextures;
+        // std::array<Atlas, texture_types_count> m_atlases;
+        Atlas m_atlas;
 
         std::vector<ECS::entity_t> m_entities;
 

@@ -34,7 +34,7 @@ SGCore::UI::FontSpecialization::FontSpecialization()
 void SGCore::UI::FontSpecialization::saveAtlasAsTexture(const std::filesystem::path& path) const noexcept
 {
     stbi_write_png(Utils::toUTF8(path.u16string()).c_str(), m_atlasTexture->getWidth(), m_atlasTexture->getHeight(), m_atlasTexture->m_channelsCount,
-                   m_atlasTexture->getData().get(), m_atlasTexture->m_channelsCount * m_maxAtlasWidth);
+                   m_atlasTexture->getData(), m_atlasTexture->m_channelsCount * m_maxAtlasWidth);
 }
 
 const SGCore::UI::FontGlyph* SGCore::UI::FontSpecialization::tryGetGlyph(const uint32_t& c) const noexcept
