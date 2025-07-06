@@ -262,7 +262,7 @@ void SGCore::GL4Texture2D::subTextureDataOnGAPISide(const std::uint8_t* data, st
         areaWidth, areaHeight, // subdata area size
         GLGraphicsTypesCaster::sggFormatToGL(m_format), // pixels format
         GLGraphicsTypesCaster::sggDataTypeToGL(m_dataType),
-        data // new data with offsets
+        data // new data
     );
 }
 

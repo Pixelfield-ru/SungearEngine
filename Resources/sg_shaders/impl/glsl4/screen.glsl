@@ -50,8 +50,11 @@ void main()
         uvY = uvY - 1.0;
     }
 
+    vec4 col = vec4(texture(u_bufferToDisplay, vec2(vsIn.UV.x - 1.0, uvY) / 2.0));
+    if(col.a < 0.05) discard;
+
     // gl_FragColor = vec4(texture(u_bufferToDisplay, vec2(vsIn.UV.x - 1.0, uvY) / 2.0).xyz, 1.0);
-    gl_FragColor = vec4(texture(u_bufferToDisplay, vec2(vsIn.UV.x - 1.0, uvY) / 2.0));
+    gl_FragColor = col;
 }
 
 #end

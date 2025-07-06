@@ -23,6 +23,7 @@ void SGCore::Atlas::findBestRect(glm::ivec2 textureSize, rectpack2D::rect_xywh& 
     const auto lastRectsCount = m_atlasRects.size();
 
     m_atlasRects.push_back({ 0, 0, textureSize.x, textureSize.y });
+    m_atlasRectsMap[rectHash] = m_atlasRects.size() - 1;
 
     const bool isPacked = tryPackLastInsertedRect();
 
@@ -42,6 +43,8 @@ void SGCore::Atlas::findBestRect(glm::ivec2 textureSize, rectpack2D::rect_xywh& 
     if(!isPacked)
     {
         m_atlasRects.pop_back();
+        m_atlasRectsMap.erase(rectHash);
+
         outputRect.x = -1;
         outputRect.y = -1;
         outputRect.w = -1;
@@ -53,8 +56,6 @@ void SGCore::Atlas::findBestRect(glm::ivec2 textureSize, rectpack2D::rect_xywh& 
     const auto r = *m_atlasRects.rbegin();
 
     outputRect = rectpack2D::rect_xywh(r.x, r.y, r.w, r.h);
-
-    m_atlasRectsMap[rectHash] = m_atlasRects.size() - 1;
 }
 
 void SGCore::Atlas::packTexture(const rectpack2D::rect_xywh& inRect, const ITexture2D* texture) noexcept
@@ -125,9 +126,19 @@ const rectpack2D::rect_xywh* SGCore::Atlas::getRectByHash(size_t hash) const noe
     return it != m_atlasRectsMap.end() ? &m_atlasRects[it->second] : nullptr;
 }
 
+bool SGCore::Atlas::contains(size_t rectHash) const noexcept
+{
+    return m_atlasRectsMap.contains(rectHash);
+}
+
 SGCore::Ref<SGCore::ITexture2D> SGCore::Atlas::getTexture() const noexcept
 {
     return m_atlasTexture;
+}
+
+glm::u32vec2 SGCore::Atlas::getSize() const noexcept
+{
+    return m_atlasSize;
 }
 
 bool SGCore::Atlas::tryPackLastInsertedRect() noexcept
@@ -155,6 +166,8 @@ bool SGCore::Atlas::tryPackLastInsertedRect() noexcept
 
     const auto discardStep = 1;
 
+    sortRects();
+
     const auto result_size = rectpack2D::find_best_packing_dont_sort<spaces_type>(
         m_atlasRects,
         rectpack2D::make_finder_input(
@@ -169,6 +182,43 @@ bool SGCore::Atlas::tryPackLastInsertedRect() noexcept
     report_result(result_size);
 
     return isPacked;
+}
+
+void SGCore::Atlas::sortRects() noexcept
+{
+    std::vector<std::pair<size_t, rectpack2D::rect_xywh>> indexedRects;
+    indexedRects.reserve(m_atlasRects.size());
+
+    for(size_t i = 0; i < m_atlasRects.size(); ++i)
+    {
+        indexedRects.emplace_back(i, m_atlasRects[i]);
+    }
+
+    std::sort(indexedRects.begin(), indexedRects.end(), [](const auto& a, const auto& b) {
+            return a.second.area() > b.second.area();
+    });
+
+    std::vector<size_t> indexMap(indexedRects.size());
+    for(size_t newIdx = 0; newIdx < indexedRects.size(); ++newIdx)
+    {
+        const size_t oldIdx = indexedRects[newIdx].first;
+        indexMap[oldIdx] = newIdx;
+    }
+
+    m_atlasRects.clear();
+    m_atlasRects.reserve(indexedRects.size());
+    for(auto& pair : indexedRects)
+    {
+        m_atlasRects.emplace_back(pair.second);
+    }
+
+    for(auto& [hash, oldIndex] : m_atlasRectsMap)
+    {
+        if(oldIndex < indexMap.size())
+        {
+            oldIndex = indexMap[oldIndex];
+        }
+    }
 }
 
 void SGCore::Atlas::convertTextureFormatToRGBA32INT(const std::uint8_t* srcBuffer,

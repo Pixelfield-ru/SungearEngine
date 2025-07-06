@@ -161,7 +161,7 @@ void SGCore::Batch::bind() const noexcept
     m_shader->useTextureBlock("u_indicesTextureBuffer", 1);
     m_shader->useTextureBlock("u_transformsTextureBuffer", 2);
 
-    m_atlas.getTexture()->bind(4);
+    m_atlas.getTexture()->bind(3);
     /*for(std::uint8_t i = 0; i < m_atlases.size(); ++i)
     {
         const auto& atlas = m_atlases[i];
@@ -200,7 +200,7 @@ void SGCore::Batch::insertEntityImpl(ECS::entity_t entity, const ECS::registry_t
     const size_t meshDataHash = meshData->getHash();
 
     // two bytes of x component - texture insertion position, two bytes of y component - texture size
-    std::array<glm::u32vec2, texture_types_count> atlasTextureInfo { };
+    std::array<glm::u32vec2, texture_types_count> atlasTextureInfo = makeFilledArray<glm::u32vec2, texture_types_count>({ -1, -1 });
     std::array<size_t, texture_types_count> usedTexturesOfMesh { };
 
     // =====================================================================
@@ -226,16 +226,17 @@ void SGCore::Batch::insertEntityImpl(ECS::entity_t entity, const ECS::registry_t
                 rectpack2D::rect_xywh rect;
 
                 // inserting new texture...
-                if(!m_usedTextures.contains(textureHash))
+                if(!m_atlas.contains(textureHash))
                 {
                     m_atlas.findBestRect({ texture->getWidth(), texture->getHeight() }, rect, textureHash);
-                    m_atlas.packTexture(rect, texture.get());
+                    // m_atlas.packTexture(rect, texture.get());
+                    m_usedTextures[textureHash] = texture;
 
-                    m_usedTextures[textureHash] = {
+                    /*m_usedTextures[textureHash] = {
                         .m_textureType = i,
                         .m_insertionPosition = { rect.x, rect.y },
                         .m_insertionSize = { rect.w, rect.h }
-                    };
+                    };*/
 
                     std::cout << fmt::format("adding texture to atlas: texture type: {}, rect pos: {}, {}, rect size: {}, {}, texture path: '{}'",
                         sgStandardTextureTypeToString(textureType),
@@ -245,17 +246,15 @@ void SGCore::Batch::insertEntityImpl(ECS::entity_t entity, const ECS::registry_t
                         rect.h,
                         Utils::toUTF8(texture->getPath().resolved().u16string())) << std::endl;
 
-                    m_shader->useTextureBlock("batchAtlas", 4);
-                    m_shader->useVectorf("batchAtlasSize", glm::vec2 { m_atlas.getTexture()->getWidth(), m_atlas.getTexture()->getHeight() });
+                    m_shader->useTextureBlock("batchAtlas", 3);
+                    m_shader->useVectorf("batchAtlasSize", glm::vec2 { m_atlas.getSize().x, m_atlas.getSize().y });
                 }
 
                 rect = *m_atlas.getRectByHash(textureHash);
 
-                const auto& textureMarkup = m_usedTextures[textureHash];
-
                 atlasTextureInfo[i].x = pack2UInt16ToUInt32(
-                    static_cast<std::uint16_t>(textureMarkup.m_insertionPosition.x),
-                    static_cast<std::uint16_t>(textureMarkup.m_insertionPosition.y)
+                    static_cast<std::uint16_t>(rect.x),
+                    static_cast<std::uint16_t>(rect.y)
                 );
 
                 atlasTextureInfo[i].y = pack2UInt16ToUInt32(
@@ -350,35 +349,35 @@ void SGCore::Batch::insertEntityImpl(ECS::entity_t entity, const ECS::registry_t
 void SGCore::Batch::updateTextureDataInTriangles() noexcept
 {
     // updating cached textures data markup
-    for(auto& [hash, markup] : m_usedTextures)
+    /*for(auto& [hash, markup] : m_usedTextures)
     {
-        const auto& atlasRect = m_atlas.getRectByHash(hash);
-        if(!atlasRect) continue;
+        const auto* atlasRect = m_atlas.getRectByHash(hash);
+        // if(!atlasRect) continue;
 
         markup.m_insertionPosition = { atlasRect->x, atlasRect->y };
         markup.m_insertionSize = { atlasRect->w, atlasRect->h };
-    }
+    }*/
 
     for(auto& [meshDataHash, meshDataMarkup] : m_usedMeshDatas)
     {
-        std::array<glm::u32vec2, texture_types_count> atlasTextureInfo { };
+        std::array<glm::u32vec2, texture_types_count> atlasTextureInfo = makeFilledArray<glm::u32vec2, texture_types_count>({ -1, -1 });;
 
         // collecting info about textures...
         for(std::uint8_t i = 0; i < texture_types_count; ++i)
         {
-            const auto it = m_usedTextures.find(meshDataMarkup.m_textures[i]);
-            if(it == m_usedTextures.end()) continue;
+            const auto rectPtr = m_atlas.getRectByHash(meshDataMarkup.m_textures[i]);
+            if(!rectPtr) continue;
 
-            const auto& textureDataMarkup = it->second;
+            const auto& rect = *rectPtr;
 
             atlasTextureInfo[i].x = pack2UInt16ToUInt32(
-                static_cast<std::uint16_t>(textureDataMarkup.m_insertionPosition.x),
-                static_cast<std::uint16_t>(textureDataMarkup.m_insertionPosition.y)
+                static_cast<std::uint16_t>(rect.x),
+                static_cast<std::uint16_t>(rect.y)
             );
 
             atlasTextureInfo[i].y = pack2UInt16ToUInt32(
-                static_cast<std::uint16_t>(textureDataMarkup.m_insertionSize.x),
-                static_cast<std::uint16_t>(textureDataMarkup.m_insertionSize.y)
+                static_cast<std::uint16_t>(rect.w),
+                static_cast<std::uint16_t>(rect.h)
             );
         }
 
@@ -403,6 +402,11 @@ void SGCore::Batch::onRenderPipelineSet() noexcept
 
 void SGCore::Batch::updateBuffers() noexcept
 {
+    for(const auto& [texHash, texture] : m_usedTextures)
+    {
+        m_atlas.packTexture(*m_atlas.getRectByHash(texHash), texture.get());
+    }
+
     m_fakeVerticesBuffer->bind();
     m_fakeVerticesBuffer->putData(m_instanceTriangles);
 

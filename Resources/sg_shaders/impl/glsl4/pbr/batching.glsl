@@ -311,8 +311,8 @@ void main()
 
         diffuseColor.rgba = vec4(0.0, 0.0, 0.0, 0.0);
 
-        highp vec2 dfdx = dFdx(finalUV) / texSize;
-        highp vec2 dfdy = dFdy(finalUV) / texSize;
+        highp vec2 dfdx = dFdx(finalUV) / batchAtlasSize;
+        highp vec2 dfdy = dFdy(finalUV) / batchAtlasSize;
 
         diffuseColor += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy);
     }
@@ -324,60 +324,71 @@ void main()
             vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets1.r1.z);
             vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets1.r1.w);
 
-            aoRoughnessMetallic.r = 0.0;
+            if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y)
+            {
+                aoRoughnessMetallic.r = 0.0;
 
-            highp vec2 dfdx = dFdx(finalUV) / texSize;
-            highp vec2 dfdy = dFdy(finalUV) / texSize;
+                highp vec2 dfdx = dFdx(finalUV) / batchAtlasSize;
+                highp vec2 dfdy = dFdy(finalUV) / batchAtlasSize;
 
-            aoRoughnessMetallic.r += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy).r;
+                aoRoughnessMetallic.r += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy).r;
+            }
         }
 
         {
             vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r1.z);
             vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r1.w);
 
-            aoRoughnessMetallic.g = 0.0;
+            if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y)
+            {
+                aoRoughnessMetallic.g = 0.0;
 
-            highp vec2 dfdx = dFdx(finalUV) / texSize;
-            highp vec2 dfdy = dFdy(finalUV) / texSize;
+                highp vec2 dfdx = dFdx(finalUV) / batchAtlasSize;
+                highp vec2 dfdy = dFdy(finalUV) / batchAtlasSize;
 
-            aoRoughnessMetallic.g += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy).g;
+                aoRoughnessMetallic.g += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy).g;
 
-            aoRoughnessMetallic.g *= 1.0;
+                aoRoughnessMetallic.g *= 1.0;
+            }
         }
 
         {
             vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets1.r2.x);
             vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets1.r2.y);
 
-            aoRoughnessMetallic.b = 0.0;
+            if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y)
+            {
+                aoRoughnessMetallic.b = 0.0;
 
-            highp vec2 dfdx = dFdx(finalUV) / texSize;
-            highp vec2 dfdy = dFdy(finalUV) / texSize;
+                highp vec2 dfdx = dFdx(finalUV) / batchAtlasSize;
+                highp vec2 dfdy = dFdy(finalUV) / batchAtlasSize;
 
-            aoRoughnessMetallic.b += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy).b;
+                aoRoughnessMetallic.b += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy).b;
 
-            aoRoughnessMetallic.b *= 1.0;
+                aoRoughnessMetallic.b *= 1.0;
+            }
         }
     }
 
     {
         // if(mat_normalsSamplers_CURRENT_COUNT > 0)
         // {
-            vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r3.z);
-            vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r3.w);
+        vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r3.z);
+        vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r3.w);
 
-            highp vec2 dfdx = dFdx(finalUV) / texSize;
-            highp vec2 dfdy = dFdy(finalUV) / texSize;
+        if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y)
+        {
+            highp vec2 dfdx = dFdx(finalUV) / batchAtlasSize;
+            highp vec2 dfdy = dFdy(finalUV) / batchAtlasSize;
 
             normalMapColor += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy).rgb;
 
             finalNormal = normalize(gsIn.TBN * (normalMapColor * 2.0 - 1.0));
-        // }
-        // else
-        // {
-        //     finalNormal = gsIn.worldNormal;
-        // }
+        }
+        else
+        {
+            finalNormal = gsIn.worldNormal;
+        }
     }
 
     vec3 viewDir = normalize(camera.position - gsIn.fragPos);
@@ -449,6 +460,7 @@ void main()
     vec3 finalCol = ambient * vec3(1.0) + lo + ambient;
 
     layerColor = vec4(finalCol, 1.0);
+    // layerColor = diffuseColor;
     // layerColor = vec4(diffuseTexUVOffset, 1.0, 1.0);
     // layerColor = vec4(gsIn.worldNormal, 1.0);
     // layerColor = vec4(finalNormal, 1.0);

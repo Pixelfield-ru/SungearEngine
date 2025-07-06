@@ -175,10 +175,10 @@ namespace SGCore
          * PLEASE NOTE THAT INTERNAL FORMAT OF data BUFFER MUST BE EQUAL TO INTERNAL FORMAT OF THIS TEXTURE.
          * @tparam DataType
          * @param data Buffer with new data.
-         * @param areaWidth Width of area to subdata. Not in bytes!
-         * @param areaHeight Height of area to subdata. Not in bytes!
-         * @param areaOffsetX X offset of area to subdata. Not in bytes!
-         * @param areaOffsetY Y offset of area to subdata. Not in bytes!
+         * @param areaWidth Width of area to subdata. In pixels!
+         * @param areaHeight Height of area to subdata. In pixels!
+         * @param areaOffsetX X offset of area to subdata. In pixels!
+         * @param areaOffsetY Y offset of area to subdata. In pixels!
          */
         void subTextureData(const std::uint8_t* data, std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY)
         {
@@ -207,7 +207,7 @@ namespace SGCore
                 return;
             }
 
-            for(size_t y = 0; y < areaHeight; y++)
+            for(size_t y = 0; y < areaHeight; ++y)
             {
                 std::memcpy(m_textureData.get() + size_t(areaOffsetX + (areaOffsetY + y) * m_width) * dataChannelsSize,
                         data + size_t(y * areaWidth) * dataChannelsSize,

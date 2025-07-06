@@ -147,14 +147,14 @@ void SGCore::ITexture2D::resizeDataBuffer(std::int32_t newWidth, std::int32_t ne
     const size_t newSize = size_t(newWidth * newHeight) * dataChannelsSize;
     data_ptr newData = data_ptr(new std::uint8_t[newSize]);
 
-    std::memset(newData.get(), 0, newSize);
+    // std::memset(newData.get(), 0, newSize);
 
     if(saveData)
     {
         for(size_t y = 0; y < m_height; ++y)
         {
-            std::memcpy(newData.get() + std::ptrdiff_t(y * newWidth) * dataChannelsSize,
-                    m_textureData.get() + std::ptrdiff_t(y * m_width) * dataChannelsSize,
+            std::memcpy(newData.get() + size_t(y * newWidth) * dataChannelsSize,
+                    m_textureData.get() + size_t(y * m_width) * dataChannelsSize,
                     m_width * dataChannelsSize);
         }
     }

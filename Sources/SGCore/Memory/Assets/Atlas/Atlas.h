@@ -30,7 +30,10 @@ namespace SGCore
          */
         const rectpack2D::rect_xywh* getRectByHash(size_t hash) const noexcept;
 
+        [[nodiscard]] bool contains(size_t rectHash) const noexcept;
+
         [[nodiscard]] Ref<ITexture2D> getTexture() const noexcept;
+        [[nodiscard]] glm::u32vec2 getSize() const noexcept;
 
     private:
         using spaces_type = rectpack2D::empty_spaces<false, rectpack2D::default_empty_spaces>;
@@ -45,6 +48,8 @@ namespace SGCore
         Ref<ITexture2D> m_atlasTexture;
 
         bool tryPackLastInsertedRect() noexcept;
+
+        void sortRects() noexcept;
 
         static void convertTextureFormatToRGBA32INT(const std::uint8_t* srcBuffer, std::uint8_t* dstBuffer, size_t pixelsCount, const std::vector<std::uint8_t>& srcChannelsBits, SGGDataType srcBufferDataType) noexcept;
 

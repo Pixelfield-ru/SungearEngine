@@ -10,6 +10,7 @@
 #include "BatchVertex.h"
 #include "SGCore/ECS/Component.h"
 #include "SGCore/Graphics/API/RenderState.h"
+#include "SGCore/Memory/AssetRef.h"
 #include "SGCore/Memory/AssetsPackage.h"
 #include "SGCore/Memory/Assets/Atlas/Atlas.h"
 #include "SGCore/Utils/Slot.h"
@@ -96,8 +97,8 @@ namespace SGCore
         // first - meshdata hash, second - vector of triangles ranges in triangles buffer
         std::unordered_map<size_t, std::vector<TrianglesMarkup>> m_trianglesMarkup;
 
-        // first - texture hash, second - material textures markup
-        std::unordered_map<size_t, TextureDataMarkup> m_usedTextures;
+        // first - texture hash, second - texture
+        std::unordered_map<size_t, AssetRef<ITexture2D>> m_usedTextures;
         // std::array<std::unordered_map<size_t, TextureDataMarkup>, texture_types_count> m_usedTextures;
         // std::array<Atlas, texture_types_count> m_atlases;
         Atlas m_atlas;
