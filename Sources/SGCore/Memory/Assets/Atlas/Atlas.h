@@ -5,7 +5,6 @@
 #ifndef SUNGEARENGINE_ATLAS_H
 #define SUNGEARENGINE_ATLAS_H
 
-#include "AtlasRect.h"
 #include "SGCore/Graphics/API/GPUDeviceInfo.h"
 #include "SGCore/Graphics/API/GraphicsDataTypes.h"
 #include "SGCore/Main/CoreGlobals.h"
@@ -22,8 +21,14 @@ namespace SGCore
     {
         std::uint32_t m_maxSideSize = GPUDeviceInfo::getMaxTextureSize().x;
 
-        void findBestRect(glm::ivec2 textureSize, AtlasRect& outputRect) noexcept;
-        void packTexture(const AtlasRect& inRect, const ITexture2D* texture) noexcept;
+        void findBestRect(glm::ivec2 textureSize, rectpack2D::rect_xywh& outputRect, size_t rectHash) noexcept;
+        void packTexture(const rectpack2D::rect_xywh& inRect, const ITexture2D* texture) noexcept;
+
+        /**
+         * @param hash Hash of rect that was passed to findBestRect function.
+         * @return Nullptr if not found or rect by hash.
+         */
+        const rectpack2D::rect_xywh* getRectByHash(size_t hash) const noexcept;
 
         [[nodiscard]] Ref<ITexture2D> getTexture() const noexcept;
 
@@ -32,12 +37,14 @@ namespace SGCore
         using rect_type = rectpack2D::output_rect_t<spaces_type>;
 
         std::vector<rectpack2D::rect_xywh> m_atlasRects;
+        // first - rect hash. second - index in m_atlasRects
+        std::unordered_map<size_t, size_t> m_atlasRectsMap;
 
-        std::int32_t m_currentSideSize = 1000;
+        glm::u32vec2 m_atlasSize { 0, 0 };
 
         Ref<ITexture2D> m_atlasTexture;
 
-        bool tryPack(glm::ivec2 textureSize, AtlasRect& outputRect) noexcept;
+        bool tryPackLastInsertedRect() noexcept;
 
         static void convertTextureFormatToRGBA32INT(const std::uint8_t* srcBuffer, std::uint8_t* dstBuffer, size_t pixelsCount, const std::vector<std::uint8_t>& srcChannelsBits, SGGDataType srcBufferDataType) noexcept;
 

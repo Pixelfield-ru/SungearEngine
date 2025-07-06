@@ -31,7 +31,8 @@ namespace SGCore
 
         Batch() noexcept;
 
-        void addEntity(ECS::entity_t entity, const ECS::registry_t& fromRegistry) noexcept;
+        void insertEntity(ECS::entity_t entity, const ECS::registry_t& fromRegistry) noexcept;
+        void insertEntities(const std::vector<ECS::entity_t>& entities, const ECS::registry_t& fromRegistry) noexcept;
 
         void update(const ECS::registry_t& inRegistry) noexcept;
 
@@ -51,6 +52,9 @@ namespace SGCore
 
             size_t m_indicesOffset = 0;
             size_t m_indicesCount = 0;
+
+            // first - hash of texture in m_usedTextures map
+            std::array<size_t, texture_types_count> m_textures = makeFilledArray<size_t, texture_types_count>(0);
         };
 
         struct TextureDataMarkup
@@ -60,6 +64,12 @@ namespace SGCore
             // in atlas. can be uv offset
             glm::u32vec2 m_insertionPosition { };
             glm::u32vec2 m_insertionSize { };
+        };
+
+        struct TrianglesMarkup
+        {
+            size_t m_trianglesOffset = 0;
+            size_t m_trianglesCount = 0;
         };
 
         Ref<IVertexArray> m_fakeVertexArray;
@@ -80,8 +90,11 @@ namespace SGCore
         std::vector<glm::u32vec3> m_indices;
         std::vector<BatchInstanceTransform> m_transforms;
 
-        // first - meshdata hash, second - data offset and size (in bytes)
+        // first - meshdata hash, second - markup
         std::unordered_map<size_t, MeshDataMarkup> m_usedMeshDatas;
+
+        // first - meshdata hash, second - vector of triangles ranges in triangles buffer
+        std::unordered_map<size_t, std::vector<TrianglesMarkup>> m_trianglesMarkup;
 
         // first - texture hash, second - material textures markup
         std::unordered_map<size_t, TextureDataMarkup> m_usedTextures;
@@ -91,9 +104,15 @@ namespace SGCore
 
         std::vector<ECS::entity_t> m_entities;
 
+        void insertEntityImpl(ECS::entity_t entity, const ECS::registry_t& fromRegistry, bool isUpdateBuffers) noexcept;
+
+        void updateTextureDataInTriangles() noexcept;
+
         void onRenderPipelineSet() noexcept;
 
         void updateBuffers() noexcept;
+
+        static std::uint32_t pack2UInt16ToUInt32(uint16_t x, uint16_t y) noexcept;
 
         Slot<void()> m_onRenderPipelineSetEventListener = [this]() {
             onRenderPipelineSet();

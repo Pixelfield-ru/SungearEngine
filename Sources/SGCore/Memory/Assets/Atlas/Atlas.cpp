@@ -10,34 +10,58 @@
 #include "SGCore/Graphics/API/ITexture2D.h"
 
 
-void SGCore::Atlas::findBestRect(glm::ivec2 textureSize, AtlasRect& outputRect) noexcept
+void SGCore::Atlas::findBestRect(glm::ivec2 textureSize, rectpack2D::rect_xywh& outputRect, size_t rectHash) noexcept
 {
+    if(m_atlasRectsMap.contains(rectHash))
+    {
+        outputRect = m_atlasRects[m_atlasRectsMap[rectHash]];
+
+        return;
+    }
+
+    const auto lastRects = m_atlasRects;
+    const auto lastRectsCount = m_atlasRects.size();
+
     m_atlasRects.push_back({ 0, 0, textureSize.x, textureSize.y });
 
-    const bool isPacked = tryPack(textureSize, outputRect);
+    const bool isPacked = tryPackLastInsertedRect();
+
+    for(size_t i = 0; i < lastRectsCount; ++i)
+    {
+        const auto& lastRect = lastRects[i];
+        const auto& currentRect = m_atlasRects[i];
+
+        if(lastRect.x != currentRect.x || lastRect.y != currentRect.y || lastRect.w != currentRect.w || lastRect.h != currentRect.h)
+        {
+            std::cout << fmt::format(
+                "Discrepancy between the rects! Last rect: pos: {}, {}, size: {}, {}. Current rect: pos: {}, {}, size: {}, {}.",
+                lastRect.x, lastRect.y, lastRect.w, lastRect.h, currentRect.x, currentRect.y, currentRect.w, currentRect.h) << std::endl;
+        }
+    }
 
     if(!isPacked)
     {
         m_atlasRects.pop_back();
-        outputRect.m_position = { -1, -1 };
-        outputRect.m_size = { -1, -1 };
+        outputRect.x = -1;
+        outputRect.y = -1;
+        outputRect.w = -1;
+        outputRect.h = -1;
 
         return;
     }
 
     const auto r = *m_atlasRects.rbegin();
 
-    outputRect = {
-        .m_position = { r.x, r.y },
-        .m_size = { r.w, r.h },
-    };
+    outputRect = rectpack2D::rect_xywh(r.x, r.y, r.w, r.h);
+
+    m_atlasRectsMap[rectHash] = m_atlasRects.size() - 1;
 }
 
-void SGCore::Atlas::packTexture(const AtlasRect& inRect, const ITexture2D* texture) noexcept
+void SGCore::Atlas::packTexture(const rectpack2D::rect_xywh& inRect, const ITexture2D* texture) noexcept
 {
-    if(inRect.m_position.x + inRect.m_size.x > m_maxSideSize || inRect.m_position.y + inRect.m_size.y > m_maxSideSize ||
-       inRect.m_position.x < 0 || inRect.m_position.y < 0 ||
-       inRect.m_size.x < 0 || inRect.m_size.y < 0)
+    if(inRect.x + inRect.w > m_maxSideSize || inRect.y + inRect.h > m_maxSideSize ||
+       inRect.x < 0 || inRect.y < 0 ||
+       inRect.w < 0 || inRect.h < 0)
     {
         LOG_E(SGCORE_TAG,
               "Can not pack texture into atlas! Out of max texture size bounds!\n"
@@ -45,9 +69,9 @@ void SGCore::Atlas::packTexture(const AtlasRect& inRect, const ITexture2D* textu
               "\tPack position: {}, {}.\n"
               "\tPack size: {}, {}.\n"
               "\tMax texture size: {}, {}.",
-              m_currentSideSize, m_currentSideSize,
-              inRect.m_position.x, inRect.m_position.y,
-              inRect.m_size.x, inRect.m_size.y,
+              m_atlasSize.x, m_atlasSize.y,
+              inRect.x, inRect.y,
+              inRect.w, inRect.h,
               m_maxSideSize, m_maxSideSize);
 
         return;
@@ -63,9 +87,9 @@ void SGCore::Atlas::packTexture(const AtlasRect& inRect, const ITexture2D* textu
         m_atlasTexture->create();
     }
 
-    if(m_currentSideSize > m_atlasTexture->getWidth() || m_currentSideSize > m_atlasTexture->getHeight())
+    if(m_atlasSize.x > m_atlasTexture->getWidth() || m_atlasSize.y > m_atlasTexture->getHeight())
     {
-        m_atlasTexture->resizeDataBuffer(m_currentSideSize, m_currentSideSize);
+        m_atlasTexture->resizeDataBuffer(m_atlasSize.x, m_atlasSize.y);
     }
 
     // ===================================================================================================================
@@ -92,7 +116,13 @@ void SGCore::Atlas::packTexture(const AtlasRect& inRect, const ITexture2D* textu
     }*/
 
     m_atlasTexture->bind(0);
-    m_atlasTexture->subTextureData(externalTextureData.data(), texture->getWidth(), texture->getHeight(), inRect.m_position.x, inRect.m_position.y);
+    m_atlasTexture->subTextureData(externalTextureData.data(), inRect.w, inRect.h, inRect.x, inRect.y);
+}
+
+const rectpack2D::rect_xywh* SGCore::Atlas::getRectByHash(size_t hash) const noexcept
+{
+    const auto it = m_atlasRectsMap.find(hash);
+    return it != m_atlasRectsMap.end() ? &m_atlasRects[it->second] : nullptr;
 }
 
 SGCore::Ref<SGCore::ITexture2D> SGCore::Atlas::getTexture() const noexcept
@@ -100,48 +130,35 @@ SGCore::Ref<SGCore::ITexture2D> SGCore::Atlas::getTexture() const noexcept
     return m_atlasTexture;
 }
 
-bool SGCore::Atlas::tryPack(glm::ivec2 textureSize, AtlasRect& outputRect) noexcept
+bool SGCore::Atlas::tryPackLastInsertedRect() noexcept
 {
-    bool isSuccessful = true;
-
     bool isPacked = true;
 
     auto report_successful = [](rect_type&) {
         return rectpack2D::callback_result::CONTINUE_PACKING;
     };
 
-    auto report_unsuccessful = [&isSuccessful](rect_type&) {
-        isSuccessful = false;
-        return rectpack2D::callback_result::ABORT_PACKING;
+    auto report_unsuccessful = [&isPacked](rect_type& r) {
+        isPacked = false;
+
+        std::cout << "Unsuccessful texture packing! With rect: pos: " << r.x << ", " << r.y << ", size: " << r.w << ", " << r.h << ". Continuing..." << std::endl;
+
+        return rectpack2D::callback_result::CONTINUE_PACKING;
     };
 
-    auto report_result = [&isSuccessful, &textureSize, &outputRect, &isPacked, this](const rectpack2D::rect_wh& result_size) {
-        std::cout << "Resultant bin: " << result_size.w << " " << result_size.h << std::endl;
+    auto report_result = [this](const rectpack2D::rect_wh& result_size) {
+        m_atlasSize.x = result_size.w;
+        m_atlasSize.y = result_size.h;
 
-        if(!isSuccessful)
-        {
-            m_currentSideSize += textureSize.x;
-
-            if(m_currentSideSize > m_maxSideSize)
-            {
-                isPacked = false;
-                return;
-            }
-
-            isPacked = tryPack(textureSize, outputRect);
-        }
-        else
-        {
-            std::cout << "Packing successful!" << std::endl;
-        }
+        std::cout << "Packing successful! Resultant bin: " << m_atlasSize.x << ", " << m_atlasSize.y << std::endl;
     };
 
-    const auto discardStep = -4;
+    const auto discardStep = 1;
 
     const auto result_size = rectpack2D::find_best_packing_dont_sort<spaces_type>(
         m_atlasRects,
         rectpack2D::make_finder_input(
-            m_currentSideSize,
+            m_maxSideSize,
             discardStep,
             report_successful,
             report_unsuccessful,

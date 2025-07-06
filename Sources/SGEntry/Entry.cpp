@@ -174,6 +174,27 @@ void coreInit()
         testAtlas = &batch.getAtlas();
     });
 
+    {
+        const size_t pixelsCnt = testAtlas->getTexture()->getWidth() * testAtlas->getTexture()->getHeight();
+
+        SGCore::Scope<std::uint8_t[]> pixels8 = SGCore::MakeScope<std::uint8_t[]>(pixelsCnt * 4);
+
+        for(size_t p = 0; p < pixelsCnt; ++p)
+        {
+            const float r = *reinterpret_cast<float*>(&testAtlas->getTexture()->getData()[p * 16]);
+            const float g = *reinterpret_cast<float*>(&testAtlas->getTexture()->getData()[p * 16 + 4]);
+            const float b = *reinterpret_cast<float*>(&testAtlas->getTexture()->getData()[p * 16 + 8]);
+            const float a = *reinterpret_cast<float*>(&testAtlas->getTexture()->getData()[p * 16 + 12]);
+
+            pixels8[p] = static_cast<std::uint8_t>(r * 255);
+            pixels8[p + 1] = static_cast<std::uint8_t>(g * 255);
+            pixels8[p + 2] = static_cast<std::uint8_t>(b * 255);
+            pixels8[p + 3] = static_cast<std::uint8_t>(a * 255);
+        }
+
+        stbi_write_png("test_atlas.png", testAtlas->getTexture()->getWidth(), testAtlas->getTexture()->getHeight(), 4, pixels8.get(), testAtlas->getTexture()->getWidth() * 4);
+    }
+
     m_screenQuadMeshData = SGCore::Ref<SGCore::IMeshData>(SGCore::CoreMain::getRenderer()->createMeshData());
 
     m_screenQuadMeshData->m_vertices.resize(4);
@@ -252,7 +273,7 @@ void onUpdate(const double& dt, const double& fixedDt)
         SGCore::PluginsManager::unloadAllPlugins();
     }
 
-    screenShader->bind();
+    /*screenShader->bind();
 
     // use this to flip screen output
     screenShader->useInteger("u_flipOutput", false);
@@ -261,21 +282,21 @@ void onUpdate(const double& dt, const double& fixedDt)
     if(testAtlas->getTexture())
     {
         testAtlas->getTexture()->bind(0);
-    }
+    }*/
 
     /*if(testTextures[0])
     {
         testTextures[0]->bind(0);
     }*/
 
-    screenShader->useTextureBlock("u_bufferToDisplay", 0);
+    /*screenShader->useTextureBlock("u_bufferToDisplay", 0);
 
     SGCore::CoreMain::getRenderer()->renderArray(
         m_screenQuadMeshData->getVertexArray(),
         m_screenQuadMeshRenderState,
         m_screenQuadMeshData->m_vertices.size(),
         m_screenQuadMeshData->m_indices.size()
-    );
+    );*/
 
     if(SGCore::Scene::getCurrentScene())
     {
