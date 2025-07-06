@@ -19,26 +19,10 @@ void SGCore::Atlas::findBestRect(glm::ivec2 textureSize, rectpack2D::rect_xywh& 
         return;
     }
 
-    const auto lastRects = m_atlasRects;
-    const auto lastRectsCount = m_atlasRects.size();
-
     m_atlasRects.push_back({ 0, 0, textureSize.x, textureSize.y });
     m_atlasRectsMap[rectHash] = m_atlasRects.size() - 1;
 
     const bool isPacked = tryPackLastInsertedRect();
-
-    for(size_t i = 0; i < lastRectsCount; ++i)
-    {
-        const auto& lastRect = lastRects[i];
-        const auto& currentRect = m_atlasRects[i];
-
-        if(lastRect.x != currentRect.x || lastRect.y != currentRect.y || lastRect.w != currentRect.w || lastRect.h != currentRect.h)
-        {
-            std::cout << fmt::format(
-                "Discrepancy between the rects! Last rect: pos: {}, {}, size: {}, {}. Current rect: pos: {}, {}, size: {}, {}.",
-                lastRect.x, lastRect.y, lastRect.w, lastRect.h, currentRect.x, currentRect.y, currentRect.w, currentRect.h) << std::endl;
-        }
-    }
 
     if(!isPacked)
     {

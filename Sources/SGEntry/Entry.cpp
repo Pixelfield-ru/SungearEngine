@@ -174,7 +174,7 @@ void coreInit()
         testAtlas = &batch.getAtlas();
     });
 
-    {
+    /*{
         const size_t pixelsCnt = testAtlas->getTexture()->getWidth() * testAtlas->getTexture()->getHeight();
 
         SGCore::Scope<std::uint8_t[]> pixels8 = SGCore::MakeScope<std::uint8_t[]>(pixelsCnt * 4);
@@ -193,7 +193,7 @@ void coreInit()
         }
 
         stbi_write_png("test_atlas.png", testAtlas->getTexture()->getWidth(), testAtlas->getTexture()->getHeight(), 4, pixels8.get(), testAtlas->getTexture()->getWidth() * 4);
-    }
+    }*/
 
     m_screenQuadMeshData = SGCore::Ref<SGCore::IMeshData>(SGCore::CoreMain::getRenderer()->createMeshData());
 

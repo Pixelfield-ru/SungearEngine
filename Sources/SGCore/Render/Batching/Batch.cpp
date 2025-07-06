@@ -229,14 +229,7 @@ void SGCore::Batch::insertEntityImpl(ECS::entity_t entity, const ECS::registry_t
                 if(!m_atlas.contains(textureHash))
                 {
                     m_atlas.findBestRect({ texture->getWidth(), texture->getHeight() }, rect, textureHash);
-                    // m_atlas.packTexture(rect, texture.get());
                     m_usedTextures[textureHash] = texture;
-
-                    /*m_usedTextures[textureHash] = {
-                        .m_textureType = i,
-                        .m_insertionPosition = { rect.x, rect.y },
-                        .m_insertionSize = { rect.w, rect.h }
-                    };*/
 
                     std::cout << fmt::format("adding texture to atlas: texture type: {}, rect pos: {}, {}, rect size: {}, {}, texture path: '{}'",
                         sgStandardTextureTypeToString(textureType),
@@ -348,16 +341,6 @@ void SGCore::Batch::insertEntityImpl(ECS::entity_t entity, const ECS::registry_t
 
 void SGCore::Batch::updateTextureDataInTriangles() noexcept
 {
-    // updating cached textures data markup
-    /*for(auto& [hash, markup] : m_usedTextures)
-    {
-        const auto* atlasRect = m_atlas.getRectByHash(hash);
-        // if(!atlasRect) continue;
-
-        markup.m_insertionPosition = { atlasRect->x, atlasRect->y };
-        markup.m_insertionSize = { atlasRect->w, atlasRect->h };
-    }*/
-
     for(auto& [meshDataHash, meshDataMarkup] : m_usedMeshDatas)
     {
         std::array<glm::u32vec2, texture_types_count> atlasTextureInfo = makeFilledArray<glm::u32vec2, texture_types_count>({ -1, -1 });;
@@ -402,6 +385,7 @@ void SGCore::Batch::onRenderPipelineSet() noexcept
 
 void SGCore::Batch::updateBuffers() noexcept
 {
+    // packing textures
     for(const auto& [texHash, texture] : m_usedTextures)
     {
         m_atlas.packTexture(*m_atlas.getRectByHash(texHash), texture.get());
