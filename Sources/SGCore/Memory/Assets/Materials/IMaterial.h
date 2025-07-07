@@ -123,8 +123,6 @@ namespace SGCore
     protected:
         // some textures can be atlases
         std::array<std::vector<AssetRef<ITexture2D>>, texture_types_count> m_textures;
-        // every index is used to indexing uvs in atlas. by default all indices equals to -1
-        std::array<glm::int64_t, texture_types_count> m_atlasesUVIndices = makeFilledArray<std::int64_t, texture_types_count>(-1);;
         // std::unordered_map<SGTextureType, std::vector<AssetRef<ITexture2D>>> m_textures;
 
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;

@@ -15,6 +15,7 @@ namespace SGCore
     struct GPUDeviceInfo
     {
         static glm::ivec2 getMaxTextureSize() noexcept;
+        static std::int32_t getMaxTextureBufferSize() noexcept;
     };
 }
 

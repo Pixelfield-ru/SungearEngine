@@ -86,6 +86,13 @@ SGCore::Batch::Batch() noexcept
                                         SGGColorInternalFormat::SGG_RGBA32_FLOAT,
                                         SGGColorFormat::SGG_RGBA);
 
+    m_instancesMaterialsBuffer = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
+    m_instancesMaterialsBuffer->m_textureBufferUsage = SGGUsage::SGG_DYNAMIC;
+    m_instancesMaterialsBuffer->m_isTextureBuffer = true;
+    m_instancesMaterialsBuffer->create(m_transforms.data(), 0, 1, 1,
+                                       SGGColorInternalFormat::SGG_RGBA32_FLOAT,
+                                       SGGColorFormat::SGG_RGBA);
+
     auto currentRenderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
     if(currentRenderPipeline)
     {
@@ -97,25 +104,104 @@ SGCore::Batch::Batch() noexcept
     // m_atlas.m_maxSideSize = 10000;
 }
 
-void SGCore::Batch::insertEntity(ECS::entity_t entity, const ECS::registry_t& fromRegistry) noexcept
+bool SGCore::Batch::insertEntity(ECS::entity_t entity, const ECS::registry_t& fromRegistry) noexcept
 {
+    if(!hasSpaceForEntity(entity, fromRegistry)) return false;
+
     insertEntityImpl(entity, fromRegistry, true);
+
+    return true;
 }
 
-void SGCore::Batch::insertEntities(const std::vector<ECS::entity_t>& entities, const ECS::registry_t& fromRegistry) noexcept
+SGCore::ECS::entity_t SGCore::Batch::insertEntities(const std::vector<ECS::entity_t>& entities, const ECS::registry_t& fromRegistry) noexcept
 {
+    ECS::entity_t lastUnsuccessfulEntity = entt::null;
+
     for(auto e : entities)
     {
+        if(!hasSpaceForEntity(e, fromRegistry))
+        {
+            lastUnsuccessfulEntity = e;
+            break;
+        }
+
         insertEntityImpl(e, fromRegistry, false);
     }
 
     updateTextureDataInTriangles();
     updateBuffers();
+
+    return lastUnsuccessfulEntity;
+}
+
+bool SGCore::Batch::hasSpaceForEntity(ECS::entity_t entity, const ECS::registry_t& fromRegistry) const noexcept
+{
+    const auto* tmpMesh = fromRegistry.tryGet<Mesh>(entity);
+    if(!tmpMesh || !fromRegistry.allOf<Transform>(entity) || !tmpMesh->m_base.getMeshData()) return true;
+
+    const Mesh& mesh = *tmpMesh;
+
+    const auto meshData = mesh.m_base.getMeshData();
+
+    // checking available space for textures
+    if(mesh.m_base.getMaterial())
+    {
+        for(std::uint8_t i = 0; i < mesh.m_base.getMaterial()->getTextures().size(); ++i)
+        {
+            const auto& texturesVec = mesh.m_base.getMaterial()->getTextures()[i];
+
+            for(const auto& texture : texturesVec)
+            {
+                if(!texture) continue;
+
+                if(!m_usedTextures.contains(texture->getHash()) && m_atlas.getSize().x + texture->getWidth() > m_atlas.m_maxSideSize && m_atlas.getSize().y + texture->getHeight() > m_atlas.m_maxSideSize)
+                {
+                    return false;
+                }
+            }
+        }
+    }
+
+    // checking available space for buffers
+
+    const bool hasIndices = !meshData->m_indices.empty();
+    const size_t indicesCount = hasIndices ? meshData->m_indices.size() : meshData->m_vertices.size() / 3;
+
+    if(!m_usedMeshDatas.contains(meshData->getHash()))
+    {
+        if(sizeof(BatchVertex) * (m_vertices.size() + meshData->m_vertices.size()) > GPUDeviceInfo::getMaxTextureBufferSize())
+        {
+            return false;
+        }
+
+        if(sizeof(glm::u32vec3) * (m_indices.size() + indicesCount) > GPUDeviceInfo::getMaxTextureBufferSize())
+        {
+            return false;
+        }
+    }
+
+    if(sizeof(BatchTriangle) * (m_instanceTriangles.size() + indicesCount / 3) > GPUDeviceInfo::getMaxTextureBufferSize())
+    {
+        return false;
+    }
+
+    if(sizeof(BatchInstanceTransform) * (m_transforms.size() + 1) > GPUDeviceInfo::getMaxTextureBufferSize())
+    {
+        return false;
+    }
+
+    if(sizeof(BatchInstanceMaterial) * (m_materials.size() + 1) > GPUDeviceInfo::getMaxTextureBufferSize())
+    {
+        return false;
+    }
+
+    return true;
 }
 
 void SGCore::Batch::update(const ECS::registry_t& inRegistry) noexcept
 {
     m_transforms.clear();
+    m_materials.clear();
 
     for(size_t i = 0; i < m_entities.size(); ++i)
     {
@@ -134,6 +220,31 @@ void SGCore::Batch::update(const ECS::registry_t& inRegistry) noexcept
         };
 
         m_transforms.push_back(instanceTransform);
+
+        const auto* mesh = inRegistry.tryGet<Mesh>(entity);
+        if(!mesh)
+        {
+            m_materials.push_back(m_defaultMaterial);
+            continue;
+        }
+
+        const auto meshMaterial = mesh->m_base.getMaterial();
+        if(!meshMaterial)
+        {
+            m_materials.push_back(m_defaultMaterial);
+            continue;
+        }
+
+        const BatchInstanceMaterial instanceMaterial {
+            .m_diffuseColor = meshMaterial->getDiffuseColor(),
+            .m_specularColor = meshMaterial->getSpecularColor(),
+            .m_ambientColor = meshMaterial->getAmbientColor(),
+            .m_emissionColor = meshMaterial->getEmissionColor(),
+            .m_transparentColor = meshMaterial->getTransparentColor(),
+            .m_shininessMetallicRoughness = { meshMaterial->getShininess(), meshMaterial->getMetallicFactor(), meshMaterial->getRoughnessFactor() }
+        };
+
+        m_materials.push_back(instanceMaterial);
     }
 
     if(m_instancesTransformsBuffer->getWidth() < m_transforms.size() * BatchInstanceTransform::components_count)
@@ -142,6 +253,15 @@ void SGCore::Batch::update(const ECS::registry_t& inRegistry) noexcept
     }
     m_instancesTransformsBuffer->bind(2);
     m_instancesTransformsBuffer->subTextureBufferData(reinterpret_cast<std::uint8_t*>(m_transforms.data()), m_transforms.size() * BatchInstanceTransform::components_count, 0);
+
+    // ============================================================
+
+    if(m_instancesMaterialsBuffer->getWidth() < m_materials.size() * BatchInstanceMaterial::components_count)
+    {
+        m_instancesMaterialsBuffer->resizeDataBuffer(m_materials.size() * BatchInstanceMaterial::components_count, 1);
+    }
+    m_instancesMaterialsBuffer->bind(3);
+    m_instancesMaterialsBuffer->subTextureBufferData(reinterpret_cast<std::uint8_t*>(m_materials.data()), m_materials.size() * BatchInstanceMaterial::components_count, 0);
 }
 
 void SGCore::Batch::bind() const noexcept
@@ -156,12 +276,14 @@ void SGCore::Batch::bind() const noexcept
     m_verticesBuffer->bind(0);
     m_indicesBuffer->bind(1);
     m_instancesTransformsBuffer->bind(2);
+    m_instancesMaterialsBuffer->bind(3);
 
     m_shader->useTextureBlock("u_verticesTextureBuffer", 0);
     m_shader->useTextureBlock("u_indicesTextureBuffer", 1);
     m_shader->useTextureBlock("u_transformsTextureBuffer", 2);
+    m_shader->useTextureBlock("u_materialsTextureBuffer", 3);
 
-    m_atlas.getTexture()->bind(3);
+    m_atlas.getTexture()->bind(4);
     /*for(std::uint8_t i = 0; i < m_atlases.size(); ++i)
     {
         const auto& atlas = m_atlases[i];
@@ -190,6 +312,8 @@ size_t SGCore::Batch::getTrianglesCount() const noexcept
 
 void SGCore::Batch::insertEntityImpl(ECS::entity_t entity, const ECS::registry_t& fromRegistry, bool isUpdateBuffers) noexcept
 {
+    if(!hasSpaceForEntity(entity, fromRegistry)) return;
+
     const auto* tmpMesh = fromRegistry.tryGet<Mesh>(entity);
     if(!tmpMesh || !fromRegistry.allOf<Transform>(entity) || !tmpMesh->m_base.getMeshData()) return;
 
@@ -221,6 +345,14 @@ void SGCore::Batch::insertEntityImpl(ECS::entity_t entity, const ECS::registry_t
             {
                 if(!texture) continue;
 
+                // if texture is not acceptable
+                if(!m_acceptableTextureTypes.contains(textureType))
+                {
+                    atlasTextureInfo[i] = { -1, -1 };
+
+                    continue;
+                }
+
                 const size_t textureHash = texture->getHash();
 
                 rectpack2D::rect_xywh rect;
@@ -239,7 +371,7 @@ void SGCore::Batch::insertEntityImpl(ECS::entity_t entity, const ECS::registry_t
                         rect.h,
                         Utils::toUTF8(texture->getPath().resolved().u16string())) << std::endl;
 
-                    m_shader->useTextureBlock("batchAtlas", 3);
+                    m_shader->useTextureBlock("batchAtlas", 4);
                     m_shader->useVectorf("batchAtlasSize", glm::vec2 { m_atlas.getSize().x, m_atlas.getSize().y });
                 }
 
@@ -348,6 +480,13 @@ void SGCore::Batch::updateTextureDataInTriangles() noexcept
         // collecting info about textures...
         for(std::uint8_t i = 0; i < texture_types_count; ++i)
         {
+            // if texture of this type is not acceptable
+            if(!m_acceptableTextureTypes.contains(static_cast<SGTextureType>(i)))
+            {
+                atlasTextureInfo[i] = { -1, -1 };
+                continue;
+            }
+
             const auto rectPtr = m_atlas.getRectByHash(meshDataMarkup.m_textures[i]);
             if(!rectPtr) continue;
 

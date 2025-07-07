@@ -9,6 +9,7 @@
 #include <glm/vec2.hpp>
 
 #include "SGCore/Graphics/API/GraphicsDataTypes.h"
+#include "SGCore/Utils/Utils.h"
 
 namespace SGCore
 {
@@ -17,7 +18,7 @@ namespace SGCore
     {
         std::int32_t m_meshInstanceID = 0;
         std::int32_t m_triangleID = 0;
-        std::array<glm::u32vec2, texture_types_count> m_atlasesUVsOffset { };
+        std::array<glm::u32vec2, texture_types_count> m_atlasesUVsOffset = makeFilledArray<glm::u32vec2, texture_types_count>({ -1, -1 });;
         glm::vec2 padding0;
     };
 #pragma pack(pop)

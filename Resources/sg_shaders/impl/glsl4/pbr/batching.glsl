@@ -13,6 +13,16 @@ struct umat4
     uvec4 r3;
 };
 
+struct BatchInstanceMaterial
+{
+    vec4 diffuseColor;
+    vec4 specularColor;
+    vec4 ambientColor;
+    vec4 emissionColor;
+    vec4 transparentColor;
+    vec3 shininessMetallicRoughness;
+};
+
 #vertex
 
 layout (location = 0) in ivec2 instanceTriangle;
@@ -42,6 +52,8 @@ out VSOut
     vec3 instanceRotation;
     vec3 instanceScale;
 
+    BatchInstanceMaterial material;
+
     flat umat4 uvOffsets0;
     flat umat4 uvOffsets1;
     flat umat4 uvOffsets2;
@@ -49,6 +61,7 @@ out VSOut
 
 // transforms of instances in batch
 uniform samplerBuffer u_transformsTextureBuffer;
+uniform samplerBuffer u_materialsTextureBuffer;
 
 void main()
 {
@@ -61,6 +74,8 @@ void main()
 
     // 4 columns of model matrix, 1 position, 1 rotation, 1 scale
     const int transformJump = 4 + 1 + 1 + 1;
+    // 6 vec4 components
+    const int materialJump = 6;
 
     instanceModelMatrix[0] = texelFetch(u_transformsTextureBuffer, vsOut.instanceIndex * transformJump);
     instanceModelMatrix[1] = texelFetch(u_transformsTextureBuffer, vsOut.instanceIndex * transformJump + 1);
@@ -77,6 +92,20 @@ void main()
     vsOut.instancePosition = instancePosition;
     vsOut.instanceRotation = instanceRotation;
     vsOut.instanceScale = instanceScale;
+
+    vec4 matDiffuseCol = texelFetch(u_materialsTextureBuffer, vsOut.instanceIndex * materialJump);
+    vec4 matSpecularCol = texelFetch(u_materialsTextureBuffer, vsOut.instanceIndex * materialJump + 1);
+    vec4 matAmbientCol = texelFetch(u_materialsTextureBuffer, vsOut.instanceIndex * materialJump + 2);
+    vec4 matEmissionCol = texelFetch(u_materialsTextureBuffer, vsOut.instanceIndex * materialJump + 3);
+    vec4 matTransparentCol = texelFetch(u_materialsTextureBuffer, vsOut.instanceIndex * materialJump + 4);
+    vec3 matShininessMetallicRoughness = texelFetch(u_materialsTextureBuffer, vsOut.instanceIndex * materialJump + 5).rgb;
+
+    vsOut.material.diffuseColor = matDiffuseCol;
+    vsOut.material.specularColor = matSpecularCol;
+    vsOut.material.ambientColor = matAmbientCol;
+    vsOut.material.emissionColor = matEmissionCol;
+    vsOut.material.transparentColor = matTransparentCol;
+    vsOut.material.shininessMetallicRoughness = matShininessMetallicRoughness;
 
     umat4 uvOffsetsMat0;
     uvOffsetsMat0.r0 = uvOffsets0;
@@ -129,6 +158,8 @@ out GSOut
     vec3 instancePosition;
     vec3 verticesIndices;
 
+    BatchInstanceMaterial material;
+
     flat umat4 uvOffsets0;
     flat umat4 uvOffsets1;
     flat umat4 uvOffsets2;
@@ -143,6 +174,8 @@ in VSOut
     vec3 instancePosition;
     vec3 instanceRotation;
     vec3 instanceScale;
+
+    BatchInstanceMaterial material;
 
     flat umat4 uvOffsets0;
     flat umat4 uvOffsets1;
@@ -183,6 +216,8 @@ void main()
         vec3 B = normalize(vec3(vsIn[0].instanceModelMatrix * vec4(vertexBitangent, 0.0)));
         vec3 N = normalize(vec3(vsIn[0].instanceModelMatrix * vec4(gsOut.normal, 0.0)));
         gsOut.TBN = mat3(T, B, N);
+
+        gsOut.material = vsIn[0].material;
 
         gsOut.uvOffsets0 = vsIn[0].uvOffsets0;
         gsOut.uvOffsets1 = vsIn[0].uvOffsets1;
@@ -227,6 +262,8 @@ in GSOut
 
     vec3 instancePosition;
     vec3 verticesIndices;
+
+    BatchInstanceMaterial material;
 
     flat umat4 uvOffsets0;
     flat umat4 uvOffsets1;
@@ -290,9 +327,9 @@ void main()
 {
     vec3 normalizedNormal = gsIn.normal;
 
-    vec4 diffuseColor = vec4(1.0, 1.0, 1.0, 1.0);
-    vec4 aoRoughnessMetallic = vec4(0.1, 0.1, 0.4, 1.0);
-    float specularCoeff = 0.5f;
+    vec4 diffuseColor = gsIn.material.diffuseColor;
+    vec4 aoRoughnessMetallic = vec4(materialAmbientFactor, gsIn.material.shininessMetallicRoughness.bg, 1.0);
+    float specularCoeff = 0.0f;
     vec3 normalMapColor = vec3(0);
     vec3 finalNormal = vec3(0);
 
@@ -457,7 +494,7 @@ void main()
     }
 
     ambient = albedo.rgb * ao;
-    vec3 finalCol = ambient * vec3(1.0) + lo + ambient;
+    vec3 finalCol = ambient * vec3(1.0) * materialAmbientFactor + lo + ambient;
 
     layerColor = vec4(finalCol, 1.0);
     // layerColor = diffuseColor;
