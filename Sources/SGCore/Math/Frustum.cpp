@@ -40,7 +40,13 @@ Frustum::Frustum(glm::mat4 m)
     m_points[5] = intersection<Left,  Top,    Far>(crosses);
     m_points[6] = intersection<Right, Bottom, Far>(crosses);
     m_points[7] = intersection<Right, Top,    Far>(crosses);
-    
+
+    for(const auto& v : m_points)
+    {
+        m_center += v;
+    }
+
+    m_center /= 8.0f;
 }
 
 bool Frustum::testAABB(const glm::vec3& aabbMin, const glm::vec3& aabbMax) const
@@ -71,6 +77,11 @@ bool Frustum::testAABB(const glm::vec3& aabbMin, const glm::vec3& aabbMax) const
     out = 0; for (int i = 0; i<8; i++) out += ((m_points[i].z < aabbMin.z) ? 1 : 0); if (out == 8) return false;
     
     return true;
+}
+
+glm::vec3 Frustum::getCenter() const noexcept
+{
+    return m_center;
 }
 
 template<Frustum::Planes a, Frustum::Planes b, Frustum::Planes c>

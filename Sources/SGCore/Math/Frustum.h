@@ -17,6 +17,8 @@ public:
 
     [[nodiscard]] bool testAABB(const glm::vec3& aabbMin, const glm::vec3& aabbMax) const;
 
+    glm::vec3 getCenter() const noexcept;
+
 private:
     enum Planes
     {
@@ -41,6 +43,8 @@ private:
     
     glm::vec4 m_planes[Count] { };
     glm::vec3 m_points[8] { };
+
+    glm::vec3 m_center { };
 };
 
 #endif //SUNGEARENGINE_FRUSTUM_H
