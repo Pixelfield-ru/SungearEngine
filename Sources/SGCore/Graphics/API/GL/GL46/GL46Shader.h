@@ -16,7 +16,7 @@ namespace SGCore
     public:
         ~GL46Shader() noexcept override;
 
-        void bind() noexcept override;
+        void bind() const noexcept override;
 
         void destroy() noexcept final;
 

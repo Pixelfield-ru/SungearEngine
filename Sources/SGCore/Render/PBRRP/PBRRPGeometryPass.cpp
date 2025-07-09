@@ -35,14 +35,24 @@ size_t renderedInOctrees = 0;
 
 void SGCore::PBRRPGeometryPass::create(const Ref<IRenderPipeline>& parentRenderPipeline)
 {
-    auto shaderFile = AssetManager::getInstance()->loadAsset<TextFileAsset>(
-            *parentRenderPipeline->m_shadersPaths["StandardMeshShader"]);
+    // loading object standard shader
+    {
+        auto shaderFile = AssetManager::getInstance()->loadAsset<TextFileAsset>(
+                *parentRenderPipeline->m_shadersPaths["StandardMeshShader"]);
 
-    m_shader = AssetManager::getInstance()->loadAsset<IShader>(shaderFile->getPath());
+        m_shader = AssetManager::getInstance()->loadAsset<IShader>(shaderFile->getPath());
+    }
 
     // configuring default material to use standard pbr shader
     auto defaultMaterial = AssetManager::getInstance()->loadAsset<IMaterial>("${enginePath}/Resources/materials/no_material.sgmat");
     defaultMaterial->m_shader = m_shader;
+
+    {
+        auto shaderFile = AssetManager::getInstance()->loadAsset<TextFileAsset>(
+            *parentRenderPipeline->m_shadersPaths["BatchingShader"]);
+
+        m_batchShader = AssetManager::getInstance()->loadAsset<IShader>(shaderFile->getPath());
+    }
 
     m_opaqueEntitiesRenderState.m_depthFunc = SGDepthStencilFunc::SGG_LESS;
     m_opaqueEntitiesRenderState.m_globalBlendingState.m_useBlending = false;
@@ -156,14 +166,14 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
             Ref<PostProcessLayer> meshPPLayer = cameraLayeredFrameReceiver->getDefaultLayer();
 
             batch.update(*registry);
-            batch.bind();
+            batch.bind(m_batchShader.get());
 
             auto uniformBuffsIt = m_uniformBuffersToUse.begin();
             while(uniformBuffsIt != m_uniformBuffersToUse.end())
             {
                 if(auto lockedUniformBuf = uniformBuffsIt->lock())
                 {
-                    batch.m_shader->useUniformBuffer(lockedUniformBuf);
+                    m_batchShader.get()->useUniformBuffer(lockedUniformBuf);
 
                     ++uniformBuffsIt;
                 }

@@ -8,6 +8,16 @@
 #include "SGCore/Render/Atmosphere/Atmosphere.h"
 #include "SGCore/Render/ShadowMapping/ShadowCaster.h"
 #include "SGCore/Scene/Scene.h"
+#include "SGCore/Graphics/API/IFrameBuffer.h"
+#include "SGCore/Render/IRenderPipeline.h"
+
+void SGCore::SunShadowsPass::create(const Ref<IRenderPipeline>& parentRenderPipeline)
+{
+    auto shaderFile = AssetManager::getInstance()->loadAsset<TextFileAsset>(
+        *parentRenderPipeline->m_shadersPaths["ShadowsGen/BatchingShader"]);
+
+    m_batchShader = AssetManager::getInstance()->loadAsset<IShader>(shaderFile->getPath());
+}
 
 void SGCore::SunShadowsPass::render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline)
 {
@@ -17,20 +27,38 @@ void SGCore::SunShadowsPass::render(const Ref<Scene>& scene, const Ref<IRenderPi
     const auto atmospheresView = registry->view<Atmosphere>();
     const auto camerasView = registry->view<CSMTarget, RenderingBase>();
 
-    atmospheresView.each([&camerasView, &batchesView, &registry](const Atmosphere::reg_t& atmosphere) {
-        camerasView.each([&atmosphere, &batchesView, &registry](const CSMTarget::reg_t& csm, const RenderingBase::reg_t& renderingBase) {
+    atmospheresView.each([&camerasView, &batchesView, &registry, this](const Atmosphere::reg_t& atmosphere) {
+        camerasView.each([&atmosphere, &batchesView, &registry, this](const CSMTarget::reg_t& csm, const RenderingBase::reg_t& renderingBase) {
             const std::vector<glm::mat4> lightSpaceMatrices = getLightSpaceMatrices(csm, renderingBase, atmosphere.m_sunPosition);
 
-            batchesView.each([&registry](Batch::reg_t& batch, const auto&) {
-                batch.update(*registry);
-                batch.bind();
+            const auto& cascades = csm.getCascades();
 
-                CoreMain::getRenderer()->renderArray(
-                    batch.getVertexArray(),
-                    batch.m_batchRenderState,
-                    batch.getTrianglesCount(),
-                    0
-                );
+            batchesView.each([&registry, &cascades, &lightSpaceMatrices, this](Batch::reg_t& batch, const auto&) {
+                batch.update(*registry);
+                batch.bind(m_batchShader.get());
+
+                // rendering to levels
+                for(size_t i = 0; i < cascades.size(); ++i)
+                {
+                    const auto& cascade = cascades[i];
+
+                    if(!cascade.m_frameBuffer) continue;
+
+                    const auto& cascadeMatrix = lightSpaceMatrices[i];
+
+                    cascade.m_frameBuffer->bind();
+
+                    m_batchShader->useMatrix("CSMLightSpaceMatrix", cascadeMatrix);
+
+                    CoreMain::getRenderer()->renderArray(
+                        batch.getVertexArray(),
+                        batch.m_batchRenderState,
+                        batch.getTrianglesCount(),
+                        0
+                    );
+
+                    cascade.m_frameBuffer->unbind();
+                }
             });
         });
     });
@@ -122,22 +150,22 @@ std::array<glm::vec4, 8> SGCore::SunShadowsPass::getFrustumCornersWorldSpace(con
 
 std::vector<glm::mat4> SGCore::SunShadowsPass::getLightSpaceMatrices(const CSMTarget::reg_t& csm, const RenderingBase::reg_t& cameraRenderingBase, const glm::vec3& sunDir) noexcept
 {
-    const auto& levels = csm.getLevels();
+    const auto& levels = csm.getCascades();
 
     std::vector<glm::mat4> ret;
     for(size_t i = 0; i < levels.size() + 1; ++i)
     {
         if (i == 0)
         {
-            ret.push_back(getLightSpaceMatrix(cameraRenderingBase, sunDir, cameraRenderingBase->m_zNear, levels[i]));
+            ret.push_back(getLightSpaceMatrix(cameraRenderingBase, sunDir, cameraRenderingBase->m_zNear, levels[i].m_level));
         }
         else if (i < levels.size())
         {
-            ret.push_back(getLightSpaceMatrix(cameraRenderingBase, sunDir, levels[i - 1], levels[i]));
+            ret.push_back(getLightSpaceMatrix(cameraRenderingBase, sunDir, levels[i - 1].m_level, levels[i].m_level));
         }
         else
         {
-            ret.push_back(getLightSpaceMatrix(cameraRenderingBase, sunDir, levels[i - 1], cameraRenderingBase->m_zFar));
+            ret.push_back(getLightSpaceMatrix(cameraRenderingBase, sunDir, levels[i - 1].m_level, cameraRenderingBase->m_zFar));
         }
     }
     return ret;

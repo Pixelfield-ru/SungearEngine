@@ -59,7 +59,7 @@ namespace SGCore
 
         virtual void destroy() = 0;
 
-        virtual void bind() = 0;
+        virtual void bind() const noexcept = 0;
 
         [[nodiscard]] virtual std::int32_t getShaderUniformLocation(const std::string& uniformName) = 0;
 

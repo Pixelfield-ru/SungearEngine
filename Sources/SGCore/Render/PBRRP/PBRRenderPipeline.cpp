@@ -13,6 +13,7 @@
 #include "PBRRPDirectionalLightsPass.h"
 #include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/TextRenderPass.h"
+#include "SGCore/Render/BaseRenderPasses/SunShadowsPass.h"
 #include "SGCore/Render/BaseRenderPasses/UIRenderPass.h"
 #include "SGCore/Render/PostProcess/PostProcessBuffersClearPass.h"
 
@@ -59,6 +60,12 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
     );
 
     m_shadersPaths.addPath(
+            "ShadowsGen/BatchingShader",
+            "${enginePath}/Resources/sg_shaders/features/shadows_generator/batching.sgshader"
+    );
+
+
+    m_shadersPaths.addPath(
             "StandardTerrainShader",
             "${enginePath}/Resources/sg_shaders/features/pbr/terrain.sgshader"
     );
@@ -90,6 +97,14 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
         // geometryPass->m_shader->m_uniformBuffer = Scope<IUniformBuffer>(CoreMain::getRenderer().createUniformBuffer());
 
         m_renderPasses.push_back(geometryPass);
+    }
+
+    {
+        auto sunShadowsPass = MakeRef<SunShadowsPass>();
+
+        // geometryPass->m_shader->m_uniformBuffer = Scope<IUniformBuffer>(CoreMain::getRenderer().createUniformBuffer());
+
+        m_renderPasses.push_back(sunShadowsPass);
     }
 
     // ALWAYS AFTER GEOMETRY PASS

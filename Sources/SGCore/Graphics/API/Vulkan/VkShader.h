@@ -14,7 +14,7 @@ namespace SGCore
     {
         ~VkShader() noexcept override;
 
-        void bind() noexcept final;
+        void bind() const noexcept final;
 
         void useUniformBuffer(const Ref<IUniformBuffer>&) override;
 

@@ -14,7 +14,7 @@ void SGCore::VkShader::doCompile() noexcept
 
 }
 
-void SGCore::VkShader::bind() noexcept
+void SGCore::VkShader::bind() const noexcept
 {
 
 }

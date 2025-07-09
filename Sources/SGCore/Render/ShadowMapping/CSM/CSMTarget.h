@@ -5,16 +5,19 @@
 #ifndef SUNGEARENGINE_CSMTARGET_H
 #define SUNGEARENGINE_CSMTARGET_H
 
+#include "CSMCascade.h"
 #include "SGCore/ECS/Component.h"
 
 namespace SGCore
 {
     struct CSMTarget : ECS::Component<CSMTarget, const CSMTarget>
     {
-        const std::vector<float>& getLevels() const noexcept;
+        CSMTarget();
+
+        const std::vector<CSMCascade>& getCascades() const noexcept;
 
     private:
-        std::vector<float> m_levels { 50.0f, 25.0f, 10.0f, 2.0f };
+        std::vector<CSMCascade> m_levels; //{ 50.0f, 25.0f, 10.0f, 2.0f };
     };
 }
 

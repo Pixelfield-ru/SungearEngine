@@ -93,14 +93,6 @@ SGCore::Batch::Batch() noexcept
                                        SGGColorInternalFormat::SGG_RGBA32_FLOAT,
                                        SGGColorFormat::SGG_RGBA);
 
-    auto currentRenderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
-    if(currentRenderPipeline)
-    {
-        m_shader = Ref<IShader>(CoreMain::getRenderer()->createShader());
-        m_shader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
-                *currentRenderPipeline->m_shadersPaths["BatchingShader"]));
-    }
-
     // m_atlas.m_maxSideSize = 10000;
 }
 
@@ -264,24 +256,28 @@ void SGCore::Batch::update(const ECS::registry_t& inRegistry) noexcept
     m_instancesMaterialsBuffer->subTextureBufferData(reinterpret_cast<std::uint8_t*>(m_materials.data()), m_materials.size() * BatchInstanceMaterial::components_count, 0);
 }
 
-void SGCore::Batch::bind() const noexcept
+void SGCore::Batch::bind(IShader* shader) const noexcept
 {
-    if(!m_shader) return;
+    if(!shader) return;
 
-    m_shader->bind();
+    shader->bind();
 
-    m_shader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
-    m_shader->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
+    shader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+    shader->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
 
     m_verticesBuffer->bind(0);
     m_indicesBuffer->bind(1);
     m_instancesTransformsBuffer->bind(2);
     m_instancesMaterialsBuffer->bind(3);
 
-    m_shader->useTextureBlock("u_verticesTextureBuffer", 0);
-    m_shader->useTextureBlock("u_indicesTextureBuffer", 1);
-    m_shader->useTextureBlock("u_transformsTextureBuffer", 2);
-    m_shader->useTextureBlock("u_materialsTextureBuffer", 3);
+    shader->useTextureBlock("u_verticesTextureBuffer", 0);
+    shader->useTextureBlock("u_indicesTextureBuffer", 1);
+    shader->useTextureBlock("u_transformsTextureBuffer", 2);
+    shader->useTextureBlock("u_materialsTextureBuffer", 3);
+
+    shader->useVectorf("batchAtlasSize", glm::vec2 { m_atlas.getSize().x, m_atlas.getSize().y });
+
+    shader->useTextureBlock("batchAtlas", 4);
 
     m_atlas.getTexture()->bind(4);
     /*for(std::uint8_t i = 0; i < m_atlases.size(); ++i)
@@ -332,8 +328,6 @@ void SGCore::Batch::insertEntityImpl(ECS::entity_t entity, const ECS::registry_t
 
     if(mesh.m_base.getMaterial())
     {
-        m_shader->bind();
-
         for(std::uint8_t i = 0; i < mesh.m_base.getMaterial()->getTextures().size(); ++i)
         {
             const auto textureType = static_cast<SGTextureType>(i);
@@ -370,9 +364,6 @@ void SGCore::Batch::insertEntityImpl(ECS::entity_t entity, const ECS::registry_t
                         rect.w,
                         rect.h,
                         Utils::toUTF8(texture->getPath().resolved().u16string())) << std::endl;
-
-                    m_shader->useTextureBlock("batchAtlas", 4);
-                    m_shader->useVectorf("batchAtlasSize", glm::vec2 { m_atlas.getSize().x, m_atlas.getSize().y });
                 }
 
                 rect = *m_atlas.getRectByHash(textureHash);
@@ -513,13 +504,6 @@ void SGCore::Batch::updateTextureDataInTriangles() noexcept
             }
         }
     }
-}
-
-void SGCore::Batch::onRenderPipelineSet() noexcept
-{
-    m_shader = Ref<IShader>(CoreMain::getRenderer()->createShader());
-    m_shader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
-            *RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["BatchingShader"]));
 }
 
 void SGCore::Batch::updateBuffers() noexcept

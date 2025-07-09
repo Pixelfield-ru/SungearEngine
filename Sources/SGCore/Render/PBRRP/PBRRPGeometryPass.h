@@ -30,6 +30,8 @@ namespace SGCore
         void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) final;
         
     private:
+        AssetRef<IShader> m_batchShader;
+
         void renderMesh(const Ref<ECS::registry_t>& registry,
                         const ECS::entity_t& meshEntity,
                         const Transform::reg_t& meshTransform,

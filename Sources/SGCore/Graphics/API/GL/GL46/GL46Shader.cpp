@@ -81,7 +81,7 @@ void SGCore::GL46Shader::doCompile()
     m_cachedLocations.clear();
 }
 
-void SGCore::GL46Shader::bind() noexcept
+void SGCore::GL46Shader::bind() const noexcept
 {
     glUseProgram(m_programHandler);
 }

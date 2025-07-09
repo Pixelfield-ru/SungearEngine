@@ -27,8 +27,6 @@ namespace SGCore
     // todo: add aabb for batch. add camera frame receiver target layer
     struct Batch : ECS::Component<Batch, const Batch>
     {
-        Ref<IShader> m_shader;
-
         MeshRenderState m_batchRenderState;
         BatchInstanceMaterial m_defaultMaterial { };
 
@@ -82,7 +80,7 @@ namespace SGCore
 
         void update(const ECS::registry_t& inRegistry) noexcept;
 
-        void bind() const noexcept;
+        void bind(IShader* shader) const noexcept;
 
         Ref<IVertexArray> getVertexArray() const noexcept;
 
@@ -117,6 +115,8 @@ namespace SGCore
             size_t m_trianglesOffset = 0;
             size_t m_trianglesCount = 0;
         };
+
+        std::string m_shaderVirtualPath = "BatchingShader";
 
         Ref<IVertexArray> m_fakeVertexArray;
         Ref<IVertexBuffer> m_fakeVerticesBuffer;
@@ -156,15 +156,9 @@ namespace SGCore
 
         void updateTextureDataInTriangles() noexcept;
 
-        void onRenderPipelineSet() noexcept;
-
         void updateBuffers() noexcept;
 
         static std::uint32_t pack2UInt16ToUInt32(uint16_t x, uint16_t y) noexcept;
-
-        Slot<void()> m_onRenderPipelineSetEventListener = [this]() {
-            onRenderPipelineSet();
-        };
     };
 }
 
