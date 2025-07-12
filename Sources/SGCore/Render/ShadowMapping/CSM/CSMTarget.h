@@ -15,6 +15,8 @@ namespace SGCore
         CSMTarget();
 
         const std::vector<CSMCascade>& getCascades() const noexcept;
+        CSMCascade& getCascade(std::uint8_t idx) noexcept;
+        const CSMCascade& getCascade(std::uint8_t idx) const noexcept;
 
     private:
         std::vector<CSMCascade> m_levels; //{ 50.0f, 25.0f, 10.0f, 2.0f };

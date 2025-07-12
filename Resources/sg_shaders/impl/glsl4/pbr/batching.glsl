@@ -300,27 +300,94 @@ uniform int mat_diffuseRoughnessSamplers_CURRENT_COUNT;*/
 uniform sampler2D batchAtlas;
 uniform vec2 batchAtlasSize;
 
-vec2 repeatUV(vec2 uv, vec2 texSize)
+uniform mat4 CSMLightSpaceMatrix[6];
+uniform float CSMCascadesPlanesDistances[6];
+uniform sampler2D CSMShadowMaps[6];
+uniform int CSMCascadesCount;
+
+float getCSMShadow(vec3 lightDir)
 {
-    // return uv - floor(uv);
-    return fract(uv);
-}
+    // select cascade layer
+    vec4 fragPosViewSpace = camera.viewMatrix * vec4(gsIn.fragPos, 1.0);
+    float depthValue = abs(fragPosViewSpace.z);
 
-vec2 repeatInTileSafe(vec2 uv, vec2 tileOffset, vec2 tileSize, vec2 atlasResolution)
-{
-    // Размер одного пикселя в texture uv space
-    vec2 pixelSize = 1.0 / atlasResolution;
+    int layer = -1;
+    for(int i = 0; i < CSMCascadesCount; ++i)
+    {
+        if (depthValue < CSMCascadesPlanesDistances[i])
+        {
+            layer = i;
+            break;
+        }
+    }
 
-    // Уменьшаем tileSize чуть-чуть, чтобы не доходить до границ
-    vec2 safeTileSize = tileSize - 2.0 * pixelSize;
+    if(layer == -1)
+    {
+        layer = CSMCascadesCount;
+    }
+    // layer = 0;
 
-    // Смещаемся внутрь тайла
-    vec2 safeTileOffset = tileOffset + pixelSize;
 
-    // Повторение uv
-    vec2 repeated = fract(uv);
+    vec4 fragPosLightSpace = CSMLightSpaceMatrix[layer] * vec4(gsIn.fragPos, 1.0);
 
-    return safeTileOffset + repeated * safeTileSize;
+    // ===========================================
+
+    // perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+    if (currentDepth > 1.0)
+    {
+        return 0.0;
+    }
+
+    // todo: pass from cpu side
+    const float cameraFarPlane = 2500.0f;
+
+    // calculate bias (based on depth map resolution and slope)
+    vec3 normal = normalize(gsIn.normal);
+    // float bias = max(0.001 * (1.0 - dot(normal, lightDir)), 0.005);
+    float biases[4] = float[] ( 0.002f, 0.002f, 0.008f, 0.05f );
+    float bias = biases[layer];
+    if (layer == CSMCascadesCount)
+    {
+        bias *= 1 / (cameraFarPlane * 0.5f);
+    }
+    else
+    {
+        bias *= 1 / (CSMCascadesPlanesDistances[layer] * 0.5f);
+    }
+
+    // ====================================== algo
+    // PCF
+
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / vec2(textureSize(CSMShadowMaps[layer], 0));
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(
+                CSMShadowMaps[layer],
+                vec2(projCoords.xy + vec2(x, y) * texelSize)
+            ).r;
+
+            shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+
+    shadow /= 9.0;
+
+    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
+    if(projCoords.z > 1.0)
+    {
+        shadow = 0.0;
+    }
+
+    return shadow;
 }
 
 void main()
@@ -444,6 +511,8 @@ void main()
     vec3 ambient = vec3(0.0);
     vec3 lo = vec3(0.0);
 
+    float shadow = (-getCSMShadow(atmosphere.sunPosition)) * 0.1;
+
     // calculating sun
     {
         // ambient += atmosphere.sunAmbient;
@@ -490,7 +559,7 @@ void main()
         // vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * u_materialSpecularCol.r;
         vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * 0.5;
 
-        lo += (diffuse * albedo.rgb / PI + specular) * max(atmosphere.sunColor.rgb, vec3(0, 0, 0)) * NdotL * 1.0;
+        lo += ((diffuse * albedo.rgb / PI + specular) + shadow) * max(atmosphere.sunColor.rgb, vec3(0, 0, 0)) * NdotL * 1.0;
     }
 
     ambient = albedo.rgb * ao;

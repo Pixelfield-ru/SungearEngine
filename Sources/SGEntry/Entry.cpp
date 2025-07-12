@@ -23,6 +23,7 @@
 
 #include "SGCore/Memory/Assets/Atlas/Atlas.h"
 #include "SGCore/Render/Batching/Batch.h"
+#include "SGCore/Render/ShadowMapping/CSM/CSMTarget.h"
 
 #ifdef PLATFORM_OS_WINDOWS
 #ifdef __cplusplus
@@ -66,6 +67,7 @@ const SGCore::Atlas* testAtlas { };
 std::vector<SGCore::AssetRef<SGCore::ITexture2D>> testTextures;
 
 SGCore::AssetRef<SGCore::IShader> screenShader;
+SGCore::Ref<SGCore::ITexture2D> depthAttachment;
 SGCore::Ref<SGCore::IMeshData> m_screenQuadMeshData;
 SGCore::MeshRenderState m_screenQuadMeshRenderState;
 
@@ -195,24 +197,34 @@ void coreInit()
         stbi_write_png("test_atlas.png", testAtlas->getTexture()->getWidth(), testAtlas->getTexture()->getHeight(), 4, pixels8.get(), testAtlas->getTexture()->getWidth() * 4);
     }*/
 
+    const auto camerasView = SGCore::Scene::getCurrentScene()->getECSRegistry()->view<SGCore::CSMTarget>();
+    camerasView.each([](const SGCore::CSMTarget& csm) {
+        depthAttachment = csm.getCascades()[0].m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0);
+        return;
+    });
+
     m_screenQuadMeshData = SGCore::Ref<SGCore::IMeshData>(SGCore::CoreMain::getRenderer()->createMeshData());
 
     m_screenQuadMeshData->m_vertices.resize(4);
 
     m_screenQuadMeshData->m_vertices[0] = {
-        .m_position = glm::vec3 { -1, -1, 0.0f }
+        .m_position = glm::vec3 { -1, -1, 0.0f },
+        .m_uv = glm::vec3 { 0.0f, 0.0f, 0.0f }
     };
 
     m_screenQuadMeshData->m_vertices[1] = {
-        .m_position = glm::vec3 { -1, 1, 0.0f }
+        .m_position = glm::vec3 { -1, 0, 0.0f },
+        .m_uv = glm::vec3 { 0.0f, 1.0f, 0.0f }
     };
 
     m_screenQuadMeshData->m_vertices[2] = {
-        .m_position = glm::vec3 { 1, 1, 0.0f }
+        .m_position = glm::vec3 { 0, 0, 0.0f },
+        .m_uv = glm::vec3 { 1.0f, 1.0f, 0.0f }
     };
 
     m_screenQuadMeshData->m_vertices[3] = {
-        .m_position = glm::vec3 { 1, -1, 0.0f }
+        .m_position = glm::vec3 { 0, -1, 0.0f },
+        .m_uv = glm::vec3 { 1.0f, 0.0f, 0.0f }
     };
 
     m_screenQuadMeshData->m_indices.resize(6);
@@ -276,12 +288,17 @@ void onUpdate(const double& dt, const double& fixedDt)
     /*screenShader->bind();
 
     // use this to flip screen output
-    screenShader->useInteger("u_flipOutput", false);
+    screenShader->useInteger("u_flipOutput", false);*/
 
     // someTexture->bind(0);
-    if(testAtlas->getTexture())
+    /*if(testAtlas->getTexture())
     {
         testAtlas->getTexture()->bind(0);
+    }*/
+
+    /*if(depthAttachment)
+    {
+        depthAttachment->bind(0);
     }*/
 
     /*if(testTextures[0])

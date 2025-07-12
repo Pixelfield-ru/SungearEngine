@@ -160,6 +160,7 @@ void main()
         gsOut.uvOffsets1 = vsIn[0].uvOffsets1;
         gsOut.uvOffsets2 = vsIn[0].uvOffsets2;
 
+        // gl_Position = camera.projectionSpaceMatrix * vec4(fragPos, 1.0);
         gl_Position = CSMLightSpaceMatrix * vec4(fragPos, 1.0);
 
         EmitVertex();

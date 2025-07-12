@@ -30,6 +30,7 @@
 #include "SGCore/Render/Decals/Decal.h"
 #include "SGCore/Render/Terrain/Terrain.h"
 #include "SGCore/Render/Batching/Batch.h"
+#include "SGCore/Render/ShadowMapping/CSM/CSMTarget.h"
 
 size_t renderedInOctrees = 0;
 
@@ -161,7 +162,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
         });
 
         // rendering batches
-        batchesView.each([&cameraLayeredFrameReceiver, &registry, this](Batch& batch) {
+        batchesView.each([&cameraLayeredFrameReceiver, &registry, cameraEntity, &cameraRenderingBase, this](Batch& batch) {
             // todo: add getting batch layer
             Ref<PostProcessLayer> meshPPLayer = cameraLayeredFrameReceiver->getDefaultLayer();
 
@@ -180,6 +181,20 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
                 else
                 {
                     uniformBuffsIt = m_uniformBuffersToUse.erase(uniformBuffsIt);
+                }
+            }
+
+            const auto* cameraCSMTarget = registry->tryGet<CSMTarget>(cameraEntity);
+            if(cameraCSMTarget)
+            {
+                m_batchShader->useInteger("CSMCascadesCount", cameraCSMTarget->getCascades().size());
+                for(std::uint8_t i = 0; i < cameraCSMTarget->getCascades().size(); ++i)
+                {
+                    const auto& cascade = cameraCSMTarget->getCascade(i);
+                    m_batchShader->useMatrix("CSMLightSpaceMatrix[" + std::to_string(i) + "]", cascade.m_projectionSpaceMatrix);
+                    m_batchShader->useFloat("CSMCascadesPlanesDistances[" + std::to_string(i) + "]", cameraRenderingBase->m_zFar / cascade.m_level);
+                    m_batchShader->useTextureBlock("CSMShadowMaps[" + std::to_string(i) + "]", 5 + i);
+                    cascade.m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0)->bind(5 + i);
                 }
             }
 

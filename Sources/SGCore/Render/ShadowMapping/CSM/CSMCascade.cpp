@@ -17,4 +17,6 @@ void SGCore::CSMCascade::createFrameBuffer() noexcept
                                  SGGColorInternalFormat::SGG_DEPTH_COMPONENT32F,
                                  0,
                                  0);
+
+    m_frameBuffer->unbind();
 }
