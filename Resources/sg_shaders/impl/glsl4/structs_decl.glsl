@@ -27,7 +27,7 @@ struct IRenderingComponent
     mat4 projectionMatrix;
     mat4 viewMatrix;
     vec3 position;
-    float p0;
+    float zFar;
     vec3 rotation;
     float p1;
     vec3 scale;

@@ -12,6 +12,8 @@
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
+#include "SGCore/Render/RenderingBase.h"
+#include "SGCore/Render/ShadowMapping/CSM/CSMTarget.h"
 #include "SGCore/Render/Terrain/Terrain.h"
 
 namespace SGCore
@@ -38,6 +40,8 @@ namespace SGCore
                         Mesh::reg_t& mesh,
                         EntityBaseInfo::reg_t& meshedEntityBaseInfo,
                         const EntityBaseInfo::reg_t& forCamera3DBaseInfo,
+                        const RenderingBase::reg_t& cameraRenderingBase,
+                        const CSMTarget::reg_t* cameraCSMTarget,
                         const Ref<PostProcessLayer>& meshPPLayer,
                         bool isTransparentPass,
                         LayeredFrameReceiver::reg_t* forLayeredFrameReceiver) noexcept;
@@ -53,9 +57,16 @@ namespace SGCore
 
         void renderOctreeNode(const Ref<ECS::registry_t>& registry,
                               const EntityBaseInfo::reg_t& forCamera3DBaseInfo,
+                              const RenderingBase::reg_t& cameraRenderingBase,
+                              const CSMTarget::reg_t* cameraCSMTarget,
                               const ECS::entity_t& forCamera,
                               LayeredFrameReceiver* cameraLayeredFrameReceiver,
                               const Ref<OctreeNode>& node) noexcept;
+
+        static void bindCSMTargetUniforms(IShader* forShader,
+                                          const RenderingBase::reg_t& cameraRenderingBase,
+                                          const CSMTarget::reg_t* csmTarget,
+                                          int texUnitOffset) noexcept;
     };
 }
 

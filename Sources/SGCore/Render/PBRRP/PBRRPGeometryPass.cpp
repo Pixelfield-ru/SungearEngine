@@ -86,6 +86,8 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
                              (const ECS::entity_t& cameraEntity,
                               const EntityBaseInfo::reg_t& camera3DBaseInfo,
                               RenderingBase::reg_t& cameraRenderingBase, Transform::reg_t& cameraTransform) {
+        const auto* cameraCSMTarget = registry->tryGet<CSMTarget>(cameraEntity);
+
         CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
         
         if(m_shader)
@@ -132,7 +134,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
         // =====================================================================================================
         // =====================================================================================================
 
-        opaqueMeshesView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, this]
+        opaqueMeshesView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, &cameraRenderingBase, &cameraCSMTarget, this]
                                 (const ECS::entity_t& meshEntity, EntityBaseInfo::reg_t& meshedEntityBaseInfo,
                                  Mesh::reg_t& mesh, Transform::reg_t& meshTransform,
                                  const auto&) {
@@ -157,12 +159,13 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
                           "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
 
                 renderMesh(registry, meshEntity, meshTransform, mesh, meshedEntityBaseInfo, camera3DBaseInfo,
+                           cameraRenderingBase, cameraCSMTarget,
                            meshPPLayer, false, cameraLayeredFrameReceiver);
             }
         });
 
         // rendering batches
-        batchesView.each([&cameraLayeredFrameReceiver, &registry, cameraEntity, &cameraRenderingBase, this](Batch& batch) {
+        batchesView.each([&cameraLayeredFrameReceiver, &registry, cameraEntity, &cameraRenderingBase, &cameraCSMTarget, this](Batch& batch) {
             // todo: add getting batch layer
             Ref<PostProcessLayer> meshPPLayer = cameraLayeredFrameReceiver->getDefaultLayer();
 
@@ -184,18 +187,9 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
                 }
             }
 
-            const auto* cameraCSMTarget = registry->tryGet<CSMTarget>(cameraEntity);
             if(cameraCSMTarget)
             {
-                m_batchShader->useInteger("CSMCascadesCount", cameraCSMTarget->getCascades().size());
-                for(std::uint8_t i = 0; i < cameraCSMTarget->getCascades().size(); ++i)
-                {
-                    const auto& cascade = cameraCSMTarget->getCascade(i);
-                    m_batchShader->useMatrix("CSMLightSpaceMatrix[" + std::to_string(i) + "]", cascade.m_projectionSpaceMatrix);
-                    m_batchShader->useFloat("CSMCascadesPlanesDistances[" + std::to_string(i) + "]", cameraRenderingBase->m_zFar / cascade.m_level);
-                    m_batchShader->useTextureBlock("CSMShadowMaps[" + std::to_string(i) + "]", 5 + i);
-                    cascade.m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0)->bind(5 + i);
-                }
+                bindCSMTargetUniforms(m_batchShader.get(), cameraRenderingBase, cameraCSMTarget, 5);
             }
 
             CoreMain::getRenderer()->renderArray(
@@ -212,7 +206,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
             cameraLayeredFrameReceiver->m_layersFrameBuffer->useStates();
         }
 
-        transparentMeshesView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, this]
+        transparentMeshesView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, &cameraRenderingBase, &cameraCSMTarget, this]
                                       (const ECS::entity_t& meshEntity, EntityBaseInfo::reg_t& meshedEntityBaseInfo,
                                        Mesh::reg_t& mesh, Transform::reg_t& meshTransform,
                                        const auto&) {
@@ -237,7 +231,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
                           "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
 
                 renderMesh(registry, meshEntity, meshTransform, mesh,
-                           meshedEntityBaseInfo, camera3DBaseInfo, meshPPLayer, true, cameraLayeredFrameReceiver);
+                           meshedEntityBaseInfo, camera3DBaseInfo, cameraRenderingBase, cameraCSMTarget, meshPPLayer, true, cameraLayeredFrameReceiver);
             }
         });
 
@@ -259,6 +253,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
                               const EntityBaseInfo::reg_t& camera3DBaseInfo,
                               RenderingBase::reg_t& cameraRenderingBase,
                               Transform::reg_t& cameraTransform) {
+       const auto* cameraCSMTarget = registry->tryGet<CSMTarget>(cameraEntity);
         
         CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
         
@@ -271,11 +266,12 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
         LayeredFrameReceiver* cameraLayeredFrameReceiver = registry->tryGet<LayeredFrameReceiver>(cameraEntity);
         
         auto objectsCullingOctreesView = registry->view<Octree, ObjectsCullingOctree>();
-        objectsCullingOctreesView.each([&cameraLayeredFrameReceiver, &scene, &cameraEntity, &registry, &camera3DBaseInfo, &cameraRenderingBase, this]
+        objectsCullingOctreesView.each([&cameraLayeredFrameReceiver, &scene, &cameraEntity, &registry, &camera3DBaseInfo, &cameraRenderingBase, &cameraCSMTarget, this]
         (Octree::reg_t& octree, const ObjectsCullingOctree::reg_t&) {
             for(const auto& n : octree->m_notEmptyNodes)
             {
-                renderOctreeNode(registry, camera3DBaseInfo, cameraEntity, cameraLayeredFrameReceiver, n);
+                renderOctreeNode(registry, camera3DBaseInfo, cameraRenderingBase, cameraCSMTarget, cameraEntity,
+                                 cameraLayeredFrameReceiver, n);
             }
         });
     });
@@ -291,6 +287,8 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
                                            Mesh& mesh,
                                            EntityBaseInfo::reg_t& meshedEntityBaseInfo,
                                            const EntityBaseInfo::reg_t& forCamera3DBaseInfo,
+                                           const RenderingBase::reg_t& cameraRenderingBase,
+                                           const CSMTarget::reg_t* cameraCSMTarget,
                                            const Ref<PostProcessLayer>& meshPPLayer,
                                            bool isTransparentPass,
                                            LayeredFrameReceiver::reg_t* forLayeredFrameReceiver) noexcept
@@ -339,17 +337,17 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
         shaderToUse->useInteger("SGPP_CurrentLayerIndex", meshPPLayer->getIndex());
 
         // 14 MS FOR loc0 IN DEBUG
-        size_t offset0 = shaderToUse->bindMaterialTextures(mesh.m_base.getMaterial());
-        shaderToUse->bindTextureBindings(offset0);
+        size_t texUnitOffset = shaderToUse->bindMaterialTextures(mesh.m_base.getMaterial());
+        shaderToUse->bindTextureBindings(texUnitOffset);
         shaderToUse->useMaterialFactors(mesh.m_base.getMaterial().get());
-        
+
         auto uniformBuffsIt = m_uniformBuffersToUse.begin();
         while(uniformBuffsIt != m_uniformBuffersToUse.end())
         {
             if(auto lockedUniformBuf = uniformBuffsIt->lock())
             {
                 shaderToUse->useUniformBuffer(lockedUniformBuf);
-                
+
                 ++uniformBuffsIt;
             }
             else
@@ -361,9 +359,9 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
         // using texture buffer with bones animated transformations
         if(auto bonesLockedBuffer = mesh.m_base.m_bonesBuffer.lock())
         {
-            bonesLockedBuffer->bind(offset0);
-            shaderToUse->useTextureBlock("u_bonesMatricesUniformBuffer", offset0);
-            ++offset0;
+            bonesLockedBuffer->bind(texUnitOffset);
+            shaderToUse->useTextureBlock("u_bonesMatricesUniformBuffer", texUnitOffset);
+            ++texUnitOffset;
 
             shaderToUse->useInteger("u_isAnimatedMesh", 1);
         }
@@ -371,6 +369,8 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
         {
             shaderToUse->useInteger("u_isAnimatedMesh", 0);
         }
+
+        bindCSMTargetUniforms(m_batchShader.get(), cameraRenderingBase, cameraCSMTarget, texUnitOffset);
 
         bool lastUseFacesCulling = mesh.m_base.getMaterial()->m_meshRenderState.m_useFacesCulling;
         if(isTransparentPass)
@@ -489,6 +489,8 @@ void SGCore::PBRRPGeometryPass::renderTerrainMesh(const Ref<ECS::registry_t>& re
 
 void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<ECS::registry_t>& registry,
                                                  const EntityBaseInfo::reg_t& forCamera3DBaseInfo,
+                                                 const RenderingBase::reg_t& cameraRenderingBase,
+                                                 const CSMTarget::reg_t* cameraCSMTarget,
                                                  const ECS::entity_t& forCamera,
                                                  LayeredFrameReceiver* cameraLayeredFrameReceiver,
                                                  const SGCore::Ref<SGCore::OctreeNode>& node) noexcept
@@ -534,6 +536,8 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<ECS::registry_t>& reg
                       "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
 
             renderMesh(registry, e, meshTransform, *mesh, *entityBaseInfo, forCamera3DBaseInfo,
+                       cameraRenderingBase,
+                       cameraCSMTarget,
                        meshPPLayer, false, cameraLayeredFrameReceiver);
         }
     }
@@ -541,5 +545,24 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<ECS::registry_t>& reg
     if(cameraLayeredFrameReceiver)
     {
         cameraLayeredFrameReceiver->m_layersFrameBuffer->unbind();
+    }
+}
+
+void SGCore::PBRRPGeometryPass::bindCSMTargetUniforms(IShader* forShader,
+                                                      const RenderingBase::reg_t& cameraRenderingBase,
+                                                      const CSMTarget::reg_t* csmTarget,
+                                                      int texUnitOffset) noexcept
+{
+    if(!csmTarget) return;
+
+    forShader->useInteger("CSMCascadesCount", csmTarget->getCascades().size());
+    for(std::uint8_t i = 0; i < csmTarget->getCascades().size(); ++i)
+    {
+        const auto& cascade = csmTarget->getCascade(i);
+        forShader->useMatrix("CSMLightSpaceMatrix[" + std::to_string(i) + "]", cascade.m_projectionSpaceMatrix);
+        forShader->useFloat("CSMCascadesPlanesDistances[" + std::to_string(i) + "]", cameraRenderingBase->m_zFar / cascade.m_level);
+        forShader->useFloat("CSMCascadesBiases[" + std::to_string(i) + "]", cascade.m_bias);
+        forShader->useTextureBlock("CSMShadowMaps[" + std::to_string(i) + "]", texUnitOffset + i);
+        cascade.m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0)->bind(texUnitOffset + i);
     }
 }

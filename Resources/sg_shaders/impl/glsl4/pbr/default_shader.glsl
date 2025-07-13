@@ -113,6 +113,7 @@ layout(location = 6) out vec3 layerVertexNormalColor;
 // REQUIRED COLORS!!! ===========
 
 #include "sg_shaders/impl/glsl4/pbr_base.glsl"
+#include "sg_shaders/impl/glsl4/shadows_sampling/csm.glsl"
 
 uniform sampler2D mat_diffuseSamplers[3];
 uniform int mat_diffuseSamplers_CURRENT_COUNT;
@@ -370,6 +371,8 @@ void main()
         // lo = vec3(1.0);
     }
 
+    float shadow = getCSMShadow(atmosphere.sunPosition, vsIn.fragPos);
+
     // calculating sun
     {
         // ambient += atmosphere.sunAmbient;
@@ -380,19 +383,6 @@ void main()
         // energy brightness coeff (коэфф. энергетической яркости)
         float NdotL = saturate(dot(finalNormal, lightDir));
         float NdotVD = abs(dot(finalNormal, viewDir)) + 1e-5f;
-
-        // ===================        shadows calc        =====================
-
-        /*dirLightsShadowCoeff += calcDirLightShadow(
-            directionalLights[i],
-            vsIn.fragPos,
-            finalNormal,
-            sgmat_shadowMap2DSamplers[i]
-        ) * finalRadiance;*/
-
-        // ====================================================================
-
-        // cooktorrance func: DFG /
 
         // NDF (normal distribution func)
         float D = GGXTR(
@@ -415,11 +405,10 @@ void main()
         float ctDenominator = 1.0 * NdotVD * NdotL;
         vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * u_materialSpecularCol.r;
 
-        lo += (diffuse * albedo.rgb / PI + specular) * max(atmosphere.sunColor.rgb, vec3(0, 0, 0)) * NdotL * 1.0;
+        lo += (diffuse * albedo.rgb / PI + specular) * max(atmosphere.sunColor.rgb, vec3(0, 0, 0)) * NdotL * shadow * 1.0;
     }
 
-    // ambient = ambient * albedo.rgb * ao;
-    ambient = albedo.rgb * ao;
+    ambient = albedo.rgb * ao * dot(atmosphere.sunPosition, vec3(0, 1, 0));
     vec3 finalCol = ambient * vec3(1.0) * materialAmbientFactor + lo + ambient;
 
     if(u_verticesColorsAttributesCount > 0)

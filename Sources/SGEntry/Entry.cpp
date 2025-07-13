@@ -171,10 +171,13 @@ void coreInit()
         }
     }
 
-    const auto batchView = SGCore::Scene::getCurrentScene()->getECSRegistry()->view<SGCore::Batch>();
-    batchView.each([](const SGCore::Batch& batch) {
-        testAtlas = &batch.getAtlas();
-    });
+    if(SGCore::Scene::getCurrentScene())
+    {
+        const auto batchView = SGCore::Scene::getCurrentScene()->getECSRegistry()->view<SGCore::Batch>();
+        batchView.each([](const SGCore::Batch& batch) {
+            testAtlas = &batch.getAtlas();
+        });
+    }
 
     /*{
         const size_t pixelsCnt = testAtlas->getTexture()->getWidth() * testAtlas->getTexture()->getHeight();
@@ -197,11 +200,14 @@ void coreInit()
         stbi_write_png("test_atlas.png", testAtlas->getTexture()->getWidth(), testAtlas->getTexture()->getHeight(), 4, pixels8.get(), testAtlas->getTexture()->getWidth() * 4);
     }*/
 
-    const auto camerasView = SGCore::Scene::getCurrentScene()->getECSRegistry()->view<SGCore::CSMTarget>();
-    camerasView.each([](const SGCore::CSMTarget& csm) {
-        depthAttachment = csm.getCascades()[0].m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0);
-        return;
-    });
+    if(SGCore::Scene::getCurrentScene())
+    {
+        const auto camerasView = SGCore::Scene::getCurrentScene()->getECSRegistry()->view<SGCore::CSMTarget>();
+        camerasView.each([](const SGCore::CSMTarget& csm) {
+            depthAttachment = csm.getCascades()[0].m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0);
+            return;
+        });
+    }
 
     m_screenQuadMeshData = SGCore::Ref<SGCore::IMeshData>(SGCore::CoreMain::getRenderer()->createMeshData());
 

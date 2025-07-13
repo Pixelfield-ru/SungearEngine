@@ -59,7 +59,7 @@ void SGCore::GL4Renderer::init() noexcept
                                               IShaderUniform("camera.projectionMatrix", SGGDataType::SGG_MAT4),
                                               IShaderUniform("camera.viewMatrix", SGGDataType::SGG_MAT4),
                                               IShaderUniform("camera.position", SGGDataType::SGG_FLOAT3),
-                                              IShaderUniform("camera.p0", SGGDataType::SGG_FLOAT),
+                                              IShaderUniform("camera.zFar", SGGDataType::SGG_FLOAT),
                                               IShaderUniform("camera.rotation", SGGDataType::SGG_FLOAT3),
                                               IShaderUniform("camera.p1", SGGDataType::SGG_FLOAT),
                                               IShaderUniform("camera.scale", SGGDataType::SGG_FLOAT3),
@@ -158,9 +158,12 @@ void SGCore::GL4Renderer::prepareUniformBuffers(const Ref<RenderingBase>& render
                                   glm::value_ptr(renderingBase->m_viewMatrix), 16
     );
 
-    // todo: make to final transform
     m_viewMatricesBuffer->subData("camera.position",
                                          glm::value_ptr(transform->m_finalTransform.m_position), 3
+    );
+
+    m_viewMatricesBuffer->subData("camera.zFar",
+                                  &renderingBase->m_zFar, 1
     );
 
     int windowWidth;

@@ -101,9 +101,9 @@ void SGCore::AtmosphereUpdater::updateAtmosphere() noexcept
         
         if(atmosphere.m_sunRotation != atmosphere.m_lastSunRotation)
         {
-            atmosphere.m_sunPosition = glm::rotateZ(atmosphere.m_sunPosition, glm::radians(atmosphere.m_sunRotation.z));
+            atmosphere.m_sunPosition = glm::rotateZ(Atmosphere::getSunOrigin(), glm::radians(atmosphere.m_sunRotation.z));
             atmosphere.m_sunPosition = glm::rotateY(atmosphere.m_sunPosition, glm::radians(atmosphere.m_sunRotation.y));
-            atmosphere.m_sunPosition = glm::rotateX(Atmosphere::getSunOrigin(), glm::radians(atmosphere.m_sunRotation.x));
+            atmosphere.m_sunPosition = glm::rotateX(atmosphere.m_sunPosition, glm::radians(atmosphere.m_sunRotation.x));
             
             if(atmosphere.m_precalculatedSunColors.find(hashedSunPos) == atmosphere.m_precalculatedSunColors.end())
             {
