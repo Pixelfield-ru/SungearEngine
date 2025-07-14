@@ -138,7 +138,6 @@ void SGCore::ITexture2D::resizeDataBuffer(std::int32_t newWidth, std::int32_t ne
 {
     if(!saveData)
     {
-        delete[] m_textureData.get();
         m_textureData = nullptr;
     }
 

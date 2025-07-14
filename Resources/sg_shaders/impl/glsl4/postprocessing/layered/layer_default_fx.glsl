@@ -186,7 +186,9 @@ void main()
 
             // STColor.rgb = ACESTonemap(STColor.rgb, exposure);
 
-            // layerColor.rgb = ACESTonemap(layerColor.rgb);
+            // layerColor.rgb = ACESTonemap(layerColor.rgb, 1.2);
+            // layerColor.rgb = reinhard2(layerColor.rgb);
+            // layerColor.rgb = filmic(layerColor.rgb);
 
             fragColor = vec4(layerColor.rgb * (1.0 - STColor.a) + STColor.rgb * (STColor.a), 1.0);
             // fragColor = vec4(layerColor.rgb + accumulated, 1.0);

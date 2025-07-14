@@ -29,6 +29,8 @@ SGCore::PhysicsWorld3D::PhysicsWorld3D()
         m_sequentialImpulseConstraintSolver.get(),
         m_collisionConfig.get());
 
+    m_dynamicsWorld->getDispatchInfo().m_useContinuous = true;
+
     m_debugDraw->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
     m_dynamicsWorld->setDebugDrawer(m_debugDraw.get());
 

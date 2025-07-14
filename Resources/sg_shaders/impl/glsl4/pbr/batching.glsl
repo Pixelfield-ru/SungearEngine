@@ -321,14 +321,14 @@ void main()
     // ===============================        load textures       ====================================
     // ===============================================================================================
 
+    highp vec2 dfdx = dFdx(finalUV) / batchAtlasSize;
+    highp vec2 dfdy = dFdy(finalUV) / batchAtlasSize;
+
     {
         vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.x);
         vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.y);
 
         diffuseColor.rgba = vec4(0.0, 0.0, 0.0, 0.0);
-
-        highp vec2 dfdx = dFdx(finalUV) / batchAtlasSize;
-        highp vec2 dfdy = dFdy(finalUV) / batchAtlasSize;
 
         diffuseColor += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy);
     }
@@ -344,9 +344,6 @@ void main()
             {
                 aoRoughnessMetallic.r = 0.0;
 
-                highp vec2 dfdx = dFdx(finalUV) / batchAtlasSize;
-                highp vec2 dfdy = dFdy(finalUV) / batchAtlasSize;
-
                 aoRoughnessMetallic.r += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy).r;
             }
         }
@@ -358,9 +355,6 @@ void main()
             if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y)
             {
                 aoRoughnessMetallic.g = 0.0;
-
-                highp vec2 dfdx = dFdx(finalUV) / batchAtlasSize;
-                highp vec2 dfdy = dFdy(finalUV) / batchAtlasSize;
 
                 aoRoughnessMetallic.g += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy).g;
 
@@ -376,9 +370,6 @@ void main()
             {
                 aoRoughnessMetallic.b = 0.0;
 
-                highp vec2 dfdx = dFdx(finalUV) / batchAtlasSize;
-                highp vec2 dfdy = dFdy(finalUV) / batchAtlasSize;
-
                 aoRoughnessMetallic.b += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy).b;
 
                 aoRoughnessMetallic.b *= 1.0;
@@ -387,16 +378,11 @@ void main()
     }
 
     {
-        // if(mat_normalsSamplers_CURRENT_COUNT > 0)
-        // {
         vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r3.z);
         vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r3.w);
 
         if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y)
         {
-            highp vec2 dfdx = dFdx(finalUV) / batchAtlasSize;
-            highp vec2 dfdy = dFdy(finalUV) / batchAtlasSize;
-
             normalMapColor += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy).rgb;
 
             finalNormal = normalize(gsIn.TBN * (normalMapColor * 2.0 - 1.0));
@@ -463,7 +449,7 @@ void main()
     }
 
     ambient = albedo.rgb * ao * dot(atmosphere.sunPosition, vec3(0, 1, 0));
-    vec3 finalCol = ambient * vec3(1.0) * materialAmbientFactor + lo + ambient;
+    vec3 finalCol = ambient * vec3(1.0) * materialAmbientFactor + lo;
 
     layerColor = vec4(finalCol, 1.0);
     // layerColor = diffuseColor;

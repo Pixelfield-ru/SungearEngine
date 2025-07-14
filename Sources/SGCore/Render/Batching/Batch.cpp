@@ -105,15 +105,17 @@ bool SGCore::Batch::insertEntity(ECS::entity_t entity, const ECS::registry_t& fr
     return true;
 }
 
-SGCore::ECS::entity_t SGCore::Batch::insertEntities(const std::vector<ECS::entity_t>& entities, const ECS::registry_t& fromRegistry) noexcept
+std::uint64_t SGCore::Batch::insertEntities(const std::vector<ECS::entity_t>& entities, const ECS::registry_t& fromRegistry) noexcept
 {
-    ECS::entity_t lastUnsuccessfulEntity = entt::null;
+    std::uint64_t lastUnsuccessfulEntityIndex = -1;
 
-    for(auto e : entities)
+    for(std::uint64_t i = 0; i < std::ssize(entities); ++i)
     {
+        const auto e = entities[i];
+
         if(!hasSpaceForEntity(e, fromRegistry))
         {
-            lastUnsuccessfulEntity = e;
+            lastUnsuccessfulEntityIndex = i;
             break;
         }
 
@@ -123,7 +125,119 @@ SGCore::ECS::entity_t SGCore::Batch::insertEntities(const std::vector<ECS::entit
     updateTextureDataInTriangles();
     updateBuffers();
 
-    return lastUnsuccessfulEntity;
+    return lastUnsuccessfulEntityIndex;
+}
+
+std::uint64_t SGCore::Batch::insertEntities(const std::vector<ECS::entity_t>::iterator& entitiesBegin,
+                                            const std::vector<ECS::entity_t>::iterator& entitiesEnd,
+                                            const ECS::registry_t& fromRegistry) noexcept
+{
+    std::uint64_t lastUnsuccessfulEntityIndex = -1;
+
+    const std::uint64_t vecSize = entitiesEnd - entitiesBegin;
+
+    for(std::uint64_t i = 0; i < vecSize; ++i)
+    {
+        const auto e = *(entitiesBegin + i);
+
+        if(!hasSpaceForEntity(e, fromRegistry))
+        {
+            lastUnsuccessfulEntityIndex = i;
+            break;
+        }
+
+        insertEntityImpl(e, fromRegistry, false);
+    }
+
+    updateTextureDataInTriangles();
+    updateBuffers();
+
+    return lastUnsuccessfulEntityIndex;
+}
+
+void SGCore::Batch::removeEntity(ECS::entity_t entity, const ECS::registry_t& fromRegistry, bool immediateRemove) noexcept
+{
+    if(entity == entt::null) return;
+
+    if(!immediateRemove)
+    {
+        m_entitiesToRemove.push_back(entity);
+        return;
+    }
+
+    std::erase(m_entities, entity);
+
+    // clearing buffers
+    m_instanceTriangles.clear();
+    m_vertices.clear();
+    m_indices.clear();
+    m_usedMeshDatas.clear();
+    m_trianglesMarkup.clear();
+
+    const std::vector<ECS::entity_t> newEntities = std::move(m_entities);
+    m_entities = { };
+
+    // adding all entities
+    insertEntities(newEntities, fromRegistry);
+}
+
+void SGCore::Batch::removeEntities(const std::vector<ECS::entity_t>& entities, const ECS::registry_t& fromRegistry, bool immediateRemove) noexcept
+{
+    if(entities.empty()) return;
+
+    if(!immediateRemove)
+    {
+        for(const auto e : entities)
+        {
+            m_entitiesToRemove.push_back(e);
+        }
+        return;
+    }
+
+    for(const auto e : entities)
+    {
+        std::erase(m_entities, e);
+    }
+
+    // clearing buffers
+    m_instanceTriangles.clear();
+    m_vertices.clear();
+    m_indices.clear();
+    m_usedMeshDatas.clear();
+    m_trianglesMarkup.clear();
+
+    const std::vector<ECS::entity_t> newEntities = std::move(m_entities);
+    m_entities = { };
+
+    // adding all entities
+    insertEntities(newEntities, fromRegistry);
+}
+
+void SGCore::Batch::shrinkBuffersToFit() noexcept
+{
+    if(m_verticesBuffer->getWidth() > m_vertices.size() * BatchVertex::components_count)
+    {
+        m_verticesBuffer->resizeDataBuffer(m_vertices.size() * BatchVertex::components_count, 1, false);
+    }
+    m_verticesBuffer->bind(0);
+    m_verticesBuffer->subTextureBufferData(reinterpret_cast<std::uint8_t*>(m_vertices.data()), m_vertices.size() * BatchVertex::components_count, 0);
+
+    if(m_indicesBuffer->getWidth() > m_indices.size())
+    {
+        m_indicesBuffer->resizeDataBuffer(m_indices.size(), 1, false);
+    }
+    m_indicesBuffer->bind(1);
+    m_indicesBuffer->subTextureBufferData(reinterpret_cast<std::uint8_t*>(m_indices.data()), m_indices.size(), 0);
+
+    if(m_instancesTransformsBuffer->getWidth() > m_entities.size() * BatchInstanceTransform::components_count)
+    {
+        m_instancesTransformsBuffer->resizeDataBuffer(m_entities.size() * BatchInstanceTransform::components_count, 1, false);
+    }
+
+    if(m_instancesMaterialsBuffer->getWidth() > m_entities.size() * BatchInstanceMaterial::components_count)
+    {
+        m_instancesMaterialsBuffer->resizeDataBuffer(m_entities.size() * BatchInstanceMaterial::components_count, 1, false);
+    }
 }
 
 bool SGCore::Batch::hasSpaceForEntity(ECS::entity_t entity, const ECS::registry_t& fromRegistry) const noexcept
@@ -190,6 +304,11 @@ bool SGCore::Batch::hasSpaceForEntity(ECS::entity_t entity, const ECS::registry_
     return true;
 }
 
+void SGCore::Batch::setAtlasMaxSide(std::uint32_t maxSide) noexcept
+{
+    m_atlas.m_maxSideSize = maxSide;
+}
+
 void SGCore::Batch::update(const ECS::registry_t& inRegistry) noexcept
 {
     m_transforms.clear();
@@ -198,6 +317,12 @@ void SGCore::Batch::update(const ECS::registry_t& inRegistry) noexcept
     for(size_t i = 0; i < m_entities.size(); ++i)
     {
         const auto entity = m_entities[i];
+
+        if(!inRegistry.valid(entity))
+        {
+            m_entitiesToRemove.push_back(entity);
+            continue;
+        }
 
         const auto* tmpTransform = inRegistry.tryGet<Transform>(entity);
         if(!tmpTransform) continue; // todo: maybe delete from batch?
@@ -239,9 +364,13 @@ void SGCore::Batch::update(const ECS::registry_t& inRegistry) noexcept
         m_materials.push_back(instanceMaterial);
     }
 
+    // deferred remove
+    removeEntities(m_entitiesToRemove, inRegistry, true);
+    m_entitiesToRemove.clear();
+
     if(m_instancesTransformsBuffer->getWidth() < m_transforms.size() * BatchInstanceTransform::components_count)
     {
-        m_instancesTransformsBuffer->resizeDataBuffer(m_transforms.size() * BatchInstanceTransform::components_count, 1);
+        m_instancesTransformsBuffer->resizeDataBuffer(m_transforms.size() * BatchInstanceTransform::components_count, 1, false);
     }
     m_instancesTransformsBuffer->bind(2);
     m_instancesTransformsBuffer->subTextureBufferData(reinterpret_cast<std::uint8_t*>(m_transforms.data()), m_transforms.size() * BatchInstanceTransform::components_count, 0);
@@ -250,7 +379,7 @@ void SGCore::Batch::update(const ECS::registry_t& inRegistry) noexcept
 
     if(m_instancesMaterialsBuffer->getWidth() < m_materials.size() * BatchInstanceMaterial::components_count)
     {
-        m_instancesMaterialsBuffer->resizeDataBuffer(m_materials.size() * BatchInstanceMaterial::components_count, 1);
+        m_instancesMaterialsBuffer->resizeDataBuffer(m_materials.size() * BatchInstanceMaterial::components_count, 1, false);
     }
     m_instancesMaterialsBuffer->bind(3);
     m_instancesMaterialsBuffer->subTextureBufferData(reinterpret_cast<std::uint8_t*>(m_materials.data()), m_materials.size() * BatchInstanceMaterial::components_count, 0);
@@ -299,6 +428,11 @@ SGCore::Ref<SGCore::IVertexArray> SGCore::Batch::getVertexArray() const noexcept
 const SGCore::Atlas& SGCore::Batch::getAtlas() const noexcept
 {
     return m_atlas;
+}
+
+const std::vector<SGCore::ECS::entity_t>& SGCore::Batch::getEntities() const noexcept
+{
+    return m_entities;
 }
 
 size_t SGCore::Batch::getTrianglesCount() const noexcept
@@ -519,14 +653,14 @@ void SGCore::Batch::updateBuffers() noexcept
 
     if(m_verticesBuffer->getWidth() < m_vertices.size() * BatchVertex::components_count)
     {
-        m_verticesBuffer->resizeDataBuffer(m_vertices.size() * BatchVertex::components_count, 1);
+        m_verticesBuffer->resizeDataBuffer(m_vertices.size() * BatchVertex::components_count, 1, false);
     }
     m_verticesBuffer->bind(0);
     m_verticesBuffer->subTextureBufferData(reinterpret_cast<std::uint8_t*>(m_vertices.data()), m_vertices.size() * BatchVertex::components_count, 0);
 
     if(m_indicesBuffer->getWidth() < m_indices.size())
     {
-        m_indicesBuffer->resizeDataBuffer(m_indices.size(), 1);
+        m_indicesBuffer->resizeDataBuffer(m_indices.size(), 1, false);
     }
     m_indicesBuffer->bind(1);
     m_indicesBuffer->subTextureBufferData(reinterpret_cast<std::uint8_t*>(m_indices.data()), m_indices.size(), 0);

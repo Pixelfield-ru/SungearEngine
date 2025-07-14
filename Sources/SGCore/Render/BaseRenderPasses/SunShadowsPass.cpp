@@ -31,25 +31,25 @@ void SGCore::SunShadowsPass::render(const Ref<Scene>& scene, const Ref<IRenderPi
         camerasView.each([&atmosphere, &batchesView, &registry, this](CSMTarget::reg_t& csm, const RenderingBase::reg_t& renderingBase) {
             const std::vector<glm::mat4> lightSpaceMatrices = getLightSpaceMatrices(csm, renderingBase, atmosphere.m_sunPosition);
 
-            batchesView.each([&registry, &csm, &lightSpaceMatrices, this](Batch::reg_t& batch, const auto&) {
-                batch.update(*registry);
-                batch.bind(m_batchShader.get());
-                m_batchShader->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
-                m_batchShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+            // rendering to levels
+            for(size_t i = 0; i < csm.getCascades().size(); ++i)
+            {
+                auto& cascade = csm.getCascade(i);
 
-                // rendering to levels
-                for(size_t i = 0; i < csm.getCascades().size(); ++i)
-                {
-                    auto& cascade = csm.getCascade(i);
+                if(!cascade.m_frameBuffer) continue;
 
-                    if(!cascade.m_frameBuffer) continue;
+                const auto& cascadeMatrix = lightSpaceMatrices[i];
 
-                    const auto& cascadeMatrix = lightSpaceMatrices[i];
+                cascade.m_projectionSpaceMatrix = cascadeMatrix;
 
-                    cascade.m_projectionSpaceMatrix = cascadeMatrix;
+                cascade.m_frameBuffer->bind();
+                cascade.m_frameBuffer->clear();
 
-                    cascade.m_frameBuffer->bind();
-                    cascade.m_frameBuffer->clear();
+                batchesView.each([&registry, &csm, &lightSpaceMatrices, &cascadeMatrix, this](Batch::reg_t& batch, const auto&) {
+                    // batch.update(*registry);
+                    batch.bind(m_batchShader.get());
+                    m_batchShader->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
+                    m_batchShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
 
                     m_batchShader->useMatrix("CSMLightSpaceMatrix", cascadeMatrix);
 
@@ -59,10 +59,10 @@ void SGCore::SunShadowsPass::render(const Ref<Scene>& scene, const Ref<IRenderPi
                         batch.getTrianglesCount(),
                         0
                     );
+                });
 
-                    cascade.m_frameBuffer->unbind();
-                }
-            });
+                cascade.m_frameBuffer->unbind();
+            }
         });
     });
 }

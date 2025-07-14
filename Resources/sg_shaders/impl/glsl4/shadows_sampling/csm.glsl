@@ -46,8 +46,9 @@ float getCSMShadow(vec3 lightDir, vec3 fragPos)
         return 0.0;
     }
 
-    // float biases[4] = float[] ( 0.0012f, 0.004f, 0.027f, 0.145f);
+    // const float biases[6] = float[6] ( 0.0012, 0.0012, 0.0012, 0.0012, 0.0012, 0.0012 );
     float bias = CSMCascadesBiases[layer];
+    // float bias = biases[layer];
     if (layer == CSMCascadesCount)
     {
         bias *= 1 / (camera.zFar * 0.5f);
@@ -61,7 +62,7 @@ float getCSMShadow(vec3 lightDir, vec3 fragPos)
 
     // float shadow = PCSS(CSMShadowMaps[layer], projCoords, bias);
     vec2 shadowMapSize = textureSize(CSMShadowMaps[layer], 0).xy;
-    float shadow = ShadowMapPCF(CSMShadowMaps[layer], projCoords, shadowMapSize, 1.0 / shadowMapSize, 2, bias);
+    float shadow = ShadowMapPCF(CSMShadowMaps[layer], projCoords, shadowMapSize, 1.0 / shadowMapSize, 1, bias);
 
     // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
     if(projCoords.z > 1.0)

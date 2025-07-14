@@ -192,6 +192,8 @@ in GSOut
 uniform sampler2D batchAtlas;
 uniform vec2 batchAtlasSize;
 
+// layout(location = 0) out float fragmentDepth;
+
 void main()
 {
     vec2 finalUV = gsIn.UV.xy;
@@ -208,12 +210,25 @@ void main()
 
     vec4 diffuseColor = vec4(0.0, 0.0, 0.0, 0.0);
 
-    highp vec2 dfdx = dFdx(finalUV) / batchAtlasSize;
-    highp vec2 dfdy = dFdy(finalUV) / batchAtlasSize;
+    highp vec2 dfdx = dFdx(finalUV / batchAtlasSize);
+    highp vec2 dfdy = dFdy(finalUV / batchAtlasSize);
 
-    diffuseColor = textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy);
+    // float lod = 0.5 * log2(max(dot(dx, dx), dot(dy, dy)));
 
-    if(diffuseColor.a < 0.05) discard;
+    if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y)
+    {
+        diffuseColor = textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy);
+        // diffuseColor = textureLod(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, lod);
+        // diffuseColor = texture(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize);
+    }
+    // diffuseColor = texture(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize);
+
+    if(diffuseColor.a < 0.05)
+    {
+        discard;
+    }
+
+    // fragmentDepth = diffuseColor.a;
 }
 
 #end

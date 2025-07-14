@@ -71,12 +71,30 @@ namespace SGCore
          * Inserts vector of entities into batch.
          * @param entities Vector of entities. All entities must contain Mesh and Transform components.
          * @param fromRegistry The registry in which the entities are located.
-         * @return entt::null if all entities have been successfully inserted or last unsuccessful entity.\n
+         * @return -1 if all entities have been successfully inserted or index of last unsuccessful entity in entities vector.\n
          *         Entity can be not inserted if there is no free space in the batch.
          */
-        [[nodiscard]] ECS::entity_t insertEntities(const std::vector<ECS::entity_t>& entities, const ECS::registry_t& fromRegistry) noexcept;
+        [[nodiscard]] std::uint64_t insertEntities(const std::vector<ECS::entity_t>& entities, const ECS::registry_t& fromRegistry) noexcept;
+
+        /**
+         * Inserts vector of entities into batch.
+         * @param entitiesBegin Begin of range.
+         * @param entitiesEnd End of range.
+         * @param fromRegistry The registry in which the entities are located.
+         * @return -1 if all entities have been successfully inserted or index (between begin and end) of last unsuccessful entity in entities vector.\n
+         *         Entity can be not inserted if there is no free space in the batch.
+         */
+        [[nodiscard]] std::uint64_t insertEntities(const std::vector<ECS::entity_t>::iterator& entitiesBegin, const std::vector<ECS::entity_t>::iterator& entitiesEnd, const ECS::registry_t& fromRegistry) noexcept;
+
+        void removeEntity(ECS::entity_t entity, const ECS::registry_t& fromRegistry, bool immediateRemove = true) noexcept;
+
+        void removeEntities(const std::vector<ECS::entity_t>& entities, const ECS::registry_t& fromRegistry, bool immediateRemove = true) noexcept;
+
+        void shrinkBuffersToFit() noexcept;
 
         bool hasSpaceForEntity(ECS::entity_t entity, const ECS::registry_t& fromRegistry) const noexcept;
+
+        void setAtlasMaxSide(std::uint32_t maxSide) noexcept;
 
         void update(const ECS::registry_t& inRegistry) noexcept;
 
@@ -85,6 +103,8 @@ namespace SGCore
         Ref<IVertexArray> getVertexArray() const noexcept;
 
         const Atlas& getAtlas() const noexcept;
+
+        const std::vector<ECS::entity_t>& getEntities() const noexcept;
 
         size_t getTrianglesCount() const noexcept;
 
@@ -115,8 +135,6 @@ namespace SGCore
             size_t m_trianglesOffset = 0;
             size_t m_trianglesCount = 0;
         };
-
-        std::string m_shaderVirtualPath = "BatchingShader";
 
         Ref<IVertexArray> m_fakeVertexArray;
         Ref<IVertexBuffer> m_fakeVerticesBuffer;
@@ -151,6 +169,7 @@ namespace SGCore
         Atlas m_atlas;
 
         std::vector<ECS::entity_t> m_entities;
+        std::vector<ECS::entity_t> m_entitiesToRemove;
 
         void insertEntityImpl(ECS::entity_t entity, const ECS::registry_t& fromRegistry, bool isUpdateBuffers) noexcept;
 

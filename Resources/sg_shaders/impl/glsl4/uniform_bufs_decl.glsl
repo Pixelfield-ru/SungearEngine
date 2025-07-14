@@ -20,7 +20,7 @@ uniform vec4 u_materialTransparentCol;
 uniform float u_materialShininess;
 uniform float u_materialMetallicFactor;
 uniform float u_materialRoughnessFactor;
-float materialAmbientFactor = 0.25;
+float materialAmbientFactor = 0.7;
 
 layout(std140) uniform CameraData
 {

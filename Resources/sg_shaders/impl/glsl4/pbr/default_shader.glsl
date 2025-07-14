@@ -409,7 +409,7 @@ void main()
     }
 
     ambient = albedo.rgb * ao * dot(atmosphere.sunPosition, vec3(0, 1, 0));
-    vec3 finalCol = ambient * vec3(1.0) * materialAmbientFactor + lo + ambient;
+    vec3 finalCol = ambient * vec3(1.0) * materialAmbientFactor + lo;
 
     if(u_verticesColorsAttributesCount > 0)
     {

@@ -18,5 +18,11 @@ void SGCore::CSMCascade::createFrameBuffer() noexcept
                                  0,
                                  0);
 
+    /*m_frameBuffer->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
+                                SGGColorFormat::SGG_R,
+                                SGGColorInternalFormat::SGG_R32_FLOAT,
+                                0,
+                                0);*/
+
     m_frameBuffer->unbind();
 }
