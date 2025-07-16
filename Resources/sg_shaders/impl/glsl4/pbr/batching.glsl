@@ -194,6 +194,8 @@ void main()
 
     ivec3 verticesIndices = texelFetch(u_indicesTextureBuffer, vsIn[0].triangleIndex).xyz;
 
+	bool allVerticesOutside = false; // true;
+
     for(int i = 0; i < 3; ++i)
     {
         int vertexIndex = verticesIndices[i];
@@ -204,11 +206,19 @@ void main()
         vec3 vertexTangent = texelFetch(u_verticesTextureBuffer, vertexIndex * vertexJump + 3).xyz;
         vec3 vertexBitangent = texelFetch(u_verticesTextureBuffer, vertexIndex * vertexJump + 4).xyz;
 
+		gsOut.fragPos = vec3(vsIn[0].instanceModelMatrix * vec4(vertexPos, 1.0));
+		
+		/*vec4 clipPos = camera.projectionSpaceMatrix * vec4(gsOut.fragPos, 1.0);
+        vec3 ndc = clipPos.xyz / clipPos.w;
+        if (abs(ndc.x) <= 1.0 && abs(ndc.y) <= 1.0 && abs(ndc.z) <= 1.0) 
+		{
+            allVerticesOutside = false;
+        }*/
+		
         gsOut.UV = vertexUV.xy;
         gsOut.normal = normalize(vertexNormal);
         gsOut.worldNormal = normalize(mat3(transpose(inverse(vsIn[0].instanceModelMatrix))) * vertexNormal);
         gsOut.vertexPos = vertexPos;
-        gsOut.fragPos = vec3(vsIn[0].instanceModelMatrix * vec4(vertexPos, 1.0));
         gsOut.verticesIndices = verticesIndices;
 
         // 0.0 IN w COMPONENT IS CORRECT!!
@@ -227,6 +237,8 @@ void main()
 
         EmitVertex();
     }
+	
+	if(allVerticesOutside) return;
 
     EndPrimitive();
 }
@@ -320,17 +332,20 @@ void main()
     // ===============================================================================================
     // ===============================        load textures       ====================================
     // ===============================================================================================
-
-    highp vec2 dfdx = dFdx(finalUV) / batchAtlasSize;
-    highp vec2 dfdy = dFdy(finalUV) / batchAtlasSize;
+	
+	vec2 fractUV = fract(finalUV);
 
     {
         vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.x);
         vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.y);
+		
+		vec2 uv = (texUVOffset + fractUV * texSize) / batchAtlasSize;
+		vec2 dfdx = dFdx(uv) / batchAtlasSize;
+		vec2 dfdy = dFdy(uv) / batchAtlasSize;
 
         diffuseColor.rgba = vec4(0.0, 0.0, 0.0, 0.0);
 
-        diffuseColor += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy);
+        diffuseColor += textureGrad(batchAtlas, uv, dfdx, dfdy);
     }
 
     if(diffuseColor.a < 0.05) discard;
@@ -342,9 +357,13 @@ void main()
 
             if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y)
             {
+				vec2 uv = (texUVOffset + fractUV * texSize) / batchAtlasSize;
+				vec2 dfdx = dFdx(uv) / batchAtlasSize;
+				vec2 dfdy = dFdy(uv) / batchAtlasSize;
+			
                 aoRoughnessMetallic.r = 0.0;
 
-                aoRoughnessMetallic.r += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy).r;
+                aoRoughnessMetallic.r += textureGrad(batchAtlas, uv, dfdx, dfdy).r;
             }
         }
 
@@ -354,9 +373,13 @@ void main()
 
             if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y)
             {
+				vec2 uv = (texUVOffset + fractUV * texSize) / batchAtlasSize;
+				vec2 dfdx = dFdx(uv) / batchAtlasSize;
+				vec2 dfdy = dFdy(uv) / batchAtlasSize;
+			
                 aoRoughnessMetallic.g = 0.0;
 
-                aoRoughnessMetallic.g += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy).g;
+                aoRoughnessMetallic.g += textureGrad(batchAtlas, uv, dfdx, dfdy).g;
 
                 aoRoughnessMetallic.g *= 1.0;
             }
@@ -368,9 +391,13 @@ void main()
 
             if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y)
             {
+				vec2 uv = (texUVOffset + fractUV * texSize) / batchAtlasSize;
+				vec2 dfdx = dFdx(uv) / batchAtlasSize;
+				vec2 dfdy = dFdy(uv) / batchAtlasSize;
+			
                 aoRoughnessMetallic.b = 0.0;
 
-                aoRoughnessMetallic.b += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy).b;
+                aoRoughnessMetallic.b += textureGrad(batchAtlas, uv, dfdx, dfdy).b;
 
                 aoRoughnessMetallic.b *= 1.0;
             }
@@ -383,7 +410,11 @@ void main()
 
         if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y)
         {
-            normalMapColor += textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy).rgb;
+			vec2 uv = (texUVOffset + fractUV * texSize) / batchAtlasSize;
+			vec2 dfdx = dFdx(uv) / batchAtlasSize;
+			vec2 dfdy = dFdy(uv) / batchAtlasSize;
+			
+            normalMapColor += textureGrad(batchAtlas, uv, dfdx, dfdy).rgb;
 
             finalNormal = normalize(gsIn.TBN * (normalMapColor * 2.0 - 1.0));
         }

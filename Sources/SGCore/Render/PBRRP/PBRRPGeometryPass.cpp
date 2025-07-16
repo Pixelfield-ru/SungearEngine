@@ -564,5 +564,6 @@ void SGCore::PBRRPGeometryPass::bindCSMTargetUniforms(IShader* forShader,
         forShader->useFloat("CSMCascadesBiases[" + std::to_string(i) + "]", cascade.m_bias);
         forShader->useTextureBlock("CSMShadowMaps[" + std::to_string(i) + "]", texUnitOffset + i);
         cascade.m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0)->bind(texUnitOffset + i);
+        // cascade.m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)->bind(texUnitOffset + i);
     }
 }

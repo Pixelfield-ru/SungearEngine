@@ -68,6 +68,7 @@ std::vector<SGCore::AssetRef<SGCore::ITexture2D>> testTextures;
 
 SGCore::AssetRef<SGCore::IShader> screenShader;
 SGCore::Ref<SGCore::ITexture2D> depthAttachment;
+SGCore::Ref<SGCore::ITexture2D> cameraDepthAttachment;
 SGCore::Ref<SGCore::IMeshData> m_screenQuadMeshData;
 SGCore::MeshRenderState m_screenQuadMeshRenderState;
 
@@ -202,9 +203,10 @@ void coreInit()
 
     if(SGCore::Scene::getCurrentScene())
     {
-        const auto camerasView = SGCore::Scene::getCurrentScene()->getECSRegistry()->view<SGCore::CSMTarget>();
-        camerasView.each([](const SGCore::CSMTarget& csm) {
+        const auto camerasView = SGCore::Scene::getCurrentScene()->getECSRegistry()->view<SGCore::CSMTarget, SGCore::LayeredFrameReceiver>();
+        camerasView.each([](const SGCore::CSMTarget& csm, const SGCore::LayeredFrameReceiver::reg_t& layeredFrameReceiver) {
             depthAttachment = csm.getCascades()[0].m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0);
+            cameraDepthAttachment = layeredFrameReceiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0);
             return;
         });
     }
@@ -291,10 +293,10 @@ void onUpdate(const double& dt, const double& fixedDt)
         SGCore::PluginsManager::unloadAllPlugins();
     }
 
-    /*screenShader->bind();
+    screenShader->bind();
 
     // use this to flip screen output
-    screenShader->useInteger("u_flipOutput", false);*/
+    screenShader->useInteger("u_flipOutput", false);
 
     // someTexture->bind(0);
     /*if(testAtlas->getTexture())
@@ -307,19 +309,24 @@ void onUpdate(const double& dt, const double& fixedDt)
         depthAttachment->bind(0);
     }*/
 
+    if(cameraDepthAttachment)
+    {
+        cameraDepthAttachment->bind(0);
+    }
+
     /*if(testTextures[0])
     {
         testTextures[0]->bind(0);
     }*/
 
-    /*screenShader->useTextureBlock("u_bufferToDisplay", 0);
+    screenShader->useTextureBlock("u_bufferToDisplay", 0);
 
     SGCore::CoreMain::getRenderer()->renderArray(
         m_screenQuadMeshData->getVertexArray(),
         m_screenQuadMeshRenderState,
         m_screenQuadMeshData->m_vertices.size(),
         m_screenQuadMeshData->m_indices.size()
-    );*/
+    );
 
     if(SGCore::Scene::getCurrentScene())
     {

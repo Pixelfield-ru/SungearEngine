@@ -111,6 +111,8 @@ out GSOut
 {
     vec2 UV;
 
+    vec4 fragPos;
+
     flat umat4 uvOffsets0;
     flat umat4 uvOffsets1;
     flat umat4 uvOffsets2;
@@ -154,14 +156,16 @@ void main()
 
         gsOut.UV = vertexUV.xy;
 
-        vec3 fragPos = vec3(vsIn[0].instanceModelMatrix * vec4(vertexPos, 1.0));
+        vec4 fragPos = vsIn[0].instanceModelMatrix * vec4(vertexPos, 1.0);
+
+        gsOut.fragPos = fragPos;
 
         gsOut.uvOffsets0 = vsIn[0].uvOffsets0;
         gsOut.uvOffsets1 = vsIn[0].uvOffsets1;
         gsOut.uvOffsets2 = vsIn[0].uvOffsets2;
 
         // gl_Position = camera.projectionSpaceMatrix * vec4(fragPos, 1.0);
-        gl_Position = CSMLightSpaceMatrix * vec4(fragPos, 1.0);
+        gl_Position = CSMLightSpaceMatrix * vec4(fragPos.xyz, 1.0);
 
         EmitVertex();
     }
@@ -181,6 +185,8 @@ in GSOut
 {
     vec2 UV;
 
+    vec4 fragPos;
+
     flat umat4 uvOffsets0;
     flat umat4 uvOffsets1;
     flat umat4 uvOffsets2;
@@ -189,10 +195,10 @@ in GSOut
 #include "sg_shaders/impl/glsl4/pbr_base.glsl"
 #include "sg_shaders/impl/glsl4/bit_utils.glsl"
 
+// layout(location = 0) out float fragmentDepth;
+
 uniform sampler2D batchAtlas;
 uniform vec2 batchAtlasSize;
-
-// layout(location = 0) out float fragmentDepth;
 
 void main()
 {
@@ -210,25 +216,22 @@ void main()
 
     vec4 diffuseColor = vec4(0.0, 0.0, 0.0, 0.0);
 
-    highp vec2 dfdx = dFdx(finalUV / batchAtlasSize);
-    highp vec2 dfdy = dFdy(finalUV / batchAtlasSize);
-
-    // float lod = 0.5 * log2(max(dot(dx, dx), dot(dy, dy)));
-
     if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y)
     {
-        diffuseColor = textureGrad(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, dfdx, dfdy);
-        // diffuseColor = textureLod(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize, lod);
-        // diffuseColor = texture(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize);
+		vec2 uv = (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize;
+	
+		highp vec2 dfdx = dFdx(uv) / batchAtlasSize;
+		highp vec2 dfdy = dFdy(uv) / batchAtlasSize;
+	
+        diffuseColor = textureGrad(batchAtlas, uv, dfdx, dfdy);
     }
-    // diffuseColor = texture(batchAtlas, (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize);
 
     if(diffuseColor.a < 0.05)
     {
         discard;
     }
 
-    // fragmentDepth = diffuseColor.a;
+    // gl_FragDepth = diffuseColor.a;
 }
 
 #end
