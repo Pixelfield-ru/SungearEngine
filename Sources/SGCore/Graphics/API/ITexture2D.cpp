@@ -94,6 +94,11 @@ void SGCore::ITexture2D::doLazyLoad()
           getPath().resolved().string());
 }
 
+void SGCore::ITexture2D::destroyOnRAM() noexcept
+{
+    m_textureData = nullptr;
+}
+
 std::uint8_t* SGCore::ITexture2D::getData() noexcept
 {
     return m_textureData.get();

@@ -16,6 +16,9 @@ void SGCore::SunShadowsPass::create(const Ref<IRenderPipeline>& parentRenderPipe
     auto shaderFile = AssetManager::getInstance()->loadAsset<TextFileAsset>(
         *parentRenderPipeline->m_shadersPaths["ShadowsGen/BatchingShader"]);
 
+    m_renderState.m_depthFunc = SGDepthStencilFunc::SGG_LESS;
+    m_renderState.m_globalBlendingState.m_useBlending = false;
+
     m_batchShader = AssetManager::getInstance()->loadAsset<IShader>(shaderFile->getPath());
 }
 
@@ -26,6 +29,8 @@ void SGCore::SunShadowsPass::render(const Ref<Scene>& scene, const Ref<IRenderPi
     const auto batchesView = registry->view<Batch, ShadowCaster>();
     const auto atmospheresView = registry->view<Atmosphere>();
     const auto camerasView = registry->view<CSMTarget, RenderingBase>();
+
+    m_renderState.use(true);
 
     atmospheresView.each([&camerasView, &batchesView, &registry, this](const Atmosphere::reg_t& atmosphere) {
         camerasView.each([&atmosphere, &batchesView, &registry, this](CSMTarget::reg_t& csm, const RenderingBase::reg_t& renderingBase) {
@@ -46,7 +51,6 @@ void SGCore::SunShadowsPass::render(const Ref<Scene>& scene, const Ref<IRenderPi
                 cascade.m_frameBuffer->clear();
 
                 batchesView.each([&registry, &csm, &lightSpaceMatrices, &cascadeMatrix, this](Batch::reg_t& batch, const auto&) {
-                    // batch.update(*registry);
                     batch.bind(m_batchShader.get());
 
                     m_batchShader->useMatrix("CSMLightSpaceMatrix", cascadeMatrix);

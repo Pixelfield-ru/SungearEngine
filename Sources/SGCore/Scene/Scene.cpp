@@ -20,6 +20,7 @@
 #include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
 #include "SGCore/Audio/AudioProcessor.h"
 #include "SGCore/Animation/MotionPlannersResolver.h"
+#include "SGCore/Render/Batching/BatchesUpdater.h"
 #include "SGCore/Serde/Serde.h"
 #include "SGCore/Serde/StandardSerdeSpecs.h"
 #include "SGCore/UI/UILayoutCalculator.h"
@@ -100,6 +101,11 @@ void SGCore::Scene::createDefaultSystems()
 
     auto uiLayoutCalculator = MakeRef<UI::UILayoutCalculator>();
     addSystem(uiLayoutCalculator);
+
+    // batches updater =================================
+
+    auto batchesUpdater = MakeRef<BatchesUpdater>();
+    addSystem(batchesUpdater);
 }
 
 // ----------------

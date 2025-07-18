@@ -8,7 +8,7 @@
 
 SGCore::GL46Texture2D::~GL46Texture2D() noexcept
 {
-    destroy();
+    destroyOnGPU();
 }
 
 // migrate to gl46
@@ -44,7 +44,7 @@ void SGCore::GL46Texture2D::create() noexcept
     #endif
 }
 
-void SGCore::GL46Texture2D::destroy() noexcept
+void SGCore::GL46Texture2D::destroyOnGPU() noexcept
 {
     glDeleteTextures(1, &m_textureHandler);
 }

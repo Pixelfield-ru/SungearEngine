@@ -565,6 +565,8 @@ void SGCore::Batch::insertEntityImpl(ECS::entity_t entity, const ECS::registry_t
                 lastVertCount + meshData->m_indices[i + 2]
             });
         }
+
+        meshData->destroy();
     }
 
     auto& meshDataMarkup = m_usedMeshDatas[meshDataHash];
@@ -646,6 +648,8 @@ void SGCore::Batch::updateBuffers() noexcept
     for(const auto& [texHash, texture] : m_usedTextures)
     {
         m_atlas.packTexture(*m_atlas.getRectByHash(texHash), texture.get());
+        texture->destroyOnRAM();
+        texture->destroyOnGPU();
     }
 
     m_fakeVerticesBuffer->bind();

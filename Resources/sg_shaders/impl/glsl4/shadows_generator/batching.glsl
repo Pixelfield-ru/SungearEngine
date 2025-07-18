@@ -192,7 +192,6 @@ in GSOut
     flat umat4 uvOffsets2;
 } gsIn;
 
-#include "sg_shaders/impl/glsl4/pbr_base.glsl"
 #include "sg_shaders/impl/glsl4/bit_utils.glsl"
 
 // layout(location = 0) out float fragmentDepth;

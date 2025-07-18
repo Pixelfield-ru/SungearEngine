@@ -28,7 +28,7 @@ namespace SGCore
         void subTextureBufferDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) noexcept override;
         void subTextureDataOnGAPISide(const std::uint8_t* data, std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY) noexcept override;
         
-        void destroy() noexcept override;
+        void destroyOnGPU() noexcept override;
 
         void bind(const std::uint8_t& textureUnit) const noexcept override;
         

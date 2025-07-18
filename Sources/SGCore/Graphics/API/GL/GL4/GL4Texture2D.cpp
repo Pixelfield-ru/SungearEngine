@@ -22,7 +22,7 @@ SGCore::GL4Texture2D::~GL4Texture2D() noexcept
 // migrate to gl46
 void SGCore::GL4Texture2D::create() noexcept
 {
-    destroy();
+    destroyOnGPU();
     
     if(m_isTextureBuffer)
     {
@@ -135,7 +135,7 @@ void SGCore::GL4Texture2D::create() noexcept
 void SGCore::GL4Texture2D::createAsFrameBufferAttachment(const SGCore::Ref<SGCore::IFrameBuffer>& parentFrameBuffer,
                                                          SGFrameBufferAttachmentType attachmentType)
 {
-    destroy();
+    destroyOnGPU();
 
     m_frameBufferAttachmentType = attachmentType;
     
@@ -266,7 +266,7 @@ void SGCore::GL4Texture2D::subTextureDataOnGAPISide(const std::uint8_t* data, st
     );
 }
 
-void SGCore::GL4Texture2D::destroy() noexcept
+void SGCore::GL4Texture2D::destroyOnGPU() noexcept
 {
     glDeleteTextures(1, &m_textureHandler);
     glDeleteBuffers(1, &m_textureBufferHandler);

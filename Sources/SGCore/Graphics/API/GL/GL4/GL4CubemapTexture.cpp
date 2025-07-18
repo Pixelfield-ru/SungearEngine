@@ -59,7 +59,7 @@ void SGCore::GL4CubemapTexture::createAsFrameBufferAttachment
 
 }
 
-void SGCore::GL4CubemapTexture::destroy()
+void SGCore::GL4CubemapTexture::destroyOnGPU()
 {
     glDeleteTextures(1, &m_cubemapHandler);
 }

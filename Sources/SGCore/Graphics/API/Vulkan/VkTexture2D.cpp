@@ -6,7 +6,7 @@
 
 SGCore::VkTexture2D::~VkTexture2D() noexcept
 {
-    destroy();
+    destroyOnGPU();
 }
 
 void SGCore::VkTexture2D::create()
@@ -25,7 +25,7 @@ void SGCore::VkTexture2D::subTextureDataOnGAPISide(const std::uint8_t* data, std
 
 }
 
-void SGCore::VkTexture2D::destroy() noexcept
+void SGCore::VkTexture2D::destroyOnGPU() noexcept
 {
 
 }

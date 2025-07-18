@@ -218,9 +218,16 @@ void SGCore::IMeshData::destroy() noexcept
     if(m_indicesBuffer) m_indicesBuffer->destroy();
 
     m_vertices.clear();
+    m_vertices.shrink_to_fit();
+
     m_indices.clear();
+    m_indices.shrink_to_fit();
+
     m_tmpVertexWeights.clear();
+    m_tmpVertexWeights.shrink_to_fit();
+
     m_verticesColors.clear();
+    m_verticesColors.shrink_to_fit();
 }
 
 void SGCore::IMeshData::setVertexPosition

@@ -169,7 +169,6 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
             // todo: add getting batch layer
             Ref<PostProcessLayer> meshPPLayer = cameraLayeredFrameReceiver->getDefaultLayer();
 
-            batch.update(*registry);
             batch.bind(m_batchShader.get());
 
             auto uniformBuffsIt = m_uniformBuffersToUse.begin();

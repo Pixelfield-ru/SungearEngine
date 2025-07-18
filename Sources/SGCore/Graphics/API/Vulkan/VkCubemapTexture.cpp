@@ -30,7 +30,7 @@ void SGCore::VkCubemapTexture::bind(const uint8_t& textureUnit) const
 
 }
 
-void SGCore::VkCubemapTexture::destroy()
+void SGCore::VkCubemapTexture::destroyOnGPU()
 {
 
 }

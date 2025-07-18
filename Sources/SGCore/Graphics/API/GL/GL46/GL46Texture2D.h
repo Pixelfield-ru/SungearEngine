@@ -17,7 +17,7 @@ namespace SGCore
         ~GL46Texture2D() noexcept;
 
         void create() noexcept final;
-        void destroy() noexcept final;
+        void destroyOnGPU() noexcept final;
 
         void bind(const std::uint8_t& textureUnit) const noexcept final;
 

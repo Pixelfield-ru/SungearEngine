@@ -221,7 +221,8 @@ namespace SGCore
             subTextureDataOnGAPISide(data, areaWidth, areaHeight, areaOffsetX, areaOffsetY);
         }
         
-        virtual void destroy() = 0;
+        virtual void destroyOnGPU() = 0;
+        void destroyOnRAM() noexcept;
 
         virtual void bind(const std::uint8_t& textureUnit) const = 0;
 

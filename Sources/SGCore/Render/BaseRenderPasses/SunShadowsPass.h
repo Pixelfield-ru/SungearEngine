@@ -19,6 +19,7 @@ namespace SGCore
 
     private:
         AssetRef<IShader> m_batchShader;
+        RenderState m_renderState;
 
         static glm::mat4 getLightSpaceMatrix(const RenderingBase::reg_t& cameraRenderingBase, const glm::vec3& sunDir, float nearPlane, float farPlane) noexcept;
         static std::array<glm::vec4, 8> getFrustumCornersWorldSpace(const glm::mat4& projView) noexcept;
