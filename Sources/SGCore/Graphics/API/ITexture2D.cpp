@@ -96,7 +96,7 @@ void SGCore::ITexture2D::doLazyLoad()
 
 void SGCore::ITexture2D::destroyOnRAM() noexcept
 {
-    m_textureData = nullptr;
+    delete[] m_textureData.release();
 }
 
 std::uint8_t* SGCore::ITexture2D::getData() noexcept

@@ -565,8 +565,6 @@ void SGCore::Batch::insertEntityImpl(ECS::entity_t entity, const ECS::registry_t
                 lastVertCount + meshData->m_indices[i + 2]
             });
         }
-
-        meshData->destroy();
     }
 
     auto& meshDataMarkup = m_usedMeshDatas[meshDataHash];
@@ -602,7 +600,7 @@ void SGCore::Batch::updateTextureDataInTriangles() noexcept
 {
     for(auto& [meshDataHash, meshDataMarkup] : m_usedMeshDatas)
     {
-        std::array<glm::u32vec2, texture_types_count> atlasTextureInfo = makeFilledArray<glm::u32vec2, texture_types_count>({ -1, -1 });;
+        std::array<glm::u32vec2, texture_types_count> atlasTextureInfo = makeFilledArray<glm::u32vec2, texture_types_count>({ -1, -1 });
 
         // collecting info about textures...
         for(std::uint8_t i = 0; i < texture_types_count; ++i)
@@ -648,8 +646,6 @@ void SGCore::Batch::updateBuffers() noexcept
     for(const auto& [texHash, texture] : m_usedTextures)
     {
         m_atlas.packTexture(*m_atlas.getRectByHash(texHash), texture.get());
-        texture->destroyOnRAM();
-        texture->destroyOnGPU();
     }
 
     m_fakeVerticesBuffer->bind();

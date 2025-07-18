@@ -338,17 +338,20 @@ void main()
     {
         vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.x);
         vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.y);
-		
-		vec2 uv = (texUVOffset + fractUV * texSize) / batchAtlasSize;
-		vec2 dfdx = dFdx(uv) / batchAtlasSize;
-		vec2 dfdy = dFdy(uv) / batchAtlasSize;
 
         diffuseColor.rgba = vec4(0.0, 0.0, 0.0, 0.0);
 
-        diffuseColor += textureGrad(batchAtlas, uv, dfdx, dfdy);
-    }
+        if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y)
+        {
+            vec2 uv = (texUVOffset + fractUV * texSize) / batchAtlasSize;
+            vec2 dfdx = dFdx(uv) / batchAtlasSize;
+            vec2 dfdy = dFdy(uv) / batchAtlasSize;
 
-    if(diffuseColor.a < 0.05) discard;
+            diffuseColor = textureGrad(batchAtlas, uv, dfdx, dfdy);
+        }
+
+        if(diffuseColor.a < 0.05) discard;
+    }
 
     {
         {

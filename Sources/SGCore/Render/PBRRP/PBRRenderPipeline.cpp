@@ -92,19 +92,19 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
     }
 
     {
-        auto geometryPass = MakeRef<PBRRPGeometryPass>();
-
-        // geometryPass->m_shader->m_uniformBuffer = Scope<IUniformBuffer>(CoreMain::getRenderer().createUniformBuffer());
-
-        m_renderPasses.push_back(geometryPass);
-    }
-
-    {
         auto sunShadowsPass = MakeRef<SunShadowsPass>();
 
         // geometryPass->m_shader->m_uniformBuffer = Scope<IUniformBuffer>(CoreMain::getRenderer().createUniformBuffer());
 
         m_renderPasses.push_back(sunShadowsPass);
+    }
+
+    {
+        auto geometryPass = MakeRef<PBRRPGeometryPass>();
+
+        // geometryPass->m_shader->m_uniformBuffer = Scope<IUniformBuffer>(CoreMain::getRenderer().createUniformBuffer());
+
+        m_renderPasses.push_back(geometryPass);
     }
 
     // ALWAYS AFTER GEOMETRY PASS

@@ -83,6 +83,7 @@ glm::mat4 SGCore::SunShadowsPass::getLightSpaceMatrix(const RenderingBase::reg_t
     {
         center += glm::vec3(v);
     }
+
     center /= corners.size();
 
     // std::cout << center << std::endl;
@@ -172,7 +173,7 @@ std::vector<glm::mat4> SGCore::SunShadowsPass::getLightSpaceMatrices(const CSMTa
     const auto& levels = csm.getCascades();
 
     std::vector<glm::mat4> ret;
-    for(size_t i = 0; i < levels.size() + 1; ++i)
+    for(size_t i = 0; i < levels.size(); ++i)
     {
         if (i == 0)
         {
@@ -181,10 +182,6 @@ std::vector<glm::mat4> SGCore::SunShadowsPass::getLightSpaceMatrices(const CSMTa
         else if (i < levels.size())
         {
             ret.push_back(getLightSpaceMatrix(cameraRenderingBase, sunDir, cameraRenderingBase->m_zFar / levels[i - 1].m_level, cameraRenderingBase->m_zFar / levels[i].m_level));
-        }
-        else
-        {
-            ret.push_back(getLightSpaceMatrix(cameraRenderingBase, sunDir, cameraRenderingBase->m_zFar / levels[i - 1].m_level, cameraRenderingBase->m_zFar));
         }
     }
     return ret;

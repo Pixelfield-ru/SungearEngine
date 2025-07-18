@@ -252,8 +252,8 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
                               const EntityBaseInfo::reg_t& camera3DBaseInfo,
                               RenderingBase::reg_t& cameraRenderingBase,
                               Transform::reg_t& cameraTransform) {
-       const auto* cameraCSMTarget = registry->tryGet<CSMTarget>(cameraEntity);
-        
+        const auto* cameraCSMTarget = registry->tryGet<CSMTarget>(cameraEntity);
+
         CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
         
         if(m_shader)

@@ -40,8 +40,6 @@ out VSOut
     mat4 instanceModelMatrix;
 
     flat umat4 uvOffsets0;
-    flat umat4 uvOffsets1;
-    flat umat4 uvOffsets2;
 } vsOut;
 
 // transforms of instances in batch
@@ -59,8 +57,6 @@ void main()
 
     // 4 columns of model matrix, 1 position, 1 rotation, 1 scale
     const int transformJump = 4 + 1 + 1 + 1;
-    // 6 vec4 components
-    const int materialJump = 6;
 
     instanceModelMatrix[0] = texelFetch(u_transformsTextureBuffer, vsOut.instanceIndex * transformJump);
     instanceModelMatrix[1] = texelFetch(u_transformsTextureBuffer, vsOut.instanceIndex * transformJump + 1);
@@ -75,21 +71,7 @@ void main()
     uvOffsetsMat0.r2 = uvOffsets2;
     uvOffsetsMat0.r3 = uvOffsets3;
 
-    umat4 uvOffsetsMat1;
-    uvOffsetsMat1.r0 = uvOffsets4;
-    uvOffsetsMat1.r1 = uvOffsets5;
-    uvOffsetsMat1.r2 = uvOffsets6;
-    uvOffsetsMat1.r3 = uvOffsets7;
-
-    umat4 uvOffsetsMat2;
-    uvOffsetsMat2.r0 = uvOffsets8;
-    uvOffsetsMat2.r1 = uvOffsets9;
-    uvOffsetsMat2.r2 = uvOffsets10;
-    uvOffsetsMat2.r3 = uvOffsets11;
-
     vsOut.uvOffsets0 = uvOffsetsMat0;
-    vsOut.uvOffsets1 = uvOffsetsMat1;
-    vsOut.uvOffsets2 = uvOffsetsMat2;
 
     // =================================================================
 
@@ -114,8 +96,6 @@ out GSOut
     vec4 fragPos;
 
     flat umat4 uvOffsets0;
-    flat umat4 uvOffsets1;
-    flat umat4 uvOffsets2;
 } gsOut;
 
 in VSOut
@@ -126,8 +106,6 @@ in VSOut
     mat4 instanceModelMatrix;
 
     flat umat4 uvOffsets0;
-    flat umat4 uvOffsets1;
-    flat umat4 uvOffsets2;
 } vsIn[];
 
 // vertices of instances in batch
@@ -161,11 +139,9 @@ void main()
         gsOut.fragPos = fragPos;
 
         gsOut.uvOffsets0 = vsIn[0].uvOffsets0;
-        gsOut.uvOffsets1 = vsIn[0].uvOffsets1;
-        gsOut.uvOffsets2 = vsIn[0].uvOffsets2;
 
-        // gl_Position = camera.projectionSpaceMatrix * vec4(fragPos, 1.0);
-        gl_Position = CSMLightSpaceMatrix * vec4(fragPos.xyz, 1.0);
+        // gl_Position = camera.projectionSpaceMatrix * vec4(fragPos.xyz, 1.0);
+        gl_Position = CSMLightSpaceMatrix * fragPos;
 
         EmitVertex();
     }
@@ -188,16 +164,16 @@ in GSOut
     vec4 fragPos;
 
     flat umat4 uvOffsets0;
-    flat umat4 uvOffsets1;
-    flat umat4 uvOffsets2;
 } gsIn;
 
 #include "sg_shaders/impl/glsl4/bit_utils.glsl"
 
-// layout(location = 0) out float fragmentDepth;
+// layout (location = 0) out float fragmentDepth;
 
 uniform sampler2D batchAtlas;
 uniform vec2 batchAtlasSize;
+
+/*void main() { }*/
 
 void main()
 {
@@ -206,31 +182,34 @@ void main()
     finalUV.y = 1.0 - finalUV.y;
     #endif
 
-    // ===============================================================================================
-    // ===============================        load textures       ====================================
-    // ===============================================================================================
-
     vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.x);
     vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.y);
 
-    vec4 diffuseColor = vec4(0.0, 0.0, 0.0, 0.0);
-
-    if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y)
+    if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y && texUVOffset.x < batchAtlasSize.x && texUVOffset.y < batchAtlasSize.y)
     {
+        vec4 diffuseColor = vec4(0.0, 0.0, 0.0, 0.0);
+
 		vec2 uv = (texUVOffset + fract(finalUV) * texSize) / batchAtlasSize;
-	
-		highp vec2 dfdx = dFdx(uv) / batchAtlasSize;
-		highp vec2 dfdy = dFdy(uv) / batchAtlasSize;
-	
+
+        highp vec2 dfdx = dFdx(uv) / batchAtlasSize;
+        highp vec2 dfdy = dFdy(uv) / batchAtlasSize;
+
         diffuseColor = textureGrad(batchAtlas, uv, dfdx, dfdy);
-    }
 
-    if(diffuseColor.a < 0.05)
-    {
-        discard;
-    }
+        if(diffuseColor.a < 0.05)
+        {
+            discard;
+        }
 
-    // gl_FragDepth = diffuseColor.a;
+        /*if(diffuseColor.a < 0.05)
+        {
+            fragmentDepth = 1.0;
+        }
+        else
+        {
+            fragmentDepth = gl_FragCoord.z / gl_FragCoord.w;
+        }*/
+    }
 }
 
 #end

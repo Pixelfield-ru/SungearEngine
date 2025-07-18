@@ -14,7 +14,7 @@ void SGCore::CSMCascade::createFrameBuffer() noexcept
     m_frameBuffer->bind();
     m_frameBuffer->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
                                  SGGColorFormat::SGG_DEPTH_COMPONENT,
-                                 SGGColorInternalFormat::SGG_DEPTH_COMPONENT32F,
+                                 SGGColorInternalFormat::SGG_DEPTH_COMPONENT32,
                                  0,
                                  0);
 
