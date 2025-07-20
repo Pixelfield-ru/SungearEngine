@@ -205,7 +205,7 @@ void coreInit()
     {
         const auto camerasView = SGCore::Scene::getCurrentScene()->getECSRegistry()->view<SGCore::CSMTarget, SGCore::LayeredFrameReceiver>();
         camerasView.each([](const SGCore::CSMTarget& csm, const SGCore::LayeredFrameReceiver::reg_t& layeredFrameReceiver) {
-            depthAttachment = csm.getCascades()[0].m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0);
+            // depthAttachment = csm.getCascades()[0].m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0);
             cameraDepthAttachment = layeredFrameReceiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0);
             return;
         });

@@ -25,9 +25,17 @@ namespace SGCore
             /*spdlog::error("GL CALLBACK: {0} type = 0x{1}, severity = 0x{2}, message = {3}\n",
                      (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
                      type, severity, message);*/
-            fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-                     ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
-                     type, severity, message );
+            const auto formatted = fmt::format("GL CALLBACK: {} type = 0x{}, severity = 0x{}, message = {}\n",
+                                               (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+                                               type, severity, message);
+
+            /*if(formatted.contains("GL_INVALID_OPERATION error generated. <location> is invalid."))
+            {
+                std::cout << Utils::getTimeAsString("%Y-%m-%d %H:%M:%S") << ", bipka" << std::endl;
+                return;
+            }*/
+
+            fprintf( stderr, formatted.c_str());
         }
         
         static void init() noexcept

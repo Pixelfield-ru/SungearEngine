@@ -40,6 +40,9 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
 
     Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
 
+    /*primaryMonitorWidth = 4096;
+    primaryMonitorHeight = 4096;*/
+
     m_layersFrameBuffer = Ref<IFrameBuffer>(CoreMain::getRenderer()->createFrameBuffer());
     m_layersFrameBuffer->setSize(primaryMonitorWidth, primaryMonitorHeight);
     m_layersFrameBuffer->create();

@@ -228,11 +228,11 @@ void SGCore::GL4Renderer::renderArray(const Ref<IVertexArray>& vertexArray,
 
     if(!meshRenderState.m_useIndices)
     {
-        glDrawArrays(drawMode, 0, verticesCount);
+        glDrawArrays(drawMode, 0, (GLsizei) verticesCount);
     }
     else
     {
-        glDrawElements(drawMode, indicesCount,
+        glDrawElements(drawMode, (GLsizei) indicesCount,
                        GL_UNSIGNED_INT, nullptr);
     }
 }

@@ -268,8 +268,17 @@ void SGCore::GL4Texture2D::subTextureDataOnGAPISide(const std::uint8_t* data, st
 
 void SGCore::GL4Texture2D::destroyOnGPU() noexcept
 {
-    glDeleteTextures(1, &m_textureHandler);
-    glDeleteBuffers(1, &m_textureBufferHandler);
+    if(m_textureHandler != static_cast<decltype(m_textureHandler)>(-1))
+    {
+        glDeleteTextures(1, &m_textureHandler);
+    }
+    if(m_textureBufferHandler != static_cast<decltype(m_textureBufferHandler)>(-1))
+    {
+        glDeleteBuffers(1, &m_textureBufferHandler);
+    }
+
+    m_textureHandler = -1;
+    m_textureBufferHandler = -1;
 }
 
 void SGCore::GL4Texture2D::bind(const std::uint8_t& textureUnit) const noexcept

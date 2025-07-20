@@ -32,6 +32,8 @@ void SGCore::SunShadowsPass::render(const Ref<Scene>& scene, const Ref<IRenderPi
 
     m_renderState.use(true);
 
+    // glGetError();
+
     atmospheresView.each([&camerasView, &batchesView, &registry, this](const Atmosphere::reg_t& atmosphere) {
         camerasView.each([&atmosphere, &batchesView, &registry, this](CSMTarget::reg_t& csm, const RenderingBase::reg_t& renderingBase) {
             const std::vector<glm::mat4> lightSpaceMatrices = getLightSpaceMatrices(csm, renderingBase, atmosphere.m_sunPosition);
@@ -67,6 +69,8 @@ void SGCore::SunShadowsPass::render(const Ref<Scene>& scene, const Ref<IRenderPi
             }
         });
     });
+
+    // CoreMain::getRenderer()->checkForErrors();
 }
 
 glm::mat4 SGCore::SunShadowsPass::getLightSpaceMatrix(const RenderingBase::reg_t& cameraRenderingBase, const glm::vec3& sunDir, float nearPlane, float farPlane) noexcept

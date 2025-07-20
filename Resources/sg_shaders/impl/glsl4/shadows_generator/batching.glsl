@@ -168,6 +168,7 @@ in GSOut
 
 #include "sg_shaders/impl/glsl4/bit_utils.glsl"
 
+// layout(early_fragment_tests) in;
 // layout (location = 0) out float fragmentDepth;
 
 uniform sampler2D batchAtlas;
@@ -200,15 +201,6 @@ void main()
         {
             discard;
         }
-
-        /*if(diffuseColor.a < 0.05)
-        {
-            fragmentDepth = 1.0;
-        }
-        else
-        {
-            fragmentDepth = gl_FragCoord.z / gl_FragCoord.w;
-        }*/
     }
 }
 
