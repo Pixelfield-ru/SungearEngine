@@ -44,6 +44,8 @@ namespace SGCore
         // put attribute
         virtual Ref<IVertexBufferLayout> addAttribute(Ref<IVertexAttribute>) noexcept;
         virtual void removeAttribute(const Ref<IVertexAttribute>&) noexcept;
+
+        std::uint16_t getMaxAttributeID() const noexcept;
     };
 }
 

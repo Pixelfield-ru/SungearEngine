@@ -20,9 +20,27 @@ void SGCore::SunShadowsPass::create(const Ref<IRenderPipeline>& parentRenderPipe
     m_renderState.m_globalBlendingState.m_useBlending = false;
 
     m_batchShader = AssetManager::getInstance()->loadAsset<IShader>(shaderFile->getPath());
+
+    m_renderTimer.m_cyclic = true;
+    m_renderTimer.setTargetFrameRate(30.0);
+
+    if(!m_renderTimer.onUpdate.contains(m_renderSlot))
+    {
+        m_renderSlot = [this](const double& dt, const double& fixedDt) {
+            renderShadows(Scene::getCurrentScene());
+        };
+
+        m_renderTimer.onUpdate += m_renderSlot;
+    }
 }
 
 void SGCore::SunShadowsPass::render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline)
+{
+    // m_renderTimer.startFrame();
+    renderShadows(scene);
+}
+
+void SGCore::SunShadowsPass::renderShadows(const Ref<Scene>& scene)
 {
     const auto registry = scene->getECSRegistry();
 

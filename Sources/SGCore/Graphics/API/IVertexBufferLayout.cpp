@@ -15,3 +15,14 @@ void SGCore::IVertexBufferLayout::removeAttribute(const Ref<IVertexAttribute>& a
 {
     m_attributes.remove(attribute);
 }
+
+std::uint16_t SGCore::IVertexBufferLayout::getMaxAttributeID() const noexcept
+{
+    std::uint16_t maxAttributeID = 0;
+    for(const auto& attribute : m_attributes)
+    {
+        if(attribute->m_ID > maxAttributeID) maxAttributeID = attribute->m_ID;
+    }
+
+    return maxAttributeID;
+}

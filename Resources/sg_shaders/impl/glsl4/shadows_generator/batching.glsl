@@ -196,6 +196,7 @@ void main()
         highp vec2 dfdy = dFdy(uv) / batchAtlasSize;
 
         diffuseColor = textureGrad(batchAtlas, uv, dfdx, dfdy);
+        // diffuseColor = textureLod(batchAtlas, uv, 0.0);
 
         if(diffuseColor.a < 0.05)
         {

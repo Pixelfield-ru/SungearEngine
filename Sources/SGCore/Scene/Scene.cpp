@@ -21,6 +21,7 @@
 #include "SGCore/Audio/AudioProcessor.h"
 #include "SGCore/Animation/MotionPlannersResolver.h"
 #include "SGCore/Render/Batching/BatchesUpdater.h"
+#include "SGCore/Render/Instancing/InstancingUpdater.h"
 #include "SGCore/Serde/Serde.h"
 #include "SGCore/Serde/StandardSerdeSpecs.h"
 #include "SGCore/UI/UILayoutCalculator.h"
@@ -106,6 +107,11 @@ void SGCore::Scene::createDefaultSystems()
 
     auto batchesUpdater = MakeRef<BatchesUpdater>();
     addSystem(batchesUpdater);
+
+    // instancing updater =================================
+
+    auto instancingUpdater = MakeRef<InstancingUpdater>();
+    addSystem(instancingUpdater);
 }
 
 // ----------------

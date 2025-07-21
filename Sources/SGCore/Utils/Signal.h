@@ -224,7 +224,7 @@ template<typename ReturnT, typename ... Args>
 bool SGCore::Signal<ReturnT(Args...)>::contains(const slot_t& slot) const noexcept
 {
     std::shared_lock lock(m_mutex);
-    return m_uniqueSlots.contains(&slot);
+    return m_uniqueSlots.contains(const_cast<slot_t*>(&slot));
 }
 
 template<typename ReturnT, typename ... Args>

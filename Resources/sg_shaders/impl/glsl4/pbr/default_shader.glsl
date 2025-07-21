@@ -22,19 +22,22 @@ float ambient = 0.1;
 
 #vertex
 
-layout (location = 0) in vec3 positionsAttribute;
-layout (location = 1) in vec3 UVAttribute;
-layout (location = 2) in vec3 normalsAttribute;
-layout (location = 3) in vec3 tangentsAttribute;
-layout (location = 4) in vec3 bitangentsAttribute;
-layout (location = 5) in ivec4 bonesIDsAttribute0;
-layout (location = 6) in ivec4 bonesIDsAttribute1;
-layout (location = 7) in vec4 bonesWeightsAttribute0;
-layout (location = 8) in vec4 bonesWeightsAttribute1;
-layout (location = 9) in vec4 vertexColor0Attribute;
-layout (location = 10) in vec4 vertexColor1Attribute;
+#include "sg_shaders/impl/glsl4/instancing.glsl"
+
+layout (location = SG_VS_POSITIONS_ATTRIBUTE_LOC) in vec3 positionsAttribute;
+layout (location = SG_VS_UV_ATTRIBUTE_LOC) in vec3 UVAttribute;
+layout (location = SG_VS_NORMALS_ATTRIBUTE_LOC) in vec3 normalsAttribute;
+layout (location = SG_VS_TANGENTS_ATTRIBUTE_LOC) in vec3 tangentsAttribute;
+layout (location = SG_VS_BITANGENTS_ATTRIBUTE_LOC) in vec3 bitangentsAttribute;
+layout (location = SG_VS_BONES_IDS_ATTRIBUTE0_LOC) in ivec4 bonesIDsAttribute0;
+layout (location = SG_VS_BONES_IDS_ATTRIBUTE1_LOC) in ivec4 bonesIDsAttribute1;
+layout (location = SG_VS_BONES_WEIGHTS_ATTRIBUTE0_LOC) in vec4 bonesWeightsAttribute0;
+layout (location = SG_VS_BONES_WEIGHTS_ATTRIBUTE1_LOC) in vec4 bonesWeightsAttribute1;
+layout (location = SG_VS_VERTEX_COLOR_ATTRIBUTE0_LOC) in vec4 vertexColor0Attribute;
+layout (location = SG_VS_VERTEX_COLOR_ATTRIBUTE1_LOC) in vec4 vertexColor1Attribute;
 
 #include "sg_shaders/impl/glsl4/animation/bones_calculation.glsl"
+#include "sg_shaders/impl/glsl4/transform_utils.glsl"
 
 out VSOut
 {
@@ -58,7 +61,7 @@ void main()
     vec4 totalPosition = vec4(0.0);
     vec3 totalNormal = vec3(0.0);
 
-    mat4 finalModelMatrix = objectTransform.modelMatrix;
+    mat4 finalModelMatrix = getCurrentInstanceModelMatrix();
 
     bool isMeshAffectedByBones = calculateVertexPosAndNormal(positionsAttribute, normalsAttribute, totalPosition, totalNormal);
 
