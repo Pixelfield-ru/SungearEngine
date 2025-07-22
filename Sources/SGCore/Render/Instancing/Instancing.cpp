@@ -162,6 +162,9 @@ void SGCore::Instancing::update(const ECS::registry_t& inRegistry) noexcept
 
     // updating vertex buffer
 
-    m_instancesTransformsBuffer->bind();
-    m_instancesTransformsBuffer->putData(m_instancesTransforms);
+    if(m_instancesTransformsBuffer)
+    {
+        m_instancesTransformsBuffer->bind();
+        m_instancesTransformsBuffer->putData(m_instancesTransforms);
+    }
 }

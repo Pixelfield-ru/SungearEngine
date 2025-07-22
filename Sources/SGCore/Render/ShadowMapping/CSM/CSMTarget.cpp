@@ -3,7 +3,9 @@
 //
 
 #include "CSMTarget.h"
-
+#include "SGCore/Graphics/API/IShader.h"
+#include "SGCore/Graphics/API/IFrameBuffer.h"
+#include "SGCore/Graphics/API/ITexture2D.h"
 
 SGCore::CSMTarget::CSMTarget()
 {
@@ -49,4 +51,21 @@ SGCore::CSMCascade& SGCore::CSMTarget::getCascade(std::uint8_t idx) noexcept
 const SGCore::CSMCascade& SGCore::CSMTarget::getCascade(std::uint8_t idx) const noexcept
 {
     return m_levels[idx];
+}
+
+int SGCore::CSMTarget::bindUniformsToShader(IShader* forShader, float cameraZFar, int texUnitOffset) const noexcept
+{
+    forShader->useInteger("CSMCascadesCount", m_levels.size());
+    for(std::uint8_t i = 0; i < m_levels.size(); ++i)
+    {
+        const auto& cascade = m_levels[i];
+        forShader->useMatrix("CSMLightSpaceMatrix[" + std::to_string(i) + "]", cascade.m_projectionSpaceMatrix);
+        forShader->useFloat("CSMCascadesPlanesDistances[" + std::to_string(i) + "]", cameraZFar / cascade.m_level);
+        forShader->useFloat("CSMCascadesBiases[" + std::to_string(i) + "]", cascade.m_bias);
+        forShader->useTextureBlock("CSMShadowMaps[" + std::to_string(i) + "]", texUnitOffset + i);
+        cascade.m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0)->bind(texUnitOffset + i);
+        // cascade.m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)->bind(texUnitOffset + i);
+    }
+
+    return m_levels.size() + texUnitOffset + 1;
 }

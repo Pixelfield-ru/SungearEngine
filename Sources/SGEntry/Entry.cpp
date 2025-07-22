@@ -85,73 +85,6 @@ void coreInit()
         SGCore::FileUtils::readFile(configPath),
         loadedConfig, SGCore::Serde::FormatType::JSON, configLoadLog);
 
-    std::vector<SGCore::InterpolatedPath> testTexturesPaths {
-        "${enginePath}/Resources/textures/no_material.png",
-        "${enginePath}/Resources/textures/test.png",
-        "${enginePath}/Resources/textures/test.png"
-    };
-
-    {
-        std::filesystem::path p = "D:\\xampp\\phpMyAdmin\\themes\\pmahomme\\img\\designer";
-        for (const auto & entry : std::filesystem::directory_iterator(p))
-            testTexturesPaths.emplace_back(entry.path());
-    }
-
-    {
-        std::filesystem::path p = "D:\\Wireshark\\Wireshark User's Guide\\wsug_graphics\\toolbar";
-        for (const auto & entry : std::filesystem::directory_iterator(p))
-            testTexturesPaths.emplace_back(entry.path());
-    }
-
-    /*{
-        std::filesystem::path p = "D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Projects\\sample_shooter\\Resources\\loc0\\textures";
-        for (const auto & entry : std::filesystem::directory_iterator(p))
-            testTexturesPaths.emplace_back(entry.path());
-    }*/
-
-    /*for(const auto& testTexturePath : testTexturesPaths)
-    {
-        const auto texture = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(testTexturePath);
-        testTextures.push_back(texture);
-    }
-
-    std::sort(testTextures.begin(), testTextures.end(),
-         [](const SGCore::AssetRef<SGCore::ITexture2D>& a, const SGCore::AssetRef<SGCore::ITexture2D>& b) {
-             return std::max(a->getWidth(), a->getHeight()) > std::max(b->getWidth(), b->getHeight());
-         });
-
-    for(const auto& texture : testTextures)
-    {
-        SGCore::AtlasRect rect;
-        testAtlas.findBestRect({ texture->getWidth(), texture->getHeight() }, rect);
-        testAtlas.packTexture(rect, texture.get());
-    }*/
-
-    /*for(const auto& texture : testTextures)
-    {
-        SGCore::AtlasRect rect;
-        testAtlas.findBestRect({ texture->getWidth(), texture->getHeight() }, rect);
-        testAtlas.packTexture(rect, texture.get());
-    }
-
-    {
-        SGCore::AtlasRect rect;
-        testAtlas.findBestRect({ testTextures[0]->getWidth(), testTextures[0]->getHeight() }, rect);
-        testAtlas.packTexture(rect, testTextures[0].get());
-    }
-
-    {
-        SGCore::AtlasRect rect;
-        testAtlas.findBestRect({ testTextures[1]->getWidth(), testTextures[1]->getHeight() }, rect);
-        testAtlas.packTexture(rect, testTextures[1].get());
-    }*/
-
-    // testAtlas.getTexture()->resizeDataBuffer(6000, 6000);
-
-    /*testTextures[0]->resizeDataBuffer(2000, 2000);
-    testTextures[0]->bind(0);
-    testTextures[0]->subTextureData(testTextures[1]->getData().get(), testTextures[1]->getWidth(), testTextures[1]->getHeight(), 1000, 0);*/
-
     if(!configLoadLog.empty())
     {
         LOG_E(SGCORE_TAG,
@@ -179,27 +112,6 @@ void coreInit()
             testAtlas = &batch.getAtlas();
         });
     }
-
-    /*{
-        const size_t pixelsCnt = testAtlas->getTexture()->getWidth() * testAtlas->getTexture()->getHeight();
-
-        SGCore::Scope<std::uint8_t[]> pixels8 = SGCore::MakeScope<std::uint8_t[]>(pixelsCnt * 4);
-
-        for(size_t p = 0; p < pixelsCnt; ++p)
-        {
-            const float r = *reinterpret_cast<float*>(&testAtlas->getTexture()->getData()[p * 16]);
-            const float g = *reinterpret_cast<float*>(&testAtlas->getTexture()->getData()[p * 16 + 4]);
-            const float b = *reinterpret_cast<float*>(&testAtlas->getTexture()->getData()[p * 16 + 8]);
-            const float a = *reinterpret_cast<float*>(&testAtlas->getTexture()->getData()[p * 16 + 12]);
-
-            pixels8[p] = static_cast<std::uint8_t>(r * 255);
-            pixels8[p + 1] = static_cast<std::uint8_t>(g * 255);
-            pixels8[p + 2] = static_cast<std::uint8_t>(b * 255);
-            pixels8[p + 3] = static_cast<std::uint8_t>(a * 255);
-        }
-
-        stbi_write_png("test_atlas.png", testAtlas->getTexture()->getWidth(), testAtlas->getTexture()->getHeight(), 4, pixels8.get(), testAtlas->getTexture()->getWidth() * 4);
-    }*/
 
     if(SGCore::Scene::getCurrentScene())
     {

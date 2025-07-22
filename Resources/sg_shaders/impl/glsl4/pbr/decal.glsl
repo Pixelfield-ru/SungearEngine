@@ -65,6 +65,7 @@ layout(location = 3) out vec4 layerSTColor;
 #include "sg_shaders/impl/glsl4/math.glsl"
 #include "sg_shaders/impl/glsl4/pbr_base.glsl"
 #include "sg_shaders/impl/glsl4/color_correction/aces.glsl"
+#include "sg_shaders/impl/glsl4/shadows_sampling/csm.glsl"
 
 in VSOut
 {
@@ -267,6 +268,8 @@ void main()
     vec3 ambient = vec3(0.0);
     vec3 lo = vec3(0.0);
 
+    float shadow = getCSMShadow(atmosphere.sunPosition, vsIn.fragPos);
+
     // calculating sun
     {
         vec3 lightDir = normalize(atmosphere.sunPosition);
@@ -310,12 +313,12 @@ void main()
         float ctDenominator = 1.0 * NdotVD * NdotL;
         vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * u_materialSpecularCol.r;
 
-        lo += (diffuse * albedo.rgb / PI + specular) * max(atmosphere.sunColor.rgb, vec3(0, 0, 0)) * NdotL * 1.0;
+        lo += (diffuse * albedo.rgb / PI + specular) * max(atmosphere.sunColor.rgb, vec3(0, 0, 0)) * NdotL * shadow * 1.0;
     }
 
     // ambient = ambient * albedo.rgb * ao;
-    ambient = albedo.rgb * ao;
-    vec3 finalCol = ambient * u_materialAmbientCol.rgb * materialAmbientFactor + lo + ambient;
+    ambient = albedo.rgb * ao * dot(atmosphere.sunPosition, vec3(0, 1, 0));
+    vec3 finalCol = ambient * materialAmbientFactor + lo;
 
     // finalCol = vec3(tessEvalIn.UV.xy, 0.0);
     // finalCol = tessEvalIn.vertexPos;

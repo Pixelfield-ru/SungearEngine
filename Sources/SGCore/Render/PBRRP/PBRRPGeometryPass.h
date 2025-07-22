@@ -33,6 +33,7 @@ namespace SGCore
         
     private:
         AssetRef<IShader> m_batchShader;
+        AssetRef<IShader> m_instancingShader;
 
         void renderMesh(const Ref<ECS::registry_t>& registry,
                         const ECS::entity_t& meshEntity,
@@ -62,11 +63,6 @@ namespace SGCore
                               const ECS::entity_t& forCamera,
                               LayeredFrameReceiver* cameraLayeredFrameReceiver,
                               const Ref<OctreeNode>& node) noexcept;
-
-        static void bindCSMTargetUniforms(IShader* forShader,
-                                          const RenderingBase::reg_t& cameraRenderingBase,
-                                          const CSMTarget::reg_t* csmTarget,
-                                          int texUnitOffset) noexcept;
     };
 }
 

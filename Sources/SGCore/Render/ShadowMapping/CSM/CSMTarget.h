@@ -10,6 +10,8 @@
 
 namespace SGCore
 {
+    class IShader;
+
     struct CSMTarget : ECS::Component<CSMTarget, const CSMTarget>
     {
         CSMTarget();
@@ -17,6 +19,16 @@ namespace SGCore
         const std::vector<CSMCascade>& getCascades() const noexcept;
         CSMCascade& getCascade(std::uint8_t idx) noexcept;
         const CSMCascade& getCascade(std::uint8_t idx) const noexcept;
+
+        /**
+         * @param forShader Bind uniforms to shader.
+         * @param cameraZFar Camera far Z.
+         * @param texUnitOffset Textures unit offset for CSM shadow maps.
+         * @return New textures unit offset.
+         */
+        [[nodiscard]] int bindUniformsToShader(IShader* forShader,
+                                               float cameraZFar,
+                                               int texUnitOffset) const noexcept;
 
     private:
         std::vector<CSMCascade> m_levels; //{ 50.0f, 25.0f, 10.0f, 2.0f };

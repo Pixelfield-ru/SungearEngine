@@ -17,7 +17,7 @@ void SGCore::InstancingUpdater::update(const double& dt, const double& fixedDt) 
 
     const auto instancingView = registry->view<Instancing>();
 
-    instancingView.each([&registry](Instancing::reg_t& batch) {
-        batch.update(*registry);
+    instancingView.each([&registry](Instancing::reg_t& instancing) {
+        instancing.update(*registry);
     });
 }

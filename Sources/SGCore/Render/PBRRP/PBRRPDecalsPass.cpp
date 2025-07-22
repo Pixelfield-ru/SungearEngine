@@ -15,6 +15,7 @@
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/Instancing/Instancing.h"
 #include "SGCore/Render/Picking/Pickable.h"
+#include "SGCore/Render/ShadowMapping/CSM/CSMTarget.h"
 #include "SGCore/Utils/Assert.h"
 
 void SGCore::PBRRPDecalsPass::create(const Ref<IRenderPipeline>& parentRenderPipeline)
@@ -44,6 +45,8 @@ void SGCore::PBRRPDecalsPass::render(const Ref<Scene>& scene, const Ref<IRenderP
                                                                           RenderingBase::reg_t& cameraRenderingBase,
                                                                           Transform::reg_t& cameraTransform) {
 
+        const auto* cameraCSMTarget = registry->tryGet<CSMTarget>(cameraEntity);
+
         CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
 
         if(m_shader)
@@ -61,7 +64,7 @@ void SGCore::PBRRPDecalsPass::render(const Ref<Scene>& scene, const Ref<IRenderP
         cameraLayeredFrameReceiver.m_layersFrameBuffer->bindAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4, 0);
         cameraLayeredFrameReceiver.m_layersFrameBuffer->bindAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT5, 1);
 
-        decalsView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, this](
+        decalsView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, &cameraCSMTarget, &cameraRenderingBase, this](
         const ECS::entity_t& decalEntity,
         const EntityBaseInfo::reg_t& decalInfo,
         const Transform::reg_t& decalTransform,
@@ -122,11 +125,15 @@ void SGCore::PBRRPDecalsPass::render(const Ref<Scene>& scene, const Ref<IRenderP
             }
 
             // 2 because we bound SGG_COLOR_ATTACHMENT4 (gbuffer world pos) and SGG_COLOR_ATTACHMENT5 (gbuffer normal) to 0 and 1 location
-            size_t texUnitOffset = shaderToUse->bindMaterialTextures(decalMesh.m_base.getMaterial(), 2);
-            texUnitOffset = shaderToUse->bindTextureBindings(texUnitOffset);
             shaderToUse->useTextureBlock("u_GBufferWorldPos", 0);
             shaderToUse->useTextureBlock("u_GBufferNormal", 1);
+            size_t texUnitOffset = shaderToUse->bindMaterialTextures(decalMesh.m_base.getMaterial(), 2);
+            texUnitOffset = shaderToUse->bindTextureBindings(texUnitOffset);
             shaderToUse->useMaterialFactors(decalMesh.m_base.getMaterial().get());
+            if(cameraCSMTarget)
+            {
+                texUnitOffset = cameraCSMTarget->bindUniformsToShader(shaderToUse.get(), cameraRenderingBase->m_zFar, texUnitOffset);
+            }
 
             auto uniformBuffsIt = m_uniformBuffersToUse.begin();
             while(uniformBuffsIt != m_uniformBuffersToUse.end())
@@ -159,6 +166,8 @@ void SGCore::PBRRPDecalsPass::render(const Ref<Scene>& scene, const Ref<IRenderP
         });
 
         // =======================================================================================
+        // =======================================================================================
+        // =======================================================================================
 
         if(m_instancingShader)
         {
@@ -168,7 +177,7 @@ void SGCore::PBRRPDecalsPass::render(const Ref<Scene>& scene, const Ref<IRenderP
             m_instancingShader->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
         }
 
-        instancedDecalsView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, this](
+        instancedDecalsView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, &cameraCSMTarget, &cameraRenderingBase, this](
         const ECS::entity_t& decalEntity,
         const EntityBaseInfo::reg_t& decalInfo,
         const Decal::reg_t& decal,
@@ -218,11 +227,15 @@ void SGCore::PBRRPDecalsPass::render(const Ref<Scene>& scene, const Ref<IRenderP
             }
 
             // 2 because we bound SGG_COLOR_ATTACHMENT4 (gbuffer world pos) and SGG_COLOR_ATTACHMENT5 (gbuffer normal) to 0 and 1 location
-            size_t texUnitOffset = shaderToUse->bindMaterialTextures(instancing.getBaseMaterial(), 2);
-            texUnitOffset = shaderToUse->bindTextureBindings(texUnitOffset);
             shaderToUse->useTextureBlock("u_GBufferWorldPos", 0);
             shaderToUse->useTextureBlock("u_GBufferNormal", 1);
+            size_t texUnitOffset = shaderToUse->bindMaterialTextures(instancing.getBaseMaterial(), 2);
+            texUnitOffset = shaderToUse->bindTextureBindings(texUnitOffset);
             shaderToUse->useMaterialFactors(instancing.getBaseMaterial().get());
+            if(cameraCSMTarget)
+            {
+                texUnitOffset = cameraCSMTarget->bindUniformsToShader(shaderToUse.get(), cameraRenderingBase->m_zFar, texUnitOffset);
+            }
 
             auto uniformBuffsIt = m_uniformBuffersToUse.begin();
             while(uniformBuffsIt != m_uniformBuffersToUse.end())
@@ -238,8 +251,6 @@ void SGCore::PBRRPDecalsPass::render(const Ref<Scene>& scene, const Ref<IRenderP
                     uniformBuffsIt = m_uniformBuffersToUse.erase(uniformBuffsIt);
                 }
             }
-
-            std::cout << "rendering decals instanced. count: " << instancing.m_entities.size() << std::endl;
 
             CoreMain::getRenderer()->renderArrayInstanced(
                 instancing.getVertexArray(),

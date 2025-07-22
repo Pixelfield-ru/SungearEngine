@@ -30,6 +30,7 @@
 #include "SGCore/Render/Decals/Decal.h"
 #include "SGCore/Render/Terrain/Terrain.h"
 #include "SGCore/Render/Batching/Batch.h"
+#include "SGCore/Render/Instancing/Instancing.h"
 #include "SGCore/Render/ShadowMapping/CSM/CSMTarget.h"
 
 size_t renderedInOctrees = 0;
@@ -42,6 +43,10 @@ void SGCore::PBRRPGeometryPass::create(const Ref<IRenderPipeline>& parentRenderP
                 *parentRenderPipeline->m_shadersPaths["StandardMeshShader"]);
 
         m_shader = AssetManager::getInstance()->loadAsset<IShader>(shaderFile->getPath());
+
+        m_instancingShader = AssetManager::getInstance()->loadAssetWithAlias<IShader>("PBRRPGeometryInstancingShader", shaderFile->getPath());
+        m_instancingShader->addDefine(SGShaderDefineType::SGG_OTHER_DEFINE, ShaderDefine("SG_INSTANCED_RENDERING", ""));
+        m_instancingShader->recompile();
     }
 
     // configuring default material to use standard pbr shader
@@ -76,13 +81,9 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
     auto transparentMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, TransparentEntityTag>(ECS::ExcludeTypes<DisableMeshGeometryPass, Decal>{});
     auto terrainsView = registry->view<EntityBaseInfo, Mesh, Transform, Terrain>(ECS::ExcludeTypes<DisableMeshGeometryPass, Decal>{});
     auto batchesView = registry->view<Batch>(ECS::ExcludeTypes<DisableMeshGeometryPass>{});
-
-    if(m_shader)
-    {
-        m_shader->bind();
-    }
+    auto instancingView = registry->view<EntityBaseInfo, Instancing>(ECS::ExcludeTypes<DisableMeshGeometryPass, Decal>{});
     
-    camerasView.each([&opaqueMeshesView, &transparentMeshesView, &terrainsView, &batchesView, &registry, this]
+    camerasView.each([&opaqueMeshesView, &transparentMeshesView, &terrainsView, &batchesView, &registry, &instancingView, this]
                              (const ECS::entity_t& cameraEntity,
                               const EntityBaseInfo::reg_t& camera3DBaseInfo,
                               RenderingBase::reg_t& cameraRenderingBase, Transform::reg_t& cameraTransform) {
@@ -92,6 +93,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
         
         if(m_shader)
         {
+            m_shader->bind();
             m_shader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
             m_shader->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
         }
@@ -164,6 +166,10 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
             }
         });
 
+        // =====================================================================================================
+        // =====================================================================================================
+        // =====================================================================================================
+
         // rendering batches
         batchesView.each([&cameraLayeredFrameReceiver, &registry, cameraEntity, &cameraRenderingBase, &cameraCSMTarget, this](Batch& batch) {
             // todo: add getting batch layer
@@ -188,7 +194,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
 
             if(cameraCSMTarget)
             {
-                bindCSMTargetUniforms(m_batchShader.get(), cameraRenderingBase, cameraCSMTarget, 5);
+                cameraCSMTarget->bindUniformsToShader(m_batchShader.get(), cameraRenderingBase->m_zFar, 5);
             }
 
             CoreMain::getRenderer()->renderArray(
@@ -198,6 +204,136 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
                 0
             );
         });
+
+        // =====================================================================================================
+        // =====================================================================================================
+        // =====================================================================================================
+
+        if(m_instancingShader)
+        {
+            m_instancingShader->bind();
+            m_instancingShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+            m_instancingShader->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
+        }
+
+        // rendering instancing
+        /*instancingView.each(
+            [&cameraLayeredFrameReceiver, &camera3DBaseInfo, &registry, cameraEntity, &cameraRenderingBase, &cameraCSMTarget, this](
+        const ECS::entity_t& instancingEntity,
+        EntityBaseInfo::reg_t& instancingEntityBaseInfo,
+        Instancing::reg_t& instancing) {
+            // todo: make layer choose
+            Ref<PostProcessLayer> meshPPLayer = cameraLayeredFrameReceiver->getDefaultLayer();
+
+            // todo: make transparent pass
+            bool isTransparentPass = false;
+
+            SG_ASSERT(meshPPLayer != nullptr,
+                      "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
+
+            if(!instancing.getBaseMeshData() ||
+               !instancing.getBaseMaterial()) return;
+
+            const auto& meshGeomShader = instancing.getBaseMaterial()->m_shaders["GeometryPass"];
+            const auto& shaderToUse = meshGeomShader ? meshGeomShader : m_instancingShader;
+
+            if(shaderToUse)
+            {
+                // binding shaderToUse only if it is custom shader
+                if(shaderToUse == meshGeomShader)
+                {
+                    shaderToUse->bind();
+                    shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+                    shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
+                }
+
+                {
+                    const auto* meshedEntityPickableComponent = registry->tryGet<Pickable>(instancingEntity);
+                    // enable picking
+                    if(meshedEntityPickableComponent &&
+                       meshedEntityPickableComponent->isPickableForCamera(camera3DBaseInfo.getThisEntity()))
+                    {
+                        shaderToUse->useVectorf("u_pickingColor", instancingEntityBaseInfo.getUniqueColor());
+                    }
+                    else
+                    {
+                        shaderToUse->useVectorf("u_pickingColor", { 0, 0, 0 });
+                    }
+                }
+
+                shaderToUse->useInteger("u_isTransparentPass", isTransparentPass ? 1 : 0);
+                shaderToUse->useInteger("u_verticesColorsAttributesCount",
+                                        instancing.getBaseMeshData()->m_verticesColors.size());
+                // meshPPLayer is always valid
+                shaderToUse->useInteger("SGPP_CurrentLayerIndex", meshPPLayer->getIndex());
+
+                // 14 MS FOR loc0 IN DEBUG
+                size_t texUnitOffset = shaderToUse->bindMaterialTextures(instancing.getBaseMaterial());
+                shaderToUse->bindTextureBindings(texUnitOffset);
+                shaderToUse->useMaterialFactors(instancing.getBaseMaterial().get());
+
+                auto uniformBuffsIt = m_uniformBuffersToUse.begin();
+                while(uniformBuffsIt != m_uniformBuffersToUse.end())
+                {
+                    if(auto lockedUniformBuf = uniformBuffsIt->lock())
+                    {
+                        shaderToUse->useUniformBuffer(lockedUniformBuf);
+
+                        ++uniformBuffsIt;
+                    }
+                    else
+                    {
+                        uniformBuffsIt = m_uniformBuffersToUse.erase(uniformBuffsIt);
+                    }
+                }
+
+                // using texture buffer with bones animated transformations
+                shaderToUse->useInteger("u_isAnimatedMesh", 0);
+
+                if(cameraCSMTarget)
+                {
+                    texUnitOffset = cameraCSMTarget->bindUniformsToShader(
+                        shaderToUse.get(), cameraRenderingBase->m_zFar, texUnitOffset);
+                }
+
+                bool lastUseFacesCulling = instancing.getBaseMaterial()->m_meshRenderState.m_useFacesCulling;
+                if(isTransparentPass)
+                {
+                    instancing.getBaseMaterial()->m_meshRenderState.m_useFacesCulling = false;
+                }
+
+                CoreMain::getRenderer()->renderArrayInstanced(
+                    instancing.getVertexArray(),
+                    instancing.getBaseMaterial()->m_meshRenderState,
+                    instancing.getBaseMeshData()->m_vertices.size(),
+                    instancing.getBaseMeshData()->m_indices.size(),
+                    instancing.m_entities.size()
+                );
+
+                if(isTransparentPass)
+                {
+                    instancing.getBaseMaterial()->m_meshRenderState.m_useFacesCulling = lastUseFacesCulling;
+                }
+
+                // if we used custom shader then we must bind standard pipeline shader
+                if(shaderToUse == meshGeomShader)
+                {
+                    if(m_instancingShader)
+                    {
+                        m_instancingShader->bind();
+                    }
+                }
+            }
+        });*/
+
+        // =====================================================================================================
+        // =====================================================================================================
+        // =====================================================================================================
+
+        if(m_shader)
+        {
+            m_shader->bind();
+        }
 
         m_transparentEntitiesRenderState.use();
         if(cameraLayeredFrameReceiver)
@@ -369,7 +505,10 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
             shaderToUse->useInteger("u_isAnimatedMesh", 0);
         }
 
-        bindCSMTargetUniforms(m_batchShader.get(), cameraRenderingBase, cameraCSMTarget, texUnitOffset);
+        if(cameraCSMTarget)
+        {
+            texUnitOffset = cameraCSMTarget->bindUniformsToShader(shaderToUse.get(), cameraRenderingBase->m_zFar, texUnitOffset);
+        }
 
         bool lastUseFacesCulling = mesh.m_base.getMaterial()->m_meshRenderState.m_useFacesCulling;
         if(isTransparentPass)
@@ -544,25 +683,5 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<ECS::registry_t>& reg
     if(cameraLayeredFrameReceiver)
     {
         cameraLayeredFrameReceiver->m_layersFrameBuffer->unbind();
-    }
-}
-
-void SGCore::PBRRPGeometryPass::bindCSMTargetUniforms(IShader* forShader,
-                                                      const RenderingBase::reg_t& cameraRenderingBase,
-                                                      const CSMTarget::reg_t* csmTarget,
-                                                      int texUnitOffset) noexcept
-{
-    if(!csmTarget) return;
-
-    forShader->useInteger("CSMCascadesCount", csmTarget->getCascades().size());
-    for(std::uint8_t i = 0; i < csmTarget->getCascades().size(); ++i)
-    {
-        const auto& cascade = csmTarget->getCascade(i);
-        forShader->useMatrix("CSMLightSpaceMatrix[" + std::to_string(i) + "]", cascade.m_projectionSpaceMatrix);
-        forShader->useFloat("CSMCascadesPlanesDistances[" + std::to_string(i) + "]", cameraRenderingBase->m_zFar / cascade.m_level);
-        forShader->useFloat("CSMCascadesBiases[" + std::to_string(i) + "]", cascade.m_bias);
-        forShader->useTextureBlock("CSMShadowMaps[" + std::to_string(i) + "]", texUnitOffset + i);
-        cascade.m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0)->bind(texUnitOffset + i);
-        // cascade.m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)->bind(texUnitOffset + i);
     }
 }
