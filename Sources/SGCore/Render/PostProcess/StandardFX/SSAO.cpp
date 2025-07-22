@@ -15,7 +15,7 @@ SGCore::SSAO::SSAO()
 {
     m_name = "SG_SSAO";
 
-    m_noise = AssetManager::getInstance()->createAsset<ITexture2D>();
+    m_noise = AssetManager::getInstance()->createAndAddAsset<ITexture2D>();
     // m_noise = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
     generateKernel();
 }

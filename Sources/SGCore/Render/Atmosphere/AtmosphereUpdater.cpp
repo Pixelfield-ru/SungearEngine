@@ -92,8 +92,8 @@ void SGCore::AtmosphereUpdater::updateAtmosphere() noexcept
 
         size_t hashedSunPos = MathUtils::hashVector(atmosphere.m_sunPosition);
 
-        auto meshShader = mesh.m_base.getMaterial()->m_shader;
-        if(meshShader && meshShader->getAnalyzedFile()->getSubPassName() == "GeometryPass")
+        auto meshShader = mesh.m_base.getMaterial()->m_shaders["GeometryPass"];
+        if(meshShader)
         {
             meshShader->bind();
             meshShader->useUniformBuffer(m_uniformBuffer);

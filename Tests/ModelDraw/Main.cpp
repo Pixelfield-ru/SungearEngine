@@ -140,7 +140,7 @@ void coreInit()
     standardCubemap->create();
 
     auto standardCubemapMaterial = mainAssetManager->getOrAddAssetByAlias<SGCore::IMaterial>("standard_skybox_material0");
-    standardCubemapMaterial->m_shader =
+    standardCubemapMaterial->m_shaders["GeometryPass"] =
             mainAssetManager->loadAsset<SGCore::IShader>(
                     *SGCore::RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["SkyboxShader"]);
     standardCubemapMaterial->m_meshRenderState.m_useFacesCulling = false;
@@ -181,7 +181,7 @@ void coreInit()
     /*auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx");
     auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx/skeletons/mixamorig:Hips");*/
 
-    auto modelAsset = SGCore::AssetManager::getInstance()->createAsset<SGCore::ModelAsset>();
+    auto modelAsset = SGCore::AssetManager::getInstance()->createAndAddAsset<SGCore::ModelAsset>();
 
     auto& modelAssetLoadSlot = modelAsset->onLazyLoadDone += [](SGCore::IAsset* thisAsset) {
         auto* modelAsset = static_cast<SGCore::ModelAsset*>(thisAsset);

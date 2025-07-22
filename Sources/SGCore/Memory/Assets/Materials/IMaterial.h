@@ -34,7 +34,8 @@ namespace SGCore
 
         std::string m_name;
 
-        AssetRef<IShader> m_shader;
+        // first - tag, second - shader
+        std::unordered_map<std::string, AssetRef<IShader>> m_shaders;
 
         MeshRenderState m_meshRenderState;
 

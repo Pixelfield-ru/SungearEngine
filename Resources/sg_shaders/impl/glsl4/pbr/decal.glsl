@@ -1,17 +1,19 @@
 #include "sg_shaders/impl/glsl4/uniform_bufs_decl.glsl"
 #include "sg_shaders/impl/glsl4/postprocessing/layered/utils.glsl"
 
-#subpass [GeometryPass]
+#subpass [DecalsPass]
 
 #attribute [Culling] [true]
 
 #vertex
 
-layout (location = 0) in vec3 positionsAttribute;
-layout (location = 1) in vec3 UVAttribute;
-layout (location = 2) in vec3 normalsAttribute;
-layout (location = 3) in vec3 tangentsAttribute;
-layout (location = 4) in vec3 bitangentsAttribute;
+#include "sg_shaders/impl/glsl4/instancing.glsl"
+
+layout (location = SG_VS_POSITIONS_ATTRIBUTE_LOC) in vec3 positionsAttribute;
+layout (location = SG_VS_UV_ATTRIBUTE_LOC) in vec3 UVAttribute;
+layout (location = SG_VS_NORMALS_ATTRIBUTE_LOC) in vec3 normalsAttribute;
+layout (location = SG_VS_TANGENTS_ATTRIBUTE_LOC) in vec3 tangentsAttribute;
+layout (location = SG_VS_BITANGENTS_ATTRIBUTE_LOC) in vec3 bitangentsAttribute;
 
 out VSOut
 {
@@ -25,21 +27,25 @@ out VSOut
     mat4 invModelMatrix;
 } vsOut;
 
+#include "sg_shaders/impl/glsl4/transform_utils.glsl"
+
 void main()
 {
+    mat4 instanceModelMatrix = getCurrentInstanceModelMatrix();
+
     vsOut.UV = UVAttribute.xy;
     vsOut.normal = normalize(normalsAttribute);
-    vsOut.worldNormal = normalize(mat3(transpose(inverse(objectTransform.modelMatrix))) * vsOut.normal);
+    vsOut.worldNormal = normalize(mat3(transpose(inverse(instanceModelMatrix))) * vsOut.normal);
 
     vsOut.vertexPos = positionsAttribute.xyz;
-    vsOut.fragPos = vec3(objectTransform.modelMatrix * vec4(positionsAttribute, 1.0));
+    vsOut.fragPos = vec3(instanceModelMatrix * vec4(positionsAttribute, 1.0));
 
-    vec3 T = normalize(vec3(objectTransform.modelMatrix * vec4(tangentsAttribute, 0.0)));
-    vec3 B = normalize(vec3(objectTransform.modelMatrix * vec4(bitangentsAttribute, 0.0)));
-    vec3 N = normalize(vec3(objectTransform.modelMatrix * vec4(vsOut.normal, 0.0)));
+    vec3 T = normalize(vec3(instanceModelMatrix * vec4(tangentsAttribute, 0.0)));
+    vec3 B = normalize(vec3(instanceModelMatrix * vec4(bitangentsAttribute, 0.0)));
+    vec3 N = normalize(vec3(instanceModelMatrix * vec4(vsOut.normal, 0.0)));
     vsOut.TBN = mat3(T, B, N);
 
-    vsOut.invModelMatrix = inverse(objectTransform.modelMatrix);
+    vsOut.invModelMatrix = inverse(instanceModelMatrix);
 
     gl_Position = camera.projectionSpaceMatrix * vec4(vsOut.fragPos, 1.0);
 }

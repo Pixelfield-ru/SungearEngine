@@ -5564,7 +5564,7 @@ namespace SGCore::Serde
         {
             valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
             valueView.getValueContainer().addMember("m_transparencyType", valueView.m_data->m_transparencyType);
-            valueView.getValueContainer().addMember("m_shader", valueView.m_data->m_shader, std::forward<SharedDataT>(sharedData)...);
+            valueView.getValueContainer().addMember("m_shaders", valueView.m_data->m_shaders, std::forward<SharedDataT>(sharedData)...);
             valueView.getValueContainer().addMember("m_meshRenderState", valueView.m_data->m_meshRenderState);
 
             valueView.getValueContainer().addMember("m_textures", valueView.m_data->m_textures, std::forward<SharedDataT>(sharedData)...);
@@ -5594,10 +5594,10 @@ namespace SGCore::Serde
                 valueView.m_data->m_transparencyType = std::move(*transparencyType);
             }
 
-            auto shader = valueView.getValueContainer().template getMember<AssetRef<IShader>>("m_shader", std::forward<SharedDataT>(sharedData)...);
-            if(shader)
+            auto shaders = valueView.getValueContainer().template getMember<std::unordered_map<std::string, AssetRef<IShader>>>("m_shaders", std::forward<SharedDataT>(sharedData)...);
+            if(shaders)
             {
-                valueView.m_data->m_shader = std::move(*shader);
+                valueView.m_data->m_shaders = std::move(*shaders);
             }
 
             const auto meshRenderState = valueView.getValueContainer().template getMember<MeshRenderState>("m_meshRenderState");

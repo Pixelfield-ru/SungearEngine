@@ -47,7 +47,7 @@ SGCore::AssetRef<SGCore::SVGImageSpecialization> SGCore::SVGImage::getSpecializa
             return nullptr;
         }
         
-        specialization = getParentAssetManager()->createAsset<SVGImageSpecialization>();
+        specialization = getParentAssetManager()->createAndAddAsset<SVGImageSpecialization>();
 
         specialization->m_bitmap = std::move(bitmap);
         specialization->regenerate();

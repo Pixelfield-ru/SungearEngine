@@ -11,6 +11,7 @@
 #include "SGCore/Graphics/API/IVertexBuffer.h"
 #include "SGCore/Graphics/API/IVertexBufferLayout.h"
 #include "SGCore/ImportedScenesArch/IMeshData.h"
+#include "SGCore/Memory/Assets/Materials/IMaterial.h"
 
 SGCore::AssetRef<SGCore::IMeshData> SGCore::Instancing::getBaseMeshData() const noexcept
 {
@@ -111,6 +112,16 @@ SGCore::AssetRef<SGCore::IMaterial> SGCore::Instancing::getBaseMaterial() const 
 void SGCore::Instancing::setBaseMaterial(const AssetRef<IMaterial>& material) noexcept
 {
     m_baseMaterial = material;
+
+    if(m_baseMaterial)
+    {
+        m_renderState = m_baseMaterial->m_meshRenderState;
+    }
+}
+
+SGCore::Ref<SGCore::IVertexArray> SGCore::Instancing::getVertexArray() const noexcept
+{
+    return m_vertexArray;
 }
 
 void SGCore::Instancing::update(const ECS::registry_t& inRegistry) noexcept

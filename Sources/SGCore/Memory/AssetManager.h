@@ -154,7 +154,7 @@ namespace SGCore
 
         template<typename AssetT, typename... AssetCtorArgsT>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        AssetRef<AssetT> createAsset(AssetCtorArgsT&&... assetCtorArgs) noexcept
+        AssetRef<AssetT> createAndAddAsset(AssetCtorArgsT&&... assetCtorArgs) noexcept
         {
             Ref<AssetT> asset = createAssetInstance<AssetT>(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
             m_assets[hashString(asset->getAlias())][AssetT::type_id] = asset;
@@ -1114,7 +1114,7 @@ namespace SGCore
 
         template<typename AssetT, typename... AssetCtorArgsT>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        AssetRef<AssetT> createAsset(const InterpolatedPath& withPath, const std::string& withAlias, AssetStorageType storedBy, AssetCtorArgsT&&... assetCtorArgs) noexcept
+        AssetRef<AssetT> createAndAddAsset(const InterpolatedPath& withPath, const std::string& withAlias, AssetStorageType storedBy, AssetCtorArgsT&&... assetCtorArgs) noexcept
         {
             // bringing the path to a single view
             auto normalizedPath = InterpolatedPath(Utils::normalizePath(withPath.raw()));

@@ -14,6 +14,9 @@ namespace SGCore
         void create(const Ref<IRenderPipeline>& parentRenderPipeline) final;
 
         void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) final;
+
+    private:
+        AssetRef<IShader> m_instancingShader;
     };
 }
 

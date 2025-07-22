@@ -486,6 +486,9 @@ void main()
     vec3 finalCol = ambient * vec3(1.0) * materialAmbientFactor + lo;
 
     layerColor = vec4(finalCol, 1.0);
+    layerWorldPosColor = gsIn.fragPos;
+    layerFragmentNormalColor = finalNormal;
+    layerVertexNormalColor = gsIn.worldNormal;
     // layerColor = diffuseColor;
     // layerColor = vec4(diffuseTexUVOffset, 1.0, 1.0);
     // layerColor = vec4(gsIn.worldNormal, 1.0);

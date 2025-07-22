@@ -9,6 +9,7 @@
 #include "SGCore/Memory/AssetRef.h"
 #include "SGCore/Render/Batching/BatchInstanceTransform.h"
 #include "SGCore/ECS/Component.h"
+#include "SGCore/Graphics/API/RenderState.h"
 
 namespace SGCore
 {
@@ -21,11 +22,15 @@ namespace SGCore
     {
         std::vector<ECS::entity_t> m_entities;
 
+        MeshRenderState m_renderState;
+
         [[nodiscard]] AssetRef<IMeshData> getBaseMeshData() const noexcept;
         void setBaseMeshData(const AssetRef<IMeshData>& meshData) noexcept;
 
         [[nodiscard]] AssetRef<IMaterial> getBaseMaterial() const noexcept;
         void setBaseMaterial(const AssetRef<IMaterial>& material) noexcept;
+
+        [[nodiscard]] Ref<IVertexArray> getVertexArray() const noexcept;
 
         void update(const ECS::registry_t& inRegistry) noexcept;
 

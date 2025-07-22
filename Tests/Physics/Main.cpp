@@ -168,7 +168,7 @@ void coreInit()
     // adding skybox with atmosphere
     {
         auto standardCubemapMaterial = mainAssetManager->getOrAddAssetByAlias<SGCore::IMaterial>("standard_skybox_material0");
-        standardCubemapMaterial->m_shader =
+        standardCubemapMaterial->m_shaders["GeometryPass"] =
                 mainAssetManager->loadAsset<SGCore::IShader>(
                         *SGCore::RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["SkyboxShader"]);
         standardCubemapMaterial->m_meshRenderState.m_useFacesCulling = false;

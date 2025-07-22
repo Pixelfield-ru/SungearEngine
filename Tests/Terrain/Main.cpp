@@ -240,7 +240,7 @@ void coreInit()
     standardCubemap->create();
 
     auto standardCubemapMaterial = mainAssetManager->getOrAddAssetByAlias<SGCore::IMaterial>("standard_skybox_material0");
-    standardCubemapMaterial->m_shader =
+    standardCubemapMaterial->m_shaders["GeometryPass"] =
             mainAssetManager->loadAsset<SGCore::IShader>(
                     *SGCore::RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["SkyboxShader"]);
     standardCubemapMaterial->m_meshRenderState.m_useFacesCulling = false;
@@ -273,7 +273,7 @@ void coreInit()
     // creating terrain material ==============================
 
     auto standardTerrainMaterial = mainAssetManager->getOrAddAssetByAlias<SGCore::IMaterial>("standard_terrain_material");
-    standardTerrainMaterial->m_shader =
+    standardTerrainMaterial->m_shaders["GeometryPass"] =
             mainAssetManager->loadAsset<SGCore::IShader>(
                     *SGCore::RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["StandardTerrainShader"]);
     standardTerrainMaterial->m_meshRenderState.m_useFacesCulling = false;
@@ -292,7 +292,7 @@ void coreInit()
     // creating terrain material ==============================
 
     auto testMaterial = mainAssetManager->getOrAddAssetByAlias<SGCore::IMaterial>("test_material_0");
-    testMaterial->m_shader =
+    testMaterial->m_shaders["GeometryPass"] =
             mainAssetManager->loadAsset<SGCore::IShader>(
                     *SGCore::RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["StandardMeshShader"]);
     testMaterial->m_meshRenderState.m_useFacesCulling = false;
@@ -318,7 +318,7 @@ void coreInit()
     auto& terrainComponent = ecsRegistry->emplace<SGCore::Terrain>(terrainEntity);
 
     // creating terrain mesh ====
-    terrainMeshData = mainAssetManager->createAsset<SGCore::IMeshData>();
+    terrainMeshData = mainAssetManager->createAndAddAsset<SGCore::IMeshData>();
 
     SGCore::Terrain::generate(terrainComponent, terrainMeshData, 40, 40, 100);
 

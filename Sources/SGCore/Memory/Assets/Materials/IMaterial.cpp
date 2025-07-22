@@ -145,7 +145,12 @@ void SGCore::IMaterial::onMemberAssetsReferencesResolveImpl(AssetManager* update
         }
     }
 
-    AssetManager::resolveAssetReference(updatedAssetManager, m_shader);
+    for(auto& [tag, shader] : m_shaders)
+    {
+        if(!shader) continue;
+
+        AssetManager::resolveAssetReference(updatedAssetManager, shader);
+    }
 }
 
 void SGCore::IMaterial::doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept

@@ -17,7 +17,7 @@ void SGCore::MeshBuilder::buildBox3D(SGCore::MeshBase& meshBase, const glm::vec3
 
     // auto meshData = meshBase.getMeshData();
 
-    auto meshData = AssetManager::getInstance()->createAsset<IMeshData>();
+    auto meshData = AssetManager::getInstance()->createAndAddAsset<IMeshData>();
     meshBase.setMeshData(meshData);
 
     meshData->m_vertices.clear();
@@ -90,7 +90,7 @@ void SGCore::MeshBuilder::buildBox3D(SGCore::MeshBase& meshBase, const glm::vec3
 void SGCore::MeshBuilder::buildSphereVariant1(SGCore::MeshBase& meshBase, const float& radius,
                                               const float& angleIncrement) noexcept
 {
-    auto meshData = AssetManager::getInstance()->createAsset<IMeshData>();
+    auto meshData = AssetManager::getInstance()->createAndAddAsset<IMeshData>();
     meshBase.setMeshData(meshData);
 
     // clear

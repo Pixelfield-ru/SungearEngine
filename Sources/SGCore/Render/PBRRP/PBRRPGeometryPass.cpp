@@ -46,7 +46,7 @@ void SGCore::PBRRPGeometryPass::create(const Ref<IRenderPipeline>& parentRenderP
 
     // configuring default material to use standard pbr shader
     auto defaultMaterial = AssetManager::getInstance()->loadAsset<IMaterial>("${enginePath}/Resources/materials/no_material.sgmat");
-    defaultMaterial->m_shader = m_shader;
+    defaultMaterial->m_shaders["GeometryPass"] = m_shader;
 
     {
         auto shaderFile = AssetManager::getInstance()->loadAsset<TextFileAsset>(
@@ -299,7 +299,7 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
     if(!mesh.m_base.getMeshData() ||
        !mesh.m_base.getMaterial()) return;
 
-    const auto& meshGeomShader = mesh.m_base.getMaterial()->m_shader;
+    const auto& meshGeomShader = mesh.m_base.getMaterial()->m_shaders["GeometryPass"];
     const auto& shaderToUse = meshGeomShader ? meshGeomShader : m_shader;
     
     if(shaderToUse)
@@ -413,7 +413,7 @@ void SGCore::PBRRPGeometryPass::renderTerrainMesh(const Ref<ECS::registry_t>& re
     if(!mesh.m_base.getMeshData() ||
        !mesh.m_base.getMaterial()) return;
 
-    const auto& meshGeomShader = mesh.m_base.getMaterial()->m_shader;
+    const auto& meshGeomShader = mesh.m_base.getMaterial()->m_shaders["GeometryPass"];
     const auto& shaderToUse = meshGeomShader ? meshGeomShader : m_shader;
 
     if(shaderToUse)

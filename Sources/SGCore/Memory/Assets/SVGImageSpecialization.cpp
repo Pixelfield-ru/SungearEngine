@@ -23,7 +23,7 @@ void SGCore::SVGImageSpecialization::regenerate(std::uint8_t channelsCount,
     m_size = { m_bitmap.width(), m_bitmap.height() };
 
     // TODO: MAYBE MAKE ALIAS
-    m_texture = getParentAssetManager()->createAsset<ITexture2D>();
+    m_texture = getParentAssetManager()->createAndAddAsset<ITexture2D>();
     m_texture->create(m_bitmap.data(), m_size.x, m_size.y, channelsCount, internalColorFormat, colorFormat);
 }
 
