@@ -22,9 +22,10 @@ namespace SGCore::Coro
 
         void await_suspend(std::coroutine_handle<> thisCoroutine);
     };
-}
 
-#include "Task.h"
+    template<typename>
+    struct Task;
+}
 
 template<typename T>
 auto operator co_await(const SGCore::Coro::Task<T>& otherTask)
@@ -35,7 +36,7 @@ auto operator co_await(const SGCore::Coro::Task<T>& otherTask)
 namespace SGCore::Coro
 {
     /// Dummy function to return to caller
-    static Task<> returnToCaller() noexcept { co_return; }
+    static Task<void> returnToCaller() noexcept;
 }
 
 #endif // SUNGEARENGINE_CORO_TASKAWAITABLE_H
