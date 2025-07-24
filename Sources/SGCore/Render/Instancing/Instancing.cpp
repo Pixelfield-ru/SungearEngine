@@ -22,29 +22,31 @@ void SGCore::Instancing::setBaseMeshData(const AssetRef<IMeshData>& meshData) no
 {
     m_baseMeshData = meshData;
 
-    if(!m_vertexArray)
-    {
-        m_vertexArray = Ref<IVertexArray>(CoreMain::getRenderer()->createVertexArray());
-    }
-
-    if(!m_instancesTransformsBuffer)
-    {
-        m_instancesTransformsBuffer = Ref<IVertexBuffer>(CoreMain::getRenderer()->createVertexBuffer());
-        m_instancesTransformsBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_instancesTransforms);
-    }
-
     if(m_baseMeshData)
     {
-        const auto bufferLayout = Ref<IVertexBufferLayout>(CoreMain::getRenderer()->createVertexBufferLayout());
+        if(!m_vertexArray)
+        {
+            m_vertexArray = Ref<IVertexArray>(CoreMain::getRenderer()->createVertexArray());
+            m_vertexArray->create();
+        }
+
+        if(!m_instancesTransformsBuffer)
+        {
+            m_instancesTransformsBuffer = Ref<IVertexBuffer>(CoreMain::getRenderer()->createVertexBuffer());
+            m_instancesTransformsBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_instancesTransforms);
+        }
 
         m_vertexArray->bind();
+        m_instancesTransformsBuffer->bind();
+
+        const auto bufferLayout = Ref<IVertexBufferLayout>(CoreMain::getRenderer()->createVertexBufferLayout());
 
         std::uint16_t currentAttribID = 0;
 
         for(std::uint8_t i = 0; i < 4; ++i)
         {
             auto instanceMatrixVec4Attrib = bufferLayout->createVertexAttribute(currentAttribID,
-                "instanceMatrixVec4_0",
+                "instanceMatrixVec4_" + std::to_string(i),
                 SGGDataType::SGG_FLOAT4,
                 4,
                 false,
@@ -126,6 +128,8 @@ SGCore::Ref<SGCore::IVertexArray> SGCore::Instancing::getVertexArray() const noe
 
 void SGCore::Instancing::update(const ECS::registry_t& inRegistry) noexcept
 {
+    if(m_entities.empty()) return;
+
     m_instancesTransforms.clear();
 
     for(size_t i = 0; i < m_entities.size(); ++i)
@@ -139,7 +143,11 @@ void SGCore::Instancing::update(const ECS::registry_t& inRegistry) noexcept
         }
 
         const auto* tmpTransform = inRegistry.tryGet<Transform>(entity);
-        if(!tmpTransform) continue;
+        if(!tmpTransform)
+        {
+            m_instancesTransforms.emplace_back();
+            continue;
+        }
 
         const auto& transform = *tmpTransform;
 

@@ -248,6 +248,7 @@ void SGCore::IMeshData::bindBuffersToVertexArray(const Ref<IVertexArray>& toVert
                                                                0,
                                                                0);
 
+    bufferLayout->reset();
     bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(positionsAttrib))->prepare()->enableAttributes();
     // --------------------------------------------
 

@@ -217,7 +217,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
         }
 
         // rendering instancing
-        /*instancingView.each(
+        instancingView.each(
             [&cameraLayeredFrameReceiver, &camera3DBaseInfo, &registry, cameraEntity, &cameraRenderingBase, &cameraCSMTarget, this](
         const ECS::entity_t& instancingEntity,
         EntityBaseInfo::reg_t& instancingEntityBaseInfo,
@@ -310,6 +310,8 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
                     instancing.m_entities.size()
                 );
 
+                std::cout << "rendering instanced: " << instancing.m_entities.size() << std::endl;
+
                 if(isTransparentPass)
                 {
                     instancing.getBaseMaterial()->m_meshRenderState.m_useFacesCulling = lastUseFacesCulling;
@@ -324,7 +326,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
                     }
                 }
             }
-        });*/
+        });
 
         // =====================================================================================================
         // =====================================================================================================
