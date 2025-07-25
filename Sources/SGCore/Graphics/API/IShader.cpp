@@ -3,6 +3,8 @@
 //
 
 #include "IShader.h"
+
+#include "GPUDeviceInfo.h"
 #include "IFrameBuffer.h"
 #include "ITexture2D.h"
 #include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"
@@ -34,6 +36,11 @@ void SGCore::IShader::compile(const SGCore::AssetRef<SGCore::TextFileAsset>& tex
         return;
     }
 
+    if(!hasDefine(SGShaderDefineType::SGG_OTHER_DEFINE, "SG_VS_MAX_ATTRIBS_COUNT"))
+    {
+        addDefine(SGShaderDefineType::SGG_OTHER_DEFINE, ShaderDefine("SG_VS_MAX_ATTRIBS_COUNT", std::to_string(GPUDeviceInfo::getMaxVertexAttribsCount())));
+    }
+
     doCompile();
 }
 
@@ -43,7 +50,7 @@ void SGCore::IShader::recompile() noexcept
     compile(m_fileAsset.lock());
 }
 
-void SGCore::IShader::addDefines(const SGShaderDefineType& shaderDefineType,
+void SGCore::IShader::addDefines(SGShaderDefineType shaderDefineType,
                                  const std::vector<ShaderDefine>& shaderDefines)
 {
     auto& shaderTypedDefines = m_defines[shaderDefineType];
@@ -63,28 +70,8 @@ void SGCore::IShader::addDefines(const SGShaderDefineType& shaderDefineType,
     if(m_autoRecompile) recompile();
 }
 
-void SGCore::IShader::emplaceDefines(const SGShaderDefineType& shaderDefineType,
-                                     std::vector<ShaderDefine>& shaderDefines)
-{
-    auto& shaderTypedDefines = m_defines[shaderDefineType];
-
-    for(auto& shaderDefine : shaderDefines)
-    {
-        // if define with name shaderDefine already exists then wont add new shader define
-        if(std::find(shaderTypedDefines.begin(), shaderTypedDefines.end(), shaderDefine)
-           != shaderTypedDefines.end())
-        {
-            return;
-        }
-
-        shaderTypedDefines.emplace_back(std::move(shaderDefine));
-    }
-
-    if(m_autoRecompile) recompile();
-}
-
-void SGCore::IShader::addDefine(const SGShaderDefineType& shaderDefineType,
-                                const ShaderDefine& shaderDefine)
+void SGCore::IShader::addDefine(SGShaderDefineType shaderDefineType,
+                                ShaderDefine shaderDefine)
 {
     auto& shaderTypedDefines = m_defines[shaderDefineType];
     // if define with name shaderDefine already exists then wont add new shader define
@@ -94,32 +81,10 @@ void SGCore::IShader::addDefine(const SGShaderDefineType& shaderDefineType,
         return;
     }
 
-    shaderTypedDefines.push_back(shaderDefine);
+    shaderTypedDefines.push_back(std::move(shaderDefine));
 }
 
-void SGCore::IShader::emplaceDefine(const SGShaderDefineType& shaderDefineType,
-                                    ShaderDefine&& shaderDefine)
-{
-    auto& shaderTypedDefines = m_defines[shaderDefineType];
-    // if define with name shaderDefine already exists then wont add new shader define
-    if (std::find(shaderTypedDefines.begin(), shaderTypedDefines.end(), shaderDefine)
-        != shaderTypedDefines.end())
-    {
-        return;
-    }
-
-    shaderTypedDefines.emplace_back(std::move(shaderDefine));
-}
-
-void SGCore::IShader::removeDefine(const SGShaderDefineType& shaderDefineType,
-                                   const ShaderDefine& shaderDefine)
-{
-    m_defines[shaderDefineType].remove(shaderDefine);
-
-    if(m_autoRecompile) recompile();
-}
-
-void SGCore::IShader::removeDefine(const SGShaderDefineType& shaderDefineType,
+void SGCore::IShader::removeDefine(SGShaderDefineType shaderDefineType,
                                    const std::string& shaderDefineName)
 {
     m_defines[shaderDefineType].remove(ShaderDefine(shaderDefineName, ""));
@@ -127,7 +92,7 @@ void SGCore::IShader::removeDefine(const SGShaderDefineType& shaderDefineType,
     if(m_autoRecompile) recompile();
 }
 
-void SGCore::IShader::updateDefine(const SGShaderDefineType& shaderDefineType,
+void SGCore::IShader::updateDefine(SGShaderDefineType shaderDefineType,
                                    const SGCore::ShaderDefine& shaderDefine)
 {
     m_autoRecompile = false;
@@ -140,20 +105,7 @@ void SGCore::IShader::updateDefine(const SGShaderDefineType& shaderDefineType,
     m_autoRecompile = true;
 }
 
-void SGCore::IShader::emplaceUpdateDefine(const SGShaderDefineType& shaderDefineType,
-                                          SGCore::ShaderDefine&& shaderDefine)
-{
-    m_autoRecompile = false;
-
-    removeDefine(shaderDefineType, shaderDefine.m_name);
-    emplaceDefine(shaderDefineType, std::move(shaderDefine));
-
-    recompile();
-
-    m_autoRecompile = true;
-}
-
-void SGCore::IShader::updateDefines(const SGShaderDefineType& shaderDefineType,
+void SGCore::IShader::updateDefines(SGShaderDefineType shaderDefineType,
                                     const std::vector<ShaderDefine>& shaderDefines)
 {
     m_autoRecompile = false;
@@ -166,20 +118,7 @@ void SGCore::IShader::updateDefines(const SGShaderDefineType& shaderDefineType,
     m_autoRecompile = true;
 }
 
-void SGCore::IShader::emplaceUpdateDefines(const SGShaderDefineType& shaderDefineType,
-                                           std::vector<ShaderDefine>& shaderDefines)
-{
-    m_autoRecompile = false;
-    for(auto& shaderDefine : shaderDefines)
-    {
-        removeDefine(shaderDefineType, shaderDefine.m_name);
-        emplaceDefine(shaderDefineType, std::move(shaderDefine));
-    }
-    recompile();
-    m_autoRecompile = true;
-}
-
-void SGCore::IShader::replaceDefines(const SGShaderDefineType& shaderDefineType,
+void SGCore::IShader::replaceDefines(SGShaderDefineType shaderDefineType,
                                      const std::list<ShaderDefine>& otherDefines) noexcept
 {
     auto& shaderTypedDefines = m_defines[shaderDefineType];
@@ -190,7 +129,7 @@ void SGCore::IShader::replaceDefines(const SGShaderDefineType& shaderDefineType,
     if(m_autoRecompile) recompile();
 }
 
-void SGCore::IShader::replaceDefines(const SGShaderDefineType& shaderDefineType,
+void SGCore::IShader::replaceDefines(SGShaderDefineType shaderDefineType,
                                      Ref<IShader> otherShader) noexcept
 {
     auto& shaderTypedDefines = m_defines[shaderDefineType];
@@ -200,6 +139,20 @@ void SGCore::IShader::replaceDefines(const SGShaderDefineType& shaderDefineType,
     shaderTypedDefines.insert(shaderTypedDefines.end(), otherShaderTypedDefines.begin(), otherShaderTypedDefines.end());
 
     if(m_autoRecompile) recompile();
+}
+
+bool SGCore::IShader::hasDefine(SGShaderDefineType shaderDefineType, const std::string& shaderDefineName) const noexcept
+{
+    auto it =  m_defines.find(shaderDefineType);
+    if(it == m_defines.end()) return false;
+
+    if (std::find(it->second.begin(), it->second.end(), ShaderDefine(shaderDefineName, ""))
+        != it->second.end())
+    {
+        return true;
+    }
+
+    return false;
 }
 
 void SGCore::IShader::clearDefinesOfType(const SGShaderDefineType& shaderDefineType) noexcept

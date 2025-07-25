@@ -33,3 +33,21 @@ vec3 getCurrentInstanceScale()
     return objectTransform.scale;
     #endif
 }
+
+vec4 getVertexColor0()
+{
+    #if SG_VS_VERTEX_COLOR_ATTRIBUTE0_LOC < SG_VS_MAX_ATTRIBS_COUNT
+    return vertexColor0Attribute;
+    #else
+    return vec4(1.0);
+    #endif
+}
+
+vec4 getVertexColor1()
+{
+    #if SG_VS_VERTEX_COLOR_ATTRIBUTE1_LOC < SG_VS_MAX_ATTRIBS_COUNT
+    return vertexColor1Attribute;
+    #else
+    return vec4(1.0);
+    #endif
+}

@@ -7,6 +7,7 @@
 
 #include "IMeshData.h"
 
+#include "SGCore/Graphics/API/GPUDeviceInfo.h"
 #include "SGCore/Main/CoreMain.h"
 
 #include "SGCore/Graphics/API/IVertexArray.h"
@@ -232,6 +233,8 @@ void SGCore::IMeshData::bindBuffersToVertexArray(const Ref<IVertexArray>& toVert
                                                  const Ref<IVertexBufferLayout>& vertexBufferLayout,
                                                  std::uint16_t vertexAttribsIDOffset) noexcept
 {
+    const auto maxVertexAttribsCount = GPUDeviceInfo::getMaxVertexAttribsCount();
+
     toVertexArray->bind();
 
     // ---------------- adding positions -------
@@ -368,6 +371,8 @@ void SGCore::IMeshData::bindBuffersToVertexArray(const Ref<IVertexArray>& toVert
 
     for(size_t i = 0; i < m_verticesColors.size(); ++i)
     {
+        if(vertexAttribsIDOffset + i + 9 >= maxVertexAttribsCount) break;
+
         m_verticesColorsBuffers[i]->bind();
 
         bufferLayout->reset();

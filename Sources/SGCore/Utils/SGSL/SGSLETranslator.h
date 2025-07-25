@@ -32,6 +32,8 @@ namespace SGCore
 
         void processCode(const std::filesystem::path& path, const std::string& code, const Ref<ShaderAnalyzedFile>& toAnalyzedFile) noexcept;
 
+        void clearOutputDirectory() const noexcept;
+
         static void includeDirectory(const std::filesystem::path& dirPath) noexcept;
 
     private:

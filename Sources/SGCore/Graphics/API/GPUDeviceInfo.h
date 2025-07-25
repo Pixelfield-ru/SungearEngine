@@ -16,6 +16,7 @@ namespace SGCore
     {
         static glm::ivec2 getMaxTextureSize() noexcept;
         static std::int32_t getMaxTextureBufferSize() noexcept;
+        static std::int32_t getMaxVertexAttribsCount() noexcept;
     };
 }
 

@@ -59,3 +59,30 @@ std::int32_t SGCore::GPUDeviceInfo::getMaxTextureBufferSize() noexcept
 
     return { };
 }
+
+std::int32_t SGCore::GPUDeviceInfo::getMaxVertexAttribsCount() noexcept
+{
+    switch(CoreMain::getRenderer()->getGAPIType())
+    {
+        case SG_API_TYPE_UNKNOWN: break;
+        case SG_API_TYPE_GL4:
+        {
+            return DeviceGLInfo::getMaxVertexAttribsCount();
+        }
+        case SG_API_TYPE_GL46:
+        {
+            return DeviceGLInfo::getMaxVertexAttribsCount();
+        }
+        case SG_API_TYPE_GLES2:
+        {
+            return DeviceGLInfo::getMaxVertexAttribsCount();
+        }
+        case SG_API_TYPE_GLES3:
+        {
+            return DeviceGLInfo::getMaxVertexAttribsCount();
+        }
+        case SG_API_TYPE_VULKAN: break;
+    }
+
+    return { };
+}

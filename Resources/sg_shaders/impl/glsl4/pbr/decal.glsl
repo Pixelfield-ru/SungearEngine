@@ -14,6 +14,12 @@ layout (location = SG_VS_UV_ATTRIBUTE_LOC) in vec3 UVAttribute;
 layout (location = SG_VS_NORMALS_ATTRIBUTE_LOC) in vec3 normalsAttribute;
 layout (location = SG_VS_TANGENTS_ATTRIBUTE_LOC) in vec3 tangentsAttribute;
 layout (location = SG_VS_BITANGENTS_ATTRIBUTE_LOC) in vec3 bitangentsAttribute;
+#if SG_VS_VERTEX_COLOR_ATTRIBUTE0_LOC < SG_VS_MAX_ATTRIBS_COUNT
+layout (location = SG_VS_VERTEX_COLOR_ATTRIBUTE0_LOC) in vec4 vertexColor0Attribute;
+#endif
+#if SG_VS_VERTEX_COLOR_ATTRIBUTE1_LOC < SG_VS_MAX_ATTRIBS_COUNT
+layout (location = SG_VS_VERTEX_COLOR_ATTRIBUTE1_LOC) in vec4 vertexColor1Attribute;
+#endif
 
 out VSOut
 {
@@ -27,7 +33,7 @@ out VSOut
     mat4 invModelMatrix;
 } vsOut;
 
-#include "sg_shaders/impl/glsl4/transform_utils.glsl"
+#include "sg_shaders/impl/glsl4/vs_attribs_utils.glsl"
 
 void main()
 {

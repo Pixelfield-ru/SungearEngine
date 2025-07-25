@@ -1005,7 +1005,7 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
             // if preview does not exist in asset manager then we are loading this preview using PARALLEL_THEN_LAZYLOAD
             if(!previewExists)
             {
-                fileIcon = m_previewAssetManager->createAsset<SGCore::ITexture2D>();
+                fileIcon = m_previewAssetManager->createAndAddAsset<SGCore::ITexture2D>();
                 // fileIcon = SGCore::Ref<SGCore::ITexture2D>(SGCore::CoreMain::getRenderer()->createTexture2D());
                 fileIcon->onLazyLoadDone += [previewExists, iconSize, iconPadding](SGCore::IAsset* self)
                 {

@@ -65,7 +65,8 @@ namespace SGCore
             glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &MAX_TEXTURE_IMAGE_UNITS);
             glGetIntegerv(GL_MAX_TEXTURE_BUFFER_SIZE, &MAX_TEXTURE_BUFFER_SIZE);
             glGetIntegerv(GL_MAX_TEXTURE_SIZE, &MAX_TEXTURE_SIZE);
-            
+            glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &MAX_VERTEX_ATTRIBS);
+
             if(s_supportingExtensions.contains(SG_STRINGIFY(GL_EXT_texture_filter_anisotropic)))
             {
                 glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &MAX_TEXTURE_MAX_ANISOTROPY);
@@ -86,6 +87,7 @@ namespace SGCore
             LOG_I(SGCORE_TAG, "GL_MAX_TEXTURE_MAX_ANISOTROPY: {}", MAX_TEXTURE_MAX_ANISOTROPY);
             LOG_I(SGCORE_TAG, "GL_MAX_TEXTURE_BUFFER_SUZE: {}", MAX_TEXTURE_BUFFER_SIZE);
             LOG_I(SGCORE_TAG, "GL_MAX_TEXTURE_SIZE: {}", MAX_TEXTURE_SIZE);
+            LOG_I(SGCORE_TAG, "GL_MAX_VERTEX_ATTRIBS: {}", MAX_VERTEX_ATTRIBS);
 
             LOG_I(SGCORE_TAG, "================================================");
         }
@@ -129,6 +131,11 @@ namespace SGCore
         {
             return MAX_TEXTURE_SIZE;
         }
+
+        [[maybe_unused]] [[nodiscard]] static auto getMaxVertexAttribsCount() noexcept
+        {
+            return MAX_VERTEX_ATTRIBS;
+        }
         
         static const auto& getSupportingExtensions() noexcept
         {
@@ -145,6 +152,7 @@ namespace SGCore
         static inline float MAX_TEXTURE_MAX_ANISOTROPY = 0.0f;
         static inline int MAX_TEXTURE_BUFFER_SIZE = 0;
         static inline int MAX_TEXTURE_SIZE = 0;
+        static inline int MAX_VERTEX_ATTRIBS = 0;
 
         static inline std::string VERSION;
     };

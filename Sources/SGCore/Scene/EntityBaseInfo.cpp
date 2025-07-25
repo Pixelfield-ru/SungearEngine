@@ -274,17 +274,11 @@ SGCore::ECS::entity_t SGCore::EntityBaseInfo::getRootParent(ECS::registry_t& inR
 void SGCore::EntityBaseInfo::getAllChildren(SGCore::ECS::registry_t& inRegistry,
                                             std::vector<ECS::entity_t>& outputEntities) const noexcept
 {
-    outputEntities.push_back(m_thisEntity);
-
     for(const auto& e : m_children)
     {
-        auto* childBaseInfo = inRegistry.tryGet<EntityBaseInfo>(e);
+        auto& childBaseInfo = inRegistry.get<EntityBaseInfo>(e);
         outputEntities.push_back(e);
-
-        if(childBaseInfo)
-        {
-            childBaseInfo->getAllChildren(inRegistry, outputEntities);
-        }
+        childBaseInfo.getAllChildren(inRegistry, outputEntities);
     }
 }
 
@@ -301,10 +295,9 @@ SGCore::ECS::entity_t SGCore::EntityBaseInfo::findEntity(SGCore::ECS::registry_t
         {
             return childBaseInfo.m_thisEntity;
         }
-        else
-        {
-            return childBaseInfo.findEntity(inRegistry, name);
-        }
+
+        const auto foundEntity = childBaseInfo.findEntity(inRegistry, name);
+        if(foundEntity != entt::null) return foundEntity;
     }
 
     return entt::null;

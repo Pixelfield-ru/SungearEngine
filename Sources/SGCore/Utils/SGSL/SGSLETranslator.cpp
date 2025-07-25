@@ -32,11 +32,21 @@ void SGCore::SGSLETranslator::processCode(const std::filesystem::path& path, con
             case SST_GEOMETRY: subShaderType = "geometry"; break;
             case SST_COMPUTE: subShaderType = "compute"; break;
             case SST_TESS_CONTROL: subShaderType = "tesselation-control"; break;
-            case SST_TESS_EVALUATION: subShaderType = "tesselation-evalution"; break;
+            case SST_TESS_EVALUATION: subShaderType = "tesselation-evaluation"; break;
         }
 
-        FileUtils::writeToFile(std::filesystem::path("SGSLETranslatorDebug") / (savePath + "_" + subShaderType + ".shader"), s.getCode(), false, true);
+        std::random_device rd;
+        std::mt19937 gen(rd());
+
+        std::uniform_int_distribution<> distrib(1, 1'000'000);
+
+        FileUtils::writeToFile(std::filesystem::path(m_config.m_outputDebugDirectoryPath) / (savePath + "_" + subShaderType + ".shader." + std::to_string(distrib(gen))), s.getCode(), false, true);
     }
+}
+
+void SGCore::SGSLETranslator::clearOutputDirectory() const noexcept
+{
+    std::filesystem::remove_all(m_config.m_outputDebugDirectoryPath);
 }
 
 std::string SGCore::SGSLETranslator::preprocessorPass(const std::filesystem::path& path, const std::string& code) noexcept

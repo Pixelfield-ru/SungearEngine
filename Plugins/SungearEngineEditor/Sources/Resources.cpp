@@ -41,13 +41,13 @@ void SGE::Resources::loadStandardResources(SGCore::AssetManager& toManager) noex
         standardCubemap->create();
 
         auto standardCubemapMaterial = toManager.getOrAddAssetByAlias<SGCore::IMaterial>("standard_skybox_material0");
-        standardCubemapMaterial->m_shader =
+        standardCubemapMaterial->m_shaders["GeometryPass"] =
                 toManager.loadAsset<SGCore::IShader>(
                         *SGCore::RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["SkyboxShader"]);
         standardCubemapMaterial->m_meshRenderState.m_useFacesCulling = false;
 
         auto standardGridMaterial = toManager.getOrAddAssetByAlias<SGCore::IMaterial>("standard_grid_material");
-        standardGridMaterial->m_shader =
+        standardGridMaterial->m_shaders["GeometryPass"] =
                 toManager.loadAsset<SGCore::IShader>(*SGCore::Paths::getDefaultPaths()["Shaders/InfiniteGrid"]);
         standardGridMaterial->m_meshRenderState.m_useFacesCulling = false;
 

@@ -64,23 +64,20 @@ namespace SGCore
         [[nodiscard]] virtual std::int32_t getShaderUniformLocation(const std::string& uniformName) = 0;
 
         // TODO: wtf is this. clean code
-        void addDefines(const SGShaderDefineType& shaderDefineType, const std::vector<ShaderDefine>& shaderDefines);
-        void emplaceDefines(const SGShaderDefineType& shaderDefineType, std::vector<ShaderDefine>& shaderDefines);
+        void addDefines(SGShaderDefineType shaderDefineType, const std::vector<ShaderDefine>& shaderDefines);
 
-        void addDefine(const SGShaderDefineType& shaderDefineType, const ShaderDefine& shaderDefine);
-        void emplaceDefine(const SGShaderDefineType& shaderDefineType, ShaderDefine&& shaderDefine);
+        void addDefine(SGShaderDefineType shaderDefineType, ShaderDefine shaderDefine);
 
-        void removeDefine(const SGShaderDefineType& shaderDefineType, const ShaderDefine& shaderDefine);
-        void removeDefine(const SGShaderDefineType& shaderDefineType, const std::string& shaderDefineName);
+        void removeDefine(SGShaderDefineType shaderDefineType, const std::string& shaderDefineName);
 
-        void updateDefine(const SGShaderDefineType& shaderDefineType, const ShaderDefine& shaderDefine);
-        void emplaceUpdateDefine(const SGShaderDefineType& shaderDefineType, ShaderDefine&& shaderDefine);
+        void updateDefine(SGShaderDefineType shaderDefineType, const ShaderDefine& shaderDefine);
 
-        void updateDefines(const SGShaderDefineType& shaderDefineType, const std::vector<ShaderDefine>& shaderDefines);
-        void emplaceUpdateDefines(const SGShaderDefineType& shaderDefineType, std::vector<ShaderDefine>& shaderDefines);
+        void updateDefines(SGShaderDefineType shaderDefineType, const std::vector<ShaderDefine>& shaderDefines);
 
-        void replaceDefines(const SGShaderDefineType& shaderDefineType, const std::list<ShaderDefine>& otherDefines) noexcept;
-        void replaceDefines(const SGShaderDefineType& shaderDefineType, Ref<IShader> otherShader) noexcept;
+        void replaceDefines(SGShaderDefineType shaderDefineType, const std::list<ShaderDefine>& otherDefines) noexcept;
+        void replaceDefines(SGShaderDefineType shaderDefineType, Ref<IShader> otherShader) noexcept;
+
+        [[nodiscard]] bool hasDefine(SGShaderDefineType shaderDefineType, const std::string& shaderDefineName) const noexcept;
 
         void clearDefinesOfType(const SGShaderDefineType& shaderDefineType) noexcept;
 

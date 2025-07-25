@@ -234,8 +234,8 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
             if(!instancing.getBaseMeshData() ||
                !instancing.getBaseMaterial()) return;
 
-            const auto& meshGeomShader = instancing.getBaseMaterial()->m_shaders["GeometryPass"];
-            const auto& shaderToUse = meshGeomShader ? meshGeomShader : m_instancingShader;
+            const auto& meshGeomShader = instancing.getBaseMaterial()->m_shaders["GeometryInstancingPass"];
+            const auto& shaderToUse = m_instancingShader;
 
             if(shaderToUse)
             {
@@ -309,8 +309,6 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
                     instancing.getBaseMeshData()->m_indices.size(),
                     instancing.m_entities.size()
                 );
-
-                std::cout << "rendering instanced: " << instancing.m_entities.size() << std::endl;
 
                 if(isTransparentPass)
                 {

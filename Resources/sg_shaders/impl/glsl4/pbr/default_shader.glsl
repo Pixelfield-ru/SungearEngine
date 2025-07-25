@@ -33,11 +33,15 @@ layout (location = SG_VS_BONES_IDS_ATTRIBUTE0_LOC) in ivec4 bonesIDsAttribute0;
 layout (location = SG_VS_BONES_IDS_ATTRIBUTE1_LOC) in ivec4 bonesIDsAttribute1;
 layout (location = SG_VS_BONES_WEIGHTS_ATTRIBUTE0_LOC) in vec4 bonesWeightsAttribute0;
 layout (location = SG_VS_BONES_WEIGHTS_ATTRIBUTE1_LOC) in vec4 bonesWeightsAttribute1;
-layout (location = SG_VS_VERTEX_COLOR_ATTRIBUTE0_LOC) in vec4 vertexColor0Attribute;
-layout (location = SG_VS_VERTEX_COLOR_ATTRIBUTE1_LOC) in vec4 vertexColor1Attribute;
+#if SG_VS_VERTEX_COLOR_ATTRIBUTE0_LOC < SG_VS_MAX_ATTRIBS_COUNT
+    layout (location = SG_VS_VERTEX_COLOR_ATTRIBUTE0_LOC) in vec4 vertexColor0Attribute;
+#endif
+#if SG_VS_VERTEX_COLOR_ATTRIBUTE1_LOC < SG_VS_MAX_ATTRIBS_COUNT
+    layout (location = SG_VS_VERTEX_COLOR_ATTRIBUTE1_LOC) in vec4 vertexColor1Attribute;
+#endif
 
 #include "sg_shaders/impl/glsl4/animation/bones_calculation.glsl"
-#include "sg_shaders/impl/glsl4/transform_utils.glsl"
+#include "sg_shaders/impl/glsl4/vs_attribs_utils.glsl"
 
 out VSOut
 {
@@ -90,8 +94,8 @@ void main()
     vec3 N = normalize(vec3(finalModelMatrix * vec4(vsOut.normal, 0.0)));
     vsOut.TBN = mat3(T, B, N);
 
-    vsOut.vertexColor0 = vertexColor0Attribute;
-    vsOut.vertexColor1 = vertexColor1Attribute;
+    vsOut.vertexColor0 = getVertexColor0();
+    vsOut.vertexColor1 = getVertexColor1();
 
     gl_Position = camera.projectionSpaceMatrix * vec4(vsOut.fragPos, 1.0);
 }

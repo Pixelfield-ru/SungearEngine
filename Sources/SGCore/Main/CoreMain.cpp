@@ -89,6 +89,7 @@ void SGCore::CoreMain::start()
 
     try
     {
+        std::filesystem::remove_all("SGSLETranslatorOutputDebug");
         std::filesystem::remove_all("ConsoleTmp");
     }
     catch(const std::exception& e)
