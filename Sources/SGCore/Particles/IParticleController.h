@@ -15,12 +15,13 @@ namespace SGCore
     {
         virtual ~IParticleController() = default;
 
-        virtual void onParticleAdd(ECS::entity_t particleEntity, ECS::registry_t& inRegistry) noexcept { }
-        virtual void onParticleRemove(ECS::entity_t particleEntity, ECS::registry_t& inRegistry) noexcept { }
+        virtual void onParticleAdd(ParticlesEmitter& particlesEmitter, ECS::entity_t particleEntity, ECS::registry_t& inRegistry, bool isAbsoluteNew) noexcept { }
+        virtual void onParticleRemove(ParticlesEmitter& particlesEmitter, ECS::entity_t particleEntity, ECS::registry_t& inRegistry) noexcept { }
+
         virtual void onAddInEmitter(ParticlesEmitter& particlesEmitter, ECS::registry_t& inRegistry) noexcept { }
         virtual void onRemoveFromEmitter(ParticlesEmitter& particlesEmitter, ECS::registry_t& inRegistry) noexcept { }
 
-        virtual void processParticle(ECS::entity_t particleEntity, const ECS::registry_t& inRegistry) noexcept = 0;
+        virtual void processParticle(ParticlesEmitter& particlesEmitter, ECS::entity_t particleEntity, const ECS::registry_t& inRegistry) noexcept = 0;
     };
 }
 

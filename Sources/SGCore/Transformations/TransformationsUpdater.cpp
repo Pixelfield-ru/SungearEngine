@@ -71,7 +71,7 @@ void SGCore::TransformationsUpdater::updateTransform(const EntityBaseInfo::reg_t
                                                      const Transform::reg_t& parentTransform,
                                                      const Ref<ECS::registry_t>& inRegistry)
 {
-    if(currentEntityTransform)
+    if(currentEntityTransform && currentEntityBaseInfo.m_isActive)
     {
         Ref<Rigidbody3D> rigidbody3D;
 

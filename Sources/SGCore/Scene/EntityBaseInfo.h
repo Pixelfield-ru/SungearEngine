@@ -36,6 +36,10 @@ namespace SGCore
         // sg_member()
         Weak<Layer> m_layer;
 
+        bool m_isActive = true;
+
+        void setActiveRecursive(bool active, ECS::registry_t& inRegistry) noexcept;
+
         void setParent(const ECS::entity_t& parent, ECS::registry_t& inRegistry) noexcept;
         void detachFromParent(ECS::registry_t& inRegistry) noexcept;
 

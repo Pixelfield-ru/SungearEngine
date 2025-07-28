@@ -1,4 +1,4 @@
-float ShadowMapPCF(sampler2D shadowMap, vec3 projCoord, vec2 resolution, vec2 pixelSize, int filterSize, float bias)
+float ShadowMapPCF(in sampler2D shadowMap, vec3 projCoord, vec2 resolution, vec2 pixelSize, int filterSize, float bias)
 {
     float shadow = 0.0f;
     vec2 grad = fract(projCoord.xy * resolution + 0.5f);

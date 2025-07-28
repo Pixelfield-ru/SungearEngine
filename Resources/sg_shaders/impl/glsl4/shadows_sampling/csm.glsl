@@ -27,7 +27,7 @@ float getCSMShadow(vec3 lightDir, vec3 fragPos)
 
     if(layer == -1)
     {
-        layer = CSMCascadesCount;
+        layer = CSMCascadesCount - 1;
     }
 
     vec4 fragPosLightSpace = CSMLightSpaceMatrix[layer] * vec4(fragPos, 1.0);

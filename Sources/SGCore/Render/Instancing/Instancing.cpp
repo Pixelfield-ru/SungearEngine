@@ -142,6 +142,8 @@ void SGCore::Instancing::update(const ECS::registry_t& inRegistry) noexcept
             continue;
         }
 
+        if(!inRegistry.get<EntityBaseInfo>(entity).m_isActive) continue;
+
         const auto* tmpTransform = inRegistry.tryGet<Transform>(entity);
         if(!tmpTransform)
         {

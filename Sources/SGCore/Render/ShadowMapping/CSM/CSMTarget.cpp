@@ -18,22 +18,22 @@ SGCore::CSMTarget::CSMTarget()
 
     CSMCascade cascade1;
     cascade1.m_level = 150.0f;
-    cascade1.m_frameBufferSize = { 1024 * 3, 1024 * 3 };
+    cascade1.m_frameBufferSize = { 1024 * 4, 1024 * 4 };
     cascade1.m_bias = 0.002f;
     cascade1.createFrameBuffer();
     m_levels.push_back(cascade1);
 
     CSMCascade cascade2;
     cascade2.m_level = 50.0f;
-    cascade2.m_frameBufferSize = { 1024 * 2, 1024 * 2 };
-    cascade2.m_bias = 0.003f;
+    cascade2.m_frameBufferSize = { 1024 * 4, 1024 * 4 };
+    cascade2.m_bias = 0.004f;
     cascade2.createFrameBuffer();
     m_levels.push_back(cascade2);
 
     CSMCascade cascade3;
     cascade3.m_level = 10.0f;
-    cascade3.m_frameBufferSize = { 1024 * 2, 1024 * 2 };
-    cascade3.m_bias = 0.008f;
+    cascade3.m_frameBufferSize = { 1024 * 4, 1024 * 4 };
+    cascade3.m_bias = 0.014f;
     cascade3.createFrameBuffer();
     m_levels.push_back(cascade3);
 }

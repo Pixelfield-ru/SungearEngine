@@ -7,6 +7,18 @@
 #include "SGCore/ECS/Registry.h"
 #include "SGCore/Utils/Assert.h"
 
+void SGCore::EntityBaseInfo::setActiveRecursive(bool active, ECS::registry_t& inRegistry) noexcept
+{
+    m_isActive = active;
+
+    for(auto&& child : m_children)
+    {
+        auto& childEntityBaseInfo = inRegistry.get<EntityBaseInfo>(child);
+
+        childEntityBaseInfo.setActiveRecursive(active, inRegistry);
+    }
+}
+
 void SGCore::EntityBaseInfo::setParent(const SGCore::ECS::entity_t& parent,
                                        SGCore::ECS::registry_t& inRegistry) noexcept
 {
