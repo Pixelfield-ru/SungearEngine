@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_PARTICLESEMITTER_H
 #define SUNGEARENGINE_PARTICLESEMITTER_H
 
-#include "IParticleController.h"
+#include "IParticlesController.h"
 #include "SGCore/ECS/Component.h"
 #include "SGCore/Main/CoreGlobals.h"
 
@@ -24,8 +24,8 @@ namespace SGCore
         ParticleCreateResult createParticle(ECS::registry_t& inRegistry) noexcept;
         void removeParticle(ECS::entity_t particleEntity, ECS::registry_t& inRegistry) noexcept;
 
-        void addController(const Ref<IParticleController>& controller, ECS::registry_t& inRegistry) noexcept;
-        void removeController(const Ref<IParticleController>& controller, ECS::registry_t& inRegistry) noexcept;
+        void addController(const Ref<IParticlesController>& controller, ECS::registry_t& inRegistry) noexcept;
+        void removeController(const Ref<IParticlesController>& controller, ECS::registry_t& inRegistry) noexcept;
 
     private:
         std::vector<ECS::entity_t> m_particles;
@@ -33,7 +33,7 @@ namespace SGCore
         // all particles map
         std::unordered_map<ECS::entity_t, size_t> m_particlesMap;
 
-        std::vector<Ref<IParticleController>> m_particleControllers;
+        std::vector<Ref<IParticlesController>> m_particleControllers;
     };
 }
 

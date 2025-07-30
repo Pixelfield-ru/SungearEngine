@@ -257,7 +257,7 @@ void SGCore::PBRRPDecalsPass::render(const Ref<Scene>& scene, const Ref<IRenderP
                 instancing.m_renderState,
                 instancing.getBaseMeshData()->m_vertices.size(),
                 instancing.getBaseMeshData()->m_indices.size(),
-                instancing.m_entities.size()
+                instancing.getActiveEntitiesCount()
             );
 
             // if we used custom shader then we must bind standard pipeline shader

@@ -11,9 +11,11 @@ namespace SGCore
 {
     struct ParticlesEmitter;
 
-    struct IParticleController
+    struct IParticlesController
     {
-        virtual ~IParticleController() = default;
+        bool m_isActive = true;
+
+        virtual ~IParticlesController() = default;
 
         virtual void onParticleAdd(ParticlesEmitter& particlesEmitter, ECS::entity_t particleEntity, ECS::registry_t& inRegistry, bool isAbsoluteNew) noexcept { }
         virtual void onParticleRemove(ParticlesEmitter& particlesEmitter, ECS::entity_t particleEntity, ECS::registry_t& inRegistry) noexcept { }

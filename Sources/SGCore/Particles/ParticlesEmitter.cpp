@@ -75,17 +75,19 @@ void SGCore::ParticlesEmitter::removeParticle(ECS::entity_t particleEntity, ECS:
     }
 }
 
-void SGCore::ParticlesEmitter::addController(const Ref<IParticleController>& controller,
+void SGCore::ParticlesEmitter::addController(const Ref<IParticlesController>& controller,
                                              ECS::registry_t& inRegistry) noexcept
 {
-    const auto cnt = std::erase(m_particleControllers, controller);
+    /*const auto cnt = std::erase(m_particleControllers, controller);
 
-    if(cnt == 0) return;
+    if(cnt == 0) return;*/
+
+    m_particleControllers.push_back(controller);
 
     controller->onAddInEmitter(*this, inRegistry);
 }
 
-void SGCore::ParticlesEmitter::removeController(const Ref<IParticleController>& controller,
+void SGCore::ParticlesEmitter::removeController(const Ref<IParticlesController>& controller,
                                                 ECS::registry_t& inRegistry) noexcept
 {
     const auto cnt = std::erase(m_particleControllers, controller);

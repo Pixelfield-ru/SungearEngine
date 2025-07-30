@@ -307,7 +307,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
                     instancing.getBaseMaterial()->m_meshRenderState,
                     instancing.getBaseMeshData()->m_vertices.size(),
                     instancing.getBaseMeshData()->m_indices.size(),
-                    instancing.m_entities.size()
+                    instancing.getActiveEntitiesCount()
                 );
 
                 if(isTransparentPass)

@@ -126,9 +126,16 @@ SGCore::Ref<SGCore::IVertexArray> SGCore::Instancing::getVertexArray() const noe
     return m_vertexArray;
 }
 
+size_t SGCore::Instancing::getActiveEntitiesCount() const noexcept
+{
+    return m_activeEntitiesCount;
+}
+
 void SGCore::Instancing::update(const ECS::registry_t& inRegistry) noexcept
 {
     if(m_entities.empty()) return;
+
+    size_t activeEntitiesCount = 0;
 
     m_instancesTransforms.clear();
 
@@ -159,6 +166,8 @@ void SGCore::Instancing::update(const ECS::registry_t& inRegistry) noexcept
             .m_rotation = glm::degrees(glm::eulerAngles(transform->m_finalTransform.m_rotation)),
             .m_scale = transform->m_finalTransform.m_scale
         });
+
+        ++activeEntitiesCount;
     }
 
     for(size_t i = 0; i < m_entitiesToRemove.size(); ++i)
@@ -167,6 +176,8 @@ void SGCore::Instancing::update(const ECS::registry_t& inRegistry) noexcept
 
         std::erase(m_entities, entity);
     }
+
+    m_activeEntitiesCount = activeEntitiesCount;
 
     m_entitiesToRemove.clear();
 

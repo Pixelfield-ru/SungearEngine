@@ -36,7 +36,7 @@ auto operator co_await(const SGCore::Coro::Task<T>& otherTask)
 namespace SGCore::Coro
 {
     /// Dummy function to return to caller
-    static Task<void> returnToCaller() noexcept;
+    Task<bool> returnToCaller() noexcept;
 }
 
 #endif // SUNGEARENGINE_CORO_TASKAWAITABLE_H

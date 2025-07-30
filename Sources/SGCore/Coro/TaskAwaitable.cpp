@@ -23,7 +23,9 @@ void SGCore::Coro::TaskAwaitable::await_suspend(std::coroutine_handle<> thisCoro
     CoroScheduler::addTaskAwaitableCoro(*this);
 }
 
-SGCore::Coro::Task<> SGCore::Coro::returnToCaller() noexcept
+SGCore::Coro::Task<bool> SGCore::Coro::returnToCaller() noexcept
 {
-    co_return;
+    co_yield true;
+
+    co_return true;
 }

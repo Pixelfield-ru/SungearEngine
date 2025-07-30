@@ -34,7 +34,7 @@ namespace SGCore::Coro
 template<typename Rep, typename Period>
 auto operator co_await(std::chrono::duration<Rep, Period> duration) noexcept
 {
-    return SGCore::Coro::TimerAwaitable { duration };
+    return SGCore::Coro::TimerAwaitable(duration);
 }
 
 #endif // SUNGEARENGINE_CORO_TIMERAWAITABLE_H

@@ -32,9 +32,13 @@ namespace SGCore
 
         [[nodiscard]] Ref<IVertexArray> getVertexArray() const noexcept;
 
+        size_t getActiveEntitiesCount() const noexcept;
+
         void update(const ECS::registry_t& inRegistry) noexcept;
 
     private:
+        size_t m_activeEntitiesCount = 0;
+
         Ref<IVertexArray> m_vertexArray;
         Ref<IVertexBuffer> m_instancesTransformsBuffer;
 
