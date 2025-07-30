@@ -1168,23 +1168,17 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
         {
             if(clickInfo.m_isLMBDoubleClicked)
             {
+                const auto inspectorView = SungearEngineEditor::getInstance()->getMainView()->getInspectorView();
+
                 if(curPath.extension() == ".sgscene")
                 {
                     auto loadedScene = EditorScene::loadByPath(curPath.parent_path(), curPath.stem());
                     EditorScene::setCurrentScene(loadedScene);
-
-                    /*auto loadedScene = SGCore::Scene::loadSceneAndSetAsCurrent(curPath);
-
-                    auto editorScene = SGCore::MakeRef<EditorScene>();
-                    editorScene->m_scene = loadedScene;
-                    editorScene->addEditorEntities();
-
-                    EditorScene::setCurrentScene(editorScene);*/
-
-                    /*if(!sceneLoadLog.empty())
-                    {
-                        LOG_E(SGEDITOR_TAG, "Error while loading scene '{}': {}", SGCore::Utils::toUTF8(curPath.stem().u16string()), sceneLoadLog);
-                    }*/
+                }
+                else if(curPath.extension() == ".sgmat")
+                {
+                    inspectorView->m_currentMaterial = SGCore::AssetManager::getInstance()->loadAsset<SGCore::IMaterial>(curPath);
+                    inspectorView->m_type = InspectorViewType::INSPECT_MATERIAL;
                 }
             }
         }

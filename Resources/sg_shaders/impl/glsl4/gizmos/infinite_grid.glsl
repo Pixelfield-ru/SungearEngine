@@ -156,10 +156,10 @@ void main()
 
     // if(u_isStochasticTransparencyEnabled) // todo: impl
     {
-        if(calculateStochasticTransparencyComponents(gridColor.rgb, gridColor.a, layerSTColor, layerColor, vs_UVAttribute.xy, 1))
+        /*if(calculateStochasticTransparencyComponents(gridColor.rgb, gridColor.a, layerSTColor, layerColor, vs_UVAttribute.xy, 1))
         {
             discard;
-        }
+        }*/
         // layerColor = vec4(gridColor);
         // calculateWBOITComponents(gridColor.rgb, gridColor.a, gl_FragCoord.z, layerWBOITColorAccum, layerColor, layerWBOITReveal, 0);
 
@@ -167,6 +167,7 @@ void main()
         layerWBOITReveal = 1.0;*/
     }
 
+    layerColor = gridColor;
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
 
     // fragColor.a = 0.0;

@@ -13,6 +13,7 @@
 #include <SGCore/Physics/PhysicsWorld3D.h>
 
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
+#include <SGCore/Graphics/API/ITexture2D.h>
 
 bool SGE::InspectorView::begin()
 {
@@ -92,6 +93,32 @@ void SGE::InspectorView::renderBody()
 
     ImGui::Separator();
 
+    switch(m_type)
+    {
+        case InspectorViewType::INSPECT_ENTITY:
+        {
+            inspectEntity();
+            break;
+        }
+        case InspectorViewType::INSPECT_MATERIAL:
+        {
+            inspectMaterial();
+            break;
+        }
+    }
+
+    ImGui::End();
+
+    ImGui::PopStyleVar(2);
+}
+
+void SGE::InspectorView::end()
+{
+    IView::end();
+}
+
+void SGE::InspectorView::inspectEntity() const noexcept
+{
     if(m_currentChosenEntity != entt::null && SGCore::Scene::getCurrentScene())
     {
         auto ecsRegistry = SGCore::Scene::getCurrentScene()->getECSRegistry();
@@ -269,13 +296,29 @@ void SGE::InspectorView::renderBody()
             }
         }
     }
-
-    ImGui::End();
-
-    ImGui::PopStyleVar(2);
 }
 
-void SGE::InspectorView::end()
+void SGE::InspectorView::inspectMaterial() const noexcept
 {
-    IView::end();
+    if(!m_currentMaterial) return;
+
+    if(ImGui::CollapsingHeader("Textures"))
+    {
+        for(size_t i = 0; i < m_currentMaterial->getTextures().size(); ++i)
+        {
+            const auto& texturesTyped = m_currentMaterial->getTextures()[i];
+            const SGTextureType textureType = static_cast<SGTextureType>(i);
+
+            if(ImGui::CollapsingHeader(sgStandardTextureTypeToString(textureType).c_str()))
+            {
+                for(size_t j = 0; j < texturesTyped.size(); ++j)
+                {
+                    const auto& texture = texturesTyped[j];
+
+                    ImGui::Text(SGCore::Utils::toUTF8(texture->getPath().resolved().u16string()).c_str());
+                    ImGui::Image(texture->getTextureNativeHandler(), ImVec2(texture->getWidth(), texture->getHeight()));
+                }
+            }
+        }
+    }
 }

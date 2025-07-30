@@ -13,6 +13,8 @@
 
 namespace SGE
 {
+    struct EditorScene;
+
     struct SceneView : public SGCore::ImGuiWrap::IView
     {
         EntitiesManipulator m_entitiesManipulator;
@@ -22,6 +24,11 @@ namespace SGE
         void end() final;
 
     private:
+        // serialized copied entities
+        std::string m_copiedEntities;
+
+        void addPastedEntityToEditorCameraAsPickable(SGCore::ECS::entity_t entity, EditorScene& editorScene);
+
         // accepts files that are drag n dropped from directory explorer
         void acceptFilesFromDirectoryExplorer() noexcept;
 

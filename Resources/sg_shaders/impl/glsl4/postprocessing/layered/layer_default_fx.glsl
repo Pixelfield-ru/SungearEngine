@@ -46,7 +46,7 @@ const float EPSILON = 0.00001f;
 
 out vec4 fragColor;
 
-uniform float u_FogDensity = 0.05;
+uniform float u_FogDensity = 0.001;
 
 vec3 Uncharted2Tonemap(vec3 x)
 {
@@ -191,7 +191,7 @@ void main()
             // layerColor.rgb = filmic(layerColor.rgb);
 
             fragColor = vec4(layerColor.rgb * (1.0 - STColor.a) + STColor.rgb * (STColor.a), 1.0);
-            // fragColor = vec4(layerColor.rgb + accumulated, 1.0);
+            // fragColor = vec4(layerColor.rgb, 1.0);
 
             vec3 fragPos = texture(u_GBufferWorldPos, finalUV).xyz;
 
@@ -212,6 +212,8 @@ void main()
 
             vec3 viewDir = normalize(fragPos - camera.position);
             fragColor.rgb = applyFog(fragColor.rgb, distance(fragPos, camera.position), viewDir, atmosphere.sunPosition);
+            // fragColor.rgb = fragPos;
+
             // fragColor.rgb = fragPos;
         }
     }

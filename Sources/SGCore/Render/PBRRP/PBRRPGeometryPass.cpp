@@ -366,7 +366,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRende
                           "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
 
                 renderMesh(registry, meshEntity, meshTransform, mesh,
-                           meshedEntityBaseInfo, camera3DBaseInfo, cameraRenderingBase, cameraCSMTarget, meshPPLayer, true, cameraLayeredFrameReceiver);
+                           meshedEntityBaseInfo, camera3DBaseInfo, cameraRenderingBase, cameraCSMTarget, meshPPLayer, false, cameraLayeredFrameReceiver);
             }
         });
 

@@ -154,6 +154,7 @@ void SGE::SceneView::renderBody()
                             entityBaseInfo.m_outlineColor = SGCore::EntityBaseInfo::s_outlineColor0;
 
                             inspectorView->m_currentChosenEntity = pickedEntity;
+                            inspectorView->m_type = InspectorViewType::INSPECT_ENTITY;
                         }
                         else
                         {
@@ -170,6 +171,7 @@ void SGE::SceneView::renderBody()
                             m_entitiesManipulator.m_isWholeModelPicking = true;
 
                             inspectorView->m_currentChosenEntity = rootEntity;
+                            inspectorView->m_type = InspectorViewType::INSPECT_ENTITY;
                         }
                     }
                     else
@@ -260,6 +262,36 @@ void SGE::SceneView::renderBody()
         }
     }
 
+    const bool isThisViewFocused = ImGui::IsWindowFocused();
+
+    if(mainInputListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT_CONTROL) && mainInputListener->keyboardKeyPressed(SGCore::KeyboardKey::KEY_C) && isThisViewFocused)
+    {
+        if(!m_entitiesManipulator.m_manipulatingEntities.empty())
+        {
+            m_copiedEntities = SGCore::Serde::Serializer::toFormat(SGCore::Serde::FormatType::JSON, m_entitiesManipulator.m_manipulatingEntities, *currentEditorScene->m_scene);
+
+            LOG_I_UNFORMATTED(SGEDITOR_TAG, m_copiedEntities);
+        }
+    }
+
+    if(mainInputListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT_CONTROL) && mainInputListener->keyboardKeyPressed(SGCore::KeyboardKey::KEY_V) && isThisViewFocused)
+    {
+        std::string entitiesDeserLog;
+
+        m_entitiesManipulator.m_manipulatingEntities.clear();
+        SGCore::Serde::Serializer::fromFormat(m_copiedEntities, m_entitiesManipulator.m_manipulatingEntities, SGCore::Serde::FormatType::JSON, entitiesDeserLog, *currentEditorScene->m_scene);
+        currentEditorScene->m_scene->resolveAllEntitiesRefs();
+
+        for(const auto entity : m_entitiesManipulator.m_manipulatingEntities)
+        {
+            addPastedEntityToEditorCameraAsPickable(entity, *currentEditorScene);
+        }
+        /*if(m_entitiesManipulator.m_isWholeModelPicking)
+        {
+
+        }*/
+    }
+
     ImGui::End();
 
     ImGui::PopStyleVar(2);
@@ -268,6 +300,21 @@ void SGE::SceneView::renderBody()
 void SGE::SceneView::end()
 {
     IView::end();
+}
+
+void SGE::SceneView::addPastedEntityToEditorCameraAsPickable(SGCore::ECS::entity_t entity, EditorScene& editorScene)
+{
+    auto* pickable = editorScene.m_scene->getECSRegistry()->tryGet<SGCore::Pickable>(entity);
+    if(pickable)
+    {
+        pickable->m_pickableForCameras.emplace_back(editorScene.m_data.m_editorCamera);
+    }
+
+    const auto& entityBaseInfo = editorScene.m_scene->getECSRegistry()->get<SGCore::EntityBaseInfo>(entity);
+    for(const auto childEntity : entityBaseInfo.getChildren())
+    {
+        addPastedEntityToEditorCameraAsPickable(childEntity, editorScene);
+    }
 }
 
 void SGE::SceneView::acceptFilesFromDirectoryExplorer() noexcept

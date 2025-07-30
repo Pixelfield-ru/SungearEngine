@@ -427,7 +427,7 @@ void main()
 
     // DEBUG ==================================
     // base color
-    // finalCol.rgb = albedo.rgb; // PASSED
+    // finalCol.rgb = albedo.rgb * shadow; // PASSED
     // finalCol.rgb = vec3(albedo.r, albedo.g, albedo.b); // PASSED
     // finalCol.rgb = vec3(metalness); // PASSED
     // finalCol.rgb = vec3(roughness); // PASSED
@@ -443,13 +443,14 @@ void main()
     // todo: make
     // if(u_isStochasticTransparencyEnabled) // todo: impl
     {
+
         bool isSTNotPassed = calculateStochasticTransparencyComponents(finalCol.rgb, diffuseColor.a, layerSTColor, layerColor, vsIn.UV, u_isTransparentPass);
 
         // gl_SampleMask[0] = coverage;
 
         if(isSTNotPassed)
         {
-            discard;
+            // discard;
         }
     }
 
