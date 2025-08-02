@@ -205,13 +205,13 @@ void main()
 
             float fogFactor = fogFactorDist;*/
 
-            /*float exposure = 1.0;
-            fragColor.rgb = ACESTonemap(fragColor.rgb, exposure);*/
+            float exposure = 0.7;
+            fragColor.rgb = ACESTonemap(fragColor.rgb, exposure);
 
             // fragColor.rgb = ToneMap_Uncharted2(fragColor.rgb);
 
-            vec3 viewDir = normalize(fragPos - camera.position);
-            fragColor.rgb = applyFog(fragColor.rgb, distance(fragPos, camera.position), viewDir, atmosphere.sunPosition);
+            /*vec3 viewDir = normalize(fragPos - camera.position);
+            fragColor.rgb = applyFog(fragColor.rgb, distance(fragPos, camera.position), viewDir, atmosphere.sunPosition);*/
             // fragColor.rgb = fragPos;
 
             // fragColor.rgb = fragPos;

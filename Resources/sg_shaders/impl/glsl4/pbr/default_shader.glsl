@@ -450,7 +450,7 @@ void main()
 
         if(isSTNotPassed)
         {
-            // discard;
+            discard;
         }
     }
 

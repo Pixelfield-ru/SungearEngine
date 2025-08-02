@@ -11,9 +11,12 @@
 #include <SGCore/Scene/Scene.h>
 #include <SGCore/Physics/Rigidbody3D.h>
 #include <SGCore/Physics/PhysicsWorld3D.h>
+#include <SGCore/Render/Mesh.h>
 
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
 #include <SGCore/Graphics/API/ITexture2D.h>
+
+#include "SungearEngineEditor.h"
 
 bool SGE::InspectorView::begin()
 {
@@ -123,6 +126,7 @@ void SGE::InspectorView::inspectEntity() const noexcept
     {
         auto ecsRegistry = SGCore::Scene::getCurrentScene()->getECSRegistry();
         auto currentScene = SGCore::Scene::getCurrentScene();
+        const auto inspectorView = SungearEngineEditor::getInstance()->getMainView()->getInspectorView();
 
         ImGui::Text("Entity: %d", m_currentChosenEntity);
 
@@ -157,6 +161,16 @@ void SGE::InspectorView::inspectEntity() const noexcept
                 if(ImGui::DragFloat3("Rotation", &euler.x))
                 {
                     transform->m_ownTransform.m_rotation = glm::quat(glm::radians(euler));
+                }
+            }
+
+            auto* mesh = ecsRegistry->tryGet<SGCore::Mesh>(m_currentChosenEntity);
+            if(mesh && ImGui::CollapsingHeader("Mesh"))
+            {
+                if(ImGui::Button("View Material"))
+                {
+                    inspectorView->m_currentMaterial = mesh->m_base.getMaterial();
+                    inspectorView->m_type = InspectorViewType::INSPECT_MATERIAL;
                 }
             }
 

@@ -18,8 +18,7 @@ namespace SGE
 
     private:
         void drawTreeNode(const SGCore::ECS::entity_t& parentEntity, bool checkForRoot) noexcept;
-
-        void drawSkeletonNode(const SGCore::Bone* parentBone) noexcept;
+        void drawEntity(SGCore::ECS::entity_t entity) noexcept;
     };
 }
 

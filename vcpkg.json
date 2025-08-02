@@ -2,7 +2,7 @@
   "name" : "sungearengine",
   "version-string" : "0.14.0.8",
   "homepage" : "https://github.com/Pixelfield-ru/SungearEngine/tree/main",
-  "builtin-baseline" : "13bde2ff13192e1b2fdd37bd9b475c7665ae6ae5",
+  "builtin-baseline" : "d5a87c6bcc5d3cb3f5627bfeff977280097c719c",
   "dependencies" : [ {
     "name" : "assimp",
     "version>=" : "5.3.1#4"
@@ -14,7 +14,7 @@
     "version>=" : "3.25#1"
   }, {
     "name" : "entt",
-    "version>=" : "3.13.1"
+    "version>=" : "3.15.0#0"
   }, {
     "name" : "freetype",
     "version>=" : "2.13.2"
@@ -52,7 +52,7 @@
     "version>=" : "1.23.1"
   }, {
     "name" : "lunasvg",
-    "version>=" : "2.3.8"
+    "version>=" : "3.3.0"
   }, {
     "name" : "rapidjson",
     "version>=" : "2023-07-17#1"

@@ -23,7 +23,7 @@
  find_package(BZip2 REQUIRED)
  find_package(unofficial-brotli CONFIG REQUIRED)
  find_package(OpenAL CONFIG REQUIRED)
- find_package(unofficial-lunasvg CONFIG REQUIRED)
+ find_package(lunasvg CONFIG REQUIRED)
  find_package(RapidJSON CONFIG REQUIRED)
  find_package(antlr4-runtime CONFIG REQUIRED)
  find_package(gli CONFIG REQUIRED)
@@ -118,7 +118,7 @@
          glad::glad
          OpenAL::OpenAL
          glaze::glaze
-         unofficial::lunasvg::lunasvg
+         lunasvg::lunasvg
          rapidjson
          msdf-atlas-gen
          gli
@@ -142,11 +142,11 @@
 
  #target_link_libraries(${PROJECT_NAME} PUBLIC -static-libgcc -static-libstdc++)
 
- IF(WIN32)
+ #[[IF(WIN32)
      target_link_libraries(${PROJECT_NAME} PRIVATE
              wsock32
              ws2_32)
- ENDIF()
+ ENDIF()]]
 
 #[[ target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/Externals/Vulkan/Lib)
 

@@ -116,8 +116,8 @@ list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}/Externals/rec
 #endif()
 
 #if(${SG_INCLUDE_LUNASVG})
-    find_package(unofficial-lunasvg CONFIG REQUIRED)
-    list(APPEND SungearEngine_LIBS "unofficial::lunasvg::lunasvg")
+    find_package(lunasvg CONFIG REQUIRED)
+    list(APPEND SungearEngine_LIBS "lunasvg::lunasvg")
 #endif()
 
 #if(${SG_INCLUDE_RAPIDJSON})

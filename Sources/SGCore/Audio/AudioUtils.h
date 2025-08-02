@@ -61,24 +61,25 @@ namespace SGCore::AudioUtils
     }
     
     template<typename ALFunc, typename... Args>
-    SG_FORCEINLINE std::enable_if_t<std::is_same_v<func_return_type_t<ALFunc>, void>, void>
+    requires(std::is_same_v<std::invoke_result_t<ALFunc, Args...>, void>)
+    SG_FORCEINLINE void
     alCallImpl(const std::source_location& sourceLocation,
                ALFunc alFunc,
                Args&& ... args)
     {
-        alFunc(args...);
+        alFunc(std::forward<Args>(args)...);
         // #ifdef SUNGEAR_DEBUG
         checkALErrors(sourceLocation);
         // #endif
     }
     
     template<typename ALFunc, typename... Args>
-    std::enable_if_t<!std::is_same_v<func_return_type_t<ALFunc>, void>, func_return_type_t<ALFunc>>
-    SG_FORCEINLINE alCallImpl(const std::source_location& sourceLocation,
+    requires(!std::is_same_v<std::invoke_result_t<ALFunc, Args...>, void>)
+    SG_FORCEINLINE std::invoke_result_t<ALFunc, Args...> alCallImpl(const std::source_location& sourceLocation,
                               ALFunc alFunc,
                               Args&& ... args)
     {
-        auto ret = alFunc(args...);
+        auto ret = alFunc(std::forward<Args>(args)...);
         // #ifdef SUNGEAR_DEBUG
         checkALErrors(sourceLocation);
         // #endif
@@ -86,7 +87,7 @@ namespace SGCore::AudioUtils
     }
     
     template<typename ALFunc, typename... Args>
-    std::enable_if_t<std::is_same_v<func_return_type_t<ALFunc>, void>, void>
+    std::enable_if_t<std::is_same_v<std::invoke_result_t<ALFunc, Args...>, void>, void>
     SG_FORCEINLINE alCallImplE(bool& noError,
                                const std::source_location& sourceLocation,
                                ALFunc alFunc,
@@ -102,7 +103,7 @@ namespace SGCore::AudioUtils
     }
     
     template<typename ALFunc, typename... Args>
-    std::enable_if_t<!std::is_same_v<func_return_type_t<ALFunc>, void>, func_return_type_t<ALFunc>>
+    std::enable_if_t<!std::is_same_v<std::invoke_result_t<ALFunc, Args...>, void>, std::invoke_result_t<ALFunc, Args...>>
     SG_FORCEINLINE alCallImplE(bool& noError,
                                const std::source_location& sourceLocation,
                                ALFunc alFunc,
