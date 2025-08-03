@@ -84,18 +84,13 @@ namespace SGCore
          */
         void unload()
         {
+            if(!m_nativeHandler) return;
             #ifdef PLATFORM_OS_LINUX
-            if(m_nativeHandler)
-            {
-                dlclose(m_nativeHandler);
-                m_nativeHandler = nullptr;
-            }
+            dlclose(m_nativeHandler);
+            m_nativeHandler = nullptr;
             #elif defined(PLATFORM_OS_WINDOWS)
-            if(m_nativeHandler)
-            {
-                FreeLibrary(m_nativeHandler);
-                m_nativeHandler = nullptr;
-            }
+            FreeLibrary(m_nativeHandler);
+            m_nativeHandler = nullptr;
             #endif
         }
         

@@ -211,9 +211,9 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
         loadedPlugin->m_pluginLib = pluginDL;
 
         LOG_I(SGCORE_TAG, "Loaded plugin '{}'.", pluginName);
+
+        m_plugins.push_back(loadedPlugin);
     }
-    
-    m_plugins.push_back(loadedPlugin);
     
     return loadedPlugin;
 }
@@ -228,49 +228,47 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
     auto foundIt = std::find_if(m_plugins.begin(), m_plugins.end(), [&pluginName](const Ref<PluginWrap>& pluginWrap) {
         return pluginWrap->getPlugin() && pluginWrap->getPlugin()->m_name == pluginName;
     });
-    
-    if(foundIt != m_plugins.end())
-    {
-        loadedPlugin = *foundIt;
-        
-        std::string dlErr;
-        std::string dlEntryErr;
-        
-        const std::filesystem::path pluginSrcPath = loadedPlugin->m_plugin->m_path;
-        const std::filesystem::path pluginDLPath = pluginSrcPath / cmakeBuildDir / (pluginName + DL_POSTFIX);
-        
-        loadedPlugin->m_plugin = nullptr;
-        
-        loadedPlugin->m_pluginLib->unload();
-        loadedPlugin->m_pluginLib->load(pluginDLPath, dlErr);
-        
-        if(!loadedPlugin->m_pluginLib->getNativeHandler())
-        {
-            LOG_E(SGCORE_TAG, "Cannot reload plugin '{}' by path '{}'. Error is: {}", pluginName, Utils::toUTF8(pluginDLPath.u16string()), dlErr);
-            return nullptr;
-        }
-        
-        // auto pluginEntry = std::function<Ref<IPlugin>()>((Ref<IPlugin>(*)()) dlsym(loadedPlugin->m_pluginLib->getNativeHandler(), "SGPluginMain"));
-        auto pluginEntry = loadedPlugin->m_pluginLib->loadSymbol<Ref<IPlugin>()>("SGPluginMain", dlEntryErr);
-        
-        if(!pluginEntry)
-        {
-            LOG_E(SGCORE_TAG, "Cannot reload plugin '{}' main function. Error is: {}", pluginName, dlEntryErr);
-            return nullptr;
-        }
-        
-        loadedPlugin->m_plugin = pluginEntry();
-        loadedPlugin->m_plugin->m_path = pluginSrcPath;
-        loadedPlugin->m_plugin->onConstruct(entryArgs);
-        
-        return loadedPlugin;
-    }
-    else
+
+    if(foundIt == m_plugins.end())
     {
         LOG_E(SGCORE_TAG, "Cannot reload plugin: The plugin '{}' has not been loaded before.", pluginName);
+
+        return nullptr;
     }
-    
-    return nullptr;
+
+    loadedPlugin = *foundIt;
+
+    std::string dlErr;
+    std::string dlEntryErr;
+
+    const std::filesystem::path pluginSrcPath = loadedPlugin->m_plugin->m_path;
+    const std::filesystem::path pluginDLPath = pluginSrcPath / cmakeBuildDir / (pluginName + DL_POSTFIX);
+
+    loadedPlugin->m_plugin = nullptr;
+
+    loadedPlugin->m_pluginLib->unload();
+    loadedPlugin->m_pluginLib->load(pluginDLPath, dlErr);
+
+    if(!loadedPlugin->m_pluginLib->getNativeHandler())
+    {
+        LOG_E(SGCORE_TAG, "Cannot reload plugin '{}' by path '{}'. Error is: {}", pluginName, Utils::toUTF8(pluginDLPath.u16string()), dlErr);
+        return nullptr;
+    }
+
+    // auto pluginEntry = std::function<Ref<IPlugin>()>((Ref<IPlugin>(*)()) dlsym(loadedPlugin->m_pluginLib->getNativeHandler(), "SGPluginMain"));
+    auto pluginEntry = loadedPlugin->m_pluginLib->loadSymbol<Ref<IPlugin>()>("SGPluginMain", dlEntryErr);
+
+    if(!pluginEntry)
+    {
+        LOG_E(SGCORE_TAG, "Cannot reload plugin '{}' main function. Error is: {}", pluginName, dlEntryErr);
+        return nullptr;
+    }
+
+    loadedPlugin->m_plugin = pluginEntry();
+    loadedPlugin->m_plugin->m_path = pluginSrcPath;
+    loadedPlugin->m_plugin->onConstruct(entryArgs);
+
+    return loadedPlugin;
 }
 
 void SGCore::PluginsManager::unloadPlugin(const std::string& pluginName) noexcept
@@ -279,14 +277,13 @@ void SGCore::PluginsManager::unloadPlugin(const std::string& pluginName) noexcep
         return plugin->m_plugin->m_name == pluginName;
     });
 
-    if(foundIt != m_plugins.end())
-    {
-        auto plugin = *foundIt;
+    if(foundIt == m_plugins.end()) return;
 
-        plugin->m_plugin = nullptr;
-        plugin->m_pluginLib->unload();
-        m_plugins.erase(foundIt);
-    }
+    auto plugin = *foundIt;
+
+    plugin->m_plugin = nullptr;
+    plugin->m_pluginLib->unload();
+    m_plugins.erase(foundIt);
 }
 
 bool SGCore::PluginsManager::isPluginExists(const std::string& pluginName) noexcept

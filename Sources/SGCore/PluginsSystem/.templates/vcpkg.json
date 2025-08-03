@@ -1,7 +1,7 @@
 {
   "name" : "${pluginName}$",
   "version-string" : "1.0.0",
-  "builtin-baseline" : "37c3e63a1306562f7f59c4c3c8892ddd50fdf992",
+  "builtin-baseline" : "d5a87c6bcc5d3cb3f5627bfeff977280097c719c",
   "dependencies" : [ {
     "name" : "assimp",
     "version>=" : "5.3.1#4"

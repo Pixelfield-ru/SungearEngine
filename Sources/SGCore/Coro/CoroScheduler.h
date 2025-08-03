@@ -13,9 +13,6 @@
 
 namespace SGCore::Coro
 {
-    struct TimerAwaitable;
-    struct TaskAwaitable;
-
     struct SGCORE_EXPORT CoroScheduler
     {
         static void process() noexcept;

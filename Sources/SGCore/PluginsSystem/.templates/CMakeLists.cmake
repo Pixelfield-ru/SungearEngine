@@ -48,14 +48,11 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
         endif ()
     endif()
 
-    message("cxx compiler flags: ${CXX_COMPILER_FLAGS}, C compiler flags: ${C_COMPILER_FLAGS}")
-
     if(MSVC)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
+        set(CXX_COMPILER_FLAGS "${CXX_COMPILER_FLAGS} /EHsc")
     endif()
 
-    set(CMAKE_CXX_FLAGS ${CXX_COMPILER_FLAGS})
-    set(CMAKE_C_FLAGS ${C_COMPILER_FLAGS})
+    message("cxx compiler flags: ${CXX_COMPILER_FLAGS}, C compiler flags: ${C_COMPILER_FLAGS}")
 
     if(MSVC)
         if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
