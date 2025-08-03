@@ -15,18 +15,18 @@ namespace SGCore::Coro
 {
     struct SGCORE_EXPORT CoroScheduler
     {
-        static void process() noexcept;
+        void process() noexcept;
 
-        static void addYieldedCoro(std::coroutine_handle<> coro) noexcept;
+        void addYieldedCoro(std::coroutine_handle<> coro) noexcept;
 
-        static void addTimerAwaitableCoro(TimerAwaitable task) noexcept;
+        void addTimerAwaitableCoro(TimerAwaitable task) noexcept;
 
-        static void addTaskAwaitableCoro(TaskAwaitable task) noexcept;
+        void addTaskAwaitableCoro(TaskAwaitable task) noexcept;
 
     private:
-        static inline std::vector<std::coroutine_handle<>> m_yieldedCoros { };
-        static inline std::vector<TimerAwaitable> m_timerAwaitableCoros { };
-        static inline std::vector<TaskAwaitable> m_taskAwaitableCoros { };
+        std::vector<std::coroutine_handle<>> m_yieldedCoros { };
+        std::vector<TimerAwaitable> m_timerAwaitableCoros { };
+        std::vector<TaskAwaitable> m_taskAwaitableCoros { };
     };
 }
 

@@ -152,7 +152,7 @@ void SGCore::CoreMain::start()
         m_fixedTimer.startFrame();
         m_renderTimer.startFrame();
 
-        Coro::CoroScheduler::process();
+        // Coro::CoroScheduler::process();
     }
     
     spdlog::shutdown();

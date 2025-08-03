@@ -28,7 +28,8 @@ namespace SGCore::Threading
         static inline std::mutex m_threadAccessMutex;
         
         static inline std::vector<std::weak_ptr<Thread>> m_threads;
-        
+        static inline std::unordered_map<std::thread::id, std::weak_ptr<Thread>> m_threadsMap;
+
         static inline std::shared_ptr<MainThread> m_mainThread;
 
         static inline bool m_staticInit = []() {
@@ -36,6 +37,7 @@ namespace SGCore::Threading
             m_mainThread->m_nativeThreadID = std::this_thread::get_id();
             m_mainThread->m_sleepIfNotBusy = false;
             m_threads.push_back(m_mainThread);
+            m_threadsMap[m_mainThread->m_nativeThreadID] = m_mainThread;
             
             return true;
         }();

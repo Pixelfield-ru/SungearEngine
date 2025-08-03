@@ -8,6 +8,7 @@
 #include <SGCore/pch.h>
 
 #include "Task.h"
+#include "SGCore/Coro/CoroScheduler.h"
 
 #include "SGCore/Utils/Signal.h"
 #include "SGCore/Utils/Utils.h"
@@ -27,6 +28,8 @@ namespace SGCore::Threading
         
         std::atomic<bool> m_autoJoinIfNotBusy = false;
         std::atomic<bool> m_sleepIfNotBusy = true;
+
+        Coro::CoroScheduler m_coroScheduler { };
         
         ~Thread();
         

@@ -14,6 +14,7 @@ std::shared_ptr<SGCore::Threading::Thread> SGCore::Threading::Thread::create(con
     auto thread = std::shared_ptr<Thread>(new Thread);
     thread->m_sleepTime = sleepTime;
     ThreadsManager::m_threads.push_back(thread);
+    ThreadsManager::m_threadsMap[thread->m_nativeThreadID] = thread;
     
     return thread;
 }
@@ -26,9 +27,11 @@ SGCore::Threading::Thread::~Thread()
 void SGCore::Threading::Thread::processTasks() noexcept
 {
     using namespace std::chrono_literals;
-    
+
     auto t0 = now();
-    
+
+    m_coroScheduler.process();
+
     {
         std::lock_guard copyGuard(m_threadProcessMutex);
         
