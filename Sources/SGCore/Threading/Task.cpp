@@ -25,7 +25,7 @@ void SGCore::Threading::Task::execute() noexcept
     {
         m_executableCallback();
     }
-    if(m_onExecutedCallback)
+    if(m_onExecutedCallback && !m_isStatic.load())
     {
         if(m_processFinishInOwnerThread)
         {

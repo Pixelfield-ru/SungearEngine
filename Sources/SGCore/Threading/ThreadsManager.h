@@ -9,6 +9,7 @@
 
 #include "Thread.h"
 #include "ThreadsPool.h"
+#include "SGCore/Utils/Utils.h"
 
 namespace SGCore::Threading
 {

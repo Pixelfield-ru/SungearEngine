@@ -32,10 +32,8 @@ namespace SGCore
             m_timer.setTargetFrameRate(80);
             m_timer.m_cyclic = true;
             m_timer.onUpdate += m_internalUpdateListener;
-            
-            m_thread->editOnUpdateEvent([this](Signal<void()>& onUpdate) {
-                onUpdate += m_threadUpdateListener;
-            });
+
+            m_thread->onUpdate += m_threadUpdateListener;
         }
         
         ~IParallelSystem() override

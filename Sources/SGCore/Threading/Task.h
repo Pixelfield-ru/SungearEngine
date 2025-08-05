@@ -8,7 +8,6 @@
 #include <SGCore/pch.h>
 
 #include "SGCore/Utils/Signal.h"
-#include "SGCore/Utils/Utils.h"
 
 namespace SGCore::Threading
 {
@@ -27,8 +26,8 @@ namespace SGCore::Threading
     struct Task : public std::enable_shared_from_this<Task>
     {
         friend struct Thread;
-        
-        bool m_isStatic = false;
+
+        std::atomic<bool> m_isStatic = false;
         
         template<typename F>
         void setOnExecuteCallback(F&& func)
@@ -79,10 +78,6 @@ namespace SGCore::Threading
         std::weak_ptr<Thread> m_onExecutedCallbackParentThread;
         
         void execute() noexcept;
-        
-        Slot<void()> m_onExecuteListener = [this]() {
-            execute();
-        };
     };
 }
 

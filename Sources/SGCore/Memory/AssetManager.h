@@ -19,6 +19,7 @@
 #include "AssetWeakRef.h"
 #include "SGCore/Utils/Slot.h"
 #include "AssetsLoadPolicy.h"
+#include "SGCore/Threading/Task.h"
 
 // WE ARE USING RESOLVED (.resolved()) PATHS OF ASSETS WHEN LOADING OR GETTING ASSET BY PATH. NOT RAW (.raw()) PATH!!!
 // BUT WE ARE USING .raw PATH WHEN HASHING INTERPOLATED PATH TO PROVIDE LOADING ASSETS FROM PACKAGE ON DIFFERENT DIVES.

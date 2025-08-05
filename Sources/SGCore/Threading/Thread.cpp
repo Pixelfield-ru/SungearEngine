@@ -6,6 +6,8 @@
 #include "Thread.h"
 
 #include "ThreadsManager.h"
+#include "SGCore/Utils/Utils.h"
+#include "Task.h"
 
 std::shared_ptr<SGCore::Threading::Thread> SGCore::Threading::Thread::create(const std::chrono::milliseconds& sleepTime) noexcept
 {
@@ -34,33 +36,27 @@ void SGCore::Threading::Thread::processTasks() noexcept
 
     {
         std::lock_guard copyGuard(m_threadProcessMutex);
-        
-        onTasksProcessCopy = std::move(onTasksProcess);
+
         m_tasksCopy = m_tasks;
-        
-        onUpdateCopy = onUpdate;
     }
 
-    // onTasksProcess.clear();
-    
-    onTasksProcessCopy();
-    onUpdateCopy();
+    for(size_t i = 0; i < m_tasks.size(); i++)
+    {
+        m_tasks[i]->execute();
+    }
     
     size_t tasksCount = 0;
-    size_t onUpdateEventListenersCount = 0;
     
     {
         std::lock_guard copyGuard(m_threadProcessMutex);
         
-        // #TODO
-        // onTasksProcess.exclude(onTasksProcessCopy);
-        
         // exclude from vector
         {
             size_t curIdx = 0;
-            // #TODO 
+            // #TODO optimization!
             for(const auto& task : m_tasksCopy)
             {
+                if(task->m_isStatic.load()) continue;
                 if(curIdx == m_tasks.size()) break;
                 
                 std::erase(m_tasks, task);
@@ -68,16 +64,15 @@ void SGCore::Threading::Thread::processTasks() noexcept
             }
         }
         
-        m_tasksCopy.clear();
-        
         tasksCount = m_tasks.size();
-        onUpdateEventListenersCount = onUpdate.slotsCount();
     }
     
     processFinishedTasks();
 
+    onUpdate();
+
     // THREAD IS FULL FREE
-    if(tasksCount == 0 && onUpdateEventListenersCount == 0 && m_autoJoinIfNotBusy)
+    if(tasksCount == 0 && onUpdate.empty() && m_autoJoinIfNotBusy)
     {
         auto joinThisThreadTask = MakeRef<Threading::Task>();
         joinThisThreadTask->setOnExecuteCallback([threadToJoin = shared_from_this()]() {
@@ -137,8 +132,6 @@ void SGCore::Threading::Thread::addTask(std::shared_ptr<Task> task)
     std::lock_guard guard(m_threadProcessMutex);
 
     m_tasks.push_back(task);
-        
-    onTasksProcess += task->m_onExecuteListener;
 }
 
 void SGCore::Threading::Thread::removeTask(std::shared_ptr<Task> task)
@@ -150,8 +143,6 @@ void SGCore::Threading::Thread::removeTask(std::shared_ptr<Task> task)
     std::erase_if(m_tasks, [&task](std::shared_ptr<Task> w) {
         return w == task;
     });
-    
-    onTasksProcess -= task->m_onExecuteListener;
 }
 
 size_t SGCore::Threading::Thread::tasksCount() noexcept
@@ -183,17 +174,17 @@ void SGCore::Threading::Thread::processFinishedTasks() noexcept
     }
 }
 
-const double& SGCore::Threading::Thread::getExecutionTime() const noexcept
+double SGCore::Threading::Thread::getExecutionTime() const noexcept
 {
     return m_executionTime.load();
 }
 
-const std::thread::id& SGCore::Threading::Thread::getNativeID() const noexcept
+std::thread::id SGCore::Threading::Thread::getNativeID() const noexcept
 {
     return m_nativeThreadID.load();
 }
 
-const bool& SGCore::Threading::Thread::isRunning() const noexcept
+bool SGCore::Threading::Thread::isRunning() const noexcept
 {
     return m_isRunning;
 }

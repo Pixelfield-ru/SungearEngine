@@ -7,14 +7,14 @@
 
 #include <SGCore/pch.h>
 
-#include "Task.h"
 #include "SGCore/Coro/CoroScheduler.h"
-
 #include "SGCore/Utils/Signal.h"
-#include "SGCore/Utils/Utils.h"
+#include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore::Threading
 {
+    struct Task;
+
     struct Thread : public std::enable_shared_from_this<Thread>
     {
         friend struct Task;
@@ -30,6 +30,8 @@ namespace SGCore::Threading
         std::atomic<bool> m_sleepIfNotBusy = true;
 
         Coro::CoroScheduler m_coroScheduler { };
+
+        Signal<void()> onUpdate;
         
         ~Thread();
         
@@ -43,26 +45,17 @@ namespace SGCore::Threading
         void removeTask(std::shared_ptr<Task> task);
         
         [[nodiscard]] size_t tasksCount() noexcept;
-        
-        template<typename Func>
-        requires(std::is_invocable_v<Func, Signal<void()>&>)
-        void editOnUpdateEvent(const Func& func)
-        {
-            std::lock_guard guard(m_threadProcessMutex);
-            
-            func(onUpdate);
-        }
 
         void setSleepTime(const std::chrono::milliseconds& sleepTime) noexcept 
         {
             m_sleepTime = sleepTime;
         }
         
-        const double& getExecutionTime() const noexcept;
+        double getExecutionTime() const noexcept;
         
-        const std::thread::id& getNativeID() const noexcept;
+        std::thread::id getNativeID() const noexcept;
         
-        const bool& isRunning() const noexcept;
+        bool isRunning() const noexcept;
 
         const std::chrono::milliseconds& getSleepTime() const noexcept 
         { 
@@ -82,16 +75,10 @@ namespace SGCore::Threading
         std::vector<std::shared_ptr<Task>> m_finishedTasksToExecute;
         
         std::atomic<double> m_executionTime = 0.0;
-        
-        std::vector<std::shared_ptr<Task>> m_tasks;
-        Signal<void()> onTasksProcess;
-        
-        std::vector<std::shared_ptr<Task>> m_tasksCopy;
-        Signal<void()> onTasksProcessCopy;
-        
-        Signal<void()> onUpdate;
-        Signal<void()> onUpdateCopy;
-        
+
+        std::vector<Ref<Task>> m_tasks;
+        std::vector<Ref<Task>> m_tasksCopy;
+
         std::atomic<bool> m_isRunning = false;
         std::atomic<bool> m_isAlive = true;
         std::atomic<bool> m_hasJoinRequest = false;
