@@ -16,7 +16,6 @@ std::shared_ptr<SGCore::Threading::Thread> SGCore::Threading::Thread::create(con
     auto thread = std::shared_ptr<Thread>(new Thread);
     thread->m_sleepTime = sleepTime;
     ThreadsManager::m_threads.push_back(thread);
-    ThreadsManager::m_threadsMap[thread->m_nativeThreadID] = thread;
     
     return thread;
 }
@@ -94,6 +93,9 @@ void SGCore::Threading::Thread::start() noexcept
     if(m_isRunning || m_hasJoinRequest) return;
 
     auto internalFunc = [this]() {
+        // todo: not thread-safe!
+        ThreadsManager::m_threadsMap[m_thread.get_id()] = weak_from_this();
+
         while(m_isAlive && m_isRunning)
         {
             m_isTasksProcessing = true;

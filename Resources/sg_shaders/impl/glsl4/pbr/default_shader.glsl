@@ -427,7 +427,7 @@ void main()
 
     // DEBUG ==================================
     // base color
-    // finalCol.rgb = albedo.rgb * shadow; // PASSED
+    finalCol.rgb = albedo.rgb; // PASSED
     // finalCol.rgb = vec3(albedo.r, albedo.g, albedo.b); // PASSED
     // finalCol.rgb = vec3(metalness); // PASSED
     // finalCol.rgb = vec3(roughness); // PASSED

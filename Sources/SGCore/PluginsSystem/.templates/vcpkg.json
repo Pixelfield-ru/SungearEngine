@@ -71,5 +71,8 @@
   }, {
     "name" : "meshoptimizer",
     "version>=" : "0.22"
+  }, {
+    "name" : "boost-asio",
+    "version>=" : "1.88.0#0"
   }]
 }

@@ -28,6 +28,7 @@
  find_package(antlr4-runtime CONFIG REQUIRED)
  find_package(gli CONFIG REQUIRED)
  find_package(meshoptimizer CONFIG REQUIRED)
+ find_package(Boost REQUIRED COMPONENTS system asio)
 
  include(FetchContent)
 
@@ -124,6 +125,8 @@
          gli
          meshoptimizer::meshoptimizer
          rectpack2D::rectpack2D
+         Boost::system
+         Boost::asio
 
          ${SG_BULLET_LIBS}
          ${FREETYPE_LIBRARIES}
