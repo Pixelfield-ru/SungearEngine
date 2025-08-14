@@ -59,23 +59,23 @@ void SGCore::Net::Client::connect(const std::string& endpointAddress,
 
 SGCore::Coro::Task<> SGCore::Net::Client::send(Packet packet) noexcept
 {
-    m_sentPackets.push_back(packet);
+    m_packetsQueue.push_back(MakeRef<Packet>(packet));
 
-    size_t packetIdx = m_sentPackets.size() - 1;
+    size_t packetIdx = m_packetsQueue.size() - 1;
 
     while(!m_isConnected)
     {
         co_await Coro::returnToCaller();
     }
 
-    m_socket.async_send(boost::asio::buffer(m_sentPackets[packetIdx]), [this, packetIdx](boost::system::error_code errorCode, size_t bytesCnt) {
+    m_socket.async_send(boost::asio::buffer(*m_packetsQueue[packetIdx]), [this, packetIdx](boost::system::error_code errorCode, size_t bytesCnt) {
         if(errorCode)
         {
             std::cout << "send failed: " << errorCode.message() << ". count of bytes to send: " << bytesCnt << std::endl;
             return;
         }
 
-        // m_sentPackets.erase(m_sentPackets.begin() + packetIdx);
+        m_sentPackets.push_back(packetIdx);
 
         // std::cout << "sent to server " << bytesCnt << " bytes" << std::endl;
     });

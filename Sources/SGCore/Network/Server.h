@@ -44,9 +44,11 @@ namespace SGCore::Net
                 }*/
 
                 m_socket->async_receive_from(boost::asio::buffer(m_recvBuffer), m_receivedFromEndpoint, [this, callback](const boost::system::error_code& error, std::size_t bufferSize) {
+                    const auto clientEndpoint = m_receivedFromEndpoint;
+
                     if(error)
                     {
-                        std::cout << "error while reading data from client: " << m_receivedFromEndpoint << ". error is: " << error.what() << std::endl;
+                        std::cout << "error while reading data from client: " << clientEndpoint << ". error is: " << error.what() << std::endl;
 
                         /*m_connectedClients.erase(std::ranges::find(m_connectedClients, m_receivedFromEndpoint));
                         m_connectedClientsSet.erase(m_receivedFromEndpoint);*/
@@ -58,21 +60,29 @@ namespace SGCore::Net
 
                     bool isNewClient = false;
 
-                    if(!m_connectedClientsSet.contains(m_receivedFromEndpoint))
+                    if(!m_connectedClientsSet.contains(clientEndpoint))
                     {
-                        m_connectedClientsSet.insert(m_receivedFromEndpoint);
-                        m_connectedClients.push_back(m_receivedFromEndpoint);
+                        m_connectedClientsSet.insert(clientEndpoint);
+                        m_connectedClients.push_back(clientEndpoint);
 
-                        std::cout << "new client: " << m_receivedFromEndpoint << ", clients count: " << m_connectedClients.size() << std::endl;
+                        std::cout << "new client: " << clientEndpoint << ", clients count: " << m_connectedClients.size() << std::endl;
 
                         isNewClient = true;
                     }
 
+                    const auto clientEndpointSize = clientEndpoint.size();
+
+                    // putting is new client
                     m_recvBuffer[m_recvBuffer.size() - 1] = isNewClient;
+
+                    // putting client size of address in buffer
+                    std::memcpy(m_recvBuffer.data() + (m_recvBuffer.size() - 1 - sizeof(clientEndpointSize)), &clientEndpointSize, sizeof(clientEndpointSize));
+                    // putting client address in buffer
+                    std::memcpy(m_recvBuffer.data() + (m_recvBuffer.size() - 1 - sizeof(clientEndpointSize) - clientEndpoint.size()), clientEndpoint.data(), clientEndpoint.size());
 
                     if(bufferSize > 0)
                     {
-                        callback(m_recvBuffer, bufferSize, m_receivedFromEndpoint);
+                        callback(m_recvBuffer, bufferSize, clientEndpoint);
                     }
                 });
 

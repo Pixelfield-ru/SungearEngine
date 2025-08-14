@@ -71,7 +71,13 @@ namespace SGCore::Net
                         return;
                     }
 
-                    movedCallback(m_recvBuffer, bufferSize, m_serverEndpoint);
+                    endpoint_t fromClient;
+                    decltype(fromClient.size()) clientEndpointSize;
+
+                    std::memcpy(&clientEndpointSize, m_recvBuffer.data() + bufferSize - 1 - sizeof(clientEndpointSize), sizeof(clientEndpointSize));
+                    std::memcpy(fromClient.data(), m_recvBuffer.data() + bufferSize - 1 - sizeof(clientEndpointSize) - clientEndpointSize, clientEndpointSize);
+
+                    movedCallback(m_recvBuffer, bufferSize, fromClient);
 
                     m_isDataReceived = true;
                 });
@@ -95,7 +101,9 @@ namespace SGCore::Net
 
         Packet m_recvBuffer;
 
-        std::deque<Packet> m_sentPackets;
+        std::vector<Ref<Packet>> m_packetsQueue;
+        std::vector<size_t> m_sentPackets;
+        std::mutex m_sentPacketsMutex;
 
         std::atomic<bool> m_isConnected = false;
         std::atomic<bool> m_isDataReceived = true;
