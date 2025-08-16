@@ -17,13 +17,8 @@ SGCore::Net::Client::Client() noexcept
     m_contextThread->addTask(contextTask);
     m_contextThread->start();
 
-    std::srand(static_cast<unsigned int>(std::time(nullptr)));
-
-    const auto port = 1024 + (std::rand() % (49151 - 1024 + 1));
-    std::cout << "client port: " << port << std::endl;
-
     m_socket.open(boost::asio::ip::udp::v4());
-    m_socket.bind(endpoint_t(boost::asio::ip::make_address("127.0.0.1"), port));
+    m_socket.bind(endpoint_t(boost::asio::ip::make_address("127.0.0.1"), 0));
 }
 
 void SGCore::Net::Client::connect(const std::string& endpointAddress,
@@ -57,28 +52,64 @@ void SGCore::Net::Client::connect(const std::string& endpointAddress,
     });
 }
 
-SGCore::Coro::Task<> SGCore::Net::Client::send(Packet packet) noexcept
+SGCore::Coro::Task<> SGCore::Net::Client::runReceivePoll() noexcept
 {
-    m_packetsQueue.push_back(MakeRef<Packet>(packet));
-
-    size_t packetIdx = m_packetsQueue.size() - 1;
-
-    while(!m_isConnected)
+    while(m_contextThread->isRunning())
     {
-        co_await Coro::returnToCaller();
-    }
-
-    m_socket.async_send(boost::asio::buffer(*m_packetsQueue[packetIdx]), [this, packetIdx](boost::system::error_code errorCode, size_t bytesCnt) {
-        if(errorCode)
+        if(m_socket.available() == 0 || !m_isConnected.load())
         {
-            std::cout << "send failed: " << errorCode.message() << ". count of bytes to send: " << bytesCnt << std::endl;
-            return;
+            co_await Coro::returnToCaller();
+            continue;
         }
 
-        m_sentPackets.push_back(packetIdx);
+        m_socket.async_receive_from(boost::asio::buffer(m_recvBuffer), m_recvEndpoint, [this](const boost::system::error_code& error, std::size_t bufferSize) {
+            const auto& tmpBuf = m_recvBuffer;
 
-        // std::cout << "sent to server " << bytesCnt << " bytes" << std::endl;
-    });
+            if(m_recvEndpoint != m_serverEndpoint)
+            {
+                std::cout << "unknown endpoint: " << m_recvEndpoint << std::endl;
+                // unknown endpoint
+                return;
+            }
+
+            if(error)
+            {
+                std::cerr << "Client: error while receiving packet: " << error.message() << '\n';
+                return;
+            }
+
+            // todo: make cycle for full packet
+
+            std::uint64_t dataTypeHash;
+            std::memcpy(&dataTypeHash, tmpBuf.data(), sizeof(dataTypeHash));
+
+            const auto dataStreamIt = m_registeredDataStreams.find(dataTypeHash);
+
+            if(dataStreamIt == m_registeredDataStreams.end())
+            {
+                // invalid data type or incomplete buffer
+                std::cout << "invalid data type: " << dataTypeHash << std::endl;
+                return;
+            }
+
+            endpoint_t fromClient;
+            std::uint64_t clientEndpointSize;
+
+            std::memcpy(&clientEndpointSize, tmpBuf.data() + sizeof(dataTypeHash), sizeof(clientEndpointSize));
+            std::memcpy(fromClient.data(), tmpBuf.data() + sizeof(dataTypeHash) + sizeof(clientEndpointSize), clientEndpointSize);
+
+            Packet pureData;
+            const size_t metaDataSize = sizeof(dataTypeHash) + sizeof(clientEndpointSize) + clientEndpointSize;
+
+            std::memcpy(pureData.data(), tmpBuf.data() + metaDataSize, bufferSize - metaDataSize);
+
+            m_recvBuffer = { };
+
+            dataStreamIt->second.onReceive(pureData, fromClient);
+        });
+
+        co_await Coro::returnToCaller();
+    }
 }
 
 bool SGCore::Net::Client::isConnected() const noexcept

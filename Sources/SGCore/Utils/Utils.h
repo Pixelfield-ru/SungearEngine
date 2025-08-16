@@ -103,16 +103,19 @@ namespace SGCore
     }
 
     /**
-     * Output of this hash will be always identical on all platforms and compilers if you are using the same string and salt.
+     * Output of this hash will be always identical on all platforms and compilers if you are using the same string and salt.\n
+     * Uses FNV-1a algorithm.
      * @param s
      * @param salt
      * @return
      */
-    static size_t hashString(const char* str, unsigned salt = 0)
+    static std::uint32_t hashString(const char* str, unsigned salt = 0)
     {
-        unsigned h = salt;
+        std::uint32_t h = 0x811C9DC5 ^ salt;
         while (*str)
-            h = h * 101 + (unsigned) *str++;
+        {
+            h = (h ^ static_cast<std::uint8_t>(*str++)) * 0x01000193;
+        }
         return h;
     }
 

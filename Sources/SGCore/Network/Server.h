@@ -58,27 +58,40 @@ namespace SGCore::Net
 
                     // std::cout << "data received: " << bufferSize << std::endl;
 
-                    bool isNewClient = false;
-
                     if(!m_connectedClientsSet.contains(clientEndpoint))
                     {
                         m_connectedClientsSet.insert(clientEndpoint);
                         m_connectedClients.push_back(clientEndpoint);
 
                         std::cout << "new client: " << clientEndpoint << ", clients count: " << m_connectedClients.size() << std::endl;
-
-                        isNewClient = true;
                     }
 
-                    const auto clientEndpointSize = clientEndpoint.size();
+                    const std::uint64_t clientEndpointSize = clientEndpoint.size();
 
-                    // putting is new client
-                    m_recvBuffer[m_recvBuffer.size() - 1] = isNewClient;
+                    const auto tmpBuf = m_recvBuffer;
+
+                    // todo: make cycle for full packet
+
+                    std::uint64_t dataTypeHash;
+
+                    std::memcpy(&dataTypeHash, m_recvBuffer.data(), sizeof(std::uint64_t));
+
+                    if(!m_registeredTypes.contains(dataTypeHash))
+                    {
+                        std::cout << "invalid data type: " << dataTypeHash << std::endl;
+
+                        // invalid data type data or incomplete buffer
+                        return;
+                    }
 
                     // putting client size of address in buffer
-                    std::memcpy(m_recvBuffer.data() + (m_recvBuffer.size() - 1 - sizeof(clientEndpointSize)), &clientEndpointSize, sizeof(clientEndpointSize));
+                    std::memcpy(m_recvBuffer.data() + sizeof(dataTypeHash), &clientEndpointSize, sizeof(clientEndpointSize));
                     // putting client address in buffer
-                    std::memcpy(m_recvBuffer.data() + (m_recvBuffer.size() - 1 - sizeof(clientEndpointSize) - clientEndpoint.size()), clientEndpoint.data(), clientEndpoint.size());
+                    std::memcpy(m_recvBuffer.data() + sizeof(dataTypeHash) + sizeof(clientEndpointSize), clientEndpoint.data(), clientEndpoint.size());
+
+                    const size_t metaDataSize = sizeof(dataTypeHash) + sizeof(clientEndpointSize) + clientEndpointSize;
+
+                    std::memcpy(m_recvBuffer.data() + metaDataSize, tmpBuf.data() + sizeof(dataTypeHash), tmpBuf.size() - metaDataSize);
 
                     if(bufferSize > 0)
                     {
@@ -88,6 +101,12 @@ namespace SGCore::Net
 
                 co_await Coro::returnToCaller();
             }
+        }
+
+        template<typename T>
+        void registerDataType() noexcept
+        {
+            m_registeredTypes[SGCore::hashString(T::type_name)] = sizeof(T);
         }
 
         Coro::Task<> propagatePacket(const Packet& packet, endpoint_t fromClient) noexcept;
@@ -110,10 +129,12 @@ namespace SGCore::Net
         std::unordered_set<endpoint_t> m_connectedClientsSet;
         std::vector<endpoint_t> m_connectedClients;
 
-        std::unordered_map<endpoint_t, Packet> m_clientsPackets;
-
         Packet m_recvBuffer;
         std::unordered_map<endpoint_t, Ref<Packet>> m_packetsToSend;
+
+        // first - data type id, second - sizeof data
+        std::unordered_map<std::uint64_t, std::uint64_t> m_registeredTypes;
+        // std::unordered_map<endpoint_t, std::vector<Ref<Packet>>> m_sentPackets;
     };
 }
 

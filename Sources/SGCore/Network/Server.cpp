@@ -28,8 +28,6 @@ SGCore::Net::Server::Server(boost::asio::ip::udp protocol, boost::asio::ip::port
 
     m_contextThread->addTask(contextTask);
     m_contextThread->start();
-
-    m_recvBuffer.resize(124);
 }
 
 SGCore::Net::Server::Server() noexcept :
@@ -45,8 +43,6 @@ SGCore::Net::Server::Server() noexcept :
 
     m_contextThread->addTask(contextTask);
     m_contextThread->start();
-
-    m_recvBuffer.resize(124);
 }
 
 SGCore::Net::Server::Server(Server&& other) noexcept : m_protocol(other.m_protocol),
@@ -87,7 +83,7 @@ SGCore::Coro::Task<> SGCore::Net::Server::propagatePacket(const Packet& packet, 
 
         if(client == fromClient) continue;
 
-        auto& clientPacket = m_packetsToSend[client];
+        auto clientPacket = m_packetsToSend[client];
         if(!clientPacket)
         {
             clientPacket = MakeRef<Packet>();
@@ -95,14 +91,14 @@ SGCore::Coro::Task<> SGCore::Net::Server::propagatePacket(const Packet& packet, 
 
         *clientPacket = packet;
 
-        // m_socket->send_to(boost::asio::buffer(*clientPacket), client);
-        m_socket->send_to(boost::asio::buffer(packet), client);
-        /*m_socket->async_send_to(boost::asio::buffer(*clientPacket), client, [client](boost::system::error_code errorCode, size_t bufferSize) {
+        // capturing client packet to save data
+        // m_socket->send_to(boost::asio::buffer(packet), client);
+        m_socket->async_send_to(boost::asio::buffer(*clientPacket), client, [client, clientPacket](boost::system::error_code errorCode, size_t bufferSize) {
             if(errorCode)
             {
                 std::cout << "can not propagate buffer with size " << bufferSize << " to client " << client << std::endl;
             }
-        });*/
+        });
 
         co_await Coro::returnToCaller();
     }

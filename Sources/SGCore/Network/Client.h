@@ -20,6 +20,16 @@
 
 namespace SGCore::Net
 {
+    struct DataStream
+    {
+        friend struct Client;
+
+        std::function<void(const Packet& data, boost::asio::ip::udp::endpoint from)> onReceive;
+
+    private:
+        std::uint64_t m_dataSize = 0;
+    };
+
     struct Client
     {
         using socket_t = boost::asio::ip::udp::socket;
@@ -29,61 +39,48 @@ namespace SGCore::Net
 
         void connect(const std::string& endpointAddress, boost::asio::ip::port_type endpointPort, std::chrono::system_clock::duration retryInterval = std::chrono::seconds(3), int retriesCount = 5) noexcept;
 
-        Coro::Task<> send(Packet packet) noexcept;
-
         template<typename T>
-        requires(std::is_invocable_v<T, const Packet&, size_t, endpoint_t>)
-        Coro::Task<> runReceivePoll(T callback) noexcept
+        requires(requires { T::type_name; })
+        Coro::Task<> send(const T& data) noexcept
         {
-            while(m_contextThread->isRunning())
+            const std::uint64_t dataTypeHash = SGCore::hashString(T::type_name);
+
+            if(!m_registeredDataStreams.contains(dataTypeHash))
             {
-                if(m_socket.available() == 0 || !m_isConnected.load())
-                {
-                    co_await Coro::returnToCaller();
-                    continue;
-                }
+                // unregistered data type
+                co_return;
+            }
 
-                while(!m_isDataReceived.load())
-                {
-                    co_await Coro::returnToCaller();
-                }
+            Packet packet;
+            std::memcpy(packet.data(), &dataTypeHash, sizeof(dataTypeHash));
+            std::memcpy(packet.data() + sizeof(dataTypeHash), &data, sizeof(data));
 
-                m_isDataReceived = false;
+            auto sharedPacket = MakeRef<Packet>(packet);
 
-                if(m_socket.available() > m_recvBuffer.size())
-                {
-                    m_recvBuffer.resize(m_socket.available());
-                }
-
-                m_socket.async_receive_from(boost::asio::buffer(m_recvBuffer), m_recvEndpoint, [this, movedCallback = std::move(callback)](const boost::system::error_code& error, std::size_t bufferSize) {
-                    if(m_recvEndpoint != m_serverEndpoint)
-                    {
-                        std::cout << "unknown endpoint: " << m_recvEndpoint << std::endl;
-                        // unknown endpoint
-                        m_isDataReceived = true;
-                        return;
-                    }
-
-                    if(error)
-                    {
-                        std::cerr << "Client: error while receiving packet: " << error.message() << '\n';
-                        m_isDataReceived = true;
-                        return;
-                    }
-
-                    endpoint_t fromClient;
-                    decltype(fromClient.size()) clientEndpointSize;
-
-                    std::memcpy(&clientEndpointSize, m_recvBuffer.data() + bufferSize - 1 - sizeof(clientEndpointSize), sizeof(clientEndpointSize));
-                    std::memcpy(fromClient.data(), m_recvBuffer.data() + bufferSize - 1 - sizeof(clientEndpointSize) - clientEndpointSize, clientEndpointSize);
-
-                    movedCallback(m_recvBuffer, bufferSize, fromClient);
-
-                    m_isDataReceived = true;
-                });
-
+            while(!m_isConnected)
+            {
                 co_await Coro::returnToCaller();
             }
+
+            // capturing sharedPacket to save packet (extend the lifetime)
+            m_socket.async_send(boost::asio::buffer(*sharedPacket), [this, sharedPacket](boost::system::error_code errorCode, size_t bytesCnt) {
+                if(errorCode)
+                {
+                    std::cout << "send failed: " << errorCode.message() << ". count of bytes to send: " << bytesCnt << std::endl;
+                    return;
+                }
+            });
+        }
+
+        Coro::Task<> runReceivePoll() noexcept;
+
+        template<typename T>
+        DataStream& registerDataStream() noexcept
+        {
+            auto& dataStream = m_registeredDataStreams[SGCore::hashString(T::type_name)];
+            dataStream.m_dataSize = sizeof(T);
+
+            return dataStream;
         }
 
         [[nodiscard]] bool isConnected() const noexcept;
@@ -100,13 +97,11 @@ namespace SGCore::Net
         socket_t m_socket = socket_t(m_context);
 
         Packet m_recvBuffer;
+        size_t m_bytesToSkip = 0;
 
-        std::vector<Ref<Packet>> m_packetsQueue;
-        std::vector<size_t> m_sentPackets;
-        std::mutex m_sentPacketsMutex;
+        std::unordered_map<std::uint64_t, DataStream> m_registeredDataStreams;
 
         std::atomic<bool> m_isConnected = false;
-        std::atomic<bool> m_isDataReceived = true;
     };
 }
 

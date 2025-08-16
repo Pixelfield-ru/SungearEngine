@@ -2,15 +2,15 @@
 // Created by stuka on 03.08.2025.
 //
 
-#ifndef PACKET_H
-#define PACKET_H
+#ifndef SUNGEARENGINE_NETWORK_PACKET_H
+#define SUNGEARENGINE_NETWORK_PACKET_H
 
 #include <cstdint>
 #include <vector>
 
 namespace SGCore::Net
 {
-    using Packet = std::vector<std::uint8_t>;
+    using Packet = std::array<std::uint8_t, 1024>;
     /*struct Packet
     {
         friend struct Client;
@@ -48,4 +48,4 @@ namespace SGCore::Net
     };*/
 }
 
-#endif //PACKET_H
+#endif // SUNGEARENGINE_NETWORK_PACKET_H
