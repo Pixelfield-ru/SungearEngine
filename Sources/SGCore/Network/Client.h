@@ -5,16 +5,22 @@
 #ifndef SUNGEARENGINE_NETWORK_CLIENT_H
 #define SUNGEARENGINE_NETWORK_CLIENT_H
 
+#include "SGCore/CrashHandler/Platform.h"
+
+#ifdef PLATFORM_OS_WINDOWS
 #include <WinSock2.h>
+#endif
+
+#include <boost/asio/strand.hpp>
 
 #include <boost/asio/ip/address.hpp>
 #include <boost/asio/ip/basic_endpoint.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ip/udp.hpp>
 
-#include <SGCore/Coro/Task.h>
-#include <SGCore/Main/CoreGlobals.h>
-#include <SGCore/Threading/Thread.h>
+#include "SGCore/Coro/Task.h"
+#include "SGCore/Main/CoreGlobals.h"
+#include "SGCore/Threading/Thread.h"
 
 #include "Packet.h"
 
@@ -63,12 +69,14 @@ namespace SGCore::Net
             }
 
             // capturing sharedPacket to save packet (extend the lifetime)
-            m_socket.async_send(boost::asio::buffer(*sharedPacket), [this, sharedPacket](boost::system::error_code errorCode, size_t bytesCnt) {
-                if(errorCode)
-                {
-                    std::cout << "send failed: " << errorCode.message() << ". count of bytes to send: " << bytesCnt << std::endl;
-                    return;
-                }
+            boost::asio::post(m_strand, [this, sharedPacket] {
+                m_socket.async_send(boost::asio::buffer(*sharedPacket), [this, sharedPacket](boost::system::error_code errorCode, size_t bytesCnt) {
+                    if(errorCode)
+                    {
+                        std::cout << "send failed: " << errorCode.message() << ". count of bytes to send: " << bytesCnt << std::endl;
+                        return;
+                    }
+                });
             });
         }
 
@@ -93,6 +101,7 @@ namespace SGCore::Net
         endpoint_t m_clientAddress;
 
         boost::asio::io_context m_context;
+        boost::asio::strand<decltype(m_context)::executor_type> m_strand = boost::asio::make_strand(m_context);
 
         socket_t m_socket = socket_t(m_context);
 

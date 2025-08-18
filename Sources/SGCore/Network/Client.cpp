@@ -4,7 +4,9 @@
 
 #include "Client.h"
 
-#include <SGCore/Threading/Task.h>
+#include "SGCore/Threading/Task.h"
+
+#include "Utils.h"
 
 SGCore::Net::Client::Client() noexcept
 {
@@ -22,9 +24,9 @@ SGCore::Net::Client::Client() noexcept
 }
 
 void SGCore::Net::Client::connect(const std::string& endpointAddress,
-                             boost::asio::ip::port_type endpointPort,
-                             std::chrono::system_clock::duration retryInterval,
-                             int retriesCount) noexcept
+                                  boost::asio::ip::port_type endpointPort,
+                                  std::chrono::system_clock::duration retryInterval,
+                                  int retriesCount) noexcept
 {
     m_serverEndpoint = endpoint_t(boost::asio::ip::make_address(endpointAddress), endpointPort);
 
@@ -62,50 +64,54 @@ SGCore::Coro::Task<> SGCore::Net::Client::runReceivePoll() noexcept
             continue;
         }
 
-        m_socket.async_receive_from(boost::asio::buffer(m_recvBuffer), m_recvEndpoint, [this](const boost::system::error_code& error, std::size_t bufferSize) {
-            const auto& tmpBuf = m_recvBuffer;
+        boost::asio::post(m_strand, [this] {
+            m_socket.async_receive_from(boost::asio::buffer(m_recvBuffer), m_recvEndpoint, [this](const boost::system::error_code& error, std::size_t bufferSize) {
+                const auto tmpBuf = m_recvBuffer;
 
-            if(m_recvEndpoint != m_serverEndpoint)
-            {
-                std::cout << "unknown endpoint: " << m_recvEndpoint << std::endl;
-                // unknown endpoint
-                return;
-            }
+                if(m_recvEndpoint != m_serverEndpoint)
+                {
+                    std::cout << "unknown endpoint: " << m_recvEndpoint << std::endl;
+                    // unknown endpoint
+                    return;
+                }
 
-            if(error)
-            {
-                std::cerr << "Client: error while receiving packet: " << error.message() << '\n';
-                return;
-            }
+                if(error)
+                {
+                    std::cerr << "Client: error while receiving packet: " << error.message() << '\n';
+                    return;
+                }
 
-            // todo: make cycle for full packet
+                // todo: make cycle for full packet
 
-            std::uint64_t dataTypeHash;
-            std::memcpy(&dataTypeHash, tmpBuf.data(), sizeof(dataTypeHash));
+                std::uint64_t dataTypeHash;
+                std::memcpy(&dataTypeHash, tmpBuf.data(), sizeof(dataTypeHash));
 
-            const auto dataStreamIt = m_registeredDataStreams.find(dataTypeHash);
+                const auto dataStreamIt = m_registeredDataStreams.find(dataTypeHash);
 
-            if(dataStreamIt == m_registeredDataStreams.end())
-            {
-                // invalid data type or incomplete buffer
-                std::cout << "invalid data type: " << dataTypeHash << std::endl;
-                return;
-            }
+                if(dataStreamIt == m_registeredDataStreams.end())
+                {
+                    // invalid data type or incomplete buffer
+                    std::cout << "invalid data type: " << dataTypeHash << std::endl;
+                    return;
+                }
 
-            endpoint_t fromClient;
-            std::uint64_t clientEndpointSize;
+                size_t metaDataSize = sizeof(dataTypeHash);
 
-            std::memcpy(&clientEndpointSize, tmpBuf.data() + sizeof(dataTypeHash), sizeof(clientEndpointSize));
-            std::memcpy(fromClient.data(), tmpBuf.data() + sizeof(dataTypeHash) + sizeof(clientEndpointSize), clientEndpointSize);
+                // reading from client endpoint =======
+                size_t fromClientEndpointSize = 0;
+                const endpoint_t fromClient = Utils::readEndpoint(tmpBuf, metaDataSize, fromClientEndpointSize);
 
-            Packet pureData;
-            const size_t metaDataSize = sizeof(dataTypeHash) + sizeof(clientEndpointSize) + clientEndpointSize;
+                metaDataSize += fromClientEndpointSize;
+                // ====================================
 
-            std::memcpy(pureData.data(), tmpBuf.data() + metaDataSize, bufferSize - metaDataSize);
+                Packet pureData;
 
-            m_recvBuffer = { };
+                std::memcpy(pureData.data(), tmpBuf.data() + metaDataSize, bufferSize - metaDataSize);
 
-            dataStreamIt->second.onReceive(pureData, fromClient);
+                // m_recvBuffer = { };
+
+                dataStreamIt->second.onReceive(pureData, fromClient);
+            });
         });
 
         co_await Coro::returnToCaller();

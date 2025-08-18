@@ -5,15 +5,26 @@
 #ifndef SUNGEARENGINE_NETWORK_SERVER_H
 #define SUNGEARENGINE_NETWORK_SERVER_H
 
+#include "Packet.h"
+
+#include "SGCore/CrashHandler/Platform.h"
+
+#ifdef PLATFORM_OS_WINDOWS
 #include <WinSock2.h>
+#endif
+
 #include <boost/asio/io_context.hpp>
+#include <boost/asio/strand.hpp>
 #include <boost/asio/ip/udp.hpp>
+
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Threading/ThreadsPool.h"
 
 #include "SGCore/Coro/Task.h"
 
-#include "Packet.h"
+#include "ClientDisconnectedPacket.h"
+
+#include "Utils.h"
 
 namespace SGCore::Net
 {
@@ -38,65 +49,77 @@ namespace SGCore::Net
                     continue;
                 }
 
-                /*if(getSocket().available() + 1 > m_recvBuffer.size())
-                {
-                    m_recvBuffer.resize(getSocket().available() + 1);
-                }*/
+                boost::asio::post(m_strand, [this, callback] {
+                    m_socket->async_receive_from(boost::asio::buffer(m_recvBuffer), m_receivedFromEndpoint, [this, callback](const boost::system::error_code& error, std::size_t bufferSize) {
+                        const auto clientEndpoint = m_receivedFromEndpoint;
+                        auto tmpBuf = m_recvBuffer;
+                        const auto originalData = m_recvBuffer;
 
-                m_socket->async_receive_from(boost::asio::buffer(m_recvBuffer), m_receivedFromEndpoint, [this, callback](const boost::system::error_code& error, std::size_t bufferSize) {
-                    const auto clientEndpoint = m_receivedFromEndpoint;
+                        if(error)
+                        {
+                            std::cout << "error while reading data from client: " << clientEndpoint << ". error is: " << error.what() << std::endl;
 
-                    if(error)
-                    {
-                        std::cout << "error while reading data from client: " << clientEndpoint << ". error is: " << error.what() << std::endl;
+                            {
+                                std::lock_guard guard(m_connectedClientsContainersMutex);
+                                m_connectedClients.erase(std::ranges::find(m_connectedClients, m_receivedFromEndpoint));
+                                m_connectedClientsSet.erase(m_receivedFromEndpoint);
+                            }
 
-                        /*m_connectedClients.erase(std::ranges::find(m_connectedClients, m_receivedFromEndpoint));
-                        m_connectedClientsSet.erase(m_receivedFromEndpoint);*/
+                            tmpBuf = {};
 
-                        return;
-                    }
+                            const std::uint64_t dataTypeHash = SGCore::hashString(ClientDisconnectedPacket::type_name);
 
-                    // std::cout << "data received: " << bufferSize << std::endl;
+                            size_t clientEndpointSize = 0;
 
-                    if(!m_connectedClientsSet.contains(clientEndpoint))
-                    {
-                        m_connectedClientsSet.insert(clientEndpoint);
-                        m_connectedClients.push_back(clientEndpoint);
+                            std::memcpy(tmpBuf.data(), &dataTypeHash, sizeof(dataTypeHash));
+                            Utils::writeEndpoint(tmpBuf, sizeof(dataTypeHash), clientEndpoint, clientEndpointSize);
 
-                        std::cout << "new client: " << clientEndpoint << ", clients count: " << m_connectedClients.size() << std::endl;
-                    }
+                            // we will definitely notify other clients about the client disconnection.
+                            propagatePacket(tmpBuf, clientEndpoint);
 
-                    const std::uint64_t clientEndpointSize = clientEndpoint.size();
+                            return;
+                        }
 
-                    const auto tmpBuf = m_recvBuffer;
+                        if(!m_connectedClientsSet.contains(clientEndpoint))
+                        {
+                            {
+                                std::lock_guard guard(m_connectedClientsContainersMutex);
+                                m_connectedClientsSet.insert(clientEndpoint);
+                                m_connectedClients.push_back(clientEndpoint);
+                            }
 
-                    // todo: make cycle for full packet
+                            std::cout << "new client: " << clientEndpoint << ", clients count: " << m_connectedClients.size() << std::endl;
+                        }
 
-                    std::uint64_t dataTypeHash;
+                        // todo: make cycle for full packet
 
-                    std::memcpy(&dataTypeHash, m_recvBuffer.data(), sizeof(std::uint64_t));
+                        std::uint64_t dataTypeHash;
 
-                    if(!m_registeredTypes.contains(dataTypeHash))
-                    {
-                        std::cout << "invalid data type: " << dataTypeHash << std::endl;
+                        std::memcpy(&dataTypeHash, tmpBuf.data(), sizeof(dataTypeHash));
 
-                        // invalid data type data or incomplete buffer
-                        return;
-                    }
+                        if(!m_registeredTypes.contains(dataTypeHash))
+                        {
+                            std::cout << "invalid data type: " << dataTypeHash << std::endl;
 
-                    // putting client size of address in buffer
-                    std::memcpy(m_recvBuffer.data() + sizeof(dataTypeHash), &clientEndpointSize, sizeof(clientEndpointSize));
-                    // putting client address in buffer
-                    std::memcpy(m_recvBuffer.data() + sizeof(dataTypeHash) + sizeof(clientEndpointSize), clientEndpoint.data(), clientEndpoint.size());
+                            // invalid data type data or incomplete buffer
+                            return;
+                        }
 
-                    const size_t metaDataSize = sizeof(dataTypeHash) + sizeof(clientEndpointSize) + clientEndpointSize;
+                        size_t metaDataSize = sizeof(dataTypeHash);
 
-                    std::memcpy(m_recvBuffer.data() + metaDataSize, tmpBuf.data() + sizeof(dataTypeHash), tmpBuf.size() - metaDataSize);
+                        // writing client endpoint ====================================
+                        size_t clientEndpointSize = 0;
+                        Utils::writeEndpoint(tmpBuf, metaDataSize, clientEndpoint, clientEndpointSize);
+                        metaDataSize += clientEndpointSize;
+                        // ============================================================
 
-                    if(bufferSize > 0)
-                    {
-                        callback(m_recvBuffer, bufferSize, clientEndpoint);
-                    }
+                        std::memcpy(tmpBuf.data() + metaDataSize, originalData.data() + sizeof(dataTypeHash), originalData.size() - metaDataSize);
+
+                        if(bufferSize > 0)
+                        {
+                            callback(tmpBuf, bufferSize, clientEndpoint);
+                        }
+                    });
                 });
 
                 co_await Coro::returnToCaller();
@@ -119,6 +142,7 @@ namespace SGCore::Net
         boost::asio::ip::udp m_protocol = boost::asio::ip::udp::v4();
         boost::asio::ip::port_type m_port = 2025;
         boost::asio::io_context m_context;
+        boost::asio::strand<decltype(m_context)::executor_type> m_strand = boost::asio::make_strand(m_context);
 
         endpoint_t m_endpoint = endpoint_t(m_protocol, m_port);
 
@@ -128,6 +152,7 @@ namespace SGCore::Net
 
         std::unordered_set<endpoint_t> m_connectedClientsSet;
         std::vector<endpoint_t> m_connectedClients;
+        std::mutex m_connectedClientsContainersMutex;
 
         Packet m_recvBuffer;
         std::unordered_map<endpoint_t, Ref<Packet>> m_packetsToSend;

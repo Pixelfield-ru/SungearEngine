@@ -10,6 +10,7 @@
 
 namespace SGCore::Net
 {
+    // using Packet = std::vector<std::uint8_t>;
     using Packet = std::array<std::uint8_t, 1024>;
     /*struct Packet
     {
