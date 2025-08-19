@@ -81,36 +81,52 @@ SGCore::Coro::Task<> SGCore::Net::Client::runReceivePoll() noexcept
                     return;
                 }
 
-                // todo: make cycle for full packet
+                size_t currentPacketOffset = 0;
 
-                std::uint64_t dataTypeHash;
-                std::memcpy(&dataTypeHash, tmpBuf.data(), sizeof(dataTypeHash));
-
-                const auto dataStreamIt = m_registeredDataStreams.find(dataTypeHash);
-
-                if(dataStreamIt == m_registeredDataStreams.end())
+                // processing all packet
+                while(true)
                 {
-                    // invalid data type or incomplete buffer
-                    std::cout << "invalid data type: " << dataTypeHash << std::endl;
-                    return;
+                    std::uint64_t dataTypeHash;
+                    std::memcpy(&dataTypeHash, tmpBuf.data() + currentPacketOffset, sizeof(dataTypeHash));
+
+                    const auto dataStreamIt = m_registeredDataStreams.find(dataTypeHash);
+
+                    if(dataStreamIt == m_registeredDataStreams.end())
+                    {
+                        std::cout << "invalid data type: " << dataTypeHash << std::endl;
+
+                        // todo: maybe += 1 byte and continue to trying to find valid data??
+                        // invalid data type or incomplete buffer
+                        return;
+                    }
+
+                    auto& dataStream = dataStreamIt->second;
+
+                    const auto registeredTypeSize = dataStream.m_dataSize;
+
+                    currentPacketOffset += sizeof(dataTypeHash);
+
+                    // reading from client endpoint =======
+                    size_t fromClientEndpointSize = 0;
+                    bool isReadClientEndpointSuccessful = false;
+                    const endpoint_t fromClient = Utils::readEndpoint(tmpBuf, currentPacketOffset, fromClientEndpointSize, isReadClientEndpointSuccessful);
+                    currentPacketOffset += fromClientEndpointSize;
+                    // ====================================
+
+                    if(!isReadClientEndpointSuccessful ||
+                       currentPacketOffset + registeredTypeSize > tmpBuf.size())
+                    {
+                        break;
+                    }
+
+                    Packet pureData;
+
+                    std::memcpy(pureData.data(), tmpBuf.data() + currentPacketOffset, registeredTypeSize);
+
+                    dataStream.onReceive(pureData, fromClient);
+
+                    currentPacketOffset += registeredTypeSize;
                 }
-
-                size_t metaDataSize = sizeof(dataTypeHash);
-
-                // reading from client endpoint =======
-                size_t fromClientEndpointSize = 0;
-                const endpoint_t fromClient = Utils::readEndpoint(tmpBuf, metaDataSize, fromClientEndpointSize);
-
-                metaDataSize += fromClientEndpointSize;
-                // ====================================
-
-                Packet pureData;
-
-                std::memcpy(pureData.data(), tmpBuf.data() + metaDataSize, bufferSize - metaDataSize);
-
-                // m_recvBuffer = { };
-
-                dataStreamIt->second.onReceive(pureData, fromClient);
             });
         });
 

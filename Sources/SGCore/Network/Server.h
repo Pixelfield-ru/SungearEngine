@@ -91,33 +91,51 @@ namespace SGCore::Net
                             std::cout << "new client: " << clientEndpoint << ", clients count: " << m_connectedClients.size() << std::endl;
                         }
 
-                        // todo: make cycle for full packet
+                        size_t formedPacketOffset = 0;
+                        size_t originalPacketOffset = 0;
 
-                        std::uint64_t dataTypeHash;
-
-                        std::memcpy(&dataTypeHash, tmpBuf.data(), sizeof(dataTypeHash));
-
-                        if(!m_registeredTypes.contains(dataTypeHash))
+                        // processing all packet
+                        while(true)
                         {
-                            std::cout << "invalid data type: " << dataTypeHash << std::endl;
+                            std::uint64_t dataTypeHash;
+                            std::memcpy(&dataTypeHash, tmpBuf.data() + formedPacketOffset, sizeof(dataTypeHash));
 
-                            // invalid data type data or incomplete buffer
-                            return;
-                        }
+                            auto registeredTypeIt = m_registeredTypes.find(dataTypeHash);
+                            if(registeredTypeIt == m_registeredTypes.end())
+                            {
+                                std::cout << "invalid data type: " << dataTypeHash << std::endl;
 
-                        size_t metaDataSize = sizeof(dataTypeHash);
+                                // todo: maybe += 1 byte and continue to trying to find valid data??
+                                // invalid data type data or incomplete buffer
+                                return;
+                            }
 
-                        // writing client endpoint ====================================
-                        size_t clientEndpointSize = 0;
-                        Utils::writeEndpoint(tmpBuf, metaDataSize, clientEndpoint, clientEndpointSize);
-                        metaDataSize += clientEndpointSize;
-                        // ============================================================
+                            const auto registeredTypeSize = registeredTypeIt->second;
 
-                        std::memcpy(tmpBuf.data() + metaDataSize, originalData.data() + sizeof(dataTypeHash), originalData.size() - metaDataSize);
+                            formedPacketOffset += sizeof(dataTypeHash);
 
-                        if(bufferSize > 0)
-                        {
-                            callback(tmpBuf, bufferSize, clientEndpoint);
+                            // writing client endpoint ====================================
+                            size_t clientEndpointSize = 0;
+                            bool clientEndpointWriteSuccess = Utils::writeEndpoint(tmpBuf, formedPacketOffset, clientEndpoint, clientEndpointSize);
+                            formedPacketOffset += clientEndpointSize;
+                            // ============================================================
+
+                            if(!clientEndpointWriteSuccess ||
+                               formedPacketOffset + registeredTypeSize > tmpBuf.size() ||
+                               originalPacketOffset + sizeof(dataTypeHash) + registeredTypeSize > originalData.size())
+                            {
+                                break;
+                            }
+
+                            std::memcpy(tmpBuf.data() + formedPacketOffset, originalData.data() + originalPacketOffset + sizeof(dataTypeHash), registeredTypeSize);
+
+                            if(bufferSize > 0)
+                            {
+                                callback(tmpBuf, bufferSize, clientEndpoint);
+                            }
+
+                            formedPacketOffset += registeredTypeSize;
+                            originalPacketOffset += sizeof(dataTypeHash) + registeredTypeSize;
                         }
                     });
                 });
