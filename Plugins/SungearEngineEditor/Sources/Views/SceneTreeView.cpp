@@ -44,7 +44,7 @@ void SGE::SceneTreeView::renderBody()
                     SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0
             );
 
-            ImGui::Image(attachment0->getTextureNativeHandler(),
+            ImGui::Image((ImTextureID) attachment0->getTextureNativeHandler(),
                          {attachment0->getWidth() / compressionCoeff, attachment0->getHeight() / compressionCoeff},
                          {0, 1}, {1, 0}
             );
@@ -53,7 +53,7 @@ void SGE::SceneTreeView::renderBody()
                     SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1
             );
 
-            ImGui::Image(attachment1->getTextureNativeHandler(),
+            ImGui::Image((ImTextureID) attachment1->getTextureNativeHandler(),
                          {attachment1->getWidth() / compressionCoeff, attachment1->getHeight() / compressionCoeff},
                          {0, 1}, {1, 0}
             );
@@ -62,7 +62,7 @@ void SGE::SceneTreeView::renderBody()
                     SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2
             );
 
-            ImGui::Image(attachment2->getTextureNativeHandler(),
+            ImGui::Image((ImTextureID) attachment2->getTextureNativeHandler(),
                          {attachment2->getWidth() / compressionCoeff, attachment2->getHeight() / compressionCoeff},
                          {0, 1}, {1, 0}
             );
@@ -71,7 +71,7 @@ void SGE::SceneTreeView::renderBody()
                     SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3
             );
 
-            ImGui::Image(attachment3->getTextureNativeHandler(),
+            ImGui::Image((ImTextureID) attachment3->getTextureNativeHandler(),
                          {attachment3->getWidth() / compressionCoeff, attachment3->getHeight() / compressionCoeff},
                          {0, 1}, {1, 0}
             );
@@ -89,7 +89,7 @@ void SGE::SceneTreeView::renderBody()
                     SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7
             );
 
-            ImGui::Image(attachment31->getTextureNativeHandler(),
+            ImGui::Image((ImTextureID) attachment31->getTextureNativeHandler(),
                          {attachment31->getWidth() / compressionCoeff, attachment31->getHeight() / compressionCoeff},
                          {0, 1}, {1, 0}
             );

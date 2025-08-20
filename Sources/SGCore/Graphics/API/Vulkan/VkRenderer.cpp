@@ -34,6 +34,8 @@ void SGCore::VkRenderer::init() noexcept
     {
         SGCF_ERROR("Can not initialize Vulkan renderer.", SG_LOG_CURRENT_SESSION_FILE);
     }*/
+
+    IRenderer::init();
 }
 
 bool SGCore::VkRenderer::confirmSupport() noexcept
@@ -104,6 +106,11 @@ SGCore::VkFrameBuffer* SGCore::VkRenderer::createFrameBuffer() const
 SGCore::VkMeshData* SGCore::VkRenderer::createMeshData() const
 {
     return new VkMeshData;
+}
+
+void SGCore::VkRenderer::bindScreenFrameBuffer() const noexcept
+{
+    // todo: impl
 }
 
 const std::shared_ptr<SGCore::VkRenderer>& SGCore::VkRenderer::getInstance() noexcept

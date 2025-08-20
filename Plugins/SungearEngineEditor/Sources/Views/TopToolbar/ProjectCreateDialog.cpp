@@ -110,7 +110,7 @@ void SGE::ProjectCreateDialog::renderBody()
                                         ImVec2(folderTexture->getWidth(), folderTexture->getHeight())).m_isLMBClicked)
             {
                 char* dat = m_dirPath.data();
-                nfdresult_t result = NFD_PickFolder("", &dat);
+                nfdresult_t result = NFD_PickFolder(&dat, nullptr);
                 if (result == NFD_OKAY)
                 {
                     m_dirPath = dat;

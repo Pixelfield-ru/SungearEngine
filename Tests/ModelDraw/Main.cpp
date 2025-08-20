@@ -15,8 +15,8 @@
 
 #include "SGCore/Actions/KeyboardKeyDownAction.h"
 #include "SGCore/Actions/KeyboardKeyReleasedAction.h"
-#include "SGCore/Animation/MotionPlanner.h"
-#include "SGCore/Animation/MotionPlannerConnection.h"
+#include "SGCore/Motion/MotionPlanner.h"
+#include "SGCore/Motion/MotionPlannerConnection.h"
 #include "SGCore/Audio/AudioListener.h"
 #include "SGCore/Audio/AudioSource.h"
 #include "SGCore/Coro/CoroScheduler.h"

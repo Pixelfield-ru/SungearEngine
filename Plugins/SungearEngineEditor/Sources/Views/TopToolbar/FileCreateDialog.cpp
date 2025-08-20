@@ -98,7 +98,7 @@ void SGE::FileCreateDialog::renderBody()
                                                   folderTexture->getHeight())).m_isLMBClicked)
                 {
                     char* dat = m_currentChosenDirPath.data();
-                    nfdresult_t result = NFD_PickFolder("", &dat);
+                    nfdresult_t result = NFD_PickFolder(&dat, nullptr);
                     if(result == NFD_OKAY)
                     {
                         m_currentChosenDirPath = dat;

@@ -82,7 +82,7 @@ add_definitions(-DNOMINMAX)
 include($ENV{SUNGEAR_SOURCES_ROOT}/cmake/SungearEngineInclude.cmake)
 
 message("CMAKE_MODULE_PATH=${CMAKE_PREFIX_PATH}")
-find_package(unofficial-nativefiledialog CONFIG REQUIRED)
+find_package(nfd CONFIG REQUIRED)
 
 file(GLOB_RECURSE SGE_SOURCES Sources/*.cpp Sources/*.h)
 list(FILTER SGE_SOURCES EXCLUDE REGEX ".templates")
@@ -93,4 +93,4 @@ add_library(${PROJECT_NAME} SHARED ${SGE_SOURCES} Externals/ImGuizmo/ImGuizmo.h 
 # add_executable(${PROJECT_NAME} ${SGE_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC Sources ${SungearEngine_INCLUDE_DIRS} Externals)
-target_link_libraries(${PROJECT_NAME} PRIVATE ${SungearEngine_LIBS} unofficial::nativefiledialog::nfd)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${SungearEngine_LIBS} nfd::nfd)

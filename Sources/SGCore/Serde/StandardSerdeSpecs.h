@@ -68,9 +68,9 @@
 
 #include "SGCore/Serde/Components/NonSavable.h"
 
-#include "SGCore/Animation/MotionPlanner.h"
-#include "SGCore/Animation/MotionPlannerConnection.h"
-#include "SGCore/Animation/MotionPlannersResolver.h"
+#include "SGCore/Motion/MotionPlanner.h"
+#include "SGCore/Motion/MotionPlannerConnection.h"
+#include "SGCore/Motion/MotionPlannersResolver.h"
 
 #include "SGCore/Main/Config.h"
 #include "SGCore/Physics/Rigidbody3D.h"

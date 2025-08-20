@@ -103,7 +103,7 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
                 {
                     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
                     ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
-                    ImGui::Image(m_redCrossTexture->getTextureNativeHandler(),
+                    ImGui::Image((ImTextureID) m_redCrossTexture->getTextureNativeHandler(),
                                  { (float) m_redCrossTexture->getWidth(),
                                    (float) m_redCrossTexture->getHeight() });
                     ImGui::SameLine();
@@ -112,7 +112,7 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
                 } else
                 {
                     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-                    ImGui::Image(m_greenCheckMarkTexture->getTextureNativeHandler(),
+                    ImGui::Image((ImTextureID) m_greenCheckMarkTexture->getTextureNativeHandler(),
                                  { (float) m_greenCheckMarkTexture->getWidth(),
                                    (float) m_greenCheckMarkTexture->getHeight() });
                     ImGui::SameLine();
@@ -130,7 +130,7 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
                                                m_folderTexture->getHeight())).m_isLMBClicked)
             {
                 char* dat = m_currentToolchainPath.data();
-                nfdresult_t result = NFD_PickFolder("", &dat);
+                nfdresult_t result = NFD_PickFolder(&dat, nullptr);
                 if (result == NFD_OKAY)
                 {
                     m_currentToolchainPath = dat;
@@ -242,7 +242,7 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
                     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
                     ImGui::Text("SDK Version");
                     ImGui::SameLine();
-                    ImGui::Image(m_questionCircledTexture->getTextureNativeHandler(), {
+                    ImGui::Image((ImTextureID) m_questionCircledTexture->getTextureNativeHandler(), {
                             (float) m_questionCircledTexture->getWidth(),
                             (float) m_questionCircledTexture->getHeight()
                     });
@@ -507,7 +507,7 @@ void SGE::SelectedToolchainDockedWindow::drawCMakeChooseRow()
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
         ImGui::Text("CMake");
         ImGui::SameLine();
-        ImGui::Image(m_questionCircledTexture->getTextureNativeHandler(), {
+        ImGui::Image((ImTextureID) m_questionCircledTexture->getTextureNativeHandler(), {
                 (float) m_questionCircledTexture->getWidth(),
                 (float) m_questionCircledTexture->getHeight()
         });
@@ -540,7 +540,7 @@ void SGE::SelectedToolchainDockedWindow::drawCMakeChooseRow()
             {
                 ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
                 ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
-                ImGui::Image(m_redCrossTexture->getTextureNativeHandler(),
+                ImGui::Image((ImTextureID) m_redCrossTexture->getTextureNativeHandler(),
                              { (float) m_redCrossTexture->getWidth(),
                                (float) m_redCrossTexture->getHeight() });
                 ImGui::SameLine();
@@ -550,7 +550,7 @@ void SGE::SelectedToolchainDockedWindow::drawCMakeChooseRow()
             else
             {
                 ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-                ImGui::Image(m_greenCheckMarkTexture->getTextureNativeHandler(),
+                ImGui::Image((ImTextureID) m_greenCheckMarkTexture->getTextureNativeHandler(),
                              { (float) m_greenCheckMarkTexture->getWidth(),
                                (float) m_greenCheckMarkTexture->getHeight() });
                 ImGui::SameLine();
@@ -567,7 +567,7 @@ void SGE::SelectedToolchainDockedWindow::drawCMakeChooseRow()
                                     ImVec2(m_folderTexture->getWidth(), m_folderTexture->getHeight())).m_isLMBClicked)
         {
             char* dat = m_currentToolchainCMakePath.data();
-            nfdresult_t result = NFD_OpenDialog({}, "", &dat);
+            nfdresult_t result = NFD_OpenDialog(&dat, {}, 0, nullptr);
             if (result == NFD_OKAY)
             {
                 m_currentToolchainCMakePath = dat;
@@ -587,7 +587,7 @@ void SGE::SelectedToolchainDockedWindow::drawBuildToolChooseRow()
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
         ImGui::Text("Build Tool");
         ImGui::SameLine();
-        ImGui::Image(m_questionCircledTexture->getTextureNativeHandler(), {
+        ImGui::Image((ImTextureID) m_questionCircledTexture->getTextureNativeHandler(), {
                 (float) m_questionCircledTexture->getWidth(),
                 (float) m_questionCircledTexture->getHeight()
         });
@@ -620,7 +620,7 @@ void SGE::SelectedToolchainDockedWindow::drawBuildToolChooseRow()
             {
                 ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
                 ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
-                ImGui::Image(m_redCrossTexture->getTextureNativeHandler(),
+                ImGui::Image((ImTextureID) m_redCrossTexture->getTextureNativeHandler(),
                              { (float) m_redCrossTexture->getWidth(),
                                (float) m_redCrossTexture->getHeight() });
                 ImGui::SameLine();
@@ -630,7 +630,7 @@ void SGE::SelectedToolchainDockedWindow::drawBuildToolChooseRow()
             else
             {
                 ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-                ImGui::Image(m_greenCheckMarkTexture->getTextureNativeHandler(),
+                ImGui::Image((ImTextureID) m_greenCheckMarkTexture->getTextureNativeHandler(),
                              { (float) m_greenCheckMarkTexture->getWidth(),
                                (float) m_greenCheckMarkTexture->getHeight() });
                 ImGui::SameLine();
@@ -647,7 +647,7 @@ void SGE::SelectedToolchainDockedWindow::drawBuildToolChooseRow()
                                     ImVec2(m_folderTexture->getWidth(), m_folderTexture->getHeight())).m_isLMBClicked)
         {
             char* dat = m_currentToolchainBuildToolPath.data();
-            nfdresult_t result = NFD_OpenDialog({}, "", &dat);
+            nfdresult_t result = NFD_OpenDialog(&dat, {}, 0, nullptr);
             if (result == NFD_OKAY)
             {
                 m_currentToolchainBuildToolPath = dat;

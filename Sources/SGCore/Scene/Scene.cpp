@@ -19,7 +19,7 @@
 #include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
 #include "SGCore/Audio/AudioProcessor.h"
-#include "SGCore/Animation/MotionPlannersResolver.h"
+#include "SGCore/Motion/MotionPlannersResolver.h"
 #include "SGCore/Render/Batching/BatchesUpdater.h"
 #include "SGCore/Render/Instancing/InstancingUpdater.h"
 #include "SGCore/Serde/Serde.h"

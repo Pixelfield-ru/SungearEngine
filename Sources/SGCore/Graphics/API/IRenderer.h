@@ -11,6 +11,7 @@
 #include "IUniformBuffer.h"
 #include "SGCore/Transformations/Transform.h"
 #include "RenderState.h"
+#include "SGCore/Memory/AssetRef.h"
 
 namespace SGCore
 {
@@ -43,7 +44,10 @@ namespace SGCore
         // Buffer for storing matrices of the program.
         Ref<IUniformBuffer> m_programDataBuffer;
 
-        virtual void init() { }
+        /**
+         * YOU MUST CALL THIS FUNCTION IN YOUR DERIVED IMPLEMENTATIONS.
+         */
+        virtual void init() noexcept;
 
         /**
          * Confirmation of GAPI support by the user's graphics card
@@ -78,6 +82,8 @@ namespace SGCore
                                           const int& indicesCount,
                                           const int& instancesCount)
         {}
+
+        void renderTextureOnScreen(const ITexture2D* texture, bool flipOutput = false) noexcept;
 
         /**
          * Applies global render state.
@@ -120,6 +126,8 @@ namespace SGCore
 
         [[nodiscard]] virtual IMeshData* createMeshData() const = 0;
 
+        virtual void bindScreenFrameBuffer() const noexcept = 0;
+
         [[nodiscard]] GAPIType getGAPIType() const noexcept;
 
         [[nodiscard]] RenderState& getCachedRenderState() noexcept;
@@ -130,6 +138,10 @@ namespace SGCore
         RenderState m_cachedRenderState;
         MeshRenderState m_cachedMeshRenderState;
         std::array<BlendingState, 32> m_cachedColorAttachmentsBlendingStates;
+
+        Ref<IMeshData> m_screenQuadMesh;
+        AssetRef<IShader> m_screenShader;
+        MeshRenderState m_screenQuadMeshRenderState;
     };
 }
 

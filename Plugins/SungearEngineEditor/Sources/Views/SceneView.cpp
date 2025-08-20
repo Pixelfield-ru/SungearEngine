@@ -75,7 +75,7 @@ void SGE::SceneView::renderBody()
         {
             editorCamera3D = *camera3D;
 
-            ImGui::Image(layeredFrameReceiver->m_layersFXFrameBuffer->getAttachment(
+            ImGui::Image((ImTextureID) layeredFrameReceiver->m_layersFXFrameBuffer->getAttachment(
                     SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7
             )->getTextureNativeHandler(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 });
 

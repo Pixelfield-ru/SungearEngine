@@ -56,35 +56,35 @@ void SGE::DialogWindowsManager::addDialogWindow(const SGCore::Ref<DialogWindow>&
         {
             case SGCore::Logger::Level::LVL_INFO:
             {
-                ImGui::Image(m_infoIcon->getTextureNativeHandler(),
+                ImGui::Image((ImTextureID) m_infoIcon->getTextureNativeHandler(),
                              ImVec2(m_infoIcon->getWidth(), m_infoIcon->getHeight()));
 
                 break;
             }
             case SGCore::Logger::Level::LVL_DEBUG:
             {
-                ImGui::Image(m_debugIcon->getTextureNativeHandler(),
+                ImGui::Image((ImTextureID) m_debugIcon->getTextureNativeHandler(),
                              ImVec2(m_debugIcon->getWidth(), m_debugIcon->getHeight()));
 
                 break;
             }
             case SGCore::Logger::Level::LVL_WARN:
             {
-                ImGui::Image(m_warnIcon->getTextureNativeHandler(),
+                ImGui::Image((ImTextureID) m_warnIcon->getTextureNativeHandler(),
                              ImVec2(m_warnIcon->getWidth(), m_warnIcon->getHeight()));
 
                 break;
             }
             case SGCore::Logger::Level::LVL_ERROR:
             {
-                ImGui::Image(m_errorIcon->getTextureNativeHandler(),
+                ImGui::Image((ImTextureID) m_errorIcon->getTextureNativeHandler(),
                              ImVec2(m_errorIcon->getWidth(), m_errorIcon->getHeight()));
 
                 break;
             }
             case SGCore::Logger::Level::LVL_CRITICAL:
             {
-                ImGui::Image(m_criticalIcon->getTextureNativeHandler(),
+                ImGui::Image((ImTextureID) m_criticalIcon->getTextureNativeHandler(),
                              ImVec2(m_criticalIcon->getWidth(), m_criticalIcon->getHeight()));
 
                 break;

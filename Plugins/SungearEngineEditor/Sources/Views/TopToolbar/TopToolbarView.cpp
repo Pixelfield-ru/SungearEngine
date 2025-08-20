@@ -162,7 +162,7 @@ void SGE::TopToolbarView::renderBody()
                                               ImGui::ColorConvertFloat4ToU32({0.3f, 0.3f, 0.3f, 0.3f}));
 
     // drawing engine icon
-    ImGui::Image(m_engineIcon->getTextureNativeHandler(), { (float) m_engineIcon->getWidth(), (float) m_engineIcon->getHeight() });
+    ImGui::Image((ImTextureID) m_engineIcon->getTextureNativeHandler(), { (float) m_engineIcon->getWidth(), (float) m_engineIcon->getHeight() });
 
     ImGui::SameLine();
 

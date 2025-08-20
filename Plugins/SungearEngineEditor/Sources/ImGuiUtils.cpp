@@ -76,8 +76,8 @@ SGE::ImGuiUtils::ImageButton(void* imageNativeHandler,
                 ImVec2(cursorScreenPos.x + buttonSize.x, cursorScreenPos.y + buttonSize.y),
                 ImGui::ColorConvertFloat4ToU32(hoverBgColor), buttonRounding);
     }
-    
-    ImGui::GetWindowDrawList()->AddImage(imageNativeHandler, ImVec2(cursorScreenPos.x + offset.x, cursorScreenPos.y + offset.y),
+
+    ImGui::GetWindowDrawList()->AddImage((ImTextureID) imageNativeHandler, ImVec2(cursorScreenPos.x + offset.x, cursorScreenPos.y + offset.y),
                                          ImVec2(cursorScreenPos.x + imageSize.x + offset.x, cursorScreenPos.y + imageSize.y + offset.y));
 
     bool leftClicked = mouseHoveringBg && ImGui::IsMouseClicked(ImGuiMouseButton_Left);
@@ -195,7 +195,7 @@ SGE::ImClickInfo SGE::ImGuiUtils::ImageButton(void* imageNativeHandler,
                 ImGui::ColorConvertFloat4ToU32(hoverBgColor), 18);
     }
     
-    ImGui::GetWindowDrawList()->AddImage(imageNativeHandler, ImVec2(cursorScreenPos.x + offset.x, cursorScreenPos.y + offset.y),
+    ImGui::GetWindowDrawList()->AddImage((ImTextureID) imageNativeHandler, ImVec2(cursorScreenPos.x + offset.x, cursorScreenPos.y + offset.y),
                                          ImVec2(cursorScreenPos.x + imageSize.x + offset.x, cursorScreenPos.y + imageSize.y + offset.y));
     
     bool leftClicked = mouseHoveringBg && ImGui::IsMouseClicked(ImGuiMouseButton_Left);

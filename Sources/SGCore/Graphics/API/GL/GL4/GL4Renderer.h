@@ -83,6 +83,8 @@ namespace SGCore
 
         [[nodiscard]] IMeshData* createMeshData() const override;
 
+        void bindScreenFrameBuffer() const noexcept final;
+
         static const Ref<GL4Renderer>& getInstance() noexcept;
     };
 }

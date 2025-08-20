@@ -78,6 +78,8 @@ void SGCore::GL4Renderer::init() noexcept
                                        });
     m_programDataBuffer->setLayoutLocation(2);
     m_programDataBuffer->prepare();
+
+    IRenderer::init();
 }
 
 bool SGCore::GL4Renderer::confirmSupport() noexcept
@@ -326,6 +328,11 @@ SGCore::GL4FrameBuffer* SGCore::GL4Renderer::createFrameBuffer() const
 SGCore::IMeshData* SGCore::GL4Renderer::createMeshData() const
 {
     return new IMeshData;
+}
+
+void SGCore::GL4Renderer::bindScreenFrameBuffer() const noexcept
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 const SGCore::Ref<SGCore::GL4Renderer>& SGCore::GL4Renderer::getInstance() noexcept

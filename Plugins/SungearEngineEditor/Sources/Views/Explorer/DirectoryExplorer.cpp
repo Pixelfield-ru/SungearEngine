@@ -733,7 +733,7 @@ void SGE::DirectoryExplorer::drawCurrentPathNavigation()
         if(!isLastDirectory)
         {
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
-            ImGui::Image(StylesManager::getCurrentStyle()->m_chevronRightIcon->getSpecialization(16, 16)->getTexture()->getTextureNativeHandler(), { 16, 16 });
+            ImGui::Image((ImTextureID) StylesManager::getCurrentStyle()->m_chevronRightIcon->getSpecialization(16, 16)->getTexture()->getTextureNativeHandler(), { 16, 16 });
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);
             
             // ImGui::Text("/");

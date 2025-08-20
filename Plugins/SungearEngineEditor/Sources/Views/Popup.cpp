@@ -46,7 +46,7 @@ void SGE::PopupElement::draw(Popup* parentPopup, PopupElement* parentElement) no
                     ImGui::TableNextColumn();
                     if(elem->m_icon)
                     {
-                        ImGui::Image(elem->m_icon->getTextureNativeHandler(), ImVec2(elem->m_icon->getWidth(), 
+                        ImGui::Image((ImTextureID) elem->m_icon->getTextureNativeHandler(), ImVec2(elem->m_icon->getWidth(),
                                                                                      elem->m_icon->getHeight()));
 
                         rowHeight = elem->m_icon->getHeight() > rowHeight ? elem->m_icon->getHeight() : rowHeight;
@@ -103,7 +103,7 @@ void SGE::PopupElement::draw(Popup* parentPopup, PopupElement* parentElement) no
                             ImGui::SetCursorPosX(iconRightAlign);
                         }
 
-                        ImGui::Image(StylesManager::getCurrentStyle()
+                        ImGui::Image((ImTextureID) StylesManager::getCurrentStyle()
                                              ->m_chevronRightIcon
                                              ->getSpecialization((std::int32_t) rowHeight, (std::int32_t) rowHeight)
                                              ->getTexture()->getTextureNativeHandler(),
@@ -290,7 +290,7 @@ void SGE::Popup::draw() noexcept
                 ImGui::TableNextColumn();
                 if(elem->m_icon)
                 {
-                    ImGui::Image(elem->m_icon->getTextureNativeHandler(), ImVec2(elem->m_icon->getWidth(), elem->m_icon->getHeight()));
+                    ImGui::Image((ImTextureID) elem->m_icon->getTextureNativeHandler(), ImVec2(elem->m_icon->getWidth(), elem->m_icon->getHeight()));
                     
                     rowHeight = elem->m_icon->getHeight() > rowHeight ? elem->m_icon->getHeight() : rowHeight;
                 }
@@ -342,7 +342,7 @@ void SGE::Popup::draw() noexcept
                         ImGui::SetCursorPosX(iconRightAlign);
                     }
                     
-                    ImGui::Image(StylesManager::getCurrentStyle()
+                    ImGui::Image((ImTextureID) StylesManager::getCurrentStyle()
                                          ->m_chevronRightIcon
                                          ->getSpecialization((std::int32_t) rowHeight, (std::int32_t) rowHeight)
                                          ->getTexture()->getTextureNativeHandler(),

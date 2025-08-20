@@ -330,7 +330,7 @@ void SGE::InspectorView::inspectMaterial() const noexcept
                     const auto& texture = texturesTyped[j];
 
                     ImGui::Text(SGCore::Utils::toUTF8(texture->getPath().resolved().u16string()).c_str());
-                    ImGui::Image(texture->getTextureNativeHandler(), ImVec2(texture->getWidth(), texture->getHeight()));
+                    ImGui::Image((ImTextureID) texture->getTextureNativeHandler(), ImVec2(texture->getWidth(), texture->getHeight()));
                 }
             }
         }

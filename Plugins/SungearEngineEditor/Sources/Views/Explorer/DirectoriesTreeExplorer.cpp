@@ -132,7 +132,7 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
         
         ImGui::SameLine();
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
-        ImGui::Image(style->m_folderIcon->getSpecialization(16, 16)->getTexture()->getTextureNativeHandler(), ImVec2(16, 16));
+        ImGui::Image((ImTextureID) style->m_folderIcon->getSpecialization(16, 16)->getTexture()->getTextureNativeHandler(), ImVec2(16, 16));
         ImGui::SameLine();
     }
     else
@@ -143,7 +143,7 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
         
         SGCore::AssetRef<SGCore::ITexture2D> iconTexture = ImGuiUtils::getFileIcon(parent, { 16, 16 }, &onIconRender);
         
-        ImGui::Image(iconTexture->getTextureNativeHandler(), ImVec2(16, 16));
+        ImGui::Image((ImTextureID) iconTexture->getTextureNativeHandler(), ImVec2(16, 16));
         
         ImGui::SameLine();
     }

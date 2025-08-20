@@ -220,7 +220,7 @@ void SGE::Tree::drawNodes(std::vector<TreeNode>& nodes, Tree* parentTree, TreeNo
                 ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
             }
 
-            ImGui::Image(node.m_icon->getTextureNativeHandler(),
+            ImGui::Image((ImTextureID) node.m_icon->getTextureNativeHandler(),
                          { (float) node.m_icon->getWidth(), (float) node.m_icon->getHeight() });
 
             ImGui::SameLine();

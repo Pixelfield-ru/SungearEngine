@@ -68,6 +68,8 @@ namespace SGCore
         [[nodiscard]] VkFrameBuffer* createFrameBuffer() const override;
 
         [[nodiscard]] VkMeshData* createMeshData() const override;
+
+        void bindScreenFrameBuffer() const noexcept final;
         
         static const std::shared_ptr<VkRenderer>& getInstance() noexcept;
     };
