@@ -4,7 +4,7 @@
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
 #include "SGCore/Render/BaseRenderPasses/IGeometryPass.h"
-#include "SGCore/Serde/StandardSerdeSpecs.h"
+#include "SGCore/Serde/StandardSerdeSpecs/SerdeSpecs.h"
 
 SGCore::IMaterial::IMaterial() noexcept
 {

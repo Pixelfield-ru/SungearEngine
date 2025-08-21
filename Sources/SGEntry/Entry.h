@@ -4,7 +4,7 @@
 #include <SGCore/Main/CoreMain.h>
 #include <SGCore/Serde/Serde.h>
 #include <SGCore/Utils/TypeTraits.h>
-#include "SGCore/Serde/StandardSerdeSpecs.h"
+#include "SGCore/Serde/StandardSerdeSpecs/SerdeSpecs.h"
 // #include "SGCore/GeneratedSerializers.h"
 
 struct Base

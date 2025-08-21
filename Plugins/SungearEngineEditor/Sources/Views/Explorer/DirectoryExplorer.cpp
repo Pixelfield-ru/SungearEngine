@@ -16,7 +16,7 @@
 #include "Styles/StylesManager.h"
 #include "EditorScene.h"
 
-#include <SGCore/Serde/StandardSerdeSpecs.h>
+#include <SGCore/Serde/StandardSerdeSpecs/SerdeSpecs.h>
 #include <SGCore/Utils/StringInterpolation/InterpolationResolver.h>
 
 SGE::DirectoryExplorer::DirectoryExplorer()

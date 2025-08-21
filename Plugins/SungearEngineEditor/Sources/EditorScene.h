@@ -9,7 +9,7 @@
 #include <SGCore/Scene/Scene.h>
 
 #include <SGCore/Serde/Serde.h>
-#include <SGCore/Serde/StandardSerdeSpecs.h>
+#include <SGCore/Serde/StandardSerdeSpecs/SerdeSpecs.h>
 
 namespace SGE
 {

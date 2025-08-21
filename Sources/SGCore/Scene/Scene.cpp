@@ -20,10 +20,11 @@
 #include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
 #include "SGCore/Audio/AudioProcessor.h"
 #include "SGCore/Motion/MotionPlannersResolver.h"
+#include "SGCore/Motion/IK/IKResolver.h"
 #include "SGCore/Render/Batching/BatchesUpdater.h"
 #include "SGCore/Render/Instancing/InstancingUpdater.h"
 #include "SGCore/Serde/Serde.h"
-#include "SGCore/Serde/StandardSerdeSpecs.h"
+#include "SGCore/Serde/StandardSerdeSpecs/SerdeSpecs.h"
 #include "SGCore/UI/UILayoutCalculator.h"
 
 SGCore::Scene::Scene()
@@ -97,6 +98,11 @@ void SGCore::Scene::createDefaultSystems()
 
     auto motionPlannersResolver = MakeRef<MotionPlannersResolver>();
     addSystem(motionPlannersResolver);
+
+    // ik resolver =================================
+
+    auto ikResolver = MakeRef<IKResolver>();
+    addSystem(ikResolver);
 
     // ui layout calculator =================================
 

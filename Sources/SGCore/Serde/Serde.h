@@ -510,7 +510,7 @@ namespace SGCore::Serde
         {
             if constexpr(std::is_same_v<T, const btCollisionShape**>)
             {
-                static_assert(always_false<T>::value, "fsfsfsdfsfssdfsdf");
+                static_assert(always_false<T>::value, "const btCollisionShape**");
             }
 
             if constexpr(SerdeSpec<T, TFormatType>::is_pointer_type) // serializing value using dynamic checks

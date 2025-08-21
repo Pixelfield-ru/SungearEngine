@@ -20,8 +20,8 @@
 #include <SGCore/Render/Camera3D.h>
 #include <SGCore/Scene/SceneUtils.h>
 #include <SGCore/Memory/Assets/AnimationsFile.h>
-#include <SGCore/Animation/MotionPlanner.h>
-#include <SGCore/Animation/MotionPlannerConnection.h>
+#include <SGCore/Motion/MotionPlanner.h>
+#include <SGCore/Motion/MotionPlannerConnection.h>
 
 #include "SungearEngineEditor.h"
 #include "Views/MainView.h"

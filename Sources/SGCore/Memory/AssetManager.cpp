@@ -8,7 +8,7 @@
 #include "Assets/TextFileAsset.h"
 #include "AssetsPackage.h"
 #include "SGCore/Serde/Serde.h"
-#include "SGCore/Serde/StandardSerdeSpecs.h"
+#include "SGCore/Serde/StandardSerdeSpecs/SerdeSpecs.h"
 
 #include <assimp/version.h>
 
