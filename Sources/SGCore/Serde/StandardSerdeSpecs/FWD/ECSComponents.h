@@ -29,7 +29,7 @@ namespace SGCore::Serde
     // ======================================================== TransformBase FWD
 
     template<FormatType TFormatType>
-    struct Serde::SerdeSpec<TransformBase, TFormatType> :
+    struct SerdeSpec<TransformBase, TFormatType> :
             BaseTypes<>,
             DerivedTypes<>
     {
@@ -88,5 +88,125 @@ namespace SGCore::Serde
         static void serialize(SerializableValueView<const AABB<ScalarT>, TFormatType>& valueView) noexcept;
 
         static void deserialize(DeserializableValueView<AABB<ScalarT>, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== RenderingBase FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<RenderingBase, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::RenderingBase";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const RenderingBase, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<RenderingBase, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== AudioSource FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<AudioSource, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::AudioSource";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const AudioSource, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<AudioSource, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== Atmosphere FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<Atmosphere, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::Atmosphere";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const Atmosphere, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<Atmosphere, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== SphereGizmo FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<SphereGizmo, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::SphereGizmo";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const SphereGizmo, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<SphereGizmo, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== BoxGizmo FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<BoxGizmo, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::BoxGizmo";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const BoxGizmo, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<BoxGizmo, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== GizmoBase FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<GizmoBase, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::GizmoBase";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const GizmoBase, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<GizmoBase, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== LineGizmo FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<LineGizmo, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::LineGizmo";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const LineGizmo, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<LineGizmo, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== MeshBase FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<MeshBase, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::MeshBase";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const MeshBase, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<MeshBase, TFormatType>& valueView) noexcept;
     };
 }
