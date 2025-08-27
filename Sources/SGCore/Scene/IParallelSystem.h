@@ -17,10 +17,8 @@
 namespace SGCore
 {
     template<typename ParallelSystemT>
-    class IParallelSystem : public ISystem
+    struct IParallelSystem : ISystem
     {
-
-    public:
         using subproc_t = IParallelSystemSubprocess<ParallelSystemT>;
 
         Timer m_timer;

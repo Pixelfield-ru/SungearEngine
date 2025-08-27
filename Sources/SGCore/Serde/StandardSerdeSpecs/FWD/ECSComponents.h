@@ -6,8 +6,27 @@
 
 #include "SGCore/Serde/Serde.h"
 
-#include "SGCore/Utils/UniqueName.h"
-#include "SGCore/Scene/EntityBaseInfo.h"
+namespace SGCore
+{
+    struct Rigidbody3D;
+    struct MotionPlannerConnection;
+    struct MotionPlannerNode;
+    struct MotionPlanner;
+    struct OpaqueEntityTag;
+    struct TransparentEntityTag;
+    class UICamera;
+    struct Camera3D;
+    struct Controllable3D;
+    struct DirectionalLight;
+    struct LightBase;
+    struct MeshBase;
+    struct LineGizmo;
+    struct GizmoBase;
+    struct BoxGizmo;
+    struct SphereGizmo;
+    struct AudioSource;
+    struct Pickable;
+}
 
 namespace SGCore::Serde
 {
@@ -208,5 +227,183 @@ namespace SGCore::Serde
         static void serialize(SerializableValueView<const MeshBase, TFormatType>& valueView) noexcept;
 
         static void deserialize(DeserializableValueView<MeshBase, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== Mesh FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<Mesh, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::Mesh";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const Mesh, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<Mesh, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== LightBase FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<LightBase, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::LightBase";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const LightBase, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<LightBase, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== DirectionalLight FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<DirectionalLight, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::DirectionalLight";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const DirectionalLight, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<DirectionalLight, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== Controllable3D FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<Controllable3D, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::Controllable3D";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const Controllable3D, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<Controllable3D, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== Camera3D FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<Camera3D, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::Camera3D";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const Camera3D, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<Camera3D, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== UICamera FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<UICamera, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::UICamera";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const UICamera, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<UICamera, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== TransparentEntityTag FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<TransparentEntityTag, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::TransparentEntityTag";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const TransparentEntityTag, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<TransparentEntityTag, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== OpaqueEntityTag FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<OpaqueEntityTag, TFormatType> :
+           BaseTypes<>,
+           DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::OpaqueEntityTag";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const OpaqueEntityTag, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<OpaqueEntityTag, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== MotionPlanner FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<MotionPlanner, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::MotionPlanner";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const MotionPlanner, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<MotionPlanner, TFormatType>& valueView) noexcept;
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<MotionPlannerNode, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::MotionPlannerNode";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const MotionPlannerNode, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<MotionPlannerNode, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== MotionPlannerConnection FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<MotionPlannerConnection, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::MotionPlannerConnection";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const MotionPlannerConnection, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<MotionPlannerConnection, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== MotionPlannerConnection FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<Rigidbody3D, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::Rigidbody3D";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const Rigidbody3D, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<Rigidbody3D, TFormatType>& valueView) noexcept;
     };
 }

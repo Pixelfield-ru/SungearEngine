@@ -6,22 +6,24 @@
 
 #include "SGCore/Serde/Serde.h"
 
-#include "SGCore/Scene/IParallelSystem.h"
-#include "SGCore/Scene/ISystem.h"
+namespace SGCore
+{
+    struct IKResolver;
+    struct MotionPlannersResolver;
+    struct AudioProcessor;
+    class OctreesSolver;
+    struct SphereGizmosUpdater;
+    struct LineGizmosRenderer;
+    class BoxGizmosRenderer;
+    struct DirectionalLightsUpdater;
+    struct AtmosphereUpdater;
+    struct RenderingBasesUpdater;
+    struct PhysicsWorld3D;
+    struct Controllables3DUpdater;
 
-#include "SGCore/Transformations/Controllables3DUpdater.h"
-#include "SGCore/Transformations/TransformationsUpdater.h"
-#include "SGCore/Physics/PhysicsWorld3D.h"
-#include "SGCore/Render/RenderingBasesUpdater.h"
-#include "SGCore/Render/Atmosphere/AtmosphereUpdater.h"
-#include "SGCore/Render/Gizmos/BoxGizmosRenderer.h"
-#include "SGCore/Render/Gizmos/LineGizmosRenderer.h"
-#include "SGCore/Render/Gizmos/SphereGizmosUpdater.h"
-#include "SGCore/Render/Lighting/DirectionalLightsUpdater.h"
-#include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
-#include "SGCore/Audio/AudioProcessor.h"
-#include "SGCore/Motion/MotionPlannersResolver.h"
-#include "SGCore/Motion/IK/IKResolver.h"
+    template<typename>
+    struct IParallelSystem;
+}
 
 namespace SGCore::Serde
 {

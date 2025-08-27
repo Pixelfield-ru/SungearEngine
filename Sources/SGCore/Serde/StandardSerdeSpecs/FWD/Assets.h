@@ -6,15 +6,18 @@
 
 #include "SGCore/Serde/Serde.h"
 
-#include "SGCore/Graphics/API/ITexture2D.h"
-#include "SGCore/Memory/Assets/AnimationsFile.h"
-#include "SGCore/Memory/Assets/AudioTrackAsset.h"
-#include "SGCore/Memory/Assets/ByteFileAsset.h"
-#include "SGCore/Memory/Assets/ModelAsset.h"
-#include "SGCore/Memory/Assets/TextFileAsset.h"
-#include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"
-#include "SGCore/Memory/Assets/Materials/IMaterial.h"
-#include "SGCore/Graphics/API/ICubemapTexture.h"
+namespace SGCore
+{
+    struct SkeletalBoneAnimation;
+    struct MeshBoneData;
+    struct AudioTrackAsset;
+    struct ByteFileAsset;
+    struct SkeletalAnimationAsset;
+    struct Bone;
+    struct AnimationsFile;
+    struct Skeleton;
+    class ModelAsset;
+}
 
 namespace SGCore::Serde
 {

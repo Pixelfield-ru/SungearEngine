@@ -4,6 +4,28 @@
 
 #pragma once
 
+#include "SGCore/Serde/Serde.h"
+
+#include "SGCore/Utils/UniqueName.h"
+#include "SGCore/Scene/EntityBaseInfo.h"
+#include "SGCore/Transformations/Controllable3D.h"
+#include "SGCore/Audio/AudioSource.h"
+#include "SGCore/Render/Camera3D.h"
+#include "SGCore/Render/UICamera.h"
+#include "SGCore/Render/Gizmos/BoxGizmo.h"
+#include "SGCore/Render/Gizmos/LineGizmo.h"
+#include "SGCore/Render/Gizmos/SphereGizmo.h"
+#include "SGCore/Render/Lighting/DirectionalLight.h"
+#include "SGCore/Render/Lighting/LightBase.h"
+#include "SGCore/Render/Picking/Pickable.h"
+#include "SGCore/Physics/Rigidbody3D.h"
+#include "SGCore/Motion/MotionPlanner.h"
+#include "SGCore/Motion/MotionPlannerConnection.h"
+#include "SGCore/Render/Atmosphere/Atmosphere.h"
+#include "SGCore/Render/Mesh.h"
+#include "SGCore/Render/Alpha/TransparentEntityTag.h"
+#include "SGCore/Render/Alpha/OpaqueEntityTag.h"
+
 namespace SGCore::Serde
 {
     // ======================================================== impl EntityBaseInfo
@@ -590,9 +612,7 @@ namespace SGCore::Serde
         valueView.getValueContainer().addMember("m_meshData", valueView.m_data->getMeshData());
     }
 
-    template<
-            FormatType TFormatType
-    >
+    template<FormatType TFormatType>
     void SerdeSpec<MeshBase, TFormatType>::deserialize(DeserializableValueView<MeshBase, TFormatType>& valueView) noexcept
     {
         const auto m_meshData = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->getMeshData())>>>("m_meshData");
@@ -607,6 +627,328 @@ namespace SGCore::Serde
         if(m_material)
         {
             valueView.m_data->setMaterial(*m_material);
+        }
+    }
+
+    // ======================================================== impl Mesh
+
+    template<FormatType TFormatType>
+    void SerdeSpec<Mesh, TFormatType>::serialize(SerializableValueView<const Mesh, TFormatType>& valueView) noexcept
+    {
+        valueView.getValueContainer().addMember("m_base", valueView.m_data->m_base);
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<Mesh, TFormatType>::deserialize(DeserializableValueView<Mesh, TFormatType>& valueView) noexcept
+    {
+        const auto m_base = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_base)>("m_base");
+
+        if(m_base)
+        {
+            valueView.m_data->m_base = *m_base;
+        }
+    }
+
+    // ======================================================== impl LightBase
+
+    template<FormatType TFormatType>
+    void SerdeSpec<LightBase, TFormatType>::serialize(SerializableValueView<const LightBase, TFormatType>& valueView) noexcept
+    {
+        valueView.getValueContainer().addMember("m_color", valueView.m_data->m_color);
+        valueView.getValueContainer().addMember("m_intensity", valueView.m_data->m_intensity);
+        valueView.getValueContainer().addMember("m_samplesCount", valueView.m_data->m_samplesCount);
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<LightBase, TFormatType>::deserialize(DeserializableValueView<LightBase, TFormatType>& valueView) noexcept
+    {
+        const auto m_color = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_color)>("m_color");
+        if(m_color)
+        {
+            valueView.m_data->m_color = *m_color;
+        }
+
+        const auto m_intensity = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_intensity)>("m_intensity");
+        if(m_intensity)
+        {
+            valueView.m_data->m_intensity = *m_intensity;
+        }
+
+        const auto m_samplesCount = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_samplesCount)>("m_samplesCount");
+        if(m_samplesCount)
+        {
+            valueView.m_data->m_samplesCount = *m_samplesCount;
+        }
+    }
+
+    // ======================================================== impl DirectionalLight
+
+    template<FormatType TFormatType>
+    void SerdeSpec<DirectionalLight, TFormatType>::serialize(SerializableValueView<const DirectionalLight, TFormatType>& valueView) noexcept
+    {
+        valueView.getValueContainer().addMember("m_base", valueView.m_data->m_base);
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<DirectionalLight, TFormatType>::deserialize(DeserializableValueView<DirectionalLight, TFormatType>& valueView) noexcept
+    {
+        const auto m_base = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_base)>("m_base");
+        if(m_base)
+        {
+            valueView.m_data->m_base = *m_base;
+        }
+    }
+
+    // ======================================================== impl Controllable3D
+
+    template<FormatType TFormatType>
+    void SerdeSpec<Controllable3D, TFormatType>::serialize(SerializableValueView<const Controllable3D, TFormatType>& valueView) noexcept
+    {
+        valueView.getValueContainer().addMember("m_movementSpeed", valueView.m_data->m_movementSpeed);
+        valueView.getValueContainer().addMember("m_rotationSensitive", valueView.m_data->m_rotationSensitive);
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<Controllable3D, TFormatType>::deserialize(DeserializableValueView<Controllable3D, TFormatType>& valueView) noexcept
+    {
+        const auto m_movementSpeed = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_movementSpeed)>("m_movementSpeed");
+        if(m_movementSpeed)
+        {
+            valueView.m_data->m_movementSpeed = *m_movementSpeed;
+        }
+
+        const auto m_rotationSensitive = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_rotationSensitive)>("m_rotationSensitive");
+        if(m_rotationSensitive)
+        {
+            valueView.m_data->m_rotationSensitive = *m_rotationSensitive;
+        }
+    }
+
+    // ======================================================== impl Camera3D
+
+    template<FormatType TFormatType>
+    void SerdeSpec<Camera3D, TFormatType>::serialize(SerializableValueView<const Camera3D, TFormatType>& valueView) noexcept
+    {
+
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<Camera3D, TFormatType>::deserialize(DeserializableValueView<Camera3D, TFormatType>& valueView) noexcept
+    {
+
+    }
+
+    // ======================================================== impl UICamera
+
+    template<FormatType TFormatType>
+    void SerdeSpec<UICamera, TFormatType>::serialize(SerializableValueView<const UICamera, TFormatType>& valueView) noexcept
+    {
+
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<UICamera, TFormatType>::deserialize(DeserializableValueView<UICamera, TFormatType>& valueView) noexcept
+    {
+
+    }
+
+    // ======================================================== impl TransparentEntityTag
+
+    template<FormatType TFormatType>
+    void SerdeSpec<TransparentEntityTag, TFormatType>::serialize(SerializableValueView<const TransparentEntityTag, TFormatType>& valueView) noexcept
+    {
+
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<TransparentEntityTag, TFormatType>::deserialize(DeserializableValueView<TransparentEntityTag, TFormatType>& valueView) noexcept
+    {
+
+    }
+
+    // ======================================================== impl OpaqueEntityTag
+
+    template<FormatType TFormatType>
+    void SerdeSpec<OpaqueEntityTag, TFormatType>::serialize(SerializableValueView<const OpaqueEntityTag, TFormatType>& valueView) noexcept
+    {
+
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<OpaqueEntityTag, TFormatType>::deserialize(DeserializableValueView<OpaqueEntityTag, TFormatType>& valueView) noexcept
+    {
+
+    }
+
+    // ======================================================== impl MotionPlanner
+
+    template<FormatType TFormatType>
+    void SerdeSpec<MotionPlanner, TFormatType>::serialize(SerializableValueView<const MotionPlanner, TFormatType>& valueView) noexcept
+    {
+        valueView.getValueContainer().addMember("m_rootNodes", valueView.m_data->m_rootNodes);
+        valueView.getValueContainer().addMember("m_skeleton", valueView.m_data->m_skeleton);
+        valueView.getValueContainer().addMember("m_maxBonesPerMesh", valueView.m_data->m_maxBonesPerMesh);
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<MotionPlanner, TFormatType>::deserialize(DeserializableValueView<MotionPlanner, TFormatType>& valueView) noexcept
+    {
+        auto rootNodes = valueView.getValueContainer().template getMember<decltype(MotionPlanner::m_rootNodes)>("m_rootNodes");
+        if(rootNodes)
+        {
+            valueView.m_data->m_rootNodes = std::move(*rootNodes);
+        }
+
+        auto skeleton = valueView.getValueContainer().template getMember<decltype(MotionPlanner::m_skeleton)>("m_skeleton");
+        if(skeleton)
+        {
+            valueView.m_data->m_skeleton = std::move(*skeleton);
+        }
+
+        auto maxBonesPerMesh = valueView.getValueContainer().template getMember<std::int32_t>("m_maxBonesPerMesh");
+        if(maxBonesPerMesh)
+        {
+            valueView.m_data->m_maxBonesPerMesh = std::move(*maxBonesPerMesh);
+        }
+    }
+
+    // ======================================================== impl MotionPlannerNode
+
+    template<FormatType TFormatType>
+    void SerdeSpec<MotionPlannerNode, TFormatType>::serialize(SerializableValueView<const MotionPlannerNode, TFormatType>& valueView) noexcept
+    {
+        valueView.getValueContainer().addMember("m_connections", valueView.m_data->m_connections);
+        valueView.getValueContainer().addMember("m_skeletalAnimation", valueView.m_data->m_skeletalAnimation);
+        valueView.getValueContainer().addMember("m_isActive", valueView.m_data->m_isActive);
+        // valueView.getValueContainer().addMember("m_isPaused", valueView.m_data->m_isPaused);
+        // valueView.getValueContainer().addMember("m_isPlaying", valueView.m_data->m_isPlaying);
+        valueView.getValueContainer().addMember("m_isRepeated", valueView.m_data->m_isRepeated);
+        valueView.getValueContainer().addMember("m_animationSpeed", valueView.m_data->m_animationSpeed);
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<MotionPlannerNode, TFormatType>::deserialize(DeserializableValueView<MotionPlannerNode, TFormatType>& valueView) noexcept
+    {
+        auto connections = valueView.getValueContainer().template getMember<decltype(MotionPlannerNode::m_connections)>("m_connections");
+        if(connections)
+        {
+            valueView.m_data->m_connections = std::move(*connections);
+        }
+
+        // setup connections
+        for(const auto& connection : valueView.m_data->m_connections)
+        {
+            // USE ONLY weak_from_this(). DO NOT USE shared_from_this()
+            connection->m_previousNode = valueView.m_data->weak_from_this();
+        }
+
+        auto skeletalAnimation = valueView.getValueContainer().template getMember<decltype(MotionPlannerNode::m_skeletalAnimation)>("m_skeletalAnimation");
+        if(skeletalAnimation)
+        {
+            valueView.m_data->m_skeletalAnimation = std::move(*skeletalAnimation);
+        }
+
+        auto isActive = valueView.getValueContainer().template getMember<bool>("m_isActive");
+        if(isActive)
+        {
+            valueView.m_data->m_isActive = std::move(*isActive);
+        }
+
+        auto isRepeated = valueView.getValueContainer().template getMember<bool>("m_isRepeated");
+        if(isRepeated)
+        {
+            valueView.m_data->m_isRepeated = std::move(*isRepeated);
+        }
+
+        auto animationSpeed = valueView.getValueContainer().template getMember<float>("m_animationSpeed");
+        if(animationSpeed)
+        {
+            valueView.m_data->m_animationSpeed = std::move(*animationSpeed);
+        }
+    }
+
+    // ======================================================== impl MotionPlannerConnection
+
+    template<FormatType TFormatType>
+    void SerdeSpec<MotionPlannerConnection, TFormatType>::serialize(SerializableValueView<const MotionPlannerConnection, TFormatType>& valueView) noexcept
+    {
+        valueView.getValueContainer().addMember("m_blendTime", valueView.m_data->m_blendTime);
+        valueView.getValueContainer().addMember("m_blendSpeed", valueView.m_data->m_blendSpeed);
+        valueView.getValueContainer().addMember("m_activationAction", valueView.m_data->m_activationAction);
+        // serializing only next node because m_previousNode owns this connection
+        valueView.getValueContainer().addMember("m_nextNode", valueView.m_data->m_nextNode);
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<MotionPlannerConnection, TFormatType>::deserialize(DeserializableValueView<MotionPlannerConnection, TFormatType>& valueView) noexcept
+    {
+        auto blendTime = valueView.getValueContainer().template getMember<float>("m_blendTime");
+        if(blendTime)
+        {
+            valueView.m_data->m_blendTime = std::move(*blendTime);
+        }
+
+        auto blendSpeed = valueView.getValueContainer().template getMember<float>("m_blendSpeed");
+        if(blendSpeed)
+        {
+            valueView.m_data->m_blendSpeed = std::move(*blendSpeed);
+        }
+
+        auto activationAction = valueView.getValueContainer().template getMember<decltype(MotionPlannerConnection::m_activationAction)>("m_activationAction");
+        if(activationAction)
+        {
+            valueView.m_data->m_activationAction = std::move(*activationAction);
+        }
+
+        auto nextNode = valueView.getValueContainer().template getMember<decltype(MotionPlannerConnection::m_nextNode)>("m_nextNode");
+        if(nextNode)
+        {
+            valueView.m_data->m_nextNode = std::move(*nextNode);
+        }
+    }
+
+    // ======================================================== impl Rigidbody3D
+
+    template<FormatType TFormatType>
+    void SerdeSpec<Rigidbody3D, TFormatType>::serialize(SerializableValueView<const Rigidbody3D, TFormatType>& valueView) noexcept
+    {
+        auto& valueContainer = valueView.getValueContainer();
+        auto& value = valueView.m_data;
+
+        valueContainer.addMember("m_mass", value->m_body->getMass());
+
+        const auto inertia = value->m_body->getLocalInertia();
+        valueContainer.addMember("m_inertia", inertia);
+
+        valueContainer.addMember("m_finalShape", static_cast<btCollisionShape*>(value->m_finalShape.get()), btTransform {}, *valueView.m_data);
+
+        valueContainer.addMember("m_type", value->getType());
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<Rigidbody3D, TFormatType>::deserialize(DeserializableValueView<Rigidbody3D, TFormatType>& valueView) noexcept
+    {
+        const auto mass = valueView.getValueContainer().template getMember<btScalar>("m_mass");
+        const auto localInertia = valueView.getValueContainer().template getMember<btVector3>("m_inertia");
+
+        if(mass && localInertia)
+        {
+            valueView.m_data->m_body->setMassProps(*mass, *localInertia);
+        }
+
+        // deserializing final shape (compound shape)
+        btTransform finalShapeTransform; // unused
+        auto finalShape = valueView.getValueContainer().template getMember<Ref<btCollisionShape>>("m_finalShape", finalShapeTransform, *valueView.m_data);
+        if(finalShape && (*finalShape)->getShapeType() == COMPOUND_SHAPE_PROXYTYPE)
+        {
+            valueView.m_data->m_finalShape = std::move(std::static_pointer_cast<btCompoundShape>(*finalShape));
+            valueView.m_data->m_body->setCollisionShape(finalShape->get());
+        }
+
+        const auto type = valueView.getValueContainer().template getMember<PhysicalObjectType>("m_type");
+        if(type)
+        {
+            valueView.m_data->setType(*type);
         }
     }
 }

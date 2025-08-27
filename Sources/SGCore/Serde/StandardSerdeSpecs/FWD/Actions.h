@@ -6,12 +6,16 @@
 
 #include "SGCore/Serde/Serde.h"
 
-#include "SGCore/Actions/AlwaysFalseAction.h"
-#include "SGCore/Actions/AlwaysTrueAction.h"
 #include "SGCore/Actions/KeyboardKeyAction.h"
-#include "SGCore/Actions/KeyboardKeyDownAction.h"
-#include "SGCore/Actions/KeyboardKeyPressedAction.h"
-#include "SGCore/Actions/KeyboardKeyReleasedAction.h"
+
+namespace SGCore
+{
+    struct KeyboardKeyReleasedAction;
+    struct KeyboardKeyPressedAction;
+    struct KeyboardKeyDownAction;
+    struct AlwaysFalseAction;
+    struct AlwaysTrueAction;
+}
 
 namespace SGCore::Serde
 {

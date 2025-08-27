@@ -17,6 +17,7 @@
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Graphics/API/ICubemapTexture.h"
+#include "SGCore/Memory/Assets/AudioTrackAsset.h"
 
 namespace SGCore::Serde
 {
