@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "SGCore/Motion/IK/IKRootJoint.h"
 #include "SGCore/Serde/Serde.h"
 
 namespace SGCore
@@ -403,7 +404,7 @@ namespace SGCore::Serde
         static void deserialize(DeserializableValueView<MotionPlannerConnection, TFormatType>& valueView) noexcept;
     };
 
-    // ======================================================== MotionPlannerConnection FWD
+    // ======================================================== Rigidbody3D FWD
 
     template<FormatType TFormatType>
     struct SerdeSpec<Rigidbody3D, TFormatType> :
@@ -416,5 +417,35 @@ namespace SGCore::Serde
         static void serialize(SerializableValueView<const Rigidbody3D, TFormatType>& valueView) noexcept;
 
         static void deserialize(DeserializableValueView<Rigidbody3D, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== IKRootJoint FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<IKRootJoint, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::IKRootJoint";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const IKRootJoint, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<IKRootJoint, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== IKJoint FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<IKJoint, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::IKJoint";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const IKJoint, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<IKJoint, TFormatType>& valueView) noexcept;
     };
 }

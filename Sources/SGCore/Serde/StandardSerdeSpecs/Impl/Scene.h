@@ -310,6 +310,24 @@ namespace SGCore::Serde
             }
         }
 
+        {
+            auto* component = serializableScene.getECSRegistry()->tryGet<IKJoint>(serializableEntity);
+
+            if(component)
+            {
+                valueView.getValueContainer().pushBack(*component);
+            }
+        }
+
+        {
+            auto* component = serializableScene.getECSRegistry()->tryGet<IKRootJoint>(serializableEntity);
+
+            if(component)
+            {
+                valueView.getValueContainer().pushBack(*component);
+            }
+        }
+
         #pragma endregion Components
 
         // ==================================================================================
@@ -596,6 +614,30 @@ namespace SGCore::Serde
                 }
             }
 
+            if(currentElementTypeName == SerdeSpec<IKJoint, TFormatType>::type_name)
+            {
+                const auto component = valueView.getValueContainer().template getMember<IKJoint::reg_t>(componentsIt);
+
+                if(component)
+                {
+                    toRegistry.emplace<IKJoint>(entity, *component);
+
+                    continue;
+                }
+            }
+
+            if(currentElementTypeName == SerdeSpec<IKRootJoint, TFormatType>::type_name)
+            {
+                const auto component = valueView.getValueContainer().template getMember<IKRootJoint::reg_t>(componentsIt);
+
+                if(component)
+                {
+                    toRegistry.emplace<IKRootJoint>(entity, *component);
+
+                    continue;
+                }
+            }
+
             #pragma endregion Components
 
             // ==================================================================================
@@ -693,7 +735,8 @@ namespace SGCore::Serde
                SG_INSTANCEOF(systemPtr, SphereGizmosUpdater) ||
                SG_INSTANCEOF(systemPtr, OctreesSolver) ||
                SG_INSTANCEOF(systemPtr, AudioProcessor) ||
-               SG_INSTANCEOF(systemPtr, MotionPlannersResolver))
+               SG_INSTANCEOF(systemPtr, MotionPlannersResolver) ||
+               SG_INSTANCEOF(systemPtr, IKResolver))
             {
                 valueView.getValueContainer().pushBack(system);
                 continue;

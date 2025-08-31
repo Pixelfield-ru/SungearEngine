@@ -951,4 +951,28 @@ namespace SGCore::Serde
             valueView.m_data->setType(*type);
         }
     }
+
+    // ======================================================== impl Rigidbody3D
+
+    template<FormatType TFormatType>
+    void SerdeSpec<IKRootJoint, TFormatType>::serialize(SerializableValueView<const IKRootJoint, TFormatType>& valueView) noexcept
+    {
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<IKRootJoint, TFormatType>::deserialize(DeserializableValueView<IKRootJoint, TFormatType>& valueView) noexcept
+    {
+    }
+
+    // ======================================================== impl IKJoint
+
+    template<FormatType TFormatType>
+    void SerdeSpec<IKJoint, TFormatType>::serialize(SerializableValueView<const IKJoint, TFormatType>& valueView) noexcept
+    {
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<IKJoint, TFormatType>::deserialize(DeserializableValueView<IKJoint, TFormatType>& valueView) noexcept
+    {
+    }
 }

@@ -86,7 +86,7 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
 
         std::int32_t updatedBonesCount = 0;
 
-        if(!nodesToInterpolate.empty())
+        // if(!nodesToInterpolate.empty())
         {
             // std::cout << "playing nodes: " << nodesToInterpolate.size() << std::endl;
 
@@ -128,7 +128,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     Mesh::reg_t* currentEntityMesh = inRegistry->tryGet<Mesh>(currentEntity);
 
     std::vector<SkeletalBoneAnimation*> currentBoneAnims;
-    auto currentBone = skeleton->findBone(currentEntityBaseInfo.getRawName());
+    Bone* currentBone = skeleton ? skeleton->findBone(currentEntityBaseInfo.getRawName()) : nullptr;
 
     if(currentBone)
     {

@@ -10,6 +10,9 @@
 #include <SGCore/Logger/Logger.h>
 #include <SGCore/Utils/StringInterpolation/InterpolationResolver.h>
 #include <SGCore/Graphics/API/IShader.h>
+#include <SGCore/Motion/IK/IKJoint.h>
+#include <SGCore/Motion/IK/IKRootJoint.h>
+#include <SGCore/Render/DebugDraw.h>
 #include <SGCore/Render/RenderPipelinesManager.h>
 #include <SGCore/Render/PBRRP/PBRRenderPipeline.h>
 
@@ -64,6 +67,26 @@ std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>
 
 void SGE::SungearEngineEditor::update(const double& dt, const double& fixedDt)
 {
+    const auto currentScene = SGCore::Scene::getCurrentScene();
+    const auto renderPipeline = SGCore::RenderPipelinesManager::getCurrentRenderPipeline();
+    if(currentScene && renderPipeline)
+    {
+        const auto debugDraw = renderPipeline->getRenderPass<SGCore::DebugDraw>();
+        if(debugDraw)
+        {
+            const auto ikJointsView = currentScene->getECSRegistry()->view<SGCore::Transform, SGCore::IKJoint>();
+            const auto ikRootJointsView = currentScene->getECSRegistry()->view<SGCore::Transform, SGCore::IKRootJoint>();
+
+            ikJointsView.each([&debugDraw](const SGCore::Transform::reg_t& jointTransform, const auto&) {
+                debugDraw->drawAABB(jointTransform->m_finalTransform.m_position - 0.01f, jointTransform->m_finalTransform.m_position + 0.01f, { 1.0f, 0.5f, 0.5f, 1.0f });
+            });
+
+            ikRootJointsView.each([&debugDraw](const SGCore::Transform::reg_t& jointTransform, const auto&) {
+                debugDraw->drawAABB(jointTransform->m_finalTransform.m_position - 0.01f, jointTransform->m_finalTransform.m_position + 0.01f, { 0.3f, 1.0f, 0.1f, 1.0f });
+            });
+        }
+    }
+
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_Y) && !ImGui::GetIO().WantTextInput)
     {
         SGCore::AssetManager::getInstance()->createPackage("./", "assets");

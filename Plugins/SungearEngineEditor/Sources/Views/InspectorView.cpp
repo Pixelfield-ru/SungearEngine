@@ -15,6 +15,9 @@
 
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
 #include <SGCore/Graphics/API/ITexture2D.h>
+#include <SGCore/Motion/MotionPlanner.h>
+#include <SGCore/Motion/IK/IKJoint.h>
+#include <SGCore/Motion/IK/IKRootJoint.h>
 
 #include "SungearEngineEditor.h"
 
@@ -284,6 +287,28 @@ void SGE::InspectorView::inspectEntity() const noexcept
                     rigidbody->addShape(boxTransform, boxShape);
                 }
             }
+
+            auto* ikJoint = ecsRegistry->tryGet<SGCore::IKJoint>(m_currentChosenEntity);
+            if(ikJoint && ImGui::CollapsingHeader("IKJoint"))
+            {
+                glm::vec3 dest { };
+                if(ImGui::DragFloat3("Destination", &dest.x))
+                {
+                    ikJoint->m_targetPosition = dest;
+                }
+            }
+
+            auto* ikRootJoint = ecsRegistry->tryGet<SGCore::IKRootJoint>(m_currentChosenEntity);
+            if(ikRootJoint && ImGui::CollapsingHeader("IKRootJoint"))
+            {
+
+            }
+
+            auto* motionPlanner = ecsRegistry->tryGet<SGCore::MotionPlanner>(m_currentChosenEntity);
+            if(motionPlanner && ImGui::CollapsingHeader("MotionPlanner"))
+            {
+
+            }
         }
 
         if(ImGui::Button("Add Transform"))
@@ -299,6 +324,30 @@ void SGE::InspectorView::inspectEntity() const noexcept
             if(!ecsRegistry->allOf<SGCore::Rigidbody3D>(m_currentChosenEntity))
             {
                 ecsRegistry->emplace<SGCore::Rigidbody3D>(m_currentChosenEntity, SGCore::MakeRef<SGCore::Rigidbody3D>(currentScene->getSystem<SGCore::PhysicsWorld3D>()));
+            }
+        }
+
+        if(ImGui::Button("Add IKJoint"))
+        {
+            if(!ecsRegistry->allOf<SGCore::IKJoint>(m_currentChosenEntity))
+            {
+                ecsRegistry->emplace<SGCore::IKJoint>(m_currentChosenEntity);
+            }
+        }
+
+        if(ImGui::Button("Add IKRootJoint"))
+        {
+            if(!ecsRegistry->allOf<SGCore::IKRootJoint>(m_currentChosenEntity))
+            {
+                ecsRegistry->emplace<SGCore::IKRootJoint>(m_currentChosenEntity);
+            }
+        }
+
+        if(ImGui::Button("Add MotionPlanner"))
+        {
+            if(!ecsRegistry->allOf<SGCore::MotionPlanner>(m_currentChosenEntity))
+            {
+                ecsRegistry->emplace<SGCore::MotionPlanner>(m_currentChosenEntity);
             }
         }
 
