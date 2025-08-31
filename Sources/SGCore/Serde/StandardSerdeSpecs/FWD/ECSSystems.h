@@ -8,6 +8,8 @@
 
 namespace SGCore
 {
+    struct TransformationsUpdater;
+    class ISystem;
     struct IKResolver;
     struct MotionPlannersResolver;
     struct AudioProcessor;

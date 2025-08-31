@@ -6,8 +6,19 @@
 
 #include "SGCore/Serde/Serde.h"
 
+#include "SGCore/Memory/AssetsPackage.h"
+
 namespace SGCore
 {
+    struct SGSLESubShader;
+    struct ICubemapTexture;
+    class IAsset;
+    class IShader;
+    class IMeshData;
+    class IMaterial;
+    struct ShaderAnalyzedFile;
+    struct TextFileAsset;
+    class ITexture2D;
     struct SkeletalBoneAnimation;
     struct MeshBoneData;
     struct AudioTrackAsset;
@@ -17,6 +28,9 @@ namespace SGCore
     struct AnimationsFile;
     struct Skeleton;
     class ModelAsset;
+
+    template<typename AssetT>
+    struct AssetRef;
 }
 
 namespace SGCore::Serde
@@ -162,7 +176,7 @@ namespace SGCore::Serde
     // ======================================================== IShader FWD
 
     template<FormatType TFormatType>
-    struct Serde::SerdeSpec<IShader, TFormatType> :
+    struct SerdeSpec<IShader, TFormatType> :
             BaseTypes<IAsset>,
             DerivedTypes<>
     {

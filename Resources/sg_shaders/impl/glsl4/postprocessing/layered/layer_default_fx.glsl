@@ -205,8 +205,8 @@ void main()
 
             float fogFactor = fogFactorDist;*/
 
-            float exposure = 0.7;
-            fragColor.rgb = ACESTonemap(fragColor.rgb, exposure);
+            // float exposure = 0.7;
+            // fragColor.rgb = ACESTonemap(fragColor.rgb, exposure);
 
             // fragColor.rgb = ToneMap_Uncharted2(fragColor.rgb);
 

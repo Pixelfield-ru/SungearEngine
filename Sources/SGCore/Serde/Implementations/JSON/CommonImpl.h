@@ -95,9 +95,9 @@ namespace SGCore::Serde
             return outputValue;
         }
 
-        template<typename T, template<typename...> typename ContainerT = std::vector, typename... SharedDataT>
-        requires(requires(ContainerT<T> con, T obj) { con.push_back(obj); })
-        [[nodiscard]] ContainerT<T> getAsArray(SharedDataT&&... sharedData) noexcept
+        template<typename T, typename ContainerT = std::vector<T>, typename... SharedDataT>
+        requires(requires(ContainerT con, T obj) { con.push_back(obj); })
+        [[nodiscard]] ContainerT getAsArray(SharedDataT&&... sharedData) noexcept
         {
             if(!(m_thisValue && m_document))
             {
@@ -119,7 +119,7 @@ namespace SGCore::Serde
                 return { };
             }
 
-            ContainerT<T> outputValue;
+            ContainerT outputValue;
 
             for(std::size_t i = 0; i < m_thisValue->Size(); ++i)
             {
@@ -165,7 +165,7 @@ namespace SGCore::Serde
 
                 Serializer::deserializeWithDynamicChecks<T, FormatType::JSON>(valueView, std::forward<SharedDataT>(sharedData)...);
 
-                outputValue.push_back(tmpVal);
+                outputValue.push_back(std::move(tmpVal));
             }
 
             return outputValue;

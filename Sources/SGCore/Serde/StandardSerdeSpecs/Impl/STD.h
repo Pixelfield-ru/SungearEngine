@@ -238,7 +238,7 @@ namespace SGCore::Serde
     template<typename... SharedDataT>
     void SerdeSpec<std::list<T>, TFormatType>::deserialize(DeserializableValueView<std::list<T>, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
     {
-        *valueView.m_data = valueView.getValueContainer().template getAsArray<T, std::list>(std::forward<SharedDataT>(sharedData)...);
+        *valueView.m_data = valueView.getValueContainer().template getAsArray<T, std::list<T>>(std::forward<SharedDataT>(sharedData)...);
     }
 
     // =============================================== impl std::basic_string

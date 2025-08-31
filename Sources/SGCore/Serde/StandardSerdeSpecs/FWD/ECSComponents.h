@@ -8,6 +8,13 @@
 
 namespace SGCore
 {
+    struct Mesh;
+    struct Atmosphere;
+    struct EntityBaseInfo;
+    class UniqueNameWrapper;
+    struct TransformBase;
+    struct Transform;
+    struct RenderingBase;
     struct Rigidbody3D;
     struct MotionPlannerConnection;
     struct MotionPlannerNode;
@@ -26,6 +33,10 @@ namespace SGCore
     struct SphereGizmo;
     struct AudioSource;
     struct Pickable;
+
+    template<typename ScalarT>
+    requires(std::is_signed_v<ScalarT>)
+    struct AABB;
 }
 
 namespace SGCore::Serde
