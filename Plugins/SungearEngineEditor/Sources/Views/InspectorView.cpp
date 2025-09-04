@@ -130,6 +130,7 @@ void SGE::InspectorView::inspectEntity() const noexcept
         auto ecsRegistry = SGCore::Scene::getCurrentScene()->getECSRegistry();
         auto currentScene = SGCore::Scene::getCurrentScene();
         const auto inspectorView = SungearEngineEditor::getInstance()->getMainView()->getInspectorView();
+        const auto mainAssetManager = SGCore::AssetManager::getInstance();
 
         ImGui::Text("Entity: %d", m_currentChosenEntity);
 
@@ -291,8 +292,8 @@ void SGE::InspectorView::inspectEntity() const noexcept
             auto* ikJoint = ecsRegistry->tryGet<SGCore::IKJoint>(m_currentChosenEntity);
             if(ikJoint && ImGui::CollapsingHeader("IKJoint"))
             {
-                glm::vec3 dest { };
-                if(ImGui::DragFloat3("Destination", &dest.x))
+                glm::vec3 dest = ikJoint->m_targetPosition ? *ikJoint->m_targetPosition : glm::vec3();
+                if(ImGui::DragFloat3("Destination", &dest.x, 0.01))
                 {
                     ikJoint->m_targetPosition = dest;
                 }
@@ -307,7 +308,27 @@ void SGE::InspectorView::inspectEntity() const noexcept
             auto* motionPlanner = ecsRegistry->tryGet<SGCore::MotionPlanner>(m_currentChosenEntity);
             if(motionPlanner && ImGui::CollapsingHeader("MotionPlanner"))
             {
+                const auto skeletons = mainAssetManager->getAssetsWithType<SGCore::Skeleton>();
+                const auto entitySkeleton = motionPlanner->m_skeleton;
 
+                if(ImGui::BeginCombo("Skeleton", entitySkeleton ? entitySkeleton->getRootBone()->getName().c_str() : "Not chosen"))
+                {
+                    for(size_t i = 0; i < skeletons.size(); ++i)
+                    {
+                        const bool isSelected = (entitySkeleton == skeletons[i]);
+                        if(ImGui::Selectable(SGCore::Utils::toUTF8(skeletons[i]->getPath().raw().u32string()).c_str(), isSelected))
+                        {
+                            motionPlanner->m_skeleton = skeletons[i];
+                        }
+
+                        if(isSelected)
+                        {
+                            ImGui::SetItemDefaultFocus();
+                        }
+                    }
+
+                    ImGui::EndCombo();
+                }
             }
         }
 

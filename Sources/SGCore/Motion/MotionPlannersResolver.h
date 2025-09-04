@@ -16,6 +16,8 @@ namespace SGCore
 
     struct MotionPlannersResolver : ISystem
     {
+        sg_implement_type_id(MotionPlannersResolver, 52)
+
         void fixedUpdate(const double& dt, const double& fixedDt) final;
 
     private:

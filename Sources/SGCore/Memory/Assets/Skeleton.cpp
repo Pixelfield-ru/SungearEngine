@@ -13,13 +13,7 @@ void SGCore::Skeleton::doLoad(const SGCore::InterpolatedPath& path)
 
 void SGCore::Skeleton::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
 {
-    // filling bones map
-    for(std::int64_t i = 0; i < std::ssize(m_allBones); ++i)
-    {
-        m_allBonesMap[m_allBones[i]->getName()] = i;
-    }
 
-    std::cout << "Skeleton::doLoadFromBinaryFile: m_allBonesMap size: " << m_allBonesMap.size() << std::endl;
 }
 
 void SGCore::Skeleton::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolicy,
@@ -30,6 +24,8 @@ void SGCore::Skeleton::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolicy,
 
 void SGCore::Skeleton::onMemberAssetsReferencesResolveImpl(SGCore::AssetManager* updatedAssetManager) noexcept
 {
+    // =================================== resolving references
+
     for(std::int64_t i = 0; i < std::ssize(m_allBones); ++i)
     {
         auto& bone = m_allBones[i];
@@ -39,6 +35,17 @@ void SGCore::Skeleton::onMemberAssetsReferencesResolveImpl(SGCore::AssetManager*
     AssetManager::resolveAssetReference(updatedAssetManager, m_rootBone);
 
     std::cout << "Skeleton::onMemberAssetsReferencesResolveImpl: m_allBones size: " << m_allBones.size() << std::endl;
+
+    // ===============================================================================================
+    // ===============================================================================================
+    // ================================== filling bones map
+
+    for(std::int64_t i = 0; i < std::ssize(m_allBones); ++i)
+    {
+        m_allBonesMap[m_allBones[i]->getName()] = i;
+    }
+
+    std::cout << "Skeleton::doLoadFromBinaryFile: m_allBonesMap size: " << m_allBonesMap.size() << std::endl;
 }
 
 void SGCore::Skeleton::addBone(AssetRef<Bone> bone, std::string boneName) noexcept

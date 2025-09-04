@@ -12,6 +12,8 @@ namespace SGCore
 {
     struct IKResolver : ISystem
     {
+        sg_implement_type_id(IKResolver, 51)
+
         void fixedUpdate(const double& dt, const double& fixedDt) final;
 
     private:

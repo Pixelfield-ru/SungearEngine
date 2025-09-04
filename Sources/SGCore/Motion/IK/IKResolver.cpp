@@ -74,8 +74,8 @@ void SGCore::IKResolver::fixedUpdate(const double& dt, const double& fixedDt)
                 const float d = glm::distance(jointsTransforms[j + 1]->m_finalTransform.m_position, jointsTransforms[j]->m_finalTransform.m_position);
                 const float lambda = bonesLengths[j] / d;
 
-                const glm::vec3 globalPosition = (1 - lambda) * jointsTransforms[j + 1]->m_finalTransform.m_position + lambda + jointsTransforms[j]->m_finalTransform.m_position;
-                const glm::vec3 localPosition = glm::inverse(jointsTransforms[i]->m_finalTransform.m_animatedModelMatrix) * glm::vec4(globalPosition, 1.0);
+                const glm::vec3 globalPosition = (1 - lambda) * jointsTransforms[j + 1]->m_finalTransform.m_position + lambda * jointsTransforms[j]->m_finalTransform.m_position;
+                const glm::vec3 localPosition = glm::inverse(jointsTransforms[j]->m_finalTransform.m_animatedModelMatrix) * glm::vec4(globalPosition, 1.0);
 
                 jointsTransforms[j]->m_ownTransform.m_position = localPosition;
             }
@@ -87,8 +87,8 @@ void SGCore::IKResolver::fixedUpdate(const double& dt, const double& fixedDt)
                 const float d = glm::distance(jointsTransforms[j + 1]->m_finalTransform.m_position, jointsTransforms[j]->m_finalTransform.m_position);
                 float lambda = bonesLengths[j] / d;
 
-                const glm::vec3 globalPosition = (1 - lambda) * jointsTransforms[j]->m_finalTransform.m_position + lambda + jointsTransforms[j + 1]->m_finalTransform.m_position;
-                const glm::vec3 localPosition = glm::inverse(jointsTransforms[i]->m_finalTransform.m_animatedModelMatrix) * glm::vec4(globalPosition, 1.0);
+                const glm::vec3 globalPosition = (1 - lambda) * jointsTransforms[j]->m_finalTransform.m_position + lambda * jointsTransforms[j + 1]->m_finalTransform.m_position;
+                const glm::vec3 localPosition = glm::inverse(jointsTransforms[j]->m_finalTransform.m_animatedModelMatrix) * glm::vec4(globalPosition, 1.0);
 
                 jointsTransforms[j + 1]->m_ownTransform.m_position = localPosition;
             }
@@ -97,7 +97,7 @@ void SGCore::IKResolver::fixedUpdate(const double& dt, const double& fixedDt)
             {
                 registry->get<IKJoint>(chain[jointsCount - 1]).m_targetPosition = std::nullopt;
             }
-        }
+         }
 
         jointsChains.clear();
     });
