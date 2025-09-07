@@ -125,24 +125,24 @@ namespace SGCore::Serde
     {
         if(!valueView.m_data->has_value())
         {
-            valueView.getValueContainer().setAsNull();
+            valueView.container().setAsNull();
             return;
         }
 
-        valueView.getValueContainer().addMember("value", valueView.m_data->value(), std::forward<SharedDataT>(sharedData)...);
+        valueView.container().addMember("value", valueView.m_data->value(), std::forward<SharedDataT>(sharedData)...);
     }
 
     template<typename T, FormatType TFormatType>
     template<typename... SharedDataT>
     void SerdeSpec<std::optional<T>, TFormatType>::deserialize(DeserializableValueView<std::optional<T>, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
     {
-        if(valueView.getValueContainer().isNull())
+        if(valueView.container().isNull())
         {
             *valueView.m_data = std::nullopt;
             return;
         }
 
-        auto data = valueView.getValueContainer().template getMember<T>("value", std::forward<SharedDataT>(sharedData)...);
+        auto data = valueView.container().template getMember<T>("value", std::forward<SharedDataT>(sharedData)...);
         if(data)
         {
             (*valueView.m_data) = std::move(*data);
@@ -155,11 +155,11 @@ namespace SGCore::Serde
     template<typename... SharedDataT>
     void SerdeSpec<std::vector<T>, TFormatType>::serialize(SerializableValueView<const std::vector<T>, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
     {
-        valueView.getValueContainer().setAsArray();
+        valueView.container().setAsArray();
 
         for(const auto& v : *valueView.m_data)
         {
-            valueView.getValueContainer().pushBack(v, std::forward<SharedDataT>(sharedData)...);
+            valueView.container().pushBack(v, std::forward<SharedDataT>(sharedData)...);
         }
     }
 
@@ -167,7 +167,7 @@ namespace SGCore::Serde
     template<typename... SharedDataT>
     void SerdeSpec<std::vector<T>, TFormatType>::deserialize(DeserializableValueView<std::vector<T>, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
     {
-        *valueView.m_data = valueView.getValueContainer().template getAsArray<T>(std::forward<SharedDataT>(sharedData)...);
+        *valueView.m_data = valueView.container().template getAsArray<T>(std::forward<SharedDataT>(sharedData)...);
     }
 
     // =============================================== impl std::array
@@ -176,11 +176,11 @@ namespace SGCore::Serde
     template<typename... SharedDataT>
     void SerdeSpec<std::array<T, Size>, TFormatType>::serialize(SerializableValueView<const std::array<T, Size>, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
     {
-        valueView.getValueContainer().setAsArray();
+        valueView.container().setAsArray();
 
         for(const auto& v : *valueView.m_data)
         {
-            valueView.getValueContainer().pushBack(v, std::forward<SharedDataT>(sharedData)...);
+            valueView.container().pushBack(v, std::forward<SharedDataT>(sharedData)...);
         }
     }
 
@@ -188,7 +188,7 @@ namespace SGCore::Serde
     template<typename... SharedDataT>
     void SerdeSpec<std::array<T, Size>, TFormatType>::deserialize(DeserializableValueView<std::array<T, Size>, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
     {
-        auto vec = valueView.getValueContainer().template getAsArray<T>(std::forward<SharedDataT>(sharedData)...);
+        auto vec = valueView.container().template getAsArray<T>(std::forward<SharedDataT>(sharedData)...);
         for(size_t i = 0; i < Size; ++i)
         {
             (*valueView.m_data)[i] = std::move(vec[i]);
@@ -201,11 +201,11 @@ namespace SGCore::Serde
     template<typename... SharedDataT>
     void SerdeSpec<std::unordered_set<T, HashT, EqualT>, TFormatType>::serialize(SerializableValueView<const collection_t, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
     {
-        valueView.getValueContainer().setAsArray();
+        valueView.container().setAsArray();
 
         for(const auto& v : *valueView.m_data)
         {
-            valueView.getValueContainer().pushBack(v, std::forward<SharedDataT>(sharedData)...);
+            valueView.container().pushBack(v, std::forward<SharedDataT>(sharedData)...);
         }
     }
 
@@ -213,7 +213,7 @@ namespace SGCore::Serde
     template<typename... SharedDataT>
     void SerdeSpec<std::unordered_set<T, HashT, EqualT>, TFormatType>::deserialize(DeserializableValueView<collection_t, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
     {
-        auto valuesVec = valueView.getValueContainer().template getAsArray<T>(std::forward<SharedDataT>(sharedData)...);
+        auto valuesVec = valueView.container().template getAsArray<T>(std::forward<SharedDataT>(sharedData)...);
         for(auto&& v : valuesVec)
         {
             valueView.m_data->emplace(std::forward<T>(v));
@@ -226,11 +226,11 @@ namespace SGCore::Serde
     template<typename... SharedDataT>
     void SerdeSpec<std::list<T>, TFormatType>::serialize(SerializableValueView<const std::list<T>, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
     {
-        valueView.getValueContainer().setAsArray();
+        valueView.container().setAsArray();
 
         for(const auto& v : *valueView.m_data)
         {
-            valueView.getValueContainer().pushBack(v, std::forward<SharedDataT>(sharedData)...);
+            valueView.container().pushBack(v, std::forward<SharedDataT>(sharedData)...);
         }
     }
 
@@ -238,7 +238,7 @@ namespace SGCore::Serde
     template<typename... SharedDataT>
     void SerdeSpec<std::list<T>, TFormatType>::deserialize(DeserializableValueView<std::list<T>, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
     {
-        *valueView.m_data = valueView.getValueContainer().template getAsArray<T, std::list<T>>(std::forward<SharedDataT>(sharedData)...);
+        *valueView.m_data = valueView.container().template getAsArray<T, std::list<T>>(std::forward<SharedDataT>(sharedData)...);
     }
 
     // =============================================== impl std::basic_string
@@ -246,13 +246,13 @@ namespace SGCore::Serde
     template<typename CharT, FormatType TFormatType>
     void SerdeSpec<std::basic_string<CharT>, TFormatType>::serialize(SerializableValueView<const std::basic_string<CharT>, TFormatType>& valueView) noexcept
     {
-        valueView.getValueContainer().setAsString(*valueView.m_data);
+        valueView.container().setAsString(*valueView.m_data);
     }
 
     template<typename CharT, FormatType TFormatType>
     void SerdeSpec<std::basic_string<CharT>, TFormatType>::deserialize(DeserializableValueView<std::basic_string<CharT>, TFormatType>& valueView) noexcept
     {
-        *valueView.m_data = valueView.getValueContainer().template getAsString<CharT>();
+        *valueView.m_data = valueView.container().template getAsString<CharT>();
     }
 
     // =============================================== impl std::unordered_map
@@ -283,7 +283,7 @@ namespace SGCore::Serde
                 static_assert(always_false<KeyT>::value, "KeyT in std::unordered_map can not be casted to std::string.");
             }
 
-            valueView.getValueContainer().addMember(resultKey, value, std::forward<SharedDataT>(sharedData)...);
+            valueView.container().addMember(resultKey, value, std::forward<SharedDataT>(sharedData)...);
         }
     }
 
@@ -291,13 +291,13 @@ namespace SGCore::Serde
     template<typename... SharedDataT>
     void SerdeSpec<std::unordered_map<KeyT, ValueT>, TFormatType>::deserialize(DeserializableValueView<std::unordered_map<KeyT, ValueT>, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
     {
-        for(auto it = valueView.getValueContainer().memberBegin(); it != valueView.getValueContainer().memberEnd(); ++it)
+        for(auto it = valueView.container().memberBegin(); it != valueView.container().memberEnd(); ++it)
         {
-            const auto val = valueView.getValueContainer().template getMember<ValueT>(it, std::forward<SharedDataT>(sharedData)...);
+            const auto val = valueView.container().template getMember<ValueT>(it, std::forward<SharedDataT>(sharedData)...);
 
             if(val)
             {
-                const std::string memberName = valueView.getValueContainer().getMemberName(it);
+                const std::string memberName = valueView.container().getMemberName(it);
                 KeyT resultKey = fromString<KeyT>(memberName);
 
                 (*valueView.m_data)[resultKey] = *val;
@@ -311,13 +311,13 @@ namespace SGCore::Serde
     void SerdeSpec<std::filesystem::path, TFormatType>::serialize(SerializableValueView<const std::filesystem::path, TFormatType>& valueView) noexcept
     {
         const std::string u8Path = SGCore::Utils::toUTF8(valueView.m_data->u16string());
-        valueView.getValueContainer().setAsString(u8Path);
+        valueView.container().setAsString(u8Path);
     }
 
     template<FormatType TFormatType>
     void SerdeSpec<std::filesystem::path, TFormatType>::deserialize(DeserializableValueView<std::filesystem::path, TFormatType>& valueView) noexcept
     {
-        const std::u16string tmpPath = valueView.getValueContainer().template getAsString<char16_t>();
+        const std::u16string tmpPath = valueView.container().template getAsString<char16_t>();
         *valueView.m_data = tmpPath;
     }
 
@@ -326,12 +326,12 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<bool, TFormatType>::serialize(SerializableValueView<const bool, TFormatType>& valueView) noexcept
     {
-        valueView.getValueContainer().setAsBool(*valueView.m_data);
+        valueView.container().setAsBool(*valueView.m_data);
     }
 
     template<FormatType TFormatType>
     void SerdeSpec<bool, TFormatType>::deserialize(DeserializableValueView<bool, TFormatType>& valueView) noexcept
     {
-        *valueView.m_data = valueView.getValueContainer().getAsBool();
+        *valueView.m_data = valueView.container().getAsBool();
     }
 }

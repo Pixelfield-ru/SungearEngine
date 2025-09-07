@@ -64,35 +64,35 @@ struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseType
 
     static void serialize(SGCore::Serde::SerializableValueView<Derived0, TFormatType>& valueView) noexcept
     {
-        valueView.getValueContainer().addMember("c", valueView.m_data->c);
-        valueView.getValueContainer().addMember("floats", valueView.m_data->floats);
-        valueView.getValueContainer().addMember("myVec3", valueView.m_data->myVec3);
-        valueView.getValueContainer().addMember("unMap", valueView.m_data->unMap);
+        valueView.container().addMember("c", valueView.m_data->c);
+        valueView.container().addMember("floats", valueView.m_data->floats);
+        valueView.container().addMember("myVec3", valueView.m_data->myVec3);
+        valueView.container().addMember("unMap", valueView.m_data->unMap);
 
         std::printf("derived0 serializing\n");
     }
 
     static void deserialize(SGCore::Serde::DeserializableValueView<Derived0, TFormatType>& valueView) noexcept
     {
-        const auto c = valueView.getValueContainer().template getMember<float>("c");
+        const auto c = valueView.container().template getMember<float>("c");
         if(c)
         {
             valueView.m_data->c = *c;
         }
 
-        const auto floats = valueView.getValueContainer().template getMember<std::vector<float>>("floats");
+        const auto floats = valueView.container().template getMember<std::vector<float>>("floats");
         if(floats)
         {
             valueView.m_data->floats = *floats;
         }
 
-        const auto myVec3 = valueView.getValueContainer().template getMember<glm::vec3>("myVec3");
+        const auto myVec3 = valueView.container().template getMember<glm::vec3>("myVec3");
         if(myVec3)
         {
             valueView.m_data->myVec3 = *myVec3;
         }
 
-        const auto unMap = valueView.getValueContainer().template getMember<decltype(Derived0::unMap)>("unMap");
+        const auto unMap = valueView.container().template getMember<decltype(Derived0::unMap)>("unMap");
         if(unMap)
         {
             valueView.m_data->unMap = *unMap;
@@ -110,27 +110,27 @@ struct SGCore::Serde::SerdeSpec<Derived, TFormatType> : SGCore::Serde::BaseTypes
 
     static void serialize(SGCore::Serde::SerializableValueView<Derived, TFormatType>& valueView) noexcept
     {
-        valueView.getValueContainer().addMember("b", valueView.m_data->b);
-        valueView.getValueContainer().addMember("str0", valueView.m_data->str0);
-        valueView.getValueContainer().addMember("str1", valueView.m_data->str1);
+        valueView.container().addMember("b", valueView.m_data->b);
+        valueView.container().addMember("str0", valueView.m_data->str0);
+        valueView.container().addMember("str1", valueView.m_data->str1);
         std::printf("derived serializing\n");
     }
 
     static void deserialize(SGCore::Serde::DeserializableValueView<Derived, TFormatType>& valueView) noexcept
     {
-        const auto b = valueView.getValueContainer().template getMember<float>("b");
+        const auto b = valueView.container().template getMember<float>("b");
         if(b)
         {
             valueView.m_data->b = *b;
         }
 
-        const auto str0 = valueView.getValueContainer().template getMember<std::string>("str0");
+        const auto str0 = valueView.container().template getMember<std::string>("str0");
         if(str0)
         {
             valueView.m_data->str0 = *str0;
         }
 
-        const auto str1 = valueView.getValueContainer().template getMember<std::basic_string<char16_t>>("str1");
+        const auto str1 = valueView.container().template getMember<std::basic_string<char16_t>>("str1");
         if(str1)
         {
             valueView.m_data->str1 = *str1;
@@ -148,13 +148,13 @@ struct SGCore::Serde::SerdeSpec<Base, TFormatType> : SGCore::Serde::DerivedTypes
 
     static void serialize(SGCore::Serde::SerializableValueView<Base, TFormatType>& valueView) noexcept
     {
-        valueView.getValueContainer().addMember("a", valueView.m_data->a);
+        valueView.container().addMember("a", valueView.m_data->a);
         std::printf("base serializing\n");
     }
 
     static void deserialize(SGCore::Serde::DeserializableValueView<Base, TFormatType>& valueView) noexcept
     {
-        const auto a = valueView.getValueContainer().template getMember<std::int32_t>("a");
+        const auto a = valueView.container().template getMember<std::int32_t>("a");
         if(a)
         {
             valueView.m_data->a = *a;

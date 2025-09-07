@@ -15,11 +15,11 @@ namespace SGCore::Serde
     template<glm::length_t Length, typename T, glm::qualifier Qualifier, FormatType TFormatType>
     void SerdeSpec<glm::vec<Length, T, Qualifier>, TFormatType>::serialize(SerializableValueView<const glm::vec<Length, T, Qualifier>, TFormatType>& valueView) noexcept
     {
-        valueView.getValueContainer().setAsArray();
+        valueView.container().setAsArray();
 
         for(std::size_t i = 0; i < Length; ++i)
         {
-            valueView.getValueContainer().pushBack((*valueView.m_data)[i]);
+            valueView.container().pushBack((*valueView.m_data)[i]);
         }
     }
 
@@ -27,7 +27,7 @@ namespace SGCore::Serde
     void SerdeSpec<glm::vec<Length, T, Qualifier>, TFormatType>::deserialize(DeserializableValueView<glm::vec<Length, T, Qualifier>, TFormatType>& valueView) noexcept
     {
         const std::vector<T> vec =
-                valueView.getValueContainer().template getAsArray<T>();
+                valueView.container().template getAsArray<T>();
 
         for(std::size_t i = 0; i < Length; ++i)
         {
@@ -40,19 +40,19 @@ namespace SGCore::Serde
     template<typename T, glm::qualifier Qualifier, FormatType TFormatType>
     void SerdeSpec<glm::qua<T, Qualifier>, TFormatType>::serialize(SerializableValueView<const glm::qua<T, Qualifier>, TFormatType>& valueView) noexcept
     {
-        valueView.getValueContainer().setAsArray();
+        valueView.container().setAsArray();
 
-        valueView.getValueContainer().pushBack(valueView.m_data->x);
-        valueView.getValueContainer().pushBack(valueView.m_data->y);
-        valueView.getValueContainer().pushBack(valueView.m_data->z);
-        valueView.getValueContainer().pushBack(valueView.m_data->w);
+        valueView.container().pushBack(valueView.m_data->x);
+        valueView.container().pushBack(valueView.m_data->y);
+        valueView.container().pushBack(valueView.m_data->z);
+        valueView.container().pushBack(valueView.m_data->w);
     }
 
     template<typename T, glm::qualifier Qualifier, FormatType TFormatType>
     void SerdeSpec<glm::qua<T, Qualifier>, TFormatType>::deserialize(DeserializableValueView<glm::qua<T, Qualifier>, TFormatType>& valueView) noexcept
     {
         const std::vector<T> vec =
-                valueView.getValueContainer().template getAsArray<T>();
+                valueView.container().template getAsArray<T>();
 
         valueView.m_data->x = vec[0];
         valueView.m_data->y = vec[1];
@@ -65,13 +65,13 @@ namespace SGCore::Serde
     template<glm::length_t C, glm::length_t R, typename T, glm::qualifier Qualifier, FormatType TFormatType>
     void SerdeSpec<glm::mat<C, R, T, Qualifier>, TFormatType>::serialize(SerializableValueView<const glm::mat<C, R, T, Qualifier>, TFormatType>& valueView) noexcept
     {
-        valueView.getValueContainer().setAsArray();
+        valueView.container().setAsArray();
 
         for(std::size_t c = 0; c < C; ++c)
         {
             for(std::size_t r = 0; r < R; ++r)
             {
-                valueView.getValueContainer().pushBack((*valueView.m_data)[c][r]);
+                valueView.container().pushBack((*valueView.m_data)[c][r]);
             }
         }
     }
@@ -80,7 +80,7 @@ namespace SGCore::Serde
     void SerdeSpec<glm::mat<C, R, T, Qualifier>, TFormatType>::deserialize(DeserializableValueView<glm::mat<C, R, T, Qualifier>, TFormatType>& valueView) noexcept
     {
         const std::vector<T> vec =
-                valueView.getValueContainer().template getAsArray<T>();
+                valueView.container().template getAsArray<T>();
 
         size_t i = 0;
         for(std::size_t c = 0; c < C; ++c)

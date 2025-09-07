@@ -519,7 +519,7 @@ namespace SGCore::Serde
                 if(!SerdeSpec<T, TFormatType>::getObjectRawPointer(valueView))
                 {
                     // setting value as null in output container
-                    valueView.getValueContainer().setAsNull();
+                    valueView.container().setAsNull();
                     return;
                 }
 
@@ -528,7 +528,7 @@ namespace SGCore::Serde
                 
                 // creating view that contains element_type object
                 SerializableValueView<const ptr_element_type, TFormatType> tmpView { };
-                tmpView.getValueContainer() = valueView.getValueContainer();
+                tmpView.container() = valueView.container();
                 tmpView.m_version = valueView.m_version;
                 tmpView.m_data = SerdeSpec<T, TFormatType>::getObjectRawPointer(valueView);
 
@@ -552,7 +552,7 @@ namespace SGCore::Serde
                 invokeSerdeSpecSerialize(valueView, std::forward<SharedDataT>(sharedData)...);
 
                 // setting new type name
-                valueView.getValueContainer().setTypeName(SerdeSpec<T, TFormatType>::type_name);
+                valueView.container().setTypeName(SerdeSpec<T, TFormatType>::type_name);
             }
         }
 
@@ -578,7 +578,7 @@ namespace SGCore::Serde
             if constexpr(SerdeSpec<T, TFormatType>::is_pointer_type) // deserializing value using dynamic checks
             {
                 // if value of deserializable type equals to null then just returning
-                if(valueView.getValueContainer().isNull())
+                if(valueView.container().isNull())
                 {
                     return;
                 }
@@ -588,7 +588,7 @@ namespace SGCore::Serde
                 
                 // creating view that contains element_type object
                 DeserializableValueView<ptr_element_type, TFormatType> tmpView { };
-                tmpView.getValueContainer() = valueView.getValueContainer();
+                tmpView.container() = valueView.container();
                 tmpView.m_version = valueView.m_version;
 
                 // trying to deserialize T as one of its derived types (this function will allocate object)
@@ -664,10 +664,10 @@ namespace SGCore::Serde
             else
             {
 
-                if(valueView.getValueContainer().m_typeName != SerdeSpec<T, TFormatType>::type_name)
+                if(valueView.container().m_typeName != SerdeSpec<T, TFormatType>::type_name)
                 {
-                    *valueView.getValueContainer().m_outputLog +=
-                            "Can not deserialize value with type '" + valueView.getValueContainer().m_typeName +
+                    *valueView.container().m_outputLog +=
+                            "Can not deserialize value with type '" + valueView.container().m_typeName +
                             "' using T as '" + SerdeSpec<T, TFormatType>::type_name + "'.\n";
 
                     return;
@@ -719,7 +719,7 @@ namespace SGCore::Serde
                     if(derivedTypeObj)
                     {
                         SerializableValueView<const CurrentDerivedT, TFormatType> tmpView {};
-                        tmpView.getValueContainer() = valueView.getValueContainer();
+                        tmpView.container() = valueView.container();
                         tmpView.m_version = valueView.m_version;
                         tmpView.m_data = derivedTypeObj;
 
@@ -772,7 +772,7 @@ namespace SGCore::Serde
 
             // Creating container for base type
             SerializableValueView<const BaseType, TFormatType> tmpView {};
-            tmpView.getValueContainer() = valueView.getValueContainer();
+            tmpView.container() = valueView.container();
             tmpView.m_version = valueView.m_version;
             tmpView.m_data = baseObj;
 
@@ -816,7 +816,7 @@ namespace SGCore::Serde
             invokeSerdeSpecSerialize(valueView, std::forward<SharedDataT>(sharedData)...);
 
             // setting new type name
-            valueView.getValueContainer().setTypeName(SerdeSpec<TypeToSerialize, TFormatType>::type_name);
+            valueView.container().setTypeName(SerdeSpec<TypeToSerialize, TFormatType>::type_name);
         }
         
         /**
@@ -863,7 +863,7 @@ namespace SGCore::Serde
         {
             // converting OriginalT value view to BaseT value view to pass into SerdeSpec
             DeserializableValueView<BaseT, TFormatType> tmpView { };
-            tmpView.getValueContainer() = valueView.getValueContainer();
+            tmpView.container() = valueView.container();
             tmpView.m_version = valueView.m_version;
             tmpView.m_data = &(static_cast<BaseT&>(*valueView.m_data));
             
@@ -926,11 +926,11 @@ namespace SGCore::Serde
             {
                 // creating temporary view that contains pointer to DerivedT
                 DeserializableValueView<DerivedT, TFormatType> tmpView {};
-                tmpView.getValueContainer() = valueView.getValueContainer();
+                tmpView.container() = valueView.container();
                 tmpView.m_version = valueView.m_version;
 
                 // typeNames are equal. DerivedT is suitable
-                if(valueView.getValueContainer().m_typeName == SerdeSpec<DerivedT, TFormatType>::type_name)
+                if(valueView.container().m_typeName == SerdeSpec<DerivedT, TFormatType>::type_name)
                 {
                     // allocating object of DerivedT
                     DerivedT* derivedObject {};
@@ -1375,7 +1375,7 @@ namespace SGCore::Serde
             return m_isDiscarded;
         }
 
-        SerializableValueContainer<TFormatType>& getValueContainer() noexcept
+        SerializableValueContainer<TFormatType>& container() noexcept
         {
             return m_valueContainer;
         }
@@ -1426,7 +1426,7 @@ namespace SGCore::Serde
 
         T* m_data { };
 
-        DeserializableValueContainer<TFormatType>& getValueContainer() noexcept
+        DeserializableValueContainer<TFormatType>& container() noexcept
         {
             return m_valueContainer;
         }

@@ -39,13 +39,13 @@ namespace SGCore::Serde
     {
         const auto* value = valueView.m_data;
 
-        valueView.getValueContainer().setAsArray();
+        valueView.container().setAsArray();
 
         for(size_t i = 0; i < value->getNumChildShapes(); ++i)
         {
             const btCollisionShape* shape = value->getChildShape(i);
 
-            valueView.getValueContainer().pushBack(shape, value->getChildTransform(i), parentRigidbody3D);
+            valueView.container().pushBack(shape, value->getChildTransform(i), parentRigidbody3D);
         }
     }
 
@@ -59,10 +59,10 @@ namespace SGCore::Serde
 
         auto* value = valueView.m_data;
 
-        for(auto it = valueView.getValueContainer().begin(); it != valueView.getValueContainer().end(); ++it)
+        for(auto it = valueView.container().begin(); it != valueView.container().end(); ++it)
         {
             childShapeTransform.setIdentity();
-            const auto shape = valueView.getValueContainer().template getMember<Ref<btCollisionShape>>(it, childShapeTransform, parentRigidbody3D);
+            const auto shape = valueView.container().template getMember<Ref<btCollisionShape>>(it, childShapeTransform, parentRigidbody3D);
 
             if(shape)
             {
@@ -86,8 +86,8 @@ namespace SGCore::Serde
         const btCollisionShape* data = valueView.m_data;
         const auto shapeType = data->getShapeType();
 
-        valueView.getValueContainer().addMember("m_localScaling", valueView.m_data->getLocalScaling());
-        valueView.getValueContainer().addMember("m_shapeType", shapeType);
+        valueView.container().addMember("m_localScaling", valueView.m_data->getLocalScaling());
+        valueView.container().addMember("m_shapeType", shapeType);
 
         // direct saving shape of actual type
 
@@ -95,13 +95,13 @@ namespace SGCore::Serde
         {
             const auto* compoundShape = static_cast<const btCompoundShape*>(data);
 
-            valueView.getValueContainer().addMember("m_shapeObject", *compoundShape, btTransform {}, parentRigidbody3D);
+            valueView.container().addMember("m_shapeObject", *compoundShape, btTransform {}, parentRigidbody3D);
         }
         else if(shapeType == BOX_SHAPE_PROXYTYPE)
         {
             const auto* boxShape = static_cast<const btBoxShape*>(data);
 
-            valueView.getValueContainer().addMember("m_shapeObject", *boxShape, btTransform {}, parentRigidbody3D);
+            valueView.container().addMember("m_shapeObject", *boxShape, btTransform {}, parentRigidbody3D);
         }
         else if(shapeType == SPHERE_SHAPE_PROXYTYPE)
         {
@@ -121,13 +121,13 @@ namespace SGCore::Serde
         DeserializableValueView<btCollisionShape, TFormatType>& valueView,
         Rigidbody3D& parentRigidbody3D) noexcept
     {
-        const auto localScaling = valueView.getValueContainer().template getMember<btVector3>("m_localScaling");
+        const auto localScaling = valueView.container().template getMember<btVector3>("m_localScaling");
         if(localScaling)
         {
             valueView.m_data->setLocalScaling(*localScaling);
         }
 
-        const auto shapeType = valueView.getValueContainer().template getMember<int>("m_shapeType");
+        const auto shapeType = valueView.container().template getMember<int>("m_shapeType");
         if(!shapeType)
         {
             LOG_E(SGCORE_TAG, "Error while deserializing physical collision shape: no 'm_shapeType' field detected!");
@@ -138,7 +138,7 @@ namespace SGCore::Serde
 
         if(*shapeType == COMPOUND_SHAPE_PROXYTYPE)
         {
-            const auto shape = valueView.getValueContainer().template getMember<Ref<btCompoundShape>>("m_shapeObject", shapeTransform, parentRigidbody3D);
+            const auto shape = valueView.container().template getMember<Ref<btCompoundShape>>("m_shapeObject", shapeTransform, parentRigidbody3D);
             if(!shape)
             {
                 LOG_E(SGCORE_TAG, "Error while deserializing physical collision shape: no 'm_shapeObject' field detected!");
@@ -176,7 +176,7 @@ namespace SGCore::Serde
     {
         serialize(valueView, parentRigidbody3D);
 
-        valueView.getValueContainer().addMember("m_transform", shapeTransform);
+        valueView.container().addMember("m_transform", shapeTransform);
     }
 
     template<FormatType TFormatType>
@@ -188,7 +188,7 @@ namespace SGCore::Serde
     {
         deserialize(valueView, parentRigidbody3D);
 
-        const auto transform = valueView.getValueContainer().template getMember<btTransform>("m_transform");
+        const auto transform = valueView.container().template getMember<btTransform>("m_transform");
         if(transform)
         {
             shapeTransform = *transform;
@@ -198,7 +198,7 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     btCollisionShape* SerdeSpec<btCollisionShape, TFormatType>::allocateObject(DeserializableValueView<btCollisionShape, TFormatType>& valueView) noexcept
     {
-        const auto shapeType = valueView.getValueContainer().template getMember<int>("m_shapeType");
+        const auto shapeType = valueView.container().template getMember<int>("m_shapeType");
 
         if(!shapeType)
         {
@@ -228,20 +228,20 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<btTransform, TFormatType>::serialize(SerializableValueView<const btTransform, TFormatType>& valueView) noexcept
     {
-        valueView.getValueContainer().addMember("m_origin", valueView.m_data->getOrigin());
-        valueView.getValueContainer().addMember("m_rotation", valueView.m_data->getRotation());
+        valueView.container().addMember("m_origin", valueView.m_data->getOrigin());
+        valueView.container().addMember("m_rotation", valueView.m_data->getRotation());
     }
 
     template<FormatType TFormatType>
     void SerdeSpec<btTransform, TFormatType>::deserialize(DeserializableValueView<btTransform, TFormatType>& valueView) noexcept
     {
-        const auto origin = valueView.getValueContainer().template getMember<btVector3>("m_origin");
+        const auto origin = valueView.container().template getMember<btVector3>("m_origin");
         if(origin)
         {
             valueView.m_data->setOrigin(*origin);
         }
 
-        const auto rotation = valueView.getValueContainer().template getMember<btQuaternion>("m_rotation");
+        const auto rotation = valueView.container().template getMember<btQuaternion>("m_rotation");
         if(rotation)
         {
             valueView.m_data->setRotation(*rotation);
@@ -253,27 +253,27 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<btVector3, TFormatType>::serialize(SerializableValueView<const btVector3, TFormatType>& valueView) noexcept
     {
-        valueView.getValueContainer().addMember("x", valueView.m_data->getX());
-        valueView.getValueContainer().addMember("y", valueView.m_data->getY());
-        valueView.getValueContainer().addMember("z", valueView.m_data->getZ());
+        valueView.container().addMember("x", valueView.m_data->getX());
+        valueView.container().addMember("y", valueView.m_data->getY());
+        valueView.container().addMember("z", valueView.m_data->getZ());
     }
 
     template<FormatType TFormatType>
     void SerdeSpec<btVector3, TFormatType>::deserialize(DeserializableValueView<btVector3, TFormatType>& valueView) noexcept
     {
-        const auto x = valueView.getValueContainer().template getMember<btScalar>("x");
+        const auto x = valueView.container().template getMember<btScalar>("x");
         if(x)
         {
             valueView.m_data->setX(*x);
         }
 
-        const auto y = valueView.getValueContainer().template getMember<btScalar>("y");
+        const auto y = valueView.container().template getMember<btScalar>("y");
         if(y)
         {
             valueView.m_data->setY(*y);
         }
 
-        const auto z = valueView.getValueContainer().template getMember<btScalar>("z");
+        const auto z = valueView.container().template getMember<btScalar>("z");
         if(z)
         {
             valueView.m_data->setZ(*z);
@@ -285,34 +285,34 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<btQuaternion, TFormatType>::serialize(SerializableValueView<const btQuaternion, TFormatType>& valueView) noexcept
     {
-        valueView.getValueContainer().addMember("x", valueView.m_data->getX());
-        valueView.getValueContainer().addMember("y", valueView.m_data->getY());
-        valueView.getValueContainer().addMember("z", valueView.m_data->getZ());
-        valueView.getValueContainer().addMember("w", valueView.m_data->getW());
+        valueView.container().addMember("x", valueView.m_data->getX());
+        valueView.container().addMember("y", valueView.m_data->getY());
+        valueView.container().addMember("z", valueView.m_data->getZ());
+        valueView.container().addMember("w", valueView.m_data->getW());
     }
 
     template<FormatType TFormatType>
     void SerdeSpec<btQuaternion, TFormatType>::deserialize(DeserializableValueView<btQuaternion, TFormatType>& valueView) noexcept
     {
-        const auto x = valueView.getValueContainer().template getMember<btScalar>("x");
+        const auto x = valueView.container().template getMember<btScalar>("x");
         if(x)
         {
             valueView.m_data->setX(*x);
         }
 
-        const auto y = valueView.getValueContainer().template getMember<btScalar>("y");
+        const auto y = valueView.container().template getMember<btScalar>("y");
         if(y)
         {
             valueView.m_data->setY(*y);
         }
 
-        const auto z = valueView.getValueContainer().template getMember<btScalar>("z");
+        const auto z = valueView.container().template getMember<btScalar>("z");
         if(z)
         {
             valueView.m_data->setZ(*z);
         }
 
-        const auto w = valueView.getValueContainer().template getMember<btScalar>("w");
+        const auto w = valueView.container().template getMember<btScalar>("w");
         if(w)
         {
             valueView.m_data->setW(*w);

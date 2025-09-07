@@ -12,6 +12,7 @@ namespace SGCore
     struct IKJoint : ECS::Component<IKJoint, const IKJoint>
     {
         std::optional<glm::vec3> m_targetPosition { };
+        bool m_isEndJoint = false;
     };
 }
 

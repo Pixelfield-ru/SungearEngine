@@ -50,7 +50,7 @@ namespace SGCore::Serde
             return;
         }
 
-        valueView.getValueContainer().addMember("m_referencedEntity", valueView.m_data->m_referencedEntity);
+        valueView.container().addMember("m_referencedEntity", valueView.m_data->m_referencedEntity);
     }
 
     template<FormatType TFormatType>
@@ -58,7 +58,7 @@ namespace SGCore::Serde
                                                         const ECS::entity_t& deserializedEntity,
                                                         ECS::registry_t& toRegistry) noexcept
     {
-        auto m_referencedEntity = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_referencedEntity)>("m_referencedEntity");
+        auto m_referencedEntity = valueView.container().template getMember<decltype(valueView.m_data->m_referencedEntity)>("m_referencedEntity");
 
         if(m_referencedEntity)
         {
@@ -81,27 +81,27 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<Layer, TFormatType>::serialize(SerializableValueView<const Layer, TFormatType>& valueView) noexcept
     {
-        valueView.getValueContainer().addMember("m_isOpaque", valueView.m_data->m_isOpaque);
-        valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
-        valueView.getValueContainer().addMember("m_index", valueView.m_data->m_index);
+        valueView.container().addMember("m_isOpaque", valueView.m_data->m_isOpaque);
+        valueView.container().addMember("m_name", valueView.m_data->m_name);
+        valueView.container().addMember("m_index", valueView.m_data->m_index);
     }
 
     template<FormatType TFormatType>
     void SerdeSpec<Layer, TFormatType>::deserialize(DeserializableValueView<Layer, TFormatType>& valueView) noexcept
     {
-        const auto m_isOpaque = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_isOpaque)>("m_isOpaque");
+        const auto m_isOpaque = valueView.container().template getMember<decltype(valueView.m_data->m_isOpaque)>("m_isOpaque");
         if(m_isOpaque)
         {
             valueView.m_data->m_isOpaque = *m_isOpaque;
         }
 
-        const auto m_name = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_name)>("m_name");
+        const auto m_name = valueView.container().template getMember<decltype(valueView.m_data->m_name)>("m_name");
         if(m_name)
         {
             valueView.m_data->m_name = *m_name;
         }
 
-        const auto m_index = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_index)>("m_index");
+        const auto m_index = valueView.container().template getMember<decltype(valueView.m_data->m_index)>("m_index");
         if(m_index)
         {
             valueView.m_data->m_index = *m_index;
@@ -113,19 +113,19 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<ECS::entity_t, TFormatType>::serialize(SerializableValueView<const ECS::entity_t, TFormatType>& valueView) noexcept
     {
-        valueView.getValueContainer().setAsInt64(std::to_underlying(*valueView.m_data));
+        valueView.container().setAsInt64(std::to_underlying(*valueView.m_data));
     }
 
     template<FormatType TFormatType>
     void SerdeSpec<ECS::entity_t, TFormatType>::deserialize(DeserializableValueView<ECS::entity_t, TFormatType>& valueView) noexcept
     {
-        *valueView.m_data = static_cast<ECS::entity_t>(valueView.getValueContainer().getAsInt64());
+        *valueView.m_data = static_cast<ECS::entity_t>(valueView.container().getAsInt64());
     }
 
     template<FormatType TFormatType>
     void SerdeSpec<ECS::entity_t, TFormatType>::serialize(SerializableValueView<const ECS::entity_t, TFormatType>& valueView, const Scene& serializableScene) noexcept
     {
-        valueView.getValueContainer().setAsArray();
+        valueView.container().setAsArray();
 
         auto& serializableEntity = *valueView.m_data;
 
@@ -140,7 +140,7 @@ namespace SGCore::Serde
 
                 LOG_I("GENERATED", "Saving CHILD entity '{}'...", std::to_underlying(childEntity));
 
-                valueView.getValueContainer().pushBack(childEntity, serializableScene);
+                valueView.container().pushBack(childEntity, serializableScene);
             }
         }
 
@@ -154,7 +154,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component);
+                valueView.container().pushBack(*component);
             }
         }
         {
@@ -162,7 +162,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component);
+                valueView.container().pushBack(*component);
             }
         }
         {
@@ -170,7 +170,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component);
+                valueView.container().pushBack(*component);
             }
         }
         {
@@ -178,7 +178,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component);
+                valueView.container().pushBack(*component);
             }
         }
         {
@@ -186,7 +186,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component);
+                valueView.container().pushBack(*component);
             }
         }
         {
@@ -194,7 +194,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component);
+                valueView.container().pushBack(*component);
             }
         }
         {
@@ -202,7 +202,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component);
+                valueView.container().pushBack(*component);
             }
         }
         {
@@ -210,7 +210,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component);
+                valueView.container().pushBack(*component);
             }
         }
         {
@@ -218,7 +218,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component);
+                valueView.container().pushBack(*component);
             }
         }
         {
@@ -226,7 +226,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component);
+                valueView.container().pushBack(*component);
             }
         }
         {
@@ -234,7 +234,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component);
+                valueView.container().pushBack(*component);
             }
         }
         {
@@ -242,7 +242,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component);
+                valueView.container().pushBack(*component);
             }
         }
         {
@@ -250,7 +250,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component);
+                valueView.container().pushBack(*component);
             }
         }
         {
@@ -258,7 +258,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component);
+                valueView.container().pushBack(*component);
             }
         }
 
@@ -267,7 +267,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component);
+                valueView.container().pushBack(*component);
             }
         }
 
@@ -276,7 +276,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component);
+                valueView.container().pushBack(*component);
             }
         }
 
@@ -285,7 +285,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component,
+                valueView.container().pushBack(*component,
                                                        serializableEntity, *serializableScene.getECSRegistry());
             }
         }
@@ -295,7 +295,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component,
+                valueView.container().pushBack(*component,
                                                        serializableEntity, *serializableScene.getECSRegistry());
             }
         }
@@ -305,7 +305,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component,
+                valueView.container().pushBack(*component,
                                                        serializableEntity, *serializableScene.getECSRegistry());
             }
         }
@@ -315,7 +315,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component);
+                valueView.container().pushBack(*component);
             }
         }
 
@@ -324,7 +324,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.getValueContainer().pushBack(*component);
+                valueView.container().pushBack(*component);
             }
         }
 
@@ -358,16 +358,16 @@ namespace SGCore::Serde
         LOG_I(SGCORE_TAG, "Loading entity: {}", std::to_underlying(*valueView.m_data));
 
         // iterating through all elements of entityView
-        for(auto componentsIt = valueView.getValueContainer().begin(); componentsIt != valueView.getValueContainer().end(); ++componentsIt)
+        for(auto componentsIt = valueView.container().begin(); componentsIt != valueView.container().end(); ++componentsIt)
         {
-            const auto& currentElementTypeName = valueView.getValueContainer().getMemberTypeName(componentsIt);
+            const auto& currentElementTypeName = valueView.container().getMemberTypeName(componentsIt);
 
             // deserializing iterator as child entity only if current iterator is SceneEntitySaveInfo
             if(currentElementTypeName == type_name)
             {
                 // trying to deserialize current element of array (valueView is array) as child SceneEntitySaveInfo
                 const std::optional<ECS::entity_t> asChild =
-                        valueView.getValueContainer().template getMember<ECS::entity_t>(componentsIt,
+                        valueView.container().template getMember<ECS::entity_t>(componentsIt,
                             deserializableScene);
                 if(asChild)
                 {
@@ -386,7 +386,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<EntityBaseInfo, TFormatType>::type_name)
             {
-                auto component = valueView.getValueContainer().template getMember<EntityBaseInfo::reg_t>(componentsIt);
+                auto component = valueView.container().template getMember<EntityBaseInfo::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -398,7 +398,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<AudioSource, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<AudioSource::reg_t>(componentsIt);
+                const auto component = valueView.container().template getMember<AudioSource::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -410,7 +410,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<Transform, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<Transform::reg_t>(componentsIt);
+                const auto component = valueView.container().template getMember<Transform::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -422,7 +422,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<AABB<float>, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<AABB<float>::reg_t>(componentsIt);
+                const auto component = valueView.container().template getMember<AABB<float>::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -434,7 +434,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<RenderingBase, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<RenderingBase::reg_t>(componentsIt);
+                const auto component = valueView.container().template getMember<RenderingBase::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -446,7 +446,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<Camera3D, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<Camera3D::reg_t>(componentsIt);
+                const auto component = valueView.container().template getMember<Camera3D::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -458,7 +458,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<SphereGizmo, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<SphereGizmo::reg_t>(componentsIt);
+                const auto component = valueView.container().template getMember<SphereGizmo::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -470,7 +470,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<BoxGizmo, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<BoxGizmo::reg_t>(componentsIt);
+                const auto component = valueView.container().template getMember<BoxGizmo::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -482,7 +482,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<LineGizmo, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<LineGizmo::reg_t>(componentsIt);
+                const auto component = valueView.container().template getMember<LineGizmo::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -494,7 +494,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<Atmosphere, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<Atmosphere::reg_t>(componentsIt);
+                const auto component = valueView.container().template getMember<Atmosphere::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -507,7 +507,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<Mesh, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<Mesh::reg_t>(componentsIt);
+                const auto component = valueView.container().template getMember<Mesh::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -520,7 +520,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<DirectionalLight, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<DirectionalLight::reg_t>(componentsIt);
+                const auto component = valueView.container().template getMember<DirectionalLight::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -532,7 +532,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<Controllable3D, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<Controllable3D::reg_t>(componentsIt);
+                const auto component = valueView.container().template getMember<Controllable3D::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -544,7 +544,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<UICamera, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<UICamera::reg_t>(componentsIt);
+                const auto component = valueView.container().template getMember<UICamera::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -556,7 +556,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<Pickable, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<Pickable::reg_t>(componentsIt, entity, toRegistry);
+                const auto component = valueView.container().template getMember<Pickable::reg_t>(componentsIt, entity, toRegistry);
 
                 if(component)
                 {
@@ -568,7 +568,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<TransparentEntityTag, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<TransparentEntityTag::reg_t>(componentsIt);
+                const auto component = valueView.container().template getMember<TransparentEntityTag::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -580,7 +580,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<OpaqueEntityTag, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<OpaqueEntityTag::reg_t>(componentsIt);
+                const auto component = valueView.container().template getMember<OpaqueEntityTag::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -592,7 +592,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<MotionPlanner, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<MotionPlanner::reg_t>(componentsIt);
+                const auto component = valueView.container().template getMember<MotionPlanner::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -604,7 +604,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<Rigidbody3D, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<Rigidbody3D::reg_t>(componentsIt);
+                const auto component = valueView.container().template getMember<Rigidbody3D::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -616,7 +616,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<IKJoint, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<IKJoint::reg_t>(componentsIt);
+                const auto component = valueView.container().template getMember<IKJoint::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -628,7 +628,7 @@ namespace SGCore::Serde
 
             if(currentElementTypeName == SerdeSpec<IKRootJoint, TFormatType>::type_name)
             {
-                const auto component = valueView.getValueContainer().template getMember<IKRootJoint::reg_t>(componentsIt);
+                const auto component = valueView.container().template getMember<IKRootJoint::reg_t>(componentsIt);
 
                 if(component)
                 {
@@ -667,7 +667,7 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<ECS::registry_t, TFormatType>::serialize(SerializableValueView<const ECS::registry_t, TFormatType>& valueView, const Scene& serializableScene) noexcept
     {
-        valueView.getValueContainer().setAsArray();
+        valueView.container().setAsArray();
 
         auto entitiesView = valueView.m_data->template view<EntityBaseInfo>();
         for(const auto& entity : entitiesView)
@@ -688,7 +688,7 @@ namespace SGCore::Serde
             }
 
             LOG_I(SGCORE_TAG, "Saving ROOT entity '{}'", std::to_underlying(entity))
-            valueView.getValueContainer().pushBack(entity, serializableScene);
+            valueView.container().pushBack(entity, serializableScene);
         }
 
         Scene::getOnSceneSavedEvent()(serializableScene);
@@ -697,10 +697,10 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<ECS::registry_t, TFormatType>::deserialize(DeserializableValueView<ECS::registry_t, TFormatType>& valueView, Scene& serializableScene) noexcept
     {
-        for(auto entityIt = valueView.getValueContainer().begin(); entityIt != valueView.getValueContainer().end(); ++entityIt)
+        for(auto entityIt = valueView.container().begin(); entityIt != valueView.container().end(); ++entityIt)
         {
             // deserializing entity and passing registry to getMember to put entity in scene
-            valueView.getValueContainer().template getMember<ECS::entity_t>(entityIt, serializableScene);
+            valueView.container().template getMember<ECS::entity_t>(entityIt, serializableScene);
         }
 
         // resolving all EntityRef`s after deserialization ================
@@ -715,7 +715,7 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<Scene::systems_container_t, TFormatType>::serialize(SerializableValueView<const Scene::systems_container_t, TFormatType>& valueView, const Scene& serializableScene) noexcept
     {
-        valueView.getValueContainer().setAsArray();
+        valueView.container().setAsArray();
 
         // serializing systems
         for(const Ref<ISystem>& system : *valueView.m_data)
@@ -738,7 +738,7 @@ namespace SGCore::Serde
                SG_INSTANCEOF(systemPtr, MotionPlannersResolver) ||
                SG_INSTANCEOF(systemPtr, IKResolver))
             {
-                valueView.getValueContainer().pushBack(system);
+                valueView.container().pushBack(system);
                 continue;
             }
 
@@ -751,10 +751,10 @@ namespace SGCore::Serde
     void SerdeSpec<Scene::systems_container_t, TFormatType>::deserialize(DeserializableValueView<Scene::systems_container_t, TFormatType>& valueView) noexcept
     {
         // type of auto is equals to Serde::FormatInfo<TFormatType>::array_iterator_t
-        for(auto systemsIt = valueView.getValueContainer().begin(); systemsIt != valueView.getValueContainer().end(); ++systemsIt)
+        for(auto systemsIt = valueView.container().begin(); systemsIt != valueView.container().end(); ++systemsIt)
         {
             // trying to deserialize current scene using standard SerdeSpecs
-            const auto system = valueView.getValueContainer().template getMember<Ref<ISystem>>(systemsIt);
+            const auto system = valueView.container().template getMember<Ref<ISystem>>(systemsIt);
             if(system)
             {
                 LOG_D(SGCORE_TAG, "LOADING SYSTEM {}", std::string(typeid(**system).name()));
@@ -773,20 +773,20 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<SceneMetaInfo, TFormatType>::serialize(SerializableValueView<const SceneMetaInfo, TFormatType>& valueView) noexcept
     {
-        valueView.getValueContainer().addMember("m_sceneName", valueView.m_data->m_sceneName);
-        valueView.getValueContainer().addMember("m_sceneLocalPath", valueView.m_data->m_sceneLocalPath);
+        valueView.container().addMember("m_sceneName", valueView.m_data->m_sceneName);
+        valueView.container().addMember("m_sceneLocalPath", valueView.m_data->m_sceneLocalPath);
     }
 
     template<FormatType TFormatType>
     void SerdeSpec<SceneMetaInfo, TFormatType>::deserialize(DeserializableValueView<SceneMetaInfo, TFormatType>& valueView) noexcept
     {
-        auto sceneName = valueView.getValueContainer().template getMember<std::string>("m_sceneName");
+        auto sceneName = valueView.container().template getMember<std::string>("m_sceneName");
         if(sceneName)
         {
             valueView.m_data->m_sceneName = std::move(*sceneName);
         }
 
-        auto sceneLocalPath = valueView.getValueContainer().template getMember<std::filesystem::path>("m_sceneLocalPath");
+        auto sceneLocalPath = valueView.container().template getMember<std::filesystem::path>("m_sceneLocalPath");
         if(sceneLocalPath)
         {
             valueView.m_data->m_sceneLocalPath = std::move(*sceneLocalPath);
@@ -798,21 +798,21 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<Scene, TFormatType>::serialize(SerializableValueView<const Scene, TFormatType>& valueView) noexcept
     {
-        valueView.getValueContainer().addMember("m_metaInfo", valueView.m_data->m_metaInfo);
-        valueView.getValueContainer().addMember("m_systems", valueView.m_data->m_systems, *valueView.m_data);
-        valueView.getValueContainer().addMember("m_ecsRegistry", *valueView.m_data->m_ecsRegistry, *valueView.m_data);
+        valueView.container().addMember("m_metaInfo", valueView.m_data->m_metaInfo);
+        valueView.container().addMember("m_systems", valueView.m_data->m_systems, *valueView.m_data);
+        valueView.container().addMember("m_ecsRegistry", *valueView.m_data->m_ecsRegistry, *valueView.m_data);
     }
 
     template<FormatType TFormatType>
     void SerdeSpec<Scene, TFormatType>::deserialize(DeserializableValueView<Scene, TFormatType>& valueView) noexcept
     {
-        auto metaInfo = valueView.getValueContainer().template getMember<SceneMetaInfo>("m_metaInfo");
+        auto metaInfo = valueView.container().template getMember<SceneMetaInfo>("m_metaInfo");
         if(metaInfo)
         {
             valueView.m_data->m_metaInfo = std::move(*metaInfo);
         }
 
-        auto systems = valueView.getValueContainer().template getMember<Scene::systems_container_t>("m_systems");
+        auto systems = valueView.container().template getMember<Scene::systems_container_t>("m_systems");
         if(systems)
         {
             for(const auto& system : *systems)
@@ -822,7 +822,7 @@ namespace SGCore::Serde
         }
 
         // we are not interested in result of getMember function. deserialize function of registry_t writes data directly in registry of this scene
-        valueView.getValueContainer().template getMember<ECS::registry_t>("m_ecsRegistry", *valueView.m_data);
+        valueView.container().template getMember<ECS::registry_t>("m_ecsRegistry", *valueView.m_data);
     }
 
     // ======================================================== impl Node
@@ -830,48 +830,48 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<Node, TFormatType>::serialize(SerializableValueView<const Node, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept
     {
-        valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
-        valueView.getValueContainer().addMember("m_children", valueView.m_data->m_children, assetsPackage);
-        valueView.getValueContainer().addMember("m_meshesData", valueView.m_data->m_meshesData, assetsPackage);
-        valueView.getValueContainer().addMember("m_position", valueView.m_data->m_position);
-        valueView.getValueContainer().addMember("m_rotationQuaternion", valueView.m_data->m_rotationQuaternion);
-        valueView.getValueContainer().addMember("m_scale", valueView.m_data->m_scale);
+        valueView.container().addMember("m_name", valueView.m_data->m_name);
+        valueView.container().addMember("m_children", valueView.m_data->m_children, assetsPackage);
+        valueView.container().addMember("m_meshesData", valueView.m_data->m_meshesData, assetsPackage);
+        valueView.container().addMember("m_position", valueView.m_data->m_position);
+        valueView.container().addMember("m_rotationQuaternion", valueView.m_data->m_rotationQuaternion);
+        valueView.container().addMember("m_scale", valueView.m_data->m_scale);
     }
 
     template<FormatType TFormatType>
     void SerdeSpec<Node, TFormatType>::deserialize(DeserializableValueView<Node, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept
     {
-        auto name = valueView.getValueContainer().template getMember<std::string>("m_name");
+        auto name = valueView.container().template getMember<std::string>("m_name");
         if(name)
         {
             valueView.m_data->m_name = std::move(*name);
         }
 
-        auto children = valueView.getValueContainer().template getMember<std::vector<Ref<Node>>>("m_children", assetsPackage);
+        auto children = valueView.container().template getMember<std::vector<Ref<Node>>>("m_children", assetsPackage);
         if(children)
         {
             valueView.m_data->m_children = std::move(*children);
         }
 
-        auto meshesData = valueView.getValueContainer().template getMember<std::vector<AssetRef<IMeshData>>>("m_meshesData", assetsPackage);
+        auto meshesData = valueView.container().template getMember<std::vector<AssetRef<IMeshData>>>("m_meshesData", assetsPackage);
         if(meshesData)
         {
             valueView.m_data->m_meshesData = std::move(*meshesData);
         }
 
-        auto position = valueView.getValueContainer().template getMember<glm::vec3>("m_position");
+        auto position = valueView.container().template getMember<glm::vec3>("m_position");
         if(position)
         {
             valueView.m_data->m_position = *position;
         }
 
-        auto rotationQuaternion = valueView.getValueContainer().template getMember<glm::quat>("m_rotationQuaternion");
+        auto rotationQuaternion = valueView.container().template getMember<glm::quat>("m_rotationQuaternion");
         if(rotationQuaternion)
         {
             valueView.m_data->m_rotationQuaternion = *rotationQuaternion;
         }
 
-        auto scale = valueView.getValueContainer().template getMember<glm::vec3>("m_scale");
+        auto scale = valueView.container().template getMember<glm::vec3>("m_scale");
         if(scale)
         {
             valueView.m_data->m_scale = *scale;

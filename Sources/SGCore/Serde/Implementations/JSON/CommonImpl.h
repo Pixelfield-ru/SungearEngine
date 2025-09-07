@@ -82,11 +82,11 @@ namespace SGCore::Serde
 
             // creating value view of member
             DeserializableValueView<T, FormatType::JSON> valueView { };
-            valueView.getValueContainer().m_document = m_document;
-            valueView.getValueContainer().m_thisValue = &memberValue;
-            valueView.getValueContainer().m_parent = this;
-            valueView.getValueContainer().m_outputLog = m_outputLog;
-            valueView.getValueContainer().m_typeName = typeName;
+            valueView.container().m_document = m_document;
+            valueView.container().m_thisValue = &memberValue;
+            valueView.container().m_parent = this;
+            valueView.container().m_outputLog = m_outputLog;
+            valueView.container().m_typeName = typeName;
             valueView.m_data = &outputValue;
 
             // deserializing member with dynamic checks
@@ -156,11 +156,11 @@ namespace SGCore::Serde
 
                 // creating value view of member
                 DeserializableValueView<T, FormatType::JSON> valueView { };
-                valueView.getValueContainer().m_document = m_document;
-                valueView.getValueContainer().m_thisValue = &valueSection;
-                valueView.getValueContainer().m_parent = this;
-                valueView.getValueContainer().m_outputLog = m_outputLog;
-                valueView.getValueContainer().m_typeName = typeNameSection;
+                valueView.container().m_document = m_document;
+                valueView.container().m_thisValue = &valueSection;
+                valueView.container().m_parent = this;
+                valueView.container().m_outputLog = m_outputLog;
+                valueView.container().m_typeName = typeNameSection;
                 valueView.m_data = &tmpVal;
 
                 Serializer::deserializeWithDynamicChecks<T, FormatType::JSON>(valueView, std::forward<SharedDataT>(sharedData)...);
@@ -301,11 +301,11 @@ namespace SGCore::Serde
 
             // creating value view of member
             DeserializableValueView<T, FormatType::JSON> valueView { };
-            valueView.getValueContainer().m_document = m_document;
-            valueView.getValueContainer().m_thisValue = &memberValue;
-            valueView.getValueContainer().m_parent = this;
-            valueView.getValueContainer().m_outputLog = m_outputLog;
-            valueView.getValueContainer().m_typeName = typeName;
+            valueView.container().m_document = m_document;
+            valueView.container().m_thisValue = &memberValue;
+            valueView.container().m_parent = this;
+            valueView.container().m_outputLog = m_outputLog;
+            valueView.container().m_typeName = typeName;
             valueView.m_data = &outputValue;
 
             // deserializing member with dynamic checks
@@ -360,11 +360,11 @@ namespace SGCore::Serde
 
             // creating value view of member
             DeserializableValueView<T, FormatType::JSON> valueView { };
-            valueView.getValueContainer().m_document = m_document;
-            valueView.getValueContainer().m_thisValue = &memberValue;
-            valueView.getValueContainer().m_parent = this;
-            valueView.getValueContainer().m_outputLog = m_outputLog;
-            valueView.getValueContainer().m_typeName = typeName;
+            valueView.container().m_document = m_document;
+            valueView.container().m_thisValue = &memberValue;
+            valueView.container().m_parent = this;
+            valueView.container().m_outputLog = m_outputLog;
+            valueView.container().m_typeName = typeName;
             valueView.m_data = &outputValue;
 
             // deserializing member with dynamic checks
@@ -463,10 +463,10 @@ namespace SGCore::Serde
             SerializableValueView<const value_view_t, FormatType::JSON> valueView {};
             // static_assert(!std::is_same_v<const btCollisionShape**, decltype(*valueView.m_data)>, "sasi");
             valueView.m_data = &value;
-            valueView.getValueContainer().m_document = m_document;
-            valueView.getValueContainer().m_thisValue = &valueSectionValue;
-            valueView.getValueContainer().m_typeNameValue = &typeNameSectionValue;
-            valueView.getValueContainer().m_parent = this;
+            valueView.container().m_document = m_document;
+            valueView.container().m_thisValue = &valueSectionValue;
+            valueView.container().m_typeNameValue = &typeNameSectionValue;
+            valueView.container().m_parent = this;
 
             // serializing value with attempt at dynamic casts to derived types
             Serializer::serializeWithDynamicChecks<value_view_t, FormatType::JSON>(valueView, std::forward<SharedDataT>(sharedData)...);

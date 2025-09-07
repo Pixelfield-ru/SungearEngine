@@ -101,13 +101,13 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<DirectionalLightsUpdater, TFormatType>::serialize(SerializableValueView<const DirectionalLightsUpdater, TFormatType>& valueView) noexcept
     {
-        valueView.getValueContainer().addMember("m_maxLightsCount", valueView.m_data->m_maxLightsCount);
+        valueView.container().addMember("m_maxLightsCount", valueView.m_data->m_maxLightsCount);
     }
 
     template<FormatType TFormatType>
     void SerdeSpec<DirectionalLightsUpdater, TFormatType>::deserialize(DeserializableValueView<DirectionalLightsUpdater, TFormatType>& valueView) noexcept
     {
-        const auto m_maxLightsCount = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_maxLightsCount)>("m_maxLightsCount");
+        const auto m_maxLightsCount = valueView.container().template getMember<decltype(valueView.m_data->m_maxLightsCount)>("m_maxLightsCount");
 
         if(m_maxLightsCount)
         {

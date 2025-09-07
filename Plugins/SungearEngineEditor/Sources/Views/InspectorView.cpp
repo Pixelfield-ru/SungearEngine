@@ -297,6 +297,8 @@ void SGE::InspectorView::inspectEntity() const noexcept
                 {
                     ikJoint->m_targetPosition = dest;
                 }
+
+                ImGui::Checkbox("End Joint", &ikJoint->m_isEndJoint);
             }
 
             auto* ikRootJoint = ecsRegistry->tryGet<SGCore::IKRootJoint>(m_currentChosenEntity);

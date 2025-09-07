@@ -61,17 +61,17 @@ struct SGCore::Serde::SerdeSpec<SGE::EditorSceneData, TFormatType> : SGCore::Ser
     static void serialize(SerializableValueView<const SGE::EditorSceneData, TFormatType>& valueView, const Scene& scene)
     {
         {
-            valueView.getValueContainer().addMember("m_editorCamera", valueView.m_data->m_editorCamera, scene);
+            valueView.container().addMember("m_editorCamera", valueView.m_data->m_editorCamera, scene);
         }
 
         {
-            valueView.getValueContainer().addMember("m_editorGrid", valueView.m_data->m_editorGrid, scene);
+            valueView.container().addMember("m_editorGrid", valueView.m_data->m_editorGrid, scene);
         }
     }
 
     static void deserialize(DeserializableValueView<SGE::EditorSceneData, TFormatType>& valueView, Scene& scene)
     {
-        const auto m_editorCamera = valueView.getValueContainer().template getMember<SGCore::ECS::entity_t>("m_editorCamera", scene);
+        const auto m_editorCamera = valueView.container().template getMember<SGCore::ECS::entity_t>("m_editorCamera", scene);
         if(m_editorCamera)
         {
             valueView.m_data->m_editorCamera = *m_editorCamera;
@@ -82,7 +82,7 @@ struct SGCore::Serde::SerdeSpec<SGE::EditorSceneData, TFormatType> : SGCore::Ser
             LOG_W(SGCORE_TAG, "Loaded editor camera entity: {}", std::to_underlying(*m_editorCamera));
         }
 
-        const auto m_editorGrid = valueView.getValueContainer().template getMember<SGCore::ECS::entity_t>("m_editorGrid", scene);
+        const auto m_editorGrid = valueView.container().template getMember<SGCore::ECS::entity_t>("m_editorGrid", scene);
         if(m_editorGrid)
         {
             valueView.m_data->m_editorGrid = *m_editorGrid;

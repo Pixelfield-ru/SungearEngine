@@ -7,6 +7,7 @@
 #include "IKRootJoint.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Transformations/Transform.h"
+#include "SGCore/Transformations/TransformUtils.h"
 
 void SGCore::IKResolver::fixedUpdate(const double& dt, const double& fixedDt)
 {
@@ -25,17 +26,17 @@ void SGCore::IKResolver::fixedUpdate(const double& dt, const double& fixedDt)
     std::vector<float> bonesLengths;
 
     ikRootsView.each([&registry, &jointsChains, &jointsTransforms, &bonesLengths](const EntityBaseInfo::reg_t& entityBaseInfo, const IKRootJoint::reg_t& rootJoint, const Transform::reg_t& transform) {
-        jointsChains.emplace_back();
+        // jointsChains.emplace_back();
+        std::vector<ECS::entity_t> rootChain;
 
         // collecting all joints chains from root to end effector
-        collectJoints(*registry, entityBaseInfo, jointsChains, *jointsChains.begin());
+        collectJoints(*registry, entityBaseInfo, jointsChains, rootChain);
+        // collectJoints(*registry, entityBaseInfo, jointsChains, *jointsChains.begin());
 
         // processing joints chains
         for(size_t i = 0; i < jointsChains.size(); ++i)
         {
             const auto& chain = jointsChains[i];
-
-            std::cout << "chain joints count: " << chain.size() << std::endl;
 
             if(chain.size() < 2) continue;
 
@@ -72,7 +73,7 @@ void SGCore::IKResolver::fixedUpdate(const double& dt, const double& fixedDt)
             if(!effectorJoint.m_targetPosition) continue;
 
             const auto targetPos = *effectorJoint.m_targetPosition;
-            glm::vec3 targetGlobalPos = jointsTransforms[jointsCount - 2]->m_finalTransform.m_animatedModelMatrix * glm::vec4(*effectorJoint.m_targetPosition, 1.0f);
+            const glm::vec3 targetGlobalPos = jointsTransforms[jointsCount - 2]->m_finalTransform.m_animatedModelMatrix * glm::vec4(*effectorJoint.m_targetPosition, 1.0f);
 
             // ====================================================
 
@@ -99,6 +100,11 @@ void SGCore::IKResolver::fixedUpdate(const double& dt, const double& fixedDt)
 
             // jointsTransforms[jointsCount - 1]->m_ownTransform.m_position = glm::inverse(jointsTransforms[jointsCount - 1]->m_finalTransform.m_animatedModelMatrix) * glm::vec4(targetPos, 1.0);
             effectorTransform->m_ownTransform.m_position = targetPos;
+            // effectorTransform->m_finalTransform.m_position = targetGlobalPos;
+            {
+                const auto& parentTransform = registry->tryGet<Transform>(registry->get<EntityBaseInfo>(chain[jointsCount - 1]).getParent());
+                TransformUtils::calculateTransform(*effectorTransform, parentTransform ? parentTransform->get() : nullptr);
+            }
 
             // backward
             for(std::int64_t j = jointsCount - 2; j >= 0; --j)
@@ -113,6 +119,13 @@ void SGCore::IKResolver::fixedUpdate(const double& dt, const double& fixedDt)
                 }
 
                 jointsTransforms[j]->m_ownTransform.m_position = localPos;
+
+                {
+                    const auto& parentTransform = registry->tryGet<Transform>(registry->get<EntityBaseInfo>(chain[j]).getParent());
+                    TransformUtils::calculateTransform(*jointsTransforms[j], parentTransform ? parentTransform->get() : nullptr);
+                }
+
+                // jointsTransforms[j]->m_finalTransform.m_position = globalPos;
                 // jointsTransforms[j]->m_ownTransform.m_position = globalPos;
 
                 /*const float d = glm::distance(jointsTransforms[j + 1]->m_finalTransform.m_position, jointsTransforms[j]->m_finalTransform.m_position);
@@ -127,6 +140,12 @@ void SGCore::IKResolver::fixedUpdate(const double& dt, const double& fixedDt)
             // forward
             jointsTransforms[0]->m_ownTransform.m_position = rootPos;
 
+            {
+                const auto& parentTransform = registry->tryGet<Transform>(registry->get<EntityBaseInfo>(chain[0]).getParent());
+                TransformUtils::calculateTransform(*jointsTransforms[0], parentTransform ? parentTransform->get() : nullptr);
+            }
+            // jointsTransforms[0]->m_finalTransform.m_position = rootGlobalPos;
+
             for(std::int64_t j = 1; j < jointsCount; ++j)
             {
                 glm::vec3 dir = glm::normalize(jointsTransforms[j]->m_finalTransform.m_position - jointsTransforms[j - 1]->m_finalTransform.m_position);
@@ -139,7 +158,13 @@ void SGCore::IKResolver::fixedUpdate(const double& dt, const double& fixedDt)
                 }
 
                 jointsTransforms[j]->m_ownTransform.m_position = localPos;
-               // jointsTransforms[j]->m_ownTransform.m_position = globalPos;
+
+                {
+                    const auto& parentTransform = registry->tryGet<Transform>(registry->get<EntityBaseInfo>(chain[j]).getParent());
+                    TransformUtils::calculateTransform(*jointsTransforms[j], parentTransform ? parentTransform->get() : nullptr);
+                }
+
+                // jointsTransforms[j]->m_finalTransform.m_position = globalPos;
             }
 
             if(glm::distance2(effectorTransform->m_ownTransform.m_position, targetPos) < tolerance * tolerance)
@@ -162,27 +187,19 @@ void SGCore::IKResolver::collectJoints(const ECS::registry_t& inRegistry,
     if(inRegistry.anyOf<IKJoint, IKRootJoint>(currentIKEntity) && inRegistry.allOf<Transform>(currentIKEntity))
     {
         currentJointsChain.push_back(currentIKEntity);
+
+        const auto* ikJoint = inRegistry.tryGet<IKJoint>(currentIKEntity);
+        if(ikJoint && ikJoint->m_isEndJoint)
+        {
+            jointsChains.push_back(currentJointsChain);
+            return;
+        }
     }
-
-    bool isMoreThanOneChain = false;
-
     for(auto childEntity : currentIKEntityInfo.getChildren())
     {
         auto newChain = currentJointsChain;
 
         collectJoints(inRegistry, inRegistry.get<EntityBaseInfo>(childEntity), jointsChains, newChain);
-
-        // if new chain has new joints
-        if(newChain.size() != currentJointsChain.size())
-        {
-            if(!isMoreThanOneChain)
-            {
-                currentJointsChain = std::move(newChain);
-                isMoreThanOneChain = true;
-                continue;
-            }
-            jointsChains.push_back(std::move(newChain));
-        }
     }
 }
 

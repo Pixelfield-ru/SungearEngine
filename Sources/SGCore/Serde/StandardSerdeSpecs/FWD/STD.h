@@ -121,12 +121,12 @@ namespace SGCore::Serde
         static void serialize(SerializableValueView<const FloatingT, TFormatType>& valueView) noexcept
         {
             const FloatingT finalValue = std::isfinite(*valueView.m_data) ? *valueView.m_data : 0.0;
-            valueView.getValueContainer().setAsFloat(*valueView.m_data);
+            valueView.container().setAsFloat(*valueView.m_data);
         }
 
         static void deserialize(DeserializableValueView<FloatingT, TFormatType>& valueView) noexcept
         {
-            *valueView.m_data = valueView.getValueContainer().getAsFloat();
+            *valueView.m_data = valueView.container().getAsFloat();
         }
     };
 
@@ -143,12 +143,12 @@ namespace SGCore::Serde
         static void serialize(SerializableValueView<const IntegerT, TFormatType>& valueView) noexcept
         {
             const IntegerT finalVal = std::isfinite(*valueView.m_data) ? *valueView.m_data : 0;
-            valueView.getValueContainer().setAsInt64(finalVal);
+            valueView.container().setAsInt64(finalVal);
         }
 
         static void deserialize(DeserializableValueView<IntegerT, TFormatType>& valueView) noexcept
         {
-            *valueView.m_data = valueView.getValueContainer().getAsInt64();
+            *valueView.m_data = valueView.container().getAsInt64();
         }
     };
 
@@ -301,12 +301,12 @@ namespace SGCore::Serde
 
         static void serialize(SerializableValueView<const T, TFormatType>& valueView) noexcept
         {
-            valueView.getValueContainer().setAsInt64(std::to_underlying(*valueView.m_data));
+            valueView.container().setAsInt64(std::to_underlying(*valueView.m_data));
         }
 
         static void deserialize(DeserializableValueView<T, TFormatType>& valueView) noexcept
         {
-            *valueView.m_data = (T) valueView.getValueContainer().getAsInt64();
+            *valueView.m_data = (T) valueView.container().getAsInt64();
         }
     };
 }

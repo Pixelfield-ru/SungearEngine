@@ -35,9 +35,9 @@ std::string SerializerImpl<FormatType::JSON>::to(const T& value,
     SerializableValueView<const value_view_t, FormatType::JSON> valueView {};
     valueView.m_data = &value;
     valueView.m_version = "1";
-    valueView.getValueContainer().m_document = &toDocument;
-    valueView.getValueContainer().m_thisValue = &valueSectionValue;
-    valueView.getValueContainer().m_typeNameValue = &typeNameSectionValue;
+    valueView.container().m_document = &toDocument;
+    valueView.container().m_thisValue = &valueSectionValue;
+    valueView.container().m_typeNameValue = &typeNameSectionValue;
 
     // serializing value with attempt at dynamic casts to derived types
     Serializer::serializeWithDynamicChecks<clean_t, FormatType::JSON, SharedDataT...>(valueView,
@@ -115,10 +115,10 @@ void SerializerImpl<FormatType::JSON>::from(const std::string& formattedText,
     DeserializableValueView<T, FormatType::JSON> valueView;
     valueView.m_data = &outValue;
     valueView.m_version = version;
-    valueView.getValueContainer().m_document = &document;
-    valueView.getValueContainer().m_thisValue = &jsonValue;
-    valueView.getValueContainer().m_typeName = typeName;
-    valueView.getValueContainer().m_outputLog = &outputLog;
+    valueView.container().m_document = &document;
+    valueView.container().m_thisValue = &jsonValue;
+    valueView.container().m_typeName = typeName;
+    valueView.container().m_outputLog = &outputLog;
 
     Serializer::deserializeWithDynamicChecks<T, FormatType::JSON>(valueView,
                                                                   std::forward<SharedDataT>(
