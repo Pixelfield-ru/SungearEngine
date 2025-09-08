@@ -151,6 +151,8 @@ void main()
     vec4 gridColor = (grid(fragPosition3D, 1) + grid(fragPosition3D, 1)) * float(t > 0);
     gridColor.a *= fading;
 
+    if(gridColor.a < 0.05) discard;
+
     /*layerColor = gridColor;
     layerColor.a *= fading;*/
 

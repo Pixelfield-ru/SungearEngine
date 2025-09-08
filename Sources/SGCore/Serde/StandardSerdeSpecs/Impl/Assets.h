@@ -942,17 +942,25 @@ namespace SGCore::Serde
     template<typename... SharedDataT>
     void SerdeSpec<AssetRef<AssetT>, TFormatType>::serialize(SerializableValueView<const AssetRef<AssetT>, TFormatType>& valueView, SharedDataT&&...) noexcept
     {
-        if(!valueView.m_data->m_asset)
+        if(valueView.m_data->m_asset)
         {
-            valueView.container().setAsNull();
+            valueView.container().addMember("m_path", (*valueView.m_data)->getPath());
+            valueView.container().addMember("m_assetTypeID", (*valueView.m_data)->getTypeID());
+            valueView.container().addMember("m_alias", (*valueView.m_data)->getAlias());
+            valueView.container().addMember("m_storedBy", (*valueView.m_data)->storedByWhat());
+            valueView.container().addMember("m_parentAssetManagerName", (*valueView.m_data)->getParentAssetManager()->getName());
+
             return;
         }
 
-        valueView.container().addMember("m_path", (*valueView.m_data)->getPath());
-        valueView.container().addMember("m_assetTypeID", (*valueView.m_data)->getTypeID());
-        valueView.container().addMember("m_alias", (*valueView.m_data)->getAlias());
-        valueView.container().addMember("m_storedBy", (*valueView.m_data)->storedByWhat());
-        valueView.container().addMember("m_parentAssetManagerName", (*valueView.m_data)->getParentAssetManager()->getName());
+        valueView.container().addMember("m_path", valueView.m_data->m_deserializedAssetPath);
+        valueView.container().addMember("m_assetTypeID", valueView.m_data->m_deserializedAssetTypeID);
+        valueView.container().addMember("m_alias", valueView.m_data->m_deserializedAssetAlias);
+        valueView.container().addMember("m_storedBy", valueView.m_data->m_deserializedAssetStoredBy);
+        if(auto assetManager = valueView.m_data->m_deserializedParentAssetManager.lock())
+        {
+            valueView.container().addMember("m_parentAssetManagerName", assetManager->getName());
+        }
     }
 
     // WE ARE DESERIALIZING ONLY META INFO OF ASSET BECAUSE IT IS ASSET REFERENCE. WE DO NOT NEED TO DO DESERIALIZATION OF DATA
