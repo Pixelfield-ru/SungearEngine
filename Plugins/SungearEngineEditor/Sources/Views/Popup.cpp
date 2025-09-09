@@ -236,7 +236,7 @@ SGE::Popup::Popup(const std::string& name, const std::initializer_list<PopupElem
 {
     m_name = name;
     
-    for(auto& data : items)
+    for(const auto& data : items)
     {
         auto e = SGCore::MakeRef<PopupElement>(data);
         m_elements.push_back(e);

@@ -220,7 +220,7 @@ void SGE::Toolchain::configurate()
     }
 }
 
-void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName)
+void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName, bool loadCMakeProject)
 {
     // Configuring incomplete
 
@@ -289,7 +289,7 @@ std::string SGE::Toolchain::ProjectSpecific::getCurrentCMakePreset() noexcept
     return m_currentCMakePreset;
 }
 
-void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolchain>& toolchain) noexcept
+void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolchain>& toolchain, bool loadCMakeProject) noexcept
 {
     auto currentEditorProject = SungearEngineEditor::getInstance()->m_currentProject;
 
@@ -318,7 +318,7 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
             toolchainPtr = toolchain.get(),
             sungearPluginsPathStr,
             isPresetsEquals,
-            projectName]
+            projectName, loadCMakeProject]
             (const Toolchain::ProjectBuildOutput& buildOutput)
     {
         // disable creating new thread because currently we are not in main thread (already parallel build)
@@ -330,7 +330,7 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
 
         // building meta info project
         toolchainCopy->buildProject(currentEditorProject->m_pluginProject.m_pluginPath / "MetaInfo",
-                                    m_currentCMakePreset);
+                                    m_currentCMakePreset, loadCMakeProject);
 
         toolchainCopy->onProjectBuilt = [&currentEditorProject, projectName]
                 (const Toolchain::ProjectBuildOutput& buildOutput) {
@@ -386,7 +386,7 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
         for(const auto& dirEntry : std::filesystem::directory_iterator(sungearPluginsPathStr))
         {
             // building plugin after building the Sungear Engine
-            toolchainCopy->buildProject(dirEntry.path(), m_currentCMakePreset);
+            toolchainCopy->buildProject(dirEntry.path(), m_currentCMakePreset, loadCMakeProject);
         }
 
         // IF CURRENT ENGINE INSTANCE IS BUILT BY THE SAME PRESET
@@ -407,11 +407,13 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
                 // if plugin was successfully loaded
                 if(currentEditorProject->m_loadedPlugin)
                 {
+                    const auto projectPlugin = currentEditorProject->m_loadedPlugin;
+
                     std::string userProjectEntriesLoadingErr;
-                    currentEditorProject->m_editorHelperEntryPoint = currentEditorProject->m_loadedPlugin->getPluginLib()->loadSymbol<void()>(
+                    currentEditorProject->m_editorHelperEntryPoint = projectPlugin->getPluginLib()->loadSymbol<void()>(
                             "editorGeneratedCodeEntry", userProjectEntriesLoadingErr
                     );
-                    currentEditorProject->m_editorHelperExitPoint = currentEditorProject->m_loadedPlugin->getPluginLib()->loadSymbol<void()>(
+                    currentEditorProject->m_editorHelperExitPoint = projectPlugin->getPluginLib()->loadSymbol<void()>(
                             "editorGeneratedCodeExit", userProjectEntriesLoadingErr
                     );
 
@@ -440,20 +442,20 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
         }
 
         // building new project after building the Sungear Engine
-        toolchainCopy->buildProject(currentEditorProject->m_pluginProject.m_pluginPath, m_currentCMakePreset);
+        toolchainCopy->buildProject(currentEditorProject->m_pluginProject.m_pluginPath, m_currentCMakePreset, loadCMakeProject);
 
         // restore state of m_doInBackground to use parallel building in next project builds
         toolchainPtr->m_doInBackground = true;
     };
     // building the Sungear Engine
-    toolchain->buildProject(SGCore::CoreMain::getSungearEngineRootPath(), m_currentCMakePreset);
+    toolchain->buildProject(SGCore::CoreMain::getSungearEngineRootPath(), m_currentCMakePreset, loadCMakeProject);
 }
 
-void SGE::Toolchain::ProjectSpecific::buildProject() noexcept
+void SGE::Toolchain::ProjectSpecific::buildProject(bool loadCMakeProject) noexcept
 {
     if(!EngineSettings::getInstance()->getToolchains().empty())
     {
-        buildProject(EngineSettings::getInstance()->getToolchains()[0]);
+        buildProject(EngineSettings::getInstance()->getToolchains()[0], loadCMakeProject);
     }
     else
     {

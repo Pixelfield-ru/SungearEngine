@@ -18,6 +18,8 @@ namespace SGE
 
     struct InspectorView : public SGCore::ImGuiWrap::IView
     {
+        virtual ~InspectorView() = default;
+
         InspectorViewType m_type = InspectorViewType::INSPECT_ENTITY;
 
         SGCore::ECS::entity_t m_currentChosenEntity { };

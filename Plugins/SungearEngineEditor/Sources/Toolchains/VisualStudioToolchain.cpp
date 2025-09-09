@@ -74,10 +74,11 @@ void SGE::VisualStudioToolchain::configurate()
 }
 
 void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathToProjectRoot,
-                                              const std::string& cmakePresetName)
+                                              const std::string& cmakePresetName,
+                                              bool loadCMakeProject)
 {
-    auto buildLambda = [this, pathToProjectRoot, cmakePresetName]() {
-        Toolchain::buildProject(pathToProjectRoot, cmakePresetName);
+    auto buildLambda = [this, pathToProjectRoot, cmakePresetName, loadCMakeProject]() {
+        Toolchain::buildProject(pathToProjectRoot, cmakePresetName, loadCMakeProject);
 
         // BUILDING PROJECT
         const std::string archTypeAsString = VCArchTypeToString(m_archType);
@@ -101,10 +102,20 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
                                                                  SGCore::Utils::toUTF8(pathToProjectRoot.u16string()) +
                                                                  "/" + m_currentBuildingPresetBinaryDir);
 
-        const std::string finalCommand = fmt::format("{0} & {1} & {2}",
-                                                     vcvarsallCommand,
-                                                     cmakeProjectLoadingCommand,
-                                                     cmakeProjectBuildCommand);
+        std::string finalCommand;
+        if(loadCMakeProject)
+        {
+            finalCommand = fmt::format("{0} & {1} & {2}",
+                                       vcvarsallCommand,
+                                       cmakeProjectLoadingCommand,
+                                       cmakeProjectBuildCommand);
+        }
+        else
+        {
+            finalCommand = fmt::format("{0} & {1}",
+                                       vcvarsallCommand,
+                                       cmakeProjectBuildCommand);
+        }
 
         bool buildFinished = false;
         std::filesystem::path buildOutputLogFile;

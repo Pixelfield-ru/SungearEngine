@@ -67,6 +67,13 @@ struct SGCore::Serde::SerdeSpec<SGE::EditorSceneData, TFormatType> : SGCore::Ser
         {
             valueView.container().addMember("m_editorGrid", valueView.m_data->m_editorGrid, scene);
         }
+
+        // terrain editor
+        // project rebuild
+        // point light
+        // fog editor
+        // animations editor
+        //
     }
 
     static void deserialize(DeserializableValueView<SGE::EditorSceneData, TFormatType>& valueView, Scene& scene)

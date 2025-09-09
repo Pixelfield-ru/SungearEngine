@@ -310,7 +310,7 @@ void SGE::ProjectCreateDialog::submit()
 */
         // =====================================================================================
         // BUILDING CREATED PROJECT
-        Toolchain::ProjectSpecific::buildProject();
+        Toolchain::ProjectSpecific::buildProject(true);
 
         // TEST!!!!!
 
@@ -385,7 +385,7 @@ void SGE::ProjectCreateDialog::submit()
             // getting "Build" button
             Button* createToolchainButton = projectBuiltDialogWindow->tryGetButton(0);
             createToolchainButton->onClicked = [](Button& self, SGCore::ImGuiWrap::IView* parent) {
-                Toolchain::ProjectSpecific::buildProject();
+                Toolchain::ProjectSpecific::buildProject(true);
 
                 // closing the dialog window
                 parent->setActive(false);
@@ -441,10 +441,12 @@ void SGE::ProjectCreateDialog::submit()
                 }
             }
 
+            const auto projectPlugin = currentEditorProject->m_loadedPlugin;
+
             // loading symbols of project
             std::string projectSymbolsLoadErr;
-            currentEditorProject->m_editorHelperEntryPoint = currentEditorProject->m_loadedPlugin->getPluginLib()->loadSymbol<void()>("editorGeneratedCodeEntry", projectSymbolsLoadErr);
-            currentEditorProject->m_editorHelperExitPoint = currentEditorProject->m_loadedPlugin->getPluginLib()->loadSymbol<void()>("editorGeneratedCodeExit", projectSymbolsLoadErr);
+            currentEditorProject->m_editorHelperEntryPoint = projectPlugin->getPluginLib()->loadSymbol<void()>("editorGeneratedCodeEntry", projectSymbolsLoadErr);
+            currentEditorProject->m_editorHelperExitPoint = projectPlugin->getPluginLib()->loadSymbol<void()>("editorGeneratedCodeExit", projectSymbolsLoadErr);
 
             if(!projectSymbolsLoadErr.empty())
             {

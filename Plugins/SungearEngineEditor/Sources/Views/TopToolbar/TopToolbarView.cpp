@@ -6,6 +6,9 @@
 #include <nfd.h>
 
 #include "TopToolbarView.h"
+
+#include <SGCore/PluginsSystem/PluginsManager.h>
+
 #include "SungearEngineEditor.h"
 #include "ImGuiUtils.h"
 
@@ -66,10 +69,20 @@ SGE::TopToolbarView::TopToolbarView()
             {
                     {
                             .m_text = "About",
-                            .m_icon = StylesManager::getCurrentStyle()->m_dummyIcon->getSpecialization(18,
-                                                                                                       18)->getTexture()
+                            .m_icon = StylesManager::getCurrentStyle()->m_dummyIcon->getSpecialization(18, 18)->getTexture()
                     }
             }
+    };
+
+    m_projectButtonPopup = Popup {
+        "ToolbarProjectActions",
+        {
+            {
+                .m_text = "Rebuild",
+                .m_ID = "Project/Rebuild",
+                .m_icon = StylesManager::getCurrentStyle()->m_dummyIcon->getSpecialization(18, 18)->getTexture()
+            }
+        }
     };
 
     m_fileButtonPopup.onElementClicked += [this](const SGCore::Ref<PopupElement>& element) {
@@ -104,6 +117,24 @@ SGE::TopToolbarView::TopToolbarView()
         }
     };
 
+    m_projectButtonPopup.onElementClicked += [this](const SGCore::Ref<PopupElement>& element) {
+        if(element->m_ID == "Project/Rebuild")
+        {
+            auto currentEditorProject = SungearEngineEditor::getInstance()->m_currentProject;
+            if(!currentEditorProject) return;
+
+            SGCore::PluginsManager::unloadPlugin(currentEditorProject->m_pluginProject.m_name);
+
+            /*if(auto pluginLib = currentEditorProject->m_loadedPlugin->getPluginLib())
+            {
+                pluginLib->unload();
+            }*/
+
+            LOG_E(SGCORE_TAG, "BUILDING PROJECT!!!!")
+            Toolchain::ProjectSpecific::buildProject(false);
+        }
+    };
+
     m_fileCreateDialog->setActive(false);
     m_projectCreateDialog->setActive(false);
     m_engineSettingsView->setActive(false);
@@ -122,9 +153,11 @@ SGE::TopToolbarView::TopToolbarView()
 
     m_fileButtonPopup.m_isCustomPosition = true;
     m_helpButtonPopup.m_isCustomPosition = true;
+    m_projectButtonPopup.m_isCustomPosition = true;
 
     m_fileButtonPopup.m_flags |= ImGuiWindowFlags_NoFocusOnAppearing;
     m_helpButtonPopup.m_flags |= ImGuiWindowFlags_NoFocusOnAppearing;
+    m_projectButtonPopup.m_flags |= ImGuiWindowFlags_NoFocusOnAppearing;
 }
 
 bool SGE::TopToolbarView::begin()
@@ -190,6 +223,7 @@ void SGE::TopToolbarView::renderBody()
 
         drawButtonWithPopup("File", m_fileButtonPopup);
         drawButtonWithPopup("Help", m_helpButtonPopup);
+        drawButtonWithPopup("Project", m_projectButtonPopup);
 
         // ====================
         ImGui::PopStyleColor(4);
@@ -205,6 +239,7 @@ void SGE::TopToolbarView::renderBody()
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 5, 0 });
     m_fileButtonPopup.draw();
     m_helpButtonPopup.draw();
+    m_projectButtonPopup.draw();
     ImGui::PopStyleVar(1);
 
     ImGui::End();

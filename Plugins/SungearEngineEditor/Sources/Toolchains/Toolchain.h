@@ -20,9 +20,9 @@ namespace SGE
     {
         struct ProjectSpecific
         {
-            static void buildProject(const SGCore::Ref<Toolchain>& toolchain) noexcept;
+            static void buildProject(const SGCore::Ref<Toolchain>& toolchain, bool loadCMakeProject) noexcept;
             // build project using first toolchain
-            static void buildProject() noexcept;
+            static void buildProject(bool loadCMakeProject) noexcept;
 
             static void setCurrentCMakePreset(const std::string& presetName) noexcept;
             SG_NOINLINE static std::string getCurrentCMakePreset() noexcept;
@@ -71,7 +71,7 @@ namespace SGE
 
         virtual void configurate();
 
-        virtual void buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName);
+        virtual void buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName, bool loadCMakeProject);
 
         virtual Toolchain* copy() const = 0;
 

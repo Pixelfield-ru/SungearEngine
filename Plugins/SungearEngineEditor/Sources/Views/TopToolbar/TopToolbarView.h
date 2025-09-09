@@ -14,6 +14,8 @@ namespace SGE
 {
     struct TopToolbarView : public SGCore::ImGuiWrap::IView
     {
+        virtual ~TopToolbarView() = default;
+
         TopToolbarView();
         
         bool begin() final;
@@ -34,6 +36,7 @@ namespace SGE
 
         Popup m_fileButtonPopup;
         Popup m_helpButtonPopup;
+        Popup m_projectButtonPopup;
 
         ImVec2 m_areaToHighlightPos { 0, 0 };
         ImVec2 m_areaToHighlightSize { 0, 0 };
