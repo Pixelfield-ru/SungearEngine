@@ -8,7 +8,7 @@
 #include "SGCore/Serde/Common.h"
 
 template<>
-class SerializerImpl<FormatType::JSON>
+struct SerializerImpl<FormatType::JSON>
 {
     friend struct Serializer;
 

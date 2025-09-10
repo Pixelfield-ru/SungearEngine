@@ -508,11 +508,6 @@ namespace SGCore::Serde
                  typename... SharedDataT>
         static void serializeWithDynamicChecksImpl(SerializableValueView<const T, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
-            if constexpr(std::is_same_v<T, const btCollisionShape**>)
-            {
-                static_assert(always_false<T>::value, "const btCollisionShape**");
-            }
-
             if constexpr(SerdeSpec<T, TFormatType>::is_pointer_type) // serializing value using dynamic checks
             {
                 // if value of passed pointer equals to nullptr
@@ -550,9 +545,6 @@ namespace SGCore::Serde
 
                 // serializing only T type members
                 invokeSerdeSpecSerialize(valueView, std::forward<SharedDataT>(sharedData)...);
-
-                // setting new type name
-                valueView.container().setTypeName(SerdeSpec<T, TFormatType>::type_name);
             }
         }
 
@@ -591,8 +583,12 @@ namespace SGCore::Serde
                 tmpView.container() = valueView.container();
                 tmpView.m_version = valueView.m_version;
 
-                // trying to deserialize T as one of its derived types (this function will allocate object)
-                deserializeAsOneOfDerivedTypes<ptr_element_type, TFormatType>(tmpView, std::forward<SharedDataT>(sharedData)...);
+                // if value has typeName field the trying to deserialize T as one of derived types
+                if(tmpView.container().hasMember("__sg_typeName"))
+                {
+                    // trying to deserialize T as one of its derived types (this function will allocate object)
+                    deserializeAsOneOfDerivedTypes<ptr_element_type, TFormatType>(tmpView, std::forward<SharedDataT>(sharedData)...);
+                }
                 
                 // if one of derived types T was deserialized
                 if(tmpView.m_data)
@@ -600,7 +596,7 @@ namespace SGCore::Serde
                     // setting new raw pointer to value view
                     SerdeSpec<T, TFormatType>::setObjectRawPointer(valueView, tmpView.m_data);
                 }
-                else
+                else // if we deserialized object exactly as ptr_element_type type
                 {
                     // collecting all base types of ptr_element_type in very base type to DerivedT order
                     using base_types = typename collect_all_base_types<ptr_element_type, TFormatType>::type;
@@ -663,16 +659,6 @@ namespace SGCore::Serde
             }
             else
             {
-
-                if(valueView.container().m_typeName != SerdeSpec<T, TFormatType>::type_name)
-                {
-                    *valueView.container().m_outputLog +=
-                            "Can not deserialize value with type '" + valueView.container().m_typeName +
-                            "' using T as '" + SerdeSpec<T, TFormatType>::type_name + "'.\n";
-
-                    return;
-                }
-
                 // deserialize without dynamic checks (static deserialization)
 
                 // collecting all base types of T in very base type to DerivedT order
@@ -742,7 +728,7 @@ namespace SGCore::Serde
 
             if constexpr(Utils::isDerivedTypesProvided<OriginalT, TFormatType>())
             {
-                // WE ARE IN THE END OF INHERITANCE TREE FOR CURRENT OBJECT. DESERIALIZING ALL BASE TYPES OF OriginalT FROM VERY BASE TYPE TO OriginalT type
+                // WE ARE IN THE END OF INHERITANCE TREE FOR CURRENT OBJECT. DESERIALIZING ALL BASE TYPES OF OriginalT (last successful type) FROM VERY BASE TYPE TO OriginalT type
                 // if we did not find correct derived type on current level then trying to serialize last correct derived type (last is: 'OriginalT')
                 // collecting all base types of OriginalT in very base type to DerivedT order
                 if(CurrentDerivedIdx == SerdeSpec<OriginalT, TFormatType>::derived_classes_count)
@@ -754,7 +740,7 @@ namespace SGCore::Serde
             }
             else
             {
-                // WE ARE IN THE END OF INHERITANCE TREE FOR CURRENT OBJECT. DESERIALIZING ALL BASE TYPES OF OriginalT FROM VERY BASE TYPE TO OriginalT type
+                // WE ARE IN THE END OF INHERITANCE TREE FOR CURRENT OBJECT. DESERIALIZING ALL BASE TYPES OF OriginalT (last successful type) FROM VERY BASE TYPE TO OriginalT type
                 // if we did not find correct derived type on current level then trying to serialize last correct derived type (last is: 'OriginalT')
                 // collecting all base types of OriginalT in very base type to DerivedT order
 
@@ -816,7 +802,8 @@ namespace SGCore::Serde
             invokeSerdeSpecSerialize(valueView, std::forward<SharedDataT>(sharedData)...);
 
             // setting new type name
-            valueView.container().setTypeName(SerdeSpec<TypeToSerialize, TFormatType>::type_name);
+            // valueView.container().setTypeName(SerdeSpec<TypeToSerialize, TFormatType>::type_name);
+            valueView.container().setTypeName(getTypeName<TypeToSerialize, TFormatType>());
         }
         
         /**
@@ -832,7 +819,7 @@ namespace SGCore::Serde
             {
                 trySerializeAsDerivedType<T, TFormatType, 0>(valueView, std::forward<SharedDataT>(sharedData)...);
             }
-            else
+            else // else just using static serialization
             {
                 checkSerializationOfAbstractType<T, TFormatType>();
 
@@ -929,44 +916,48 @@ namespace SGCore::Serde
                 tmpView.container() = valueView.container();
                 tmpView.m_version = valueView.m_version;
 
-                // typeNames are equal. DerivedT is suitable
-                if(valueView.container().m_typeName == SerdeSpec<DerivedT, TFormatType>::type_name)
+                // if derived type has type_name
+                if constexpr(has_type_name<DerivedT, TFormatType>)
                 {
-                    // allocating object of DerivedT
-                    DerivedT* derivedObject {};
-                    if constexpr(!std::is_abstract_v<DerivedT> && std::is_default_constructible_v<DerivedT>)
+                    // typeNames are equal. DerivedT is suitable
+                    if(valueView.container().m_typeName == SerdeSpec<DerivedT, TFormatType>::type_name)
                     {
-                        derivedObject = new DerivedT();
-                    }
-                    else
-                    {
-                        if constexpr(requires { SerdeSpec<DerivedT, TFormatType>::allocateObject; })
+                        // allocating object of DerivedT
+                        DerivedT* derivedObject {};
+                        if constexpr(!std::is_abstract_v<DerivedT> && std::is_default_constructible_v<DerivedT>)
                         {
-                            derivedObject = SerdeSpec<DerivedT, TFormatType>::allocateObject(tmpView);
+                            derivedObject = new DerivedT();
                         }
                         else
                         {
-                            static_assert(always_false<DerivedT>::value,
-                                          "Can not allocate object of abstract type (or type does not have default constructor) (using new expression or SerdeSpec<AbstractType, TFormatType>::allocateObject()."
-                            );
+                            if constexpr(requires { SerdeSpec<DerivedT, TFormatType>::allocateObject; })
+                            {
+                                derivedObject = SerdeSpec<DerivedT, TFormatType>::allocateObject(tmpView);
+                            }
+                            else
+                            {
+                                static_assert(always_false<DerivedT>::value,
+                                              "Can not allocate object of abstract type (or type does not have default constructor) (using new expression or SerdeSpec<AbstractType, TFormatType>::allocateObject()."
+                                );
+                            }
                         }
+
+                        tmpView.m_data = derivedObject;
+
+                        // collecting all base types of DerivedT in very base type to DerivedT order
+                        using base_types = typename collect_all_base_types<DerivedT, TFormatType>::type;
+
+                        // deserializing base types of DerivedT
+                        deserializeBaseTypes<base_types>(tmpView, std::forward<SharedDataT>(sharedData)...);
+
+                        // deserializing members of DerivedT
+                        invokeSerdeSpecDeserialize(tmpView, std::forward<SharedDataT>(sharedData)...);
+
+                        // assigning allocated pointer to original valueView
+                        valueView.m_data = derivedObject;
+
+                        return;
                     }
-
-                    tmpView.m_data = derivedObject;
-
-                    // collecting all base types of DerivedT in very base type to DerivedT order
-                    using base_types = typename collect_all_base_types<DerivedT, TFormatType>::type;
-
-                    // deserializing base types of DerivedT
-                    deserializeBaseTypes<base_types>(tmpView, std::forward<SharedDataT>(sharedData)...);
-
-                    // deserializing members of DerivedT
-                    invokeSerdeSpecDeserialize(tmpView, std::forward<SharedDataT>(sharedData)...);
-
-                    // assigning allocated pointer to original valueView
-                    valueView.m_data = derivedObject;
-
-                    return;
                 }
 
                 // if DerivedT is not suitable than continue to search
@@ -1032,6 +1023,11 @@ namespace SGCore::Serde
 
         template<typename T0, FormatType TFormatType0>
         friend struct DeserializableValueView;
+
+        bool hasMember(const std::string& memberName) const noexcept
+        {
+
+        }
 
         template<typename T, typename... SharedDataT>
         std::optional<T> getMember(const std::string& memberName, SharedDataT&&... sharedData) noexcept

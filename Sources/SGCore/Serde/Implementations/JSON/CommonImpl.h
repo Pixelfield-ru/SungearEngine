@@ -4,7 +4,9 @@
 
 #ifndef SUNGEARENGINE_JSON_COMMONIMPL_H
 #define SUNGEARENGINE_JSON_COMMONIMPL_H
+
 #include "SGCore/Utils/TypeTraits.h"
+#include "SGCore/Serde/Common.h"
 
 namespace SGCore::Serde
 {
@@ -25,6 +27,11 @@ namespace SGCore::Serde
 
         template<typename, FormatType>
         friend struct DeserializableValueView;
+
+        bool hasMember(const std::string& memberName) const noexcept
+        {
+            return m_document && m_thisValue && m_thisValue->HasMember(memberName.c_str());
+        }
 
         template<typename T, typename... SharedDataT>
         std::optional<T> getMember(const std::string& memberName, SharedDataT&&... sharedData) noexcept
@@ -52,7 +59,7 @@ namespace SGCore::Serde
             // getting member
             auto& member = (*m_thisValue)[memberName.c_str()];
 
-            if(!member.HasMember("typeName"))
+            /*if(!member.HasMember("__sg_typeName"))
             {
                 if(m_outputLog)
                 {
@@ -60,23 +67,13 @@ namespace SGCore::Serde
                 }
 
                 return std::nullopt;
-            }
+            }*/
 
             // getting typeName section of member
-            const std::string& typeName = member["typeName"].GetString();
-
-            if(!member.HasMember("value"))
-            {
-                if(m_outputLog)
-                {
-                    *m_outputLog += "Error: Can not get member with name '" + memberName + "': this member does not have 'value' section.\n";
-                }
-
-                return std::nullopt;
-            }
+            std::string typeName = getTypeName(member);
 
             // getting value section of member
-            auto& memberValue = member["value"];
+            auto& memberValue = member;
 
             T outputValue { };
 
@@ -125,9 +122,14 @@ namespace SGCore::Serde
             {
                 T tmpVal { };
 
-                auto& rootValue = (*m_thisValue)[i];
+                auto& elementValue = (*m_thisValue)[i];
 
-                if(!rootValue.HasMember("typeName"))
+                if(elementValue.IsObject() && elementValue.HasMember("__sg_array_typeName"))
+                {
+                    continue;
+                }
+
+                /*if(!rootValue.HasMember("typeName"))
                 {
                     if(m_outputLog)
                     {
@@ -136,12 +138,12 @@ namespace SGCore::Serde
                     }
 
                     continue;
-                }
+                }*/
 
                 // getting 'typeName' section
-                const std::string typeNameSection = rootValue["typeName"].GetString();
+                std::string typeNameSection = getTypeName(elementValue);
 
-                if(!rootValue.HasMember("value"))
+                /*if(!rootValue.HasMember("value"))
                 {
                     if(m_outputLog)
                     {
@@ -150,9 +152,10 @@ namespace SGCore::Serde
                     }
 
                     continue;
-                }
+                }*/
 
-                auto& valueSection = rootValue["value"];
+                // auto& valueSection = rootValue["value"];
+                auto& valueSection = elementValue;
 
                 // creating value view of member
                 DeserializableValueView<T, FormatType::JSON> valueView { };
@@ -269,7 +272,12 @@ namespace SGCore::Serde
             // getting member
             auto& member = memberIterator->value;
 
-            if(!member.HasMember("typeName"))
+            if(member.IsString() && memberIterator->name == "__sg_typeName")
+            {
+                return std::nullopt;
+            }
+
+            /*if(!member.HasMember("typeName"))
             {
                 if(m_outputLog)
                 {
@@ -278,12 +286,12 @@ namespace SGCore::Serde
                 }
 
                 return std::nullopt;
-            }
+            }*/
 
             // getting typeName section of member
-            const std::string& typeName = member["typeName"].GetString();
+            std::string typeName = getTypeName(member);
 
-            if(!member.HasMember("value"))
+            /*if(!member.HasMember("value"))
             {
                 if(m_outputLog)
                 {
@@ -292,10 +300,11 @@ namespace SGCore::Serde
                 }
 
                 return std::nullopt;
-            }
+            }*/
 
             // getting value section of member
-            auto& memberValue = member["value"];
+            // auto& memberValue = member["value"];
+            auto& memberValue = member;
 
             T outputValue { };
 
@@ -330,7 +339,12 @@ namespace SGCore::Serde
             // getting member
             auto& member = *arrayIterator;
 
-            if(!member.HasMember("typeName"))
+            if(member.IsObject() && member.HasMember("__sg_array_typeName"))
+            {
+                return std::nullopt;
+            }
+
+            /*if(!member.HasMember("typeName"))
             {
                 if(m_outputLog)
                 {
@@ -338,12 +352,12 @@ namespace SGCore::Serde
                 }
 
                 return std::nullopt;
-            }
+            }*/
 
             // getting typeName section of member
-            const std::string& typeName = member["typeName"].GetString();
+            std::string typeName = getTypeName(member);
 
-            if(!member.HasMember("value"))
+            /*if(!member.HasMember("value"))
             {
                 if(m_outputLog)
                 {
@@ -351,10 +365,11 @@ namespace SGCore::Serde
                 }
 
                 return std::nullopt;
-            }
+            }*/
 
             // getting value section of member
-            auto& memberValue = member["value"];
+            // auto& memberValue = member["value"];
+            auto& memberValue = member;
 
             T outputValue { };
 
@@ -380,24 +395,12 @@ namespace SGCore::Serde
 
         [[nodiscard]] std::string getMemberTypeName(const rapidjson::Value::MemberIterator& memberIterator) const noexcept
         {
-            if(!memberIterator->value.HasMember("typeName"))
-            {
-                *m_outputLog += fmt::format("Can not get type name of member '{}'. Section 'typeName' in member iterator does not exist.", memberIterator->name.GetString());
-                return "";
-            }
-
-            return memberIterator->value["typeName"].GetString();
+            return getTypeName(memberIterator->value);
         }
 
         [[nodiscard]] std::string getMemberTypeName(const rapidjson::Value::ValueIterator& memberIterator) const noexcept
         {
-            if(!memberIterator->HasMember("typeName"))
-            {
-                *m_outputLog += fmt::format("Can not get type name of array element. Section 'typeName' in value iterator does not exist.");
-                return "";
-            }
-
-            return (*memberIterator)["typeName"].GetString();
+            return getTypeName((*memberIterator));
         }
 
         [[nodiscard]] bool isNull() const noexcept
@@ -406,6 +409,27 @@ namespace SGCore::Serde
         }
 
     private:
+        static std::string getTypeName(const rapidjson::Value& from) noexcept
+        {
+            if(from.IsObject())
+            {
+                if(from.HasMember("__sg_typeName"))
+                {
+                    return from["__sg_typeName"].GetString();
+                }
+            }
+            else if(from.IsArray())
+            {
+                // meta object with __sg_array_typeName is always last in arrays
+                if(!from.Empty() && from[from.Size() - 1].IsObject() && from[from.Size() - 1].HasMember("__sg_array_typeName"))
+                {
+                    return from[from.Size() - 1]["__sg_array_typeName"].GetString();
+                }
+            }
+
+            return "";
+        }
+
         DeserializableValueContainer<FormatType::JSON>* m_parent { };
         rapidjson::Document* m_document { };
         rapidjson::Value* m_thisValue { };
@@ -433,7 +457,7 @@ namespace SGCore::Serde
             using clean_t = leave_pointers_t<T, false>;
             using value_view_t = leave_pointers_t<T, true>;
 
-            if (!(m_thisValue || m_document)) return;
+            if (!(m_thisValue && m_document)) return;
 
             // removing member with this name if it is already exists
             if (m_thisValue->IsObject() && m_thisValue->HasMember(name.c_str()))
@@ -450,9 +474,11 @@ namespace SGCore::Serde
             valueNameKey.SetString(name.c_str(), name.length(), m_document->GetAllocator());
 
             // creating type name of T value
+            std::string valueTypeName = Serde::getTypeName<clean_t, FormatType::JSON>();
             rapidjson::Value typeNameSectionValue(rapidjson::kStringType);
-            typeNameSectionValue.SetString(SerdeSpec<clean_t, FormatType::JSON>::type_name.c_str(),
-                                           SerdeSpec<clean_t, FormatType::JSON>::type_name.length());
+            typeNameSectionValue.SetString(valueTypeName.c_str(),
+                                           valueTypeName.length(),
+                                           m_document->GetAllocator());
 
             // creating section that will contain all members of T0
             rapidjson::Value valueSectionValue(rapidjson::kObjectType);
@@ -464,7 +490,8 @@ namespace SGCore::Serde
             // static_assert(!std::is_same_v<const btCollisionShape**, decltype(*valueView.m_data)>, "sasi");
             valueView.m_data = &value;
             valueView.container().m_document = m_document;
-            valueView.container().m_thisValue = &valueSectionValue;
+            // valueView.container().m_thisValue = &valueSectionValue;
+            valueView.container().m_thisValue = &valueRootSection;
             valueView.container().m_typeNameValue = &typeNameSectionValue;
             valueView.container().m_parent = this;
 
@@ -476,10 +503,19 @@ namespace SGCore::Serde
             if(!valueView.isDiscarded())
             {
                 // adding typeName section
-                valueRootSection.AddMember("typeName", typeNameSectionValue, m_document->GetAllocator());
+                if(valueRootSection.IsObject())
+                {
+                    valueRootSection.AddMember("__sg_typeName", typeNameSectionValue, m_document->GetAllocator());
+                }
+                else if(valueRootSection.IsArray())
+                {
+                    rapidjson::Value typeNameElement(rapidjson::kObjectType);
+                    typeNameElement.AddMember("__sg_array_typeName", typeNameSectionValue, m_document->GetAllocator());
+                    valueRootSection.PushBack(typeNameElement, m_document->GetAllocator());
+                }
 
                 // adding value section
-                valueRootSection.AddMember("value", valueSectionValue, m_document->GetAllocator());
+                // valueRootSection.AddMember("value", valueSectionValue, m_document->GetAllocator());
 
                 if(m_thisValue->IsArray())
                 {
@@ -523,7 +559,7 @@ namespace SGCore::Serde
         template<typename CharT>
         void setAsString(const std::basic_string<CharT>& str) noexcept
         {
-            if(!(m_thisValue || m_document)) return;
+            if(!(m_thisValue && m_document)) return;
 
             const std::string utf8String = SGCore::Utils::toUTF8(str);
 
@@ -546,7 +582,7 @@ namespace SGCore::Serde
 
         void setTypeName(const std::string& typeName) noexcept
         {
-            if(!(m_typeNameValue || m_document)) return;
+            if(!(m_typeNameValue && m_document)) return;
 
             m_typeNameValue->SetString(typeName.c_str(), typeName.length(), m_document->GetAllocator());
         }

@@ -30,6 +30,8 @@ struct Derived0 : Derived
     std::vector<float> floats { 1, 2, 3, 51.1f };
     glm::vec3 myVec3 { 3.0, 1.0, -1.0 };
     std::unordered_map<std::string, float> unMap { { "v0", 1.0f }, { "v1", -5.0f } };
+
+    std::unique_ptr<Base> m_derived = std::make_unique<Derived>();
 };
 
 struct Derived1 : Derived
@@ -45,7 +47,7 @@ struct SGCore::Serde::SerdeSpec<Derived1, TFormatType> : SGCore::Serde::BaseType
     static inline const std::string type_name = "Derived1";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<Derived1, TFormatType>& valueView) noexcept
+    static void serialize(SGCore::Serde::SerializableValueView<const Derived1, TFormatType>& valueView) noexcept
     {
         std::printf("derived1 serializing\n");
     }
@@ -62,12 +64,13 @@ struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseType
     static inline const std::string type_name = "Derived0";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<Derived0, TFormatType>& valueView) noexcept
+    static void serialize(SGCore::Serde::SerializableValueView<const Derived0, TFormatType>& valueView) noexcept
     {
         valueView.container().addMember("c", valueView.m_data->c);
         valueView.container().addMember("floats", valueView.m_data->floats);
         valueView.container().addMember("myVec3", valueView.m_data->myVec3);
         valueView.container().addMember("unMap", valueView.m_data->unMap);
+        valueView.container().addMember("m_derived", valueView.m_data->m_derived);
 
         std::printf("derived0 serializing\n");
     }
@@ -98,6 +101,12 @@ struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseType
             valueView.m_data->unMap = *unMap;
         }
 
+        auto derived = valueView.container().template getMember<decltype(Derived0::m_derived)>("m_derived");
+        if(derived)
+        {
+            valueView.m_data->m_derived = std::move(*derived);
+        }
+
         std::printf("derived0 deserializing\n");
     }
 };
@@ -108,7 +117,7 @@ struct SGCore::Serde::SerdeSpec<Derived, TFormatType> : SGCore::Serde::BaseTypes
     static inline const std::string type_name = "Derived";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<Derived, TFormatType>& valueView) noexcept
+    static void serialize(SGCore::Serde::SerializableValueView<const Derived, TFormatType>& valueView) noexcept
     {
         valueView.container().addMember("b", valueView.m_data->b);
         valueView.container().addMember("str0", valueView.m_data->str0);
@@ -143,10 +152,9 @@ struct SGCore::Serde::SerdeSpec<Derived, TFormatType> : SGCore::Serde::BaseTypes
 template<SGCore::Serde::FormatType TFormatType>
 struct SGCore::Serde::SerdeSpec<Base, TFormatType> : SGCore::Serde::DerivedTypes<Derived>
 {
-    static inline const std::string type_name = "Base";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<Base, TFormatType>& valueView) noexcept
+    static void serialize(SGCore::Serde::SerializableValueView<const Base, TFormatType>& valueView) noexcept
     {
         valueView.container().addMember("a", valueView.m_data->a);
         std::printf("base serializing\n");

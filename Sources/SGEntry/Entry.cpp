@@ -78,6 +78,38 @@ void coreInit()
 
     screenShader = SGCore::AssetManager::getInstance()->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
 
+    std::unique_ptr<Base> d = std::make_unique<Derived0>();
+    d->a = 10;
+    dynamic_cast<Derived0*>(d.get())->b = 0.14f;
+    dynamic_cast<Derived0*>(d.get())->str0 = "edited";
+
+    const std::string output = SGCore::Serde::Serializer::toFormat(SGCore::Serde::FormatType::JSON, d);
+    SGCore::FileUtils::writeToFile("serializer_test.txt", output, false, false);
+
+    const std::string output0 = SGCore::Serde::Serializer::toFormat(SGCore::Serde::FormatType::JSON, std::vector { 1, 2, 3 });
+    SGCore::FileUtils::writeToFile("serializer_test1.txt", output0, false, false);
+
+    const std::string output1 = SGCore::Serde::Serializer::toFormat(SGCore::Serde::FormatType::JSON, std::string("hello eto vashe kek"));
+    SGCore::FileUtils::writeToFile("serializer_test2.txt", output1, false, false);
+
+    std::string testDeserLog;
+    std::unique_ptr<Base> dd;
+    SGCore::Serde::Serializer::fromFormat(
+        SGCore::FileUtils::readFile("serializer_test.txt"),
+        dd, SGCore::Serde::FormatType::JSON, testDeserLog);
+
+    std::string testDeserLog0;
+    std::vector<int> dd0;
+    SGCore::Serde::Serializer::fromFormat(
+        SGCore::FileUtils::readFile("serializer_test1.txt"),
+        dd0, SGCore::Serde::FormatType::JSON, testDeserLog0);
+
+    std::string testDeserLog1;
+    std::string dd1;
+    SGCore::Serde::Serializer::fromFormat(
+        SGCore::FileUtils::readFile("serializer_test2.txt"),
+        dd1, SGCore::Serde::FormatType::JSON, testDeserLog1);
+
     const std::filesystem::path configPath = "SungearEngineConfig.json";
     SGCore::Config loadedConfig;
     std::string configLoadLog;
