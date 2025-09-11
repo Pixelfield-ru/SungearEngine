@@ -584,7 +584,7 @@ namespace SGCore::Serde
                 tmpView.m_version = valueView.m_version;
 
                 // if value has typeName field the trying to deserialize T as one of derived types
-                if(tmpView.container().hasMember("__sg_typeName"))
+                if(tmpView.container().hasTypeName())
                 {
                     // trying to deserialize T as one of its derived types (this function will allocate object)
                     deserializeAsOneOfDerivedTypes<ptr_element_type, TFormatType>(tmpView, std::forward<SharedDataT>(sharedData)...);
@@ -683,21 +683,25 @@ namespace SGCore::Serde
         // =====================================================================================
         
         /**
-         * Tries to find correct derived type
-         * @tparam OriginalT
+         * Tries to find correct derived type.
+         * @tparam OriginalT Original type that was passed to serializer.
+         * @tparam CurrentT Current derived type from OriginalT type.
+         * @tparam TFormatType Format type.
+         * @tparam CurrentDerivedIdx Current index of derived type in tuple of all derived types of CurrentT type.
+         * @tparam SharedDataT Types of data that shares between SerdeSpec`s.
          * @param valueView
          */
-        template<typename OriginalT, FormatType TFormatType, size_t CurrentDerivedIdx, typename... SharedDataT>
-        static void trySerializeAsDerivedType(SerializableValueView<const OriginalT, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
+        template<typename OriginalT, typename CurrentT, FormatType TFormatType, size_t CurrentDerivedIdx, typename... SharedDataT>
+        static void trySerializeAsDerivedType(SerializableValueView<const CurrentT, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
-            if constexpr(Utils::isDerivedTypesProvided<OriginalT, TFormatType>())
+            if constexpr(Utils::isDerivedTypesProvided<CurrentT, TFormatType>())
             {
-                if constexpr(CurrentDerivedIdx < SerdeSpec<OriginalT, TFormatType>::derived_classes_count)
+                if constexpr(CurrentDerivedIdx < SerdeSpec<CurrentT, TFormatType>::derived_classes_count)
                 {
-                    using CurrentDerivedT = typename SerdeSpec<OriginalT, TFormatType>::template get_derived_type<CurrentDerivedIdx>;
+                    using CurrentDerivedT = typename SerdeSpec<CurrentT, TFormatType>::template get_derived_type<CurrentDerivedIdx>;
 
                     const CurrentDerivedT* derivedTypeObj = nullptr;
-                    if constexpr(std::is_polymorphic_v<OriginalT> && std::is_base_of_v<OriginalT, CurrentDerivedT>)
+                    if constexpr(std::is_polymorphic_v<CurrentT> && std::is_base_of_v<CurrentT, CurrentDerivedT>)
                     {
                         derivedTypeObj = dynamic_cast<const CurrentDerivedT*>(valueView.m_data);
                     }
@@ -709,14 +713,14 @@ namespace SGCore::Serde
                         tmpView.m_version = valueView.m_version;
                         tmpView.m_data = derivedTypeObj;
 
-                        trySerializeAsDerivedType<CurrentDerivedT, TFormatType, 0>(tmpView,
-                                                                                   std::forward<SharedDataT>(sharedData)...
+                        trySerializeAsDerivedType<OriginalT, CurrentDerivedT, TFormatType, 0>(tmpView,
+                            std::forward<SharedDataT>(sharedData)...
                         );
                     }
                     else
                     {
                         // continue to search needed derived type in derived types of OriginalT types
-                        trySerializeAsDerivedType<OriginalT, TFormatType,
+                        trySerializeAsDerivedType<OriginalT, CurrentT, TFormatType,
                                 CurrentDerivedIdx + 1>(valueView,
                                                        std::forward<SharedDataT>(
                                                                sharedData
@@ -726,16 +730,16 @@ namespace SGCore::Serde
                 }
             }
 
-            if constexpr(Utils::isDerivedTypesProvided<OriginalT, TFormatType>())
+            if constexpr(Utils::isDerivedTypesProvided<CurrentT, TFormatType>())
             {
                 // WE ARE IN THE END OF INHERITANCE TREE FOR CURRENT OBJECT. DESERIALIZING ALL BASE TYPES OF OriginalT (last successful type) FROM VERY BASE TYPE TO OriginalT type
                 // if we did not find correct derived type on current level then trying to serialize last correct derived type (last is: 'OriginalT')
                 // collecting all base types of OriginalT in very base type to DerivedT order
-                if(CurrentDerivedIdx == SerdeSpec<OriginalT, TFormatType>::derived_classes_count)
+                if(CurrentDerivedIdx == SerdeSpec<CurrentT, TFormatType>::derived_classes_count)
                 {
-                    checkSerializationOfAbstractType<OriginalT, TFormatType>();
+                    checkSerializationOfAbstractType<CurrentT, TFormatType>();
 
-                    serializeObjectStraightDownByTree(valueView, std::forward<SharedDataT>(sharedData)...);
+                    serializeObjectStraightDownByTree<OriginalT>(valueView, std::forward<SharedDataT>(sharedData)...);
                 }
             }
             else
@@ -744,9 +748,9 @@ namespace SGCore::Serde
                 // if we did not find correct derived type on current level then trying to serialize last correct derived type (last is: 'OriginalT')
                 // collecting all base types of OriginalT in very base type to DerivedT order
 
-                checkSerializationOfAbstractType<OriginalT, TFormatType>();
+                checkSerializationOfAbstractType<CurrentT, TFormatType>();
 
-                serializeObjectStraightDownByTree(valueView, std::forward<SharedDataT>(sharedData)...);
+                serializeObjectStraightDownByTree<OriginalT>(valueView, std::forward<SharedDataT>(sharedData)...);
             }
         }
 
@@ -783,13 +787,14 @@ namespace SGCore::Serde
 
         /**
          * Serializes all types in \p BaseTypesCont from very base type to very derived type.
-         * @tparam TypeToSerialize
-         * @tparam TFormatType
-         * @tparam SharedDataT
-         * @param valueView
-         * @param sharedData
+         * @tparam OriginalT Original type that was passed in serializer.
+         * @tparam TypeToSerialize Type that will be serialized. It can be derived type of OriginalT.
+         * @tparam TFormatType Format type.
+         * @tparam SharedDataT Types of data that shares between SerdeSpec`s.
+         * @param valueView View that contains format-specific data and value.
+         * @param sharedData Data that shares between SerdeSpec`s.
          */
-        template<typename TypeToSerialize, FormatType TFormatType, typename... SharedDataT>
+        template<typename OriginalT, typename TypeToSerialize, FormatType TFormatType, typename... SharedDataT>
         static void serializeObjectStraightDownByTree(SerializableValueView<const TypeToSerialize, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
             using base_types = typename collect_all_base_types<TypeToSerialize, TFormatType>::type;
@@ -801,9 +806,13 @@ namespace SGCore::Serde
             // calling serialize 'found_correct_derived_type'
             invokeSerdeSpecSerialize(valueView, std::forward<SharedDataT>(sharedData)...);
 
-            // setting new type name
-            // valueView.container().setTypeName(SerdeSpec<TypeToSerialize, TFormatType>::type_name);
-            valueView.container().setTypeName(getTypeName<TypeToSerialize, TFormatType>());
+            // if we are serializing derived type then setting type name of derived type
+            if constexpr(!std::is_same_v<OriginalT, TypeToSerialize>)
+            {
+                std::cout << "[SGCore::Serde] Serializing derived type..." << std::endl;
+                // setting new type name
+                valueView.container().setTypeName(Detail::getTypeName<TypeToSerialize, TFormatType>());
+            }
         }
         
         /**
@@ -817,7 +826,7 @@ namespace SGCore::Serde
             // serializing derived types only if information of them was provided and count of derived types > 0
             if constexpr(Utils::isDerivedTypesProvided<T, TFormatType>())
             {
-                trySerializeAsDerivedType<T, TFormatType, 0>(valueView, std::forward<SharedDataT>(sharedData)...);
+                trySerializeAsDerivedType<T, T, TFormatType, 0>(valueView, std::forward<SharedDataT>(sharedData)...);
             }
             else // else just using static serialization
             {
@@ -917,7 +926,7 @@ namespace SGCore::Serde
                 tmpView.m_version = valueView.m_version;
 
                 // if derived type has type_name
-                if constexpr(has_type_name<DerivedT, TFormatType>)
+                if constexpr(Detail::has_type_name<DerivedT, TFormatType>)
                 {
                     // typeNames are equal. DerivedT is suitable
                     if(valueView.container().m_typeName == SerdeSpec<DerivedT, TFormatType>::type_name)
@@ -1174,6 +1183,14 @@ namespace SGCore::Serde
         }
 
         [[nodiscard]] bool isNull() const noexcept
+        {
+
+        }
+
+        /**
+         * @return Does current container has meta field with type name.
+         */
+        [[nodiscard]] bool hasTypeName() const noexcept
         {
 
         }

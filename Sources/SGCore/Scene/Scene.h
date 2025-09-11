@@ -47,7 +47,6 @@ namespace SGCore
                                       const Scene& serializableScene)> onEntitySerialize;
 
             static inline Signal<void(Serde::DeserializableValueView<ECS::entity_t, TFormatType>& entityView,
-                                      const typename Serde::FormatInfo<TFormatType>::array_iterator_t& componentsIterator,
                                       Scene& deserializableScene)> onEntityDeserialize;
 
             static inline Signal<void(Serde::SerializableValueView<const Scene::systems_container_t, TFormatType>& systemsContainerView,

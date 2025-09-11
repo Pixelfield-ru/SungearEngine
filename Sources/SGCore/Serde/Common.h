@@ -25,29 +25,36 @@ namespace SGCore::Serde
     template<typename T, FormatType TFormatType>
     struct SerdeSpec;
 
-    /**
-     * @tparam T Type.
-     * @tparam TFormatType Format type.
-     * @return Does SerdeSpec<T, TFormatType> has field type_name. Works in compile-time.
-     */
-    template<typename T, FormatType TFormatType>
-    static constexpr bool has_type_name = requires { SerdeSpec<T, TFormatType>::type_name; };
-
-
-    /**
-     * @tparam T Type.
-     * @tparam TFormatType Format type.
-     * @return Type name in SerdeSpec<T, TFormatType>::type_name if field type_name exists. Otherwise, returns empty string.
-     */
-    template<typename T, FormatType TFormatType>
-    static std::string getTypeName() noexcept
+    namespace Detail
     {
-        if constexpr(has_type_name<T, TFormatType>)
-        {
-            return SerdeSpec<T, TFormatType>::type_name;
-        }
+        static inline constexpr char s_typeNameFieldName[] = "__sg_type_name";
+        static inline constexpr char s_arrayTypeNameFieldName[] = "__sg_array_type_name";
+        static inline constexpr char s_versionFieldName[] = "__sg_version";
 
-        return "";
+        /**
+        * @tparam T Type.
+        * @tparam TFormatType Format type.
+        * @return Does SerdeSpec<T, TFormatType> has field type_name. Works in compile-time.
+        */
+        template<typename T, FormatType TFormatType>
+        static constexpr bool has_type_name = requires { SerdeSpec<T, TFormatType>::type_name; };
+
+
+        /**
+         * @tparam T Type.
+         * @tparam TFormatType Format type.
+         * @return Type name in SerdeSpec<T, TFormatType>::type_name if field type_name exists. Otherwise, returns empty string.
+         */
+        template<typename T, FormatType TFormatType>
+        static std::string getTypeName() noexcept
+        {
+            if constexpr(has_type_name<T, TFormatType>)
+            {
+                return SerdeSpec<T, TFormatType>::type_name;
+            }
+
+            return "";
+        }
     }
 }
 

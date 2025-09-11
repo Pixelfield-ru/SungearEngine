@@ -61,11 +61,15 @@ struct SGCore::Serde::SerdeSpec<SGE::EditorSceneData, TFormatType> : SGCore::Ser
     static void serialize(SerializableValueView<const SGE::EditorSceneData, TFormatType>& valueView, const Scene& scene)
     {
         {
+            scene.getECSRegistry()->remove<SGCore::NonSavable>(valueView.m_data->m_editorCamera);
             valueView.container().addMember("m_editorCamera", valueView.m_data->m_editorCamera, scene);
+            scene.getECSRegistry()->emplace<SGCore::NonSavable>(valueView.m_data->m_editorCamera);
         }
 
         {
+            scene.getECSRegistry()->remove<SGCore::NonSavable>(valueView.m_data->m_editorGrid);
             valueView.container().addMember("m_editorGrid", valueView.m_data->m_editorGrid, scene);
+            scene.getECSRegistry()->emplace<SGCore::NonSavable>(valueView.m_data->m_editorGrid);
         }
 
         // terrain editor

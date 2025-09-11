@@ -32,6 +32,7 @@ struct Derived0 : Derived
     std::unordered_map<std::string, float> unMap { { "v0", 1.0f }, { "v1", -5.0f } };
 
     std::unique_ptr<Base> m_derived = std::make_unique<Derived>();
+    Base m_base;
 };
 
 struct Derived1 : Derived
@@ -71,6 +72,7 @@ struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseType
         valueView.container().addMember("myVec3", valueView.m_data->myVec3);
         valueView.container().addMember("unMap", valueView.m_data->unMap);
         valueView.container().addMember("m_derived", valueView.m_data->m_derived);
+        valueView.container().addMember("m_base", valueView.m_data->m_base);
 
         std::printf("derived0 serializing\n");
     }
@@ -105,6 +107,12 @@ struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseType
         if(derived)
         {
             valueView.m_data->m_derived = std::move(*derived);
+        }
+
+        auto base = valueView.container().template getMember<Base>("m_base");
+        if(base)
+        {
+            valueView.m_data->m_base = std::move(*base);
         }
 
         std::printf("derived0 deserializing\n");
