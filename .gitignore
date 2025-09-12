@@ -11,6 +11,18 @@ Sources/SGConsole/cmake-build-debug
 Sources/SGEntry/cmake-build-debug
 Tests/Physics/cmake-build-debug
 Tests/Physics/cmake-build-release
+Sources/SGCore/UI/ANTLR4CSS3Generated/css3Lexer.cpp
+Sources/SGCore/UI/ANTLR4CSS3Generated/css3Lexer.h
+Sources/SGCore/UI/ANTLR4CSS3Generated/css3Parser.cpp
+Sources/SGCore/UI/ANTLR4CSS3Generated/css3Parser.h
+Sources/SGCore/UI/ANTLR4CSS3Generated/css3ParserBaseListener.cpp
+Sources/SGCore/UI/ANTLR4CSS3Generated/css3ParserBaseListener.h
+Sources/SGCore/UI/ANTLR4CSS3Generated/css3ParserBaseVisitor.cpp
+Sources/SGCore/UI/ANTLR4CSS3Generated/css3ParserBaseVisitor.h
+Sources/SGCore/UI/ANTLR4CSS3Generated/css3ParserListener.cpp
+Sources/SGCore/UI/ANTLR4CSS3Generated/css3ParserListener.h
+Sources/SGCore/UI/ANTLR4CSS3Generated/css3ParserVisitor.cpp
+Sources/SGCore/UI/ANTLR4CSS3Generated/css3ParserVisitor.h
 # -----------------------
 
 # RESOURCES -------------
