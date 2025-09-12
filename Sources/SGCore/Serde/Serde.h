@@ -14,6 +14,13 @@
 
 #include "Common.h"
 
+#define SG_SERDE_DEFINE_TYPE_NAME(n) \
+static const std::string& type_name() noexcept \
+{ \
+       static const std::string name = n; \
+       return name; \
+}
+
 /**
  *  Sungear Engine Core Serde.\n\n
  *  Please note that all serialization functions accept a const reference to an object,
@@ -929,7 +936,7 @@ namespace SGCore::Serde
                 if constexpr(Detail::has_type_name<DerivedT, TFormatType>)
                 {
                     // typeNames are equal. DerivedT is suitable
-                    if(valueView.container().m_typeName == SerdeSpec<DerivedT, TFormatType>::type_name)
+                    if(valueView.container().m_typeName == SerdeSpec<DerivedT, TFormatType>::type_name())
                     {
                         // allocating object of DerivedT
                         DerivedT* derivedObject {};

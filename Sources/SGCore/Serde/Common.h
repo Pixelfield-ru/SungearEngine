@@ -37,7 +37,7 @@ namespace SGCore::Serde
         * @return Does SerdeSpec<T, TFormatType> has field type_name. Works in compile-time.
         */
         template<typename T, FormatType TFormatType>
-        static constexpr bool has_type_name = requires { SerdeSpec<T, TFormatType>::type_name; };
+        static constexpr bool has_type_name = requires { { SerdeSpec<T, TFormatType>::type_name() } -> std::same_as<const std::string&>; };
 
 
         /**
@@ -50,7 +50,7 @@ namespace SGCore::Serde
         {
             if constexpr(has_type_name<T, TFormatType>)
             {
-                return SerdeSpec<T, TFormatType>::type_name;
+                return SerdeSpec<T, TFormatType>::type_name();
             }
 
             return "";
