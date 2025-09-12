@@ -95,11 +95,12 @@ namespace SGCore::Serde
     {
         static_assert(always_false<T>::value,
                       "This type is not serializable. Please, implement specialization of SerdeSpec for this type.");
-        
+
         /**
-         * The type name of T
+         * Required.
          */
-        static inline const std::string type_name = "unknown";
+        SG_SERDE_DEFINE_TYPE_NAME("Example")
+
         /**
          * Is T is pointer type
          */
@@ -816,7 +817,7 @@ namespace SGCore::Serde
             // if we are serializing derived type then setting type name of derived type
             if constexpr(!std::is_same_v<OriginalT, TypeToSerialize>)
             {
-                std::cout << "[SGCore::Serde] Serializing derived type..." << std::endl;
+                // std::cout << "[SGCore::Serde] Serializing derived type..." << ". Type name: " << Detail::getTypeName<TypeToSerialize, TFormatType>() << std::endl;
                 // setting new type name
                 valueView.container().setTypeName(Detail::getTypeName<TypeToSerialize, TFormatType>());
             }

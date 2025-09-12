@@ -17,7 +17,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        static inline const std::string type_name = Detail::getTypeName<T, TFormatType>();
+        SG_SERDE_DEFINE_TYPE_NAME((Detail::getTypeName<T, TFormatType>()))
         static inline constexpr bool is_pointer_type = true;
         using element_type = T;
 
@@ -37,7 +37,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        static inline const std::string type_name = Detail::getTypeName<T, TFormatType>();
+        SG_SERDE_DEFINE_TYPE_NAME((Detail::getTypeName<T, TFormatType>()))
         static inline constexpr bool is_pointer_type = true;
         using element_type = T;
 
@@ -57,7 +57,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        static inline const std::string type_name = Detail::getTypeName<T, TFormatType>();
+        SG_SERDE_DEFINE_TYPE_NAME((Detail::getTypeName<T, TFormatType>()))
         static inline constexpr bool is_pointer_type = true;
         using element_type = T;
 
@@ -77,7 +77,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        static inline const std::string type_name = Detail::getTypeName<T, TFormatType>();
+        SG_SERDE_DEFINE_TYPE_NAME((Detail::getTypeName<T, TFormatType>()))
         static inline constexpr bool is_pointer_type = true;
         using element_type = T;
 
