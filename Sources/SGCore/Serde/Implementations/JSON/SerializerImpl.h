@@ -19,10 +19,10 @@ std::string SerializerImpl<FormatType::JSON>::to(const T& value,
     toDocument.SetObject();
 
     // adding version of document
-    toDocument.AddMember("version", "1", toDocument.GetAllocator());
+    toDocument.AddMember(Detail::s_versionFieldName, "1", toDocument.GetAllocator());
 
     // adding type name of T
-    std::string valueTypeName = getTypeName<clean_t, FormatType::JSON>();
+    std::string valueTypeName = Detail::getTypeName<clean_t, FormatType::JSON>();
     rapidjson::Value typeNameSectionValue(rapidjson::kStringType);
     typeNameSectionValue.SetString(valueTypeName.c_str(),
                                    valueTypeName.length(),
@@ -38,7 +38,6 @@ std::string SerializerImpl<FormatType::JSON>::to(const T& value,
     valueView.m_data = &value;
     valueView.m_version = "1";
     valueView.container().m_document = &toDocument;
-    // valueView.container().m_thisValue = &valueSectionValue;
     valueView.container().m_thisValue = &toDocument;
     valueView.container().m_typeNameValue = &typeNameSectionValue;
 
@@ -53,23 +52,25 @@ std::string SerializerImpl<FormatType::JSON>::to(const T& value,
 
     if(!valueView.isDiscarded())
     {
-        if constexpr(has_type_name<T, FormatType::JSON>)
+        if constexpr(Detail::has_type_name<T, FormatType::JSON>)
         {
-            if(toDocument.IsObject())
+            // if type name was changed after serialization with dynamic checks (it means that type was serialized as derived type)
+            // then we are adding type name field
+            if(valueTypeName != valueView.container().m_typeNameValue->GetString())
             {
-                // adding type name of T after serializing (because type name can be changed)
-                toDocument.AddMember("__sg_typeName", typeNameSectionValue, toDocument.GetAllocator());
-            }
-            else if(toDocument.IsArray())
-            {
-                rapidjson::Value typeNameElement(rapidjson::kObjectType);
-                typeNameElement.AddMember("__sg_array_typeName", typeNameSectionValue, toDocument.GetAllocator());
-                toDocument.PushBack(typeNameElement, toDocument.GetAllocator());
+                if(toDocument.IsObject())
+                {
+                    // adding type name of T after serializing (because type name can be changed)
+                    toDocument.AddMember(Detail::s_typeNameFieldName, typeNameSectionValue, toDocument.GetAllocator());
+                }
+                else if(toDocument.IsArray())
+                {
+                    rapidjson::Value typeNameElement(rapidjson::kObjectType);
+                    typeNameElement.AddMember(Detail::s_arrayTypeNameFieldName, typeNameSectionValue, toDocument.GetAllocator());
+                    toDocument.PushBack(typeNameElement, toDocument.GetAllocator());
+                }
             }
         }
-
-        // adding value section to document
-        // toDocument.AddMember("value", valueSectionValue, toDocument.GetAllocator());
 
         // return "{\t}"; // todo: maybe?
     }
@@ -100,46 +101,35 @@ void SerializerImpl<FormatType::JSON>::from(const std::string& formattedText,
     document.Parse(formattedText.c_str());
 
     // trying to get 'version' member from document
-    if(document.IsObject() && !document.HasMember("version"))
+    if(document.IsObject() && !document.HasMember(Detail::s_versionFieldName))
     {
-        outputLog = "Error: Broken JSON document: root member 'version' does not exist.\n";
+        outputLog = "Error: Broken JSON document: root member '" + std::string(Detail::s_versionFieldName) + "' does not exist.\n";
         return;
     }
 
     // getting 'version' member from document
     std::string version = "1";
-    if(document.IsObject() && document.HasMember("version"))
+    if(document.IsObject() && document.HasMember(Detail::s_versionFieldName))
     {
-        version = document["version"].GetString();
+        version = document[Detail::s_versionFieldName].GetString();
     }
 
     // getting 'typeName' member from document (if has)
     std::string typeName;
-    if(document.IsObject() && document.HasMember("__sg_typeName"))
+    if(document.IsObject() && document.HasMember(Detail::s_typeNameFieldName))
     {
-        typeName = document["__sg_typeName"].GetString();
+        typeName = document[Detail::s_typeNameFieldName].GetString();
     }
-    else if(document.IsArray() && document[document.Size() - 1].HasMember("__sg_array_typeName"))
+    else if(document.IsArray() && !document.Empty() && document[document.Size() - 1].IsObject() && document[document.Size() - 1].HasMember(Detail::s_arrayTypeNameFieldName))
     {
-        typeName = document[document.Size() - 1]["__sg_array_typeName"].GetString();
+        typeName = document[document.Size() - 1][Detail::s_arrayTypeNameFieldName].GetString();
     }
-
-    // trying to get 'value' member from document
-    /*if(!document.HasMember("value"))
-    {
-        outputLog = "Error: Broken JSON document: root member 'value' does not exist.\n";
-        return;
-    }*/
-
-    // getting 'value' member from document
-    // auto& jsonValue = document["value"];
-    auto& jsonValue = document;
 
     DeserializableValueView<T, FormatType::JSON> valueView;
     valueView.m_data = &outValue;
     valueView.m_version = version;
     valueView.container().m_document = &document;
-    valueView.container().m_thisValue = &jsonValue;
+    valueView.container().m_thisValue = &document;
     valueView.container().m_typeName = typeName;
     valueView.container().m_outputLog = &outputLog;
 

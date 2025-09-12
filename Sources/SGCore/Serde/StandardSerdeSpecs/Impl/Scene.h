@@ -125,24 +125,17 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<ECS::entity_t, TFormatType>::serialize(SerializableValueView<const ECS::entity_t, TFormatType>& valueView, const Scene& serializableScene) noexcept
     {
-        valueView.container().setAsArray();
-
         auto& serializableEntity = *valueView.m_data;
 
-        auto* entityBaseInfo = serializableScene.getECSRegistry()->tryGet<EntityBaseInfo>(serializableEntity);
-        if(entityBaseInfo)
+        // valueView.container().setAsArray();
+        if(serializableScene.getECSRegistry()->allOf<NonSavable>(serializableEntity))
         {
-            // saving all children entities
-            for(const auto& childEntity : entityBaseInfo->getChildren())
-            {
-                // if entity has component 'NonSavable' then skipping this entity
-                if(serializableScene.getECSRegistry()->allOf<NonSavable>(childEntity)) continue;
-
-                LOG_I("GENERATED", "Saving CHILD entity '{}'...", std::to_underlying(childEntity));
-
-                valueView.container().pushBack(childEntity, serializableScene);
-            }
+            valueView.discard();
+            return;
         }
+
+        auto& entityBaseInfo = serializableScene.getECSRegistry()->get<EntityBaseInfo>(serializableEntity);
+
 
         // trying to save standard components ===============================================
         // ==================================================================================
@@ -154,7 +147,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component);
+                valueView.container().addMember(SerdeSpec<EntityBaseInfo, TFormatType>::type_name, *component);
             }
         }
         {
@@ -162,7 +155,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component);
+                valueView.container().addMember(SerdeSpec<AudioSource, TFormatType>::type_name, *component);
             }
         }
         {
@@ -170,7 +163,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component);
+                valueView.container().addMember(SerdeSpec<Transform, TFormatType>::type_name, *component);
             }
         }
         {
@@ -178,7 +171,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component);
+                valueView.container().addMember(SerdeSpec<AABB<>, TFormatType>::type_name, *component);
             }
         }
         {
@@ -186,7 +179,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component);
+                valueView.container().addMember(SerdeSpec<RenderingBase, TFormatType>::type_name, *component);
             }
         }
         {
@@ -194,7 +187,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component);
+                valueView.container().addMember(SerdeSpec<Camera3D, TFormatType>::type_name, *component);
             }
         }
         {
@@ -202,7 +195,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component);
+                valueView.container().addMember(SerdeSpec<SphereGizmo, TFormatType>::type_name, *component);
             }
         }
         {
@@ -210,7 +203,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component);
+                valueView.container().addMember(SerdeSpec<BoxGizmo, TFormatType>::type_name, *component);
             }
         }
         {
@@ -218,7 +211,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component);
+                valueView.container().addMember(SerdeSpec<LineGizmo, TFormatType>::type_name, *component);
             }
         }
         {
@@ -226,7 +219,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component);
+                valueView.container().addMember(SerdeSpec<Atmosphere, TFormatType>::type_name, *component);
             }
         }
         {
@@ -234,7 +227,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component);
+                valueView.container().addMember(SerdeSpec<Mesh, TFormatType>::type_name, *component);
             }
         }
         {
@@ -242,7 +235,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component);
+                valueView.container().addMember(SerdeSpec<DirectionalLight, TFormatType>::type_name, *component);
             }
         }
         {
@@ -250,7 +243,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component);
+                valueView.container().addMember(SerdeSpec<Controllable3D, TFormatType>::type_name, *component);
             }
         }
         {
@@ -258,7 +251,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component);
+                valueView.container().addMember(SerdeSpec<UICamera, TFormatType>::type_name, *component);
             }
         }
 
@@ -267,7 +260,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component);
+                valueView.container().addMember(SerdeSpec<TransparentEntityTag, TFormatType>::type_name, *component);
             }
         }
 
@@ -276,7 +269,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component);
+                valueView.container().addMember(SerdeSpec<OpaqueEntityTag, TFormatType>::type_name, *component);
             }
         }
 
@@ -285,8 +278,9 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component,
-                                                       serializableEntity, *serializableScene.getECSRegistry());
+                valueView.container().addMember(
+                    SerdeSpec<Pickable, TFormatType>::type_name, *component,
+                    serializableEntity, *serializableScene.getECSRegistry());
             }
         }
 
@@ -295,8 +289,9 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component,
-                                                       serializableEntity, *serializableScene.getECSRegistry());
+                valueView.container().addMember(
+                    SerdeSpec<MotionPlanner, TFormatType>::type_name, *component,
+                    serializableEntity, *serializableScene.getECSRegistry());
             }
         }
 
@@ -305,8 +300,9 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component,
-                                                       serializableEntity, *serializableScene.getECSRegistry());
+                valueView.container().addMember(
+                    SerdeSpec<Rigidbody3D, TFormatType>::type_name, *component,
+                    serializableEntity, *serializableScene.getECSRegistry());
             }
         }
 
@@ -315,7 +311,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component);
+                valueView.container().addMember(SerdeSpec<IKJoint, TFormatType>::type_name, *component);
             }
         }
 
@@ -324,7 +320,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                valueView.container().pushBack(*component);
+                valueView.container().addMember(SerdeSpec<IKRootJoint, TFormatType>::type_name, *component);
             }
         }
 
@@ -338,6 +334,9 @@ namespace SGCore::Serde
                 valueView,
                 serializableScene
         );
+
+        // saving children
+        valueView.container().addMember("children", entityBaseInfo.getChildren(), serializableScene);
     }
 
     template<FormatType TFormatType>
@@ -357,308 +356,246 @@ namespace SGCore::Serde
 
         LOG_I(SGCORE_TAG, "Loading entity: {}", std::to_underlying(*valueView.m_data));
 
-        // iterating through all elements of entityView
-        for(auto componentsIt = valueView.container().begin(); componentsIt != valueView.container().end(); ++componentsIt)
+        // trying to load standard components ===============================================
+        // ==================================================================================
+
+        #pragma region Components
+
+        if(valueView.container().hasMember(SerdeSpec<EntityBaseInfo, TFormatType>::type_name))
         {
-            const auto& currentElementTypeName = valueView.container().getMemberTypeName(componentsIt);
+            auto component = valueView.container().template getMember<EntityBaseInfo::reg_t>(SerdeSpec<EntityBaseInfo, TFormatType>::type_name);
 
-            // deserializing iterator as child entity only if current iterator is SceneEntitySaveInfo
-            if(currentElementTypeName == type_name())
+            if(component)
             {
-                // trying to deserialize current element of array (valueView is array) as child SceneEntitySaveInfo
-                const std::optional<ECS::entity_t> asChild =
-                        valueView.container().template getMember<ECS::entity_t>(componentsIt,
-                            deserializableScene);
-                if(asChild)
-                {
-                    childrenEntities.push_back(*asChild);
-                    LOG_E(SGCORE_TAG, "Loaded child entity: {}",
-                          std::to_underlying(*asChild));
-
-                }
-                continue;
+                entityBaseInfo = std::move(*component);
             }
-
-            // trying to load standard components ===============================================
-            // ==================================================================================
-
-            #pragma region Components
-
-            if(currentElementTypeName == SerdeSpec<EntityBaseInfo, TFormatType>::type_name())
-            {
-                auto component = valueView.container().template getMember<EntityBaseInfo::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    entityBaseInfo = std::move(*component);
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<AudioSource, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<AudioSource::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    toRegistry.emplace<AudioSource>(entity, *component);
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<Transform, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<Transform::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    toRegistry.emplace<Transform>(entity, *component);
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<AABB<float>, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<AABB<float>::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    toRegistry.emplace<AABB<float>>(entity, *component);
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<RenderingBase, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<RenderingBase::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    toRegistry.emplace<RenderingBase>(entity, *component);
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<Camera3D, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<Camera3D::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    toRegistry.emplace<Camera3D>(entity, *component);
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<SphereGizmo, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<SphereGizmo::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    toRegistry.emplace<SphereGizmo>(entity, *component);
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<BoxGizmo, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<BoxGizmo::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    toRegistry.emplace<BoxGizmo>(entity, *component);
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<LineGizmo, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<LineGizmo::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    toRegistry.emplace<LineGizmo>(entity, *component);
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<Atmosphere, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<Atmosphere::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    LOG_D(SGCORE_TAG, "Atmosphere component deserializing");
-                    toRegistry.emplace<Atmosphere>(entity, *component);
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<Mesh, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<Mesh::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    LOG_D(SGCORE_TAG, "Mesh component deserializing");
-                    toRegistry.emplace<Mesh>(entity, *component);
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<DirectionalLight, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<DirectionalLight::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    toRegistry.emplace<DirectionalLight>(entity, *component);
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<Controllable3D, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<Controllable3D::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    toRegistry.emplace<Controllable3D>(entity, *component);
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<UICamera, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<UICamera::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    toRegistry.emplace<UICamera>(entity, *component);
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<Pickable, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<Pickable::reg_t>(componentsIt, entity, toRegistry);
-
-                if(component)
-                {
-                    toRegistry.emplace<Pickable>(entity, *component);
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<TransparentEntityTag, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<TransparentEntityTag::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    toRegistry.emplace<TransparentEntityTag>(entity, *component);
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<OpaqueEntityTag, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<OpaqueEntityTag::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    toRegistry.emplace<OpaqueEntityTag>(entity, *component);
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<MotionPlanner, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<MotionPlanner::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    toRegistry.emplace<MotionPlanner>(entity, *component);
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<Rigidbody3D, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<Rigidbody3D::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    toRegistry.emplace<Rigidbody3D>(entity, *component)->setParentWorld(deserializableScene.getSystem<PhysicsWorld3D>());
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<IKJoint, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<IKJoint::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    toRegistry.emplace<IKJoint>(entity, *component);
-
-                    continue;
-                }
-            }
-
-            if(currentElementTypeName == SerdeSpec<IKRootJoint, TFormatType>::type_name())
-            {
-                const auto component = valueView.container().template getMember<IKRootJoint::reg_t>(componentsIt);
-
-                if(component)
-                {
-                    toRegistry.emplace<IKRootJoint>(entity, *component);
-
-                    continue;
-                }
-            }
-
-            #pragma endregion Components
-
-            // ==================================================================================
-            // ==================================================================================
-
-            // calling event to deserialize user-provided components
-            Scene::getOnEntityDeserializeEvent<TFormatType>()(
-                    valueView,
-                    componentsIt,
-                    deserializableScene
-            );
         }
+
+        if(valueView.container().hasMember(SerdeSpec<AudioSource, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<AudioSource::reg_t>(SerdeSpec<AudioSource, TFormatType>::type_name);
+
+            if(component)
+            {
+                toRegistry.emplace<AudioSource>(entity, *component);
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<Transform, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<Transform::reg_t>(SerdeSpec<Transform, TFormatType>::type_name);
+
+            if(component)
+            {
+                toRegistry.emplace<Transform>(entity, *component);
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<AABB<float>, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<AABB<float>::reg_t>(SerdeSpec<AABB<float>, TFormatType>::type_name);
+
+            if(component)
+            {
+                toRegistry.emplace<AABB<float>>(entity, *component);
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<RenderingBase, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<RenderingBase::reg_t>(SerdeSpec<RenderingBase, TFormatType>::type_name);
+
+            if(component)
+            {
+                toRegistry.emplace<RenderingBase>(entity, *component);
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<Camera3D, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<Camera3D::reg_t>(SerdeSpec<Camera3D, TFormatType>::type_name);
+
+            if(component)
+            {
+                toRegistry.emplace<Camera3D>(entity, *component);
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<SphereGizmo, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<SphereGizmo::reg_t>(SerdeSpec<SphereGizmo, TFormatType>::type_name);
+
+            if(component)
+            {
+                toRegistry.emplace<SphereGizmo>(entity, *component);
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<BoxGizmo, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<BoxGizmo::reg_t>(SerdeSpec<BoxGizmo, TFormatType>::type_name);
+
+            if(component)
+            {
+                toRegistry.emplace<BoxGizmo>(entity, *component);
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<LineGizmo, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<LineGizmo::reg_t>(SerdeSpec<LineGizmo, TFormatType>::type_name);
+
+            if(component)
+            {
+                toRegistry.emplace<LineGizmo>(entity, *component);
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<Atmosphere, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<Atmosphere::reg_t>(SerdeSpec<Atmosphere, TFormatType>::type_name);
+
+            if(component)
+            {
+                LOG_D(SGCORE_TAG, "Atmosphere component deserializing");
+                toRegistry.emplace<Atmosphere>(entity, *component);
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<Mesh, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<Mesh::reg_t>(SerdeSpec<Mesh, TFormatType>::type_name);
+
+            if(component)
+            {
+                LOG_D(SGCORE_TAG, "Mesh component deserializing");
+                toRegistry.emplace<Mesh>(entity, *component);
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<DirectionalLight, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<DirectionalLight::reg_t>(SerdeSpec<DirectionalLight, TFormatType>::type_name);
+
+            if(component)
+            {
+                toRegistry.emplace<DirectionalLight>(entity, *component);
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<Controllable3D, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<Controllable3D::reg_t>(SerdeSpec<Controllable3D, TFormatType>::type_name);
+
+            if(component)
+            {
+                toRegistry.emplace<Controllable3D>(entity, *component);
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<UICamera, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<UICamera::reg_t>(SerdeSpec<UICamera, TFormatType>::type_name);
+
+            if(component)
+            {
+                toRegistry.emplace<UICamera>(entity, *component);
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<Pickable, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<Pickable::reg_t>(SerdeSpec<Pickable, TFormatType>::type_name, entity, toRegistry);
+
+            if(component)
+            {
+                toRegistry.emplace<Pickable>(entity, *component);
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<TransparentEntityTag, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<TransparentEntityTag::reg_t>(SerdeSpec<TransparentEntityTag, TFormatType>::type_name);
+
+            if(component)
+            {
+                toRegistry.emplace<TransparentEntityTag>(entity, *component);
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<OpaqueEntityTag, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<OpaqueEntityTag::reg_t>(SerdeSpec<OpaqueEntityTag, TFormatType>::type_name);
+
+            if(component)
+            {
+                toRegistry.emplace<OpaqueEntityTag>(entity, *component);
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<MotionPlanner, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<MotionPlanner::reg_t>(SerdeSpec<MotionPlanner, TFormatType>::type_name);
+
+            if(component)
+            {
+                toRegistry.emplace<MotionPlanner>(entity, *component);
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<Rigidbody3D, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<Rigidbody3D::reg_t>(SerdeSpec<Rigidbody3D, TFormatType>::type_name);
+
+            if(component)
+            {
+                toRegistry.emplace<Rigidbody3D>(entity, *component)->setParentWorld(deserializableScene.getSystem<PhysicsWorld3D>());
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<IKJoint, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<IKJoint::reg_t>(SerdeSpec<IKJoint, TFormatType>::type_name);
+
+            if(component)
+            {
+                toRegistry.emplace<IKJoint>(entity, *component);
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<IKRootJoint, TFormatType>::type_name))
+        {
+            const auto component = valueView.container().template getMember<IKRootJoint::reg_t>(SerdeSpec<IKRootJoint, TFormatType>::type_name);
+
+            if(component)
+            {
+                toRegistry.emplace<IKRootJoint>(entity, *component);
+            }
+        }
+
+        #pragma endregion Components
+
+        // ==================================================================================
+        // ==================================================================================
+
+        // calling event to deserialize user-provided components
+        Scene::getOnEntityDeserializeEvent<TFormatType>()(
+                valueView,
+                deserializableScene
+        );
 
         // creating EntityBaseInfo component with 'entity' as identifier in arguments
         entityBaseInfo.setThisEntity(entity);
 
-        // adding all children
-        for(const auto& childEntity : childrenEntities)
+        // loading children
+        const auto children = valueView.container().template getMember<decltype(EntityBaseInfo::m_children)>("children", deserializableScene);
+        if(children)
         {
-            LOG_I(SGCORE_TAG, "Adding child entity '{}' to parent entity '{}'...", std::to_underlying(childEntity), std::to_underlying(entity));
-            entityBaseInfo.addChild(childEntity, toRegistry);
+            for(auto child : *children)
+            {
+                LOG_I(SGCORE_TAG, "Adding child entity '{}' to parent entity '{}'...", std::to_underlying(child), std::to_underlying(entity));
+                entityBaseInfo.addChild(child, toRegistry);
+            }
         }
     }
 
@@ -697,8 +634,11 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<ECS::registry_t, TFormatType>::deserialize(DeserializableValueView<ECS::registry_t, TFormatType>& valueView, Scene& serializableScene) noexcept
     {
+        LOG_I(SGCORE_TAG, "Loading registry...")
+
         for(auto entityIt = valueView.container().begin(); entityIt != valueView.container().end(); ++entityIt)
         {
+            LOG_I(SGCORE_TAG, "Trying to deserialize entity...")
             // deserializing entity and passing registry to getMember to put entity in scene
             valueView.container().template getMember<ECS::entity_t>(entityIt, serializableScene);
         }
