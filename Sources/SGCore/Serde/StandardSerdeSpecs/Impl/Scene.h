@@ -363,7 +363,7 @@ namespace SGCore::Serde
             const auto& currentElementTypeName = valueView.container().getMemberTypeName(componentsIt);
 
             // deserializing iterator as child entity only if current iterator is SceneEntitySaveInfo
-            if(currentElementTypeName == type_name)
+            if(currentElementTypeName == type_name())
             {
                 // trying to deserialize current element of array (valueView is array) as child SceneEntitySaveInfo
                 const std::optional<ECS::entity_t> asChild =
@@ -384,7 +384,7 @@ namespace SGCore::Serde
 
             #pragma region Components
 
-            if(currentElementTypeName == SerdeSpec<EntityBaseInfo, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<EntityBaseInfo, TFormatType>::type_name())
             {
                 auto component = valueView.container().template getMember<EntityBaseInfo::reg_t>(componentsIt);
 
@@ -396,7 +396,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<AudioSource, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<AudioSource, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<AudioSource::reg_t>(componentsIt);
 
@@ -408,7 +408,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<Transform, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<Transform, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<Transform::reg_t>(componentsIt);
 
@@ -420,7 +420,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<AABB<float>, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<AABB<float>, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<AABB<float>::reg_t>(componentsIt);
 
@@ -432,7 +432,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<RenderingBase, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<RenderingBase, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<RenderingBase::reg_t>(componentsIt);
 
@@ -444,7 +444,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<Camera3D, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<Camera3D, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<Camera3D::reg_t>(componentsIt);
 
@@ -456,7 +456,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<SphereGizmo, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<SphereGizmo, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<SphereGizmo::reg_t>(componentsIt);
 
@@ -468,7 +468,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<BoxGizmo, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<BoxGizmo, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<BoxGizmo::reg_t>(componentsIt);
 
@@ -480,7 +480,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<LineGizmo, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<LineGizmo, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<LineGizmo::reg_t>(componentsIt);
 
@@ -492,7 +492,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<Atmosphere, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<Atmosphere, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<Atmosphere::reg_t>(componentsIt);
 
@@ -505,7 +505,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<Mesh, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<Mesh, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<Mesh::reg_t>(componentsIt);
 
@@ -518,7 +518,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<DirectionalLight, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<DirectionalLight, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<DirectionalLight::reg_t>(componentsIt);
 
@@ -530,7 +530,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<Controllable3D, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<Controllable3D, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<Controllable3D::reg_t>(componentsIt);
 
@@ -542,7 +542,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<UICamera, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<UICamera, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<UICamera::reg_t>(componentsIt);
 
@@ -554,7 +554,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<Pickable, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<Pickable, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<Pickable::reg_t>(componentsIt, entity, toRegistry);
 
@@ -566,7 +566,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<TransparentEntityTag, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<TransparentEntityTag, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<TransparentEntityTag::reg_t>(componentsIt);
 
@@ -578,7 +578,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<OpaqueEntityTag, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<OpaqueEntityTag, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<OpaqueEntityTag::reg_t>(componentsIt);
 
@@ -590,7 +590,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<MotionPlanner, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<MotionPlanner, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<MotionPlanner::reg_t>(componentsIt);
 
@@ -602,7 +602,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<Rigidbody3D, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<Rigidbody3D, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<Rigidbody3D::reg_t>(componentsIt);
 
@@ -614,7 +614,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<IKJoint, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<IKJoint, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<IKJoint::reg_t>(componentsIt);
 
@@ -626,7 +626,7 @@ namespace SGCore::Serde
                 }
             }
 
-            if(currentElementTypeName == SerdeSpec<IKRootJoint, TFormatType>::type_name)
+            if(currentElementTypeName == SerdeSpec<IKRootJoint, TFormatType>::type_name())
             {
                 const auto component = valueView.container().template getMember<IKRootJoint::reg_t>(componentsIt);
 
