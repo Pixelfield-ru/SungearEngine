@@ -13,13 +13,7 @@
 #include "SGCore/Main/CoreGlobals.h"
 
 #include "Common.h"
-
-#define SG_SERDE_DEFINE_TYPE_NAME(n) \
-static const std::string& type_name() noexcept \
-{ \
-       static const std::string name = n; \
-       return name; \
-}
+#include "Defines.h"
 
 /**
  *  Sungear Engine Core Serde.\n\n
@@ -97,9 +91,9 @@ namespace SGCore::Serde
                       "This type is not serializable. Please, implement specialization of SerdeSpec for this type.");
 
         /**
-         * Required.
+         * Required field. See sg_serde_define_type_name in SGCore/Serde/Defines.h
          */
-        SG_SERDE_DEFINE_TYPE_NAME("Example")
+        sg_serde_define_type_name("Example")
 
         /**
          * Is T is pointer type
@@ -537,6 +531,12 @@ namespace SGCore::Serde
 
                 // trying to serialize as one of derived types of ptr_element_type
                 tryToSerializeAsDerivedType<ptr_element_type, TFormatType>(tmpView, std::forward<SharedDataT>(sharedData)...);
+
+                // inheriting discard status
+                if(tmpView.isDiscarded())
+                {
+                    valueView.discard();
+                }
             }
             else
             {
@@ -720,10 +720,21 @@ namespace SGCore::Serde
                         tmpView.container() = valueView.container();
                         tmpView.m_version = valueView.m_version;
                         tmpView.m_data = derivedTypeObj;
+                        // inheriting discard status
+                        if(valueView.isDiscarded())
+                        {
+                            tmpView.discard();
+                        }
 
                         trySerializeAsDerivedType<OriginalT, CurrentDerivedT, TFormatType, 0>(tmpView,
                             std::forward<SharedDataT>(sharedData)...
                         );
+
+                        // inheriting discard status
+                        if(tmpView.isDiscarded())
+                        {
+                            valueView.discard();
+                        }
                     }
                     else
                     {
@@ -775,6 +786,12 @@ namespace SGCore::Serde
             tmpView.m_data = baseObj;
 
             invokeSerdeSpecSerialize(tmpView, std::forward<SharedDataT>(sharedData)...);
+
+            // inheriting discard status
+            if(tmpView.isDiscarded())
+            {
+                valueView.discard();
+            }
         }
 
         /**

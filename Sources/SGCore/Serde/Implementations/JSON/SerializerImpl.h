@@ -50,29 +50,29 @@ std::string SerializerImpl<FormatType::JSON>::to(const T& value,
 
     // =======================
 
-    if(!valueView.isDiscarded())
+    if(valueView.isDiscarded())
     {
-        if constexpr(Detail::has_type_name<T, FormatType::JSON>)
+        return "{\n}";
+    }
+
+    if constexpr(Detail::has_type_name<T, FormatType::JSON>)
+    {
+        // if type name was changed after serialization with dynamic checks (it means that type was serialized as derived type)
+        // then we are adding type name field
+        if(valueTypeName != valueView.container().m_typeNameValue->GetString())
         {
-            // if type name was changed after serialization with dynamic checks (it means that type was serialized as derived type)
-            // then we are adding type name field
-            if(valueTypeName != valueView.container().m_typeNameValue->GetString())
+            if(toDocument.IsObject())
             {
-                if(toDocument.IsObject())
-                {
-                    // adding type name of T after serializing (because type name can be changed)
-                    toDocument.AddMember(Detail::s_typeNameFieldName, typeNameSectionValue, toDocument.GetAllocator());
-                }
-                else if(toDocument.IsArray())
-                {
-                    rapidjson::Value typeNameElement(rapidjson::kObjectType);
-                    typeNameElement.AddMember(Detail::s_arrayTypeNameFieldName, typeNameSectionValue, toDocument.GetAllocator());
-                    toDocument.PushBack(typeNameElement, toDocument.GetAllocator());
-                }
+                // adding type name of T after serializing (because type name can be changed)
+                toDocument.AddMember(Detail::s_typeNameFieldName, typeNameSectionValue, toDocument.GetAllocator());
+            }
+            else if(toDocument.IsArray())
+            {
+                rapidjson::Value typeNameElement(rapidjson::kObjectType);
+                typeNameElement.AddMember(Detail::s_arrayTypeNameFieldName, typeNameSectionValue, toDocument.GetAllocator());
+                toDocument.PushBack(typeNameElement, toDocument.GetAllocator());
             }
         }
-
-        // return "{\t}"; // todo: maybe?
     }
 
     // converting to string
@@ -100,15 +100,9 @@ void SerializerImpl<FormatType::JSON>::from(const std::string& formattedText,
     rapidjson::Document document;
     document.Parse(formattedText.c_str());
 
-    // trying to get 'version' member from document
-    if(document.IsObject() && !document.HasMember(Detail::s_versionFieldName))
-    {
-        outputLog = "Error: Broken JSON document: root member '" + std::string(Detail::s_versionFieldName) + "' does not exist.\n";
-        return;
-    }
-
     // getting 'version' member from document
     std::string version = "1";
+    // trying to get 'version' member from document
     if(document.IsObject() && document.HasMember(Detail::s_versionFieldName))
     {
         version = document[Detail::s_versionFieldName].GetString();

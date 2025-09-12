@@ -55,7 +55,7 @@ namespace SGCore::Serde
                 ByteFileAsset
             >
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::IAsset")
+        sg_serde_define_type_name("SGCore::IAsset")
         static inline constexpr bool is_pointer_type = false;
 
         template<typename... SharedDataT>
@@ -76,7 +76,7 @@ namespace SGCore::Serde
             DerivedTypes<ICubemapTexture>
     {
         /// We indicate the type we are working with.
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::ITexture2D")
+        sg_serde_define_type_name("SGCore::ITexture2D")
         /// ITexture2D is not pointer type. That is, ITexture2D is not a type that uses RAII to store the pointer and to wrap it.
         static inline constexpr bool is_pointer_type = false;
 
@@ -118,7 +118,7 @@ namespace SGCore::Serde
             BaseTypes<IAsset>,
             DerivedTypes<AudioTrackAsset>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::ByteFileAsset")
+        sg_serde_define_type_name("SGCore::ByteFileAsset")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const ByteFileAsset, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept;
@@ -133,7 +133,7 @@ namespace SGCore::Serde
             BaseTypes<ByteFileAsset>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::AudioTrackAsset")
+        sg_serde_define_type_name("SGCore::AudioTrackAsset")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const AudioTrackAsset, TFormatType>& valueView) noexcept;
@@ -148,7 +148,7 @@ namespace SGCore::Serde
             BaseTypes<ITexture2D>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::ICubemapTexture")
+        sg_serde_define_type_name("SGCore::ICubemapTexture")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const ICubemapTexture, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept;
@@ -165,7 +165,7 @@ namespace SGCore::Serde
             BaseTypes<IAsset>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::TextFileAsset")
+        sg_serde_define_type_name("SGCore::TextFileAsset")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const TextFileAsset, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept;
@@ -180,7 +180,7 @@ namespace SGCore::Serde
             BaseTypes<IAsset>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::IShader")
+        sg_serde_define_type_name("SGCore::IShader")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const IShader, TFormatType>& valueView) noexcept;
@@ -197,7 +197,7 @@ namespace SGCore::Serde
             BaseTypes<IAsset>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::ShaderAnalyzedFile")
+        sg_serde_define_type_name("SGCore::ShaderAnalyzedFile")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const ShaderAnalyzedFile, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept;
@@ -210,7 +210,7 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     struct SerdeSpec<SGSLESubShader, TFormatType> : BaseTypes<>, DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::SGSLESubShader")
+        sg_serde_define_type_name("SGCore::SGSLESubShader")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const SGSLESubShader, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept;
@@ -225,7 +225,7 @@ namespace SGCore::Serde
             BaseTypes<IAsset>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::IMaterial")
+        sg_serde_define_type_name("SGCore::IMaterial")
         static inline constexpr bool is_pointer_type = false;
 
         template<typename... SharedDataT>
@@ -242,7 +242,7 @@ namespace SGCore::Serde
             BaseTypes<IAsset>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::IMeshData")
+        sg_serde_define_type_name("SGCore::IMeshData")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const IMeshData, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept;
@@ -259,7 +259,7 @@ namespace SGCore::Serde
             BaseTypes<IAsset>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::ModelAsset")
+        sg_serde_define_type_name("SGCore::ModelAsset")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const ModelAsset, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept;
@@ -274,7 +274,7 @@ namespace SGCore::Serde
             BaseTypes<IAsset>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::Skeleton")
+        sg_serde_define_type_name("SGCore::Skeleton")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const Skeleton, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept;
@@ -289,7 +289,7 @@ namespace SGCore::Serde
             BaseTypes<IAsset>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::Bone")
+        sg_serde_define_type_name("SGCore::Bone")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const Bone, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept;
@@ -304,7 +304,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::MeshBoneData")
+        sg_serde_define_type_name("SGCore::MeshBoneData")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const MeshBoneData, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept;
@@ -319,7 +319,7 @@ namespace SGCore::Serde
             BaseTypes<IAsset>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::AnimationsFile")
+        sg_serde_define_type_name("SGCore::AnimationsFile")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const AnimationsFile, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept;
@@ -334,7 +334,7 @@ namespace SGCore::Serde
             BaseTypes<IAsset>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::SkeletalAnimationAsset")
+        sg_serde_define_type_name("SGCore::SkeletalAnimationAsset")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const SkeletalAnimationAsset, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept;
@@ -349,7 +349,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::SkeletalBoneAnimation")
+        sg_serde_define_type_name("SGCore::SkeletalBoneAnimation")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const SkeletalBoneAnimation, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept;
@@ -364,7 +364,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::AssetRef")
+        sg_serde_define_type_name("SGCore::AssetRef")
         static inline constexpr bool is_pointer_type = false;
 
         // WE ARE SERIALIZING ONLY META INFO OF ASSET BECAUSE IT IS ASSET REFERENCE. WE DO NOT NEED TO DO SERIALIZATION OF DATA
@@ -384,7 +384,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::AssetsPackage::DataMarkup")
+        sg_serde_define_type_name("SGCore::AssetsPackage::DataMarkup")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const AssetsPackage::DataMarkup, TFormatType>& valueView) noexcept;

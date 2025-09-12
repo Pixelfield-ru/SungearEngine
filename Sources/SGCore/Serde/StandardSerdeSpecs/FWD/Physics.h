@@ -22,7 +22,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("btBoxShape")
+        sg_serde_define_type_name("btBoxShape")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const btBoxShape, TFormatType>& valueView,
@@ -41,7 +41,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("btCompoundShape")
+        sg_serde_define_type_name("btCompoundShape")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const btCompoundShape, TFormatType>& valueView,
@@ -60,7 +60,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("btCollisionShape")
+        sg_serde_define_type_name("btCollisionShape")
         static inline constexpr bool is_pointer_type = false;
 
         template<typename... SharedDataT>
@@ -85,7 +85,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("btTransform")
+        sg_serde_define_type_name("btTransform")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const btTransform, TFormatType>& valueView) noexcept;
@@ -100,7 +100,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("btVector3")
+        sg_serde_define_type_name("btVector3")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const btVector3, TFormatType>& valueView) noexcept;
@@ -115,7 +115,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("btQuaternion")
+        sg_serde_define_type_name("btQuaternion")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const btQuaternion, TFormatType>& valueView) noexcept;

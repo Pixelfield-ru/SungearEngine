@@ -25,7 +25,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<EntityBaseInfo>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::UniqueNameWrapper")
+        sg_serde_define_type_name("SGCore::UniqueNameWrapper")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const UniqueNameWrapper, TFormatType>& valueView) noexcept;
@@ -40,7 +40,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::UniqueName")
+        sg_serde_define_type_name("SGCore::UniqueName")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const UniqueName, TFormatType>& valueView) noexcept;
@@ -55,7 +55,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::LoadablePluginConfig")
+        sg_serde_define_type_name("SGCore::LoadablePluginConfig")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const LoadablePluginConfig, TFormatType>& valueView) noexcept;
@@ -70,7 +70,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::Config")
+        sg_serde_define_type_name("SGCore::Config")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const Config, TFormatType>& valueView) noexcept;
@@ -85,7 +85,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::InterpolatedPath")
+        sg_serde_define_type_name("SGCore::InterpolatedPath")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const InterpolatedPath, TFormatType>& valueView) noexcept;

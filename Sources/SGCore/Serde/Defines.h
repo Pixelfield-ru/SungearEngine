@@ -5,6 +5,13 @@
 #ifndef SUNGEARENGINE_SERDE_DEFINES_H
 #define SUNGEARENGINE_SERDE_DEFINES_H
 
+#define sg_serde_define_type_name(n)            \
+static const std::string& type_name() noexcept  \
+{                                               \
+    static const std::string name = n;          \
+    return name;                                \
+}
+
 #define sg_serde_as_friend()                                    \
 template<typename T, SGCore::Serde::FormatType TFormatType>     \
 friend struct SGCore::Serde::SerdeSpec;                         \

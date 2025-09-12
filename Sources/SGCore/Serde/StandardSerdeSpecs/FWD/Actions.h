@@ -33,7 +33,7 @@ namespace SGCore::Serde
                 KeyboardKeyReleasedAction
             >
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::IAction")
+        sg_serde_define_type_name("SGCore::IAction")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const IAction<ActionReturnT(ExecuteArgs...)>, TFormatType>& valueView) noexcept;
@@ -48,7 +48,7 @@ namespace SGCore::Serde
             BaseTypes<IAction<bool()>>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::AlwaysTrueAction")
+        sg_serde_define_type_name("SGCore::AlwaysTrueAction")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const AlwaysTrueAction, TFormatType>& valueView) noexcept;
@@ -63,7 +63,7 @@ namespace SGCore::Serde
             BaseTypes<IAction<bool()>>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::AlwaysFalseAction")
+        sg_serde_define_type_name("SGCore::AlwaysFalseAction")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const AlwaysFalseAction, TFormatType>& valueView)  noexcept;
@@ -78,7 +78,7 @@ namespace SGCore::Serde
             BaseTypes<IAction<KeyboardKeyActionType()>>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::KeyboardKeyAction")
+        sg_serde_define_type_name("SGCore::KeyboardKeyAction")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const KeyboardKeyAction, TFormatType>& valueView) noexcept;
@@ -93,7 +93,7 @@ namespace SGCore::Serde
             BaseTypes<IAction<bool()>>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::KeyboardKeyDownAction")
+        sg_serde_define_type_name("SGCore::KeyboardKeyDownAction")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const KeyboardKeyDownAction, TFormatType>& valueView) noexcept;
@@ -108,7 +108,7 @@ namespace SGCore::Serde
             BaseTypes<IAction<bool()>>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::KeyboardKeyPressedAction")
+        sg_serde_define_type_name("SGCore::KeyboardKeyPressedAction")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const KeyboardKeyPressedAction, TFormatType>& valueView) noexcept;
@@ -123,7 +123,7 @@ namespace SGCore::Serde
             BaseTypes<IAction<bool()>>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::KeyboardKeyReleasedAction")
+        sg_serde_define_type_name("SGCore::KeyboardKeyReleasedAction")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const KeyboardKeyReleasedAction, TFormatType>& valueView) noexcept;

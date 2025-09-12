@@ -49,7 +49,7 @@ namespace SGCore::Serde
             BaseTypes<UniqueNameWrapper>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::EntityBaseInfo")
+        sg_serde_define_type_name("SGCore::EntityBaseInfo")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const EntityBaseInfo, TFormatType>& valueView) noexcept;
@@ -64,7 +64,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::TransformBase")
+        sg_serde_define_type_name("SGCore::TransformBase")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const TransformBase, TFormatType>& valueView) noexcept;
@@ -79,7 +79,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::Transform")
+        sg_serde_define_type_name("SGCore::Transform")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const Transform, TFormatType>& valueView) noexcept;
@@ -94,7 +94,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::Pickable")
+        sg_serde_define_type_name("SGCore::Pickable")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const Pickable, TFormatType>& valueView,
@@ -113,7 +113,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::AABB")
+        sg_serde_define_type_name("SGCore::AABB")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const AABB<ScalarT>, TFormatType>& valueView) noexcept;
@@ -128,7 +128,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::RenderingBase")
+        sg_serde_define_type_name("SGCore::RenderingBase")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const RenderingBase, TFormatType>& valueView) noexcept;
@@ -143,7 +143,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::AudioSource")
+        sg_serde_define_type_name("SGCore::AudioSource")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const AudioSource, TFormatType>& valueView) noexcept;
@@ -158,7 +158,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::Atmosphere")
+        sg_serde_define_type_name("SGCore::Atmosphere")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const Atmosphere, TFormatType>& valueView) noexcept;
@@ -173,7 +173,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::SphereGizmo")
+        sg_serde_define_type_name("SGCore::SphereGizmo")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const SphereGizmo, TFormatType>& valueView) noexcept;
@@ -188,7 +188,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::BoxGizmo")
+        sg_serde_define_type_name("SGCore::BoxGizmo")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const BoxGizmo, TFormatType>& valueView) noexcept;
@@ -203,7 +203,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::GizmoBase")
+        sg_serde_define_type_name("SGCore::GizmoBase")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const GizmoBase, TFormatType>& valueView) noexcept;
@@ -218,7 +218,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::LineGizmo")
+        sg_serde_define_type_name("SGCore::LineGizmo")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const LineGizmo, TFormatType>& valueView) noexcept;
@@ -233,7 +233,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::MeshBase")
+        sg_serde_define_type_name("SGCore::MeshBase")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const MeshBase, TFormatType>& valueView) noexcept;
@@ -248,7 +248,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::Mesh")
+        sg_serde_define_type_name("SGCore::Mesh")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const Mesh, TFormatType>& valueView) noexcept;
@@ -263,7 +263,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::LightBase")
+        sg_serde_define_type_name("SGCore::LightBase")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const LightBase, TFormatType>& valueView) noexcept;
@@ -278,7 +278,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::DirectionalLight")
+        sg_serde_define_type_name("SGCore::DirectionalLight")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const DirectionalLight, TFormatType>& valueView) noexcept;
@@ -293,7 +293,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::Controllable3D")
+        sg_serde_define_type_name("SGCore::Controllable3D")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const Controllable3D, TFormatType>& valueView) noexcept;
@@ -308,7 +308,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::Camera3D")
+        sg_serde_define_type_name("SGCore::Camera3D")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const Camera3D, TFormatType>& valueView) noexcept;
@@ -323,7 +323,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::UICamera")
+        sg_serde_define_type_name("SGCore::UICamera")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const UICamera, TFormatType>& valueView) noexcept;
@@ -338,7 +338,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::TransparentEntityTag")
+        sg_serde_define_type_name("SGCore::TransparentEntityTag")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const TransparentEntityTag, TFormatType>& valueView) noexcept;
@@ -353,7 +353,7 @@ namespace SGCore::Serde
            BaseTypes<>,
            DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::OpaqueEntityTag")
+        sg_serde_define_type_name("SGCore::OpaqueEntityTag")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const OpaqueEntityTag, TFormatType>& valueView) noexcept;
@@ -368,7 +368,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::MotionPlanner")
+        sg_serde_define_type_name("SGCore::MotionPlanner")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const MotionPlanner, TFormatType>& valueView) noexcept;
@@ -381,7 +381,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::MotionPlannerNode")
+        sg_serde_define_type_name("SGCore::MotionPlannerNode")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const MotionPlannerNode, TFormatType>& valueView) noexcept;
@@ -396,7 +396,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::MotionPlannerConnection")
+        sg_serde_define_type_name("SGCore::MotionPlannerConnection")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const MotionPlannerConnection, TFormatType>& valueView) noexcept;
@@ -411,7 +411,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::Rigidbody3D")
+        sg_serde_define_type_name("SGCore::Rigidbody3D")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const Rigidbody3D, TFormatType>& valueView) noexcept;
@@ -426,7 +426,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::IKRootJoint")
+        sg_serde_define_type_name("SGCore::IKRootJoint")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const IKRootJoint, TFormatType>& valueView) noexcept;
@@ -441,7 +441,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::IKJoint")
+        sg_serde_define_type_name("SGCore::IKJoint")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const IKJoint, TFormatType>& valueView) noexcept;

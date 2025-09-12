@@ -24,7 +24,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::RenderState")
+        sg_serde_define_type_name("SGCore::RenderState")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const RenderState, TFormatType>& valueView) noexcept;
@@ -39,7 +39,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::MeshRenderState")
+        sg_serde_define_type_name("SGCore::MeshRenderState")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const MeshRenderState, TFormatType>& valueView) noexcept;
@@ -54,7 +54,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::BlendingState")
+        sg_serde_define_type_name("SGCore::BlendingState")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const BlendingState, TFormatType>& valueView) noexcept;
@@ -69,7 +69,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::ShaderTextureBinding")
+        sg_serde_define_type_name("SGCore::ShaderTextureBinding")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const ShaderTextureBinding, TFormatType>& valueView) noexcept;
@@ -84,7 +84,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::ShaderDefine")
+        sg_serde_define_type_name("SGCore::ShaderDefine")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const ShaderDefine, TFormatType>& valueView) noexcept;

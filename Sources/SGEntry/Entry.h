@@ -45,7 +45,7 @@ struct Derived1 : Derived
 template<SGCore::Serde::FormatType TFormatType>
 struct SGCore::Serde::SerdeSpec<Derived1, TFormatType> : SGCore::Serde::BaseTypes<Derived>
 {
-    SG_SERDE_DEFINE_TYPE_NAME("Derived1")
+    sg_serde_define_type_name("Derived1")
     static inline constexpr bool is_pointer_type = false;
 
     static void serialize(SGCore::Serde::SerializableValueView<const Derived1, TFormatType>& valueView) noexcept
@@ -62,7 +62,7 @@ struct SGCore::Serde::SerdeSpec<Derived1, TFormatType> : SGCore::Serde::BaseType
 template<SGCore::Serde::FormatType TFormatType>
 struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseTypes<Derived>
 {
-    SG_SERDE_DEFINE_TYPE_NAME("Derived0")
+    sg_serde_define_type_name("Derived0")
     static inline constexpr bool is_pointer_type = false;
 
     static void serialize(SGCore::Serde::SerializableValueView<const Derived0, TFormatType>& valueView) noexcept
@@ -122,7 +122,7 @@ struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseType
 template<SGCore::Serde::FormatType TFormatType>
 struct SGCore::Serde::SerdeSpec<Derived, TFormatType> : SGCore::Serde::BaseTypes<Base>, SGCore::Serde::DerivedTypes<Derived0, Derived1>
 {
-    SG_SERDE_DEFINE_TYPE_NAME("Derived")
+    sg_serde_define_type_name("Derived")
     static inline constexpr bool is_pointer_type = false;
 
     static void serialize(SGCore::Serde::SerializableValueView<const Derived, TFormatType>& valueView) noexcept

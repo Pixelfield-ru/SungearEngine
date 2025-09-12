@@ -50,7 +50,7 @@ namespace SGCore::Serde
                 IKResolver
             >
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::ISystem")
+        sg_serde_define_type_name("SGCore::ISystem")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const ISystem, TFormatType>& valueView) noexcept;
@@ -65,7 +65,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::IParallelSystem")
+        sg_serde_define_type_name("SGCore::IParallelSystem")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const IParallelSystem<ParallelSystemT>, TFormatType>& valueView) noexcept;
@@ -80,7 +80,7 @@ namespace SGCore::Serde
             BaseTypes<ISystem>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::Controllables3DUpdater")
+        sg_serde_define_type_name("SGCore::Controllables3DUpdater")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const Controllables3DUpdater, TFormatType>& valueView) noexcept;
@@ -95,7 +95,7 @@ namespace SGCore::Serde
             BaseTypes<IParallelSystem<PhysicsWorld3D>, ISystem>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::PhysicsWorld3D")
+        sg_serde_define_type_name("SGCore::PhysicsWorld3D")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const PhysicsWorld3D, TFormatType>& valueView) noexcept;
@@ -110,7 +110,7 @@ namespace SGCore::Serde
             BaseTypes<ISystem>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::RenderingBasesUpdater")
+        sg_serde_define_type_name("SGCore::RenderingBasesUpdater")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const RenderingBasesUpdater, TFormatType>& valueView) noexcept;
@@ -125,7 +125,7 @@ namespace SGCore::Serde
             BaseTypes<ISystem>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::AtmosphereUpdater")
+        sg_serde_define_type_name("SGCore::AtmosphereUpdater")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const AtmosphereUpdater, TFormatType>& valueView) noexcept;
@@ -140,7 +140,7 @@ namespace SGCore::Serde
             BaseTypes<ISystem>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::DirectionalLightsUpdater")
+        sg_serde_define_type_name("SGCore::DirectionalLightsUpdater")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const DirectionalLightsUpdater, TFormatType>& valueView) noexcept;
@@ -155,7 +155,7 @@ namespace SGCore::Serde
             BaseTypes<IParallelSystem<TransformationsUpdater>, ISystem>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::TransformationsUpdater")
+        sg_serde_define_type_name("SGCore::TransformationsUpdater")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const TransformationsUpdater, TFormatType>& valueView) noexcept;
@@ -170,7 +170,7 @@ namespace SGCore::Serde
             BaseTypes<ISystem>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::BoxGizmosRenderer")
+        sg_serde_define_type_name("SGCore::BoxGizmosRenderer")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const BoxGizmosRenderer, TFormatType>& valueView) noexcept;
@@ -185,7 +185,7 @@ namespace SGCore::Serde
             BaseTypes<ISystem>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::LineGizmosRenderer")
+        sg_serde_define_type_name("SGCore::LineGizmosRenderer")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const LineGizmosRenderer, TFormatType>& valueView) noexcept;
@@ -200,7 +200,7 @@ namespace SGCore::Serde
         BaseTypes<ISystem>,
         DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::SphereGizmosUpdater")
+        sg_serde_define_type_name("SGCore::SphereGizmosUpdater")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const SphereGizmosUpdater, TFormatType>& valueView) noexcept;
@@ -215,7 +215,7 @@ namespace SGCore::Serde
             BaseTypes<IParallelSystem<OctreesSolver>, ISystem>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::OctreesSolver")
+        sg_serde_define_type_name("SGCore::OctreesSolver")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const OctreesSolver, TFormatType>& valueView) noexcept;
@@ -230,7 +230,7 @@ namespace SGCore::Serde
             BaseTypes<ISystem>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::AudioProcessor")
+        sg_serde_define_type_name("SGCore::AudioProcessor")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const AudioProcessor, TFormatType>& valueView) noexcept;
@@ -245,7 +245,7 @@ namespace SGCore::Serde
             BaseTypes<ISystem>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::MotionPlannersResolver")
+        sg_serde_define_type_name("SGCore::MotionPlannersResolver")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const MotionPlannersResolver, TFormatType>& valueView) noexcept;
@@ -260,7 +260,7 @@ namespace SGCore::Serde
             BaseTypes<ISystem>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("SGCore::IKResolver")
+        sg_serde_define_type_name("SGCore::IKResolver")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const IKResolver, TFormatType>& valueView) noexcept;

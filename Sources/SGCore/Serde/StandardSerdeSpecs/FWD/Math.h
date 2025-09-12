@@ -15,7 +15,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("glm::vec")
+        sg_serde_define_type_name("glm::vec")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const glm::vec<Length, T, Qualifier>, TFormatType>& valueView) noexcept;
@@ -30,7 +30,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("glm::qua")
+        sg_serde_define_type_name("glm::qua")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const glm::qua<T, Qualifier>, TFormatType>& valueView) noexcept;
@@ -45,7 +45,7 @@ namespace SGCore::Serde
             BaseTypes<>,
             DerivedTypes<>
     {
-        SG_SERDE_DEFINE_TYPE_NAME("glm::mat")
+        sg_serde_define_type_name("glm::mat")
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<const glm::mat<C, R, T, Qualifier>, TFormatType>& valueView) noexcept;
