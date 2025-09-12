@@ -280,7 +280,6 @@ void onUpdate(const double& dt, const double& fixedDt)
 
 int main()
 {
-    std::printf("SGEntry launched");
     using namespace SGCore;
     //std::printf("definitions: %i\n", register_definition<SGCore::SerializerSpec<std::int8_t>>::counter);
     
