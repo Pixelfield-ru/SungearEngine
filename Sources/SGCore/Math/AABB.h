@@ -27,6 +27,8 @@ namespace SGCore
         
         using mat4_t = glm::mat<4, 4, ScalarT, glm::defaultp>;
         using quat_t = glm::qua<ScalarT, glm::defaultp>;
+
+        virtual ~AABB() = default;
         
         AABB(const vec3_t& min, const vec3_t& max) noexcept : m_min(min), m_max(max) { }
         

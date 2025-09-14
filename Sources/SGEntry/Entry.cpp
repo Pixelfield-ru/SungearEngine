@@ -78,6 +78,9 @@ void coreInit()
 
     screenShader = SGCore::AssetManager::getInstance()->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
 
+    // SG_SERDE_ARG_COUNT();
+    // SG_SERDE_DEFINE_CONNECTION(Base, Derived)
+
     std::unique_ptr<Base> d = std::make_unique<Derived0>();
     d->a = 10;
     dynamic_cast<Derived0*>(d.get())->b = 0.14f;
@@ -91,6 +94,12 @@ void coreInit()
 
     const std::string output1 = SGCore::Serde::Serializer::toFormat(SGCore::Serde::FormatType::JSON, std::string("hello eto vashe kek"));
     SGCore::FileUtils::writeToFile("serializer_test2.txt", output1, false, false);
+
+    int a = 1;
+    SGCore::Ref<SGCore::AABB<float>> t = SGCore::MakeRef<MyTest0>();
+    const std::string output2 = SGCore::Serde::Serializer::toFormat(SGCore::Serde::FormatType::JSON, t);
+    SGCore::FileUtils::writeToFile("serializer_test3.txt", output2, false, false);
+    std::cout << "new a: " << a << std::endl;
 
     std::string testDeserLog;
     std::unique_ptr<Base> dd;

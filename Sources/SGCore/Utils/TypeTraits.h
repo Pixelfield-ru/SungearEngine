@@ -85,6 +85,30 @@ namespace SGCore
 
     // ======================================================================================================================
     // ======================================================================================================================
+
+    template<typename T>
+    struct TypeWrapper
+    {
+        using type = T;
+    };
+
+    template<typename FuncT, typename... Types>
+    constexpr void for_types(FuncT&& func)
+    {
+        (func(TypeWrapper<Types>{}), ...);
+    }
+
+    template<typename FuncT, typename TypesContainerT, size_t... Indices>
+    constexpr void for_types_impl(FuncT&& func, TypesContainerT, std::index_sequence<Indices...>)
+    {
+        (func(TypeWrapper<typename TypesContainerT::template get_type<Indices>>{}), ...);
+    }
+
+    template<typename FuncT, typename TypesContainerT>
+    constexpr void for_types(FuncT&& func, TypesContainerT)
+    {
+        for_types_impl(std::forward<FuncT>(func), TypesContainerT{}, std::make_index_sequence<TypesContainerT::types_count>{});
+    }
     
     template<typename T, size_t RepeatsCnt>
     struct repeated_type
@@ -261,7 +285,7 @@ namespace SGCore
         }
 
     public:
-        using type = decltype(impl(std::make_index_sequence<TypesContainer::types_size>()));
+        using type = decltype(impl(std::make_index_sequence<TypesContainer::types_count>()));
     };
 
     template<types_container_t TypesContainer, typename T>

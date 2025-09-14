@@ -42,6 +42,82 @@ struct Derived1 : Derived
     float g = 3.0f;
 };
 
+struct MyTest : SGCore::AABB<float>
+{
+    int m_test = 3;
+};
+
+struct MyTest0 : MyTest
+{
+    int m_otherTest = 201;
+};
+
+template<SGCore::Serde::FormatType TFormatType>
+struct SGCore::Serde::SerdeSpec<MyTest, TFormatType> : SGCore::Serde::BaseTypes<SGCore::AABB<float>>, SGCore::Serde::DerivedTypes<MyTest0>
+{
+    sg_serde_define_type_name("MyTest")
+    static inline constexpr bool is_pointer_type = false;
+
+    static void serialize(SGCore::Serde::SerializableValueView<const MyTest, TFormatType>& valueView, const int& a) noexcept
+    {
+        std::cout << "printing a: " << a << std::endl;
+        const_cast<MyTest*>(valueView.m_data)->m_test = a;
+        // valueView.setDataMemberValue(&MyTest::m_test, a);
+        // a = 3;
+        valueView.container().addMember("m_test", valueView.m_data->m_test);
+    }
+
+    static void serialize(SGCore::Serde::SerializableValueView<const MyTest, TFormatType>& valueView, int& a) noexcept
+    {
+        std::cout << "printing a: " << a << std::endl;
+        const_cast<MyTest*>(valueView.m_data)->m_test = a;
+        a = 3;
+        valueView.container().addMember("m_test", valueView.m_data->m_test);
+
+        // valueView.discard();
+    }
+
+    static void serialize(SGCore::Serde::SerializableValueView<const MyTest, TFormatType>& valueView) noexcept
+    {
+        std::cout << "no a!" << std::endl;
+        valueView.container().addMember("m_test", valueView.m_data->m_test);
+
+        // valueView.discard();
+    }
+
+    static void deserialize(SGCore::Serde::DeserializableValueView<MyTest, TFormatType>& valueView) noexcept
+    {
+        const auto test = valueView.container().template getMember<int>("m_test");
+        if(test)
+        {
+            valueView.m_data->m_test = *test;
+        }
+    }
+};
+
+template<SGCore::Serde::FormatType TFormatType>
+struct SGCore::Serde::SerdeSpec<MyTest0, TFormatType> : SGCore::Serde::BaseTypes<MyTest>
+{
+    sg_serde_define_type_name("MyTest0")
+    static inline constexpr bool is_pointer_type = false;
+
+    static void serialize(SGCore::Serde::SerializableValueView<const MyTest0, TFormatType>& valueView) noexcept
+    {
+        valueView.container().addMember("m_otherTest", valueView.m_data->m_otherTest);
+
+        // valueView.discard();
+    }
+
+    static void deserialize(SGCore::Serde::DeserializableValueView<MyTest0, TFormatType>& valueView) noexcept
+    {
+        const auto test = valueView.container().template getMember<int>("m_otherTest");
+        if(test)
+        {
+            valueView.m_data->m_otherTest = *test;
+        }
+    }
+};
+
 template<SGCore::Serde::FormatType TFormatType>
 struct SGCore::Serde::SerdeSpec<Derived1, TFormatType> : SGCore::Serde::BaseTypes<Derived>
 {
@@ -178,6 +254,14 @@ struct SGCore::Serde::SerdeSpec<Base, TFormatType> : SGCore::Serde::DerivedTypes
         std::printf("base deserializing\n");
     }
 };
+
+SG_SERDE_DECLARE_EXTERNAL_DERIVED(SGCore::AABB<>, MyTest, AABBToMyTest)
+SG_SERDE_REGISTER_DYNAMIC_SERDE(SGCore::AABB<>, MyTest, AABBToMyTest)
+SG_SERDE_REGISTER_DYNAMIC_SERDE(SGCore::AABB<>, MyTest, AABBToMyTest, int&)
+SG_SERDE_REGISTER_DYNAMIC_SERDE(SGCore::AABB<>, MyTest, AABBToMyTest, const int&)
+
+SG_SERDE_DECLARE_EXTERNAL_DERIVED(MyTest, MyTest0, MyTestToMyTest0)
+SG_SERDE_REGISTER_DYNAMIC_SERDE(MyTest, MyTest0, MyTestToMyTest0)
 
 void coreInit();
 

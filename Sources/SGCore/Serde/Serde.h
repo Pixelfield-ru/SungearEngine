@@ -79,6 +79,29 @@ namespace SGCore::Serde
     // ==============================================================================
     // ==============================================================================
     // ==============================================================================
+
+    template<FormatType TFormatType, typename... SharedDataT>
+    struct IDynamicSerde
+    {
+        virtual ~IDynamicSerde() = default;
+
+        virtual bool invokeSerialize(const std::byte* derived, SGCore::Serde::SerializableValueContainer<TFormatType>& container, const std::string& version, bool& isDiscarded, SharedDataT&&... sharedData) noexcept = 0;
+    };
+
+    template<typename T>
+    struct DynamicSerdeStorage
+    {
+        template<FormatType TFormatType, typename... SharedDataT>
+        static auto& dynamicSerializers() noexcept
+        {
+            static std::vector<IDynamicSerde<TFormatType, SharedDataT...>*> serializers;
+            return serializers;
+        }
+    };
+
+    // ==============================================================================
+    // ==============================================================================
+    // ==============================================================================
     
     /**
      * Primary SerdeSpec structure. Use this structure body as example to implement custom SerdeSpec.\n
@@ -318,6 +341,38 @@ namespace SGCore::Serde
 
         template<FormatType TFormatType>
         friend struct SerializerImpl;
+
+        /// Collects all base types of \p FromT type and returns \p std::tuple with all base types from very base type to \p FromT type
+        template<typename FromT, FormatType TFormatType>
+        struct collect_all_base_types
+        {
+        private:
+            template<typename CurrentT, size_t... Indices>
+            consteval static auto impl(std::index_sequence<Indices...>)
+            {
+                using out_type = types_container_cat_t<
+                        typename SerdeSpec<CurrentT, TFormatType>::base_types_container,
+                        typename collect_all_base_types<typename SerdeSpec<CurrentT, TFormatType>::template get_base_type<Indices>, TFormatType>::not_reversed_type...>;
+
+                return out_type { };
+            }
+
+            consteval static auto get()
+            {
+                if constexpr(Utils::isBaseTypesProvided<FromT, TFormatType>())
+                {
+                    return decltype(impl<FromT>(std::make_index_sequence<Utils::getBaseTypesCount<FromT, TFormatType>()> {})) { };
+                }
+                else
+                {
+                    return types_container<> { };
+                }
+            }
+
+        public:
+            using not_reversed_type = std::remove_cvref_t<decltype(get())>;
+            using type = reverse_types_container_t<not_reversed_type>;
+        };
         
         /**
          * Converts object to some format (JSON, BSON, YAML, etc)
@@ -466,38 +521,6 @@ namespace SGCore::Serde
                 SG_ASSERT(false, assertMsg.data());
             }
         }
-
-        /// Collects all base types of \p FromT type and returns \p std::tuple with all base types from very base type to \p FromT type
-        template<typename FromT, FormatType TFormatType>
-        struct collect_all_base_types
-        {
-        private:
-            template<typename CurrentT, size_t... Indices>
-            consteval static auto impl(std::index_sequence<Indices...>)
-            {
-                using out_type = types_container_cat_t<
-                        typename SerdeSpec<CurrentT, TFormatType>::base_types_container,
-                        typename collect_all_base_types<typename SerdeSpec<CurrentT, TFormatType>::template get_base_type<Indices>, TFormatType>::not_reversed_type...>;
-
-                return out_type { };
-            }
-
-            consteval static auto get()
-            {
-                if constexpr(Utils::isBaseTypesProvided<FromT, TFormatType>())
-                {
-                    return decltype(impl<FromT>(std::make_index_sequence<Utils::getBaseTypesCount<FromT, TFormatType>()> {})) { };
-                }
-                else
-                {
-                    return types_container<> { };
-                }
-            }
-
-        public:
-            using not_reversed_type = std::remove_cvref_t<decltype(get())>;
-            using type = reverse_types_container_t<not_reversed_type>;
-        };
         
         /**
          * Serializes value with attempt at dynamic casts to derived types.\n
@@ -700,7 +723,7 @@ namespace SGCore::Serde
          * @param valueView
          */
         template<typename OriginalT, typename CurrentT, FormatType TFormatType, size_t CurrentDerivedIdx, typename... SharedDataT>
-        static void trySerializeAsDerivedType(SerializableValueView<const CurrentT, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
+        static void trySerializeAsDerivedTypeImpl(SerializableValueView<const CurrentT, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
             if constexpr(Utils::isDerivedTypesProvided<CurrentT, TFormatType>())
             {
@@ -726,7 +749,7 @@ namespace SGCore::Serde
                             tmpView.discard();
                         }
 
-                        trySerializeAsDerivedType<OriginalT, CurrentDerivedT, TFormatType, 0>(tmpView,
+                        trySerializeAsDerivedTypeImpl<OriginalT, CurrentDerivedT, TFormatType, 0>(tmpView,
                             std::forward<SharedDataT>(sharedData)...
                         );
 
@@ -739,7 +762,7 @@ namespace SGCore::Serde
                     else
                     {
                         // continue to search needed derived type in derived types of OriginalT types
-                        trySerializeAsDerivedType<OriginalT, CurrentT, TFormatType,
+                        trySerializeAsDerivedTypeImpl<OriginalT, CurrentT, TFormatType,
                                 CurrentDerivedIdx + 1>(valueView,
                                                        std::forward<SharedDataT>(
                                                                sharedData
@@ -748,6 +771,23 @@ namespace SGCore::Serde
                     }
                 }
             }
+
+            // ====================== trying to serialize as external derived type
+
+            for(const auto& serializer : DynamicSerdeStorage<OriginalT>::template dynamicSerializers<TFormatType, SharedDataT...>())
+            {
+                bool isDiscarded = valueView.isDiscarded();
+                if(serializer->invokeSerialize(reinterpret_cast<const std::byte*>(valueView.m_data), valueView.container(), valueView.m_version, isDiscarded, std::forward<SharedDataT>(sharedData)...))
+                {
+                    if(isDiscarded)
+                    {
+                        valueView.discard();
+                    }
+                    return;
+                }
+            }
+
+            // ===========================================
 
             if constexpr(Utils::isDerivedTypesProvided<CurrentT, TFormatType>())
             {
@@ -848,25 +888,7 @@ namespace SGCore::Serde
         template<typename T, FormatType TFormatType, typename... SharedDataT>
         static void tryToSerializeAsDerivedType(SerializableValueView<const T, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
-            // serializing derived types only if information of them was provided and count of derived types > 0
-            if constexpr(Utils::isDerivedTypesProvided<T, TFormatType>())
-            {
-                trySerializeAsDerivedType<T, T, TFormatType, 0>(valueView, std::forward<SharedDataT>(sharedData)...);
-            }
-            else // else just using static serialization
-            {
-                checkSerializationOfAbstractType<T, TFormatType>();
-
-                // collecting all base types of T
-                using base_types = typename collect_all_base_types<T, TFormatType>::type;
-
-                // calling serialize all base types using 'base_types'
-                serializeBaseTypes<base_types>(valueView, std::make_index_sequence<base_types::types_count>(),
-                                               std::forward<SharedDataT>(sharedData)...);
-
-                // calling serialization of T
-                invokeSerdeSpecSerialize(valueView, std::forward<SharedDataT>(sharedData)...);
-            }
+            trySerializeAsDerivedTypeImpl<T, T, TFormatType, 0>(valueView, std::forward<SharedDataT>(sharedData)...);
         }
         
         // =====================================================================================
@@ -1386,7 +1408,6 @@ namespace SGCore::Serde
         using t_field_ptr_t = typename t_field_ptr<FieldT, std::is_class_v<T>>::type;
 
     public:
-
         template<FormatType>
         friend struct SerializerImpl;
 
@@ -1399,6 +1420,8 @@ namespace SGCore::Serde
         static inline constexpr FormatType format_type = TFormatType;
 
         const T* m_data { };
+
+        std::string m_version;
 
         /**
          * Discards writing this value section to file.
@@ -1434,8 +1457,6 @@ namespace SGCore::Serde
         }
 
     private:
-        std::string m_version;
-
         bool m_isDiscarded = false;
 
         SerializableValueContainer<TFormatType> m_valueContainer { };
@@ -1464,14 +1485,14 @@ namespace SGCore::Serde
 
         T* m_data { };
 
+        std::string m_version;
+
         DeserializableValueContainer<TFormatType>& container() noexcept
         {
             return m_valueContainer;
         }
 
     private:
-        std::string m_version;
-
         DeserializableValueContainer<TFormatType> m_valueContainer { };
     };
 
