@@ -1,8 +1,11 @@
 [submodule "vcpkg"]
 	path = vcpkg
-	url = https://github.com/microsoft/vcpkg
+	url = https://github.com/microsoft/vcpkg/tree/d5a87c6bcc5d3cb3f5627bfeff977280097c719c
 
 [submodule "msdf-atlas-gen"]
 	path = Externals/msdf-atlas-gen
 	url = https://github.com/Chlumsky/msdf-atlas-gen
 	branch = v1.3
+[submodule ".\\Externals\\msdf-atlas-gen\\"]
+	path = .\\Externals\\msdf-atlas-gen\\
+	url = https://github.com/Chlumsky/msdf-atlas-gen/tree/c27de5988d7ecfbc9936ee5f936429e2dbc077b9
