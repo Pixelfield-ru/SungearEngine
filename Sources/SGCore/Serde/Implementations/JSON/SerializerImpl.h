@@ -42,10 +42,12 @@ std::string SerializerImpl<FormatType::JSON>::to(const T& value,
     valueView.container().m_typeNameValue = &typeNameSectionValue;
 
     // serializing value with attempt at dynamic casts to derived types
-    Serializer::serializeWithDynamicChecks<clean_t, FormatType::JSON, SharedDataT...>(valueView,
-                                                                                std::forward<SharedDataT>(
-                                                                                        sharedData
-                                                                                )...
+    Serializer::serializeWithDynamicChecks<clean_t, FormatType::JSON, SharedDataT...>(
+        valueView,
+        false,
+        std::forward<SharedDataT>(
+            sharedData
+        )...
     );
 
     // =======================

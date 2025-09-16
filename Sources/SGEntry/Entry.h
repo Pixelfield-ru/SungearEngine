@@ -52,6 +52,26 @@ struct MyTest0 : MyTest
     int m_otherTest = 201;
 };
 
+/*template<typename... SharedDataT>
+struct ISerializable
+{
+    virtual void serialize(SGCore::Serde::SerializableValueContainer<SGCore::Serde::FormatType::JSON>& valueView, SharedDataT&&...) = 0;
+};
+
+struct Test : ISerializable<int, float>, ISerializable<int>
+{
+    int m_test = 0;
+
+    void serialize(SGCore::Serde::SerializableValueContainer<SGCore::Serde::FormatType::JSON>& container, int&&, float&&) override;
+    void serialize(SGCore::Serde::SerializableValueContainer<SGCore::Serde::FormatType::JSON>& container, int&&) override;
+};
+
+inline void Test::serialize(SGCore::Serde::SerializableValueContainer<SGCore::Serde::FormatType::JSON>& container, int& a)
+{
+
+}*/
+
+
 template<SGCore::Serde::FormatType TFormatType>
 struct SGCore::Serde::SerdeSpec<MyTest, TFormatType> : SGCore::Serde::BaseTypes<SGCore::AABB<float>>, SGCore::Serde::DerivedTypes<MyTest0>
 {
@@ -255,13 +275,13 @@ struct SGCore::Serde::SerdeSpec<Base, TFormatType> : SGCore::Serde::DerivedTypes
     }
 };
 
-SG_SERDE_DECLARE_EXTERNAL_DERIVED(SGCore::AABB<>, MyTest, AABBToMyTest)
-SG_SERDE_REGISTER_DYNAMIC_SERDE(SGCore::AABB<>, MyTest, AABBToMyTest)
-SG_SERDE_REGISTER_DYNAMIC_SERDE(SGCore::AABB<>, MyTest, AABBToMyTest, int&)
-SG_SERDE_REGISTER_DYNAMIC_SERDE(SGCore::AABB<>, MyTest, AABBToMyTest, const int&)
+SG_SERDE_DECLARE_EXTERNAL_CONNECTION(SGCore::AABB<>, MyTest, AABBToMyTest)
+SG_SERDE_REGISTER_EXTERNAL_CONNECTION(SGCore::AABB<>, MyTest, AABBToMyTest)
+SG_SERDE_REGISTER_EXTERNAL_CONNECTION(SGCore::AABB<>, MyTest, AABBToMyTest, int&)
+SG_SERDE_REGISTER_EXTERNAL_CONNECTION(SGCore::AABB<>, MyTest, AABBToMyTest, const int&)
 
-SG_SERDE_DECLARE_EXTERNAL_DERIVED(MyTest, MyTest0, MyTestToMyTest0)
-SG_SERDE_REGISTER_DYNAMIC_SERDE(MyTest, MyTest0, MyTestToMyTest0)
+/*SG_SERDE_DECLARE_EXTERNAL_CONNECTION(MyTest, MyTest0, MyTestToMyTest0)
+SG_SERDE_REGISTER_EXTERNAL_CONNECTION(MyTest, MyTest0, MyTestToMyTest0)*/
 
 void coreInit();
 

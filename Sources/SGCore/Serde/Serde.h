@@ -81,20 +81,20 @@ namespace SGCore::Serde
     // ==============================================================================
 
     template<FormatType TFormatType, typename... SharedDataT>
-    struct IDynamicSerde
+    struct IExternalSerde
     {
-        virtual ~IDynamicSerde() = default;
+        virtual ~IExternalSerde() = default;
 
         virtual bool invokeSerialize(const std::byte* derived, SGCore::Serde::SerializableValueContainer<TFormatType>& container, const std::string& version, bool& isDiscarded, SharedDataT&&... sharedData) noexcept = 0;
     };
 
     template<typename T>
-    struct DynamicSerdeStorage
+    struct ExternalSerdeStorage
     {
         template<FormatType TFormatType, typename... SharedDataT>
-        static auto& dynamicSerializers() noexcept
+        static auto& storage() noexcept
         {
-            static std::vector<IDynamicSerde<TFormatType, SharedDataT...>*> serializers;
+            static std::vector<IExternalSerde<TFormatType, SharedDataT...>*> serializers;
             return serializers;
         }
     };
@@ -491,6 +491,14 @@ namespace SGCore::Serde
             }
         }
 
+        template<typename T,
+                 FormatType TFormatType,
+                 typename... SharedDataT>
+        static void serializeWithDynamicChecks(SerializableValueView<const T, TFormatType>& valueView, bool calledFromExternalSerde, SharedDataT&&... sharedData)
+        {
+            serializeWithDynamicChecksImpl<T, TFormatType, SharedDataT...>(valueView, calledFromExternalSerde, std::forward<SharedDataT>(sharedData)...);
+        }
+
         [[nodiscard]] static const FormatType& getDefaultFormatType() noexcept
         {
             return m_defaultFormatType;
@@ -531,7 +539,7 @@ namespace SGCore::Serde
         template<typename T,
                  FormatType TFormatType,
                  typename... SharedDataT>
-        static void serializeWithDynamicChecksImpl(SerializableValueView<const T, TFormatType>& valueView, SharedDataT&&... sharedData)
+        static void serializeWithDynamicChecksImpl(SerializableValueView<const T, TFormatType>& valueView, bool calledFromExternalSerde, SharedDataT&&... sharedData)
         {
             if constexpr(SerdeSpec<T, TFormatType>::is_pointer_type) // serializing value using dynamic checks
             {
@@ -553,7 +561,7 @@ namespace SGCore::Serde
                 tmpView.m_data = SerdeSpec<T, TFormatType>::getObjectRawPointer(valueView);
 
                 // trying to serialize as one of derived types of ptr_element_type
-                tryToSerializeAsDerivedType<ptr_element_type, TFormatType>(tmpView, std::forward<SharedDataT>(sharedData)...);
+                tryToSerializeAsDerivedType(tmpView, calledFromExternalSerde, std::forward<SharedDataT>(sharedData)...);
 
                 // inheriting discard status
                 if(tmpView.isDiscarded())
@@ -563,6 +571,16 @@ namespace SGCore::Serde
             }
             else
             {
+                // if we must invoke external serde then trying to serialize as derived type (external) because
+                // we dont know if serializable type was in pointer or not (because this function calls from external project)
+                if(calledFromExternalSerde)
+                {
+                    // trying to serialize as one of derived types of T
+                    tryToSerializeAsDerivedType(valueView, calledFromExternalSerde, std::forward<SharedDataT>(sharedData)...);
+
+                    return;
+                }
+
                 checkSerializationOfAbstractType<T, TFormatType>();
 
                 // getting all base types from very base type in inheritance tree to very derived type
@@ -577,14 +595,6 @@ namespace SGCore::Serde
                 // serializing only T type members
                 invokeSerdeSpecSerialize(valueView, std::forward<SharedDataT>(sharedData)...);
             }
-        }
-
-        template<typename T,
-                 FormatType TFormatType,
-                 typename... SharedDataT>
-        static void serializeWithDynamicChecks(SerializableValueView<const T, TFormatType>& valueView, SharedDataT&&... sharedData)
-        {
-            serializeWithDynamicChecksImpl<T, TFormatType, SharedDataT...>(valueView, std::forward<SharedDataT>(sharedData)...);
         }
         
         /**
@@ -723,7 +733,7 @@ namespace SGCore::Serde
          * @param valueView
          */
         template<typename OriginalT, typename CurrentT, FormatType TFormatType, size_t CurrentDerivedIdx, typename... SharedDataT>
-        static void trySerializeAsDerivedTypeImpl(SerializableValueView<const CurrentT, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
+        static void trySerializeAsDerivedTypeImpl(SerializableValueView<const CurrentT, TFormatType>& valueView, bool calledFromExternalSerde, SharedDataT&&... sharedData) noexcept
         {
             if constexpr(Utils::isDerivedTypesProvided<CurrentT, TFormatType>())
             {
@@ -749,7 +759,7 @@ namespace SGCore::Serde
                             tmpView.discard();
                         }
 
-                        trySerializeAsDerivedTypeImpl<OriginalT, CurrentDerivedT, TFormatType, 0>(tmpView,
+                        trySerializeAsDerivedTypeImpl<OriginalT, CurrentDerivedT, TFormatType, 0>(tmpView, calledFromExternalSerde,
                             std::forward<SharedDataT>(sharedData)...
                         );
 
@@ -763,7 +773,7 @@ namespace SGCore::Serde
                     {
                         // continue to search needed derived type in derived types of OriginalT types
                         trySerializeAsDerivedTypeImpl<OriginalT, CurrentT, TFormatType,
-                                CurrentDerivedIdx + 1>(valueView,
+                                CurrentDerivedIdx + 1>(valueView, calledFromExternalSerde,
                                                        std::forward<SharedDataT>(
                                                                sharedData
                                                        )...
@@ -774,16 +784,19 @@ namespace SGCore::Serde
 
             // ====================== trying to serialize as external derived type
 
-            for(const auto& serializer : DynamicSerdeStorage<OriginalT>::template dynamicSerializers<TFormatType, SharedDataT...>())
+            if(!calledFromExternalSerde)
             {
-                bool isDiscarded = valueView.isDiscarded();
-                if(serializer->invokeSerialize(reinterpret_cast<const std::byte*>(valueView.m_data), valueView.container(), valueView.m_version, isDiscarded, std::forward<SharedDataT>(sharedData)...))
+                for(const auto& serializer : ExternalSerdeStorage<OriginalT>::template storage<TFormatType, SharedDataT...>())
                 {
-                    if(isDiscarded)
+                    bool isDiscarded = valueView.isDiscarded();
+                    if(serializer->invokeSerialize(reinterpret_cast<const std::byte*>(valueView.m_data), valueView.container(), valueView.m_version, isDiscarded, std::forward<SharedDataT>(sharedData)...))
                     {
-                        valueView.discard();
+                        if(isDiscarded)
+                        {
+                            valueView.discard();
+                        }
+                        return;
                     }
-                    return;
                 }
             }
 
@@ -886,9 +899,9 @@ namespace SGCore::Serde
          * @param valueView
          */
         template<typename T, FormatType TFormatType, typename... SharedDataT>
-        static void tryToSerializeAsDerivedType(SerializableValueView<const T, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
+        static void tryToSerializeAsDerivedType(SerializableValueView<const T, TFormatType>& valueView, bool calledFromExternalSerde, SharedDataT&&... sharedData) noexcept
         {
-            trySerializeAsDerivedTypeImpl<T, T, TFormatType, 0>(valueView, std::forward<SharedDataT>(sharedData)...);
+            trySerializeAsDerivedTypeImpl<T, T, TFormatType, 0>(valueView, calledFromExternalSerde, std::forward<SharedDataT>(sharedData)...);
         }
         
         // =====================================================================================
@@ -1032,6 +1045,8 @@ namespace SGCore::Serde
                                                        std::index_sequence<BuiltinDerivedTypesIndices...>,
                                                        SharedDataT&&... sharedData) noexcept
         {
+            // todo: maybe call deserializeAsDerivedType with T (Original type)? and remove additional checks in deserializeWithDynamicChecksImpl?
+
             // unpacking variadic template
             (deserializeAsDerivedType<T,
                     typename SerdeSpec<T, TFormatType>::template get_derived_type<BuiltinDerivedTypesIndices>,

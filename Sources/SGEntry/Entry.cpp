@@ -97,7 +97,7 @@ void coreInit()
 
     int a = 1;
     SGCore::Ref<SGCore::AABB<float>> t = SGCore::MakeRef<MyTest0>();
-    const std::string output2 = SGCore::Serde::Serializer::toFormat(SGCore::Serde::FormatType::JSON, t);
+    const std::string output2 = SGCore::Serde::Serializer::toFormat(SGCore::Serde::FormatType::JSON, t, a);
     SGCore::FileUtils::writeToFile("serializer_test3.txt", output2, false, false);
     std::cout << "new a: " << a << std::endl;
 

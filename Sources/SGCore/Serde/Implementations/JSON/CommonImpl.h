@@ -423,7 +423,7 @@ namespace SGCore::Serde
             valueView.container().m_parent = this;
 
             // serializing value with attempt at dynamic casts to derived types
-            Serializer::serializeWithDynamicChecks<value_view_t, FormatType::JSON>(valueView, std::forward<SharedDataT>(sharedData)...);
+            Serializer::serializeWithDynamicChecks<value_view_t, FormatType::JSON>(valueView, false, std::forward<SharedDataT>(sharedData)...);
 
             // =======================
 
