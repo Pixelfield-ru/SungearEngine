@@ -134,6 +134,7 @@ git submodule update --init --recursive
 - [Ilya (pfhgil)](https://github.com/pfhgil)
 - [Nikita (8bitniksis)](https://github.com/8bitniksis)
 - [Vlad (MisterChoose)](https://github.com/MisterChoose)
+- [Alexey (CREAsTIVE)](https://github.com/CREAsTIVE)
 
 # Contributing
 ### Reporting Issues
@@ -146,4 +147,4 @@ Make sure to first use the search function to see if the bug has already been re
 When filling out a bug report, make sure that you include as much information as possible to help the developers track down the issue, such as your version of SungearEngine, operating system, architecture, and any code and models that are necessary for the developers to reproduce the issue.
 
 # License 📜
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the GPL-3.0 License. See `LICENSE.txt` for more information.
