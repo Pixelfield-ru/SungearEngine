@@ -24,7 +24,7 @@ namespace SGCore
 
         PostProcessPass();
 
-        void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) final;
+        void render(const Scene*, const Ref<IRenderPipeline>& renderPipeline) final;
 
     private:
         void layersFX(LayeredFrameReceiver& receiver) noexcept;

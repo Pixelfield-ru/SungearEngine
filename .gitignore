@@ -54,6 +54,8 @@ build
 
 .vscode
 .idea
+Plugins/SungearEngineEditor/.idea
+Plugins/SungearEngineEditor-v2/.idea
 
 ports
 

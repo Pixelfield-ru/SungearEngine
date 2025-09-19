@@ -19,7 +19,7 @@ SGCore::OctreesSolver::OctreesSolver()
     // startThread();
 }
 
-void SGCore::OctreesSolver::onAddToScene(const Ref<Scene>& scene)
+void SGCore::OctreesSolver::onAddToScene(const Scene* scene)
 {
     if(!scene) return;
     

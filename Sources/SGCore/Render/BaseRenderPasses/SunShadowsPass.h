@@ -15,7 +15,7 @@ namespace SGCore
     {
         void create(const Ref<IRenderPipeline>& parentRenderPipeline) final;
 
-        void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) final;
+        void render(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline) final;
 
     private:
         AssetRef<IShader> m_batchShader;
@@ -23,7 +23,7 @@ namespace SGCore
         Timer m_renderTimer;
         Slot<void(const double&, const double&)> m_renderSlot;
 
-        void renderShadows(const Ref<Scene>& scene);
+        void renderShadows(const Scene* scene);
 
         static glm::mat4 getLightSpaceMatrix(const RenderingBase::reg_t& cameraRenderingBase, const glm::vec3& sunDir, float nearPlane, float farPlane) noexcept;
         static std::array<glm::vec4, 8> getFrustumCornersWorldSpace(const glm::mat4& projView) noexcept;

@@ -36,16 +36,16 @@ namespace SGCore
         virtual void fixedUpdate(const double& dt, const double& fixedDt) { }
         virtual void update(const double& dt, const double& fixedDt) { }
         // scene - this (m_scene) locked scene
-        virtual void onAddToScene(const Ref<Scene>& scene) { }
+        virtual void onAddToScene(const Scene* scene) { }
         // scene - this (m_scene) locked scene
         virtual void onRemoveFromScene(const Ref<Scene>& scene) { }
         
-        void setScene(const Ref<Scene>& scene) noexcept;
+        void setScene(Scene* scene) noexcept;
         /**
          * Can be nullptr. You must ALWAYS check for nullptr.
          * @return Scene that is parent of current system.
          */
-        [[nodiscard]] Ref<Scene> getScene() const noexcept;
+        [[nodiscard]] Scene* getScene() const noexcept;
 
         [[nodiscard]] Ref<Threading::Thread> getThread() const noexcept;
 
@@ -53,7 +53,7 @@ namespace SGCore
         Ref<Threading::Thread> m_thread = Threading::ThreadsManager::getMainThread();
 
     private:
-        Weak<Scene> m_scene;
+        Scene* m_scene {};
     };
 }
 

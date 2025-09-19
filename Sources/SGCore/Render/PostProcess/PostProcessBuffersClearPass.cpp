@@ -7,7 +7,7 @@
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
 
-void SGCore::PostProcessBuffersClearPass::render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline)
+void SGCore::PostProcessBuffersClearPass::render(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline)
 {
     auto ecsRegistry = scene->getECSRegistry();
 

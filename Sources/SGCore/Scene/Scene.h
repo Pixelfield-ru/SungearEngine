@@ -34,7 +34,7 @@ namespace SGCore
         std::filesystem::path m_sceneLocalPath;
     };
     
-    class SGCORE_EXPORT Scene : public std::enable_shared_from_this<Scene>
+    class SGCORE_EXPORT Scene
     {
     public:
         using systems_container_t = std::vector<Ref<ISystem>>;
@@ -61,6 +61,7 @@ namespace SGCore
         sg_serde_as_friend()
 
         Scene();
+        ~Scene();
 
         SceneMetaInfo m_metaInfo;
 

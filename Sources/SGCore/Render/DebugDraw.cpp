@@ -159,7 +159,7 @@ void SGCore::DebugDraw::drawAABB(const glm::vec3& min, const glm::vec3& max, con
     drawLine({ max.x, min.y, max.z }, { max.x, min.y, min.z }, color);
 }
 
-void SGCore::DebugDraw::render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) noexcept
+void SGCore::DebugDraw::render(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline) noexcept
 {
     if(!m_linesShader || !scene || m_mode == DebugDrawMode::NO_DEBUG) return;
 

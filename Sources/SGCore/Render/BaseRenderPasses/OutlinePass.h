@@ -20,7 +20,7 @@ namespace SGCore
 
         void create(const Ref<IRenderPipeline>& parentRenderPipeline) noexcept final;
 
-        void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) noexcept final;
+        void render(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline) noexcept final;
     };
 }
 

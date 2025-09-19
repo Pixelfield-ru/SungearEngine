@@ -130,6 +130,7 @@ void SerializerImpl<FormatType::JSON>::from(const std::string& formattedText,
     valueView.container().m_outputLog = &outputLog;
 
     Serializer::deserializeWithDynamicChecks<T, FormatType::JSON>(valueView,
+                                                                  false,
                                                                   std::forward<SharedDataT>(
                                                                           sharedData
                                                                   )...

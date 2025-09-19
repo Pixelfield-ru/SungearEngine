@@ -74,7 +74,7 @@ namespace SGCore::Serde
             valueView.m_data = &outputValue;
 
             // deserializing member with dynamic checks
-            Serializer::deserializeWithDynamicChecks<T, FormatType::JSON>(valueView, std::forward<SharedDataT>(sharedData)...);
+            Serializer::deserializeWithDynamicChecks(valueView, false, std::forward<SharedDataT>(sharedData)...);
 
             return outputValue;
         }
@@ -128,7 +128,7 @@ namespace SGCore::Serde
                 valueView.container().m_typeName = typeNameSection;
                 valueView.m_data = &tmpVal;
 
-                Serializer::deserializeWithDynamicChecks<T, FormatType::JSON>(valueView, std::forward<SharedDataT>(sharedData)...);
+                Serializer::deserializeWithDynamicChecks(valueView, false, std::forward<SharedDataT>(sharedData)...);
 
                 outputValue.push_back(std::move(tmpVal));
             }
@@ -254,7 +254,7 @@ namespace SGCore::Serde
             valueView.m_data = &outputValue;
 
             // deserializing member with dynamic checks
-            Serializer::deserializeWithDynamicChecks<T, FormatType::JSON>(valueView, std::forward<SharedDataT>(sharedData)...);
+            Serializer::deserializeWithDynamicChecks(valueView, false, std::forward<SharedDataT>(sharedData)...);
 
             return outputValue;
         }
@@ -295,7 +295,7 @@ namespace SGCore::Serde
             valueView.m_data = &outputValue;
 
             // deserializing member with dynamic checks
-            Serializer::deserializeWithDynamicChecks<T, FormatType::JSON>(valueView, std::forward<SharedDataT>(sharedData)...);
+            Serializer::deserializeWithDynamicChecks(valueView, false, std::forward<SharedDataT>(sharedData)...);
 
             return outputValue;
         }
@@ -335,6 +335,11 @@ namespace SGCore::Serde
             }
 
             return false;
+        }
+
+        [[nodiscard]] std::string getTypeName() const noexcept
+        {
+            return m_typeName;
         }
 
     private:
@@ -516,7 +521,7 @@ namespace SGCore::Serde
             m_typeNameValue->SetString(typeName.c_str(), typeName.length(), m_document->GetAllocator());
         }
 
-        [[nodiscard]] std::string getTypeName(const std::string& typeName) const noexcept
+        [[nodiscard]] std::string getTypeName() const noexcept
         {
             if(!m_typeNameValue) return "";
 

@@ -49,7 +49,7 @@ namespace SGCore
         void drawLine(const glm::vec3& from, const glm::vec3& to, const glm::vec4& color) noexcept;
         void drawAABB(const glm::vec3& min, const glm::vec3& max, const glm::vec4& color) noexcept;
 
-        virtual void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) noexcept;
+        void render(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline) noexcept override;
         
         void resetRenderer() noexcept;
     

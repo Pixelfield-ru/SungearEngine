@@ -7,6 +7,16 @@
 #include "SGCore/Serde/StandardSerdeSpecs/SerdeSpecs.h"
 // #include "SGCore/GeneratedSerializers.h"
 
+struct MyTest : SGCore::AABB<float>
+{
+    int m_test = 3;
+};
+
+struct MyTest0 : MyTest
+{
+    int m_otherTest = 201;
+};
+
 struct Base
 {
     int a = 3;
@@ -33,6 +43,7 @@ struct Derived0 : Derived
 
     std::unique_ptr<Base> m_derived = std::make_unique<Derived>();
     Base m_base;
+    std::shared_ptr<SGCore::AABB<>> m_aabb = std::make_shared<MyTest0>();
 };
 
 struct Derived1 : Derived
@@ -40,16 +51,6 @@ struct Derived1 : Derived
     float e = 3.0f;
     float f = 3.0f;
     float g = 3.0f;
-};
-
-struct MyTest : SGCore::AABB<float>
-{
-    int m_test = 3;
-};
-
-struct MyTest0 : MyTest
-{
-    int m_otherTest = 201;
 };
 
 /*template<typename... SharedDataT>
@@ -169,6 +170,7 @@ struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseType
         valueView.container().addMember("unMap", valueView.m_data->unMap);
         valueView.container().addMember("m_derived", valueView.m_data->m_derived);
         valueView.container().addMember("m_base", valueView.m_data->m_base);
+        valueView.container().addMember("m_aabb", valueView.m_data->m_aabb);
 
         std::printf("derived0 serializing\n");
     }
@@ -209,6 +211,12 @@ struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseType
         if(base)
         {
             valueView.m_data->m_base = std::move(*base);
+        }
+
+        auto aabb = valueView.container().template getMember<std::shared_ptr<SGCore::AABB<>>>("m_aabb");
+        if(aabb)
+        {
+            valueView.m_data->m_aabb = std::move(*aabb);
         }
 
         std::printf("derived0 deserializing\n");
@@ -276,12 +284,16 @@ struct SGCore::Serde::SerdeSpec<Base, TFormatType> : SGCore::Serde::DerivedTypes
 };
 
 SG_SERDE_DECLARE_EXTERNAL_CONNECTION(SGCore::AABB<>, MyTest, AABBToMyTest)
-SG_SERDE_REGISTER_EXTERNAL_CONNECTION(SGCore::AABB<>, MyTest, AABBToMyTest)
-SG_SERDE_REGISTER_EXTERNAL_CONNECTION(SGCore::AABB<>, MyTest, AABBToMyTest, int&)
-SG_SERDE_REGISTER_EXTERNAL_CONNECTION(SGCore::AABB<>, MyTest, AABBToMyTest, const int&)
+SG_SERDE_REGISTER_EXTERNAL_SERIALIZER(SGCore::AABB<>, MyTest, AABBToMyTest)
+SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER(SGCore::AABB<>, MyTest, AABBToMyTest)
+SG_SERDE_REGISTER_EXTERNAL_SERIALIZER(SGCore::AABB<>, MyTest, AABBToMyTest, int&)
+SG_SERDE_REGISTER_EXTERNAL_SERIALIZER(SGCore::AABB<>, MyTest, AABBToMyTest, const int&)
 
 /*SG_SERDE_DECLARE_EXTERNAL_CONNECTION(MyTest, MyTest0, MyTestToMyTest0)
-SG_SERDE_REGISTER_EXTERNAL_CONNECTION(MyTest, MyTest0, MyTestToMyTest0)*/
+SG_SERDE_REGISTER_EXTERNAL_SERIALIZER(MyTest, MyTest0, MyTestToMyTest0)
+SG_SERDE_REGISTER_EXTERNAL_SERIALIZER(MyTest, MyTest0, MyTestToMyTest0, int&)
+SG_SERDE_REGISTER_EXTERNAL_SERIALIZER(MyTest, MyTest0, MyTestToMyTest0, const int&)
+SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER(MyTest, MyTest0, MyTestToMyTest0)*/
 
 void coreInit();
 

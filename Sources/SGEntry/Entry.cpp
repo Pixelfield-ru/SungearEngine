@@ -95,7 +95,7 @@ void coreInit()
     const std::string output1 = SGCore::Serde::Serializer::toFormat(SGCore::Serde::FormatType::JSON, std::string("hello eto vashe kek"));
     SGCore::FileUtils::writeToFile("serializer_test2.txt", output1, false, false);
 
-    int a = 1;
+    const int a = 1;
     SGCore::Ref<SGCore::AABB<float>> t = SGCore::MakeRef<MyTest0>();
     const std::string output2 = SGCore::Serde::Serializer::toFormat(SGCore::Serde::FormatType::JSON, t, a);
     SGCore::FileUtils::writeToFile("serializer_test3.txt", output2, false, false);
@@ -118,6 +118,12 @@ void coreInit()
     SGCore::Serde::Serializer::fromFormat(
         SGCore::FileUtils::readFile("serializer_test2.txt"),
         dd1, SGCore::Serde::FormatType::JSON, testDeserLog1);
+
+    std::string testDeserLog2;
+    SGCore::Ref<SGCore::AABB<float>> dd2;
+    SGCore::Serde::Serializer::fromFormat(
+        SGCore::FileUtils::readFile("serializer_test3.txt"),
+        dd2, SGCore::Serde::FormatType::JSON, testDeserLog2);
 
     const std::filesystem::path configPath = "SungearEngineConfig.json";
     SGCore::Config loadedConfig;

@@ -19,7 +19,7 @@ void SGCore::UIRenderPass::create(const Ref<IRenderPipeline>& parentRenderPipeli
     IRenderPass::create(parentRenderPipeline);
 }
 
-void SGCore::UIRenderPass::render(const Ref<Scene>& scene,
+void SGCore::UIRenderPass::render(const Scene* scene,
                                   const Ref<IRenderPipeline>& renderPipeline) noexcept
 {
     auto uiComponentsView = scene->getECSRegistry()->view<UI::UIComponent>();

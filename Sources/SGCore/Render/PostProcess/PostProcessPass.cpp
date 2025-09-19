@@ -34,7 +34,7 @@ SGCore::PostProcessPass::PostProcessPass()
     m_postProcessQuad->prepare();
 }
 
-void SGCore::PostProcessPass::render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline)
+void SGCore::PostProcessPass::render(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline)
 {
     m_renderState.m_useDepthTest = false;
     m_renderState.m_useStencilTest = false;

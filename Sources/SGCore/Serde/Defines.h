@@ -60,26 +60,26 @@ SG_SERDE_ARG_COUNT_IMPL(0, ##__VA_ARGS__, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
 
 #define SG_SERDE_DECLARE_EXTERNAL_CONNECTION(Base, Derived, SerdeName) \
 template<SGCore::Serde::FormatType TFormatType, typename... SharedDataT> \
-struct SerdeName final : SGCore::Serde::IExternalSerde<TFormatType, SharedDataT...> \
+struct SG_SERDE_CONCAT(SerdeName, _Serializer) final : SGCore::Serde::IExternalSerializer<TFormatType, SharedDataT...> \
 { \
-    bool invokeSerialize(const std::byte* thisTypeObject, SGCore::Serde::SerializableValueContainer<TFormatType>& container, const std::string& version, bool& isDiscarded, SharedDataT&&... sharedData) noexcept \
+    bool invoke(const std::byte* thisTypeObject, SGCore::Serde::SerializableValueContainer<TFormatType>& container, const std::string& version, bool& isDiscarded, SharedDataT&&... sharedData) noexcept \
     { \
         const auto* typed = reinterpret_cast<const Base*>(thisTypeObject); \
 \
         { \
-            const auto& serdeStorage = SGCore::Serde::ExternalSerdeStorage<Derived>::storage<TFormatType, SharedDataT...>(); \
+            const auto& serdeStorage = SGCore::Serde::ExternalSerializersStorage<Derived>::storage<TFormatType, SharedDataT...>(); \
             for(const auto& serializer : serdeStorage) \
             { \
-                if(serializer->invokeSerialize(thisTypeObject, container, version, isDiscarded, std::forward<SharedDataT>(sharedData)...)) return true; \
+                if(serializer->invoke(thisTypeObject, container, version, isDiscarded, std::forward<SharedDataT>(sharedData)...)) return true; \
             } \
         } \
 \
         { \
             /* trying to invoke serialize function without shared data (default behaviour if call to serialize with share data provides failure) */ \
-            const auto& serdeStorage = SGCore::Serde::ExternalSerdeStorage<Derived>::storage<TFormatType>(); \
+            const auto& serdeStorage = SGCore::Serde::ExternalSerializersStorage<Derived>::storage<TFormatType>(); \
             for(const auto& serializer : serdeStorage) \
             { \
-                if(serializer->invokeSerialize(thisTypeObject, container, version, isDiscarded)) return true; \
+                if(serializer->invoke(thisTypeObject, container, version, isDiscarded)) return true; \
             } \
         } \
 \
@@ -97,21 +97,98 @@ struct SerdeName final : SGCore::Serde::IExternalSerde<TFormatType, SharedDataT.
 \
         return true; \
     } \
+\
+}; \
+\
+template<SGCore::Serde::FormatType TFormatType, typename... SharedDataT> \
+struct SG_SERDE_CONCAT(SerdeName, _Deserializer) final : SGCore::Serde::IExternalDeserializer<TFormatType, SharedDataT...> \
+{ \
+    std::byte* invoke(SGCore::Serde::DeserializableValueContainer<TFormatType>& container, const std::string& version, SharedDataT&&... sharedData) noexcept \
+    { \
+        { \
+            const auto& serdeStorage = SGCore::Serde::ExternalDeserializersStorage<Derived>::storage<TFormatType, SharedDataT...>(); \
+            for(const auto& deserializer : serdeStorage) \
+            { \
+                std::byte* deserializedObject = deserializer->invoke(container, version, std::forward<SharedDataT>(sharedData)...); \
+                if(deserializedObject) return deserializedObject; \
+            } \
+        } \
+        \
+        { \
+            /* trying to invoke serialize function without shared data (default behaviour if call to serialize with share data provides failure) */ \
+            const auto& serdeStorage = SGCore::Serde::ExternalDeserializersStorage<Derived>::storage<TFormatType>(); \
+            for(const auto& deserializer : serdeStorage) \
+            { \
+                std::byte* deserializedObject = deserializer->invoke(container, version); \
+                if(deserializedObject) return deserializedObject; \
+            } \
+        } \
+\
+        SGCore::Serde::DeserializableValueView<Derived, TFormatType> valueView {}; \
+        valueView.container() = container; \
+        valueView.m_version = version; \
+\
+        if(container.getTypeName() != SGCore::Serde::Detail::getTypeName<Derived, TFormatType>()) \
+        { \
+            /* trying to call deserialization of Derived derived types, that declared in DerivedTypes of SerdeSpec of Derived */ \
+            SGCore::Serde::Serializer::deserializeWithDynamicChecks(valueView, true, std::forward<SharedDataT>(sharedData)...); \
+            return reinterpret_cast<std::byte*>(valueView.m_data); \
+        } \
+\
+        Derived* derivedObject {}; \
+        if constexpr(!std::is_abstract_v<Derived> && std::is_default_constructible_v<Derived>) \
+        { \
+            derivedObject = new Derived(); \
+        } \
+        else \
+        { \
+            if constexpr(requires { SGCore::Serde::SerdeSpec<Derived, TFormatType>::allocateObject; }) \
+            { \
+                derivedObject = SGCore::Serde::SerdeSpec<Derived, TFormatType>::allocateObject(valueView); \
+            } \
+            else \
+            { \
+                /* can not use static_assert because this branch is not in compile time context */ \
+                return nullptr; \
+            } \
+        } \
+\
+        valueView.m_data = derivedObject; \
+        /* deserializing value */ \
+        SGCore::Serde::Serializer::deserializeWithDynamicChecks(valueView, false, std::forward<SharedDataT>(sharedData)...); \
+\
+        return reinterpret_cast<std::byte*>(derivedObject); \
+    } \
 };
 
-#define SG_SERDE_REGISTER_EXTERNAL_CONNECTION_FOR_FORMAT_IMPL(Base, Derived, SerdeName, FormatType, Line, ...) \
+#define SG_SERDE_REGISTER_EXTERNAL_SERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, FormatType, Line, ...) \
 auto SG_SERDE_CONCAT(_SG_DECLARE_SERIALIZER_SPEC_, Line) = []() { \
-    static SerdeName<FormatType __VA_OPT__(,) __VA_ARGS__> serializer; \
-    SGCore::Serde::ExternalSerdeStorage<Base>::storage<FormatType __VA_OPT__(,) __VA_ARGS__>().push_back(&serializer); \
+    static SG_SERDE_CONCAT(SerdeName, _Serializer)<FormatType __VA_OPT__(,) __VA_ARGS__> serializer; \
+    SGCore::Serde::ExternalSerializersStorage<Base>::storage<FormatType __VA_OPT__(,) __VA_ARGS__>().push_back(&serializer); \
     return true; \
 }();
 
-#define SG_SERDE_REGISTER_EXTERNAL_CONNECTION_FOR_FORMAT(Base, Derived, SerdeName, FormatType, ...) \
-    SG_SERDE_REGISTER_EXTERNAL_CONNECTION_FOR_FORMAT_IMPL(Base, Derived, SerdeName, FormatType, __LINE__, __VA_ARGS__)
+#define SG_SERDE_REGISTER_EXTERNAL_SERIALIZER_FOR_FORMAT(Base, Derived, SerdeName, FormatType, ...) \
+    SG_SERDE_REGISTER_EXTERNAL_SERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, FormatType, __LINE__, __VA_ARGS__)
 
-#define SG_SERDE_REGISTER_EXTERNAL_CONNECTION(Base, Derived, SerdeName, ...) \
-    SG_SERDE_REGISTER_EXTERNAL_CONNECTION_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::JSON, SG_SERDE_CONCAT(__LINE__, _JSON), __VA_ARGS__) \
-    SG_SERDE_REGISTER_EXTERNAL_CONNECTION_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::BSON, SG_SERDE_CONCAT(__LINE__, _BSON), __VA_ARGS__) \
-    SG_SERDE_REGISTER_EXTERNAL_CONNECTION_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::YAML, SG_SERDE_CONCAT(__LINE__, _YAML), __VA_ARGS__)
+#define SG_SERDE_REGISTER_EXTERNAL_SERIALIZER(Base, Derived, SerdeName, ...) \
+    SG_SERDE_REGISTER_EXTERNAL_SERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::JSON, SG_SERDE_CONCAT(__LINE__, _JSON), __VA_ARGS__) \
+    SG_SERDE_REGISTER_EXTERNAL_SERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::BSON, SG_SERDE_CONCAT(__LINE__, _BSON), __VA_ARGS__) \
+    SG_SERDE_REGISTER_EXTERNAL_SERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::YAML, SG_SERDE_CONCAT(__LINE__, _YAML), __VA_ARGS__)
+
+#define SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, FormatType, Line, ...) \
+auto SG_SERDE_CONCAT(_SG_DECLARE_DESERIALIZER_SPEC_, Line) = []() { \
+    static SG_SERDE_CONCAT(SerdeName, _Deserializer)<FormatType __VA_OPT__(,) __VA_ARGS__> deserializer; \
+    SGCore::Serde::ExternalDeserializersStorage<Base>::storage<FormatType __VA_OPT__(,) __VA_ARGS__>().push_back(&deserializer); \
+    return true; \
+}();
+
+#define SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER_FOR_FORMAT(Base, Derived, SerdeName, FormatType, ...) \
+SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, FormatType, __LINE__, __VA_ARGS__)
+
+#define SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER(Base, Derived, SerdeName, ...) \
+SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::JSON, SG_SERDE_CONCAT(__LINE__, _JSON), __VA_ARGS__) \
+// SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::BSON, SG_SERDE_CONCAT(__LINE__, _BSON), __VA_ARGS__) \
+// SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::YAML, SG_SERDE_CONCAT(__LINE__, _YAML), __VA_ARGS__)
 
 #endif // SUNGEARENGINE_SERDE_DEFINES_H

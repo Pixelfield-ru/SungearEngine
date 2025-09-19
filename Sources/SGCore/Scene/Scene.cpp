@@ -32,6 +32,17 @@ SGCore::Scene::Scene()
    createLayer(SG_LAYER_OPAQUE_NAME);
 }
 
+SGCore::Scene::~Scene()
+{
+    for(const auto& system : m_systems)
+    {
+        if(system->m_scene == this)
+        {
+            system->m_scene = nullptr;
+        }
+    }
+}
+
 void SGCore::Scene::createDefaultSystems()
 {
     // physics ===================
@@ -46,8 +57,6 @@ void SGCore::Scene::createDefaultSystems()
     
     // ===================
     // rendering
-    
-    auto thisShared = shared_from_this();
     
     auto renderingBasesUpdater = MakeRef<RenderingBasesUpdater>();
     addSystem(renderingBasesUpdater);
@@ -152,7 +161,7 @@ void SGCore::Scene::update(const double& dt, const double& fixedDt)
 
     if(renderPipeline)
     {
-        renderPipeline->render(shared_from_this());
+        renderPipeline->render(this);
     }
 }
 
@@ -180,7 +189,7 @@ void SGCore::Scene::addSystem(const Ref<ISystem>& system) noexcept
 {
     if(isSystemExists(system)) return;
 
-    system->setScene(shared_from_this());
+    system->setScene(this);
     m_systems.push_back(system);
 }
 

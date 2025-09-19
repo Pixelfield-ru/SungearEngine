@@ -69,7 +69,7 @@ void SGCore::PBRRPGeometryPass::create(const Ref<IRenderPipeline>& parentRenderP
     m_transparentEntitiesRenderState.m_globalBlendingState.m_blendingEquation = SGEquation::SGG_FUNC_ADD;*/
 }
 
-void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline)
+void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline)
 {
     Ref<PBRRPDirectionalLightsPass> dirLightsPass = renderPipeline->getRenderPass<PBRRPDirectionalLightsPass>();
     

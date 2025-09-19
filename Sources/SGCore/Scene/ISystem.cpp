@@ -5,15 +5,15 @@
 #include "ISystem.h"
 #include "SGCore/Scene/Scene.h"
 
-void SGCore::ISystem::setScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
+void SGCore::ISystem::setScene(Scene* scene) noexcept
 {
     m_scene = scene;
     onAddToScene(scene);
 }
 
-SGCore::Ref<SGCore::Scene> SGCore::ISystem::getScene() const noexcept
+SGCore::Scene* SGCore::ISystem::getScene() const noexcept
 {
-    return m_scene.lock();
+    return m_scene;
 }
 
 std::shared_ptr<SGCore::Threading::Thread> SGCore::ISystem::getThread() const noexcept

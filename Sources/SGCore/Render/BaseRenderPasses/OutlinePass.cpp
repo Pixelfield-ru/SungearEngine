@@ -47,8 +47,8 @@ void SGCore::OutlinePass::create(const SGCore::Ref<SGCore::IRenderPipeline>& par
     m_postProcessQuad->prepare();
 }
 
-void SGCore::OutlinePass::render(const SGCore::Ref<SGCore::Scene>& scene,
-                                 const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline) noexcept
+void SGCore::OutlinePass::render(const Scene* scene,
+                                 const Ref<IRenderPipeline>& renderPipeline) noexcept
 {
     auto registry = scene->getECSRegistry();
 

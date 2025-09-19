@@ -660,27 +660,7 @@ namespace SGCore::Serde
         // serializing systems
         for(const Ref<ISystem>& system : *valueView.m_data)
         {
-            auto systemPtr = system.get();
-
-            // if system is instance of standard systems then serializing system using standard SerdeSpecs
-            // TODO: THIS IS SO SHITTY. REMOVE WHEN CUSTOM DERIVED TYPES IN EXTERNAL PROJECTS WILL BE AVAILABLE IN SGCore::Serde
-            if(SG_INSTANCEOF(systemPtr, Controllables3DUpdater) ||
-               SG_INSTANCEOF(systemPtr, PhysicsWorld3D) ||
-               SG_INSTANCEOF(systemPtr, RenderingBasesUpdater) ||
-               SG_INSTANCEOF(systemPtr, AtmosphereUpdater) ||
-               SG_INSTANCEOF(systemPtr, DirectionalLightsUpdater) ||
-               SG_INSTANCEOF(systemPtr, TransformationsUpdater) ||
-               SG_INSTANCEOF(systemPtr, BoxGizmosRenderer) ||
-               SG_INSTANCEOF(systemPtr, LineGizmosRenderer) ||
-               SG_INSTANCEOF(systemPtr, SphereGizmosUpdater) ||
-               SG_INSTANCEOF(systemPtr, OctreesSolver) ||
-               SG_INSTANCEOF(systemPtr, AudioProcessor) ||
-               SG_INSTANCEOF(systemPtr, MotionPlannersResolver) ||
-               SG_INSTANCEOF(systemPtr, IKResolver))
-            {
-                valueView.container().pushBack(system);
-                continue;
-            }
+            valueView.container().pushBack(system);
 
             // else if it is not standard system then
             Scene::getOnSystemSerializeEvent<TFormatType>()(valueView, serializableScene, system);

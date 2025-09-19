@@ -18,8 +18,8 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/UI/FontsManager.h"
 
-void SGCore::TextRenderPass::render(const SGCore::Ref<SGCore::Scene>& scene,
-                                    const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
+void SGCore::TextRenderPass::render(const Scene* scene,
+                                    const Ref<IRenderPipeline>& renderPipeline)
 {
     // auto textsView = scene->getECSRegistry()->view<Text, Transform>();
     auto uiCamerasView = scene->getECSRegistry()->view<LayeredFrameReceiver, RenderingBase, Transform>();

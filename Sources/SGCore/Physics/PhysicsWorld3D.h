@@ -33,7 +33,7 @@ namespace SGCore
         void removeBody(const Ref<btRigidBody>& rigidBody) noexcept;
         
         void update(const double& dt, const double& fixedDt) noexcept override;
-        void onAddToScene(const Ref<Scene>& scene) override;
+        void onAddToScene(const Scene* scene) override;
         void onRemoveFromScene(const Ref<Scene>& scene) override;
         
         auto& getCollisionConfig() noexcept

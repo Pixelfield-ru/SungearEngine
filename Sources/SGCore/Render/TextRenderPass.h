@@ -11,7 +11,7 @@ namespace SGCore
 {
     struct TextRenderPass : public IRenderPass
     {
-        void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) final;
+        void render(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline) final;
     };
 }
 

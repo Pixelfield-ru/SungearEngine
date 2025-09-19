@@ -30,7 +30,7 @@ void SGCore::PBRRPDecalsPass::create(const Ref<IRenderPipeline>& parentRenderPip
     m_instancingShader->recompile();
 }
 
-void SGCore::PBRRPDecalsPass::render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline)
+void SGCore::PBRRPDecalsPass::render(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline)
 {
     auto registry = scene->getECSRegistry();
 

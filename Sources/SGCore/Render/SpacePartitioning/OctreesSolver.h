@@ -26,7 +26,7 @@ namespace SGCore
 
         void fixedUpdate(const double& dt, const double& fixedDt) noexcept final;
         
-        void onAddToScene(const Ref<Scene>& scene) final;
+        void onAddToScene(const Scene* scene) final;
         
     private:
         void onTransformChanged(const ECS::entity_t& entity, const Transform::const_reg_t& transform) noexcept;

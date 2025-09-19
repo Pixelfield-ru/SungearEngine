@@ -74,7 +74,7 @@ void SGCore::PhysicsWorld3D::update(const double& dt, const double& fixedDt) noe
     m_dynamicsWorld->debugDrawWorld();
 }
 
-void SGCore::PhysicsWorld3D::onAddToScene(const Ref<Scene>& scene)
+void SGCore::PhysicsWorld3D::onAddToScene(const Scene* scene)
 {
     if (!scene) return;
 

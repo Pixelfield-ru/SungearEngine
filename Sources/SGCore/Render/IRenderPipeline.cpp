@@ -4,7 +4,7 @@
 #include "IRenderPipeline.h"
 #include "SGCore/Main/CoreMain.h"
 
-void SGCore::IRenderPipeline::render(SGCore::Ref<SGCore::Scene> scene) noexcept
+void SGCore::IRenderPipeline::render(Scene* scene) noexcept
 {
     auto t0 = glfwGetTime();
     

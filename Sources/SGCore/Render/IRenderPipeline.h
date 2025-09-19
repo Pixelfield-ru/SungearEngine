@@ -18,7 +18,7 @@ namespace SGCore
     {
         Paths m_shadersPaths;
 
-        virtual void render(Ref<Scene> scene) noexcept;
+        virtual void render(Scene* scene) noexcept;
 
         std::vector<Ref<IRenderPass>> m_renderPasses;
 

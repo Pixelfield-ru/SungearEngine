@@ -23,7 +23,7 @@ void SGCore::PBRRPDirectionalLightsPass::create(const SGCore::Ref<SGCore::IRende
     m_renderTimer.onUpdate += m_renderListener;
 }
 
-void SGCore::PBRRPDirectionalLightsPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
+void SGCore::PBRRPDirectionalLightsPass::render(const Scene* scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
 {
     m_renderTimer.startFrame();
 

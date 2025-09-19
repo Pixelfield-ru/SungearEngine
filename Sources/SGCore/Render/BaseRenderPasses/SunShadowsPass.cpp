@@ -27,20 +27,20 @@ void SGCore::SunShadowsPass::create(const Ref<IRenderPipeline>& parentRenderPipe
     if(!m_renderTimer.onUpdate.contains(m_renderSlot))
     {
         m_renderSlot = [this](const double& dt, const double& fixedDt) {
-            renderShadows(Scene::getCurrentScene());
+            renderShadows(Scene::getCurrentScene().get());
         };
 
         m_renderTimer.onUpdate += m_renderSlot;
     }
 }
 
-void SGCore::SunShadowsPass::render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline)
+void SGCore::SunShadowsPass::render(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline)
 {
     // m_renderTimer.startFrame();
     renderShadows(scene);
 }
 
-void SGCore::SunShadowsPass::renderShadows(const Ref<Scene>& scene)
+void SGCore::SunShadowsPass::renderShadows(const Scene* scene)
 {
     const auto registry = scene->getECSRegistry();
 
