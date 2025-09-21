@@ -36,7 +36,7 @@ vec3 getCurrentInstanceScale()
 
 vec4 getVertexColor0()
 {
-    #if SG_VS_VERTEX_COLOR_ATTRIBUTE0_LOC < SG_VS_MAX_ATTRIBS_COUNT
+    #if defined(SG_VS_VERTEX_COLOR_ATTRIBUTE0_LOC) && defined(SG_VS_MAX_ATTRIBS_COUNT) && SG_VS_VERTEX_COLOR_ATTRIBUTE0_LOC < SG_VS_MAX_ATTRIBS_COUNT
     return vertexColor0Attribute;
     #else
     return vec4(1.0);
@@ -45,7 +45,7 @@ vec4 getVertexColor0()
 
 vec4 getVertexColor1()
 {
-    #if SG_VS_VERTEX_COLOR_ATTRIBUTE1_LOC < SG_VS_MAX_ATTRIBS_COUNT
+    #if defined(SG_VS_VERTEX_COLOR_ATTRIBUTE1_LOC) && defined(SG_VS_MAX_ATTRIBS_COUNT) && SG_VS_VERTEX_COLOR_ATTRIBUTE1_LOC < SG_VS_MAX_ATTRIBS_COUNT
     return vertexColor1Attribute;
     #else
     return vec4(1.0);

@@ -12,6 +12,7 @@ namespace SGCore::UI
     enum struct UIElementAttributeType
     {
         AT_CLASS,   // for any element
+        AT_NAME,    // for any element
         AT_TYPE,    // for 'include' element
         AT_PATH,    // for 'include' element
         AT_UNKNOWN
@@ -23,13 +24,17 @@ namespace SGCore::UI
         {
             return UIElementAttributeType::AT_CLASS;
         }
-        else if(value == "type")
+        if(value == "type")
         {
             return UIElementAttributeType::AT_TYPE;
         }
-        else if(value == "path")
+        if(value == "path")
         {
             return UIElementAttributeType::AT_PATH;
+        }
+        if(value == "name")
+        {
+            return UIElementAttributeType::AT_NAME;
         }
 
         return UIElementAttributeType::AT_UNKNOWN;

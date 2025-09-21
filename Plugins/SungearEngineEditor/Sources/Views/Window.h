@@ -12,6 +12,8 @@ namespace SGE
 {
     struct Window : SGCore::ImGuiWrap::IView
     {
+        virtual ~Window() = default;
+
         ImVec2 m_bodyPadding { 7, 8 };
 
         bool begin() override;
@@ -58,7 +60,7 @@ namespace SGE
         void removeButton(const std::string& name) noexcept;
 
     protected:
-        ImGuiID m_dockspaceID;
+        ImGuiID m_dockspaceID { };
 
         ImVec2 m_bodyMinSize { };
         ImVec2 m_size { };

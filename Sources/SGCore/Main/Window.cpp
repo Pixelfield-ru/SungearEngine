@@ -303,6 +303,11 @@ double SGCore::Window::getSwapBuffersExecutionTime() const noexcept
     return m_swapBuffersExecutionTime;
 }
 
+GLFWwindow* SGCore::Window::getNativeHandler() noexcept
+{
+    return m_handler;
+}
+
 int SGCore::Window::getPrimaryMonitorRefreshRate() noexcept
 {
     return glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate;

@@ -97,6 +97,18 @@ void SGCore::UI::UIElement::regenerateMesh(const UIElementCache* parentElementCa
     }
 }
 
+SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIElement::findElement(const std::string& name) noexcept
+{
+    for(const auto& child : m_children)
+    {
+        if(child->m_name == name) return child;
+
+        return child->findElement(name);
+    }
+
+    return nullptr;
+}
+
 void SGCore::UI::UIElement::checkForMeshGenerating(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept
 {
     if(!m_meshData)

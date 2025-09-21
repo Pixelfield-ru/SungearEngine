@@ -22,6 +22,7 @@
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Input/InputManager.h"
 #include "SGCore/UI/FontsManager.h"
+#include "SGCore/UI/Elements/Text.h"
 
 SGCore::AssetRef<SGCore::UI::CSSFile> cssFile;
 SGCore::AssetRef<SGCore::UI::UIDocument> uiDocument;
@@ -34,7 +35,6 @@ SGCore::Ref<SGCore::ITexture2D> attachmentToDisplay;
 SGCore::AssetRef<SGCore::ITexture2D> someTexture;
 
 SGCore::AssetRef<SGCore::ITexture2D> testTex;
-SGCore::SDFTexture sdfTest;
 
 SGCore::Ref<SGCore::RenderingBase> cameraRenderingBase { };
 
@@ -55,7 +55,6 @@ void coreInit()
     someTexture = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/no_material.png");
 
     testTex = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test.png");
-    // sdfTest.generate(testTex->getData().get(), testTex->getWidth(), testTex->getHeight(), 20.0f);
 
     auto ecsRegistry = scene->getECSRegistry();
 
@@ -80,19 +79,23 @@ void coreInit()
     quadMeshData->m_vertices.resize(4);
 
     quadMeshData->m_vertices[0] = {
-        .m_position = { -1, -1, 0.0f }
+        .m_position = { -1, -1, 0.0f },
+        .m_uv = glm::vec3 { 0.0f, 0.0f, 0.0f }
     };
 
     quadMeshData->m_vertices[1] = {
-        .m_position = { -1, 1, 0.0f }
+        .m_position = { -1, 1, 0.0f },
+        .m_uv = glm::vec3 { 0.0f, 1.0f, 0.0f }
     };
 
     quadMeshData->m_vertices[2] = {
-        .m_position = { 1, 1, 0.0f }
+        .m_position = { 1, 1, 0.0f },
+        .m_uv = glm::vec3 { 1.0f, 1.0f, 0.0f }
     };
 
     quadMeshData->m_vertices[3] = {
-        .m_position = { 1, -1, 0.0f }
+        .m_position = { 1, -1, 0.0f },
+        .m_uv = glm::vec3 { 1.0f, 0.0f, 0.0f }
     };
 
     quadMeshData->m_indices.resize(6);
@@ -105,6 +108,37 @@ void coreInit()
     quadMeshData->m_indices[5] = 2;
 
     quadMeshData->prepare();
+
+    glfwGetError(nullptr);
+
+    glfwInit();
+
+    glfwSetCharCallback(SGCore::CoreMain::getWindow().getNativeHandler(), [](GLFWwindow* window, unsigned int c) {
+        std::cout << "char: " << c << std::endl;
+        auto text = uiDocument->findElement("InputText");
+        static_cast<SGCore::UI::Text*>(text.get())->m_text += c;
+    });
+
+    const char* error { };
+    glfwGetError(&error);
+
+    if(error)
+    {
+        std::cout << "glfw error after glfwSetCharCallback: " << error << std::endl;
+    }
+
+    SGCore::InputManager::getMainInputListener()->onKeyboardKeyStateChanged += [](SGCore::Window& inWindow, SGCore::KeyboardKey key, SGCore::KeyState state) {
+        auto elem = uiDocument->findElement("InputText");
+        auto* textElem = static_cast<SGCore::UI::Text*>(elem.get());
+        if(key == SGCore::KeyboardKey::KEY_BACKSPACE && (state == SGCore::KeyState::REPEAT || state == SGCore::KeyState::PRESS) && !textElem->m_text.empty())
+        {
+            textElem->m_text.erase(textElem->m_text.length() - 1);
+        }
+        else if(key == SGCore::KeyboardKey::KEY_ENTER && (state == SGCore::KeyState::REPEAT || state == SGCore::KeyState::PRESS))
+        {
+            textElem->m_text += U'\n';
+        }
+    };
 }
 
 void onUpdate(const double& dt, const double& fixedDt)
@@ -129,8 +163,6 @@ void onUpdate(const double& dt, const double& fixedDt)
     cameraRenderingBase->m_zFar = 100;
 
     screenShader->bind();
-
-    // auto spec = SGCore::UI::FontsManager::getInstance().getAssetManager()->getAssetsWithType<SGCore::UI::Font>()[0]->getSpecialization({ .m_height = 52, .m_name = "default" });
 
     attachmentToDisplay->bind(0);
     screenShader->useTextureBlock("u_bufferToDisplay", 0);

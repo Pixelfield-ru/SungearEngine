@@ -9,6 +9,8 @@ layout (location = 0) in vec3 positionsAttribute;
 layout (location = 1) in vec2 UVAttribute;
 layout (location = 2) in int sliceIndexAttribute;
 
+#include "sg_shaders/impl/glsl4/vs_attribs_utils.glsl"
+
 // REQUIRED UNIFORM!!
 // first vec2 - min, second vec2 - max
 uniform vec4 u_meshAABB;
@@ -41,7 +43,7 @@ void main()
     vsOut.UV = UVAttribute.xy;
     vsOut.vertexPos = finalVertexPos;
     // vsOut.fragPos = vec3(objectTransform.modelMatrix * vec4(positionsAttribute.xy * (meshAABBCenterOffset * 10.0), 0.0, 1.0));
-    vsOut.fragPos = vec3(objectTransform.modelMatrix * vec4(finalVertexPos.xy, float(u_layer), 1.0));
+    vsOut.fragPos = vec3(getCurrentInstanceModelMatrix() * vec4(finalVertexPos.xy, float(u_layer), 1.0));
 
     gl_Position = camera.orthographicSpaceMatrix * vec4(vsOut.fragPos, 1.0);
 }

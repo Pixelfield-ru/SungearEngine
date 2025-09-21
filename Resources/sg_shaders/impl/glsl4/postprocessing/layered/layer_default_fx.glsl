@@ -190,8 +190,8 @@ void main()
             // layerColor.rgb = reinhard2(layerColor.rgb);
             // layerColor.rgb = filmic(layerColor.rgb);
 
-            fragColor = vec4(layerColor.rgb * (1.0 - STColor.a) + STColor.rgb * (STColor.a), 1.0);
-            // fragColor = vec4(layerColor.rgb, 1.0);
+            // fragColor = vec4(layerColor.rgb * (1.0 - STColor.a) + STColor.rgb * (STColor.a), 1.0);
+            fragColor = vec4(layerColor.rgb, 1.0);
 
             vec3 fragPos = texture(u_GBufferWorldPos, finalUV).xyz;
 

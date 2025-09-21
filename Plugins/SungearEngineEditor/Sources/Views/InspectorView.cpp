@@ -18,8 +18,27 @@
 #include <SGCore/Motion/MotionPlanner.h>
 #include <SGCore/Motion/IK/IKJoint.h>
 #include <SGCore/Motion/IK/IKRootJoint.h>
+#include <SGCore/Render/Terrain/Terrain.h>
 
 #include "SungearEngineEditor.h"
+
+SGE::InspectorView::InspectorView() noexcept
+{
+    m_assetChooseWindow = SGCore::MakeRef<Window>();
+    m_assetChooseWindow->m_name = "Choose Asset";
+    m_assetChooseWindow->addButton(Button {
+        .m_text = "Choose"
+    });
+    m_assetChooseWindow->addButton(Button {
+        .m_text = "Cancel",
+        .onClicked = [](Button& self, SGCore::ImGuiWrap::IView* parentView) {
+            parentView->setActive(false);
+        }
+    });
+    m_assetChooseWindow->setActive(false);
+
+    addChild(m_assetChooseWindow);
+}
 
 bool SGE::InspectorView::begin()
 {
@@ -332,6 +351,19 @@ void SGE::InspectorView::inspectEntity() const noexcept
                     ImGui::EndCombo();
                 }
             }
+
+            auto* terrain = ecsRegistry->tryGet<SGCore::Terrain>(m_currentChosenEntity);
+            if(terrain && ImGui::CollapsingHeader("Terrain"))
+            {
+                auto* mesh = ecsRegistry->tryGet<SGCore::Mesh>(m_currentChosenEntity);
+                if(mesh)
+                {
+                    if(ImGui::Button("Generate"))
+                    {
+                        SGCore::Terrain::generate(*terrain, mesh->m_base.getMeshData(), 10, 10, 10);
+                    }
+                }
+            }
         }
 
         if(ImGui::Button("Add Transform"))
@@ -374,6 +406,14 @@ void SGE::InspectorView::inspectEntity() const noexcept
             }
         }
 
+        if(ImGui::Button("Add Terrain"))
+        {
+            if(!ecsRegistry->allOf<SGCore::Terrain>(m_currentChosenEntity))
+            {
+                ecsRegistry->emplace<SGCore::Terrain>(m_currentChosenEntity);
+            }
+        }
+
         if(ImGui::CollapsingHeader("Danger zone"))
         {
             if(ImGui::Button("Delete entity"))
@@ -394,8 +434,9 @@ void SGE::InspectorView::inspectMaterial() const noexcept
         {
             const auto& texturesTyped = m_currentMaterial->getTextures()[i];
             const SGTextureType textureType = static_cast<SGTextureType>(i);
+            const std::string textureTypeString = sgStandardTextureTypeToString(textureType);
 
-            if(ImGui::CollapsingHeader(sgStandardTextureTypeToString(textureType).c_str()))
+            if(ImGui::CollapsingHeader(textureTypeString.c_str()))
             {
                 for(size_t j = 0; j < texturesTyped.size(); ++j)
                 {
@@ -404,6 +445,19 @@ void SGE::InspectorView::inspectMaterial() const noexcept
                     ImGui::Text(SGCore::Utils::toUTF8(texture->getPath().resolved().u16string()).c_str());
                     ImGui::Image((ImTextureID) texture->getTextureNativeHandler(), ImVec2(texture->getWidth(), texture->getHeight()));
                 }
+
+                ImGui::PushID((textureTypeString + "_" + SGCore::Utils::toUTF8(m_currentMaterial->getPath().raw().u16string())).c_str());
+                if(ImGui::Button("Add texture"))
+                {
+                    const auto textures = SGCore::AssetManager::getInstance()->getAssetsWithType<SGCore::ITexture2D>();
+
+                    for(const auto& texture : textures)
+                    {
+                        m_assetChooseWindow->setActive(true);
+                        // if(ImGui::Button("Choose"))
+                    }
+                }
+                ImGui::PopID();
             }
         }
     }

@@ -18,6 +18,7 @@
 namespace SGCore::UI
 {
     struct UIElementMesh;
+    struct UIDocument;
 
     struct UIElement
     {
@@ -28,7 +29,10 @@ namespace SGCore::UI
         std::vector<Ref<UIElement>> m_children;
         Weak<UIElement> m_parent;
 
+        // =================== XML ATTRIBUTES
         AssetRef<CSSSelector> m_selector;
+        std::string m_name;
+        // ===================
 
         AssetRef<IShader> m_shader;
 
@@ -61,6 +65,8 @@ namespace SGCore::UI
 
         void regenerateMesh(const UIElementCache* parentElementCache,
                             UIElementCache& thisElementCache) noexcept;
+
+        Ref<UIElement> findElement(const std::string& name) noexcept;
 
     protected:
         virtual void doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,

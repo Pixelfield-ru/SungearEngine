@@ -160,3 +160,8 @@ SGCore::UI::UIDocument::findSelector(const std::string& selectorName) const noex
 
     return nullptr;
 }
+
+Ref<SGCore::UI::UIElement> SGCore::UI::UIDocument::findElement(const std::string& elementName) const noexcept
+{
+    return m_rootElement->findElement(elementName);
+}

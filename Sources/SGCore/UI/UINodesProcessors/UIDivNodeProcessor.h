@@ -49,6 +49,12 @@ namespace SGCore::UI
 
                         break;
                     }
+                    case UIElementAttributeType::AT_NAME:
+                    {
+                        element->m_name = attribute.value();
+
+                        break;
+                    }
                     default:
                     {
                         break;

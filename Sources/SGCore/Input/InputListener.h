@@ -13,27 +13,28 @@ namespace SGCore
 {
     struct InputListener : public std::enable_shared_from_this<InputListener>
     {
+        Signal<void(Window& inWindow, KeyboardKey key, KeyState state)> onKeyboardKeyStateChanged;
+        Signal<void(Window& inWindow, MouseButton button, KeyState state)> onMouseButtonStateChanged;
+
         InputListener() noexcept;
 
         void startFrame() noexcept;
 
-        void notifyKeyboard(Window&, const KeyboardKey& key, const KeyState& state) noexcept;
+        void notifyKeyboard(Window&, KeyboardKey key, KeyState state) noexcept;
 
-        void notifyMouse(Window&, const MouseButton& button, const KeyState& state) noexcept;
+        void notifyMouse(Window&, MouseButton button, KeyState state) noexcept;
 
-        bool keyboardKeyDown(const KeyboardKey& key) noexcept;
+        bool keyboardKeyDown(KeyboardKey key) noexcept;
 
-        bool keyboardKeyPressed(const KeyboardKey& key) noexcept;
+        bool keyboardKeyPressed(KeyboardKey key) noexcept;
 
-        bool keyboardKeyReleased(const KeyboardKey& key) noexcept;
+        bool keyboardKeyReleased(KeyboardKey key) noexcept;
 
-        void keyboardKeySkipFrame(const KeyboardKey& key) noexcept;
+        bool mouseButtonDown(MouseButton) noexcept;
 
-        bool mouseButtonDown(const MouseButton&) noexcept;
+        bool mouseButtonPressed(MouseButton) noexcept;
 
-        bool mouseButtonPressed(const MouseButton&) noexcept;
-
-        bool mouseButtonReleased(const MouseButton&) noexcept;
+        bool mouseButtonReleased(MouseButton) noexcept;
 
         double getCursorPositionLastX() const noexcept;
 

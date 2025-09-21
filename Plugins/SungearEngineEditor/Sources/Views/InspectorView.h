@@ -8,6 +8,8 @@
 #include <SGCore/ImGuiWrap/Views/IView.h>
 #include <SGCore/Memory/Assets/Materials/IMaterial.h>
 
+#include "Window.h"
+
 namespace SGE
 {
     enum class InspectorViewType
@@ -19,6 +21,7 @@ namespace SGE
     struct InspectorView : public SGCore::ImGuiWrap::IView
     {
         virtual ~InspectorView() = default;
+        InspectorView() noexcept;
 
         InspectorViewType m_type = InspectorViewType::INSPECT_ENTITY;
 
@@ -30,6 +33,8 @@ namespace SGE
         void end() final;
 
     private:
+        SGCore::Ref<Window> m_assetChooseWindow;
+
         void inspectEntity() const noexcept;
         void inspectMaterial() const noexcept;
     };
