@@ -104,7 +104,6 @@
  message("Bullet Include Dir: " ${BULLET_INCLUDE_DIRS})
  message("Bullet Libraries: " ${SG_BULLET_LIBS})
 
- # TODO: make for linux and mac
  target_link_libraries(${PROJECT_NAME} PUBLIC
          PNG::PNG
          BZip2::BZip2
@@ -127,6 +126,7 @@
          rectpack2D::rectpack2D
          Boost::system
          Boost::asio
+         tbb
 
          ${SG_BULLET_LIBS}
          ${FREETYPE_LIBRARIES}
