@@ -126,7 +126,6 @@
          rectpack2D::rectpack2D
          Boost::system
          Boost::asio
-         tbb
 
          ${SG_BULLET_LIBS}
          ${FREETYPE_LIBRARIES}
@@ -138,6 +137,7 @@
   target_link_libraries(${PROJECT_NAME} PUBLIC
           ${CMAKE_DL_LIBS}
           ${Backtrace_LIBRARY}
+          tbb
           antlr4_static)
  else()
   target_link_libraries(${PROJECT_NAME} PUBLIC antlr4_static)
