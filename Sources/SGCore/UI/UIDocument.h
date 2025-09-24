@@ -15,7 +15,6 @@ namespace SGCore::UI
     
     struct UIDocument : public IAsset
     {
-        template<UIElementType>
         friend struct UIElementNodeProcessor;
 
         sg_implement_type_id(UIDocument, 10)

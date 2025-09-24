@@ -1,6 +1,8 @@
 <xml>
     <include type="stylesheet" path="test.css"/>
     <div class="window-header" name="InputDiv">
-        <text class="test-text-0" name="InputText">NONE</text>
+        <div class="text-box" name="InputDiv1">
+            <text class="test-text-1" name="InputText">NONE</text>
+        </div>
     </div>
 </xml>

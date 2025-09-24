@@ -59,7 +59,7 @@ namespace SGCore::UI
                              const Transform* parentTransform,
                              Transform& ownTransform) noexcept;
 
-        [[nodiscard]] UIElementType getType() const noexcept;
+        [[nodiscard]] size_t getTypeHash() const noexcept;
 
         virtual void useUniforms(UIElementCache& thisElementCache) const noexcept;
 
@@ -93,7 +93,7 @@ namespace SGCore::UI
         virtual void doGenerateBasicMesh() noexcept = 0;
 
     private:
-        UIElementType m_type = UIElementType::ET_UNKNOWN;
+        size_t m_typeHash = 0;
 
         void checkForMeshGenerating(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept;
     };

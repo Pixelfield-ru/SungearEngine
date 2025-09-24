@@ -5,9 +5,9 @@
 
 #include "UIElementMesh/UIElementMesh.h"
 
-SGCore::UI::UIElementType SGCore::UI::UIElement::getType() const noexcept
+size_t SGCore::UI::UIElement::getTypeHash() const noexcept
 {
-    return m_type;
+    return m_typeHash;
 }
 
 void SGCore::UI::UIElement::useUniforms(UIElementCache& thisElementCache) const noexcept
@@ -103,7 +103,7 @@ SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIElement::findElement(const std:
     {
         if(child->m_name == name) return child;
 
-        return child->findElement(name);
+        if(auto found = child->findElement(name)) return found;
     }
 
     return nullptr;

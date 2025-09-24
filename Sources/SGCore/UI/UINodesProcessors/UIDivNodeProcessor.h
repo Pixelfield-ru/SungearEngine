@@ -2,67 +2,20 @@
 // Created by stuka on 25.01.2025.
 //
 
-#ifndef SUNGEARENGINE_UIDIVNODEPROCESSOR_H
-#define SUNGEARENGINE_UIDIVNODEPROCESSOR_H
+#pragma once
 
 #include "UIElementNodeProcessor.h"
 
-#include "SGCore/UI/Elements/Div.h"
-
 namespace SGCore::UI
 {
-    template<>
-    struct UIElementNodeProcessor<UIElementType::ET_DIV>
+    struct UIDivNodeProcessor : UIElementNodeProcessor
     {
-        static constexpr UIElementType element_type = UIElementType::ET_DIV;
+        SG_DECLARE_UI_ELEMENT_PROCESSOR_NODE_NAME(div)
 
-        static void processElement(const UIDocument* inDocument,
-                                   const Ref<Div>& element,
-                                   const pugi::xml_node& elementNode) noexcept
-        {
-            for(const auto& attribute : elementNode.attributes())
-            {
-                const UIElementAttributeType attributeType = getUIElementAttributeTypeFromString(attribute.name());
+        Ref<UIElement> allocateElement() noexcept final;
 
-                if(attributeType == UIElementAttributeType::AT_UNKNOWN)
-                {
-                    UINodesProcessorsUtils::printUnknownAttributeError(inDocument, attribute, elementNode);
-
-                    continue;
-                }
-
-                switch(attributeType)
-                {
-                    case UIElementAttributeType::AT_CLASS:
-                    {
-                        const auto foundSelector = inDocument->findSelector(attribute.value());
-
-                        if(foundSelector)
-                        {
-                            element->m_selector = foundSelector;
-                        }
-                        else
-                        {
-                            // todo: maybe setting some default selector??
-                            element->m_selector = nullptr;
-                        }
-
-                        break;
-                    }
-                    case UIElementAttributeType::AT_NAME:
-                    {
-                        element->m_name = attribute.value();
-
-                        break;
-                    }
-                    default:
-                    {
-                        break;
-                    }
-                }
-            }
-        }
+        void processElement(UIDocument* inDocument,
+                            const Ref<UIElement>& element,
+                            const pugi::xml_node& elementNode) noexcept final;
     };
 }
-
-#endif //SUNGEARENGINE_UIDIVNODEPROCESSOR_H

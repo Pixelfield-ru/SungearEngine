@@ -7,6 +7,7 @@
 #include "Elements/Text.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Transformations/TransformUtils.h"
+#include "UINodesProcessors/UITextNodeProcessor.h"
 
 void SGCore::UI::UILayoutCalculator::fixedUpdate(const double& dt, const double& fixedDt)
 {
@@ -127,7 +128,7 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
 
     if(!parentSelector) return;
 
-    const UIElementType currentUIElementType = currentUIElement->getType();
+    const size_t currentUIElementType = currentUIElement->getTypeHash();
 
     if(parentSelector->m_display == DisplayKeyword::KW_FLEX)
     {
@@ -144,7 +145,7 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
                 parentElementCache.m_lastRowSize.y = 0.0f;
             }
 
-            if(currentUIElementType == UIElementType::ET_TEXT)
+            if(currentUIElementType == UITextNodeProcessor::getNodeTypeHashStatic())
             {
                 auto* asTextElement = static_cast<Text*>(currentUIElement.get());
 
@@ -191,7 +192,7 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
             }
 
             glm::vec3 currentElementPos = parentElementCache.m_curLocalPositionForElements;
-            if(currentUIElementType != UIElementType::ET_TEXT)
+            if(currentUIElementType != UITextNodeProcessor::getNodeTypeHashStatic())
             {
                 currentElementPos += glm::vec3 { currentElementCache.m_finalSize, 0.0 } / 2.0f;
             }
@@ -216,7 +217,7 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
     else if(parentSelector->m_display == DisplayKeyword::KW_BLOCK)
     {
         glm::vec3 currentElementPos = parentElementCache.m_curLocalPositionForElements;
-        if(currentUIElementType != UIElementType::ET_TEXT)
+        if(currentUIElementType != UITextNodeProcessor::getNodeTypeHashStatic())
         {
             currentElementPos += glm::vec3 { currentElementCache.m_finalSize, 0.0 } / 2.0f;
         }

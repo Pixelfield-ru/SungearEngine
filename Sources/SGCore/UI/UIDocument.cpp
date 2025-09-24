@@ -5,14 +5,12 @@
 #include "UIDocument.h"
 #include <spdlog/spdlog.h>
 
+#include "CSS/CSSFile.h"
 #include "Elements/Text.h"
 #include "SGCore/Logger/Logger.h"
 
-#include "UINodesProcessors/UIElementNodeProcessor.h"
+#include "UINodesProcessors/UIElementsProcessorsRegistry.h"
 #include "UINodesProcessors/UIRootNodeProcessor.h"
-#include "UINodesProcessors/UIIncludeNodeProcessor.h"
-#include "UINodesProcessors/UIDivNodeProcessor.h"
-#include "UINodesProcessors/UITextNodeProcessor.h"
 
 void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
 {
@@ -35,10 +33,10 @@ void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
 
     auto rootElement = processUIElement(m_document.child("xml"));
 
-    if(!rootElement || rootElement->getType() != UIElementType::ET_ROOT)
+    if(!rootElement || rootElement->getTypeHash() != UIRootNodeProcessor::getNodeTypeHashStatic())
     {
         LOG_E(SGCORE_TAG,
-              "Can not process UIDocument: root element must <xml>.\n"
+              "Can not process UIDocument: root element must be <xml>.\n"
               "In XML file: '{}'",
               u8Path);
         return;
@@ -65,7 +63,7 @@ SGCore::UI::UIDocument::processUIElement(const pugi::xml_node& xmlNode) noexcept
     if(!xmlNode)
     {
         LOG_E(SGCORE_TAG,
-              "Can not process UIDocument correctly: invalid node.\n"
+              "Cannot process UIDocument correctly: invalid node.\n"
               "In XML file: '{}'",
               Utils::toUTF8(getPath().resolved().u16string()));
 
@@ -74,63 +72,20 @@ SGCore::UI::UIDocument::processUIElement(const pugi::xml_node& xmlNode) noexcept
 
     std::cout << "node: " << xmlNode.name() << std::endl;
 
-    const UIElementType elementType = getUIElementTypeFromString(xmlNode.name());
-
-    Ref<UIElement> outputElement;
-
-    switch(elementType)
+    auto nodeProcessor = UIElementsProcessorsRegistry::getProcessor(xmlNode.name());
+    if(!nodeProcessor)
     {
-        case UIElementType::ET_ROOT:
-        {
-            auto element = MakeRef<UIRoot>();
-
-            UIElementNodeProcessor<UIElementType::ET_ROOT>::processElement(this, element, xmlNode);
-
-            outputElement = element;
-
-            break;
-        }
-        case UIElementType::ET_INCLUDE:
-        {
-            UIElementNodeProcessor<UIElementType::ET_INCLUDE>::processElement(this, nullptr, xmlNode);
-
-            break;
-        }
-        case UIElementType::ET_DIV:
-        {
-            auto element = MakeRef<Div>();
-
-            UIElementNodeProcessor<UIElementType::ET_DIV>::processElement(this, element, xmlNode);
-
-            outputElement = element;
-
-            break;
-        }
-        case UIElementType::ET_TEXT:
-        {
-            auto element = MakeRef<Text>();
-
-            UIElementNodeProcessor<UIElementType::ET_TEXT>::processElement(this, element, xmlNode);
-
-            outputElement = element;
-
-            break;
-        }
-        case UIElementType::ET_UNKNOWN:
-        {
-            LOG_E(SGCORE_TAG,
-                  "Can not process UIDocument correctly: unknown node '{}'.\n"
-                  "In XML file: '{}'",
-                  xmlNode.name(),
-                  Utils::toUTF8(getPath().resolved().u16string()));
-
-            return nullptr;
-        }
+        LOG_W(SGCORE_TAG, "In UIDocument by path '{}': cannot process node '{}': processor for this node does not exist.", Utils::toUTF8(getPath().resolved().u16string()), xmlNode.name());
+        return nullptr;
+    }
+    Ref<UIElement> outputElement = nodeProcessor->allocateElement();
+    nodeProcessor->processElement(this, outputElement, xmlNode);
+    if(outputElement)
+    {
+        outputElement->m_typeHash = nodeProcessor->getNodeTypeHash();
     }
 
     if(!outputElement) return nullptr;
-
-    outputElement->m_type = elementType;
 
     for(const pugi::xml_node& child : xmlNode)
     {

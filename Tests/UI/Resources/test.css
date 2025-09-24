@@ -1,10 +1,24 @@
 .window-default {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
 
     width: 100px;
-    height: calc(100px - 10%);
-    background-color: rgb(10 100 10 / 255);
+    height: 100px;
+    background-color: rgba(10 100 10 / 255);
+}
+
+.text-box {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    border-radius: 5px / 20px;
+
+    padding: 10px;
+
+    width: 100px;
+    height: auto;
+    background-color: rgba(100 100 10 / 255);
 }
 
 .window-header {
@@ -17,7 +31,7 @@
     gap: 10px;
     padding: 10px;
 
-    border-radius: 100px / 200px;
+    border-radius: 5px;
 }
 
 .test-text-0 {

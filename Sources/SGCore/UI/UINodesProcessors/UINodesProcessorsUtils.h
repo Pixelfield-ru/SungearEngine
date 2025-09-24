@@ -2,8 +2,7 @@
 // Created by stuka on 26.01.2025.
 //
 
-#ifndef SUNGEARENGINE_UINODESPROCESSORSUTILS_H
-#define SUNGEARENGINE_UINODESPROCESSORSUTILS_H
+#pragma once
 
 #include "SGCore/UI/UIDocument.h"
 
@@ -16,5 +15,3 @@ namespace SGCore::UI::UINodesProcessorsUtils
     InterpolatedPath resolveIncludePath(const UIDocument* inDocument,
                                         const std::string& originalPath) noexcept;
 }
-
-#endif //SUNGEARENGINE_UINODESPROCESSORSUTILS_H
