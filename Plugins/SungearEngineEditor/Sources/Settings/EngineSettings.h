@@ -7,7 +7,7 @@
 
 #include <vector>
 #include <SGCore/Utils/Utils.h>
-#include <SGCore/Utils/UniqueNamesManager.h>
+#include <SGCore/Utils/Unique/UniqueNamesManager.h>
 #include <SGCore/Main/CoreGlobals.h>
 #include "Toolchains/Toolchain.h"
 

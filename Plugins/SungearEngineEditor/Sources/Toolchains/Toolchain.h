@@ -8,7 +8,7 @@
 #include "ToolchainType.h"
 
 #include <filesystem>
-#include <SGCore/Utils/UniqueName.h>
+#include <SGCore/Utils/Unique/UniqueName.h>
 #include <SGCore/Utils/Utils.h>
 #include <SGCore/Main/CoreGlobals.h>
 

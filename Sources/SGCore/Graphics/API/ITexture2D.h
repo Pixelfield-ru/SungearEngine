@@ -9,7 +9,7 @@
 
 #include "GraphicsDataTypes.h"
 #include "SGCore/Main/CoreGlobals.h"
-#include "SGCore/Utils/UniqueName.h"
+#include "SGCore/Utils/Unique/UniqueName.h"
 #include "SGCore/Memory/Assets/IAsset.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/API/IRenderer.h"

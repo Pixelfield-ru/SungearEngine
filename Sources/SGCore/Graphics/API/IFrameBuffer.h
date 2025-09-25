@@ -9,7 +9,7 @@
 
 #include "GraphicsDataTypes.h"
 #include "IFrameBufferAttachment.h"
-#include "SGCore/Utils/UniqueName.h"
+#include "SGCore/Utils/Unique/UniqueName.h"
 #include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore

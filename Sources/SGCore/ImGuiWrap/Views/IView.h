@@ -7,11 +7,11 @@
 
 #include <SGCore/pch.h>
 
-#include "SGCore/Utils/UUID.h"
+#include "SGCore/Utils/Unique/UUID.h"
 #include "SGCore/Utils/Signal.h"
 #include "SGCore/Main/CoreGlobals.h"
-#include "SGCore/Utils/UniqueName.h"
-#include "SGCore/Utils/UniqueNamesManager.h"
+#include "SGCore/Utils/Unique/UniqueName.h"
+#include "SGCore/Utils/Unique/UniqueNamesManager.h"
 #include "SGCore/Utils/Utils.h"
 
 namespace SGCore::ImGuiWrap

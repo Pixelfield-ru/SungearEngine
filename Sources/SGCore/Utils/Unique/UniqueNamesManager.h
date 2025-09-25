@@ -8,7 +8,7 @@
 #include <SGCore/pch.h>
 
 #include "UniqueName.h"
-#include "Signal.h"
+#include "SGCore/Utils/Signal.h"
 
 namespace SGCore
 {

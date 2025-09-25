@@ -6,7 +6,6 @@
 
 #include "SGCore/Serde/Serde.h"
 
-#include "SGCore/Utils/UniqueName.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Transformations/Controllable3D.h"
 #include "SGCore/Audio/AudioSource.h"

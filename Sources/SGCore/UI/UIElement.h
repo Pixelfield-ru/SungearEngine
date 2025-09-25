@@ -12,7 +12,6 @@
 #include "CSS/CSSSelector.h"
 #include "SGCore/Memory/AssetRef.h"
 #include "SGCore/Graphics/API/IShader.h"
-#include "UIElementType.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
 
 namespace SGCore::UI

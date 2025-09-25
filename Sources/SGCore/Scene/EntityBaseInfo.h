@@ -8,16 +8,17 @@
 #include <SGCore/pch.h>
 
 #include "SGCore/Main/CoreGlobals.h"
-#include "SGCore/Utils/UniqueName.h"
+#include "SGCore/Utils/Unique/UniqueName.h"
 #include "SGCore/ECS/Component.h"
 #include "EntityRef.h"
+#include "SGCore/Utils/Unique/UniqueColor.h"
 
 namespace SGCore
 {
     struct Layer;
 
     // sizeof
-    struct EntityBaseInfo : public UniqueNameWrapper, public ECS::Component<EntityBaseInfo, const EntityBaseInfo>
+    struct EntityBaseInfo final : public UniqueNameWrapper, public ECS::Component<EntityBaseInfo, const EntityBaseInfo>
     {
         sg_serde_as_friend()
 
@@ -77,7 +78,7 @@ namespace SGCore
          */
         [[nodiscard]] ECS::entity_t findEntity(ECS::registry_t& inRegistry, const std::string& name) const noexcept;
 
-        [[nodiscard]] const glm::vec3& getUniqueColor() const noexcept;
+        [[nodiscard]] glm::vec3 getUniqueColor() const noexcept;
 
         [[nodiscard]] const ECS::entity_t& getThisEntity() const noexcept;
 
@@ -103,7 +104,7 @@ namespace SGCore
         std::vector<Ref<ECS::entity_t>> m_entitiesRefsToResolve;
 
         // for picking. not serializable
-        glm::vec3 m_uniqueColor { };
+        UniqueColor m_uniqueColor;
 
         std::vector<ECS::entity_t> m_children;
     };

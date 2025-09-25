@@ -12,7 +12,7 @@
 #include <SGCore/Main/CoreGlobals.h>
 #include <SGCore/Graphics/API/ITexture2D.h>
 #include <SGCore/Memory/AssetRef.h>
-#include <SGCore/Utils/UniqueNamesManager.h>
+#include <SGCore/Utils/Unique/UniqueNamesManager.h>
 
 namespace SGE
 {

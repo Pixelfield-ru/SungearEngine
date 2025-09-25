@@ -214,9 +214,9 @@ void SGCore::EntityBaseInfo::destroy(ECS::registry_t& inRegistry) const noexcept
     inRegistry.destroy(m_thisEntity);
 }
 
-const glm::vec3& SGCore::EntityBaseInfo::getUniqueColor() const noexcept
+glm::vec3 SGCore::EntityBaseInfo::getUniqueColor() const noexcept
 {
-    return m_uniqueColor;
+    return { m_uniqueColor.color().x, m_uniqueColor.color().y, m_uniqueColor.color().z };
 }
 
 const SGCore::ECS::entity_t& SGCore::EntityBaseInfo::getThisEntity() const noexcept
@@ -255,14 +255,7 @@ void SGCore::EntityBaseInfo::resolveAllEntitiesRefs(const SGCore::Ref<SGCore::EC
 
 void SGCore::EntityBaseInfo::generateUniqueColor() noexcept
 {
-    const auto underlyingVal = std::to_underlying(m_thisEntity);
-
-    m_uniqueColor.x = (float) (((underlyingVal + 1) & 0xFF0000) >> 16) / 255.0f;
-    m_uniqueColor.y = (float) (((underlyingVal + 1) & 0x00FF00) >> 8) / 255.0f;
-    m_uniqueColor.z = (float) ((underlyingVal + 1) & 0x0000FF) / 255.0f;
-
-    std::cout << fmt::format("UNIQUE COLOR x = {}, y = {}, z = {}",
-                             m_uniqueColor.x, m_uniqueColor.y, m_uniqueColor.z) << std::endl;
+    m_uniqueColor.generate();
 }
 
 void SGCore::EntityBaseInfo::setThisEntity(const SGCore::ECS::entity_t& entity) noexcept

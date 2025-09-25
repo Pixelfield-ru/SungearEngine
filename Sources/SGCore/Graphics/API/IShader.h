@@ -20,7 +20,7 @@
 #include "IUniformBuffer.h"
 #include "ShaderDefine.h"
 
-#include "SGCore/Utils/UniqueName.h"
+#include "SGCore/Utils/Unique/UniqueName.h"
 
 #include "SGCore/Utils/Utils.h"
 
