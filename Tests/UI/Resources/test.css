@@ -7,6 +7,10 @@
     background-color: rgba(10 100 10 / 255);
 }
 
+.text-box:hover {
+
+}
+
 .text-box {
     display: flex;
     flex-direction: row;

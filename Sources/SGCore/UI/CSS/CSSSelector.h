@@ -38,6 +38,9 @@ namespace SGCore::UI
         copy_operator(CSSSelector) = default;
         move_operator(CSSSelector) = default;
 
+#pragma region Properties
+        // ============================================================== properties
+
         DisplayKeyword m_display = DisplayKeyword::KW_FLEX;
         FlexboxKeyword m_flexDirection = FlexboxKeyword::KW_ROW;
         FlexboxKeyword m_flexWrap = FlexboxKeyword::KW_NOWRAP;
@@ -62,7 +65,11 @@ namespace SGCore::UI
         /// Used as scale.
         CSSPropertyValue<FontSizeKeyword::KW_UNSET, Ref<CSSMathNode>> m_fontSize;
 
+        // ==============================================================
+#pragma endregion Properties
+
         [[nodiscard]] const std::string& getName() const noexcept;
+        [[nodiscard]] const std::string& getPseudoName() const noexcept;
 
         void calculateCache(const UIElementCache* parentElementCache,
                             UIElementCache& thisElementCache) noexcept;
@@ -74,7 +81,15 @@ namespace SGCore::UI
 
         Ref<FontSpecialization> getFontSpecialization() const noexcept;
 
+        void copy(CSSSelector& to) const noexcept;
+
     protected:
+        // todo: maybe vector with pseudo class handlers
+        // std::vector<Ref<CSSPseudoClassHandler>> m_pseudoClassesHandlers;
+        // we will pass current UIElement to handler of pseudo class and check if condition is true in virtual function.
+        // if condition is true, then we must take pseudo class name from CSSPseudoClassHandler that returns true and then
+        // pass current UIElement to apply(...) function of CSSPseudoClassHandler to do pseudo-class-specific actions
+
         /// NOT SUPPORTED
         void doLoad(const InterpolatedPath& path) final;
 
@@ -89,6 +104,7 @@ namespace SGCore::UI
         Weak<FontSpecialization> m_fontSpecialization;
 
         std::string m_name;
+        std::string m_pseudoName;
     };
 }
 

@@ -6,6 +6,8 @@
 #define UIEELEMENTCACHE_H
 
 #include <glm/vec4.hpp>
+#include <glm/vec2.hpp>
+#include <array>
 
 namespace SGCore::UI
 {

@@ -37,13 +37,11 @@ void SGCore::UI::UIInputListener::update(const double& dt, const double& fixedDt
             // reading from attachment with picking color
             const auto pickedColor = layeredFrameReceiver.m_layersFrameBuffer->readPixelsFromAttachment(mouseRelativePos, SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2);
 
-            uiComponent.m_transformTree.m_elements[0].m_currentElementCache.m_backgroundColor
-
             bool breakFind = false;
             uiComponent.m_document->iterate([&](UIElement* parent, UIElement* current) {
                 if((glm::vec3) current->m_uniqueColor.color() == pickedColor)
                 {
-                    std::cout << "hovering element: " << current->m_name << std::endl;
+                    // std::cout << "hovering element: " << current->m_name << std::endl;
                     breakFind = true;
                 }
             }, breakFind);

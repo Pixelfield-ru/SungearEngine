@@ -20,6 +20,11 @@ const std::string& SGCore::UI::CSSSelector::getName() const noexcept
     return m_name;
 }
 
+const std::string& SGCore::UI::CSSSelector::getPseudoName() const noexcept
+{
+    return m_pseudoName;
+}
+
 void SGCore::UI::CSSSelector::calculateCache(const UIElementCache* parentElementCache,
                                              UIElementCache& thisElementCache) noexcept
 {
@@ -193,6 +198,36 @@ void SGCore::UI::CSSSelector::updateFontSettings() noexcept
 SGCore::Ref<SGCore::UI::FontSpecialization> SGCore::UI::CSSSelector::getFontSpecialization() const noexcept
 {
     return m_fontSpecialization.lock();
+}
+
+void SGCore::UI::CSSSelector::copy(CSSSelector& to) const noexcept
+{
+    to.m_display = m_display;
+    to.m_flexDirection = m_flexDirection;
+    to.m_flexWrap = m_flexWrap;
+
+    to.m_width = m_width;
+    to.m_height = m_height;
+
+    to.m_padding = m_padding;
+
+    to.m_gap = m_gap;
+
+    to.m_bottomLeftBorderRadius = m_bottomLeftBorderRadius;
+    to.m_topLeftBorderRadius = m_topLeftBorderRadius;
+    to.m_topRightBorderRadius = m_topRightBorderRadius;
+    to.m_bottomRightBorderRadius = m_bottomRightBorderRadius;
+
+    to.m_backgroundColor = m_backgroundColor;
+
+    to.m_font = m_font;
+
+    to.m_fontSize = m_fontSize;
+
+    to.m_fontSpecializationSettings = m_fontSpecializationSettings;
+    to.m_fontSpecialization = m_fontSpecialization;
+
+    to.m_name = m_name;
 }
 
 void SGCore::UI::CSSSelector::doLoad(const InterpolatedPath& path)

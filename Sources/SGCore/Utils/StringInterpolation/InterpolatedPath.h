@@ -50,7 +50,7 @@ namespace SGCore
         InterpolatedPath& operator/=(const std::filesystem::path& path) noexcept;
         InterpolatedPath& operator/=(const InterpolatedPath& path) noexcept;
         template<typename CharT>
-        [[nodiscard]] InterpolatedPath& operator/=(const std::basic_string<CharT>& other) noexcept
+        InterpolatedPath& operator/=(const std::basic_string<CharT>& other) noexcept
         {
             m_rawPath /= other;
             resolve();

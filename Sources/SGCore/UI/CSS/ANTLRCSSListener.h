@@ -32,6 +32,8 @@ namespace SGCore::UI
 
         void enterKnownDeclaration(css3Parser::KnownDeclarationContext* ctx) override;
 
+        void resolvePseudos() noexcept;
+
     private:
         /**
          * Iterates through all nodes of any function that can calculate and creates tree of math nodes.
@@ -80,6 +82,8 @@ namespace SGCore::UI
                                   const std::string& defaultSetKeyword) const noexcept;
 
         CSSSelector* m_currentSelector { };
+        CSSSelector* m_currentPseudo { };
+        std::vector<std::pair<CSSSelector*, css3Parser::KnownDeclarationContext*>> m_pseudosToResolve;
     };
 }
 

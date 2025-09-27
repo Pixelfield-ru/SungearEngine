@@ -21,6 +21,7 @@
 void SGCore::UI::ANTLRCSSListener::enterSelector(css3Parser::SelectorContext* ctx)
 {
     std::string currentSelectorName = "";
+    std::string currentPseudoName = "";
     if(!ctx->children.empty())
     {
         if(!ctx->children[0]->children.empty())
@@ -30,29 +31,60 @@ void SGCore::UI::ANTLRCSSListener::enterSelector(css3Parser::SelectorContext* ct
                 currentSelectorName = ctx->children[0]->children[0]->children[1]->getText();
             }
         }
+
+        if(ctx->children[0]->children.size() > 1)
+        {
+            currentPseudoName = ctx->children[0]->children[1]->children[1]->getText();
+        }
     }
 
-    auto foundSelector = m_toCSSFile->findSelector(currentSelectorName);
-
-    if(foundSelector)
-    {
-        m_currentSelector = foundSelector.get();
-
-        return;
-    }
+    std::cout << "selector name: " << currentSelectorName << ", with pseudo: " << currentPseudoName << std::endl;
 
     auto assetManager = m_toCSSFile->getParentAssetManager();
-    const InterpolatedPath newSelectorPath = m_toCSSFile->getPath() / "selectors" / currentSelectorName;
 
-    m_toCSSFile->m_selectors.push_back(assetManager->getOrAddAssetByPath<CSSSelector>(newSelectorPath));
+    InterpolatedPath newSelectorPath = m_toCSSFile->getPath() / "selectors";
+    // if selector is pseudo class
+    if(!currentPseudoName.empty())
+    {
+        newSelectorPath /= currentSelectorName + ":" + currentPseudoName;
 
-    m_currentSelector = m_toCSSFile->m_selectors.rbegin()->get();
+        auto pseudo = assetManager->getOrAddAssetByPath<CSSSelector>(newSelectorPath);
 
-    m_currentSelector->m_name = currentSelectorName;
+        pseudo->m_name = currentSelectorName;
+        pseudo->m_pseudoName = currentSelectorName;
+
+        m_currentPseudo = pseudo.get();
+    }
+    else
+    {
+        newSelectorPath /= currentSelectorName;
+
+        auto foundSelector = m_toCSSFile->findSelector(currentSelectorName);
+
+        if(foundSelector)
+        {
+            m_currentSelector = foundSelector.get();
+
+            return;
+        }
+
+        m_toCSSFile->m_selectors.push_back(assetManager->getOrAddAssetByPath<CSSSelector>(newSelectorPath));
+
+        m_currentSelector = m_toCSSFile->m_selectors.rbegin()->get();
+
+        m_currentSelector->m_name = currentSelectorName;
+    }
 }
 
 void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclarationContext* ctx)
 {
+    if(m_currentPseudo)
+    {
+        m_pseudosToResolve.push_back({ m_currentPseudo, ctx });
+        m_currentPseudo = nullptr;
+        return;
+    }
+
     if(!m_currentSelector)
     {
         LOG_E(SGCORE_TAG,
@@ -169,6 +201,28 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
         }
         case CSSPropertyType::PT_UNKNOWN:break;
     }
+}
+
+void SGCore::UI::ANTLRCSSListener::resolvePseudos() noexcept
+{
+    for(auto& [pseudo, decl] : m_pseudosToResolve)
+    {
+        auto selector = m_toCSSFile->findSelector(pseudo->m_name);
+        if(!selector)
+        {
+            LOG_W(SGCORE_TAG, "SGCore::UI::ANTLRCSSListener::resolvePseudos: cannot resolve pseudo '{}' for selector '{}': this selector does not exist.", pseudo->m_pseudoName, pseudo->m_name);
+            continue;
+        }
+
+        selector->copy(*pseudo);
+
+        m_currentPseudo = nullptr;
+        m_currentSelector = pseudo;
+
+        enterKnownDeclaration(decl);
+    }
+
+    m_pseudosToResolve.clear();
 }
 
 void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* currentANTLRNode,

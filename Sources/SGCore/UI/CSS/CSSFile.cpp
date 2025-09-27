@@ -39,6 +39,7 @@ void SGCore::UI::CSSFile::doLoad(const InterpolatedPath& path)
     ANTLRCSSListener listener;
     listener.m_toCSSFile = this;
     antlr4::tree::ParseTreeWalker::DEFAULT.walk(&listener, tree);
+    listener.resolvePseudos();
 }
 
 void SGCore::UI::CSSFile::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
