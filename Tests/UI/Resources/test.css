@@ -31,7 +31,7 @@
     gap: 10px;
     padding: 10px;
 
-    border-radius: 5px;
+    border-radius: 40px / 60px;
 }
 
 .test-text-0 {
@@ -41,7 +41,7 @@
 
 .test-text-1 {
     font-family: "JetBrains Mono", "Times New Roman";
-    font-size: calc(20px);
+    font-size: calc(40px);
 }
 
 .window-header-1 {

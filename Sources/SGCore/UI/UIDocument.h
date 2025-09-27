@@ -28,6 +28,20 @@ namespace SGCore::UI
         [[nodiscard]] AssetRef<CSSSelector> findSelector(const std::string& selectorName) const noexcept;
         [[nodiscard]] Ref<UIElement> findElement(const std::string& elementName) const noexcept;
 
+        template<typename FuncT>
+        requires(std::is_invocable_v<FuncT, UIElement*, UIElement*>)
+        void iterate(const FuncT& func, bool& breakToken) noexcept
+        {
+            m_rootElement->iterate(func, breakToken);
+        }
+
+        template<typename FuncT>
+        requires(std::is_invocable_v<FuncT, const UIElement*, const UIElement*>)
+        void iterate(const FuncT& func, bool& breakToken) const noexcept
+        {
+            m_rootElement->iterate(func, breakToken);
+        }
+
     protected:
         void doLoad(const InterpolatedPath& path) override;
 

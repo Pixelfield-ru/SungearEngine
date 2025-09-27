@@ -10,20 +10,22 @@
 
 namespace SGCore
 {
-    /**
-     * Usage:\n
-     * SGCore::UniqueColor uniqueColor;\n
-     * uniqueColor.generate();\n
-     */
     struct UniqueColor
     {
-        UniqueID m_id { };
+        UniqueColor() noexcept;
+        UniqueColor(const UniqueColor& color) noexcept;
+        UniqueColor(UniqueColor&& color) noexcept;
 
-        void generate() noexcept;
-
+        const UniqueID& id() const noexcept;
         glm::vec4 color() const noexcept;
 
+        UniqueColor& operator=(const UniqueColor& color) noexcept;
+        UniqueColor& operator=(UniqueColor&& color) noexcept;
+
     private:
+        UniqueID m_id { };
         glm::vec4 m_color { };
+
+        void generate() noexcept;
     };
 }

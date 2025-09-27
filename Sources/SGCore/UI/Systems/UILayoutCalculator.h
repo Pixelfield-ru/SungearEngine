@@ -6,7 +6,7 @@
 #define UILAYOUTCALCULATOR_H
 
 #include "SGCore/Scene/ISystem.h"
-#include "UIComponent.h"
+#include "SGCore/UI/UIComponent.h"
 
 namespace SGCore::UI
 {

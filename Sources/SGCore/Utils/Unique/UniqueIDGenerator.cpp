@@ -28,12 +28,12 @@ size_t SGCore::UniqueIDGenerator::getFreeID() noexcept
         {
             const auto freeID = m_freeIDs.back();
             m_freeIDs.pop_back();
-            std::cout << "got free id" << std::endl;
             return freeID;
         }
     }
 
-    const size_t id = m_maxID++;
+    const size_t id = m_maxID;
+    ++m_maxID;
 
     return id;
 }

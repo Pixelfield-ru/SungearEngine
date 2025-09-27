@@ -13,6 +13,7 @@
 #include "SGCore/Memory/AssetRef.h"
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
+#include "SGCore/Utils/Unique/UniqueColor.h"
 
 namespace SGCore::UI
 {
@@ -34,8 +35,8 @@ namespace SGCore::UI
         // ===================
 
         AssetRef<IShader> m_shader;
-
         Ref<UIElementMesh> m_meshData;
+        UniqueColor m_uniqueColor;
 
         /**
          * 
@@ -66,6 +67,34 @@ namespace SGCore::UI
                             UIElementCache& thisElementCache) noexcept;
 
         Ref<UIElement> findElement(const std::string& name) noexcept;
+
+        template<typename FuncT>
+        requires(std::is_invocable_v<FuncT, UIElement*, UIElement*>)
+        void iterate(const FuncT& func, bool& breakToken) noexcept
+        {
+            func(m_parent.lock().get(), this);
+            if(breakToken) return;
+
+            for(const auto& child : m_children)
+            {
+                child->iterate(func, breakToken);
+                if(breakToken) return;
+            }
+        }
+
+        template<typename FuncT>
+        requires(std::is_invocable_v<FuncT, const UIElement*, const UIElement*>)
+        void iterate(const FuncT& func, bool& breakToken) const noexcept
+        {
+            func(m_parent.lock().get(), this);
+            if(breakToken) return;
+
+            for(const auto& child : m_children)
+            {
+                child->iterate(func);
+                if(breakToken) return;
+            }
+        }
 
     protected:
         virtual void doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,

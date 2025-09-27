@@ -26,7 +26,7 @@ namespace SGCore
         UniqueID& operator=(UniqueID&& other) noexcept;
 
     private:
-        std::atomic<size_t> m_id;
+        std::atomic<size_t> m_id = 0;
         std::atomic<bool> m_valid = false;
     };
 }

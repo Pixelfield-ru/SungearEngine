@@ -4,10 +4,11 @@
 
 #include "UILayoutCalculator.h"
 
-#include "Elements/Text.h"
+#include "SGCore/UI/Elements/Text.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Transformations/TransformUtils.h"
-#include "UINodesProcessors/UITextNodeProcessor.h"
+#include "SGCore/UI/UINodesProcessors/UITextNodeProcessor.h"
+
 
 void SGCore::UI::UILayoutCalculator::fixedUpdate(const double& dt, const double& fixedDt)
 {

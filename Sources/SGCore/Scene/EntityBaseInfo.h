@@ -84,8 +84,6 @@ namespace SGCore
 
         void resolveAllEntitiesRefs(const Ref<ECS::registry_t>& registry) noexcept;
 
-        void generateUniqueColor() noexcept;
-
         EntityBaseInfo& operator=(const EntityBaseInfo&) = default;
         EntityBaseInfo& operator=(EntityBaseInfo&&) = default;
 

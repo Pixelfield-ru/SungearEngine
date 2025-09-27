@@ -77,6 +77,8 @@ void SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::reg_t& c
 
         uiElementShader->useInteger("SGPP_CurrentLayerIndex", defaultPPLayer->getIndex());
 
+        uiElementShader->useVectorf("u_pickingColor", (glm::vec3) currentUIElement->m_uniqueColor.color());
+
         currentUIElement->useUniforms(currentTransformNode.m_currentElementCache);
 
         CoreMain::getRenderer()->renderArray(

@@ -8,7 +8,7 @@
 
 SGCore::UniqueID::~UniqueID() noexcept
 {
-    if(m_valid.load())
+    if(m_valid)
     {
         UniqueIDGenerator::pushFreeID(m_id);
     }
@@ -16,7 +16,10 @@ SGCore::UniqueID::~UniqueID() noexcept
 
 SGCore::UniqueID::UniqueID(const UniqueID& other) noexcept
 {
-    UniqueIDGenerator::generate(*this);
+    if(other.m_valid)
+    {
+        UniqueIDGenerator::generate(*this);
+    }
 }
 
 SGCore::UniqueID::UniqueID(UniqueID&& other) noexcept
@@ -26,28 +29,33 @@ SGCore::UniqueID::UniqueID(UniqueID&& other) noexcept
     m_id = otherID;
     m_valid = other.m_valid.load();
 
-    if(other.m_valid.load())
+    if(other.m_valid)
     {
         UniqueIDGenerator::pushFreeID(otherID);
+        other.m_valid = false;
     }
-    other.m_valid = false;
 }
 
 size_t SGCore::UniqueID::id() const noexcept
 {
-    return m_id.load();
+    return m_id;
 }
 
 bool SGCore::UniqueID::valid() const noexcept
 {
-    return m_valid.load();
+    return m_valid;
 }
 
 SGCore::UniqueID& SGCore::UniqueID::operator=(const UniqueID& other) noexcept
 {
     if(this == &other) return *this;
 
-    UniqueIDGenerator::generate(*this);
+    if(m_valid) return *this;
+
+    if(other.m_valid)
+    {
+        UniqueIDGenerator::generate(*this);
+    }
 
     return *this;
 }
@@ -56,15 +64,15 @@ SGCore::UniqueID& SGCore::UniqueID::operator=(UniqueID&& other) noexcept
 {
     if(this == &other) return *this;
 
+    if(m_valid)
+    {
+        UniqueIDGenerator::pushFreeID(m_id);
+    }
+
     const size_t otherID = other.m_id;
 
     m_id = otherID;
     m_valid = other.m_valid.load();
-
-    if(other.m_valid.load())
-    {
-        UniqueIDGenerator::pushFreeID(otherID);
-    }
     other.m_valid = false;
 
     return *this;

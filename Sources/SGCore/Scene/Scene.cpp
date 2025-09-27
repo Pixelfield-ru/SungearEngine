@@ -25,7 +25,8 @@
 #include "SGCore/Render/Instancing/InstancingUpdater.h"
 #include "SGCore/Serde/Serde.h"
 #include "SGCore/Serde/StandardSerdeSpecs/SerdeSpecs.h"
-#include "SGCore/UI/UILayoutCalculator.h"
+#include "../UI/Systems/UILayoutCalculator.h"
+#include "SGCore/UI/Systems/UIInputListener.h"
 
 SGCore::Scene::Scene()
 {
@@ -113,10 +114,13 @@ void SGCore::Scene::createDefaultSystems()
     auto ikResolver = MakeRef<IKResolver>();
     addSystem(ikResolver);
 
-    // ui layout calculator =================================
+    // ui =================================
 
     auto uiLayoutCalculator = MakeRef<UI::UILayoutCalculator>();
     addSystem(uiLayoutCalculator);
+
+    auto uiInputListener = MakeRef<UI::UIInputListener>();
+    addSystem(uiInputListener);
 
     // batches updater =================================
 

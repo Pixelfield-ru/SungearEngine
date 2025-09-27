@@ -253,15 +253,9 @@ void SGCore::EntityBaseInfo::resolveAllEntitiesRefs(const SGCore::Ref<SGCore::EC
     }
 }
 
-void SGCore::EntityBaseInfo::generateUniqueColor() noexcept
-{
-    m_uniqueColor.generate();
-}
-
 void SGCore::EntityBaseInfo::setThisEntity(const SGCore::ECS::entity_t& entity) noexcept
 {
     m_thisEntity = entity;
-    generateUniqueColor();
 }
 
 SGCore::ECS::entity_t SGCore::EntityBaseInfo::getRootParent(ECS::registry_t& inRegistry) const noexcept

@@ -67,8 +67,6 @@ uniform vec3 u_pickingColor;
 // REQUIRED UNIFORM!!
 uniform int SGPP_CurrentLayerIndex;
 
-in float si;
-
 in VSOut
 {
     vec2 UV;
@@ -81,6 +79,7 @@ void main()
 {
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
     layerColor = u_backgroundColor / 255.0;
+    pickingColor = u_pickingColor;
     // layerColor = vec4(si / 9.0, 0.0, 0.0, 1.0);
     // layerColor = vec4(1.0);
 }
