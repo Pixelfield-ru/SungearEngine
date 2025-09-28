@@ -23,24 +23,28 @@ void SGCore::UIRenderPass::render(const Scene* scene,
                                   const Ref<IRenderPipeline>& renderPipeline) noexcept
 {
     auto uiComponentsView = scene->getECSRegistry()->view<UI::UIComponent>();
-    auto camerasView = scene->getECSRegistry()->view<LayeredFrameReceiver, EntityBaseInfo, RenderingBase, Transform>();
-    auto fontsView = UI::FontsManager::getInstance().getAssetManager()->getAssetsWithType<UI::Font>();
+    auto camerasView = scene->getECSRegistry()->view<RenderingBase, Transform>();
 
-    camerasView.each([&uiComponentsView, &fontsView, this](const LayeredFrameReceiver::reg_t& cameraReceiver,
-                                               const EntityBaseInfo::reg_t& cameraInfo,
-                                               const RenderingBase::reg_t& cameraRenderingBase,
-                                               const Transform::reg_t& cameraTransform){
+    // preparing cameras buffers
+    camerasView.each([](const RenderingBase::reg_t& cameraRenderingBase,
+                        const Transform::reg_t& cameraTransform) {
         CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
+    });
 
-        cameraReceiver.m_layersFrameBuffer->bind();
+    uiComponentsView.each([this, scene](UI::UIComponent::reg_t& uiComponent) {
+        if(!uiComponent.m_attachedToCamera.m_referencedEntity) return;
 
-        cameraReceiver.m_layersFrameBuffer->bindAttachmentsToDrawIn(cameraReceiver.m_attachmentToRenderIn);
+        auto* cameraReceiver = scene->getECSRegistry()->tryGet<LayeredFrameReceiver>(*uiComponent.m_attachedToCamera);
 
-        uiComponentsView.each([this, &cameraReceiver](UI::UIComponent::reg_t& uiComponent) {
-            processUIElement(cameraReceiver, uiComponent, uiComponent.m_document->m_rootElement, 0);
-        });
+        if(!cameraReceiver) return;
 
-        cameraReceiver.m_layersFrameBuffer->unbind();
+        cameraReceiver->m_layersFrameBuffer->bind();
+
+        cameraReceiver->m_layersFrameBuffer->bindAttachmentsToDrawIn(cameraReceiver->m_attachmentToRenderIn);
+
+        processUIElement(*cameraReceiver, uiComponent, uiComponent.m_document->m_rootElement, 0);
+
+        cameraReceiver->m_layersFrameBuffer->unbind();
     });
 }
 

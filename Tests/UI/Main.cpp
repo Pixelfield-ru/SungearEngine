@@ -72,6 +72,7 @@ void coreInit()
 
     auto& uiComponent = ecsRegistry->emplace<SGCore::UI::UIComponent>(uiEntity);
     uiComponent.m_document = uiDocument;
+    uiComponent.m_attachedToCamera = cameraEntity;
 
     // creating quad model ======================================
     quadMeshData = SGCore::Ref<SGCore::IMeshData>(SGCore::CoreMain::getRenderer()->createMeshData());

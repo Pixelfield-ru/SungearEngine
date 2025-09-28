@@ -91,7 +91,7 @@ namespace SGCore::UI
 
             for(const auto& child : m_children)
             {
-                child->iterate(func);
+                child->iterate(func, breakToken);
                 if(breakToken) return;
             }
         }
@@ -122,6 +122,9 @@ namespace SGCore::UI
 
     private:
         size_t m_typeHash = 0;
+
+        // for pseudos
+        std::unordered_map<std::string, std::pair<bool, AssetRef<CSSSelector>>> m_states;
 
         void checkForMeshGenerating(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept;
     };

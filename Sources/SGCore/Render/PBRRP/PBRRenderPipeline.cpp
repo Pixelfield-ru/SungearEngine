@@ -13,6 +13,7 @@
 #include "PBRRPDirectionalLightsPass.h"
 #include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/TextRenderPass.h"
+#include "SGCore/Render/BaseRenderPasses/ReceiverPickingPass.h"
 #include "SGCore/Render/BaseRenderPasses/SunShadowsPass.h"
 #include "SGCore/Render/BaseRenderPasses/UIRenderPass.h"
 #include "SGCore/Render/PostProcess/PostProcessBuffersClearPass.h"
@@ -141,6 +142,13 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
         auto uiPass = MakeRef<UIRenderPass>();
 
         m_renderPasses.push_back(uiPass);
+    }
+
+    // WARNING! ReceiverPickingPass ALWAYS BEFORE PostProcessPass
+    {
+        auto pickingPass = MakeRef<ReceiverPickingPass>();
+
+        m_renderPasses.push_back(pickingPass);
     }
 
     // WARNING! PostProcessFXPass ALWAYS AFTER OTHER PASSES

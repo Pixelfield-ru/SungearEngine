@@ -12,6 +12,7 @@
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Render/IRenderPipeline.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
+#include "SGCore/Input/InputManager.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
@@ -42,7 +43,7 @@ void SGCore::PostProcessPass::render(const Scene* scene, const Ref<IRenderPipeli
 
     auto receiversView = scene->getECSRegistry()->view<LayeredFrameReceiver, RenderingBase, Transform>();
 
-    receiversView.each([this](LayeredFrameReceiver::reg_t& receiver, RenderingBase::reg_t& renderingBase,
+    receiversView.each([&](LayeredFrameReceiver::reg_t& receiver, RenderingBase::reg_t& renderingBase,
                               Transform::reg_t& transform) {
 
         CoreMain::getRenderer()->prepareUniformBuffers(renderingBase, transform);

@@ -139,6 +139,8 @@ namespace SGCore
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT6 // BY DEFAULT GBUFFER VERTEX NORMAL
         };
 
+        glm::vec3 m_pickingColorUnderMouse { };
+
         Ref<PostProcessLayer> addOrGetLayer(const std::string& name,
                                             const std::uint16_t& fbWidth,
                                             const std::uint16_t& fbHeight);

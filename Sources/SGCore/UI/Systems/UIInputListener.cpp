@@ -13,38 +13,25 @@ void SGCore::UI::UIInputListener::update(const double& dt, const double& fixedDt
 {
     auto scene = getScene();
 
-    auto mainInputListener = InputManager::getMainInputListener();
-
-    const glm::vec2 mousePos = { mainInputListener->getCursorPositionX(),
-                                 mainInputListener->getCursorPositionY() };
-
-    glm::ivec2 windowSize;
-    CoreMain::getWindow().getSize(windowSize.x, windowSize.y);
-
     auto uiComponentsView = scene->getECSRegistry()->view<UIComponent>();
-    auto camerasView = scene->getECSRegistry()->view<LayeredFrameReceiver, EntityBaseInfo>();
 
-    camerasView.each([&](const LayeredFrameReceiver::reg_t& layeredFrameReceiver, const EntityBaseInfo& cameraInfo) {
-        uiComponentsView.each([&](UIComponent::reg_t& uiComponent) {
-            auto attachment2 = layeredFrameReceiver.m_layersFrameBuffer
-                    ->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2);
+    uiComponentsView.each([&](UIComponent::reg_t& uiComponent) {
+        if(!uiComponent.m_attachedToCamera.m_referencedEntity) return;
 
-            const glm::vec2 mouseRelativePos = {
-                mousePos.x * (attachment2->getWidth() / windowSize.x),
-                mousePos.y * (attachment2->getHeight() / windowSize.y)
-            };
+        auto* cameraReceiver = scene->getECSRegistry()->tryGet<LayeredFrameReceiver>(*uiComponent.m_attachedToCamera);
 
-            // reading from attachment with picking color
-            const auto pickedColor = layeredFrameReceiver.m_layersFrameBuffer->readPixelsFromAttachment(mouseRelativePos, SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2);
+        if(!cameraReceiver) return;
 
-            bool breakFind = false;
-            uiComponent.m_document->iterate([&](UIElement* parent, UIElement* current) {
-                if((glm::vec3) current->m_uniqueColor.color() == pickedColor)
-                {
-                    // std::cout << "hovering element: " << current->m_name << std::endl;
-                    breakFind = true;
-                }
-            }, breakFind);
-        });
+        // reading from attachment with picking color
+        const auto pickedColor = cameraReceiver->m_pickingColorUnderMouse;
+
+        bool breakFind = false;
+        uiComponent.m_document->iterate([&](UIElement* parent, UIElement* current) {
+            if((glm::vec3) current->m_uniqueColor.color() == pickedColor)
+            {
+                // std::cout << "hovering element: " << current->m_name << std::endl;
+                breakFind = true;
+            }
+        }, breakFind);
     });
 }

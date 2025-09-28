@@ -14,8 +14,6 @@
 
 namespace SGCore
 {
-    // sizeof(TransformBase) == 382
-    // todo: make quaternion transformations
     struct TransformBase
     {
         friend struct TransformationsUpdater;

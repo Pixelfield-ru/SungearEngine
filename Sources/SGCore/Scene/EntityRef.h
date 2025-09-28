@@ -27,6 +27,16 @@ namespace SGCore
         EntityRef& operator=(const EntityRef& e) noexcept = default;
         EntityRef& operator=(EntityRef&& e) noexcept = default;
 
+        ECS::entity_t& operator*() const noexcept
+        {
+            return *m_referencedEntity;
+        }
+
+        ECS::entity_t& operator*() noexcept
+        {
+            return *m_referencedEntity;
+        }
+
         bool operator==(const EntityRef& other) const noexcept
         {
             return *m_referencedEntity == *other.m_referencedEntity;
