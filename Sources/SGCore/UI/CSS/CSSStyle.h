@@ -21,22 +21,22 @@
 
 namespace SGCore::UI
 {
-    struct CSSSelector : IAsset
+    struct CSSStyle : IAsset
     {
         sg_serde_as_friend();
 
-        sg_implement_type_id(CSSSelector, 34)
+        sg_implement_type_id(CSSStyle, 34)
 
         friend struct ANTLRCSSListener;
         friend struct CSSFile;
 
-        CSSSelector() noexcept;
+        CSSStyle() noexcept;
 
-        copy_constructor(CSSSelector) = default;
-        move_constructor(CSSSelector) = default;
+        copy_constructor(CSSStyle) = default;
+        move_constructor(CSSStyle) = default;
 
-        copy_operator(CSSSelector) = default;
-        move_operator(CSSSelector) = default;
+        copy_operator(CSSStyle) = default;
+        move_operator(CSSStyle) = default;
 
 #pragma region Properties
         // ============================================================== properties
@@ -68,7 +68,10 @@ namespace SGCore::UI
         // ==============================================================
 #pragma endregion Properties
 
-        [[nodiscard]] const std::string& getName() const noexcept;
+        // first - hash of pseudo class name. second - style
+        std::unordered_map<size_t, AssetRef<CSSStyle>> m_pseudoClassesStyles;
+
+        [[nodiscard]] const std::string& getSelector() const noexcept;
         [[nodiscard]] const std::string& getPseudoName() const noexcept;
 
         void calculateCache(const UIElementCache* parentElementCache,
@@ -81,7 +84,7 @@ namespace SGCore::UI
 
         Ref<FontSpecialization> getFontSpecialization() const noexcept;
 
-        void copy(CSSSelector& to) const noexcept;
+        void copy(CSSStyle& to) const noexcept;
 
     protected:
         // todo: maybe vector with pseudo class handlers
@@ -103,8 +106,8 @@ namespace SGCore::UI
         FontSpecializationSettings m_fontSpecializationSettings;
         Weak<FontSpecialization> m_fontSpecialization;
 
-        std::string m_name;
-        std::string m_pseudoName;
+        std::string m_selector;
+        std::string m_pseudoClass;
     };
 }
 

@@ -11,7 +11,7 @@
 
 namespace SGCore::UI
 {
-    struct CSSSelector;
+    struct CSSStyle;
 
     struct CSSMathNode
     {

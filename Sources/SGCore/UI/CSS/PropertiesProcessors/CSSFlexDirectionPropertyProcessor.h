@@ -20,7 +20,7 @@ namespace SGCore::UI
                                     const std::string& propertyName,
                                     const std::string& propertyCurrentValue) noexcept
         {
-            auto* currentSelector = antlrcssListener->m_currentSelector;
+            auto* currentSelector = antlrcssListener->m_currentStyle;
 
             currentSelector->m_flexDirection = getFlexboxKeywordFromStringValue(propertyCurrentValue);
 

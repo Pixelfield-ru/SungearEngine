@@ -9,7 +9,7 @@
 #include "SGCore/UI/ANTLR4CSS3Generated/css3Parser.h"
 #include "SGCore/UI/CSS/CSSPropertyType.h"
 #include "SGCore/UI/CSS/PropertyValues/CSSPropertyValueKeywords.h"
-#include "SGCore/UI/CSS/CSSSelector.h"
+#include "SGCore/UI/CSS/CSSStyle.h"
 
 namespace SGCore::UI
 {
@@ -24,7 +24,7 @@ namespace SGCore::UI
                                     const std::string& propertyName,
                                     const std::string& propertyCurrentValue) noexcept
         {
-            CSSSelector* currentSelector = antlrcssListener->m_currentSelector;
+            CSSStyle* currentStyle = antlrcssListener->m_currentStyle;
 
             auto* expr = propertyDeclContext->expr();
 
@@ -46,8 +46,8 @@ namespace SGCore::UI
 
                 if(foundFont)
                 {
-                    currentSelector->m_font = foundFont;
-                    currentSelector->updateFontSettings();
+                    currentStyle->m_font = foundFont;
+                    currentStyle->updateFontSettings();
 
                     std::cout << "found font with family: " << fontFamily << std::endl;
 

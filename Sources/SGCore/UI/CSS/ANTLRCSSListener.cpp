@@ -20,72 +20,72 @@
 
 void SGCore::UI::ANTLRCSSListener::enterSelector(css3Parser::SelectorContext* ctx)
 {
-    std::string currentSelectorName = "";
-    std::string currentPseudoName = "";
+    std::string currentSelector = "";
+    std::string currentPseudoClass = "";
     if(!ctx->children.empty())
     {
         if(!ctx->children[0]->children.empty())
         {
             if(ctx->children[0]->children[0]->children.size() > 1)
             {
-                currentSelectorName = ctx->children[0]->children[0]->children[1]->getText();
+                currentSelector = ctx->children[0]->children[0]->children[1]->getText();
             }
         }
 
         if(ctx->children[0]->children.size() > 1)
         {
-            currentPseudoName = ctx->children[0]->children[1]->children[1]->getText();
+            currentPseudoClass = ctx->children[0]->children[1]->children[1]->getText();
         }
     }
 
-    std::cout << "selector name: " << currentSelectorName << ", with pseudo: " << currentPseudoName << std::endl;
+    std::cout << "selector name: " << currentSelector << ", with pseudo: " << currentPseudoClass << std::endl;
 
     auto assetManager = m_toCSSFile->getParentAssetManager();
 
-    InterpolatedPath newSelectorPath = m_toCSSFile->getPath() / "selectors";
+    InterpolatedPath newSelectorPath = m_toCSSFile->getPath() / "styles";
     // if selector is pseudo class
-    if(!currentPseudoName.empty())
+    if(!currentPseudoClass.empty())
     {
-        newSelectorPath /= currentSelectorName + ":" + currentPseudoName;
+        newSelectorPath /= currentSelector + ":" + currentPseudoClass;
 
-        auto pseudo = assetManager->getOrAddAssetByPath<CSSSelector>(newSelectorPath);
+        auto pseudo = assetManager->getOrAddAssetByPath<CSSStyle>(newSelectorPath);
 
-        pseudo->m_name = currentSelectorName;
-        pseudo->m_pseudoName = currentSelectorName;
+        pseudo->m_selector = currentSelector;
+        pseudo->m_pseudoClass = currentSelector;
 
-        m_currentPseudo = pseudo.get();
+        m_currentPseudoClassStyle = pseudo.get();
     }
     else
     {
-        newSelectorPath /= currentSelectorName;
+        newSelectorPath /= currentSelector;
 
-        auto foundSelector = m_toCSSFile->findSelector(currentSelectorName);
+        auto foundStyle = m_toCSSFile->findStyle(currentSelector);
 
-        if(foundSelector)
+        if(foundStyle)
         {
-            m_currentSelector = foundSelector.get();
+            m_currentStyle = foundStyle.get();
 
             return;
         }
 
-        m_toCSSFile->m_selectors.push_back(assetManager->getOrAddAssetByPath<CSSSelector>(newSelectorPath));
+        m_toCSSFile->m_styles.push_back(assetManager->getOrAddAssetByPath<CSSStyle>(newSelectorPath));
 
-        m_currentSelector = m_toCSSFile->m_selectors.rbegin()->get();
+        m_currentStyle = m_toCSSFile->m_styles.rbegin()->get();
 
-        m_currentSelector->m_name = currentSelectorName;
+        m_currentStyle->m_selector = currentSelector;
     }
 }
 
 void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclarationContext* ctx)
 {
-    if(m_currentPseudo)
+    if(m_currentPseudoClassStyle)
     {
-        m_pseudosToResolve.push_back({ m_currentPseudo, ctx });
-        m_currentPseudo = nullptr;
+        m_pseudosToResolve.push_back({ m_currentPseudoClassStyle, ctx });
+        m_currentPseudoClassStyle = nullptr;
         return;
     }
 
-    if(!m_currentSelector)
+    if(!m_currentStyle)
     {
         LOG_E(SGCORE_TAG,
               "ANTLRCSSListener ERROR: can not enter the known declaration without entering "
@@ -207,17 +207,17 @@ void SGCore::UI::ANTLRCSSListener::resolvePseudos() noexcept
 {
     for(auto& [pseudo, decl] : m_pseudosToResolve)
     {
-        auto selector = m_toCSSFile->findSelector(pseudo->m_name);
+        auto selector = m_toCSSFile->findStyle(pseudo->m_selector);
         if(!selector)
         {
-            LOG_W(SGCORE_TAG, "SGCore::UI::ANTLRCSSListener::resolvePseudos: cannot resolve pseudo '{}' for selector '{}': this selector does not exist.", pseudo->m_pseudoName, pseudo->m_name);
+            LOG_W(SGCORE_TAG, "SGCore::UI::ANTLRCSSListener::resolvePseudos: cannot resolve pseudo '{}' for selector '{}': this selector does not exist.", pseudo->m_pseudoClass, pseudo->m_selector);
             continue;
         }
 
         selector->copy(*pseudo);
 
-        m_currentPseudo = nullptr;
-        m_currentSelector = pseudo;
+        m_currentPseudoClassStyle = nullptr;
+        m_currentStyle = pseudo;
 
         enterKnownDeclaration(decl);
     }

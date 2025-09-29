@@ -12,20 +12,20 @@
 
 #include "SGCore/Memory/AssetManager.h"
 
-SGCore::AssetRef<SGCore::UI::CSSSelector> SGCore::UI::CSSFile::findSelector(const std::string& name) const noexcept
+SGCore::AssetRef<SGCore::UI::CSSStyle> SGCore::UI::CSSFile::findStyle(const std::string& selector) const noexcept
 {
-    auto foundIt = std::find_if(m_selectors.begin(), m_selectors.end(), [&name](const AssetRef<CSSSelector>& selector) {
-        return selector->getName() == name;
+    auto foundIt = std::find_if(m_styles.begin(), m_styles.end(), [&selector](const AssetRef<CSSStyle>& style) {
+        return style->getSelector() == selector;
     });
 
-    return foundIt == m_selectors.end() ? nullptr : *foundIt;
+    return foundIt == m_styles.end() ? nullptr : *foundIt;
 }
 
 void SGCore::UI::CSSFile::doLoad(const InterpolatedPath& path)
 {
-    auto uiBodySelector = getParentAssetManager()->getOrAddAssetByPath<CSSSelector>(getPath() / "selectors" / "body");
-    uiBodySelector->m_name = "body";
-    m_selectors.push_back(uiBodySelector);
+    auto uiBodySelector = getParentAssetManager()->getOrAddAssetByPath<CSSStyle>(getPath() / "styles" / "body");
+    uiBodySelector->m_selector = "body";
+    m_styles.push_back(uiBodySelector);
 
     antlr4::ANTLRInputStream input(FileUtils::readFile(path.resolved()));
 

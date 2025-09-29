@@ -8,20 +8,22 @@
 
 SGCore::UI::Text::Text() noexcept
 {
-    m_selector = AssetManager::getInstance()->getOrAddAssetByAlias<CSSSelector>("sgui_default_text_style");
+    m_mainStyle = AssetManager::getInstance()->getOrAddAssetByAlias<CSSStyle>("sgui_default_text_style");
 }
 
 bool SGCore::UI::Text::draw(const LayeredFrameReceiver::reg_t& cameraReceiver,
                             const Transform& elementTransform,
                             UIElementCache& elementCache) noexcept
 {
-    if(!m_selector) return true;
+    if(m_currentFrameStyles.empty()) return true;
 
-    AssetRef<Font> font = m_selector->m_font.lock();
+    auto* lastStyle = m_currentFrameStyles.back();
+
+    AssetRef<Font> font = lastStyle->m_font.lock();
 
     if(font)
     {
-        Ref<FontSpecialization> fontSpec = font->getSpecialization(m_selector->getFontSpecializationSettings());
+        Ref<FontSpecialization> fontSpec = font->getSpecialization(lastStyle->getFontSpecializationSettings());
 
         if(fontSpec)
         {
@@ -68,25 +70,19 @@ void SGCore::UI::Text::clearGlyphs() noexcept
 void SGCore::UI::Text::doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,
                                          const Transform* parentTransform, Transform& ownTransform) noexcept
 {
-    if(m_selector)
+    for(auto* style : m_currentFrameStyles)
     {
-        m_selector->calculateCache(parentElementCache, thisElementCache);
+        style->calculateCache(parentElementCache, thisElementCache);
+    }
 
+    if(!m_currentFrameStyles.empty())
+    {
         thisElementCache.m_finalSize = m_textSize;
     }
-    else
-    {
-
-    }
 }
 
-void SGCore::UI::Text::doGenerateMeshBaseSelector(const UIElementCache* parentElementCache,
+void SGCore::UI::Text::doGenerateMesh(const UIElementCache* parentElementCache,
                                                   UIElementCache& thisElementCache) noexcept
-{
-
-}
-
-void SGCore::UI::Text::doGenerateBasicMesh() noexcept
 {
 
 }

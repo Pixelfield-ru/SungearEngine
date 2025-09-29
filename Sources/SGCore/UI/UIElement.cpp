@@ -80,14 +80,12 @@ void SGCore::UI::UIElement::regenerateMesh(const UIElementCache* parentElementCa
     m_meshData->m_indices.clear();
     m_meshData->m_vertices.clear();
 
-    if(m_selector)
+    for(auto* style : m_currentFrameStyles)
     {
-        doGenerateMeshBaseSelector(parentElementCache, thisElementCache);
+        style->calculateCache(parentElementCache, thisElementCache);
     }
-    else
-    {
-        doGenerateBasicMesh();
-    }
+
+    doGenerateMesh(parentElementCache, thisElementCache);
 
     m_meshData->update();
 
@@ -115,14 +113,12 @@ void SGCore::UI::UIElement::checkForMeshGenerating(const UIElementCache* parentE
     {
         m_meshData = MakeRef<UIElementMesh>();
 
-        if(m_selector)
+        for(auto* style : m_currentFrameStyles)
         {
-            doGenerateMeshBaseSelector(parentElementCache, thisElementCache);
+            style->calculateCache(parentElementCache, thisElementCache);
         }
-        else
-        {
-            doGenerateBasicMesh();
-        }
+
+        doGenerateMesh(parentElementCache, thisElementCache);
 
         m_meshData->prepare();
 

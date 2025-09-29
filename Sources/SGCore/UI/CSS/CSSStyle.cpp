@@ -1,11 +1,11 @@
 //
 // Created by stuka on 18.01.2025.
 //
-#include "CSSSelector.h"
+#include "CSSStyle.h"
 
 #include "SGCore/UI/FontsManager.h"
 
-SGCore::UI::CSSSelector::CSSSelector() noexcept
+SGCore::UI::CSSStyle::CSSStyle() noexcept
 {
     // setting default font
     m_font = FontsManager::getInstance().getAssetManager()->getAsset<Font, AssetStorageType::BY_ALIAS>("JetBrains Mono");
@@ -15,17 +15,17 @@ SGCore::UI::CSSSelector::CSSSelector() noexcept
     setFontSpecializationSettings(m_fontSpecializationSettings);
 }
 
-const std::string& SGCore::UI::CSSSelector::getName() const noexcept
+const std::string& SGCore::UI::CSSStyle::getSelector() const noexcept
 {
-    return m_name;
+    return m_selector;
 }
 
-const std::string& SGCore::UI::CSSSelector::getPseudoName() const noexcept
+const std::string& SGCore::UI::CSSStyle::getPseudoName() const noexcept
 {
-    return m_pseudoName;
+    return m_pseudoClass;
 }
 
-void SGCore::UI::CSSSelector::calculateCache(const UIElementCache* parentElementCache,
+void SGCore::UI::CSSStyle::calculateCache(const UIElementCache* parentElementCache,
                                              UIElementCache& thisElementCache) noexcept
 {
     if(m_padding.containsAlternative())
@@ -147,7 +147,7 @@ void SGCore::UI::CSSSelector::calculateCache(const UIElementCache* parentElement
     }
 }
 
-void SGCore::UI::CSSSelector::setFontSpecializationSettings(const FontSpecializationSettings& settings) noexcept
+void SGCore::UI::CSSStyle::setFontSpecializationSettings(const FontSpecializationSettings& settings) noexcept
 {
     m_fontSpecializationSettings = settings;
 
@@ -185,22 +185,22 @@ void SGCore::UI::CSSSelector::setFontSpecializationSettings(const FontSpecializa
     }
 }
 
-const SGCore::UI::FontSpecializationSettings& SGCore::UI::CSSSelector::getFontSpecializationSettings() const noexcept
+const SGCore::UI::FontSpecializationSettings& SGCore::UI::CSSStyle::getFontSpecializationSettings() const noexcept
 {
     return m_fontSpecializationSettings;
 }
 
-void SGCore::UI::CSSSelector::updateFontSettings() noexcept
+void SGCore::UI::CSSStyle::updateFontSettings() noexcept
 {
     setFontSpecializationSettings(m_fontSpecializationSettings);
 }
 
-SGCore::Ref<SGCore::UI::FontSpecialization> SGCore::UI::CSSSelector::getFontSpecialization() const noexcept
+SGCore::Ref<SGCore::UI::FontSpecialization> SGCore::UI::CSSStyle::getFontSpecialization() const noexcept
 {
     return m_fontSpecialization.lock();
 }
 
-void SGCore::UI::CSSSelector::copy(CSSSelector& to) const noexcept
+void SGCore::UI::CSSStyle::copy(CSSStyle& to) const noexcept
 {
     to.m_display = m_display;
     to.m_flexDirection = m_flexDirection;
@@ -227,20 +227,20 @@ void SGCore::UI::CSSSelector::copy(CSSSelector& to) const noexcept
     to.m_fontSpecializationSettings = m_fontSpecializationSettings;
     to.m_fontSpecialization = m_fontSpecialization;
 
-    to.m_name = m_name;
+    to.m_selector = m_selector;
 }
 
-void SGCore::UI::CSSSelector::doLoad(const InterpolatedPath& path)
+void SGCore::UI::CSSStyle::doLoad(const InterpolatedPath& path)
 {
     LOG_NOT_SUPPORTED_FUNC(SGCORE_TAG);
 }
 
-void SGCore::UI::CSSSelector::doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept
+void SGCore::UI::CSSStyle::doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept
 {
 
 }
 
-void SGCore::UI::CSSSelector::doReloadFromDisk(AssetsLoadPolicy loadPolicy,
+void SGCore::UI::CSSStyle::doReloadFromDisk(AssetsLoadPolicy loadPolicy,
                                                Ref<Threading::Thread> lazyLoadInThread) noexcept
 {
     LOG_NOT_SUPPORTED_FUNC(SGCORE_TAG);

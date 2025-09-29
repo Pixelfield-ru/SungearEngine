@@ -26,6 +26,7 @@
 #include "SGCore/Serde/Serde.h"
 #include "SGCore/Serde/StandardSerdeSpecs/SerdeSpecs.h"
 #include "../UI/Systems/UILayoutCalculator.h"
+#include "SGCore/UI/EventHandling/EventsHandlingSystem.h"
 #include "SGCore/UI/Systems/UIInputListener.h"
 
 SGCore::Scene::Scene()
@@ -121,6 +122,9 @@ void SGCore::Scene::createDefaultSystems()
 
     auto uiInputListener = MakeRef<UI::UIInputListener>();
     addSystem(uiInputListener);
+
+    auto uiEventsHandlingSystem = MakeRef<UI::EventsHandlingSystem>();
+    addSystem(uiEventsHandlingSystem);
 
     // batches updater =================================
 

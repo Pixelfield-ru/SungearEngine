@@ -9,7 +9,7 @@
 
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Transformations/Transform.h"
-#include "CSS/CSSSelector.h"
+#include "CSS/CSSStyle.h"
 #include "SGCore/Memory/AssetRef.h"
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
@@ -30,9 +30,12 @@ namespace SGCore::UI
         Weak<UIElement> m_parent;
 
         // =================== XML ATTRIBUTES
-        AssetRef<CSSSelector> m_selector;
+        AssetRef<CSSStyle> m_mainStyle;
         std::string m_name;
         // ===================
+
+        // todo: move in UITransformTree
+        std::vector<CSSStyle*> m_currentFrameStyles;
 
         AssetRef<IShader> m_shader;
         Ref<UIElementMesh> m_meshData;
@@ -108,23 +111,10 @@ namespace SGCore::UI
          * Calls only if mesh has not been generated before (i.e. mesh == nullptr).\n
          * IN THIS FUNCTION, YOU DO NOT NEED TO CREATE A MESH INSTANCE. YOU ONLY NEED TO GENERATE VERTICES.
          */
-        virtual void doGenerateMeshBaseSelector(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept = 0;
-
-        /**
-         * Generates basic mesh without selector (i.e. selector == nullptr).\n
-         * You must implement this function in the UIElement derived classes.\n
-         * You need to generate vertex positions, uv coordinates of vertices, and vertex colors.\n
-         * Calls at the beginning of the calculateLayout function.\n
-         * Calls only if mesh has not been generated before (i.e. mesh == nullptr).\n
-         * IN THIS FUNCTION, YOU DO NOT NEED TO CREATE A MESH INSTANCE. YOU ONLY NEED TO GENERATE VERTICES.
-         */
-        virtual void doGenerateBasicMesh() noexcept = 0;
+        virtual void doGenerateMesh(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept = 0;
 
     private:
         size_t m_typeHash = 0;
-
-        // for pseudos
-        std::unordered_map<std::string, std::pair<bool, AssetRef<CSSSelector>>> m_states;
 
         void checkForMeshGenerating(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept;
     };

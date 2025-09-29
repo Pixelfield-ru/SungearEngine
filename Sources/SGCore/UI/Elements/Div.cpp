@@ -15,24 +15,13 @@ void SGCore::UI::Div::doCalculateLayout(const UIElementCache* parentElementCache
                                         UIElementCache& thisElementCache,
                                         const Transform* parentTransform, Transform& ownTransform) noexcept
 {
-    if(m_selector)
+    for(auto* style : m_currentFrameStyles)
     {
-        m_selector->calculateCache(parentElementCache, thisElementCache);
-    }
-    else
-    {
-
+        style->calculateCache(parentElementCache, thisElementCache);
     }
 }
 
-void SGCore::UI::Div::doGenerateMeshBaseSelector(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept
+void SGCore::UI::Div::doGenerateMesh(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept
 {
-    m_selector->calculateCache(parentElementCache, thisElementCache);
-
     NineSlice::generate9SlicedQuad<std::uint32_t>(thisElementCache.m_borderRadiusCache, 0, m_meshData->m_vertices, m_meshData->m_indices);
-}
-
-void SGCore::UI::Div::doGenerateBasicMesh() noexcept
-{
-    NineSlice::generate9SlicedQuad<std::uint32_t>({ }, 0, m_meshData->m_vertices, m_meshData->m_indices);
 }

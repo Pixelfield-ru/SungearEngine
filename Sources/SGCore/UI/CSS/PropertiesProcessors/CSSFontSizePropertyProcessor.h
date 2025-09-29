@@ -23,7 +23,7 @@ namespace SGCore::UI
                                     const std::string& propertyName,
                                     const std::string& propertyCurrentValue) noexcept
         {
-            CSSSelector* currentSelector = antlrcssListener->m_currentSelector;
+            CSSStyle* currentStyle = antlrcssListener->m_currentStyle;
 
             auto* expr = propertyDeclContext->expr();
 
@@ -31,12 +31,12 @@ namespace SGCore::UI
             {
                 auto* knownTerm = dynamic_cast<css3Parser::KnownTermContext*>(expr->term(0));
 
-                auto termValue = CSSPropertyProcessorCommon::processKnownTerm<UniversalKeyword>(antlrcssListener, currentSelector, knownTerm, 0, propertyName);
+                auto termValue = CSSPropertyProcessorCommon::processKnownTerm<UniversalKeyword>(antlrcssListener, currentStyle, knownTerm, 0, propertyName);
 
                 if(std::holds_alternative<Ref<CSSMathNode>>(termValue))
                 {
                     auto mathNode = std::get<1>(termValue);
-                    currentSelector->m_fontSize.m_value = mathNode;
+                    currentStyle->m_fontSize.m_value = mathNode;
                 }
             }
         }

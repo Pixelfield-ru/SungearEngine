@@ -29,7 +29,7 @@ void SGCore::UI::UIInputListener::update(const double& dt, const double& fixedDt
         uiComponent.m_document->iterate([&](UIElement* parent, UIElement* current) {
             if((glm::vec3) current->m_uniqueColor.color() == pickedColor)
             {
-                // std::cout << "hovering element: " << current->m_name << std::endl;
+                std::cout << "hovering element: " << current->m_name << std::endl;
                 breakFind = true;
             }
         }, breakFind);

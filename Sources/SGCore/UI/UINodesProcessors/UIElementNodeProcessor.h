@@ -7,7 +7,7 @@
 #include "SGCore/UI/UIElement.h"
 
 #define SG_DECLARE_UI_ELEMENT_PROCESSOR_NODE_NAME(name) \
-    static size_t getNodeTypeHashStatic() noexcept \
+    static consteval size_t getNodeTypeHashStatic() noexcept \
     { \
         static constexpr size_t node_type_hash = SGCore::constexprHash(#name); \
         return node_type_hash; \

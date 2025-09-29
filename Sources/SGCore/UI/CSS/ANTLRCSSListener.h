@@ -81,9 +81,9 @@ namespace SGCore::UI
                                   const std::string& currentHex,
                                   const std::string& defaultSetKeyword) const noexcept;
 
-        CSSSelector* m_currentSelector { };
-        CSSSelector* m_currentPseudo { };
-        std::vector<std::pair<CSSSelector*, css3Parser::KnownDeclarationContext*>> m_pseudosToResolve;
+        CSSStyle* m_currentStyle { };
+        CSSStyle* m_currentPseudoClassStyle { };
+        std::vector<std::pair<CSSStyle*, css3Parser::KnownDeclarationContext*>> m_pseudosToResolve;
     };
 }
 

@@ -25,7 +25,7 @@ namespace SGCore::UI
 
         std::vector<AssetRef<CSSFile>> m_includedCSSFiles;
 
-        [[nodiscard]] AssetRef<CSSSelector> findSelector(const std::string& selectorName) const noexcept;
+        [[nodiscard]] AssetRef<CSSStyle> findStyle(const std::string& selector) const noexcept;
         [[nodiscard]] Ref<UIElement> findElement(const std::string& elementName) const noexcept;
 
         template<typename FuncT>

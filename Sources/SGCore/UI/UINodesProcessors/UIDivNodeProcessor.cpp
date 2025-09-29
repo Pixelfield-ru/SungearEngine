@@ -32,16 +32,16 @@ void SGCore::UI::UIDivNodeProcessor::processElement(UIDocument* inDocument,
         {
             case UIElementAttributeType::AT_CLASS:
             {
-                const auto foundSelector = inDocument->findSelector(attribute.value());
+                const auto foundSelector = inDocument->findStyle(attribute.value());
 
                 if(foundSelector)
                 {
-                    element->m_selector = foundSelector;
+                    element->m_mainStyle = foundSelector;
                 }
                 else
                 {
                     // todo: maybe setting some default selector??
-                    element->m_selector = nullptr;
+                    element->m_mainStyle = nullptr;
                 }
 
                 break;

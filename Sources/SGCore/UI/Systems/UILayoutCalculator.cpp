@@ -125,15 +125,17 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
     auto& lastParentElementCache = parentElementTransform.m_lastElementCache;
     auto& currentElementCache = currentElementTransform.m_currentElementCache;
 
-    auto parentSelector = parentUIElement->m_selector;
+    if(parentUIElement->m_currentFrameStyles.empty()) return;
 
-    if(!parentSelector) return;
+    auto* parentStyle = parentUIElement->m_currentFrameStyles.back();
+
+    if(!parentStyle) return;
 
     const size_t currentUIElementType = currentUIElement->getTypeHash();
 
-    if(parentSelector->m_display == DisplayKeyword::KW_FLEX)
+    if(parentStyle->m_display == DisplayKeyword::KW_FLEX)
     {
-        if(parentSelector->m_flexDirection == FlexboxKeyword::KW_ROW)
+        if(parentStyle->m_flexDirection == FlexboxKeyword::KW_ROW)
         {
             // moving cursor to a new line if current element is bigger than (containerSize.x / 2 - rightPadding)
             if(parentElementCache.m_curLocalPositionForElements.x + currentElementCache.m_finalSize.x > parentElementCache.m_finalSize.x / 2.0f - parentElementCache.m_rightPadding &&
@@ -148,43 +150,52 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
 
             if(currentUIElementType == UITextNodeProcessor::getNodeTypeHashStatic())
             {
-                auto* asTextElement = static_cast<Text*>(currentUIElement.get());
-
-                const auto lockedFont = asTextElement->m_selector->m_font.lock();
-                if(!lockedFont) return;
-
-                float curGlyphXPos = parentElementCache.m_curLocalPositionForElements.x;
-
-                const auto fontSpec =
-                    lockedFont->getSpecialization(asTextElement->m_selector->getFontSpecializationSettings());
-
-                // iterating through all characters :(
-                for(size_t i = 0; i < asTextElement->m_text.size() && i < asTextElement->m_glyphs.size(); ++i)
+                do
                 {
-                    const auto* glyph = asTextElement->m_glyphs[i];
-                    if(!glyph) continue;
+                    auto* asTextElement = static_cast<Text*>(currentUIElement.get());
 
-                    const float fontScale = currentElementCache.m_fontSize / (float) asTextElement->m_selector->getFontSpecializationSettings().m_height;
+                    if(asTextElement->m_currentFrameStyles.empty()) break;
 
-                    const float offset =
-                            fontSpec->getGlyphsHeightScale() *
-                            glyph->m_geometry.getAdvance() *
-                            fontScale;
+                    auto* textStyle = asTextElement->m_currentFrameStyles.back();
 
-                    // i > 0 to prevent line break on first character
-                    if(curGlyphXPos + offset > parentElementCache.m_finalSize.x / 2.0f - parentElementCache.m_rightPadding &&
-                       i > 0)
+                    if(!textStyle) break;
+
+                    const auto lockedFont = textStyle->m_font.lock();
+                    if(!lockedFont) break;
+
+                    float curGlyphXPos = parentElementCache.m_curLocalPositionForElements.x;
+
+                    const auto fontSpec =
+                        lockedFont->getSpecialization(textStyle->getFontSpecializationSettings());
+
+                    // iterating through all characters :(
+                    for(size_t i = 0; i < asTextElement->m_text.size() && i < asTextElement->m_glyphs.size(); ++i)
                     {
-                        curGlyphXPos = parentElementCache.m_curLocalPositionForElements.x;
-                        asTextElement->m_lineBreaks[i] = true;
-                    }
-                    else
-                    {
-                        asTextElement->m_lineBreaks[i] = false;
-                    }
+                        const auto* glyph = asTextElement->m_glyphs[i];
+                        if(!glyph) continue;
 
-                    curGlyphXPos += offset;
-                }
+                        const float fontScale = currentElementCache.m_fontSize / (float) textStyle->getFontSpecializationSettings().m_height;
+
+                        const float offset =
+                                fontSpec->getGlyphsHeightScale() *
+                                glyph->m_geometry.getAdvance() *
+                                fontScale;
+
+                        // i > 0 to prevent line break on first character
+                        if(curGlyphXPos + offset > parentElementCache.m_finalSize.x / 2.0f - parentElementCache.m_rightPadding &&
+                           i > 0)
+                        {
+                            curGlyphXPos = parentElementCache.m_curLocalPositionForElements.x;
+                            asTextElement->m_lineBreaks[i] = true;
+                        }
+                        else
+                        {
+                            asTextElement->m_lineBreaks[i] = false;
+                        }
+
+                        curGlyphXPos += offset;
+                    }
+                } while(false);
             }
 
             if(currentElementCache.m_finalSize.y > parentElementCache.m_lastRowSize.y)
@@ -202,7 +213,7 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
 
             parentElementCache.m_curLocalPositionForElements.x += currentElementCache.m_finalSize.x + parentElementCache.m_gap.x;
 
-            if(parentElementCache.m_contentSize.y + parentElementCache.m_lastRowSize.y > parentElementCache.m_finalSize.y && parentUIElement->m_selector->m_height.containsKeyword())
+            if(parentElementCache.m_contentSize.y + parentElementCache.m_lastRowSize.y > parentElementCache.m_finalSize.y && parentStyle->m_height.containsKeyword())
             {
                 parentElementCache.m_finalSize.y = parentElementCache.m_contentSize.y + parentElementCache.m_lastRowSize.y;
 
@@ -210,12 +221,12 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
                 parentElementTransform.m_transform.m_ownTransform.m_position.y += (parentElementCache.m_finalSize.y - lastParentElementCache.m_finalSize.y) / 2.0f;
             }
         }
-        else if(parentSelector->m_flexDirection == FlexboxKeyword::KW_COLUMN)
+        else if(parentStyle->m_flexDirection == FlexboxKeyword::KW_COLUMN)
         {
 
         }
     }
-    else if(parentSelector->m_display == DisplayKeyword::KW_BLOCK)
+    else if(parentStyle->m_display == DisplayKeyword::KW_BLOCK)
     {
         glm::vec3 currentElementPos = parentElementCache.m_curLocalPositionForElements;
         if(currentUIElementType != UITextNodeProcessor::getNodeTypeHashStatic())

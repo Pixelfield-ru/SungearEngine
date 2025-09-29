@@ -100,12 +100,12 @@ SGCore::UI::UIDocument::processUIElement(const pugi::xml_node& xmlNode) noexcept
     return outputElement;
 }
 
-SGCore::AssetRef<SGCore::UI::CSSSelector>
-SGCore::UI::UIDocument::findSelector(const std::string& selectorName) const noexcept
+SGCore::AssetRef<SGCore::UI::CSSStyle>
+SGCore::UI::UIDocument::findStyle(const std::string& selectorName) const noexcept
 {
     for(size_t i = 0; i < m_includedCSSFiles.size(); ++i)
     {
-        auto selector = m_includedCSSFiles[i]->findSelector(selectorName);
+        auto selector = m_includedCSSFiles[i]->findStyle(selectorName);
 
         if(selector)
         {

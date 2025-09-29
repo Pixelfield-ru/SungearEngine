@@ -14,13 +14,15 @@ namespace SGCore::UI
 
     struct UIEventHandlersRegistry
     {
-    private:
-        static inline std::vector<Ref<UIEventHandler>> s_nodesProcessors;
+        static const std::vector<Ref<UIEventHandler>>& getHandlers() noexcept;
 
-        static void initializeCoreProcessors() noexcept;
+    private:
+        static inline std::vector<Ref<UIEventHandler>> s_handlers;
+
+        static void initializeCoreHandlers() noexcept;
 
         static inline bool s_staticInit = []() {
-            UIEventHandlersRegistry::initializeCoreProcessors();
+            UIEventHandlersRegistry::initializeCoreHandlers();
             return true;
         }();
     };

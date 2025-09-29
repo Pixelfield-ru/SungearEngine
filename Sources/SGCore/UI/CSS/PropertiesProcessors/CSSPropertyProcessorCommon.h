@@ -14,7 +14,7 @@ namespace SGCore::UI
         template<typename KeywordT>
         static std::variant<KeywordT, Ref<CSSMathNode>> processKnownTerm(
             ANTLRCSSListener* antlrcssListener,
-            CSSSelector* currentSelector,
+            CSSStyle* currentStyle,
             css3Parser::KnownTermContext* knownTerm,
             const size_t& termIndex,
             const std::string& propertyName) noexcept

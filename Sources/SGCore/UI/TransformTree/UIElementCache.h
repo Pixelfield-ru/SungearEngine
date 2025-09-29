@@ -37,7 +37,7 @@ namespace SGCore::UI
         float m_leftPadding = 0.0f;
 
         /// bottom-left, top-left, top-right, bottom-right
-        std::array<glm::vec2, 4> m_borderRadiusCache;
+        std::array<glm::vec2, 4> m_borderRadiusCache { };
 
         float m_fontSize = 16.0f;
 
