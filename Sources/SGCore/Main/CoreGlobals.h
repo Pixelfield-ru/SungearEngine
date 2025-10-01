@@ -2,11 +2,11 @@
 // Created by stuka on 20.11.2023.
 //
 
-#ifndef SUNGEARENGINE_COREGLOBALS_H
-#define SUNGEARENGINE_COREGLOBALS_H
+#pragma once
 
-#include <SGCore/pch.h>
-// #include "SGCore/ECS/ECSRegistry.h"
+#include <glm/vec2.hpp>
+
+#include <memory>
 
 namespace SGCore
 {
@@ -19,7 +19,7 @@ namespace SGCore
 
         using entity_t = highp_entity;
 
-        using registry_t = ECS::Registry<entity_t>;
+        using registry_t = Registry<entity_t>;
     }
 
     template<typename T>
@@ -63,5 +63,3 @@ namespace SGCore
     
     // ===========================================
 }
-
-#endif //SUNGEARENGINE_COREGLOBALS_H

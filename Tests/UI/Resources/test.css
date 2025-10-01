@@ -8,7 +8,9 @@
 }
 
 .text-box:hover {
-
+    background-color: rgba(100 100 10 / 255);
+    border-radius: 20px;
+    width: 200px;
 }
 
 .text-box {
@@ -22,7 +24,7 @@
 
     width: 100px;
     height: auto;
-    background-color: rgba(100 100 10 / 255);
+    background-color: rgba(100 10 10 / 255);
 }
 
 .window-header {
@@ -35,7 +37,7 @@
     gap: 10px;
     padding: 10px;
 
-    border-radius: 40px / 60px;
+    border-radius: 20px / 60px;
 }
 
 .test-text-0 {

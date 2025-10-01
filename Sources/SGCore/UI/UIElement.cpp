@@ -77,20 +77,24 @@ void SGCore::UI::UIElement::calculateLayout(const UIElementCache* parentElementC
 void SGCore::UI::UIElement::regenerateMesh(const UIElementCache* parentElementCache,
                                            UIElementCache& thisElementCache) noexcept
 {
-    m_meshData->m_indices.clear();
-    m_meshData->m_vertices.clear();
+    if(thisElementCache.m_currentFrameStyles.empty()) return;
 
-    for(auto* style : m_currentFrameStyles)
+    if(m_meshData)
+    {
+        m_meshData->m_indices.clear();
+        m_meshData->m_vertices.clear();
+    }
+
+    for(auto* style : thisElementCache.m_currentFrameStyles)
     {
         style->calculateCache(parentElementCache, thisElementCache);
     }
 
     doGenerateMesh(parentElementCache, thisElementCache);
 
-    m_meshData->update();
-
     if(m_meshData)
     {
+        m_meshData->update();
         m_meshData->m_aabb.calculate(m_meshData->m_vertices);
     }
 }
@@ -109,11 +113,11 @@ SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIElement::findElement(const std:
 
 void SGCore::UI::UIElement::checkForMeshGenerating(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept
 {
-    if(!m_meshData)
+    if(!m_meshData && !thisElementCache.m_currentFrameStyles.empty())
     {
         m_meshData = MakeRef<UIElementMesh>();
 
-        for(auto* style : m_currentFrameStyles)
+        for(auto* style : thisElementCache.m_currentFrameStyles)
         {
             style->calculateCache(parentElementCache, thisElementCache);
         }

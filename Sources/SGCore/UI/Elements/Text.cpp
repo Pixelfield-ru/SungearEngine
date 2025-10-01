@@ -15,9 +15,9 @@ bool SGCore::UI::Text::draw(const LayeredFrameReceiver::reg_t& cameraReceiver,
                             const Transform& elementTransform,
                             UIElementCache& elementCache) noexcept
 {
-    if(m_currentFrameStyles.empty()) return true;
+    if(elementCache.m_currentFrameStyles.empty()) return true;
 
-    auto* lastStyle = m_currentFrameStyles.back();
+    auto* lastStyle = elementCache.m_currentFrameStyles.back();
 
     AssetRef<Font> font = lastStyle->m_font.lock();
 
@@ -70,12 +70,12 @@ void SGCore::UI::Text::clearGlyphs() noexcept
 void SGCore::UI::Text::doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,
                                          const Transform* parentTransform, Transform& ownTransform) noexcept
 {
-    for(auto* style : m_currentFrameStyles)
+    for(auto* style : thisElementCache.m_currentFrameStyles)
     {
         style->calculateCache(parentElementCache, thisElementCache);
     }
 
-    if(!m_currentFrameStyles.empty())
+    if(!thisElementCache.m_currentFrameStyles.empty())
     {
         thisElementCache.m_finalSize = m_textSize;
     }

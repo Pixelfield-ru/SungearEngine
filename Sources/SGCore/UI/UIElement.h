@@ -34,9 +34,6 @@ namespace SGCore::UI
         std::string m_name;
         // ===================
 
-        // todo: move in UITransformTree
-        std::vector<CSSStyle*> m_currentFrameStyles;
-
         AssetRef<IShader> m_shader;
         Ref<UIElementMesh> m_meshData;
         UniqueColor m_uniqueColor;

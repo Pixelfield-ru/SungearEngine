@@ -15,7 +15,7 @@ void SGCore::UI::Div::doCalculateLayout(const UIElementCache* parentElementCache
                                         UIElementCache& thisElementCache,
                                         const Transform* parentTransform, Transform& ownTransform) noexcept
 {
-    for(auto* style : m_currentFrameStyles)
+    for(auto* style : thisElementCache.m_currentFrameStyles)
     {
         style->calculateCache(parentElementCache, thisElementCache);
     }

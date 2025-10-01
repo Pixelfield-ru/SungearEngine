@@ -56,7 +56,7 @@ void SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::reg_t& c
     if(currentTransformNodeIdx >= uiComponent.m_transformTree.m_elements.size()) return;
 
     auto& currentTransformNode = uiComponent.m_transformTree.m_elements[currentTransformNodeIdx];
-    auto& currentElementCache = currentTransformNode.m_currentElementCache;
+    auto& currentElementCache = currentTransformNode.m_elementCurrentCache;
 
     // =================================================================== rendering uielement
 
@@ -64,7 +64,7 @@ void SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::reg_t& c
 
     const bool isElementCustomRendered = currentUIElement->draw(cameraReceiver, currentTransformNode.m_transform, currentElementCache);
 
-    if(!isElementCustomRendered && uiElementShader)
+    if(!isElementCustomRendered && uiElementShader && currentUIElement->m_meshData)
     {
         const auto defaultPPLayer = cameraReceiver.getDefaultLayer();
 
@@ -83,7 +83,7 @@ void SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::reg_t& c
 
         uiElementShader->useVectorf("u_pickingColor", (glm::vec3) currentUIElement->m_uniqueColor.color());
 
-        currentUIElement->useUniforms(currentTransformNode.m_currentElementCache);
+        currentUIElement->useUniforms(currentTransformNode.m_elementCurrentCache);
 
         CoreMain::getRenderer()->renderArray(
                 currentUIElement->m_meshData->getVertexArray(),

@@ -16,29 +16,36 @@ void SGCore::UI::EventsHandlingSystem::update(const double& dt, const double& fi
     auto uiView = registry->view<UIComponent>();
 
     uiView.each([&](UIComponent& uiComponent) {
+        auto* cameraFrameReceiver = registry->tryGet<LayeredFrameReceiver>(*uiComponent.m_attachedToCamera.m_referencedEntity);
+        if(!cameraFrameReceiver) return;
+
         bool stopToken = false;
-        uiComponent.m_document->iterate([&](UIElement* parent, UIElement* current) {
-            current->m_currentFrameStyles.clear();
+        uiComponent.m_transformTree.iterate([&](UITransformTreeElement* parentTransform, UITransformTreeElement& currentTransform, UIElement* parentUIElement, UIElement& currentUIElement) {
+            auto& currentElementCache = currentTransform.m_elementCurrentCache;
+
+            currentElementCache.m_currentFrameStyles.clear();
 
             for(const auto& eventHandler : UIEventHandlersRegistry::getHandlers())
             {
-                bool handled = eventHandler->testElement(*current);
+                bool handled = eventHandler->testElement(currentUIElement, *uiComponent.m_document.get(), *getScene(), *cameraFrameReceiver);
                 if(handled && eventHandler->isChangesStyle())
                 {
-                    if(!current->m_mainStyle) continue;
+                    if(!currentUIElement.m_mainStyle) continue;
 
-                    auto pseudoClassStyle = current->m_mainStyle->m_pseudoClassesStyles[eventHandler->getEventNameHash()];
-                    if(pseudoClassStyle) continue;
+                    auto pseudoClassStyle = currentUIElement.m_mainStyle->m_pseudoClassesStyles[eventHandler->getEventNameHash()];
+                    if(!pseudoClassStyle) continue;
 
-                    current->m_currentFrameStyles.push_back(pseudoClassStyle.get());
+                    currentElementCache.m_currentFrameStyles.push_back(pseudoClassStyle.get());
                     // eventHandler->applyStyle(*current, current->getStyleForPseudoClass(eventHandler->getEventNameHash()));
                 }
             }
 
-            if(current->m_currentFrameStyles.empty())
+            if(currentElementCache.m_currentFrameStyles.empty())
             {
-                current->m_currentFrameStyles.push_back(current->m_mainStyle.get());
+                currentElementCache.m_currentFrameStyles.push_back(currentUIElement.m_mainStyle.get());
             }
-        }, stopToken);
+        },
+         *uiComponent.m_document.get(),
+        stopToken);
     });
 }

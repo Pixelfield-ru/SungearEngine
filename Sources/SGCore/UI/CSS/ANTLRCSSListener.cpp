@@ -51,12 +51,14 @@ void SGCore::UI::ANTLRCSSListener::enterSelector(css3Parser::SelectorContext* ct
         auto pseudo = assetManager->getOrAddAssetByPath<CSSStyle>(newSelectorPath);
 
         pseudo->m_selector = currentSelector;
-        pseudo->m_pseudoClass = currentSelector;
+        pseudo->m_pseudoClass = currentPseudoClass;
 
         m_currentPseudoClassStyle = pseudo.get();
     }
     else
     {
+        m_currentPseudoClassStyle = nullptr;
+
         newSelectorPath /= currentSelector;
 
         auto foundStyle = m_toCSSFile->findStyle(currentSelector);
@@ -80,8 +82,7 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
 {
     if(m_currentPseudoClassStyle)
     {
-        m_pseudosToResolve.push_back({ m_currentPseudoClassStyle, ctx });
-        m_currentPseudoClassStyle = nullptr;
+        m_pseudosToResolve[m_currentPseudoClassStyle].push_back(ctx);
         return;
     }
 
@@ -205,7 +206,7 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
 
 void SGCore::UI::ANTLRCSSListener::resolvePseudos() noexcept
 {
-    for(auto& [pseudo, decl] : m_pseudosToResolve)
+    for(auto& [pseudo, decls] : m_pseudosToResolve)
     {
         auto selector = m_toCSSFile->findStyle(pseudo->m_selector);
         if(!selector)
@@ -219,7 +220,12 @@ void SGCore::UI::ANTLRCSSListener::resolvePseudos() noexcept
         m_currentPseudoClassStyle = nullptr;
         m_currentStyle = pseudo;
 
-        enterKnownDeclaration(decl);
+        for(auto* decl : decls)
+        {
+            enterKnownDeclaration(decl);
+        }
+
+        selector->m_pseudoClassesStyles[constexprHash(pseudo->m_pseudoClass.c_str())] = AssetManager::getInstance()->getOrAddAssetByPath<CSSStyle>(pseudo->getPath());
     }
 
     m_pseudosToResolve.clear();

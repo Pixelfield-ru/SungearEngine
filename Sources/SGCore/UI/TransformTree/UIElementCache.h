@@ -12,6 +12,8 @@
 
 namespace SGCore::UI
 {
+    struct CSSStyle;
+
     /**
      * Used to store calculated properties of UI element.
      */
@@ -42,6 +44,8 @@ namespace SGCore::UI
         float m_fontSize = 16.0f;
 
         // ===================================== tmp values! DO NOT CHANGE EXTERNALLY!
+
+        std::vector<CSSStyle*> m_currentFrameStyles;
 
         glm::vec2 m_contentSize { };
 

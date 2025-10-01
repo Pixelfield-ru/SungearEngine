@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_TRANSFORM_H
 #define SUNGEARENGINE_TRANSFORM_H
 
-#include <SGCore/pch.h>
+#include <glm/mat4x4.hpp>
 
 #include "TransformBase.h"
 #include "SGCore/Main/CoreGlobals.h"
@@ -45,27 +45,6 @@ namespace SGCore
         // initial model matrix of node in asset
         glm::mat4 m_initialModelMatrix = glm::identity<glm::mat4>();
     };
-
-    /*template<>
-    struct SerializerSpec<Transform>
-    {
-        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                              const std::string& varName, const Transform& value) noexcept
-        {
-            rapidjson::Value k(rapidjson::kStringType);
-            rapidjson::Value v(rapidjson::kObjectType);
-
-            k.SetString(varName.c_str(), varName.length());
-
-            Serializer::serialize(toDocument, v, "finalTransform", value.m_finalTransform);
-            Serializer::serialize(toDocument, v, "ownTransform", value.m_ownTransform);
-
-            Serializer::serialize(toDocument, v, "followParentTRS", value.m_followParentTRS);
-            Serializer::serialize(toDocument, v, "transformChanged", value.m_transformChanged);
-
-            parent.AddMember(k, v, toDocument.GetAllocator());
-        }
-    };*/
 }
 
 #endif //SUNGEARENGINE_TRANSFORM_H

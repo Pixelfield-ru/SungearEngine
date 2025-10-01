@@ -36,13 +36,13 @@ void SGCore::UI::UIRoot::doCalculateLayout(const UIElementCache* parentElementCa
                                            UIElementCache& thisElementCache,
                                            const Transform* parentTransform, Transform& ownTransform) noexcept
 {
-    for(auto* style : m_currentFrameStyles)
+    for(auto* style : thisElementCache.m_currentFrameStyles)
     {
         // todo: move into CSSStyle struct to calculate all selector props
         style->calculateCache(parentElementCache, thisElementCache);
     }
 
-    if(m_currentFrameStyles.empty())
+    if(thisElementCache.m_currentFrameStyles.empty())
     {
         thisElementCache.m_topPadding = { };
         thisElementCache.m_rightPadding = { };

@@ -19,6 +19,9 @@ namespace SGCore::UI
         AssetRef<UIDocument> m_document;
 
         UITransformTree m_transformTree;
+
+        // contains tmp value that indicates count of proceed elements in transform tree of this ui
+        std::int64_t m_currentProceedUIElements = 0;
     };
 }
 

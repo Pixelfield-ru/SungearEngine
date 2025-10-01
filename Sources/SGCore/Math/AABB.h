@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_AABB_H
 #define SUNGEARENGINE_AABB_H
 
-#include "SGCore/pch.h"
-
 #include "MathUtils.h"
 #include "SGCore/ECS/Component.h"
 #include "SGCore/ImportedScenesArch/Vertex.h"

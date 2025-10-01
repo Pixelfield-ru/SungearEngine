@@ -4,7 +4,8 @@
 
 #pragma once
 
-#include "SGCore/Main/CoreGlobals.h"
+#include "SGCore/Render/LayeredFrameReceiver.h"
+#include "SGCore/Utils/TypeTraits.h"
 
 #define SG_DECLARE_UI_EVENT_HANDLER_NAME(name) \
     static consteval size_t getEventNameHashStatic() noexcept \
@@ -18,11 +19,16 @@
         return name_hash; \
     }
 
+namespace SGCore
+{
+    class Scene;
+}
 
 namespace SGCore::UI
 {
     struct UIElement;
     struct CSSStyle;
+    struct UIDocument;
 
     struct UIEventHandler
     {
@@ -35,7 +41,7 @@ namespace SGCore::UI
          * @param element Element to test event.
          * @return Is event
          */
-        virtual bool testElement(UIElement& element) noexcept = 0;
+        virtual bool testElement(UIElement& element, UIDocument& document, Scene& scene, LayeredFrameReceiver::reg_t& attachedCameraReceiver) noexcept = 0;
 
         virtual size_t getEventNameHash() noexcept = 0;
     };

@@ -83,7 +83,7 @@ namespace SGCore::UI
 
         CSSStyle* m_currentStyle { };
         CSSStyle* m_currentPseudoClassStyle { };
-        std::vector<std::pair<CSSStyle*, css3Parser::KnownDeclarationContext*>> m_pseudosToResolve;
+        std::unordered_map<CSSStyle*, std::vector<css3Parser::KnownDeclarationContext*>> m_pseudosToResolve;
     };
 }
 
