@@ -28,15 +28,17 @@ namespace SGCore::UI
 
         [[nodiscard]] AssetRef<CSSStyle> findStyle(const std::string& selector) const noexcept;
 
+        const std::vector<AssetRef<CSSStyle>>& getStyles() const noexcept;
+
     protected:
         void doLoad(const InterpolatedPath& path) final;
 
         // todo: impl
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept final;
 
-        // todo: impl
         void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
 
+        std::vector<AssetRef<CSSFile>> m_importedFiles;
         std::vector<AssetRef<CSSStyle>> m_styles;
     };
 }

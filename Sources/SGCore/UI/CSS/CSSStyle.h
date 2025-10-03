@@ -74,6 +74,9 @@ namespace SGCore::UI
         [[nodiscard]] const std::string& getSelector() const noexcept;
         [[nodiscard]] const std::string& getPseudoName() const noexcept;
 
+        [[nodiscard]] size_t getSelectorHash() const noexcept;
+        [[nodiscard]] size_t getPseudoClassHash() const noexcept;
+
         void calculateCache(const UIElementCache* parentElementCache,
                             UIElementCache& thisElementCache) noexcept;
 
@@ -108,6 +111,9 @@ namespace SGCore::UI
 
         std::string m_selector;
         std::string m_pseudoClass;
+
+        mutable size_t m_selectorHash = 0;
+        mutable size_t m_pseudoClassHash = 0;
     };
 }
 

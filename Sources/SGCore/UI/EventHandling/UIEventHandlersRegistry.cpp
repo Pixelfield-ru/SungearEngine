@@ -4,6 +4,7 @@
 
 #include "UIEventHandlersRegistry.h"
 
+#include "UIActiveEventHandler.h"
 #include "UIHoverEventHandler.h"
 
 const std::vector<SGCore::Ref<SGCore::UI::UIEventHandler>>& SGCore::UI::UIEventHandlersRegistry::getHandlers() noexcept
@@ -15,4 +16,7 @@ void SGCore::UI::UIEventHandlersRegistry::initializeCoreHandlers() noexcept
 {
     auto hoverEventHandler = MakeRef<UIHoverEventHandler>();
     s_handlers.push_back(hoverEventHandler);
+
+    auto activeEventHandler = MakeRef<UIActiveEventHandler>();
+    s_handlers.push_back(activeEventHandler);
 }

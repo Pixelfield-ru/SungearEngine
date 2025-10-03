@@ -32,6 +32,8 @@ namespace SGCore::UI
 
         void enterKnownDeclaration(css3Parser::KnownDeclarationContext* ctx) override;
 
+        void enterGoodImport(css3Parser::GoodImportContext* ctx) override;
+
         void resolvePseudos() noexcept;
 
     private:
@@ -84,6 +86,7 @@ namespace SGCore::UI
         CSSStyle* m_currentStyle { };
         CSSStyle* m_currentPseudoClassStyle { };
         std::unordered_map<CSSStyle*, std::vector<css3Parser::KnownDeclarationContext*>> m_pseudosToResolve;
+        std::unordered_set<size_t> m_importedFilesHashes;
     };
 }
 

@@ -51,6 +51,11 @@ namespace SGCore::UI
         void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
 
         [[nodiscard]] Ref<UIElement> processUIElement(const pugi::xml_node& xmlNode) noexcept;
+
+        void applyDefaultStylesToNonStyledElements() noexcept;
+
+    private:
+        void applyDefaultStylesToNonStyledElementsImpl(const Ref<UIElement>& element) noexcept;
     };
 }
 

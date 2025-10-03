@@ -204,6 +204,29 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
     }
 }
 
+void SGCore::UI::ANTLRCSSListener::enterGoodImport(css3Parser::GoodImportContext* ctx)
+{
+    const InterpolatedPath importPath = std::string(ctx->String_()->getText(), 1, ctx->String_()->getText().length() - 2);
+
+    std::cout << "imports " << importPath.resolved() << std::endl;
+
+    const auto importedCSSFile = m_toCSSFile->getParentAssetManager()->loadAsset<CSSFile>(importPath);
+
+    if(!importedCSSFile) return;
+
+    if(!m_importedFilesHashes.contains(importedCSSFile->getHash()))
+    {
+        m_toCSSFile->m_importedFiles.push_back(importedCSSFile);
+        m_importedFilesHashes.insert(importedCSSFile->getHash());
+
+        for(const auto& style : importedCSSFile->m_styles)
+        {
+            std::cout << "imported style: " << style->m_selector << std::endl;
+            m_toCSSFile->m_styles.push_back(style);
+        }
+    }
+}
+
 void SGCore::UI::ANTLRCSSListener::resolvePseudos() noexcept
 {
     for(auto& [pseudo, decls] : m_pseudosToResolve)

@@ -25,8 +25,28 @@ const std::string& SGCore::UI::CSSStyle::getPseudoName() const noexcept
     return m_pseudoClass;
 }
 
+size_t SGCore::UI::CSSStyle::getSelectorHash() const noexcept
+{
+    if(m_selectorHash == 0)
+    {
+        m_selectorHash = constexprHash(m_selector.c_str());
+    }
+
+    return m_selectorHash;
+}
+
+size_t SGCore::UI::CSSStyle::getPseudoClassHash() const noexcept
+{
+    if(m_pseudoClassHash == 0)
+    {
+        m_pseudoClassHash = constexprHash(m_pseudoClass.c_str());
+    }
+
+    return m_pseudoClassHash;
+}
+
 void SGCore::UI::CSSStyle::calculateCache(const UIElementCache* parentElementCache,
-                                             UIElementCache& thisElementCache) noexcept
+                                          UIElementCache& thisElementCache) noexcept
 {
     if(m_padding.containsAlternative())
     {

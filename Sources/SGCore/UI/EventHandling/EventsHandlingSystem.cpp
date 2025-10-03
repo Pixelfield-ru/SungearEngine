@@ -36,11 +36,10 @@ void SGCore::UI::EventsHandlingSystem::update(const double& dt, const double& fi
                     if(!pseudoClassStyle) continue;
 
                     currentElementCache.m_currentFrameStyles.push_back(pseudoClassStyle.get());
-                    // eventHandler->applyStyle(*current, current->getStyleForPseudoClass(eventHandler->getEventNameHash()));
                 }
             }
 
-            if(currentElementCache.m_currentFrameStyles.empty())
+            if(currentElementCache.m_currentFrameStyles.empty() && currentUIElement.m_mainStyle)
             {
                 currentElementCache.m_currentFrameStyles.push_back(currentUIElement.m_mainStyle.get());
             }

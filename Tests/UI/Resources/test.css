@@ -1,3 +1,5 @@
+@import "${enginePath}/Resources/ui/styles/default.css";
+
 .window-default {
     display: flex;
     flex-direction: row;
@@ -10,6 +12,12 @@
 .text-box:hover {
     background-color: rgba(100 100 10 / 255);
     border-radius: 20px;
+    width: 200px;
+}
+
+.text-box:active {
+    background-color: rgba(100 100 100 / 255);
+    border-radius: 10px;
     width: 200px;
 }
 

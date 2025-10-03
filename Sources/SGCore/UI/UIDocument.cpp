@@ -11,12 +11,15 @@
 
 #include "UINodesProcessors/UIElementsProcessorsRegistry.h"
 #include "UINodesProcessors/UIRootNodeProcessor.h"
+#include "CSS/CSSFile.h"
 
 void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
 {
     for(auto cssFile : m_includedCSSFiles)
     {
-        cssFile->getParentAssetManager()->removeAsset(cssFile);
+        // todo: is it good?
+        cssFile->reloadFromDisk();
+        // cssFile->getParentAssetManager()->removeAsset(cssFile);
     }
 
     m_includedCSSFiles.clear();
@@ -44,6 +47,8 @@ void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
 
     m_rootElement = nullptr;
     m_rootElement = std::static_pointer_cast<UIRoot>(rootElement);
+
+    applyDefaultStylesToNonStyledElements();
 }
 
 void SGCore::UI::UIDocument::doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept
@@ -98,6 +103,33 @@ SGCore::UI::UIDocument::processUIElement(const pugi::xml_node& xmlNode) noexcept
     }
 
     return outputElement;
+}
+
+void SGCore::UI::UIDocument::applyDefaultStylesToNonStyledElements() noexcept
+{
+    applyDefaultStylesToNonStyledElementsImpl(m_rootElement);
+}
+
+void SGCore::UI::UIDocument::applyDefaultStylesToNonStyledElementsImpl(const Ref<UIElement>& element) noexcept
+{
+    if(!element->m_mainStyle)
+    {
+        for(const auto& cssFile : m_includedCSSFiles)
+        {
+            for(const auto& style : cssFile->getStyles())
+            {
+                if(element->getTypeHash() == style->getSelectorHash())
+                {
+                    element->m_mainStyle = style;
+                }
+            }
+        }
+    }
+
+    for(const auto& child : element->m_children)
+    {
+        applyDefaultStylesToNonStyledElementsImpl(child);
+    }
 }
 
 SGCore::AssetRef<SGCore::UI::CSSStyle>

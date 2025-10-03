@@ -21,12 +21,13 @@ SGCore::AssetRef<SGCore::UI::CSSStyle> SGCore::UI::CSSFile::findStyle(const std:
     return foundIt == m_styles.end() ? nullptr : *foundIt;
 }
 
+const std::vector<SGCore::AssetRef<SGCore::UI::CSSStyle>>& SGCore::UI::CSSFile::getStyles() const noexcept
+{
+    return m_styles;
+}
+
 void SGCore::UI::CSSFile::doLoad(const InterpolatedPath& path)
 {
-    auto uiBodySelector = getParentAssetManager()->getOrAddAssetByPath<CSSStyle>(getPath() / "styles" / "body");
-    uiBodySelector->m_selector = "body";
-    m_styles.push_back(uiBodySelector);
-
     antlr4::ANTLRInputStream input(FileUtils::readFile(path.resolved()));
 
     css3Lexer lexer(&input);
@@ -50,5 +51,11 @@ void SGCore::UI::CSSFile::doLoadFromBinaryFile(SGCore::AssetManager* parentAsset
 void SGCore::UI::CSSFile::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolicy,
                                            SGCore::Ref<SGCore::Threading::Thread> lazyLoadInThread) noexcept
 {
+    for(const auto& importedFile : m_importedFiles)
+    {
+        importedFile->doReloadFromDisk(loadPolicy, lazyLoadInThread);
+    }
 
+    m_styles.clear();
+    doLoad(getPath());
 }
