@@ -11,3 +11,30 @@
     width: 100px;
     height: auto;
 }
+
+.button:active {
+    background-color: rgba(calc(255 / 1.2) calc(255 / 1.2) calc(255 / 1.2) / 255);
+}
+
+.button:hover {
+    background-color: rgba(calc(255 / 1.1) calc(255 / 1.1) calc(255 / 1.1) / 255);
+}
+
+.button {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    padding: 10px;
+
+    background-color: rgba(255 255 255 / 255);
+    border-radius: 10px;
+    /* todo: make auto when implemented */
+    width: 100px;
+    height: auto;
+}
+
+.text {
+    font-family: "JetBrains Mono", "Times New Roman";
+    font-size: calc(16px);
+}

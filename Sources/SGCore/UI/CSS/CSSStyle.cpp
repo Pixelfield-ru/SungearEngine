@@ -3,6 +3,7 @@
 //
 #include "CSSStyle.h"
 
+#include "Math/CSSMathNumericNode.h"
 #include "SGCore/UI/FontsManager.h"
 
 SGCore::UI::CSSStyle::CSSStyle() noexcept
@@ -13,6 +14,11 @@ SGCore::UI::CSSStyle::CSSStyle() noexcept
     // using 64 to generate big MSDF atlas
     m_fontSpecializationSettings.m_height = 64;
     setFontSpecializationSettings(m_fontSpecializationSettings);
+
+    // default value if field font-size not exists
+    auto fontSizeMathNode = MakeRef<CSSMathNumericNode>();
+    fontSizeMathNode->m_value = 16;
+    m_fontSize.setWithAlternative(fontSizeMathNode);
 }
 
 const std::string& SGCore::UI::CSSStyle::getSelector() const noexcept

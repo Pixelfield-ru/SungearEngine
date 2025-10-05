@@ -18,3 +18,8 @@ bool SGCore::UI::UIHoverEventHandler::testElement(UIElement& element, UIDocument
 {
     return (glm::vec3) element.m_uniqueColor.color() == attachedCameraReceiver.m_pickingColorUnderMouse;
 }
+
+void SGCore::UI::UIHoverEventHandler::callEvent(UIElement& element) noexcept
+{
+    element.onPointerHover(&element);
+}

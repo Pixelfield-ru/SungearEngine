@@ -13,6 +13,9 @@
 
 namespace SGCore
 {
+    /**
+     *
+     */
     struct Transform : ECS::Component<Ref<Transform>, Ref<const Transform>>
     {
         friend class Node;

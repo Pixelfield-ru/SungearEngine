@@ -1,5 +1,5 @@
 //
-// Created by stuka on 25.01.2025.
+// Created by stuka on 05.10.2025.
 //
 
 #pragma once
@@ -8,7 +8,7 @@
 
 namespace SGCore::UI
 {
-    struct UIDivNodeProcessor : UIElementNodeProcessor
+    struct UIButtonNodeProcessor : UIElementNodeProcessor
     {
         Ref<UIElement> allocateElement() noexcept final;
 

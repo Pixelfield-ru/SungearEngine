@@ -15,6 +15,18 @@
 #include "SGCore/Render/LayeredFrameReceiver.h"
 #include "SGCore/Utils/Unique/UniqueColor.h"
 
+#define SG_DECLARE_UI_ELEMENT_TYPE(name) \
+    static consteval size_t getTypeHashStatic() noexcept \
+    { \
+        static constexpr size_t type_hash = SGCore::constexprHash(#name); \
+        return type_hash; \
+    } \
+    size_t getTypeHash() const noexcept override \
+    { \
+        static constexpr size_t type_hash = SGCore::constexprHash(#name); \
+        return type_hash; \
+    }
+
 namespace SGCore::UI
 {
     struct UIElementMesh;
@@ -25,6 +37,11 @@ namespace SGCore::UI
         virtual ~UIElement() = default;
 
         friend struct UIDocument;
+
+        Signal<void(UIElement* self)> onPointerDown;
+        Signal<void(UIElement* self)> onPointerUp;
+        Signal<void(UIElement* self)> onPointerHold;
+        Signal<void(UIElement* self)> onPointerHover;
 
         std::vector<Ref<UIElement>> m_children;
         Weak<UIElement> m_parent;
@@ -58,8 +75,6 @@ namespace SGCore::UI
                              UIElementCache& thisElementCache,
                              const Transform* parentTransform,
                              Transform& ownTransform) noexcept;
-
-        [[nodiscard]] size_t getTypeHash() const noexcept;
 
         virtual void useUniforms(UIElementCache& thisElementCache) const noexcept;
 
@@ -96,6 +111,8 @@ namespace SGCore::UI
             }
         }
 
+        virtual size_t getTypeHash() const noexcept = 0;
+
     protected:
         virtual void doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,
                                        const Transform* parentTransform, Transform& ownTransform) = 0;
@@ -111,8 +128,6 @@ namespace SGCore::UI
         virtual void doGenerateMesh(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept = 0;
 
     private:
-        size_t m_typeHash = 0;
-
         void checkForMeshGenerating(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept;
     };
 }

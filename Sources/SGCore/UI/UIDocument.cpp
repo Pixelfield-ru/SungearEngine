@@ -36,7 +36,7 @@ void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
 
     auto rootElement = processUIElement(m_document.child("xml"));
 
-    if(!rootElement || rootElement->getTypeHash() != UIRootNodeProcessor::getNodeTypeHashStatic())
+    if(!rootElement || rootElement->getTypeHash() != UIRoot::getTypeHashStatic())
     {
         LOG_E(SGCORE_TAG,
               "Can not process UIDocument: root element must be <xml>.\n"
@@ -85,10 +85,6 @@ SGCore::UI::UIDocument::processUIElement(const pugi::xml_node& xmlNode) noexcept
     }
     Ref<UIElement> outputElement = nodeProcessor->allocateElement();
     nodeProcessor->processElement(this, outputElement, xmlNode);
-    if(outputElement)
-    {
-        outputElement->m_typeHash = nodeProcessor->getNodeTypeHash();
-    }
 
     if(!outputElement) return nullptr;
 

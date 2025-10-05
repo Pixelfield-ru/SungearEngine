@@ -10,8 +10,6 @@ namespace SGCore::UI
 {
     struct UITextNodeProcessor : UIElementNodeProcessor
     {
-        SG_DECLARE_UI_ELEMENT_PROCESSOR_NODE_NAME(text)
-
         Ref<UIElement> allocateElement() noexcept final;
 
         void processElement(UIDocument* inDocument,

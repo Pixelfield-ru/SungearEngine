@@ -43,6 +43,8 @@ namespace SGCore::UI
          */
         virtual bool testElement(UIElement& element, UIDocument& document, Scene& scene, LayeredFrameReceiver::reg_t& attachedCameraReceiver) noexcept = 0;
 
+        virtual void callEvent(UIElement& element) noexcept = 0;
+
         virtual size_t getEventNameHash() noexcept = 0;
     };
 }

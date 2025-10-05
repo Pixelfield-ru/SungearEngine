@@ -12,6 +12,8 @@ namespace SGCore::UI
 {
     struct UIRoot : UIElement
     {
+        SG_DECLARE_UI_ELEMENT_TYPE(xml)
+
         UIRoot() noexcept;
 
         copy_constructor(UIRoot) = default;

@@ -52,7 +52,7 @@ const float threshold = 0.01;
 
 uniform float pxRange = 0.0;
 uniform vec4 bgColor = vec4(0.0);
-uniform vec4 fgColor = vec4(1.0, 1.0, 1.0, 1.0);
+uniform vec4 fgColor = vec4(0.0, 0.0, 0.0, 1.0);
 
 in float vs_fontScale;
 

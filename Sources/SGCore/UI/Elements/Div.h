@@ -12,6 +12,8 @@ namespace SGCore::UI
 {
     struct Div : UIElement
     {
+        SG_DECLARE_UI_ELEMENT_TYPE(div)
+
         Div() noexcept;
 
         copy_constructor(Div) = default;

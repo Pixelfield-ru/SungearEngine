@@ -4,5 +4,7 @@
         <div class="text-box" name="InputDiv1">
             <text class="test-text-1" name="InputText">NONE</text>
         </div>
+
+        <button name="Button0">Click me!</button>
     </div>
 </xml>

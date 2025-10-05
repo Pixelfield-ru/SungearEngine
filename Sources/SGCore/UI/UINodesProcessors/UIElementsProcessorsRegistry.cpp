@@ -4,6 +4,7 @@
 
 #include "UIElementsProcessorsRegistry.h"
 
+#include "UIButtonNodeProcessor.h"
 #include "UIDivNodeProcessor.h"
 #include "UIIncludeNodeProcessor.h"
 #include "UIRootNodeProcessor.h"
@@ -31,4 +32,5 @@ void SGCore::UI::UIElementsProcessorsRegistry::initializeCoreProcessors() noexce
     s_nodesProcessors["include"] = MakeRef<UIIncludeNodeProcessor>();
     s_nodesProcessors["div"] = MakeRef<UIDivNodeProcessor>();
     s_nodesProcessors["text"] = MakeRef<UITextNodeProcessor>();
+    s_nodesProcessors["button"] = MakeRef<UIButtonNodeProcessor>();
 }

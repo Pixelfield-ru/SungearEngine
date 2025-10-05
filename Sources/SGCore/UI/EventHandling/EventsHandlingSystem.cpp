@@ -28,14 +28,19 @@ void SGCore::UI::EventsHandlingSystem::update(const double& dt, const double& fi
             for(const auto& eventHandler : UIEventHandlersRegistry::getHandlers())
             {
                 bool handled = eventHandler->testElement(currentUIElement, *uiComponent.m_document.get(), *getScene(), *cameraFrameReceiver);
-                if(handled && eventHandler->isChangesStyle())
+                if(handled)
                 {
-                    if(!currentUIElement.m_mainStyle) continue;
+                    eventHandler->callEvent(currentUIElement);
 
-                    auto pseudoClassStyle = currentUIElement.m_mainStyle->m_pseudoClassesStyles[eventHandler->getEventNameHash()];
-                    if(!pseudoClassStyle) continue;
+                    if(eventHandler->isChangesStyle())
+                    {
+                        if(!currentUIElement.m_mainStyle) continue;
 
-                    currentElementCache.m_currentFrameStyles.push_back(pseudoClassStyle.get());
+                        auto pseudoClassStyle = currentUIElement.m_mainStyle->m_pseudoClassesStyles[eventHandler->getEventNameHash()];
+                        if(!pseudoClassStyle) continue;
+
+                        currentElementCache.m_currentFrameStyles.push_back(pseudoClassStyle.get());
+                    }
                 }
             }
 

@@ -13,6 +13,8 @@ namespace SGCore::UI
 {
     struct Text : UIElement
     {
+        SG_DECLARE_UI_ELEMENT_TYPE(text)
+
         friend struct FontSpecializationRenderer;
         friend struct UILayoutCalculator;
 
@@ -36,8 +38,6 @@ namespace SGCore::UI
         void clearGlyphs() noexcept;
 
     protected:
-
-
         /// todo: omg i have element size (m_basicSize) in selector but i cant use it because of order. i am calculating m_basicSize in draw function of struct Text and then i am calling m_mainStyle->calculateCache() in UILayoutCalculator so m_basicSize resets
         /// todo: so i need to hold this variable
         glm::vec2 m_textSize { };

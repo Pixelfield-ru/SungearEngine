@@ -5,11 +5,6 @@
 
 #include "UIElementMesh/UIElementMesh.h"
 
-size_t SGCore::UI::UIElement::getTypeHash() const noexcept
-{
-    return m_typeHash;
-}
-
 void SGCore::UI::UIElement::useUniforms(UIElementCache& thisElementCache) const noexcept
 {
     if(!m_shader) return;

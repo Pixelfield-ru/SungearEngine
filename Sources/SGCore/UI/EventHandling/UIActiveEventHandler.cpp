@@ -16,3 +16,21 @@ bool SGCore::UI::UIActiveEventHandler::testElement(UIElement& element, UIDocumen
 {
     return attachedCameraReceiver.m_pickingColorUnderMouse == (glm::vec3) element.m_uniqueColor.color() && InputManager::getMainInputListener()->mouseButtonDown(MouseButton::MOUSE_BUTTON_LEFT);
 }
+
+void SGCore::UI::UIActiveEventHandler::callEvent(UIElement& element) noexcept
+{
+    if(InputManager::getMainInputListener()->mouseButtonPressed(MouseButton::MOUSE_BUTTON_LEFT))
+    {
+        element.onPointerDown(&element);
+    }
+
+    if(InputManager::getMainInputListener()->mouseButtonDown(MouseButton::MOUSE_BUTTON_LEFT))
+    {
+        element.onPointerHold(&element);
+    }
+
+    if(InputManager::getMainInputListener()->mouseButtonReleased(MouseButton::MOUSE_BUTTON_LEFT))
+    {
+        element.onPointerUp(&element);
+    }
+}

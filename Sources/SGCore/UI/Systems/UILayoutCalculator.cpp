@@ -148,7 +148,7 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
                 parentElementCache.m_lastRowSize.y = 0.0f;
             }
 
-            if(currentUIElementType == UITextNodeProcessor::getNodeTypeHashStatic())
+            if(currentUIElementType == Text::getTypeHashStatic())
             {
                 do
                 {
@@ -204,7 +204,7 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
             }
 
             glm::vec3 currentElementPos = parentElementCache.m_curLocalPositionForElements;
-            if(currentUIElementType != UITextNodeProcessor::getNodeTypeHashStatic())
+            if(currentUIElementType != Text::getTypeHashStatic())
             {
                 currentElementPos += glm::vec3 { elementCurrentCache.m_finalSize, 0.0 } / 2.0f;
             }
@@ -229,7 +229,7 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
     else if(parentStyle->m_display == DisplayKeyword::KW_BLOCK)
     {
         glm::vec3 currentElementPos = parentElementCache.m_curLocalPositionForElements;
-        if(currentUIElementType != UITextNodeProcessor::getNodeTypeHashStatic())
+        if(currentUIElementType != Text::getTypeHashStatic())
         {
             currentElementPos += glm::vec3 { elementCurrentCache.m_finalSize, 0.0 } / 2.0f;
         }

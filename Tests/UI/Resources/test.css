@@ -7,6 +7,9 @@
     width: 100px;
     height: 100px;
     background-color: rgba(10 100 10 / 255);
+
+    font-family: "JetBrains Mono", "Times New Roman";
+    font-size: calc(40px);
 }
 
 .text-box:hover {
