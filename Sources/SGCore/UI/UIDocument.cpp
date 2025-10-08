@@ -12,6 +12,7 @@
 #include "UINodesProcessors/UIElementsProcessorsRegistry.h"
 #include "UINodesProcessors/UIRootNodeProcessor.h"
 #include "CSS/CSSFile.h"
+#include "Elements/TemplateElement.h"
 
 void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
 {
@@ -34,7 +35,7 @@ void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
         return;
     }
 
-    auto rootElement = processUIElement(m_document.child("xml"));
+    auto rootElement = processUIElement(*this, m_document.child("xml"));
 
     if(!rootElement || rootElement->getTypeHash() != UIRoot::getTypeHashStatic())
     {
@@ -63,14 +64,14 @@ void SGCore::UI::UIDocument::doReloadFromDisk(AssetsLoadPolicy loadPolicy,
 }
 
 SGCore::Ref<SGCore::UI::UIElement>
-SGCore::UI::UIDocument::processUIElement(const pugi::xml_node& xmlNode) noexcept
+SGCore::UI::UIDocument::processUIElement(UIDocument& inDocument, const pugi::xml_node& xmlNode) noexcept
 {
     if(!xmlNode)
     {
         LOG_E(SGCORE_TAG,
               "Cannot process UIDocument correctly: invalid node.\n"
               "In XML file: '{}'",
-              Utils::toUTF8(getPath().resolved().u16string()));
+              Utils::toUTF8(inDocument.getPath().resolved().u16string()));
 
         return nullptr;
     }
@@ -80,17 +81,23 @@ SGCore::UI::UIDocument::processUIElement(const pugi::xml_node& xmlNode) noexcept
     auto nodeProcessor = UIElementsProcessorsRegistry::getProcessor(xmlNode.name());
     if(!nodeProcessor)
     {
-        LOG_W(SGCORE_TAG, "In UIDocument by path '{}': cannot process node '{}': processor for this node does not exist.", Utils::toUTF8(getPath().resolved().u16string()), xmlNode.name());
+        LOG_W(SGCORE_TAG, "In UIDocument by path '{}': cannot process node '{}': processor for this node does not exist.", Utils::toUTF8(inDocument.getPath().resolved().u16string()), xmlNode.name());
         return nullptr;
     }
+
     Ref<UIElement> outputElement = nodeProcessor->allocateElement();
-    nodeProcessor->processElement(this, outputElement, xmlNode);
+    nodeProcessor->processElement(&inDocument, outputElement, xmlNode);
 
     if(!outputElement) return nullptr;
+    if(outputElement->getTypeHash() == TemplateElement::getTypeHashStatic())
+    {
+        inDocument.m_templates.push_back(outputElement);
+        return nullptr;
+    }
 
     for(const pugi::xml_node& child : xmlNode)
     {
-        auto processedChild = processUIElement(child);
+        auto processedChild = processUIElement(inDocument, child);
 
         if(processedChild)
         {

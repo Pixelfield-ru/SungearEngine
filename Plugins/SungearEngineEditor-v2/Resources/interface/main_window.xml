@@ -1,5 +1,5 @@
 <xml>
-    <include type="template" path="templates/window/window.xml"/>
+    <include type="xml" path="templates/window/window.xml"/>
 
     <window isDockingTarget="true">
         <window title="Explorer">

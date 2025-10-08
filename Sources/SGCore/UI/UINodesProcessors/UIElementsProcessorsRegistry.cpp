@@ -8,6 +8,7 @@
 #include "UIDivNodeProcessor.h"
 #include "UIIncludeNodeProcessor.h"
 #include "UIRootNodeProcessor.h"
+#include "UITemplateNodeProcessor.h"
 #include "UITextNodeProcessor.h"
 
 SGCore::Ref<SGCore::UI::UIElementNodeProcessor> SGCore::UI::UIElementsProcessorsRegistry::getProcessor(const std::string& nodeType) noexcept
@@ -29,6 +30,7 @@ void SGCore::UI::UIElementsProcessorsRegistry::setProcessorForType(std::string n
 void SGCore::UI::UIElementsProcessorsRegistry::initializeCoreProcessors() noexcept
 {
     s_nodesProcessors["xml"] = MakeRef<UIRootNodeProcessor>();
+    s_nodesProcessors["template"] = MakeRef<UITemplateNodeProcessor>();
     s_nodesProcessors["include"] = MakeRef<UIIncludeNodeProcessor>();
     s_nodesProcessors["div"] = MakeRef<UIDivNodeProcessor>();
     s_nodesProcessors["text"] = MakeRef<UITextNodeProcessor>();

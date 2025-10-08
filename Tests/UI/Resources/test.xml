@@ -1,5 +1,7 @@
 <xml>
     <include type="stylesheet" path="test.css"/>
+    <include type="xml" path="templates.xml"/>
+
     <div name="InputDiv">
         <div class="text-box" name="InputDiv1">
             <text class="test-text-1" name="InputText">NONE</text>
@@ -7,4 +9,6 @@
 
         <button name="Button0">Click me!</button>
     </div>
+
+    <my-template/>
 </xml>

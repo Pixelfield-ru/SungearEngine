@@ -51,6 +51,7 @@ void coreInit()
     
     cssFile = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::CSSFile>("${enginePath}/Tests/UI/Resources/test.css");
     uiDocument = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::UIDocument>("${enginePath}/Tests/UI/Resources/test.xml");
+    auto tmpDoc = uiDocument;
     screenShader = SGCore::AssetManager::getInstance()->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
     someTexture = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/no_material.png");
 

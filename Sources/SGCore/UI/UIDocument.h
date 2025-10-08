@@ -22,8 +22,10 @@ namespace SGCore::UI
         pugi::xml_document m_document;
 
         Ref<UIRoot> m_rootElement;
+        std::vector<Ref<UIElement>> m_templates;
 
         std::vector<AssetRef<CSSFile>> m_includedCSSFiles;
+        std::vector<AssetRef<UIDocument>> m_includedUIDocuments;
 
         [[nodiscard]] AssetRef<CSSStyle> findStyle(const std::string& selector) const noexcept;
         [[nodiscard]] Ref<UIElement> findElement(const std::string& elementName) const noexcept;
@@ -42,6 +44,8 @@ namespace SGCore::UI
             m_rootElement->iterate(func, breakToken);
         }
 
+        [[nodiscard]] static Ref<UIElement> processUIElement(UIDocument& inDocument, const pugi::xml_node& xmlNode) noexcept;
+
     protected:
         void doLoad(const InterpolatedPath& path) override;
 
@@ -49,8 +53,6 @@ namespace SGCore::UI
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
 
         void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
-
-        [[nodiscard]] Ref<UIElement> processUIElement(const pugi::xml_node& xmlNode) noexcept;
 
         void applyDefaultStylesToNonStyledElements() noexcept;
 
