@@ -25,11 +25,11 @@ void SGCore::ReceiverPickingPass::render(const Scene* scene, const Ref<IRenderPi
     camerasView.each([&](LayeredFrameReceiver& receiver) {
         auto attachment2 = receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2);
 
-        if(!attachment2) return;
+        if(!attachment2 || windowSize.x == 0 || windowSize.y == 0) return;
 
         const glm::vec2 mouseRelativePos = {
-            mousePos.x * (attachment2->getWidth() / windowSize.x),
-            mousePos.y * (attachment2->getHeight() / windowSize.y)
+            mousePos.x * ((float) attachment2->getWidth() / (float) windowSize.x),
+            mousePos.y * ((float) attachment2->getHeight() / (float) windowSize.y)
         };
 
         // reading from attachment with picking color

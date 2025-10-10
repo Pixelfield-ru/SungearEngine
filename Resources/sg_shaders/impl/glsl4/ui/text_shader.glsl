@@ -39,6 +39,7 @@ void main()
 
 layout(location = 0) out vec4 layerVolume;
 layout(location = 1) out vec4 layerColor;
+layout(location = 2) out vec3 pickingColor;
 
 in vec2 vs_UVAttribute;
 in vec4 vs_characterColor;
@@ -70,8 +71,6 @@ float median(float r, float g, float b)
 
 void main()
 {
-    vec4 charCol = vec4(0, 0, 0, 1);
-
     vec2 finalUV = vs_UVAttribute.xy;
 
     vec3 msd = texture(u_fontSpecializationAtlas, vec2(finalUV.x, finalUV.y)).rgb;

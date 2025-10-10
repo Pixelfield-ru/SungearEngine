@@ -14,7 +14,7 @@
         <!-- declaring elements that will be pasted instead of this attribute -->
         <elements>
             <empty-window style="window-default">
-                <div style="window-header"> <!-- header -->
+                <div style="window-header" placeName="header"> <!-- header -->
 
                 </div>
 

@@ -10,6 +10,9 @@
 #include <glm/vec2.hpp>
 #include <array>
 
+#include "SGCore/Utils/Macroses.h"
+#include "SGCore/Utils/Unique/UniqueColor.h"
+
 namespace SGCore::UI
 {
     struct CSSStyle;
@@ -45,6 +48,9 @@ namespace SGCore::UI
 
         // ===================================== tmp values! DO NOT CHANGE EXTERNALLY!
 
+        // non copyable in context of UIElementCache
+        UniqueColor m_uniqueColor;
+
         std::vector<CSSStyle*> m_currentFrameStyles;
 
         glm::vec2 m_contentSize { };
@@ -59,6 +65,14 @@ namespace SGCore::UI
 
         /// used to calculate Z position
         std::int32_t m_layer = 0;
+
+        UIElementCache() noexcept = default;
+
+        copy_constructor(UIElementCache);
+        move_constructor(UIElementCache);
+
+        copy_operator(UIElementCache);
+        move_operator(UIElementCache);
     };
 }
 

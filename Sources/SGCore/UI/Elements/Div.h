@@ -19,6 +19,8 @@ namespace SGCore::UI
         copy_constructor(Div) = default;
         move_constructor(Div) = default;
 
+        [[nodiscard]] Ref<UIElement> copy() const noexcept override;
+
         copy_operator(Div) = default;
         move_operator(Div) = default;
 

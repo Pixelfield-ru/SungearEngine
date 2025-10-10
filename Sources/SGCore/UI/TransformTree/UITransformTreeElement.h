@@ -26,6 +26,7 @@ namespace SGCore::UI
 
         std::vector<std::int64_t> m_children;
         std::int64_t m_parent = -1;
+        std::int64_t m_indexInTree = -1;
 
     private:
         template<typename FuncT>

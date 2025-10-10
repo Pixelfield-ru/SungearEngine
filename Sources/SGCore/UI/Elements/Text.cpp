@@ -67,6 +67,15 @@ void SGCore::UI::Text::clearGlyphs() noexcept
     m_lineBreaks.clear();
 }
 
+SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::Text::copy() const noexcept
+{
+    auto element = MakeRef<Text>();
+    UIElement::doCopy(element);
+    doCopy(element);
+
+    return element;
+}
+
 void SGCore::UI::Text::doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,
                                          const Transform* parentTransform, Transform& ownTransform) noexcept
 {
@@ -82,7 +91,13 @@ void SGCore::UI::Text::doCalculateLayout(const UIElementCache* parentElementCach
 }
 
 void SGCore::UI::Text::doGenerateMesh(const UIElementCache* parentElementCache,
-                                                  UIElementCache& thisElementCache) noexcept
+                                      UIElementCache& thisElementCache) noexcept
 {
 
+}
+
+void SGCore::UI::Text::doCopy(const Ref<UIElement>& to) const noexcept
+{
+    auto* text = static_cast<Text*>(to.get());
+    text->m_text = m_text;
 }

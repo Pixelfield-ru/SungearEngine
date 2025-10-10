@@ -37,6 +37,8 @@ namespace SGCore::UI
 
         void clearGlyphs() noexcept;
 
+        [[nodiscard]] Ref<UIElement> copy() const noexcept override;
+
     protected:
         /// todo: omg i have element size (m_basicSize) in selector but i cant use it because of order. i am calculating m_basicSize in draw function of struct Text and then i am calling m_mainStyle->calculateCache() in UILayoutCalculator so m_basicSize resets
         /// todo: so i need to hold this variable
@@ -51,6 +53,8 @@ namespace SGCore::UI
                                const Transform* parentTransform, Transform& ownTransform) noexcept final;
 
         void doGenerateMesh(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept final;
+
+        void doCopy(const Ref<UIElement>& to) const noexcept override;
     };
 }
 

@@ -32,6 +32,14 @@ SGCore::UI::UIRoot::UIRoot() noexcept
     m_mainStyle->m_display = UI::DisplayKeyword::KW_BLOCK;
 }
 
+SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIRoot::copy() const noexcept
+{
+    auto element = MakeRef<UIRoot>();
+    UIElement::doCopy(element);
+
+    return element;
+}
+
 void SGCore::UI::UIRoot::doCalculateLayout(const UIElementCache* parentElementCache,
                                            UIElementCache& thisElementCache,
                                            const Transform* parentTransform, Transform& ownTransform) noexcept

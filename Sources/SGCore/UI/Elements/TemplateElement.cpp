@@ -4,6 +4,14 @@
 
 #include "TemplateElement.h"
 
+SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::TemplateElement::copy() const noexcept
+{
+    auto element = MakeRef<TemplateElement>();
+    UIElement::doCopy(element);
+
+    return element;
+}
+
 void SGCore::UI::TemplateElement::doCalculateLayout(const UIElementCache* parentSelectorCache,
                                                     UIElementCache& thisSelectorCache,
                                                     const Transform* parentTransform,

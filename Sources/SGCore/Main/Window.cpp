@@ -221,6 +221,26 @@ void SGCore::Window::getSize(int& sizeX, int& sizeY) noexcept
     glfwGetWindowSize(m_handler, &sizeX, &sizeY);
 }
 
+void SGCore::Window::getBordersSize(int& left, int& top, int& right, int& bottom) noexcept
+{
+    glfwGetWindowFrameSize(m_handler, &left, &top, &right, &bottom);
+}
+
+void SGCore::Window::getSizeWithBorders(int& sizeX, int& sizeY) noexcept
+{
+    getSize(sizeX, sizeY);
+
+    int leftBorder;
+    int topBorder;
+    int rightBorder;
+    int bottomBorder;
+
+    getBordersSize(leftBorder, topBorder, rightBorder, bottomBorder);
+
+    sizeX = sizeX + leftBorder + rightBorder;
+    sizeY = sizeY + topBorder + bottomBorder;
+}
+
 #pragma endregion
 
 void SGCore::Window::nativeCloseCallback(GLFWwindow* window) noexcept

@@ -27,7 +27,7 @@ void SGCore::UI::EventsHandlingSystem::update(const double& dt, const double& fi
 
             for(const auto& eventHandler : UIEventHandlersRegistry::getHandlers())
             {
-                bool handled = eventHandler->testElement(currentUIElement, *uiComponent.m_document.get(), *getScene(), *cameraFrameReceiver);
+                bool handled = eventHandler->testElement(currentUIElement, uiComponent.m_transformTree, currentTransform.m_indexInTree, *uiComponent.m_document.get(), *getScene(), *cameraFrameReceiver);
                 if(handled)
                 {
                     eventHandler->callEvent(currentUIElement);

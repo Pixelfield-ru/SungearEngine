@@ -12,9 +12,16 @@ bool SGCore::UI::UIActiveEventHandler::isChangesStyle() const noexcept
     return true;
 }
 
-bool SGCore::UI::UIActiveEventHandler::testElement(UIElement& element, UIDocument& document, Scene& scene, LayeredFrameReceiver::reg_t& attachedCameraReceiver) noexcept
+bool SGCore::UI::UIActiveEventHandler::testElement(UIElement& element,
+                                                   UITransformTree& transformTree,
+                                                   std::int64_t elementIndexInTransformTree,
+                                                   UIDocument& document,
+                                                   Scene& scene,
+                                                   LayeredFrameReceiver::reg_t& attachedCameraReceiver) noexcept
 {
-    return attachedCameraReceiver.m_pickingColorUnderMouse == (glm::vec3) element.m_uniqueColor.color() && InputManager::getMainInputListener()->mouseButtonDown(MouseButton::MOUSE_BUTTON_LEFT);
+    const auto& transformElement = transformTree.m_elements[elementIndexInTransformTree];
+    const auto elementColor = transformElement.m_elementCurrentCache.m_uniqueColor.color();
+    return (glm::vec3) elementColor == attachedCameraReceiver.m_pickingColorUnderMouse && InputManager::getMainInputListener()->mouseButtonDown(MouseButton::MOUSE_BUTTON_LEFT);
 }
 
 void SGCore::UI::UIActiveEventHandler::callEvent(UIElement& element) noexcept

@@ -106,6 +106,19 @@ SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIElement::findElement(const std:
     return nullptr;
 }
 
+void SGCore::UI::UIElement::doCopy(const Ref<UIElement>& to) const noexcept
+{
+    to->m_mainStyle = m_mainStyle;
+    to->m_name = m_name;
+
+    to->m_shader = m_shader;
+
+    for(const auto& child : m_children)
+    {
+        to->m_children.push_back(child->copy());
+    }
+}
+
 void SGCore::UI::UIElement::checkForMeshGenerating(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept
 {
     if(!m_meshData && !thisElementCache.m_currentFrameStyles.empty())

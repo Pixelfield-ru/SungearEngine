@@ -14,7 +14,12 @@ namespace SGCore::UI
 
         bool isChangesStyle() const noexcept final;
 
-        bool testElement(UIElement& element, UIDocument& document, Scene& scene, LayeredFrameReceiver::reg_t& attachedCameraReceiver) noexcept final;
+        bool testElement(UIElement& element,
+                         UITransformTree& transformTree,
+                         std::int64_t elementIndexInTransformTree,
+                         UIDocument& document,
+                         Scene& scene,
+                         LayeredFrameReceiver::reg_t& attachedCameraReceiver) noexcept final;
 
         void callEvent(UIElement& element) noexcept final;
     };

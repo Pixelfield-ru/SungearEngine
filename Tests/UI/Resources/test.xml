@@ -10,5 +10,15 @@
         <button name="Button0">Click me!</button>
     </div>
 
-    <my-template/>
+    <my-template>
+        <place.body>
+
+        </place.body>
+    </my-template>
+
+    <my-template>
+        <place.body>
+
+        </place.body>
+    </my-template>
 </xml>

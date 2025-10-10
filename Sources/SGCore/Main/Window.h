@@ -166,6 +166,10 @@ namespace SGCore
 
         void getSize(int& sizeX, int& sizeY) noexcept;
 
+        void getBordersSize(int& left, int& top, int& right, int& bottom) noexcept;
+
+        void getSizeWithBorders(int& sizeX, int& sizeY) noexcept;
+
         [[nodiscard]] double getSwapBuffersExecutionTime() const noexcept;
 
         GLFWwindow* getNativeHandler() noexcept;

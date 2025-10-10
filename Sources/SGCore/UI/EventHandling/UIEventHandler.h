@@ -5,6 +5,7 @@
 #pragma once
 
 #include "SGCore/Render/LayeredFrameReceiver.h"
+#include "SGCore/UI/TransformTree/UITransformTree.h"
 #include "SGCore/Utils/TypeTraits.h"
 
 #define SG_DECLARE_UI_EVENT_HANDLER_NAME(name) \
@@ -29,6 +30,7 @@ namespace SGCore::UI
     struct UIElement;
     struct CSSStyle;
     struct UIDocument;
+    struct UITransformTree;
 
     struct UIEventHandler
     {
@@ -41,7 +43,12 @@ namespace SGCore::UI
          * @param element Element to test event.
          * @return Is event
          */
-        virtual bool testElement(UIElement& element, UIDocument& document, Scene& scene, LayeredFrameReceiver::reg_t& attachedCameraReceiver) noexcept = 0;
+        virtual bool testElement(UIElement& element,
+                                 UITransformTree& transformTree,
+                                 std::int64_t elementIndexInTransformTree,
+                                 UIDocument& document,
+                                 Scene& scene,
+                                 LayeredFrameReceiver::reg_t& attachedCameraReceiver) noexcept = 0;
 
         virtual void callEvent(UIElement& element) noexcept = 0;
 

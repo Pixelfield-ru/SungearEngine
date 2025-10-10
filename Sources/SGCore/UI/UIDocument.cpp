@@ -16,14 +16,10 @@
 
 void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
 {
-    for(auto cssFile : m_includedCSSFiles)
-    {
-        // todo: is it good?
-        cssFile->reloadFromDisk();
-        // cssFile->getParentAssetManager()->removeAsset(cssFile);
-    }
-
     m_includedCSSFiles.clear();
+    m_includedUIDocuments.clear();
+
+    m_templates.clear();
 
     const std::string u8Path = Utils::toUTF8(path.resolved().u16string());
 
@@ -35,7 +31,7 @@ void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
         return;
     }
 
-    auto rootElement = processUIElement(*this, m_document.child("xml"));
+    auto rootElement = processUIElement(*this, nullptr, m_document.child("xml"));
 
     if(!rootElement || rootElement->getTypeHash() != UIRoot::getTypeHashStatic())
     {
@@ -60,11 +56,22 @@ void SGCore::UI::UIDocument::doLoadFromBinaryFile(AssetManager* parentAssetManag
 void SGCore::UI::UIDocument::doReloadFromDisk(AssetsLoadPolicy loadPolicy,
                                               Ref<Threading::Thread> lazyLoadInThread) noexcept
 {
+    for(auto cssFile : m_includedCSSFiles)
+    {
+        cssFile->reloadFromDisk(loadPolicy, lazyLoadInThread);
+    }
+
+    for(auto uiDocument : m_includedUIDocuments)
+    {
+        uiDocument->reloadFromDisk(loadPolicy, lazyLoadInThread);
+    }
+
     doLoad(getPath());
 }
 
-SGCore::Ref<SGCore::UI::UIElement>
-SGCore::UI::UIDocument::processUIElement(UIDocument& inDocument, const pugi::xml_node& xmlNode) noexcept
+SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIDocument::processUIElement(UIDocument& inDocument,
+                                                                            const Ref<UIElement>& parent,
+                                                                            const pugi::xml_node& xmlNode) noexcept
 {
     if(!xmlNode)
     {
@@ -78,26 +85,53 @@ SGCore::UI::UIDocument::processUIElement(UIDocument& inDocument, const pugi::xml
 
     std::cout << "node: " << xmlNode.name() << std::endl;
 
+    const auto foundTemplate = inDocument.findTemplate(xmlNode.name());
+
     auto nodeProcessor = UIElementsProcessorsRegistry::getProcessor(xmlNode.name());
     if(!nodeProcessor)
     {
+        // if template then node processor is not required. in this case template will just unroll without intermediate element
+        if(foundTemplate && parent)
+        {
+            if(parent)
+            {
+                for(const auto& element : foundTemplate->m_children)
+                {
+                    parent->m_children.push_back(element->copy());
+                }
+            }
+
+            return nullptr;
+        }
+
         LOG_W(SGCORE_TAG, "In UIDocument by path '{}': cannot process node '{}': processor for this node does not exist.", Utils::toUTF8(inDocument.getPath().resolved().u16string()), xmlNode.name());
         return nullptr;
     }
 
+    // NOTE (for template): creating user-defined intermediate element if element uses template
     Ref<UIElement> outputElement = nodeProcessor->allocateElement();
+    // if current node uses template
+    if(foundTemplate)
+    {
+        // then unroll template in user-defined intermediate element
+        for(const auto& element : foundTemplate->m_children)
+        {
+            outputElement->m_children.push_back(element->copy());
+        }
+    }
+
     nodeProcessor->processElement(&inDocument, outputElement, xmlNode);
 
     if(!outputElement) return nullptr;
+    // if we proceed <template> tag then do not add this template to elements tree
     if(outputElement->getTypeHash() == TemplateElement::getTypeHashStatic())
     {
-        inDocument.m_templates.push_back(outputElement);
         return nullptr;
     }
 
     for(const pugi::xml_node& child : xmlNode)
     {
-        auto processedChild = processUIElement(inDocument, child);
+        auto processedChild = processUIElement(inDocument, outputElement, child);
 
         if(processedChild)
         {
@@ -138,11 +172,11 @@ void SGCore::UI::UIDocument::applyDefaultStylesToNonStyledElementsImpl(const Ref
 SGCore::AssetRef<SGCore::UI::CSSStyle>
 SGCore::UI::UIDocument::findStyle(const std::string& selectorName) const noexcept
 {
-    for(size_t i = 0; i < m_includedCSSFiles.size(); ++i)
-    {
-        auto selector = m_includedCSSFiles[i]->findStyle(selectorName);
+    if(selectorName.empty()) return nullptr;
 
-        if(selector)
+    for(auto&& cssFile : m_includedCSSFiles)
+    {
+        if(auto selector = cssFile->findStyle(selectorName))
         {
             return selector;
         }
@@ -153,5 +187,30 @@ SGCore::UI::UIDocument::findStyle(const std::string& selectorName) const noexcep
 
 Ref<SGCore::UI::UIElement> SGCore::UI::UIDocument::findElement(const std::string& elementName) const noexcept
 {
+    if(elementName.empty()) return nullptr;
+
     return m_rootElement->findElement(elementName);
+}
+
+Ref<SGCore::UI::UIElement> SGCore::UI::UIDocument::findTemplate(const std::string& templateName) const noexcept
+{
+    if(templateName.empty()) return nullptr;
+
+    for(auto&& uiTemplate : m_templates)
+    {
+        if(uiTemplate->m_name == templateName)
+        {
+            return uiTemplate;
+        }
+    }
+
+    for(auto&& uiDocument : m_includedUIDocuments)
+    {
+        if(auto uiTemplate = uiDocument->findTemplate(templateName))
+        {
+            return uiTemplate;
+        }
+    }
+
+    return nullptr;
 }

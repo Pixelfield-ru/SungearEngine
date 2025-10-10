@@ -13,7 +13,6 @@
 #include "SGCore/Memory/AssetRef.h"
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
-#include "SGCore/Utils/Unique/UniqueColor.h"
 
 #define SG_DECLARE_UI_ELEMENT_TYPE(name) \
     static consteval size_t getTypeHashStatic() noexcept \
@@ -52,8 +51,8 @@ namespace SGCore::UI
         // ===================
 
         AssetRef<IShader> m_shader;
+        // not copyable when calling copy()
         Ref<UIElementMesh> m_meshData;
-        UniqueColor m_uniqueColor;
 
         /**
          * 
@@ -113,6 +112,8 @@ namespace SGCore::UI
 
         virtual size_t getTypeHash() const noexcept = 0;
 
+        [[nodiscard]] virtual Ref<UIElement> copy() const noexcept = 0;
+
     protected:
         virtual void doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,
                                        const Transform* parentTransform, Transform& ownTransform) = 0;
@@ -126,6 +127,8 @@ namespace SGCore::UI
          * IN THIS FUNCTION, YOU DO NOT NEED TO CREATE A MESH INSTANCE. YOU ONLY NEED TO GENERATE VERTICES.
          */
         virtual void doGenerateMesh(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept = 0;
+
+        virtual void doCopy(const Ref<UIElement>& to) const noexcept;
 
     private:
         void checkForMeshGenerating(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept;

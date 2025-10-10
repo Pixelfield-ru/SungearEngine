@@ -44,6 +44,7 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
         uiComponent.m_transformTree.m_elements.emplace_back();
 
         uiComponent.m_transformTree.m_elements[currentUITransformNodeIdx].m_parent = parentUITreeNodeIdx;
+        uiComponent.m_transformTree.m_elements[currentUITransformNodeIdx].m_indexInTree = currentUITransformNodeIdx;
 
         isCreatedNewTransformNode = true;
         isTreeFormed = false;
@@ -52,14 +53,14 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
     auto& currentTransformNode = uiComponent.m_transformTree.m_elements[currentUITransformNodeIdx];
     auto& currentElementCache = currentTransformNode.m_elementCurrentCache;
 
-    UI::UITransformTreeElement* parentTransformNode { };
+    UITransformTreeElement* parentTransformNode { };
     if(parentUITreeNodeIdx != -1)
     {
         parentTransformNode = &uiComponent.m_transformTree.m_elements[parentUITreeNodeIdx];
     }
 
     const Transform* parentTransform = parentTransformNode ? &parentTransformNode->m_transform : nullptr;
-    UI::UIElementCache* parentElementCache = parentTransformNode ? &parentTransformNode->m_elementCurrentCache : nullptr;
+    UIElementCache* parentElementCache = parentTransformNode ? &parentTransformNode->m_elementCurrentCache : nullptr;
 
     // =================================================================== calculating transform
 

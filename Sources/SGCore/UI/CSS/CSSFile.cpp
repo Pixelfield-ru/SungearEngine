@@ -28,6 +28,9 @@ const std::vector<SGCore::AssetRef<SGCore::UI::CSSStyle>>& SGCore::UI::CSSFile::
 
 void SGCore::UI::CSSFile::doLoad(const InterpolatedPath& path)
 {
+    m_importedFiles.clear();
+    m_styles.clear();
+
     antlr4::ANTLRInputStream input(FileUtils::readFile(path.resolved()));
 
     css3Lexer lexer(&input);
@@ -53,9 +56,8 @@ void SGCore::UI::CSSFile::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolicy,
 {
     for(const auto& importedFile : m_importedFiles)
     {
-        importedFile->doReloadFromDisk(loadPolicy, lazyLoadInThread);
+        importedFile->reloadFromDisk(loadPolicy, lazyLoadInThread);
     }
 
-    m_styles.clear();
     doLoad(getPath());
 }

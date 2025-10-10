@@ -29,6 +29,7 @@ namespace SGCore::UI
 
         [[nodiscard]] AssetRef<CSSStyle> findStyle(const std::string& selector) const noexcept;
         [[nodiscard]] Ref<UIElement> findElement(const std::string& elementName) const noexcept;
+        [[nodiscard]] Ref<UIElement> findTemplate(const std::string& templateName) const noexcept;
 
         template<typename FuncT>
         requires(std::is_invocable_v<FuncT, UIElement*, UIElement*>)
@@ -44,7 +45,9 @@ namespace SGCore::UI
             m_rootElement->iterate(func, breakToken);
         }
 
-        [[nodiscard]] static Ref<UIElement> processUIElement(UIDocument& inDocument, const pugi::xml_node& xmlNode) noexcept;
+        [[nodiscard]] static Ref<UIElement> processUIElement(UIDocument& inDocument,
+                                                             const Ref<UIElement>& parent,
+                                                             const pugi::xml_node& xmlNode) noexcept;
 
     protected:
         void doLoad(const InterpolatedPath& path) override;
