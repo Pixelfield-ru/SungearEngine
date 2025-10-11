@@ -1,0 +1,13 @@
+<xml>
+    <include type="stylesheet" path="${enginePath}/Resources/ui/styles/default.css"/>
+
+    <template name="h1">
+        <attribute name="class">
+            <default value="h1"/>
+        </attribute>
+
+        <elements>
+            <text class="{{ class }}">{{ templateValue }}</text>
+        </elements>
+    </template>
+</xml>

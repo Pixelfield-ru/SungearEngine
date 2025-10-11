@@ -38,3 +38,8 @@
     font-family: "JetBrains Mono", "Times New Roman";
     font-size: calc(16px);
 }
+
+.h1 {
+    font-family: "JetBrains Mono", "Times New Roman";
+    font-size: calc(32px);
+}

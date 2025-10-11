@@ -130,18 +130,18 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
 
         m_renderPasses.push_back(directionalLightsPass);
     }
-    
-    {
-        auto textRenderPass = MakeRef<TextRenderPass>();
-        
-        m_renderPasses.push_back(textRenderPass);
-    }
 
     // WARNING! UIRenderPass ALWAYS AFTER OTHER GEOMETRY PASS
     {
         auto uiPass = MakeRef<UIRenderPass>();
 
         m_renderPasses.push_back(uiPass);
+    }
+
+    {
+        auto textRenderPass = MakeRef<TextRenderPass>();
+        
+        m_renderPasses.push_back(textRenderPass);
     }
 
     // WARNING! ReceiverPickingPass ALWAYS BEFORE PostProcessPass

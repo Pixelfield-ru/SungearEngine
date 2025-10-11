@@ -1,8 +1,8 @@
+#include "sg_shaders/impl/glsl4/uniform_bufs_decl.glsl"
+
 #subpass [TextRenderPass]
 
 #vertex
-
-#include "sg_shaders/impl/glsl4/uniform_bufs_decl.glsl"
 
 layout (location = 0) in mat4 characterModelMatrix;
 layout (location = 4) in vec4 characterColor;
@@ -51,36 +51,39 @@ uniform int SGPP_CurrentLayerIndex;
 
 const float threshold = 0.01;
 
-uniform float pxRange = 0.0;
+uniform float pxRange = 6.0;
 uniform vec4 bgColor = vec4(0.0);
 uniform vec4 fgColor = vec4(0.0, 0.0, 0.0, 1.0);
 
 in float vs_fontScale;
 
-float screenPxRange()
-{
-    vec2 unitRange = vec2(pxRange) / vec2(textureSize(u_fontSpecializationAtlas, 0));
-    vec2 screenTexSize = vec2(1.0) / fwidth(vs_UVAttribute.xy);
-    return max(0.5 * dot(unitRange, screenTexSize), 1.0);
-}
+float textWeight = 0.0;
+float distanceRange = 10.0;
+
+#define DIST_RANGE 8.0
 
 float median(float r, float g, float b)
 {
     return max(min(r, g), min(max(r, g), b));
+}
+float getDistance()
+{
+    vec3 msdf = texture(u_fontSpecializationAtlas, vs_UVAttribute).rgb;
+    return median(msdf.r, msdf.g, msdf.b);
 }
 
 void main()
 {
     vec2 finalUV = vs_UVAttribute.xy;
 
-    vec3 msd = texture(u_fontSpecializationAtlas, vec2(finalUV.x, finalUV.y)).rgb;
-    float sd = median(msd.r, msd.g, msd.b);
-    float screenPxDistance = screenPxRange() * (sd - 0.5);
-    float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
+    vec2 dxdy = fwidth(vs_UVAttribute) * textureSize(u_fontSpecializationAtlas, 0);
+    float dist = getDistance() + min(textWeight, 0.5 - 1.0 / DIST_RANGE) - 0.5;
+    float opacity = clamp(dist * distanceRange / length(dxdy) + 0.5, 0.0, 1.0);
 
-    if(opacity < 0.2) discard;
+    // if(opacity < 0.2) discard;
 
-    layerColor = mix(bgColor, fgColor * 1.4, opacity);
+    // layerColor = mix(bgColor, fgColor, opacity);
+    layerColor = vec4(fgColor.rgb, opacity);
     // layerColor = vec4(msd, 1.0);
     // fragColor = charCol;
     // layerColor = vec4(charCol.rgb * vs_characterColor.rgb, vs_characterColor.a);

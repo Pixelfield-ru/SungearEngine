@@ -1,6 +1,7 @@
 <xml>
     <include type="stylesheet" path="test.css"/>
     <include type="xml" path="templates.xml"/>
+    <include type="xml" path="${enginePath}/Resources/ui/xml/templates.xml"/>
 
     <div name="InputDiv">
         <div class="text-box" name="InputDiv1">
@@ -8,6 +9,7 @@
         </div>
 
         <button name="Button0">Click me!</button>
+        <h1>Привет, это шаблон h1</h1>
     </div>
 
     <my-template>
