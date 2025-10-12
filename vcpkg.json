@@ -17,7 +17,7 @@
     "version>=" : "3.15.0#0"
   }, {
     "name" : "freetype",
-    "version>=" : "2.13.2"
+    "version>=" : "2.13.3"
   }, {
     "name" : "glad",
     "features" : [ "extensions" ],
@@ -27,11 +27,18 @@
     "version>=" : "1.0.1#1"
   }, {
     "name" : "imgui",
-    "features" : [ "glfw-binding", "opengl3-binding", "docking-experimental" ],
+    "features": [
+      "opengl3-binding",
+      "docking-experimental",
+      {
+        "name": "glfw-binding",
+        "platform": "!android"
+      }
+    ],
     "version>=" : "1.90.7"
   }, {
     "name" : "pugixml",
-    "version>=" : "1.14"
+    "version>=" : "1.15"
   }, {
     "name" : "spdlog",
     "version>=" : "1.13.0"
@@ -46,7 +53,8 @@
     "version>=" : "2022-02-06#1"
   }, {
     "name" : "glfw3",
-    "version>=" : "3.4"
+    "version>=" : "3.4",
+    "platform": "!android"
   }, {
     "name" : "openal-soft",
     "version>=" : "1.23.1"
@@ -65,7 +73,8 @@
     "version>=" : "4.13.1"
   }, {
     "name" : "skia",
-    "version>=" : "129#3"
+    "version>=" : "129#3",
+    "platform": "!android"
   }, {
     "name" : "gli",
     "version>=" : "2021-07-06#2"
@@ -75,5 +84,5 @@
   }, {
     "name" : "boost-asio",
     "version>=" : "1.88.0#0"
-  }]
+  } ]
 }

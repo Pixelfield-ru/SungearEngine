@@ -2,12 +2,12 @@ set(CMAKE_INSTALL_PREFIX $ENV{SUNGEAR_SOURCES_ROOT}/installed)
 
 include(cmake/set-toolchain.cmake)
 
-if(WIN32)
-    set(VCPKG_TARGET_TRIPLET "x64-windows-static-md")
-endif()
-
 cmake_minimum_required(VERSION 3.22)
 project(SungearEngine)
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    set(VCPKG_TARGET_TRIPLET "x64-windows-static-md")
+endif()
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     add_definitions(-DSUNGEAR_DEBUG)
@@ -34,7 +34,12 @@ add_definitions(-DNOMINMAX)
 add_definitions(-DWIN32_LEAN_AND_MEAN)
 # BECAUSE I CANT USE antlr4-runtime BECAUSE OF FUCKING MACRO 'ERROR' AND ENUM TYPE IN antlr4 ParseTreeType::ERROR in ParseTreeType.h file
 add_definitions(-DNOGDI)
-add_definitions(-DBT_ENABLE_PROFILE)
+
+if(ANDROID)
+    set(MSDFGEN_USE_SKIA OFF)
+endif()
+set(MSDF_ATLAS_BUILD_STANDALONE OFF)
+set(MSDF_ATLAS_DYNAMIC_RUNTIME ON)
 #add_definitions(-DSPDLOG_WCHAR_TO_UTF8_SUPPORT)
 
 set(CMAKE_CXX_STANDARD 23)
@@ -118,6 +123,32 @@ endif ()
 # multiple definition because of bullet library
 set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition -Wno-return-type")
 
+# packages --------------------------------------------------
+
+find_package(Bullet REQUIRED)
+find_package(pugixml CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
+find_package(assimp CONFIG REQUIRED)
+find_package(Freetype REQUIRED)
+find_package(EnTT CONFIG REQUIRED)
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+    find_package(glfw3 CONFIG REQUIRED)
+endif()
+find_package(imgui CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
+find_package(Stb REQUIRED)
+find_package(glad CONFIG REQUIRED)
+find_package(PNG REQUIRED)
+find_package(BZip2 REQUIRED)
+find_package(unofficial-brotli CONFIG REQUIRED)
+find_package(OpenAL CONFIG REQUIRED)
+find_package(lunasvg CONFIG REQUIRED)
+find_package(RapidJSON CONFIG REQUIRED)
+find_package(antlr4-runtime CONFIG REQUIRED)
+find_package(gli CONFIG REQUIRED)
+find_package(meshoptimizer CONFIG REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system asio)
+
 # options --------------------------
 
 # TODO: make SG_BUILD_EDITOR
@@ -126,9 +157,6 @@ set(SG_BUILD_ENTRY ON)
 
 # ----------------------------------
 # including msdf-atlas-gen ========================================
-
-set(MSDF_ATLAS_BUILD_STANDALONE OFF)
-set(MSDF_ATLAS_DYNAMIC_RUNTIME ON)
 
 add_subdirectory(Externals/msdf-atlas-gen)
 add_subdirectory(Externals/rectpack2D)

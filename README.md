@@ -71,7 +71,7 @@
     - ✔️ Windows
     - 🔨 MacOS
     - ✔️ Linux
-    - ❌ Android
+    - 🔨 Android
     - ❌ iOS
     - ❌ Web
 

@@ -8,28 +8,6 @@
  file(GLOB_RECURSE SGCORE_SOURCES ../SGCore/*.cpp ../SGCore/*.h)
  list(FILTER SGCORE_SOURCES EXCLUDE REGEX ".templates")
 
- find_package(Bullet REQUIRED)
- find_package(pugixml CONFIG REQUIRED)
- find_package(glm CONFIG REQUIRED)
- find_package(assimp CONFIG REQUIRED)
- find_package(Freetype REQUIRED)
- find_package(EnTT CONFIG REQUIRED)
- find_package(glfw3 CONFIG REQUIRED)
- find_package(imgui CONFIG REQUIRED)
- find_package(spdlog CONFIG REQUIRED)
- find_package(Stb REQUIRED)
- find_package(glad CONFIG REQUIRED)
- find_package(PNG REQUIRED)
- find_package(BZip2 REQUIRED)
- find_package(unofficial-brotli CONFIG REQUIRED)
- find_package(OpenAL CONFIG REQUIRED)
- find_package(lunasvg CONFIG REQUIRED)
- find_package(RapidJSON CONFIG REQUIRED)
- find_package(antlr4-runtime CONFIG REQUIRED)
- find_package(gli CONFIG REQUIRED)
- find_package(meshoptimizer CONFIG REQUIRED)
- find_package(Boost REQUIRED COMPONENTS system asio)
-
  include(FetchContent)
 
  FetchContent_Declare(
