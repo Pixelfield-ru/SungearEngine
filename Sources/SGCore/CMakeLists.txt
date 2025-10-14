@@ -84,7 +84,6 @@
 
  target_link_libraries(${PROJECT_NAME} PUBLIC
          PNG::PNG
-         BZip2::BZip2
          unofficial::brotli::brotlidec
          glm::glm
          assimp::assimp

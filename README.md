@@ -75,7 +75,7 @@
     - ❌ iOS
     - ❌ Web
 
-# Cloning the repository using console commands
+# Cloning the repository using console commands 
 ### If you are cloning the repository from GitHub
 
 ```bash
