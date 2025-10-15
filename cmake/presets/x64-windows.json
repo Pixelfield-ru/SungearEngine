@@ -1,0 +1,40 @@
+{
+  "version": 5,
+  "include": [
+    "base-presets.json"
+  ],
+  "configurePresets": [
+    {
+      "inherits": "release-x64-base",
+      "binaryDir": "cmake-build-release-x64-windows-static-md",
+      "name": "release-x64-windows-static-md",
+      "cacheVariables": {
+        "SG_BUILD_PRESET": "release-x64-windows-static-md",
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static-md",
+        "CMAKE_SYSTEM_NAME": "Windows",
+        "VCPKG_CMAKE_SYSTEM_NAME": "Windows"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "inherits": "debug-x64-base",
+      "binaryDir": "cmake-build-debug-x64-windows-static-md",
+      "name": "debug-x64-windows-static-md",
+      "cacheVariables": {
+        "SG_BUILD_PRESET": "debug-x64-windows-static-md",
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static-md",
+        "CMAKE_SYSTEM_NAME": "Windows",
+        "VCPKG_CMAKE_SYSTEM_NAME": "Windows"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    }
+  ]
+}

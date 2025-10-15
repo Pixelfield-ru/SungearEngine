@@ -1,14 +1,13 @@
-set(CMAKE_INSTALL_PREFIX $ENV{SUNGEAR_SOURCES_ROOT}/installed)
-
 include(cmake/set-toolchain.cmake)
 
 cmake_minimum_required(VERSION 3.22)
 project(SungearEngine)
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    set(VCPKG_TARGET_TRIPLET "x64-windows-static-md")
-endif()
+message("CMAKE_SIZEOF_VOID_P: ${CMAKE_SIZEOF_VOID_P}")
 
+message(STATUS "CMAKE_TOOLCHAIN_FILE: ${CMAKE_TOOLCHAIN_FILE}")
+message(STATUS "ANDROID_ABI: ${ANDROID_ABI}")
+message(STATUS "ANDROID_PLATFORM: ${ANDROID_PLATFORM}")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DSUNGEAR_DEBUG)
@@ -35,8 +34,9 @@ add_definitions(-DNOGDI)
 
 add_definitions(-DANTLR4CPP_STATIC)
 
-if(ANDROID)
+if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     set(MSDFGEN_USE_SKIA OFF)
+    set(MSDF_ATLAS_USE_SKIA OFF)
 endif()
 set(MSDF_ATLAS_BUILD_STANDALONE OFF)
 set(MSDF_ATLAS_DYNAMIC_RUNTIME ON)

@@ -85,7 +85,9 @@
 
 // IMGUI
 #include <imgui_impl_opengl3.h>
+#ifndef __ANDROID__
 #include <imgui_impl_glfw.h>
+#endif
 #include <imgui.h>
 
 // BULLET
@@ -111,8 +113,10 @@
 #include <assimp/scene.h>
 #include <assimp/types.h>
 
+#ifndef __ANDROID__
 // GLFW 3
 #include <GLFW/glfw3.h>
+#endif
 
 // FREETYPE
 #include <freetype/freetype.h>

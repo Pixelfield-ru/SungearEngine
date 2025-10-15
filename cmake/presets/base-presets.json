@@ -1,0 +1,27 @@
+{
+  "version": 5,
+  "configurePresets": [
+    {
+      "generator": "Ninja",
+      "name": "release-x64-base",
+      "hidden": true,
+      "cacheVariables": {
+        "SG_BUILD_TYPE": "Release",
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_SYSTEM_PROCESSOR": "x64",
+        "CMAKE_TOOLCHAIN_FILE": "vcpkg/scripts/buildsystems/vcpkg.cmake"
+      }
+    },
+    {
+      "generator": "Ninja",
+      "name": "debug-x64-base",
+      "hidden": true,
+      "cacheVariables": {
+        "SG_BUILD_TYPE": "Debug",
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_SYSTEM_PROCESSOR": "x64",
+        "CMAKE_TOOLCHAIN_FILE": "vcpkg/scripts/buildsystems/vcpkg.cmake"
+      }
+    }
+  ]
+}
