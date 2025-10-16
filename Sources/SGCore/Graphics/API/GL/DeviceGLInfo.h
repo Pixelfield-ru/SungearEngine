@@ -35,7 +35,8 @@ namespace SGCore
                 return;
             }*/
 
-            fprintf( stderr, formatted.c_str());
+            std::cerr << formatted << std::endl;
+            // fprintf( stderr, formatted.c_str());
         }
         
         static void init() noexcept

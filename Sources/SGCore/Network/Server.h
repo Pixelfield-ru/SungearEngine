@@ -7,9 +7,9 @@
 
 #include "Packet.h"
 
-#include "SGCore/CrashHandler/Platform.h"
+#include "../Utils/Platform.h"
 
-#ifdef PLATFORM_OS_WINDOWS
+#ifdef SG_PLATFORM_OS_WINDOWS
 #include <WinSock2.h>
 #endif
 

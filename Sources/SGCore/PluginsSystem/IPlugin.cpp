@@ -2,11 +2,11 @@
 // Created by ilya on 19.03.24.
 //
 #include "IPlugin.h"
-#include "SGCore/CrashHandler/Platform.h"
+#include "SGCore/Utils/Platform.h"
 
 #include <iostream>
 
-#ifdef PLATFORM_OS_LINUX
+#ifdef SG_PLATFORM_OS_LINUX
 #include <dlfcn.h>
 #endif
 

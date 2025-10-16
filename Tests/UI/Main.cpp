@@ -115,7 +115,7 @@ void coreInit()
 
     glfwInit();
 
-    glfwSetCharCallback(SGCore::CoreMain::getWindow().getNativeHandler(), [](GLFWwindow* window, unsigned int c) {
+    glfwSetCharCallback(SGCore::CoreMain::getWindow().getNativeHandle(), [](GLFWwindow* window, unsigned int c) {
         std::cout << "char: " << c << std::endl;
         auto text = uiDocument->findElement("InputText");
         static_cast<SGCore::UI::Text*>(text.get())->m_text += c;

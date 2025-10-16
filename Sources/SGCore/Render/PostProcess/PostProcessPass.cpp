@@ -12,10 +12,8 @@
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Render/IRenderPipeline.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
-#include "SGCore/Input/InputManager.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
 #include "SGCore/Render/RenderingBase.h"
-#include "SGCore/Render/RenderPipelinesManager.h"
 #include "SGCore/Render/Atmosphere/AtmosphereUpdater.h"
 
 SGCore::PostProcessPass::PostProcessPass()

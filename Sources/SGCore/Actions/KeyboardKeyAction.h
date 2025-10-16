@@ -6,7 +6,7 @@
 #define SUNGEARENGINE_KEYBOARDKEYACTION_H
 
 #include "IAction.h"
-#include "SGCore/Input/InputManager.h"
+#include "SGCore/Input/PCInput.h"
 
 namespace SGCore
 {
@@ -20,19 +20,19 @@ namespace SGCore
 
     struct KeyboardKeyAction : IAction<KeyboardKeyActionType()>
     {
-        KeyboardKey m_key = KeyboardKey::KEY_FIRST;
+        Input::KeyboardKey m_key = Input::KeyboardKey::KEY_FIRST;
 
         KeyboardKeyActionType execute() noexcept final
         {
-            if(InputManager::getMainInputListener()->keyboardKeyDown(m_key))
+            if(Input::PC::keyboardKeyDown(m_key))
             {
                 return KeyboardKeyActionType::KA_DOWN;
             }
-            else if(InputManager::getMainInputListener()->keyboardKeyReleased(m_key))
+            else if(Input::PC::keyboardKeyReleased(m_key))
             {
                 return KeyboardKeyActionType::KA_RELEASED;
             }
-            else if(InputManager::getMainInputListener()->keyboardKeyPressed(m_key))
+            else if(Input::PC::keyboardKeyPressed(m_key))
             {
                 return KeyboardKeyActionType::KA_PRESSED;
             }

@@ -163,7 +163,7 @@ void SGE::Toolchain::configurate()
     {
         case ToolchainType::VISUAL_STUDIO:
         {
-            #ifdef PLATFORM_OS_LINUX
+            #ifdef SG_PLATFORM_OS_LINUX
             throw std::runtime_error("Toolchain unsupported combination: host platform Linux and toolchain type is Visual Studio");
             #endif
 

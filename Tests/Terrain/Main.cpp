@@ -31,7 +31,7 @@
 #include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
 #include <BulletCollision/CollisionShapes/btCompoundShape.h>
 
-#ifdef PLATFORM_OS_WINDOWS
+#ifdef SG_PLATFORM_OS_WINDOWS
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -55,7 +55,7 @@
 #include <locale>
 
 #include "TypeTraits.h"
-#include "SGCore/CrashHandler/Platform.h"
+#include "Platform.h"
 
 namespace SGCore
 {
@@ -242,7 +242,7 @@ namespace SGCore
 
         [[nodiscard]] static std::chrono::sys_time<std::chrono::seconds> getStringAsTime(const std::string& dateTime, const std::string& format = "%Y-%m-%d") noexcept
         {
-            #if defined(PLATFORM_OS_WINDOWS)
+            #if defined(SG_PLATFORM_OS_WINDOWS)
             std::istringstream in { dateTime };
             std::chrono::sys_time<std::chrono::seconds> dt;
 

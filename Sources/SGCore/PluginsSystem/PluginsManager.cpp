@@ -4,7 +4,7 @@
 
 #include "PluginsManager.h"
 #include "SGCore/Main/CoreMain.h"
-#include "SGCore/CrashHandler/Platform.h"
+#include "../Utils/Platform.h"
 
 #include <filesystem>
 #include <spdlog/fmt/fmt.h>
@@ -15,7 +15,7 @@
 #include "SGCore/Utils/FileUtils.h"
 #include "SGCore/Utils/Formatter.h"
 
-#ifdef PLATFORM_OS_LINUX
+#ifdef SG_PLATFORM_OS_LINUX
 #include <dlfcn.h>
 #endif
 

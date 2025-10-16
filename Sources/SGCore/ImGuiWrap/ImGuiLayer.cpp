@@ -25,7 +25,10 @@ void SGCore::ImGuiWrap::ImGuiLayer::init() noexcept
     if (gapiType == GAPIType::SG_API_TYPE_GL4 ||
         gapiType == GAPIType::SG_API_TYPE_GL46)
     {
-        ImGui_ImplGlfw_InitForOpenGL(CoreMain::getWindow().m_handler, true);
+#ifdef SG_PLATFORM_PC
+        ImGui_ImplGlfw_InitForOpenGL(CoreMain::getWindow().m_handle, true);
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
         ImGui_ImplOpenGL3_Init();
     }
 }
@@ -39,7 +42,10 @@ void SGCore::ImGuiWrap::ImGuiLayer::destroy() noexcept
         gapiType == GAPIType::SG_API_TYPE_GL46)
     {
         ImGui_ImplOpenGL3_DestroyDeviceObjects();
+#ifdef SG_PLATFORM_PC
         ImGui_ImplGlfw_Shutdown();
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
         ImGui_ImplOpenGL3_Shutdown();
     }
     
@@ -60,7 +66,10 @@ void SGCore::ImGuiWrap::ImGuiLayer::beginFrame() noexcept
         gapiType == GAPIType::SG_API_TYPE_GL46)
     {
         ImGui_ImplOpenGL3_NewFrame();
+#ifdef SG_PLATFORM_PC
         ImGui_ImplGlfw_NewFrame();
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
     }
 
     ImGui::NewFrame();

@@ -6,9 +6,9 @@
 #include <SGCore/pch.h>
 
 #include <sgcore_export.h>
+#include "SGCore/Utils/Platform.h"
 
 #include "SGCore/Utils/Signal.h"
-#include "SGCore/Input/PCKeys.h"
 
 namespace SGCore
 {
@@ -95,16 +95,14 @@ namespace SGCore
         friend class ImGuiWrap::ImGuiLayer;
         
         static inline Signal<void(Window&)> onClose;
-        
         static inline Signal<void(Window&, const int&)> onIconify;
-        
-        static inline Signal<void(Window&, const KeyboardKey&, const int&, const KeyState&, const int&)> onKeyboardKeyEvent;
-        
-        static inline Signal<void(Window&, const MouseButton&, const KeyState&, const int&)> onMouseButtonEvent;
-        
-        static inline Signal<void(Window&, const double&, const double&)> onCursorPositionChanged;
-
         static inline Signal<void(Window&, const int&, const int&)> onFrameBufferSizeChanged;
+
+#ifdef SG_PLATFORM_PC
+        using window_handle = GLFWwindow*;
+#elif defined(SG_PLATFORM_OS_ANDROID)
+        using window_handle = void*;
+#endif
 
         Window() noexcept = default;
 
@@ -116,10 +114,13 @@ namespace SGCore
 
         ~Window() noexcept
         {
+#ifdef SG_PLATFORM_PC
             glfwMakeContextCurrent(nullptr);
-            glfwSetWindowShouldClose(m_handler, GLFW_TRUE);
+            glfwSetWindowShouldClose(m_handle, GLFW_TRUE);
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
             // glfwDestroyWindow(m_handler);
-            m_handler = nullptr;
+            m_handle = nullptr;
         }
 
         void create();
@@ -148,12 +149,6 @@ namespace SGCore
         // -----------------
 
         void setShouldClose(const bool&) noexcept;
-
-        void setCursorPosition(const double&, const double&) noexcept;
-        void getCursorPosition(double& posX, double& posY) noexcept;
-        
-        KeyState getKeyboardKeyState(const KeyboardKey& key);
-        KeyState getMouseButtonState(const MouseButton& button);
         
         void setFullscreen(bool fullscreen) noexcept;
         bool isFullscreen() const noexcept;
@@ -172,7 +167,7 @@ namespace SGCore
 
         [[nodiscard]] double getSwapBuffersExecutionTime() const noexcept;
 
-        GLFWwindow* getNativeHandler() noexcept;
+        window_handle getNativeHandle() noexcept;
         
         static void getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept;
         
@@ -183,16 +178,13 @@ namespace SGCore
         
         double m_swapBuffersExecutionTime = 0.0;
 
-        static void nativeCloseCallback(GLFWwindow* window) noexcept;
-        static void nativeIconifyCallback(GLFWwindow* window, int iconified) noexcept;
-        static void nativeKeyboardKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept;
-        static void nativeMouseButtonCallback(GLFWwindow* window, int button, int action, int mods) noexcept;
-        static void nativeMousePositionCallback(GLFWwindow* window, double xpos, double ypos) noexcept;
-        static void nativeFramebufferSizeCallback(GLFWwindow* window, int width, int height) noexcept;
+        static void nativeCloseCallback(window_handle window) noexcept;
+        static void nativeIconifyCallback(window_handle window, int iconified) noexcept;
+        static void nativeFramebufferSizeCallback(window_handle window, int width, int height) noexcept;
 
         static void errorCallback(int errCode, const char* err_msg);
 
-        GLFWwindow* m_handler = nullptr;
+        window_handle m_handle = nullptr;
     };
 }
 

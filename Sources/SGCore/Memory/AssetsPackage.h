@@ -10,7 +10,7 @@
 
 namespace SGCore
 {
-    struct IAsset;
+    class IAsset;
     class AssetManager;
 
     /**

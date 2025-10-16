@@ -6,17 +6,17 @@
 #define SUNGEARENGINE_KEYBOARDKEYPRESSEDACTION_H
 
 #include "IAction.h"
-#include "SGCore/Input/InputManager.h"
+#include "SGCore/Input/PCInput.h"
 
 namespace SGCore
 {
     struct KeyboardKeyPressedAction : IAction<bool()>
     {
-        KeyboardKey m_key = KeyboardKey::KEY_FIRST;
+        Input::KeyboardKey m_key = Input::KeyboardKey::KEY_FIRST;
 
         bool execute() noexcept final
         {
-            return InputManager::getMainInputListener()->keyboardKeyPressed(m_key);
+            return Input::PC::keyboardKeyPressed(m_key);
         }
 
         Ref<IAction> copy() noexcept final

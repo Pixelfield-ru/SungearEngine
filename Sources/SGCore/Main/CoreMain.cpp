@@ -11,7 +11,6 @@
 
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 #include "SGCore/Memory/AssetManager.h"
-#include "SGCore/Input/InputManager.h"
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Physics/PhysicsWorld3D.h"
 #include "SGCore/UI/FontsManager.h"
@@ -22,6 +21,7 @@
 #include "SGCore/MetaInfo/MetaInfo.h"
 #include "SGCore/Utils/StringInterpolation/InterpolationResolver.h"
 #include "SGCore/Utils/SGSL/SGSLETranslator.h"
+#include "SGCore/Input/PCInput.h"
 
 void SGCore::CoreMain::start()
 {
@@ -125,7 +125,6 @@ void SGCore::CoreMain::start()
     m_renderer->init();
 
     Paths::init();
-    InputManager::init();
     UI::FontsManager::getInstance().init();
 
     m_renderTimer.onPreUpdate = updateStart;
@@ -160,7 +159,7 @@ void SGCore::CoreMain::start()
 
 void SGCore::CoreMain::fixedUpdateStart(const double& dt, const double& fixedDt)
 {
-    InputManager::startFrame();
+    Input::PC::startFrame();
 
     for(const auto& plugin : PluginsManager::getPlugins())
     {

@@ -5,11 +5,11 @@
 #include "Window.h"
 #include "CoreMain.h"
 
-#include "SGCore/Input/InputManager.h"
-#include "SGCore/ImGuiWrap/ImGuiLayer.h"
+#include "SGCore/Input/PCInput.h"
 
 void SGCore::Window::create()
 {
+#ifdef SG_PLATFORM_PC
     glfwSetErrorCallback(errorCallback);
 
     if(!glfwInit())
@@ -35,33 +35,30 @@ void SGCore::Window::create()
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     }
 
-    m_handler = glfwCreateWindow(this->m_config.m_sizeX, this->m_config.m_sizeY, this->m_config.m_title.c_str(), m_config.m_fullsreen ? glfwGetPrimaryMonitor() : nullptr, nullptr);
+    m_handle = glfwCreateWindow(this->m_config.m_sizeX, this->m_config.m_sizeY, this->m_config.m_title.c_str(), m_config.m_fullsreen ? glfwGetPrimaryMonitor() : nullptr, nullptr);
 
-    if(!m_handler)
+    if(!m_handle)
     {
         LOG_E(SGCORE_TAG, "Failed to initialize GLFW Window!\n{}", SG_CURRENT_LOCATION_STR);
         return;
     }
     
-    glfwSetWindowCloseCallback(m_handler, nativeCloseCallback);
-    glfwSetWindowIconifyCallback(m_handler, nativeIconifyCallback);
-    glfwSetKeyCallback(m_handler, nativeKeyboardKeyCallback);
-    glfwSetMouseButtonCallback(m_handler, nativeMouseButtonCallback);
-    glfwSetCursorPosCallback(m_handler, nativeMousePositionCallback);
-    glfwSetFramebufferSizeCallback(m_handler, nativeFramebufferSizeCallback);
+    glfwSetWindowCloseCallback(m_handle, nativeCloseCallback);
+    glfwSetWindowIconifyCallback(m_handle, nativeIconifyCallback);
+    glfwSetFramebufferSizeCallback(m_handle, nativeFramebufferSizeCallback);
 
     makeCurrent();
 
-    glfwSetWindowPos(m_handler, this->m_config.m_positionX, this->m_config.m_positionY);
-    glfwSetWindowSizeLimits(m_handler, this->m_config.m_sizeMinLimitX, this->m_config.m_sizeMinLimitY, this->m_config.m_sizeMaxLimitX, this->m_config.m_sizeMaxLimitY);
-    glfwSetWindowUserPointer(m_handler, this);
+    glfwSetWindowPos(m_handle, this->m_config.m_positionX, this->m_config.m_positionY);
+    glfwSetWindowSizeLimits(m_handle, this->m_config.m_sizeMinLimitX, this->m_config.m_sizeMinLimitY, this->m_config.m_sizeMaxLimitX, this->m_config.m_sizeMaxLimitY);
+    glfwSetWindowUserPointer(m_handle, this);
 
-    glfwShowWindow(m_handler);
+    glfwShowWindow(m_handle);
 
     setSwapInterval(this->m_config.m_swapInterval);
 
-    glfwSetInputMode(m_handler, GLFW_STICKY_KEYS, this->m_config.m_enableStickyKeys);
-    glfwSetInputMode(m_handler, GLFW_LOCK_KEY_MODS, GLFW_TRUE);
+    glfwSetInputMode(m_handle, GLFW_STICKY_KEYS, this->m_config.m_enableStickyKeys);
+    glfwSetInputMode(m_handle, GLFW_LOCK_KEY_MODS, GLFW_TRUE);
 
     // ------------- post create
     const GLFWvidmode* primaryVideoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -80,22 +77,32 @@ void SGCore::Window::create()
         setPosition((primaryVideoMode->width - wndSizeX) / 2, (primaryVideoMode->height - wndSizeY) / 2);
     }
     // -------------------------
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
 }
 
 void SGCore::Window::recreate()
 {
+#ifdef SG_PLATFORM_PC
     glfwMakeContextCurrent(nullptr);
-    glfwDestroyWindow(m_handler);
+    glfwDestroyWindow(m_handle);
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
 
     create();
 }
 
 void SGCore::Window::makeCurrent() noexcept
 {
+    Input::PC::setupInput(*this);
+
     GAPIType apiType = CoreMain::getRenderer()->getGAPIType();
     if(apiType >= GAPIType::SG_API_TYPE_GL4 && apiType <= GAPIType::SG_API_TYPE_GLES3)
     {
-        glfwMakeContextCurrent(m_handler);
+#ifdef SG_PLATFORM_PC
+        glfwMakeContextCurrent(m_handle);
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
     }
 }
 
@@ -106,7 +113,10 @@ void SGCore::Window::setSize(const int& sizeX, const int& sizeY) noexcept
     m_config.m_sizeX = sizeX;
     m_config.m_sizeY = sizeY;
 
-    glfwSetWindowSize(m_handler, sizeX, sizeY);
+#ifdef SG_PLATFORM_PC
+    glfwSetWindowSize(m_handle, sizeX, sizeY);
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
 }
 
 void SGCore::Window::setSizeLimits(const int& sizeMinLimitX, const int& sizeMinLimitY, const int& sizeMaxLimitX, const int& sizeMaxLimitY) noexcept
@@ -117,7 +127,10 @@ void SGCore::Window::setSizeLimits(const int& sizeMinLimitX, const int& sizeMinL
     m_config.m_sizeMaxLimitX = sizeMaxLimitX;
     m_config.m_sizeMaxLimitY = sizeMaxLimitY;
 
-    glfwSetWindowSizeLimits(m_handler, sizeMinLimitX, sizeMinLimitY, sizeMaxLimitX, sizeMaxLimitY);
+#ifdef SG_PLATFORM_PC
+    glfwSetWindowSizeLimits(m_handle, sizeMinLimitX, sizeMinLimitY, sizeMaxLimitX, sizeMaxLimitY);
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
 }
 
 void SGCore::Window::setPosition(const int& posX, const int& posY) noexcept
@@ -125,14 +138,20 @@ void SGCore::Window::setPosition(const int& posX, const int& posY) noexcept
     m_config.m_positionX = posX;
     m_config.m_positionY = posY;
 
-    glfwSetWindowPos(m_handler, posX, posY);
+#ifdef SG_PLATFORM_PC
+    glfwSetWindowPos(m_handle, posX, posY);
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
 }
 
 void SGCore::Window::setTitle(const std::string& title) noexcept
 {
     m_config.m_title = title;
 
-    glfwSetWindowTitle(m_handler, title.c_str());
+#ifdef SG_PLATFORM_PC
+    glfwSetWindowTitle(m_handle, title.c_str());
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
 }
 
 void SGCore::Window::setSwapInterval(const bool& swapInterval) noexcept
@@ -142,7 +161,10 @@ void SGCore::Window::setSwapInterval(const bool& swapInterval) noexcept
     GAPIType apiType = CoreMain::getRenderer()->getGAPIType();
     if(apiType >= GAPIType::SG_API_TYPE_GL4 && apiType <= GAPIType::SG_API_TYPE_GLES3)
     {
+#ifdef SG_PLATFORM_PC
         glfwSwapInterval(swapInterval);
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
     }
 }
 
@@ -150,14 +172,20 @@ void SGCore::Window::setEnableStickyKeys(const bool& enableStickyKeys) noexcept
 {
     m_config.m_enableStickyKeys = enableStickyKeys;
 
-    glfwSetInputMode(m_handler, GLFW_STICKY_KEYS, enableStickyKeys);
+#ifdef SG_PLATFORM_PC
+    glfwSetInputMode(m_handle, GLFW_STICKY_KEYS, enableStickyKeys);
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
 }
 
 void SGCore::Window::setHideAndCentralizeCursor(const bool& hideAndCentralizeCursor) noexcept
 {
     m_config.m_hideAndCentralizeCursor = hideAndCentralizeCursor;
 
-    glfwSetInputMode(m_handler, GLFW_CURSOR, hideAndCentralizeCursor ? GLFW_CURSOR_HIDDEN : GLFW_CURSOR_NORMAL);
+#ifdef SG_PLATFORM_PC
+    glfwSetInputMode(m_handle, GLFW_CURSOR, hideAndCentralizeCursor ? GLFW_CURSOR_HIDDEN : GLFW_CURSOR_NORMAL);
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
 }
 
 bool SGCore::Window::isHideAndCentralizeCursor() noexcept
@@ -172,27 +200,10 @@ void SGCore::Window::setConfig(WindowConfig&& other) noexcept
 
 void SGCore::Window::setShouldClose(const bool& shouldClose) noexcept
 {
-    glfwSetWindowShouldClose(m_handler, shouldClose);
-}
-
-void SGCore::Window::setCursorPosition(const double& x, const double& y) noexcept
-{
-    glfwSetCursorPos(m_handler, x, y);
-}
-
-void SGCore::Window::getCursorPosition(double& posX, double& posY) noexcept
-{
-    glfwGetCursorPos(m_handler, &posX, &posY);
-}
-
-SGCore::KeyState SGCore::Window::getKeyboardKeyState(const SGCore::KeyboardKey& key)
-{
-    return (KeyState) glfwGetKey(m_handler, std::to_underlying(key));
-}
-
-SGCore::KeyState SGCore::Window::getMouseButtonState(const SGCore::MouseButton& button)
-{
-    return (KeyState) glfwGetMouseButton(m_handler, std::to_underlying(button));
+#ifdef SG_PLATFORM_PC
+    glfwSetWindowShouldClose(m_handle, shouldClose);
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
 }
 
 #pragma endregion
@@ -201,14 +212,21 @@ SGCore::KeyState SGCore::Window::getMouseButtonState(const SGCore::MouseButton& 
 
 void SGCore::Window::getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept
 {
+#ifdef SG_PLATFORM_PC
     const GLFWvidmode* primaryVideoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     sizeX = primaryVideoMode->width;
     sizeY = primaryVideoMode->height;
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
 }
 
 bool SGCore::Window::shouldClose() noexcept
 {
-    return glfwWindowShouldClose(m_handler);
+#ifdef SG_PLATFORM_PC
+    return glfwWindowShouldClose(m_handle);
+#elif defined(SG_PLATFORM_OS_ANDROID)
+    return false;
+#endif
 }
 
 SGCore::WindowConfig& SGCore::Window::getConfig() noexcept
@@ -218,12 +236,18 @@ SGCore::WindowConfig& SGCore::Window::getConfig() noexcept
 
 void SGCore::Window::getSize(int& sizeX, int& sizeY) noexcept
 {
-    glfwGetWindowSize(m_handler, &sizeX, &sizeY);
+#ifdef SG_PLATFORM_PC
+    glfwGetWindowSize(m_handle, &sizeX, &sizeY);
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
 }
 
 void SGCore::Window::getBordersSize(int& left, int& top, int& right, int& bottom) noexcept
 {
-    glfwGetWindowFrameSize(m_handler, &left, &top, &right, &bottom);
+#ifdef SG_PLATFORM_PC
+    glfwGetWindowFrameSize(m_handle, &left, &top, &right, &bottom);
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
 }
 
 void SGCore::Window::getSizeWithBorders(int& sizeX, int& sizeY) noexcept
@@ -243,38 +267,32 @@ void SGCore::Window::getSizeWithBorders(int& sizeX, int& sizeY) noexcept
 
 #pragma endregion
 
-void SGCore::Window::nativeCloseCallback(GLFWwindow* window) noexcept
+void SGCore::Window::nativeCloseCallback(window_handle window) noexcept
 {
+#ifdef SG_PLATFORM_PC
     onClose(*((Window*) glfwGetWindowUserPointer(window)));
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
 
-    LOG_I(SGCORE_TAG, "GLFW window closed.");
+    LOG_I(SGCORE_TAG, "Application window closed.");
 }
 
-void SGCore::Window::nativeIconifyCallback(GLFWwindow* window, int iconified) noexcept
+void SGCore::Window::nativeIconifyCallback(window_handle window, int iconified) noexcept
 {
+#ifdef SG_PLATFORM_PC
     onIconify(*((Window*) glfwGetWindowUserPointer(window)), iconified);
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
 
-    LOG_I(SGCORE_TAG, "GLFW window iconified.");
+    LOG_I(SGCORE_TAG, "Application window iconified.");
 }
 
-void SGCore::Window::nativeKeyboardKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept
+void SGCore::Window::nativeFramebufferSizeCallback(window_handle window, int width, int height) noexcept
 {
-    onKeyboardKeyEvent(*((Window*) glfwGetWindowUserPointer(window)), (KeyboardKey) key, scancode, (KeyState) action, mods);
-}
-
-void SGCore::Window::nativeMouseButtonCallback(GLFWwindow* window, int button, int action, int mods) noexcept
-{
-    onMouseButtonEvent(*((Window*) glfwGetWindowUserPointer(window)), (MouseButton) button, (KeyState) action, mods);
-}
-
-void SGCore::Window::nativeMousePositionCallback(GLFWwindow* window, double xpos, double ypos) noexcept
-{
-    onCursorPositionChanged(*((Window*) glfwGetWindowUserPointer(window)), xpos, ypos);
-}
-
-void SGCore::Window::nativeFramebufferSizeCallback(GLFWwindow* window, int width, int height) noexcept
-{
+#ifdef SG_PLATFORM_PC
     onFrameBufferSizeChanged(*((Window*) glfwGetWindowUserPointer(window)), width, height);
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
 }
 
 void SGCore::Window::errorCallback(int errCode, const char* err_msg)
@@ -284,16 +302,23 @@ void SGCore::Window::errorCallback(int errCode, const char* err_msg)
 
 void SGCore::Window::swapBuffers()
 {
+#ifdef SG_PLATFORM_PC
     auto t0 = glfwGetTime();
-    glfwSwapBuffers(m_handler);
+    glfwSwapBuffers(m_handle);
     auto t1 = glfwGetTime();
+
     
     m_swapBuffersExecutionTime = (t1 - t0) * 1000.0;
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
 }
 
 void SGCore::Window::pollEvents()
 {
+#ifdef SG_PLATFORM_PC
     glfwPollEvents();
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
 }
 
 void SGCore::Window::setFullscreen(bool fullscreen) noexcept
@@ -303,14 +328,17 @@ void SGCore::Window::setFullscreen(bool fullscreen) noexcept
     int sizeX, sizeY;
     getPrimaryMonitorSize(sizeX, sizeY);
 
+#ifdef SG_PLATFORM_PC
     if(fullscreen)
     {
-        glfwSetWindowMonitor(m_handler, glfwGetPrimaryMonitor(), 0, 0, sizeX, sizeY, glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate);
+        glfwSetWindowMonitor(m_handle, glfwGetPrimaryMonitor(), 0, 0, sizeX, sizeY, glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate);
     }
     else
     {
-        glfwSetWindowMonitor(m_handler, nullptr, 0, 0, sizeX, sizeY, glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate);
+        glfwSetWindowMonitor(m_handle, nullptr, 0, 0, sizeX, sizeY, glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate);
     }
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
 }
 
 bool SGCore::Window::isFullscreen() const noexcept
@@ -323,12 +351,16 @@ double SGCore::Window::getSwapBuffersExecutionTime() const noexcept
     return m_swapBuffersExecutionTime;
 }
 
-GLFWwindow* SGCore::Window::getNativeHandler() noexcept
+SGCore::Window::window_handle SGCore::Window::getNativeHandle() noexcept
 {
-    return m_handler;
+    return m_handle;
 }
 
 int SGCore::Window::getPrimaryMonitorRefreshRate() noexcept
 {
+#ifdef SG_PLATFORM_PC
     return glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate;
+#elif defined(SG_PLATFORM_OS_ANDROID)
+    return 0;
+#endif
 }

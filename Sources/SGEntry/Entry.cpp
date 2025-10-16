@@ -15,7 +15,6 @@
 #include "SGCore/Transformations/Controllable3D.h"
 #include "SGCore/Render/RenderingBase.h"
 
-#include <SGCore/Input/InputManager.h>
 #include <SGCore/PluginsSystem/PluginsManager.h>
 #include <SGCore/Memory/AssetManager.h>
 #include <SGCore/Memory/Assets/ModelAsset.h>
@@ -25,7 +24,7 @@
 #include "SGCore/Render/Batching/Batch.h"
 #include "SGCore/Render/ShadowMapping/CSM/CSMTarget.h"
 
-#ifdef PLATFORM_OS_WINDOWS
+#ifdef SG_PLATFORM_OS_WINDOWS
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -224,7 +223,7 @@ void onUpdate(const double& dt, const double& fixedDt)
     SGCore::ImGuiWrap::IView::getRoot()->render();
     SGCore::ImGuiWrap::ImGuiLayer::endFrame();
 
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_P) &&
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_P) &&
         ImGui::GetCurrentContext() && !ImGui::GetIO().WantTextInput)
     {
         if(SGCore::PluginsManager::isPluginExists("SungearEngineEditor"))
@@ -246,7 +245,7 @@ void onUpdate(const double& dt, const double& fixedDt)
         }
     }
 
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_O) &&
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_O) &&
             ImGui::GetCurrentContext() && !ImGui::GetIO().WantTextInput)
     {
         SGCore::PluginsManager::unloadAllPlugins();

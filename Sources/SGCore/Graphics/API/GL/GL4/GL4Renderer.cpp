@@ -13,6 +13,7 @@
 
 void SGCore::GL4Renderer::init() noexcept
 {
+#ifdef SG_PLATFORM_PC
     LOG_I("SGCore", "-----------------------------------");
     LOG_I("SGCore", "GLRenderer initializing...");
 
@@ -27,6 +28,7 @@ void SGCore::GL4Renderer::init() noexcept
 
     printInfo();
     LOG_I("SGCore", "-----------------------------------");
+#endif
 
     // -------------------------------------
 
@@ -181,7 +183,10 @@ void SGCore::GL4Renderer::prepareUniformBuffers(const Ref<RenderingBase>& render
     // todo: перенести обновление в класс окна
     m_programDataBuffer->subData("programData.windowSize", { (float) windowWidth, (float) windowHeight });
     m_programDataBuffer->subData("programData.primaryMonitorSize", { (float) primaryMonitorWidth, (float) primaryMonitorHeight });
+#ifdef SG_PLATFORM_PC
     m_programDataBuffer->subData("programData.currentTime", {(float) glfwGetTime()});
+#elif defined(SG_PLATFORM_OS_ANDROID)
+#endif
 
     // double t1 = glfwGetTime();
 

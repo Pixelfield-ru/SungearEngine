@@ -6,8 +6,6 @@
 
 #include "SGCore/Main/CoreSettings.h"
 
-#include <GLFW/glfw3.h>
-
 void SGCore::VkRenderer::init() noexcept
 {
     /*m_applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;

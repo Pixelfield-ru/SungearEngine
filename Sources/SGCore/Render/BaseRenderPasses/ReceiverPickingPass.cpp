@@ -6,16 +6,14 @@
 
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
-#include "SGCore/Input/InputManager.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
+#include "SGCore/Input/PCInput.h"
 
 void SGCore::ReceiverPickingPass::render(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline)
 {
-    auto mainInputListener = InputManager::getMainInputListener();
-
-    const glm::vec2 mousePos = { mainInputListener->getCursorPositionX(),
-                                 mainInputListener->getCursorPositionY() };
+    const glm::vec2 mousePos = { Input::PC::getCursorPositionX(),
+                                 Input::PC::getCursorPositionY() };
 
     glm::ivec2 windowSize;
     CoreMain::getWindow().getSize(windowSize.x, windowSize.y);

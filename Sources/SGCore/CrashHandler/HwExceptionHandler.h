@@ -8,16 +8,16 @@
 #include "SGCore/pch.h"
 #include "sgcore_export.h"
 
-#include "Platform.h"
+#include "../Utils/Platform.h"
 #include "SGCore/Utils/Utils.h"
 
-#ifdef PLATFORM_OS_WINDOWS
+#ifdef SG_PLATFORM_OS_WINDOWS
 // preventing including win sockets in next time
 #define _WINSOCKAPI_
 #include <Windows.h>
 #include <winnt.h>
 #endif
-#ifdef PLATFORM_OS_LINUX
+#ifdef SG_PLATFORM_OS_LINUX
 #include <csignal>
 #include <cstring>
 #include <ucontext.h>
@@ -38,7 +38,7 @@ namespace SGCore
 
         static inline size_t m_handlersCount = 0;
 
-        #ifdef PLATFORM_OS_WINDOWS
+        #ifdef SG_PLATFORM_OS_WINDOWS
         static LONG WINAPI winHandler(PEXCEPTION_POINTERS pExceptionInfo)
         {
             std::cout << "fatal error" << std::endl;
@@ -125,7 +125,7 @@ namespace SGCore
         }
         #endif
         
-        #ifdef PLATFORM_OS_LINUX
+        #ifdef SG_PLATFORM_OS_LINUX
         static void posixHandler(int sig, siginfo_t* siginfo, void* context)
         {
             char fnmBuffer[256];
@@ -253,12 +253,12 @@ namespace SGCore
 
         static void setupHandler()
         {
-            #ifdef PLATFORM_OS_WINDOWS
+            #ifdef SG_PLATFORM_OS_WINDOWS
             // AddVectoredExceptionHandler(m_handlersCount, winHandler);
             SetUnhandledExceptionFilter(winHandler);
             #endif
             
-            #ifdef PLATFORM_OS_LINUX
+            #ifdef SG_PLATFORM_OS_LINUX
             
             
             #define STACK_SZ (MINSIGSTKSZ + 135 * 1000)

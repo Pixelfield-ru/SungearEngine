@@ -62,7 +62,7 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<KeyboardKeyAction, TFormatType>::deserialize(DeserializableValueView<KeyboardKeyAction, TFormatType>& valueView) noexcept
     {
-        auto key = valueView.container().template getMember<KeyboardKey>("m_key");
+        auto key = valueView.container().template getMember<Input::KeyboardKey>("m_key");
         if(key)
         {
             valueView.m_data->m_key = std::move(*key);
@@ -80,7 +80,7 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<KeyboardKeyDownAction, TFormatType>::deserialize(DeserializableValueView<KeyboardKeyDownAction, TFormatType>& valueView) noexcept
     {
-        auto key = valueView.container().template getMember<KeyboardKey>("m_key");
+        auto key = valueView.container().template getMember<Input::KeyboardKey>("m_key");
         if(key)
         {
             valueView.m_data->m_key = std::move(*key);
@@ -98,7 +98,7 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<KeyboardKeyPressedAction, TFormatType>::deserialize(DeserializableValueView<KeyboardKeyPressedAction, TFormatType>& valueView) noexcept
     {
-        auto key = valueView.container().template getMember<KeyboardKey>("m_key");
+        auto key = valueView.container().template getMember<Input::KeyboardKey>("m_key");
         if(key)
         {
             valueView.m_data->m_key = std::move(*key);
@@ -116,7 +116,7 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<KeyboardKeyReleasedAction, TFormatType>::deserialize(DeserializableValueView<KeyboardKeyReleasedAction, TFormatType>& valueView) noexcept
     {
-        auto key = valueView.container().template getMember<KeyboardKey>("m_key");
+        auto key = valueView.container().template getMember<Input::KeyboardKey>("m_key");
         if(key)
         {
             valueView.m_data->m_key = std::move(*key);
