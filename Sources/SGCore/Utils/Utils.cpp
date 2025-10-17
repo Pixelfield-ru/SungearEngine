@@ -76,6 +76,16 @@ long long SGCore::Utils::getTimeMilliseconds() noexcept
     return fine;
 }
 
+double SGCore::Utils::getTimeSecondsAsDouble() noexcept
+{
+    using namespace std::chrono;
+    static auto start_time = steady_clock::now();
+
+    auto current_time = steady_clock::now();
+    auto duration = duration_cast<microseconds>(current_time - start_time);
+    return duration.count() / 1000000.0;
+}
+
 std::string SGCore::Utils::consoleExecute(const std::string& cmd, std::filesystem::path* outputFile)
 {
     UUID execUUID;

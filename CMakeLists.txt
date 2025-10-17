@@ -3,6 +3,8 @@ include(cmake/set-toolchain.cmake)
 cmake_minimum_required(VERSION 3.22)
 project(SungearEngine)
 
+include(cmake/platform.cmake)
+
 message("CMAKE_SIZEOF_VOID_P: ${CMAKE_SIZEOF_VOID_P}")
 
 message(STATUS "CMAKE_TOOLCHAIN_FILE: ${CMAKE_TOOLCHAIN_FILE}")
@@ -19,10 +21,10 @@ endif()
 
 add_definitions(-DSG_BUILD_PRESET="${SG_BUILD_PRESET}")
 
-if(POSIX OR APPLE)
+if(SG_TARGET_OS_LINUX OR SG_TARGET_OS_DARWIN)
     add_definitions(-DBOOST_STACKTRACE_USE_ADDR2LINE)
     add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)
-elseif(MSVC)
+elseif(SG_TARGET_OS_WINDOWS)
     add_definitions(-DBOOST_STACKTRACE_USE_WINDBG)
 endif()
 add_definitions(-DUSE_LIBPNG)
@@ -34,7 +36,7 @@ add_definitions(-DNOGDI)
 
 add_definitions(-DANTLR4CPP_STATIC)
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Android")
+if(SG_TARGET_OS_ANDROID)
     set(MSDFGEN_USE_SKIA OFF)
     set(MSDF_ATLAS_USE_SKIA OFF)
 endif()
@@ -72,15 +74,16 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-implicit-fallthrough -Wno-ignored-qualifiers -Wno-error=deprecated-copy")
 endif()
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+if(SG_TARGET_OS_LINUX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -rdynamic -g -fno-pie -no-pie")
 
     if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
         add_definitions(-DSTBI_NO_SIMD)
         add_definitions(-DSTBIR_NO_SIMD)
     endif()
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+elseif(SG_TARGET_OS_WINDOWS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi")
+elseif(SG_TARGET_OS_ANDROID)
 endif()
 
 set(VCPKG_CXX_FLAGS_DEBUG "${VCPKG_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS_DEBUG}")
@@ -103,7 +106,7 @@ find_package(glm CONFIG REQUIRED)
 find_package(assimp CONFIG REQUIRED)
 find_package(Freetype REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
-if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+if(SG_TARGET_PLATFORM_PC)
     find_package(glfw3 CONFIG REQUIRED)
 endif()
 find_package(imgui CONFIG REQUIRED)

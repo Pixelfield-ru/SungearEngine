@@ -87,7 +87,6 @@
          unofficial::brotli::brotlidec
          glm::glm
          assimp::assimp
-         glfw
          imgui::imgui
          pugixml
          EnTT::EnTT
@@ -108,7 +107,11 @@
          ${FREETYPE_LIBRARIES}
  )
 
- if(UNIX OR APPLE)
+ if(SG_TARGET_PLATFORM_PC)
+   target_link_libraries(${PROJECT_NAME} PUBLIC glfw)
+ endif()
+
+ if(SG_TARGET_OS_LINUX OR SG_TARGET_OS_DARWIN)
   find_library(Backtrace_LIBRARY backtrace)
 
   target_link_libraries(${PROJECT_NAME} PUBLIC
@@ -119,19 +122,3 @@
  else()
   target_link_libraries(${PROJECT_NAME} PUBLIC antlr4_static)
  endif()
-
- #target_link_libraries(${PROJECT_NAME} PUBLIC -static-libgcc -static-libstdc++)
-
- #[[IF(WIN32)
-     target_link_libraries(${PROJECT_NAME} PRIVATE
-             wsock32
-             ws2_32)
- ENDIF()]]
-
-#[[ target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/Externals/Vulkan/Lib)
-
-if(WIN32)
-  target_link_libraries(${PROJECT_NAME} vulkan-1)
-else()
-  target_link_libraries(${PROJECT_NAME} vulkan)
-endif()]]

@@ -446,12 +446,14 @@ namespace SGCore
             {
                 return source;
             }
-            
-            std::string result;
-            std::wstring_convert<std::codecvt_utf8_utf16<T>, T> convertor;
-            result = convertor.to_bytes(source);
-            
-            return result;
+            else
+            {
+                std::string result;
+                std::wstring_convert<std::codecvt_utf8_utf16<T>, T> convertor;
+                result = convertor.to_bytes(source);
+
+                return result;
+            }
         }
 
         template<typename T>
@@ -462,9 +464,11 @@ namespace SGCore
                 result = source;
                 return;
             }
-            
-            std::wstring_convert<std::codecvt_utf8_utf16<T>, T> convertor;
-            result = convertor.from_bytes(source);
+            else
+            {
+                std::wstring_convert<std::codecvt_utf8_utf16<T>, T> convertor;
+                result = convertor.from_bytes(source);
+            }
         }
 
         template<typename T>
@@ -474,9 +478,11 @@ namespace SGCore
             {
                 return source;
             }
-            
-            std::wstring_convert<std::codecvt_utf8_utf16<T>, T> convertor;
-            return convertor.from_bytes(source);
+            else
+            {
+                std::wstring_convert<std::codecvt_utf8_utf16<T>, T> convertor;
+                return convertor.from_bytes(source);
+            }
         }
 
         static long long getTimeMilliseconds() noexcept;
@@ -484,6 +490,8 @@ namespace SGCore
         static long long getTimeMicros() noexcept;
 
         static long long getTimeNanos() noexcept;
+
+        static double getTimeSecondsAsDouble() noexcept;
 
         static void swapEndian(unsigned char* sourceBuffer, const size_t& bufferSize) noexcept
         {
