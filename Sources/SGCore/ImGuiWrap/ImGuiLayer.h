@@ -9,7 +9,7 @@
 
 #include <sgcore_export.h>
 
-#include "SGCore/Utils/Utils.h"
+#include "SGCore/Utils/Macroses.h"
 
 namespace SGCore::ImGuiWrap
 {

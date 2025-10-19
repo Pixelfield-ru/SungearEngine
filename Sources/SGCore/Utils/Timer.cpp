@@ -3,7 +3,8 @@
 //
 
 #include "Timer.h"
-#include "Utils.h"
+
+#include "Time.h"
 
 void SGCore::Timer::startFrame()
 {
@@ -16,7 +17,7 @@ void SGCore::Timer::startFrame()
     }
     
     double lastTime = m_currentTime;
-    m_currentTime = (double) SGCore::Utils::getTimeMilliseconds();
+    m_currentTime = (double) Utils::getTimeMilliseconds();
     
     m_rawDeltaTime = (m_currentTime - lastTime) / 1000.0;
     

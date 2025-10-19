@@ -2,6 +2,31 @@
 #include "FileUtils.h"
 #include "Unique/UUID.h"
 
+std::string SGCore::Utils::sourceLocationToString(const std::source_location& location) noexcept
+{
+    return "\tFile: " + std::string(location.file_name()) + "\n"
+                                                                    "\tFunction: " +
+                   std::string(location.function_name()) + "\n" + "\tLine: " +
+                   std::to_string(location.line()) + "\n" + "\tColumn: " +
+                   std::to_string(location.column()) + "\n";
+}
+
+void SGCore::Utils::swapEndian(unsigned char* sourceBuffer, const size_t& bufferSize) noexcept
+{
+    for (size_t i = 0; i < bufferSize; ++i)
+    {
+        sourceBuffer[i] = sourceBuffer[bufferSize - i - 1];
+    }
+}
+
+void SGCore::Utils::swapEndian(char* sourceBuffer, const size_t& bufferSize) noexcept
+{
+    for (size_t i = 0; i < bufferSize; ++i)
+    {
+        sourceBuffer[i] = sourceBuffer[bufferSize - i - 1];
+    }
+}
+
 std::string SGCore::Utils::getRealPath(const std::string& path) noexcept
 {
     #if defined(SG_PLATFORM_OS_WINDOWS)
@@ -46,46 +71,6 @@ std::filesystem::path SGCore::Utils::normalizePath(const std::filesystem::path& 
     return finalPath;
 }
 
-long long SGCore::Utils::getTimeNanos() noexcept
-{
-    using namespace std::chrono;
-    auto timepoint = system_clock::now();
-    auto coarse = system_clock::to_time_t(timepoint);
-    auto fine = time_point_cast<std::chrono::nanoseconds>(timepoint).time_since_epoch().count();
-
-    return fine;
-}
-
-long long SGCore::Utils::getTimeMicros() noexcept
-{
-    using namespace std::chrono;
-    auto timepoint = system_clock::now();
-    auto coarse = system_clock::to_time_t(timepoint);
-    auto fine = time_point_cast<std::chrono::microseconds>(timepoint).time_since_epoch().count();
-
-    return fine;
-}
-
-long long SGCore::Utils::getTimeMilliseconds() noexcept
-{
-    using namespace std::chrono;
-    auto timepoint = system_clock::now();
-    auto coarse = system_clock::to_time_t(timepoint);
-    auto fine = time_point_cast<std::chrono::milliseconds>(timepoint).time_since_epoch().count();
-
-    return fine;
-}
-
-double SGCore::Utils::getTimeSecondsAsDouble() noexcept
-{
-    using namespace std::chrono;
-    static auto start_time = steady_clock::now();
-
-    auto current_time = steady_clock::now();
-    auto duration = duration_cast<microseconds>(current_time - start_time);
-    return duration.count() / 1000000.0;
-}
-
 std::string SGCore::Utils::consoleExecute(const std::string& cmd, std::filesystem::path* outputFile)
 {
     UUID execUUID;
@@ -128,4 +113,9 @@ std::string SGCore::Utils::consoleExecute(const std::string& cmd, std::filesyste
     }
 
     return result;*/
+}
+
+std::chrono::high_resolution_clock::time_point SGCore::now() noexcept
+{
+    return std::chrono::high_resolution_clock::now();
 }

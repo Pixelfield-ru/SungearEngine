@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_NETWORK_CLIENT_H
 #define SUNGEARENGINE_NETWORK_CLIENT_H
 
-#include "../Utils/Platform.h"
+#include "SGCore/Utils/Platform.h"
 
 #ifdef SG_PLATFORM_OS_WINDOWS
 #include <WinSock2.h>

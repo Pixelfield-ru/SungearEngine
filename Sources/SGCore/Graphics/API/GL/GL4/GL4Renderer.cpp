@@ -183,10 +183,7 @@ void SGCore::GL4Renderer::prepareUniformBuffers(const Ref<RenderingBase>& render
     // todo: перенести обновление в класс окна
     m_programDataBuffer->subData("programData.windowSize", { (float) windowWidth, (float) windowHeight });
     m_programDataBuffer->subData("programData.primaryMonitorSize", { (float) primaryMonitorWidth, (float) primaryMonitorHeight });
-#ifdef SG_PLATFORM_PC
-    m_programDataBuffer->subData("programData.currentTime", {(float) glfwGetTime()});
-#elif defined(SG_PLATFORM_OS_ANDROID)
-#endif
+    m_programDataBuffer->subData("programData.currentTime", {(float) Utils::getTimeSecondsAsDouble() });
 
     // double t1 = glfwGetTime();
 

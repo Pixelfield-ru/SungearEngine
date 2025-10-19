@@ -10,7 +10,7 @@
 
 #include "sgcore_export.h"
 #include "SGCore/Main/CoreGlobals.h"
-#include "SGCore/Utils/Utils.h"
+#include "SGCore/Utils/Macroses.h"
 #include "PluginWrap.h"
 #include "IPlugin.h"
 #include "PluginProject.h"

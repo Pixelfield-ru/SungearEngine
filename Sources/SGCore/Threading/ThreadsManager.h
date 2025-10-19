@@ -9,7 +9,7 @@
 
 #include "Thread.h"
 #include "ThreadsPool.h"
-#include "SGCore/Utils/Utils.h"
+#include "SGCore/Utils/Macroses.h"
 
 namespace SGCore::Threading
 {

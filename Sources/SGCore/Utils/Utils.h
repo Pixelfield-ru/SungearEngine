@@ -1,58 +1,11 @@
 #ifndef SUNGEARENGINE_UTILS_H
 #define SUNGEARENGINE_UTILS_H
 
-#define SG_INSTANCEOF(data, type) SGCore::Utils::instanceof<type>(data)
-
-#define SG_MAY_NORETURN __declspec(noreturn)
-
-#define SG_CTOR(cls) cls() = default;
-#define SG_COPY_CTOR(cls) cls(const cls&) = default;
-#define SG_MOVE_CTOR(cls) cls(cls&& cls) noexcept = default;
-
-#define SG_NO_CTOR(cls) cls() = delete;
-#define SG_NO_COPY(cls) cls(const cls&) = delete;
-#define SG_NO_MOVE(cls) cls(cls&& cls) noexcept = delete;
-
-#define SG_CURRENT_LOCATION_STR SGCore::Utils::sourceLocationToString(std::source_location::current())
-
-#define SG_STRINGIFY(n) #n
-
-#ifdef _MSC_VER
-#define SG_NOINLINE __declspec(noinline)
-#elif defined(__GNUC__)
-#define SG_NOINLINE __attribute__((noinline))
-#endif
-
-#ifdef _MSC_VER
-#define SG_FORCEINLINE __forceinline
-#elif defined(__GNUC__)
-#define SG_FORCEINLINE __attribute__((always_inline))
-#endif
-
-#ifdef _MSC_VER
-#define SG_CDECL __cdecl
-#elif defined(__GNUC__)
-#define SG_CDECL __attribute__((cdecl))
-#endif
-
-#define SG_NOMANGLING extern "C"
-
-#ifdef _MSC_VER
-#define SG_DLEXPORT __declspec(dllexport)
-#elif defined(__GNUC__)
-#define SG_DLEXPORT __attribute__((visibility("default")))
-#endif
-
-#ifdef _MSC_VER
-#define SG_DLIMPORT __declspec(dllimport)
-#elif defined(__GNUC__)
-#define SG_DLIMPORT
-#endif
-
-#include <SGCore/pch.h>
-
 #include <codecvt>
 #include <locale>
+#include <array>
+#include <chrono>
+#include <sstream>
 
 #include "TypeTraits.h"
 #include "Platform.h"
@@ -60,17 +13,14 @@
 namespace SGCore
 {
     template<typename T, std::size_t N>
-    static std::array<T, N> makeFilledArray(const T& value)
+    static constexpr std::array<T, N> makeFilledArray(const T& value)
     {
         std::array<T, N> arr;
-        arr.fill(value); // Используем метод fill()
+        arr.fill(value);
         return arr;
     }
 
-    static std::chrono::high_resolution_clock::time_point now() noexcept
-    {
-        return std::chrono::high_resolution_clock::now();
-    }
+    std::chrono::high_resolution_clock::time_point now() noexcept;
 
     template<typename ScalarT, typename TimeValT>
     static ScalarT timeDiff(const std::chrono::high_resolution_clock::time_point& begin,
@@ -171,7 +121,7 @@ namespace SGCore
         from.erase(std::remove_if(from.begin(), from.end(), predicate), from.end());
     }
 
-    struct Utils
+    namespace Utils
     {
         // stores type of T
         template<typename T>
@@ -218,88 +168,6 @@ namespace SGCore
             }
         };
 
-        static std::string getTimeAsString(const std::string& format = "%Y-%m-%d") noexcept
-        {
-            const auto now = std::chrono::system_clock::now();
-            auto in_time_t = std::chrono::system_clock::to_time_t(now);
-
-            std::ostringstream timeStringStream;
-            timeStringStream << std::put_time(std::localtime(&in_time_t), format.c_str());
-
-            return timeStringStream.str();
-        }
-
-        template<typename T>
-        static std::string getTimeAsString(const std::string& format, const T& timePoint) noexcept
-        {
-            auto in_time_t = std::chrono::system_clock::to_time_t(timePoint);
-
-            std::ostringstream timeStringStream;
-            timeStringStream << std::put_time(std::localtime(&in_time_t), format.c_str());
-
-            return timeStringStream.str();
-        }
-
-        [[nodiscard]] static std::chrono::sys_time<std::chrono::seconds> getStringAsTime(const std::string& dateTime, const std::string& format = "%Y-%m-%d") noexcept
-        {
-            #if defined(SG_PLATFORM_OS_WINDOWS)
-            std::istringstream in { dateTime };
-            std::chrono::sys_time<std::chrono::seconds> dt;
-
-            in >> std::chrono::parse(format, dt);
-
-            return dt;
-            #else
-                #warning getStringAsTime DOES NOT SUPPORTED IN LINUX AND MAC OS NOW. FOR DEVS: PLEASE, IMPLEMENT getStringAsTime!
-            
-            return {};
-            #endif
-            /*std::istringstream ss{ dateTime };
-            std::tm dt;
-            ss >> std::get_time(&dt, format.c_str());
-            return std::mktime(&dt);*/
-        }
-
-        template<typename T>
-        [[nodiscard]] static std::chrono::year getYearFromTimePoint(const T& timePoint) noexcept
-        {
-            const auto d0 = std::chrono::floor<std::chrono::days>(timePoint);
-            const std::chrono::year_month_day ymd = d0;
-            return ymd.year();
-        }
-
-        template<typename T>
-        [[nodiscard]] static std::chrono::month getMonthFromTimePoint(const T& timePoint) noexcept
-        {
-            const auto d0 = std::chrono::floor<std::chrono::days>(timePoint);
-            const std::chrono::year_month_day ymd = d0;
-            return ymd.month();
-        }
-
-        template<typename T>
-        [[nodiscard]] static std::chrono::day getDayFromTimePoint(const T& timePoint) noexcept
-        {
-            const auto d0 = std::chrono::floor<std::chrono::days>(timePoint);
-            const std::chrono::year_month_day ymd = d0;
-            return ymd.day();
-        }
-
-        template<typename T>
-        [[nodiscard]] static std::chrono::day getLastDayOfTimePoint(const T& timePoint) noexcept
-        {
-            return (SGCore::Utils::getYearFromTimePoint(timePoint) /
-                    SGCore::Utils::getMonthFromTimePoint(timePoint) /
-                    std::chrono::last).day();
-        }
-
-        [[nodiscard]] static std::chrono::day getLastDayOfTimePoint(const std::chrono::year& year,
-                                                                    const std::chrono::month& month) noexcept
-        {
-            return (year /
-                    month /
-                    std::chrono::last).day();
-        }
-
         /**
          * Example
          * forTypes<InTypes...>([](auto t) { using type = typename decltype(t)::type; });
@@ -320,9 +188,8 @@ namespace SGCore
         }
 
         template<typename CharT>
-        static void
-        splitString(const std::basic_string<CharT>& str, char delim,
-                    std::vector<std::basic_string<CharT>>& words) noexcept
+        static void splitString(const std::basic_string<CharT>& str, char delim,
+                                std::vector<std::basic_string<CharT>>& words) noexcept
         {
             std::basic_stringstream<CharT> ss(str);
             std::basic_string<CharT> word;
@@ -413,11 +280,11 @@ namespace SGCore
             return str;
         }
 
-        static std::string
-        toString(const std::vector<std::string>::iterator& begin,
-                 const std::vector<std::string>::iterator& end) noexcept
+        template<typename CharT>
+        static std::string toString(const typename std::vector<std::basic_string<CharT>>::iterator& begin,
+                                    const typename std::vector<std::basic_string<CharT>>::iterator& end) noexcept
         {
-            std::string str;
+            std::basic_string<CharT> str;
 
             auto it = begin;
 
@@ -430,17 +297,10 @@ namespace SGCore
             return str;
         }
 
-        static std::string sourceLocationToString(const std::source_location& location) noexcept
-        {
-            return "\tFile: " + std::string(location.file_name()) + "\n"
-                                                                    "\tFunction: " +
-                   std::string(location.function_name()) + "\n" + "\tLine: " +
-                   std::to_string(location.line()) + "\n" + "\tColumn: " +
-                   std::to_string(location.column()) + "\n";
-        }
+        std::string sourceLocationToString(const std::source_location& location) noexcept;
 
         template<typename T>
-        static std::string toUTF8(const std::basic_string<T, std::char_traits<T>, std::allocator<T>>& source)
+        static std::string toUTF8(const std::basic_string<T>& source)
         {
             if constexpr(std::is_same_v<T, char>)
             {
@@ -457,12 +317,11 @@ namespace SGCore
         }
 
         template<typename T>
-        static void fromUTF8(const std::string& source, std::basic_string<T, std::char_traits<T>, std::allocator<T>>& result)
+        static void fromUTF8(const std::string& source, std::basic_string<T>& result)
         {
             if constexpr(std::is_same_v<T, char>)
             {
                 result = source;
-                return;
             }
             else
             {
@@ -472,7 +331,7 @@ namespace SGCore
         }
 
         template<typename T>
-        static std::basic_string<T, std::char_traits<T>, std::allocator<T>> fromUTF8(const std::string& source)
+        static std::basic_string<T> fromUTF8(const std::string& source)
         {
             if constexpr(std::is_same_v<T, char>)
             {
@@ -485,36 +344,16 @@ namespace SGCore
             }
         }
 
-        static long long getTimeMilliseconds() noexcept;
+        void swapEndian(unsigned char* sourceBuffer, const size_t& bufferSize) noexcept;
 
-        static long long getTimeMicros() noexcept;
+        void swapEndian(char* sourceBuffer, const size_t& bufferSize) noexcept;
 
-        static long long getTimeNanos() noexcept;
+        std::string getRealPath(const std::string& path) noexcept;
 
-        static double getTimeSecondsAsDouble() noexcept;
+        bool isSubpath(const std::filesystem::path& path,
+                       const std::filesystem::path& base) noexcept;
 
-        static void swapEndian(unsigned char* sourceBuffer, const size_t& bufferSize) noexcept
-        {
-            for (size_t i = 0; i < bufferSize; ++i)
-            {
-                sourceBuffer[i] = sourceBuffer[bufferSize - i - 1];
-            }
-        }
-
-        static void swapEndian(char* sourceBuffer, const size_t& bufferSize) noexcept
-        {
-            for (size_t i = 0; i < bufferSize; ++i)
-            {
-                sourceBuffer[i] = sourceBuffer[bufferSize - i - 1];
-            }
-        }
-
-        static std::string getRealPath(const std::string& path) noexcept;
-
-        static bool isSubpath(const std::filesystem::path& path,
-                              const std::filesystem::path& base) noexcept;
-
-        static std::filesystem::path normalizePath(const std::filesystem::path& path) noexcept;
+        std::filesystem::path normalizePath(const std::filesystem::path& path) noexcept;
 
         template<typename CharT>
         static std::string::size_type findInString(const std::basic_string<CharT>& str,
@@ -534,7 +373,8 @@ namespace SGCore
                         if constexpr (std::is_same_v<CharT, char>)
                         {
                             return std::toupper(ch1) == std::toupper(ch2);
-                        } else
+                        }
+                        else
                         {
                             return std::towupper(ch1) == std::towupper(ch2);
                         }
@@ -549,7 +389,7 @@ namespace SGCore
             return std::string::npos;
         }
 
-        static std::string consoleExecute(const std::string& cmd, std::filesystem::path* outputFile = nullptr);
+        std::string consoleExecute(const std::string& cmd, std::filesystem::path* outputFile = nullptr);
     };
 }
 

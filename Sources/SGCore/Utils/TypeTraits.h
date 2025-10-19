@@ -2,10 +2,7 @@
 // Created by stuka on 05.01.2024.
 //
 
-#ifndef ECS_TYPEMETA_H
-#define ECS_TYPEMETA_H
-
-#include <SGCore/pch.h>
+#pragma once
 
 #if defined _MSC_VER
 #   define GENERATOR_PRETTY_FUNCTION __FUNCSIG__
@@ -26,6 +23,9 @@
         }
     };
 }*/
+
+#include <cstdint>
+#include <type_traits>
 
 namespace SGCore
 {
@@ -793,5 +793,3 @@ constexpr size_t operator ""_hash(const char* in, size_t)
 {
     return SGCore::constexprHash(in);
 }
-
-#endif //ECS_TYPEMETA_H

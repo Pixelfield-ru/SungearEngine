@@ -11,7 +11,7 @@
 #include "SGCore/Utils/StringInterpolation/InterpolatedPath.h"
 #include "Singleton.h"
 #include "SGCore/Main/CoreGlobals.h"
-#include "Utils.h"
+#include "SGCore/Utils/Macroses.h"
 
 namespace SGCore
 {

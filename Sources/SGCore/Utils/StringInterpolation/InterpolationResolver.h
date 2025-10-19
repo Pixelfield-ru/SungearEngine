@@ -6,7 +6,7 @@
 #define SUNGEARENGINE_INTERPOLATIONRESOLVER_H
 
 #include "SGCore/Logger/Logger.h"
-#include "SGCore/Utils/Utils.h"
+#include "SGCore/Utils/Macroses.h"
 #include "SGCore/Utils/TypeTraits.h"
 #include "sgcore_export.h"
 

@@ -9,7 +9,7 @@
 #include "SGCore/Utils/Timer.h"
 
 #include "CoreGlobals.h"
-#include "SGCore/Utils/Utils.h"
+#include "SGCore/Utils/Macroses.h"
 #include "SGCore/CrashHandler/HwExceptionHandler.h"
 
 /*namespace Core::Graphics

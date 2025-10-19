@@ -6,7 +6,7 @@
 #define SUNGEARENGINE_STATICTYPEID_H
 
 #include <set>
-#include "SGCore/Logger/Logger.h"
+#include "SGCore/Utils/Macroses.h"
 
 /// Pass current class type as first argument and its type ID as second argument.\n
 /// Use this macro in derived types to implement function \p getTypeID() that overrides virtual function in base type\n

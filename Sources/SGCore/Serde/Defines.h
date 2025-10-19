@@ -5,6 +5,8 @@
 #ifndef SUNGEARENGINE_SERDE_DEFINES_H
 #define SUNGEARENGINE_SERDE_DEFINES_H
 
+#include "SGCore/Utils/Macroses.h"
+
 #define sg_serde_define_type_name(n)            \
 static const std::string& type_name() noexcept  \
 {                                               \
@@ -51,16 +53,9 @@ namespace SGCore::Serde                                 \
 
 #define sg_validate_serdespec_supported_formats(CurrentFormat, ...) static_assert(SGCore::contains_obj<CurrentFormat, __VA_ARGS__>::value, "This TFormatType is not supported in current SerdeSpec.");
 
-#define SG_SERDE_ARG_COUNT(...) \
-SG_SERDE_ARG_COUNT_IMPL(0, ##__VA_ARGS__, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
-#define SG_SERDE_ARG_COUNT_IMPL(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
-
-#define SG_SERDE_CONCAT(a, b) SG_SERDE_CONCAT_IMPL(a, b)
-#define SG_SERDE_CONCAT_IMPL(a, b) a##b
-
 #define SG_SERDE_DECLARE_EXTERNAL_CONNECTION(Base, Derived, SerdeName) \
 template<SGCore::Serde::FormatType TFormatType, typename... SharedDataT> \
-struct SG_SERDE_CONCAT(SerdeName, _Serializer) final : SGCore::Serde::IExternalSerializer<TFormatType, SharedDataT...> \
+struct SG_CONCAT(SerdeName, _Serializer) final : SGCore::Serde::IExternalSerializer<TFormatType, SharedDataT...> \
 { \
     bool invoke(const std::byte* thisTypeObject, SGCore::Serde::SerializableValueContainer<TFormatType>& container, const std::string& version, bool& isDiscarded, SharedDataT&&... sharedData) noexcept \
     { \
@@ -101,7 +96,7 @@ struct SG_SERDE_CONCAT(SerdeName, _Serializer) final : SGCore::Serde::IExternalS
 }; \
 \
 template<SGCore::Serde::FormatType TFormatType, typename... SharedDataT> \
-struct SG_SERDE_CONCAT(SerdeName, _Deserializer) final : SGCore::Serde::IExternalDeserializer<TFormatType, SharedDataT...> \
+struct SG_CONCAT(SerdeName, _Deserializer) final : SGCore::Serde::IExternalDeserializer<TFormatType, SharedDataT...> \
 { \
     std::byte* invoke(SGCore::Serde::DeserializableValueContainer<TFormatType>& container, const std::string& version, SharedDataT&&... sharedData) noexcept \
     { \
@@ -162,8 +157,8 @@ struct SG_SERDE_CONCAT(SerdeName, _Deserializer) final : SGCore::Serde::IExterna
 };
 
 #define SG_SERDE_REGISTER_EXTERNAL_SERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, FormatType, Line, ...) \
-auto SG_SERDE_CONCAT(_SG_DECLARE_SERIALIZER_SPEC_, Line) = []() { \
-    static SG_SERDE_CONCAT(SerdeName, _Serializer)<FormatType __VA_OPT__(,) __VA_ARGS__> serializer; \
+auto SG_CONCAT(_SG_DECLARE_SERIALIZER_SPEC_, Line) = []() { \
+    static SG_CONCAT(SerdeName, _Serializer)<FormatType __VA_OPT__(,) __VA_ARGS__> serializer; \
     SGCore::Serde::ExternalSerializersStorage<Base>::storage<FormatType __VA_OPT__(,) __VA_ARGS__>().push_back(&serializer); \
     return true; \
 }();
@@ -172,13 +167,13 @@ auto SG_SERDE_CONCAT(_SG_DECLARE_SERIALIZER_SPEC_, Line) = []() { \
     SG_SERDE_REGISTER_EXTERNAL_SERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, FormatType, __LINE__, __VA_ARGS__)
 
 #define SG_SERDE_REGISTER_EXTERNAL_SERIALIZER(Base, Derived, SerdeName, ...) \
-    SG_SERDE_REGISTER_EXTERNAL_SERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::JSON, SG_SERDE_CONCAT(__LINE__, _JSON), __VA_ARGS__) \
-    SG_SERDE_REGISTER_EXTERNAL_SERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::BSON, SG_SERDE_CONCAT(__LINE__, _BSON), __VA_ARGS__) \
-    SG_SERDE_REGISTER_EXTERNAL_SERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::YAML, SG_SERDE_CONCAT(__LINE__, _YAML), __VA_ARGS__)
+    SG_SERDE_REGISTER_EXTERNAL_SERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::JSON, SG_CONCAT(__LINE__, _JSON), __VA_ARGS__) \
+    SG_SERDE_REGISTER_EXTERNAL_SERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::BSON, SG_CONCAT(__LINE__, _BSON), __VA_ARGS__) \
+    SG_SERDE_REGISTER_EXTERNAL_SERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::YAML, SG_CONCAT(__LINE__, _YAML), __VA_ARGS__)
 
 #define SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, FormatType, Line, ...) \
-auto SG_SERDE_CONCAT(_SG_DECLARE_DESERIALIZER_SPEC_, Line) = []() { \
-    static SG_SERDE_CONCAT(SerdeName, _Deserializer)<FormatType __VA_OPT__(,) __VA_ARGS__> deserializer; \
+auto SG_CONCAT(_SG_DECLARE_DESERIALIZER_SPEC_, Line) = []() { \
+    static SG_CONCAT(SerdeName, _Deserializer)<FormatType __VA_OPT__(,) __VA_ARGS__> deserializer; \
     SGCore::Serde::ExternalDeserializersStorage<Base>::storage<FormatType __VA_OPT__(,) __VA_ARGS__>().push_back(&deserializer); \
     return true; \
 }();
@@ -187,8 +182,8 @@ auto SG_SERDE_CONCAT(_SG_DECLARE_DESERIALIZER_SPEC_, Line) = []() { \
 SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, FormatType, __LINE__, __VA_ARGS__)
 
 #define SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER(Base, Derived, SerdeName, ...) \
-SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::JSON, SG_SERDE_CONCAT(__LINE__, _JSON), __VA_ARGS__) \
-// SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::BSON, SG_SERDE_CONCAT(__LINE__, _BSON), __VA_ARGS__) \
-// SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::YAML, SG_SERDE_CONCAT(__LINE__, _YAML), __VA_ARGS__)
+SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::JSON, SG_CONCAT(__LINE__, _JSON), __VA_ARGS__) \
+// SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::BSON, SG_CONCAT(__LINE__, _BSON), __VA_ARGS__) \
+// SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, SGCore::Serde::FormatType::YAML, SG_CONCAT(__LINE__, _YAML), __VA_ARGS__)
 
 #endif // SUNGEARENGINE_SERDE_DEFINES_H

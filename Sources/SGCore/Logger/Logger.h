@@ -4,6 +4,7 @@
 #define SUNGEARENGINE_LOGGER_H
 
 #include "SGCore/Main/CoreGlobals.h"
+#include "SGCore/Utils/Time.h"
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/Utils/TypeTraits.h"
 

@@ -2,8 +2,7 @@
 // Created by Ilya on 15.03.2024.
 //
 
-#ifndef SUNGEARENGINE_PLATFORM_H
-#define SUNGEARENGINE_PLATFORM_H
+#pragma once
 
 #if defined(__clang__)
 #define SG_PLATFORM_COMPILER_CLANG
@@ -37,6 +36,4 @@
 #define SG_PLATFORM_PC
 #elif defined(SG_PLATFORM_OS_ANDROID) || defined(SG_PLATFORM_OS_IOS)
 #define SG_PLATFORM_MOBILE
-#endif
-
-#endif //SUNGEARENGINE_PLATFORM_H
+#endif//SUNGEARENGINE_PLATFORM_H

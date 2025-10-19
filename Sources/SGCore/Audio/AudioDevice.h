@@ -7,7 +7,7 @@
 
 #include <alc.h>
 
-#include "SGCore/Utils/Utils.h"
+#include "SGCore/Utils/Macroses.h"
 #include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
