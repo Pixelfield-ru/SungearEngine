@@ -65,29 +65,43 @@ namespace GLGraphicsTypesCaster
             case SGGColorInternalFormat::SGG_R8: return GL_R8;
             case SGGColorInternalFormat::SGG_R8_SIGNED_NORMALIZED: return GL_R8_SNORM;
 
+#if GL_VERSION_1_0
             case SGGColorInternalFormat::SGG_R16: return GL_R16;
             case SGGColorInternalFormat::SGG_R16_SIGNED_NORMALIZED: return GL_R16_SNORM;
+#endif
 
             case SGGColorInternalFormat::SGG_RG8: return GL_RG8;
             case SGGColorInternalFormat::SGG_RG8_SIGNED_NORMALIZED: return GL_RG8_SNORM;
 
+#if GL_VERSION_1_0
             case SGGColorInternalFormat::SGG_RG16: return GL_R16;
             case SGGColorInternalFormat::SGG_RG16_SIGNED_NORMALIZED: return GL_R16_SNORM;
+#endif
 
+#if GL_VERSION_1_0
             case SGGColorInternalFormat::SGG_R3_G3_B2: return GL_R3_G3_B2;
+#endif
 
+#if GL_VERSION_1_0
             case SGGColorInternalFormat::SGG_RGB4: return GL_RGB4;
             case SGGColorInternalFormat::SGG_RGB5: return GL_RGB5;
+#endif
             case SGGColorInternalFormat::SGG_RGB8: return GL_RGB8;
 
             case SGGColorInternalFormat::SGG_RGB8_SIGNED_NORMALIZED: return GL_RGB8_SNORM;
 
+#if GL_VERSION_1_0
             case SGGColorInternalFormat::SGG_RGB10: return GL_RGB10;
             case SGGColorInternalFormat::SGG_RGB12: return GL_RGB12;
+#endif
 
+#if GL_VERSION_1_0
             case SGGColorInternalFormat::SGG_RGB16_SIGNED_NORMALIZED: return GL_RGB16_SNORM;
+#endif
 
+#if GL_VERSION_1_0
             case SGGColorInternalFormat::SGG_RGBA2: return GL_RGBA2;
+#endif
             case SGGColorInternalFormat::SGG_RGBA4: return GL_RGBA4;
 
             case SGGColorInternalFormat::SGG_RGB5_A1: return GL_RGB5_A1;
@@ -98,8 +112,10 @@ namespace GLGraphicsTypesCaster
             case SGGColorInternalFormat::SGG_RGB10_A2: return GL_RGB10_A2;
             case SGGColorInternalFormat::SGG_RGB10_A2_UNSIGNED_INT: return GL_RGB10_A2UI;
 
+#if GL_VERSION_1_0
             case SGGColorInternalFormat::SGG_RGBA12: return GL_RGBA12;
             case SGGColorInternalFormat::SGG_RGBA16: return GL_RGBA16;
+#endif
 
             case SGGColorInternalFormat::SGG_SRGB8: return GL_SRGB8;
             case SGGColorInternalFormat::SGG_SRGB8_ALPHA8: return GL_SRGB8_ALPHA8;
@@ -154,6 +170,7 @@ namespace GLGraphicsTypesCaster
             case SGGColorInternalFormat::SGG_RGBA32_INT: return GL_RGBA32I;
             case SGGColorInternalFormat::SGG_RGBA32_UNSIGNED_INT: return GL_RGBA32UI;
 
+#if GL_VERSION_1_0
             case SGGColorInternalFormat::SGG_COMPRESSED_R: return GL_COMPRESSED_RED;
             case SGGColorInternalFormat::SGG_COMPRESSED_RG: return GL_COMPRESSED_RG;
             case SGGColorInternalFormat::SGG_COMPRESSED_RGB: return GL_COMPRESSED_RGB;
@@ -161,12 +178,15 @@ namespace GLGraphicsTypesCaster
 
             case SGGColorInternalFormat::SGG_COMPRESSED_SRGB: return GL_COMPRESSED_SRGB;
             case SGGColorInternalFormat::SGG_COMPRESSED_SRGBA: return GL_COMPRESSED_SRGB_ALPHA;
+#endif
 
             case SGGColorInternalFormat::SGG_STENCIL_INDEX8: return GL_STENCIL_INDEX8;
 
             case SGGColorInternalFormat::SGG_DEPTH_COMPONENT16: return GL_DEPTH_COMPONENT16;
             case SGGColorInternalFormat::SGG_DEPTH_COMPONENT24: return GL_DEPTH_COMPONENT24;
+#if GL_VERSION_1_0
             case SGGColorInternalFormat::SGG_DEPTH_COMPONENT32: return GL_DEPTH_COMPONENT32;
+#endif
             case SGGColorInternalFormat::SGG_DEPTH_COMPONENT32F: return GL_DEPTH_COMPONENT32F;
 
             case SGGColorInternalFormat::SGG_DEPTH24_STENCIL8: return GL_DEPTH24_STENCIL8;
@@ -183,16 +203,24 @@ namespace GLGraphicsTypesCaster
             case SGGColorFormat::SGG_R: return GL_RED;
             case SGGColorFormat::SGG_RG: return GL_RG;
             case SGGColorFormat::SGG_RGB: return GL_RGB;
+#if GL_VERSION_1_0
             case SGGColorFormat::SGG_BGR: return GL_BGR;
+#endif
             case SGGColorFormat::SGG_RGBA: return GL_RGBA;
+#if GL_VERSION_1_0
             case SGGColorFormat::SGG_BGRA: return GL_BGRA;
+#endif
 
             case SGGColorFormat::SGG_R_INTEGER: return GL_RED_INTEGER;
             case SGGColorFormat::SGG_RG_INTEGER: return GL_RG_INTEGER;
             case SGGColorFormat::SGG_RGB_INTEGER: return GL_RGB_INTEGER;
+#if GL_VERSION_1_0
             case SGGColorFormat::SGG_BGR_INTEGER: return GL_BGR_INTEGER;
+#endif
             case SGGColorFormat::SGG_RGBA_INTEGER: return GL_RGBA_INTEGER;
+#if GL_VERSION_1_0
             case SGGColorFormat::SGG_BGRA_INTEGER: return GL_BGRA_INTEGER;
+#endif
 
             case SGGColorFormat::SGG_STENCIL_INDEX: return GL_STENCIL_INDEX;
 
@@ -316,16 +344,24 @@ namespace GLGraphicsTypesCaster
             case GL_RED: return SGGColorFormat::SGG_R;
             case GL_RG: return SGGColorFormat::SGG_RG;
             case GL_RGB: return SGGColorFormat::SGG_RGB;
+#if GL_VERSION_1_0
             case GL_BGR: return SGGColorFormat::SGG_BGR;
+#endif
             case GL_RGBA: return SGGColorFormat::SGG_RGBA;
+#if GL_VERSION_1_0
             case GL_BGRA: return SGGColorFormat::SGG_BGRA;
+#endif
 
             case GL_RED_INTEGER: return SGGColorFormat::SGG_R_INTEGER;
             case GL_RG_INTEGER: return SGGColorFormat::SGG_RG_INTEGER;
             case GL_RGB_INTEGER: return SGGColorFormat::SGG_RGB_INTEGER;
+#if GL_VERSION_1_0
             case GL_BGR_INTEGER: return SGGColorFormat::SGG_BGR_INTEGER;
+#endif
             case GL_RGBA_INTEGER: return SGGColorFormat::SGG_RGBA_INTEGER;
+#if GL_VERSION_1_0
             case GL_BGRA_INTEGER: return SGGColorFormat::SGG_BGRA_INTEGER;
+#endif
 
             case GL_STENCIL_INDEX: return SGGColorFormat::SGG_STENCIL_INDEX;
 
@@ -343,12 +379,15 @@ namespace GLGraphicsTypesCaster
             case GL_R8: return SGGColorInternalFormat::SGG_R8;
             case GL_R8_SNORM: return SGGColorInternalFormat::SGG_R8_SIGNED_NORMALIZED;
 
+#if GL_VERSION_1_0
             case GL_R16: return SGGColorInternalFormat::SGG_R16;
             case GL_R16_SNORM: return SGGColorInternalFormat::SGG_R16_SIGNED_NORMALIZED;
+#endif
 
             case GL_RG8: return SGGColorInternalFormat::SGG_RG8;
             case GL_RG8_SNORM: return SGGColorInternalFormat::SGG_RG8_SIGNED_NORMALIZED;
 
+#if GL_VERSION_1_0
             case GL_RG16: return SGGColorInternalFormat::SGG_RG16;
             case GL_RG16_SNORM: return SGGColorInternalFormat::SGG_RG16_SIGNED_NORMALIZED;
 
@@ -356,16 +395,19 @@ namespace GLGraphicsTypesCaster
 
             case GL_RGB4: return SGGColorInternalFormat::SGG_RGB4;
             case GL_RGB5: return SGGColorInternalFormat::SGG_RGB5;
+#endif
             case GL_RGB8: return SGGColorInternalFormat::SGG_RGB8;
 
             case GL_RGB8_SNORM: return SGGColorInternalFormat::SGG_RGB8_SIGNED_NORMALIZED;
 
+#if GL_VERSION_1_0
             case GL_RGB10: return SGGColorInternalFormat::SGG_RGB10;
             case GL_RGB12: return SGGColorInternalFormat::SGG_RGB12;
 
             case GL_RGB16_SNORM: return SGGColorInternalFormat::SGG_RGB16_SIGNED_NORMALIZED;
 
             case GL_RGBA2: return SGGColorInternalFormat::SGG_RGBA2;
+#endif
             case GL_RGBA4: return SGGColorInternalFormat::SGG_RGBA4;
 
             case GL_RGB5_A1: return SGGColorInternalFormat::SGG_RGB5_A1;
@@ -376,8 +418,10 @@ namespace GLGraphicsTypesCaster
             case GL_RGB10_A2: return SGGColorInternalFormat::SGG_RGB10_A2;
             case GL_RGB10_A2UI: return SGGColorInternalFormat::SGG_RGB10_A2_UNSIGNED_INT;
 
+#if GL_VERSION_1_0
             case GL_RGBA12: return SGGColorInternalFormat::SGG_RGBA12;
             case GL_RGBA16: return SGGColorInternalFormat::SGG_RGBA16;
+#endif
 
             case GL_SRGB8: return SGGColorInternalFormat::SGG_SRGB8;
             case GL_SRGB8_ALPHA8: return SGGColorInternalFormat::SGG_SRGB8_ALPHA8;
@@ -432,6 +476,7 @@ namespace GLGraphicsTypesCaster
             case GL_RGBA32I: return SGGColorInternalFormat::SGG_RGBA32_INT;
             case GL_RGBA32UI: return SGGColorInternalFormat::SGG_RGBA32_UNSIGNED_INT;
 
+#if GL_VERSION_1_0
             case GL_COMPRESSED_RED: return SGGColorInternalFormat::SGG_COMPRESSED_R;
             case GL_COMPRESSED_RG: return SGGColorInternalFormat::SGG_COMPRESSED_RG;
             case GL_COMPRESSED_RGB: return SGGColorInternalFormat::SGG_COMPRESSED_RGB;
@@ -439,12 +484,15 @@ namespace GLGraphicsTypesCaster
 
             case GL_COMPRESSED_SRGB: return SGGColorInternalFormat::SGG_COMPRESSED_SRGB;
             case GL_COMPRESSED_SRGB_ALPHA: return SGGColorInternalFormat::SGG_COMPRESSED_SRGBA;
+#endif
 
             case GL_STENCIL_INDEX8: return SGGColorInternalFormat::SGG_STENCIL_INDEX8;
 
             case GL_DEPTH_COMPONENT16: return SGGColorInternalFormat::SGG_DEPTH_COMPONENT16;
             case GL_DEPTH_COMPONENT24: return SGGColorInternalFormat::SGG_DEPTH_COMPONENT24;
+#if GL_VERSION_1_0
             case GL_DEPTH_COMPONENT32: return SGGColorInternalFormat::SGG_DEPTH_COMPONENT32;
+#endif
             case GL_DEPTH_COMPONENT32F: return SGGColorInternalFormat::SGG_DEPTH_COMPONENT32F;
 
             case GL_DEPTH24_STENCIL8: return SGGColorInternalFormat::SGG_DEPTH24_STENCIL8;

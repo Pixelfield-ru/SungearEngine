@@ -8,7 +8,7 @@
 
 SGCore::GLVertexBuffer::~GLVertexBuffer() noexcept
 {
-    destroy();
+    GLVertexBuffer::destroy();
 }
 
 std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::create() noexcept

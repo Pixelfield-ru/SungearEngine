@@ -17,7 +17,7 @@ void SGCore::GL4Renderer::init() noexcept
     LOG_I("SGCore", "-----------------------------------");
     LOG_I("SGCore", "GLRenderer initializing...");
 
-    if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    if(!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     {
         LOG_I("SGCore", "Failed to initialize GLRenderer.");
     }
@@ -28,16 +28,19 @@ void SGCore::GL4Renderer::init() noexcept
 
     printInfo();
     LOG_I("SGCore", "-----------------------------------");
+/*#elif defined(SG_PLATFORM_OS_ANDROID)
+    if(int version = gladLoadGL())
+    {
+        LOG_I("SGCore", "GLES renderer initialized! Version: {}", version);
+    }*/
 #endif
 
     // -------------------------------------
 
+
     DeviceGLInfo::init();
 
-    if(!confirmSupport())
-    {
-        CoreMain::getWindow().setShouldClose(true);
-    }
+    if(!confirmSupport()) { CoreMain::getWindow().setShouldClose(true); }
 
     useState(m_cachedRenderState, true);
     useMeshRenderState(m_cachedMeshRenderState, true);
@@ -55,29 +58,29 @@ void SGCore::GL4Renderer::init() noexcept
     m_viewMatricesBuffer = Ref<GL4UniformBuffer>(createUniformBuffer());
     m_viewMatricesBuffer->m_blockName = "CameraData";
     m_viewMatricesBuffer->putUniforms({
-                                              IShaderUniform("camera.projectionSpaceMatrix", SGGDataType::SGG_MAT4),
-                                              IShaderUniform("camera.orthographicSpaceMatrix", SGGDataType::SGG_MAT4),
-                                              IShaderUniform("camera.orthographicMatrix", SGGDataType::SGG_MAT4),
-                                              IShaderUniform("camera.projectionMatrix", SGGDataType::SGG_MAT4),
-                                              IShaderUniform("camera.viewMatrix", SGGDataType::SGG_MAT4),
-                                              IShaderUniform("camera.position", SGGDataType::SGG_FLOAT3),
-                                              IShaderUniform("camera.zFar", SGGDataType::SGG_FLOAT),
-                                              IShaderUniform("camera.rotation", SGGDataType::SGG_FLOAT3),
-                                              IShaderUniform("camera.p1", SGGDataType::SGG_FLOAT),
-                                              IShaderUniform("camera.scale", SGGDataType::SGG_FLOAT3),
-                                              IShaderUniform("camera.p2", SGGDataType::SGG_FLOAT)
-                                        });
+        IShaderUniform("camera.projectionSpaceMatrix", SGGDataType::SGG_MAT4),
+        IShaderUniform("camera.orthographicSpaceMatrix", SGGDataType::SGG_MAT4),
+        IShaderUniform("camera.orthographicMatrix", SGGDataType::SGG_MAT4),
+        IShaderUniform("camera.projectionMatrix", SGGDataType::SGG_MAT4),
+        IShaderUniform("camera.viewMatrix", SGGDataType::SGG_MAT4),
+        IShaderUniform("camera.position", SGGDataType::SGG_FLOAT3),
+        IShaderUniform("camera.zFar", SGGDataType::SGG_FLOAT),
+        IShaderUniform("camera.rotation", SGGDataType::SGG_FLOAT3),
+        IShaderUniform("camera.p1", SGGDataType::SGG_FLOAT),
+        IShaderUniform("camera.scale", SGGDataType::SGG_FLOAT3),
+        IShaderUniform("camera.p2", SGGDataType::SGG_FLOAT)
+    });
     m_viewMatricesBuffer->setLayoutLocation(1);
     m_viewMatricesBuffer->prepare();
 
     m_programDataBuffer = Ref<GL4UniformBuffer>(createUniformBuffer());
     m_programDataBuffer->m_blockName = "ProgramDataBlock";
     m_programDataBuffer->putUniforms({
-                                             IShaderUniform("programData.windowSize", SGGDataType::SGG_FLOAT2),
-                                             IShaderUniform("programData.primaryMonitorSize", SGGDataType::SGG_FLOAT2),
-                                             IShaderUniform("programData.p0", SGGDataType::SGG_FLOAT),
-                                             IShaderUniform("programData.currentTime", SGGDataType::SGG_FLOAT)
-                                       });
+        IShaderUniform("programData.windowSize", SGGDataType::SGG_FLOAT2),
+        IShaderUniform("programData.primaryMonitorSize", SGGDataType::SGG_FLOAT2),
+        IShaderUniform("programData.p0", SGGDataType::SGG_FLOAT),
+        IShaderUniform("programData.currentTime", SGGDataType::SGG_FLOAT)
+    });
     m_programDataBuffer->setLayoutLocation(2);
     m_programDataBuffer->prepare();
 

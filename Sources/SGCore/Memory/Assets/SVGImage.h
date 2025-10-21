@@ -30,7 +30,7 @@ namespace SGCore
 
         void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
 
-        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept;
 
         std::vector<AssetRef<SVGImageSpecialization>> m_specializations;
         

@@ -37,7 +37,7 @@ namespace SGCore
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) final;
         void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept final;
 
-        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept;
 
     private:
         lunasvg::Bitmap m_bitmap;

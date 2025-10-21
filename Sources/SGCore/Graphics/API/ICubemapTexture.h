@@ -22,7 +22,7 @@ namespace SGCore
         std::vector<AssetRef<ITexture2D>> m_parts;
 
     protected:
-        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept;
 
     private:
         template<typename... AssetCtorArgs>

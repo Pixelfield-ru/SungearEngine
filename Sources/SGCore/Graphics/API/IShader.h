@@ -140,7 +140,7 @@ namespace SGCore
     protected:
         virtual void doCompile() = 0;
 
-        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept;
 
     private:
         AssetWeakRef<ShaderAnalyzedFile> m_shaderAnalyzedFile;

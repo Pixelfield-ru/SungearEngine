@@ -157,7 +157,7 @@ namespace SGCore
         void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
-        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept;
 
         std::streamsize m_indicesOffsetInPackage = 0;
         std::streamsize m_indicesSizeInPackage = 0;

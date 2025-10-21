@@ -126,7 +126,7 @@ namespace SGCore
         std::array<std::vector<AssetRef<ITexture2D>>, texture_types_count> m_textures;
         // std::unordered_map<SGTextureType, std::vector<AssetRef<ITexture2D>>> m_textures;
 
-        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept;
 
         glm::vec4 m_diffuseColor        = glm::vec4(1.0f);
         glm::vec4 m_specularColor       = glm::vec4(1.0f);

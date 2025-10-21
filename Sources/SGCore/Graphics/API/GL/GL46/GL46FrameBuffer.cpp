@@ -2,5 +2,5 @@
 
 SGCore::GL46FrameBuffer::~GL46FrameBuffer() noexcept
 {
-    destroy();
+    GL4FrameBuffer::destroy();
 }

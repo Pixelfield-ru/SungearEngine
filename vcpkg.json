@@ -20,7 +20,17 @@
     "version>=" : "2.13.3"
   }, {
     "name" : "glad",
-    "features" : [ "extensions" ],
+    "features" : [
+      "extensions",
+      {
+        "name": "gl-api-46",
+        "platform": "windows | linux | osx"
+      },
+      {
+        "name": "gles2-api-32",
+        "platform": "android"
+      }
+    ],
     "version>=" : "0.1.36"
   }, {
     "name" : "glm",

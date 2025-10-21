@@ -5,11 +5,17 @@ project(SungearEngine)
 
 include(cmake/platform.cmake)
 
+if(SG_TARGET_OS_ANDROID)
+    set(ANDROID_STL "c++_static")
+    add_definitions(-DANDROID_STL="c++_static")
+endif()
+
 message("CMAKE_SIZEOF_VOID_P: ${CMAKE_SIZEOF_VOID_P}")
 
 message(STATUS "CMAKE_TOOLCHAIN_FILE: ${CMAKE_TOOLCHAIN_FILE}")
 message(STATUS "ANDROID_ABI: ${ANDROID_ABI}")
 message(STATUS "ANDROID_PLATFORM: ${ANDROID_PLATFORM}")
+message(STATUS "ANDROID_STL: ${ANDROID_STL}")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DSUNGEAR_DEBUG)

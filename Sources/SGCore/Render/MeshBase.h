@@ -35,7 +35,7 @@ namespace SGCore
         MeshBase& operator=(MeshBase&&) noexcept = default;
 
     protected:
-        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept;
 
     private:
         AssetRef<IMeshData> m_meshData;

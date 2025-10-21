@@ -25,7 +25,7 @@ namespace SGCore
                                  const bool& rootAdd) noexcept;
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept;
-        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept;
 
     public:
         std::string m_name;

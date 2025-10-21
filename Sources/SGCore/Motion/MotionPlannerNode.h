@@ -66,7 +66,7 @@ namespace SGCore
         MotionPlannerNode& operator=(const MotionPlannerNode&) noexcept = default;
         MotionPlannerNode& operator=(MotionPlannerNode&&) noexcept = default;
 
-        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept;
     };
 }
 

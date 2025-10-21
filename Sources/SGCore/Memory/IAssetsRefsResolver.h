@@ -7,7 +7,6 @@
 
 #include "SGCore/Utils/Slot.h"
 #include "SGCore/Memory/AssetManager.h"
-#include "SGCore/Utils/Defines.h"
 
 #define sg_assets_refs_resolver_as_friend template<typename> friend struct IAssetsRefsResolver;
 

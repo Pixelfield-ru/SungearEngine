@@ -9,7 +9,7 @@
 
 SGCore::GLVertexArray::~GLVertexArray() noexcept
 {
-    destroy();
+    GLVertexArray::destroy();
 }
 
 std::shared_ptr<SGCore::IVertexArray> SGCore::GLVertexArray::create() noexcept
