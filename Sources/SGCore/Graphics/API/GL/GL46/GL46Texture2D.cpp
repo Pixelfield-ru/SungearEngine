@@ -6,6 +6,8 @@
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 #include "../GLGraphicsTypesCaster.h"
 
+// todo: remove folder GL46
+
 SGCore::GL46Texture2D::~GL46Texture2D() noexcept
 {
     destroyOnGPU();
@@ -14,6 +16,7 @@ SGCore::GL46Texture2D::~GL46Texture2D() noexcept
 // migrate to gl46
 void SGCore::GL46Texture2D::create() noexcept
 {
+#ifdef GL_VERSION_1_0
     glCreateTextures(GL_TEXTURE_2D, 1, &m_textureHandler);
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -38,6 +41,7 @@ void SGCore::GL46Texture2D::create() noexcept
                         GLGraphicsTypesCaster::sggFormatToGL(m_format),
                         GL_UNSIGNED_BYTE,
                         m_textureData.get());
+#endif
 
     #ifdef SUNGEAR_DEBUG
     GL4Renderer::getInstance()->checkForErrors();
@@ -51,7 +55,9 @@ void SGCore::GL46Texture2D::destroyOnGPU() noexcept
 
 void SGCore::GL46Texture2D::bind(const std::uint8_t& textureUnit) const noexcept
 {
+#ifdef GL_VERSION_1_0
     glBindTextureUnit(textureUnit, m_textureHandler);
+#endif
     //glActiveTexture(GL_TEXTURE0);
     //glBindTexture(GL_TEXTURE_2D, m_handler);
 }

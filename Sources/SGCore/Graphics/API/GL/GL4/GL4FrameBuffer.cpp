@@ -40,8 +40,11 @@ void SGCore::GL4FrameBuffer::bindAttachmentToDrawIn
     if(attachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
        attachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
     {
-        glDrawBuffer(GL_COLOR_ATTACHMENT0 + (std::to_underlying(attachmentType) -
-                std::to_underlying(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)));
+        const GLenum buffers[] = {
+            GLenum(GL_COLOR_ATTACHMENT0 + (std::to_underlying(attachmentType) - std::to_underlying(
+                                               SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)))
+        };
+        glDrawBuffers(1, buffers);
     }
 }
 
@@ -102,7 +105,8 @@ void SGCore::GL4FrameBuffer::unbindAttachmentToReadFrom()
 
 void SGCore::GL4FrameBuffer::unbindAttachmentToDrawIn()
 {
-    glDrawBuffer(GL_NONE);
+    const GLenum buf[] = { GL_NONE };
+    glDrawBuffers(1, buf);
 }
 
 void SGCore::GL4FrameBuffer::bind() const
@@ -263,6 +267,7 @@ void SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmen
                       "Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT.\n{0}",
                       SG_CURRENT_LOCATION_STR);
                 break;
+#ifdef GL_VERSION_1_0
             case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
                 // Обработка ошибки: Неправильный буфер рисования
                 LOG_E(SGCORE_TAG,
@@ -275,6 +280,7 @@ void SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmen
                       "Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER.\n{0}",
                       SG_CURRENT_LOCATION_STR);
                 break;
+#endif
             case GL_FRAMEBUFFER_UNSUPPORTED:
                 // Обработка ошибки: Неподдерживаемый формат фреймбуфера
                 LOG_E(SGCORE_TAG,

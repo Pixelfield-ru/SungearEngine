@@ -590,7 +590,11 @@ SGCore::GL4Renderer::useMeshRenderState(const SGCore::MeshRenderState& newMeshRe
         }
 
         glLineWidth(newMeshRenderState.m_linesWidth);
+#ifdef GL_VERSION_1_0
         glPointSize(newMeshRenderState.m_pointsSize);
+#else
+#warning "Please, implement point size set"
+#endif
 
         m_cachedMeshRenderState.m_linesWidth = newMeshRenderState.m_linesWidth;
         m_cachedMeshRenderState.m_pointsSize = newMeshRenderState.m_pointsSize;
@@ -639,7 +643,11 @@ SGCore::GL4Renderer::useMeshRenderState(const SGCore::MeshRenderState& newMeshRe
         }
         if(m_cachedMeshRenderState.m_pointsSize != newMeshRenderState.m_pointsSize)
         {
+#ifdef GL_VERSION_1_0
             glPointSize(newMeshRenderState.m_pointsSize);
+#else
+#warning "Please, implement point size set"
+#endif
             m_cachedMeshRenderState.m_pointsSize = newMeshRenderState.m_pointsSize;
         }
 

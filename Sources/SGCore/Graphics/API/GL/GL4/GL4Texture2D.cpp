@@ -70,7 +70,11 @@ void SGCore::GL4Texture2D::create() noexcept
 
                 glTexParameteri(target, GL_TEXTURE_BASE_LEVEL, 0);
                 glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, static_cast<GLint>(m_gliTexture.levels() - 1));
-                glTexParameteriv(target, GL_TEXTURE_SWIZZLE_RGBA, &gliFormat.Swizzles[0]);
+                // glTexParameteriv(target, GL_TEXTURE_SWIZZLE_RGBA, &gliFormat.Swizzles[0]);
+                glTexParameteri(target, GL_TEXTURE_SWIZZLE_R, gliFormat.Swizzles[0]);
+                glTexParameteri(target, GL_TEXTURE_SWIZZLE_G, gliFormat.Swizzles[1]);
+                glTexParameteri(target, GL_TEXTURE_SWIZZLE_B, gliFormat.Swizzles[2]);
+                glTexParameteri(target, GL_TEXTURE_SWIZZLE_A, gliFormat.Swizzles[3]);
                 glTexStorage2D(target, static_cast<GLint>(m_gliTexture.levels()), gliFormat.Internal, textureExtent.x, textureExtent.y);
 
                 // m_internalFormat = gliFormat.Internal;
@@ -115,13 +119,18 @@ void SGCore::GL4Texture2D::create() noexcept
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+#ifdef GL_VERSION_1_0
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0);
+#else
+#warning "TODO: MAKE CHECK IF CURRENT GPU IS Qualcomm"
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS_QCOM, 0);
+#endif
 
         if(DeviceGLInfo::getSupportingExtensions().contains(SG_STRINGIFY(GL_EXT_texture_filter_anisotropic)))
         {
             float amount = std::min(4.0f, DeviceGLInfo::getMaxTextureMaxAnisotropy());
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, amount);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
         }
     }
     
@@ -220,12 +229,21 @@ void SGCore::GL4Texture2D::createAsFrameBufferAttachment(const SGCore::Ref<SGCor
         }
         else
         {
+#ifdef GL_VERSION_1_0
             glTexImage2DMultisample(glType,
                                     m_multisamplingSamplesCount,
-                                    GLGraphicsTypesCaster::sggFormatToGL(m_format),
+                                    GLGraphicsTypesCaster::sggInternalFormatToGL(m_internalFormat),
                                     m_width, m_height,
                                     GL_FALSE
             );
+#else
+            glTexStorage2DMultisample(glType,
+                                      m_multisamplingSamplesCount,
+                                      GLGraphicsTypesCaster::sggInternalFormatToGL(m_internalFormat),
+                                      m_width, m_height,
+                                      GL_FALSE
+            );
+#endif
         }
 
         // TODO: make it customizable
