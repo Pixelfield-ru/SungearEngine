@@ -6,6 +6,9 @@
 #include <SGCore/Utils/Utils.h>
 #include "Logger.h"
 
+#include "AndroidLogcat.h"
+#include "SGCore/Utils/FileUtils.h"
+
 std::string SGCore::Logger::levelToString(SGCore::Logger::Level level) noexcept
 {
     switch (level)
@@ -37,6 +40,12 @@ SGCore::Logger::createLogger(const std::string& loggerName, const std::filesyste
 SGCore::Logger::Logger(const std::string& loggerName, const std::filesystem::path& filePath, bool saveMessages) noexcept
 {
     const std::string u8Path = Utils::toUTF8(filePath.u16string());
+
+    LOGCAT_I(SGCORE_TAG, "SGCORE: log path: {}, loggerName: {}", u8Path.c_str(), loggerName);
+
+    /*std::filesystem::create_directories(filePath.parent_path());
+    std::ofstream ofs(filePath);*/
+
     m_spdlogLogger = spdlog::basic_logger_mt(loggerName, u8Path);
     spdlog::flush_on(spdlog::level::info);
 

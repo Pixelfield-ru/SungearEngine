@@ -75,6 +75,7 @@
          $<BUILD_INTERFACE:${FREETYPE_INCLUDE_DIRS}>
          $<BUILD_INTERFACE:${Stb_INCLUDE_DIR}>
          ${ANTLR4_INCLUDE_DIR}
+         ${JNI_INCLUDE_DIRS}
          )
 
  message("CMAKE_BUILD_TYPE: " ${CMAKE_BUILD_TYPE})
@@ -105,10 +106,15 @@
 
          ${SG_BULLET_LIBS}
          ${FREETYPE_LIBRARIES}
+         ${JNI_LIBRARIES}
  )
 
  if(SG_TARGET_PLATFORM_PC)
    target_link_libraries(${PROJECT_NAME} PUBLIC glfw)
+ endif()
+
+ if(SG_TARGET_OS_ANDROID)
+  target_link_libraries(${PROJECT_NAME} PUBLIC GLESv3)
  endif()
 
  if(SG_TARGET_OS_LINUX OR SG_TARGET_OS_DARWIN)

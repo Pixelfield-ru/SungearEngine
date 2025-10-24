@@ -23,7 +23,7 @@ import java.io.File;
 public class MainActivity extends Activity implements SurfaceHolder.Callback {
     private SurfaceView surfaceView;
 
-    public String getDeviceArchitecture() {
+    public static String getDeviceArchitecture() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             String[] abis = Build.SUPPORTED_ABIS;
             if (abis != null && abis.length > 0) {
@@ -59,6 +59,8 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
         Log.d("SungearStarter", "Loading SGCore.so...");
         final var appInfo = getApplicationInfo();
         System.load(appInfo.sourceDir  + "!/lib/" + getDeviceArchitecture() + "/SGCore.so");
+
+        NativeMethods.startSGCore(this.getApplicationContext());
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }

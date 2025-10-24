@@ -128,6 +128,7 @@ find_package(antlr4-runtime CONFIG REQUIRED)
 find_package(gli CONFIG REQUIRED)
 find_package(meshoptimizer CONFIG REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system asio)
+find_package(JNI REQUIRED)
 
 # options --------------------------
 

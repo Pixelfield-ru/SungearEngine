@@ -4,6 +4,9 @@
 
 #include "FileUtils.h"
 #include "Utils.h"
+#include <jni.h>
+
+#include "SGCore/ExternalAPI/Java/JNIManager.h"
 
 std::string SGCore::FileUtils::readFile(const std::filesystem::path& path)
 {
@@ -175,4 +178,29 @@ SGCore::FileUtils::findFile(const std::filesystem::path& relativePath, const std
     }
 
     return "";
+}
+
+std::filesystem::path SGCore::FileUtils::getAppDataPath() noexcept
+{
+#ifdef SG_PLATFORM_OS_ANDROID
+    Java::JNINativeThreadHandler threadHandler;
+    auto* env = Java::JNIManager::getEnv(threadHandler);
+    auto context = Java::JNIManager::getContext();
+
+    const jclass contextClass = env->GetObjectClass(context);
+    const jmethodID getFilesDirMethod = env->GetMethodID(contextClass, "getExternalFilesDir", "(Ljava/lang/String;)Ljava/io/File;");
+    const jobject filesDir = env->CallObjectMethod(context, getFilesDirMethod, nullptr);
+
+    const jclass fileClass = env->FindClass("java/io/File");
+    const jmethodID getPathMethod = env->GetMethodID(fileClass, "getAbsolutePath", "()Ljava/lang/String;");
+    const auto path = (jstring)env->CallObjectMethod(filesDir, getPathMethod);
+
+    const char* pathChars = env->GetStringUTFChars(path, nullptr);
+    std::filesystem::path result(pathChars);
+    env->ReleaseStringUTFChars(path, pathChars);
+
+    return result;
+#else
+    return "";
+#endif
 }

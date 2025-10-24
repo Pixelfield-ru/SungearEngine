@@ -5,6 +5,7 @@
 #include "Time.h"
 
 #include <sstream>
+#include "Platform.h"
 
 long long SGCore::Utils::getTimeNanos() noexcept
 {
@@ -65,7 +66,7 @@ std::chrono::sys_time<std::chrono::seconds> SGCore::Utils::getStringAsTime(const
 
     return dt;
 #else
-#warning getStringAsTime DOES NOT SUPPORTED IN LINUX AND MAC OS NOW. FOR DEVS: PLEASE, IMPLEMENT getStringAsTime!
+#warning getStringAsTime DOES NOT SUPPORTED IN LINUX, MAC OS AND Android FOR NOW. FOR DEVS: PLEASE, IMPLEMENT getStringAsTime!
 
     return {};
 #endif
