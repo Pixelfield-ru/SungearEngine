@@ -114,7 +114,9 @@
  endif()
 
  if(SG_TARGET_OS_ANDROID)
-  target_link_libraries(${PROJECT_NAME} PUBLIC GLESv3)
+  message(STATUS "Android Lib: ${SG_ANDROID_LIB}")
+  message(STATUS "EGL Lib: ${SG_EGL_LIB}")
+  target_link_libraries(${PROJECT_NAME} PUBLIC GLESv3 ${SG_ANDROID_LIB} ${SG_EGL_LIB})
  endif()
 
  if(SG_TARGET_OS_LINUX OR SG_TARGET_OS_DARWIN)

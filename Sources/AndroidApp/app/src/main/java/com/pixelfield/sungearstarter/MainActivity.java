@@ -60,7 +60,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
         final var appInfo = getApplicationInfo();
         System.load(appInfo.sourceDir  + "!/lib/" + getDeviceArchitecture() + "/SGCore.so");
 
-        NativeMethods.startSGCore(this.getApplicationContext());
+        NativeMethods.startSGCore(this.getApplicationContext(), holder.getSurface());
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }

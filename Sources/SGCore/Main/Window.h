@@ -10,6 +10,14 @@
 
 #include "SGCore/Utils/Signal.h"
 
+#ifdef SG_PLATFORM_OS_ANDROID
+#include <jni.h>
+#include <android/native_window.h>
+#include <EGL/egl.h>
+#endif
+
+#include "SGCore/ExternalAPI/Java/Main.h"
+
 namespace SGCore
 {
     struct Window;
@@ -101,7 +109,11 @@ namespace SGCore
 #ifdef SG_PLATFORM_PC
         using window_handle = GLFWwindow*;
 #elif defined(SG_PLATFORM_OS_ANDROID)
-        using window_handle = void*;
+        using window_handle = ANativeWindow*;
+#endif
+
+#ifdef SG_PLATFORM_OS_ANDROID
+        friend void __AndroidImpl::setAndroidMainWindowHandle(ANativeWindow* window) noexcept;
 #endif
 
         Window() noexcept = default;
@@ -185,6 +197,13 @@ namespace SGCore
         static void errorCallback(int errCode, const char* err_msg);
 
         window_handle m_handle = nullptr;
+
+#ifdef SG_PLATFORM_OS_ANDROID
+        EGLDisplay m_eglDisplay = EGL_NO_DISPLAY;
+        EGLSurface m_eglSurface = EGL_NO_SURFACE;
+        EGLContext m_eglContext = EGL_NO_CONTEXT;
+        EGLConfig m_eglConfig = nullptr;
+#endif
     };
 }
 

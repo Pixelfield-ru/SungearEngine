@@ -6,6 +6,7 @@
 #include "CoreMain.h"
 
 #include "SGCore/Input/PCInput.h"
+#include "SGCore/Logger/AndroidLogcat.h"
 
 void SGCore::Window::create()
 {
@@ -78,6 +79,68 @@ void SGCore::Window::create()
     }
     // -------------------------
 #elif defined(SG_PLATFORM_OS_ANDROID)
+    if(!m_handle)
+    {
+        LOGCAT_E(SGCORE_TAG, "SGCore: Attempt to create second window. In: {}", SG_CURRENT_LOCATION_STR);
+        LOG_E(SGCORE_TAG, "SGCore: Failed to create second window. In: {}", SG_CURRENT_LOCATION_STR);
+        return;
+    }
+
+    m_eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    if(m_eglDisplay == EGL_NO_DISPLAY)
+    {
+        LOGCAT_E(SGCORE_TAG, "SGCore: Failed to create EGL display. In: {}", SG_CURRENT_LOCATION_STR);
+        LOG_E(SGCORE_TAG, "SGCore: Failed to create EGL display. In: {}", SG_CURRENT_LOCATION_STR);
+        return;
+    }
+
+    EGLint major, minor;
+    if(!eglInitialize(m_eglDisplay, &major, &minor))
+    {
+        LOGCAT_E(SGCORE_TAG, "SGCore: Failed to initialize EGL. In: {}", SG_CURRENT_LOCATION_STR);
+        LOG_E(SGCORE_TAG, "SGCore: Failed to initialize EGL. In: {}", SG_CURRENT_LOCATION_STR);
+        return;
+    }
+
+    // todo: make customizable
+    const EGLint configAttribs[] = {
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
+        EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+        EGL_BLUE_SIZE, 8,
+        EGL_GREEN_SIZE, 8,
+        EGL_RED_SIZE, 8,
+        EGL_ALPHA_SIZE, 8,
+        EGL_DEPTH_SIZE, 24,
+        EGL_STENCIL_SIZE, 8,
+        EGL_NONE
+    };
+
+    EGLint numConfigs;
+    if(!eglChooseConfig(m_eglDisplay, configAttribs, &m_eglConfig, 1, &numConfigs))
+    {
+        LOGCAT_E(SGCORE_TAG, "SGCore: Failed to choose EGL config. In: {}", SG_CURRENT_LOCATION_STR);
+        LOG_E(SGCORE_TAG, "SGCore: Failed to choose EGL config. In: {}", SG_CURRENT_LOCATION_STR);
+        return;
+    }
+
+    const EGLint contextAttribs[] = {
+        EGL_CONTEXT_CLIENT_VERSION, 3,
+        EGL_NONE
+    };
+
+    m_eglContext = eglCreateContext(m_eglDisplay, m_eglConfig, EGL_NO_CONTEXT, contextAttribs);
+    if(m_eglContext == EGL_NO_CONTEXT)
+    {
+        LOGCAT_E(SGCORE_TAG, "SGCore: Failed to create EGL context. In: {}", SG_CURRENT_LOCATION_STR);
+        LOG_E(SGCORE_TAG, "SGCore: Failed to create EGL context. In: {}", SG_CURRENT_LOCATION_STR);
+        return;
+    }
+
+    makeCurrent();
+
+    LOGCAT_I(SGCORE_TAG, "SGCore: EGL Window initialized. Version: {}.{}", major, minor);
+    LOG_I(SGCORE_TAG, "SGCore: EGL Window initialized. Version: {}.{}", major, minor);
+
 #endif
 }
 
@@ -102,6 +165,7 @@ void SGCore::Window::makeCurrent() noexcept
 #ifdef SG_PLATFORM_PC
         glfwMakeContextCurrent(m_handle);
 #elif defined(SG_PLATFORM_OS_ANDROID)
+        eglMakeCurrent(m_eglDisplay, m_eglSurface, m_eglSurface, m_eglContext);
 #endif
     }
 }
@@ -302,15 +366,17 @@ void SGCore::Window::errorCallback(int errCode, const char* err_msg)
 
 void SGCore::Window::swapBuffers()
 {
-#ifdef SG_PLATFORM_PC
-    auto t0 = glfwGetTime();
-    glfwSwapBuffers(m_handle);
-    auto t1 = glfwGetTime();
+    auto t0 = Utils::getTimeSecondsAsDouble();
 
-    
-    m_swapBuffersExecutionTime = (t1 - t0) * 1000.0;
+#ifdef SG_PLATFORM_PC
+    glfwSwapBuffers(m_handle);
 #elif defined(SG_PLATFORM_OS_ANDROID)
+    eglSwapBuffers(m_eglDisplay, m_eglSurface);
 #endif
+
+    auto t1 = Utils::getTimeSecondsAsDouble();
+
+    m_swapBuffersExecutionTime = (t1 - t0) * 1000.0;
 }
 
 void SGCore::Window::pollEvents()

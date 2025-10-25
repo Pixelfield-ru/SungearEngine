@@ -130,6 +130,11 @@ find_package(meshoptimizer CONFIG REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system asio)
 find_package(JNI REQUIRED)
 
+if(SG_TARGET_OS_ANDROID)
+    find_library(SG_ANDROID_LIB android)
+    find_library(SG_EGL_LIB EGL)
+endif()
+
 # options --------------------------
 
 # TODO: make SG_BUILD_EDITOR

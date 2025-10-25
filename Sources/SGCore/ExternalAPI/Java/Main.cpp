@@ -5,11 +5,17 @@
 #include "Main.h"
 
 #include "JNIManager.h"
+
 #include "SGCore/Logger/AndroidLogcat.h"
 #include "SGCore/Logger/Logger.h"
 #include "SGCore/Main/CoreMain.h"
 
-void Java_com_pixelfield_sungearstarter_NativeMethods_startSGCore(JNIEnv* env, jclass clazz, jobject context)
+#ifdef SG_PLATFORM_OS_ANDROID
+
+#include <android/native_window.h>
+#include <android/native_window_jni.h>
+
+void Java_com_pixelfield_sungearstarter_NativeMethods_startSGCore(JNIEnv* env, jclass thisClass, jobject context, jobject surface)
 {
     if(!SGCore::Java::JNIManager::initialized())
     {
@@ -26,7 +32,16 @@ void Java_com_pixelfield_sungearstarter_NativeMethods_startSGCore(JNIEnv* env, j
         return;
     }
 
+    SGCore::__AndroidImpl::setAndroidMainWindowHandle(ANativeWindow_fromSurface(env, surface));
+
     SGCore::CoreMain::start();
 
     SGCore::Java::JNIManager::cleanup(env);
 }
+
+void SGCore::__AndroidImpl::setAndroidMainWindowHandle(ANativeWindow* window) noexcept
+{
+    SGCore::CoreMain::getWindow().m_handle = window;
+}
+
+#endif
