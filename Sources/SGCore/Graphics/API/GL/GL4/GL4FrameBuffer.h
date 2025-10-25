@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_GL4FRAMEBUFFER_H
 #define SUNGEARENGINE_GL4FRAMEBUFFER_H
 
-#include <SGCore/pch.h>
+#include <glad/glad.h>
 
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 

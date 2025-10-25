@@ -7,6 +7,7 @@
 #include "SGCore/Serde/Serde.h"
 
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
+#include <BulletCollision/CollisionShapes/btCompoundShape.h>
 
 namespace SGCore
 {

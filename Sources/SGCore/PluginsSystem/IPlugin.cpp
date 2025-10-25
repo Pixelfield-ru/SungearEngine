@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#ifdef SG_PLATFORM_OS_LINUX
+#if SG_PLATFORM_OS_LINUX
 #include <dlfcn.h>
 #endif
 

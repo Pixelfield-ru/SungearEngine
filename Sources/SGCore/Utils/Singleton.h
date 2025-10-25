@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_SINGLETON_H
 #define SUNGEARENGINE_SINGLETON_H
 
-#include <SGCore/pch.h>
+#include <memory>
 
 #include <sgcore_export.h>
 

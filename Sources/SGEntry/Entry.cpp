@@ -24,7 +24,7 @@
 #include "SGCore/Render/Batching/Batch.h"
 #include "SGCore/Render/ShadowMapping/CSM/CSMTarget.h"
 
-#ifdef SG_PLATFORM_OS_WINDOWS
+#if SG_PLATFORM_OS_WINDOWS
 #ifdef __cplusplus
 extern "C" {
 #endif

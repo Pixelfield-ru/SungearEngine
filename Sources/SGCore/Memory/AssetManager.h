@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_ASSETMANAGER_H
 #define SUNGEARENGINE_ASSETMANAGER_H
 
-#include <SGCore/pch.h>
-
 #include <sgcore_export.h>
 
 #include "Assets/IAsset.h"
@@ -15,7 +13,6 @@
 #include "SGCore/Threading/ThreadsManager.h"
 #include "SGCore/Logger/Logger.h"
 #include "AssetsPackage.h"
-#include "AssetRef.h"
 #include "AssetWeakRef.h"
 #include "SGCore/Utils/Slot.h"
 #include "AssetsLoadPolicy.h"

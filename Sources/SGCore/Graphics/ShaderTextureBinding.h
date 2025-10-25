@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_TEXTURESBLOCK_H
 #define SUNGEARENGINE_TEXTURESBLOCK_H
 
-#include <SGCore/pch.h>
-
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Graphics/API/GraphicsDataTypes.h"
 // #include "SGCore/Memory/AssetRef.h"

@@ -4,6 +4,9 @@
 
 #include "TransformUtils.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+
 #include "Transform.h"
 
 bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,

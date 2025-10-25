@@ -4,6 +4,8 @@
 
 #include "MathUtils.h"
 
+#include <glm/ext/quaternion_geometric.hpp>
+
 glm::vec2 SGCore::MathUtils::raySphereIntersection(const glm::vec3& ro, const glm::vec3& rd, const float& sr) noexcept
 {
     float b = glm::dot(ro, rd);

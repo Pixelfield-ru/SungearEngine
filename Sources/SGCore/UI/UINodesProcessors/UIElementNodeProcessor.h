@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <pugixml.hpp>
+
 #include "SGCore/UI/UIElement.h"
 
 namespace SGCore::UI

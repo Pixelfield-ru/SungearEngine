@@ -5,8 +5,6 @@
 #ifndef THREADINGAPI_THREADSMANAGER_H
 #define THREADINGAPI_THREADSMANAGER_H
 
-#include <SGCore/pch.h>
-
 #include "Thread.h"
 #include "ThreadsPool.h"
 #include "SGCore/Utils/Macroses.h"

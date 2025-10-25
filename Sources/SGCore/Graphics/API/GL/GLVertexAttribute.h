@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_GLVERTEXATTRIBUTE_H
 #define SUNGEARENGINE_GLVERTEXATTRIBUTE_H
 
-#include <SGCore/pch.h>
-
 #include "SGCore/Graphics/API/IVertexAttribute.h"
 
 namespace SGCore

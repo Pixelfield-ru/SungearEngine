@@ -6,22 +6,25 @@
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/Time.h"
 #include "SGCore/Utils/Utils.h"
-#include "SGCore/Utils/TypeTraits.h"
+#include <fmt/format.h>
+#include <spdlog/spdlog.h>
 
-#define LOG_I(tag, msg, ...) SGCore::Logger::getDefaultLogger()->info<true>(tag, msg, ##__VA_ARGS__);
-#define LOG_D(tag, msg, ...) SGCore::Logger::getDefaultLogger()->debug<true>(tag, msg, ##__VA_ARGS__);
-#define LOG_W(tag, msg, ...) SGCore::Logger::getDefaultLogger()->warn<true>(tag, msg, ##__VA_ARGS__);
-#define LOG_E(tag, msg, ...) SGCore::Logger::getDefaultLogger()->error<true>(tag, msg, ##__VA_ARGS__);
-#define LOG_C(tag, msg, ...) SGCore::Logger::getDefaultLogger()->critical<true>(tag, msg, ##__VA_ARGS__);
+#include "AndroidLogcat.h"
+
+#define LOG_I(tag, msg, ...) SGCore::Logger::getDefaultLogger()->info<true>(tag, msg, ##__VA_ARGS__); LOGCAT_I(tag, msg, ##__VA_ARGS__);
+#define LOG_D(tag, msg, ...) SGCore::Logger::getDefaultLogger()->debug<true>(tag, msg, ##__VA_ARGS__); LOGCAT_D(tag, msg, ##__VA_ARGS__);
+#define LOG_W(tag, msg, ...) SGCore::Logger::getDefaultLogger()->warn<true>(tag, msg, ##__VA_ARGS__); LOGCAT_W(tag, msg, ##__VA_ARGS__);
+#define LOG_E(tag, msg, ...) SGCore::Logger::getDefaultLogger()->error<true>(tag, msg, ##__VA_ARGS__); LOGCAT_E(tag, msg, ##__VA_ARGS__);
+#define LOG_C(tag, msg, ...) SGCore::Logger::getDefaultLogger()->critical<true>(tag, msg, ##__VA_ARGS__); LOGCAT_D(tag, msg, ##__VA_ARGS__);
 
 #define LOG_NOT_IMPLEMENTED(tag) LOG_E(tag, "Do not call this function! It is not implemented!\n{}", SG_CURRENT_LOCATION_STR)
 #define LOG_NOT_SUPPORTED_FUNC(tag) LOG_E(tag, "Do not call this function! It is not supported!\n{}", SG_CURRENT_LOCATION_STR)
 
-#define LOG_I_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->info<false>(tag, msg, ##__VA_ARGS__);
-#define LOG_D_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->debug<false>(tag, msg, ##__VA_ARGS__);
-#define LOG_W_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->warn<false>(tag, msg, ##__VA_ARGS__);
-#define LOG_E_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->error<false>(tag, msg, ##__VA_ARGS__);
-#define LOG_C_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->critical<false>(tag, msg, ##__VA_ARGS__);
+#define LOG_I_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->info<false>(tag, msg, ##__VA_ARGS__); LOGCAT_I_UNFORMATTED(tag, msg);
+#define LOG_D_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->debug<false>(tag, msg, ##__VA_ARGS__); LOGCAT_D_UNFORMATTED(tag, msg);
+#define LOG_W_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->warn<false>(tag, msg, ##__VA_ARGS__); LOGCAT_W_UNFORMATTED(tag, msg);
+#define LOG_E_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->error<false>(tag, msg, ##__VA_ARGS__); LOGCAT_E_UNFORMATTED(tag, msg);
+#define LOG_C_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->critical<false>(tag, msg, ##__VA_ARGS__); LOGCAT_E_UNFORMATTED(tag, msg);
 
 #define SGCORE_TAG "SGCore"
 #define PROJECT_BUILD_TAG "Project Build"

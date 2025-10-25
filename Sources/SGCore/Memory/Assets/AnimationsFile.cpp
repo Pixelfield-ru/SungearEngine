@@ -6,6 +6,7 @@
 #include "SGCore/Utils/AssimpUtils.h"
 
 #include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
 void SGCore::AnimationsFile::doLoad(const SGCore::InterpolatedPath& path)
 {

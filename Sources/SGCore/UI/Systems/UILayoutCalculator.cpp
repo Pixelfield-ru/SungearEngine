@@ -94,7 +94,7 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
         }
         
         currentElementCache.m_curLocalPositionForElements =
-                glm::vec3 { currentTransformNode.m_elementCurrentCache.m_finalSize, 0.0f } / -2.0;
+                glm::vec3 { currentTransformNode.m_elementCurrentCache.m_finalSize, 0.0f } / -2.0f;
         currentElementCache.m_curLocalPositionForElements.x += currentElementCache.m_leftPadding;
         currentElementCache.m_curLocalPositionForElements.y += currentElementCache.m_topPadding;
         currentElementCache.m_lastRowSize = {};

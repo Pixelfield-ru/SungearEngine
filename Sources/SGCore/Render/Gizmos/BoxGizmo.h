@@ -1,7 +1,7 @@
 #ifndef SUNGEARENGINE_BOXCOMPONENT_H
 #define SUNGEARENGINE_BOXCOMPONENT_H
 
-#include <SGCore/pch.h>
+#include <glm/integer.hpp>
 
 #include "SGCore/Transformations/TransformBase.h"
 #include "SGCore/Render/MeshBase.h"

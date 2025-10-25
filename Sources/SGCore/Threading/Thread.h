@@ -5,7 +5,7 @@
 #ifndef THREADINGAPI_THREAD_H
 #define THREADINGAPI_THREAD_H
 
-#include <SGCore/pch.h>
+#include <thread>
 
 #include "SGCore/Coro/CoroScheduler.h"
 #include "SGCore/Utils/Signal.h"

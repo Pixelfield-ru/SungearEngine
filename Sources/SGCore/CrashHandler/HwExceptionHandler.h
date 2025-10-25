@@ -5,26 +5,28 @@
 #ifndef SUNGEARENGINE_HWEXCEPTIONHANDLER_H
 #define SUNGEARENGINE_HWEXCEPTIONHANDLER_H
 
-#include "SGCore/pch.h"
 #include "sgcore_export.h"
 
-#include "../Utils/Platform.h"
+#include "SGCore/Utils/Platform.h"
 #include "SGCore/Utils/Utils.h"
+#include "SGCore/Logger/AndroidLogcat.h"
+#include "SGCore/Logger/Logger.h"
 
-#ifdef SG_PLATFORM_OS_WINDOWS
+#if SG_PLATFORM_OS_WINDOWS
 // preventing including win sockets in next time
 #define _WINSOCKAPI_
 #include <Windows.h>
 #include <winnt.h>
 #endif
-#ifdef SG_PLATFORM_OS_LINUX
+#if SG_PLATFORM_OS_LINUX || SG_PLATFORM_OS_ANDROID
 #include <csignal>
 #include <cstring>
 #include <ucontext.h>
 #include <err.h>
 #endif
 
-#include "boost/stacktrace.hpp"
+#include <boost/stacktrace.hpp>
+#include <iostream>
 
 namespace SGCore
 {
@@ -38,7 +40,7 @@ namespace SGCore
 
         static inline size_t m_handlersCount = 0;
 
-        #ifdef SG_PLATFORM_OS_WINDOWS
+        #if SG_PLATFORM_OS_WINDOWS
         static LONG WINAPI winHandler(PEXCEPTION_POINTERS pExceptionInfo)
         {
             std::cout << "fatal error" << std::endl;
@@ -125,7 +127,7 @@ namespace SGCore
         }
         #endif
         
-        #ifdef SG_PLATFORM_OS_LINUX
+        #if SG_PLATFORM_OS_LINUX || SG_PLATFORM_OS_ANDROID
         static void posixHandler(int sig, siginfo_t* siginfo, void* context)
         {
             char fnmBuffer[256];
@@ -134,7 +136,11 @@ namespace SGCore
             FILE* fpCrash = fopen(fnmBuffer, "a");
 
             auto *u =(ucontext_t *) context;
+#if SG_PLATFORM_OS_LINUX
             void* exAddr = (void*) u->uc_mcontext.gregs[REG_RIP];
+#elif SG_PLATFORM_OS_ANDROID
+            void* exAddr = (void*) u->uc_mcontext.fault_address;
+#endif
 
             auto stackTrace = boost::stacktrace::stacktrace();
 
@@ -170,7 +176,7 @@ namespace SGCore
         #ifdef __LP64__
             eh_print("*** Arch: x64\n");
         #else
-            hc_print("*** Arch: x86\n");
+            eh_print("*** Arch: x86\n");
         #endif
             eh_print("*** Dump file: %s\n", fnmBuffer);
             eh_print("***\n");
@@ -253,12 +259,12 @@ namespace SGCore
 
         static void setupHandler()
         {
-            #ifdef SG_PLATFORM_OS_WINDOWS
+            #if SG_PLATFORM_OS_WINDOWS
             // AddVectoredExceptionHandler(m_handlersCount, winHandler);
             SetUnhandledExceptionFilter(winHandler);
             #endif
             
-            #ifdef SG_PLATFORM_OS_LINUX
+            #if SG_PLATFORM_OS_LINUX || SG_PLATFORM_OS_ANDROID
             
             
             #define STACK_SZ (MINSIGSTKSZ + 135 * 1000)

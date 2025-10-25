@@ -5,8 +5,7 @@
 #ifndef SUNGEARENGINE_THREADSPOOL_H
 #define SUNGEARENGINE_THREADSPOOL_H
 
-#include <SGCore/pch.h>
-
+#include <algorithm>
 #include "Thread.h"
 
 namespace SGCore::Threading

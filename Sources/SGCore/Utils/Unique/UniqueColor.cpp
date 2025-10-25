@@ -4,6 +4,9 @@
 
 #include "UniqueColor.h"
 
+#include <iostream>
+#include <fmt/format.h>
+
 #include "UniqueIDGenerator.h"
 
 SGCore::UniqueColor::UniqueColor() noexcept

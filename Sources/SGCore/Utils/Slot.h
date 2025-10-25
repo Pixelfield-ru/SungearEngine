@@ -8,6 +8,7 @@
 #include <functional>
 #include <list>
 #include <atomic>
+#include <mutex>
 #include <shared_mutex>
 
 namespace SGCore

@@ -29,7 +29,7 @@ void SGCore::Utils::swapEndian(char* sourceBuffer, const size_t& bufferSize) noe
 
 std::string SGCore::Utils::getRealPath(const std::string& path) noexcept
 {
-    #if defined(SG_PLATFORM_OS_WINDOWS)
+    #if SG_PLATFORM_OS_WINDOWS
     char buf[1024];
     char* res = _fullpath(buf, path.c_str(), 1024);
     if(res)
@@ -37,7 +37,7 @@ std::string SGCore::Utils::getRealPath(const std::string& path) noexcept
         return buf;
     }
     return "";
-    #elif defined(SG_PLATFORM_OS_LINUX) || defined(SG_PLATFORM_OS_ANDROID)
+    #elif SG_PLATFORM_OS_LINUX || SG_PLATFORM_OS_ANDROID
     char buf[PATH_MAX];
     char* res = realpath(path.c_str(), buf);
     if(res)
@@ -88,14 +88,14 @@ std::string SGCore::Utils::consoleExecute(const std::string& cmd, std::filesyste
 
     /*std::array<char, 2048> buffer { };
     std::string result;
-    #if defined(SG_PLATFORM_OS_WINDOWS)
+    #if SG_PLATFORM_OS_WINDOWS
     std::unique_ptr<FILE, void (*)(FILE*)> pipe(_popen(cmd.c_str(), "r"),
                                                 [](FILE* f) -> void
                                                 {
                                                     // wrapper to ignore the return value from pclose() is needed with newer versions of gnu g++
                                                     std::ignore = _pclose(f);
                                                 });
-    #elif defined(SG_PLATFORM_OS_LINUX)
+    #elif SG_PLATFORM_OS_LINUX
     std::unique_ptr<FILE, void(*)(FILE*)> pipe(popen(cmd.c_str(), "r"),
     [](FILE * f) -> void
     {

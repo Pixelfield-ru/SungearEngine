@@ -1,8 +1,6 @@
 #ifndef SUNGEARENGINE_TIMER_H
 #define SUNGEARENGINE_TIMER_H
 
-#include <SGCore/pch.h>
-
 // #include "TimerCallback.h"
 #include "Signal.h"
 

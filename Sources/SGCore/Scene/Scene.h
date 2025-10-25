@@ -1,8 +1,6 @@
 #ifndef SUNGEARENGINE_SCENE_H
 #define SUNGEARENGINE_SCENE_H
 
-#include <SGCore/pch.h>
-
 #include <sgcore_export.h>
 #include <optional>
 
@@ -11,7 +9,6 @@
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/Utils/Unique/UniqueNamesManager.h"
 #include "SGCore/Utils/Signal.h"
-#include "SGCore/Utils/TypeTraits.h"
 #include "SGCore/Memory/Assets/IAsset.h"
 #include "SGCore/ECS/Registry.h"
 

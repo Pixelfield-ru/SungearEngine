@@ -1,7 +1,7 @@
 #ifndef SUNGEARENGINE_ISHADERUNIFORM_H
 #define SUNGEARENGINE_ISHADERUNIFORM_H
 
-#include <SGCore/pch.h>
+#include <any>
 
 #include "GraphicsDataTypes.h"
 

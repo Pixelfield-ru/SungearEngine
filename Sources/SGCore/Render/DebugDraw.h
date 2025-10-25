@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_DEBUGDRAW_H
 #define SUNGEARENGINE_DEBUGDRAW_H
 
-#include <SGCore/pch.h>
-
 #include "IRenderPass.h"
 #include "SGCore/Graphics/API/RenderState.h"
 #include "SGCore/Main/CoreGlobals.h"

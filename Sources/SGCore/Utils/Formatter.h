@@ -5,7 +5,9 @@
 #ifndef SUNGEARENGINE_FORMATTER_H
 #define SUNGEARENGINE_FORMATTER_H
 
-#include <SGCore/pch.h>
+#include <string>
+#include <any>
+#include <unordered_map>
 
 namespace SGCore
 {

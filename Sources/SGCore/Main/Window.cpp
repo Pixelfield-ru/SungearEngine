@@ -10,7 +10,7 @@
 
 void SGCore::Window::create()
 {
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     glfwSetErrorCallback(errorCallback);
 
     if(!glfwInit())
@@ -78,10 +78,9 @@ void SGCore::Window::create()
         setPosition((primaryVideoMode->width - wndSizeX) / 2, (primaryVideoMode->height - wndSizeY) / 2);
     }
     // -------------------------
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
     if(!m_handle)
     {
-        LOGCAT_E(SGCORE_TAG, "SGCore: Attempt to create second window. In: {}", SG_CURRENT_LOCATION_STR);
         LOG_E(SGCORE_TAG, "SGCore: Failed to create second window. In: {}", SG_CURRENT_LOCATION_STR);
         return;
     }
@@ -89,7 +88,6 @@ void SGCore::Window::create()
     m_eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if(m_eglDisplay == EGL_NO_DISPLAY)
     {
-        LOGCAT_E(SGCORE_TAG, "SGCore: Failed to create EGL display. In: {}", SG_CURRENT_LOCATION_STR);
         LOG_E(SGCORE_TAG, "SGCore: Failed to create EGL display. In: {}", SG_CURRENT_LOCATION_STR);
         return;
     }
@@ -97,7 +95,6 @@ void SGCore::Window::create()
     EGLint major, minor;
     if(!eglInitialize(m_eglDisplay, &major, &minor))
     {
-        LOGCAT_E(SGCORE_TAG, "SGCore: Failed to initialize EGL. In: {}", SG_CURRENT_LOCATION_STR);
         LOG_E(SGCORE_TAG, "SGCore: Failed to initialize EGL. In: {}", SG_CURRENT_LOCATION_STR);
         return;
     }
@@ -118,11 +115,11 @@ void SGCore::Window::create()
     EGLint numConfigs;
     if(!eglChooseConfig(m_eglDisplay, configAttribs, &m_eglConfig, 1, &numConfigs))
     {
-        LOGCAT_E(SGCORE_TAG, "SGCore: Failed to choose EGL config. In: {}", SG_CURRENT_LOCATION_STR);
         LOG_E(SGCORE_TAG, "SGCore: Failed to choose EGL config. In: {}", SG_CURRENT_LOCATION_STR);
         return;
     }
 
+    // todo: customizable
     const EGLint contextAttribs[] = {
         EGL_CONTEXT_CLIENT_VERSION, 3,
         EGL_NONE
@@ -131,14 +128,12 @@ void SGCore::Window::create()
     m_eglContext = eglCreateContext(m_eglDisplay, m_eglConfig, EGL_NO_CONTEXT, contextAttribs);
     if(m_eglContext == EGL_NO_CONTEXT)
     {
-        LOGCAT_E(SGCORE_TAG, "SGCore: Failed to create EGL context. In: {}", SG_CURRENT_LOCATION_STR);
         LOG_E(SGCORE_TAG, "SGCore: Failed to create EGL context. In: {}", SG_CURRENT_LOCATION_STR);
         return;
     }
 
     makeCurrent();
 
-    LOGCAT_I(SGCORE_TAG, "SGCore: EGL Window initialized. Version: {}.{}", major, minor);
     LOG_I(SGCORE_TAG, "SGCore: EGL Window initialized. Version: {}.{}", major, minor);
 
 #endif
@@ -146,10 +141,10 @@ void SGCore::Window::create()
 
 void SGCore::Window::recreate()
 {
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     glfwMakeContextCurrent(nullptr);
     glfwDestroyWindow(m_handle);
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
 
     create();
@@ -162,9 +157,9 @@ void SGCore::Window::makeCurrent() noexcept
     GAPIType apiType = CoreMain::getRenderer()->getGAPIType();
     if(apiType >= GAPIType::SG_API_TYPE_GL4 && apiType <= GAPIType::SG_API_TYPE_GLES3)
     {
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
         glfwMakeContextCurrent(m_handle);
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
         eglMakeCurrent(m_eglDisplay, m_eglSurface, m_eglSurface, m_eglContext);
 #endif
     }
@@ -177,9 +172,9 @@ void SGCore::Window::setSize(const int& sizeX, const int& sizeY) noexcept
     m_config.m_sizeX = sizeX;
     m_config.m_sizeY = sizeY;
 
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     glfwSetWindowSize(m_handle, sizeX, sizeY);
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
 }
 
@@ -191,9 +186,9 @@ void SGCore::Window::setSizeLimits(const int& sizeMinLimitX, const int& sizeMinL
     m_config.m_sizeMaxLimitX = sizeMaxLimitX;
     m_config.m_sizeMaxLimitY = sizeMaxLimitY;
 
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     glfwSetWindowSizeLimits(m_handle, sizeMinLimitX, sizeMinLimitY, sizeMaxLimitX, sizeMaxLimitY);
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
 }
 
@@ -202,9 +197,9 @@ void SGCore::Window::setPosition(const int& posX, const int& posY) noexcept
     m_config.m_positionX = posX;
     m_config.m_positionY = posY;
 
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     glfwSetWindowPos(m_handle, posX, posY);
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
 }
 
@@ -212,9 +207,9 @@ void SGCore::Window::setTitle(const std::string& title) noexcept
 {
     m_config.m_title = title;
 
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     glfwSetWindowTitle(m_handle, title.c_str());
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
 }
 
@@ -225,9 +220,9 @@ void SGCore::Window::setSwapInterval(const bool& swapInterval) noexcept
     GAPIType apiType = CoreMain::getRenderer()->getGAPIType();
     if(apiType >= GAPIType::SG_API_TYPE_GL4 && apiType <= GAPIType::SG_API_TYPE_GLES3)
     {
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
         glfwSwapInterval(swapInterval);
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
     }
 }
@@ -236,9 +231,9 @@ void SGCore::Window::setEnableStickyKeys(const bool& enableStickyKeys) noexcept
 {
     m_config.m_enableStickyKeys = enableStickyKeys;
 
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     glfwSetInputMode(m_handle, GLFW_STICKY_KEYS, enableStickyKeys);
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
 }
 
@@ -246,9 +241,9 @@ void SGCore::Window::setHideAndCentralizeCursor(const bool& hideAndCentralizeCur
 {
     m_config.m_hideAndCentralizeCursor = hideAndCentralizeCursor;
 
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     glfwSetInputMode(m_handle, GLFW_CURSOR, hideAndCentralizeCursor ? GLFW_CURSOR_HIDDEN : GLFW_CURSOR_NORMAL);
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
 }
 
@@ -264,9 +259,9 @@ void SGCore::Window::setConfig(WindowConfig&& other) noexcept
 
 void SGCore::Window::setShouldClose(const bool& shouldClose) noexcept
 {
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     glfwSetWindowShouldClose(m_handle, shouldClose);
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
 }
 
@@ -276,19 +271,19 @@ void SGCore::Window::setShouldClose(const bool& shouldClose) noexcept
 
 void SGCore::Window::getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept
 {
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     const GLFWvidmode* primaryVideoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     sizeX = primaryVideoMode->width;
     sizeY = primaryVideoMode->height;
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
 }
 
 bool SGCore::Window::shouldClose() noexcept
 {
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     return glfwWindowShouldClose(m_handle);
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
     return false;
 #endif
 }
@@ -300,17 +295,17 @@ SGCore::WindowConfig& SGCore::Window::getConfig() noexcept
 
 void SGCore::Window::getSize(int& sizeX, int& sizeY) noexcept
 {
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     glfwGetWindowSize(m_handle, &sizeX, &sizeY);
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
 }
 
 void SGCore::Window::getBordersSize(int& left, int& top, int& right, int& bottom) noexcept
 {
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     glfwGetWindowFrameSize(m_handle, &left, &top, &right, &bottom);
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
 }
 
@@ -333,9 +328,9 @@ void SGCore::Window::getSizeWithBorders(int& sizeX, int& sizeY) noexcept
 
 void SGCore::Window::nativeCloseCallback(window_handle window) noexcept
 {
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     onClose(*((Window*) glfwGetWindowUserPointer(window)));
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
 
     LOG_I(SGCORE_TAG, "Application window closed.");
@@ -343,9 +338,9 @@ void SGCore::Window::nativeCloseCallback(window_handle window) noexcept
 
 void SGCore::Window::nativeIconifyCallback(window_handle window, int iconified) noexcept
 {
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     onIconify(*((Window*) glfwGetWindowUserPointer(window)), iconified);
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
 
     LOG_I(SGCORE_TAG, "Application window iconified.");
@@ -353,9 +348,9 @@ void SGCore::Window::nativeIconifyCallback(window_handle window, int iconified) 
 
 void SGCore::Window::nativeFramebufferSizeCallback(window_handle window, int width, int height) noexcept
 {
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     onFrameBufferSizeChanged(*((Window*) glfwGetWindowUserPointer(window)), width, height);
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
 }
 
@@ -368,9 +363,9 @@ void SGCore::Window::swapBuffers()
 {
     auto t0 = Utils::getTimeSecondsAsDouble();
 
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     glfwSwapBuffers(m_handle);
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
     eglSwapBuffers(m_eglDisplay, m_eglSurface);
 #endif
 
@@ -381,9 +376,9 @@ void SGCore::Window::swapBuffers()
 
 void SGCore::Window::pollEvents()
 {
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     glfwPollEvents();
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
 }
 
@@ -394,7 +389,7 @@ void SGCore::Window::setFullscreen(bool fullscreen) noexcept
     int sizeX, sizeY;
     getPrimaryMonitorSize(sizeX, sizeY);
 
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     if(fullscreen)
     {
         glfwSetWindowMonitor(m_handle, glfwGetPrimaryMonitor(), 0, 0, sizeX, sizeY, glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate);
@@ -403,7 +398,7 @@ void SGCore::Window::setFullscreen(bool fullscreen) noexcept
     {
         glfwSetWindowMonitor(m_handle, nullptr, 0, 0, sizeX, sizeY, glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate);
     }
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
 }
 
@@ -424,9 +419,9 @@ SGCore::Window::window_handle SGCore::Window::getNativeHandle() noexcept
 
 int SGCore::Window::getPrimaryMonitorRefreshRate() noexcept
 {
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
     return glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate;
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
     return 0;
 #endif
 }

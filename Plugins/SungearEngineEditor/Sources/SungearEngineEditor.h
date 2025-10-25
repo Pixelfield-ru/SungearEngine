@@ -6,7 +6,7 @@
 #include "Views/MainView.h"
 #include "Project/Project.h"
 
-#ifdef SG_PLATFORM_OS_WINDOWS
+#if SG_PLATFORM_OS_WINDOWS
 #include <windows.h>
 #include <winnt.h>
 #endif

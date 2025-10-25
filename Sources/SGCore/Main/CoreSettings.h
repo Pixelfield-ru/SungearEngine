@@ -7,10 +7,10 @@
 
 #define SG_CORE_MAJOR_VERSION 0
 #define SG_CORE_MINOR_VERSION 6
-#define SG_CORE_PATCH_VERSION 1
+#define SG_CORE_PATCH_VERSION 5
 #define SG_CORE_BUILD_VERSION 0
 
-#include <SGCore/pch.h>
+#include <assimp/postprocess.h>
 
 namespace SGCore
 {

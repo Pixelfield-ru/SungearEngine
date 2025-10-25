@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_IPARALLELSYSTEM_H
 #define SUNGEARENGINE_IPARALLELSYSTEM_H
 
-#include <SGCore/pch.h>
-
 #include <SGCore/Threading/Thread.h>
 
 #include "ISystem.h"

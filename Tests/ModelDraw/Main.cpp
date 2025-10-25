@@ -37,7 +37,7 @@
 #include "SGCore/Memory/Assets/AnimationsFile.h"
 #include "SGCore/Memory/Assets/AudioTrackAsset.h"
 
-#ifdef SG_PLATFORM_OS_WINDOWS
+#if SG_PLATFORM_OS_WINDOWS
 #ifdef __cplusplus
 extern "C" {
 #endif

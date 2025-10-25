@@ -1,7 +1,8 @@
 #ifndef SUNGEARENGINE_IMESH_H
 #define SUNGEARENGINE_IMESH_H
 
-#include <SGCore/pch.h>
+#include <BulletCollision/CollisionShapes/btTriangleMesh.h>
+
 #include "SGCore/Memory/IAssetsRefsResolver.h"
 
 #include "SGCore/Main/CoreGlobals.h"

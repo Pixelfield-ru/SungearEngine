@@ -5,7 +5,8 @@
 #ifndef SUNGEARENGINE_GRAPHICSDATATYPES_H
 #define SUNGEARENGINE_GRAPHICSDATATYPES_H
 
-#include <SGCore/pch.h>
+#include <string>
+#include <vector>
 
 #include "SGCore/Utils/TypeTraits.h"
 

@@ -1,7 +1,12 @@
 #ifndef FLAT_ARRAY_H
 #define FLAT_ARRAY_H
 
-#include <SGCore/pch.h>
+#include <cstddef>
+#include <iomanip>
+#include <iterator>
+#include <sstream>
+#include <string>
+#include <vector>
 
 template<class T>
 struct reverse_wrapper

@@ -5,7 +5,8 @@
 #ifndef SUNGEARENGINE_LAYER_H
 #define SUNGEARENGINE_LAYER_H
 
-#include <SGCore/pch.h>
+#include <string>
+
 #include "SGCore/Serde/Defines.h"
 
 // STANDARD LAYERS DEFINES

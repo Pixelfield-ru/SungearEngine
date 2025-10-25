@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_OCTREE_H
 #define SUNGEARENGINE_OCTREE_H
 
-#include <SGCore/pch.h>
-
 #include "SGCore/ECS/Component.h"
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Math/AABB.h"

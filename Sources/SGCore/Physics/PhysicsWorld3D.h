@@ -5,12 +5,14 @@
 #ifndef SUNGEARENGINE_PHYSICSWORLD3D_H
 #define SUNGEARENGINE_PHYSICSWORLD3D_H
 
-#include <SGCore/pch.h>
+#include <BulletCollision/BroadphaseCollision/btBroadphaseInterface.h>
+#include <BulletCollision/CollisionDispatch/btCollisionDispatcher.h>
+#include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolver.h>
+#include <BulletDynamics/Dynamics/btDynamicsWorld.h>
 
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Main/CoreGlobals.h"
 #include "PhysicsDebugDraw.h"
-#include "SGCore/Threading/WrappedObject.h"
 #include "SGCore/Scene/IParallelSystem.h"
 
 namespace SGCore

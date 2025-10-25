@@ -5,7 +5,6 @@
 #ifndef SGSLETRANSLATOR_SHADERANALYZEDFILE_H
 #define SGSLETRANSLATOR_SHADERANALYZEDFILE_H
 
-#include <SGCore/pch.h>
 #include "SGCore/Utils/SGSL/SGSLESubShader.h"
 
 #include "SGCore/Memory/Assets/IAsset.h"

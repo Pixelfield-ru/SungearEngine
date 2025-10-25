@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-#ifdef SG_PLATFORM_OS_ANDROID
+#if SG_PLATFORM_OS_ANDROID
   /*
    * Class:     com_pixelfield_sungearstarter_NativeMethods
    * Method:    startSGCore
@@ -25,7 +25,7 @@ extern "C" {
 #ifdef __cplusplus
 }
 
-#ifdef SG_PLATFORM_OS_ANDROID
+#if SG_PLATFORM_OS_ANDROID
 #include <android/native_window.h>
 
 namespace SGCore::__AndroidImpl

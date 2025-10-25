@@ -1,7 +1,8 @@
 #ifndef SUNGEARENGINE_IUNIFORMBUFFER_H
 #define SUNGEARENGINE_IUNIFORMBUFFER_H
 
-#include <SGCore/pch.h>
+#include <iostream>
+#include <unordered_map>
 
 #include "IShaderUniform.h"
 

@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_FONT_H
 #define SUNGEARENGINE_FONT_H
 
-#include <SGCore/pch.h>
-
 #include "IAsset.h"
 #include "FontSpecialization.h"
 #include <msdf-atlas-gen/msdf-atlas-gen/msdf-atlas-gen.h>

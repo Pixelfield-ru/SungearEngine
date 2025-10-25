@@ -2,6 +2,8 @@
 // Created by ilya on 14.02.24.
 //
 
+// for glm/gtx/rotate_vector.hpp
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/rotate_vector.hpp>
 
 #include "AtmosphereUpdater.h"

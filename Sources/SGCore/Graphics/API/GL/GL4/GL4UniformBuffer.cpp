@@ -2,6 +2,8 @@
 // Created by stuka on 08.06.2023.
 //
 
+#include <glad/glad.h>
+
 #include "GL4UniformBuffer.h"
 
 SGCore::GL4UniformBuffer::~GL4UniformBuffer()

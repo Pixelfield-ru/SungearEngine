@@ -5,9 +5,10 @@
 #ifndef SUNGEARENGINE_DEVICEGLINFO_H
 #define SUNGEARENGINE_DEVICEGLINFO_H
 
-#include <SGCore/pch.h>
-#include <SGCore/Logger/Logger.h>
+#include <iostream>
+#include <glad/glad.h>
 
+#include "SGCore/Logger/Logger.h"
 #include "SGCore/Utils/Utils.h"
 
 namespace SGCore
@@ -44,7 +45,7 @@ namespace SGCore
             // todo:
             /*glEnable(GL_DEBUG_OUTPUT);
             glDebugMessageCallback(messageCallback, 0);*/
-            
+
             GLint extensionsNum = 0;
             glGetIntegerv(GL_NUM_EXTENSIONS, &extensionsNum);
             

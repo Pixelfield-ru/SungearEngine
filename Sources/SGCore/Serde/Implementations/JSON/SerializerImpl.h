@@ -7,7 +7,6 @@
 
 #include "SGCore/Serde/Common.h"
 
-
 template<typename T, typename... SharedDataT>
 std::string SerializerImpl<FormatType::JSON>::to(const T& value,
                                                  SharedDataT&& ... sharedData) noexcept

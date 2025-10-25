@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_CULLABLEMESH_H
 #define SUNGEARENGINE_CULLABLEMESH_H
 
-#include <SGCore/pch.h>
-
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/ECS/Component.h"
 

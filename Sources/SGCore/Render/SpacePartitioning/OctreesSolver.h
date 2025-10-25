@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_OCTREESSOLVER_H
 #define SUNGEARENGINE_OCTREESSOLVER_H
 
-#include <SGCore/pch.h>
-
 #include "SGCore/Scene/ISystem.h"
 #include "SGCore/Utils/Slot.h"
 #include "SGCore/Utils/Timer.h"

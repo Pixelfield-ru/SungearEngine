@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_GL46SHADER_H
 #define SUNGEARENGINE_GL46SHADER_H
 
-#include <SGCore/pch.h>
+#include <glad/glad.h>
 
 #include "SGCore/Graphics/API/IShader.h"
 

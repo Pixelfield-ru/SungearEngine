@@ -5,6 +5,8 @@
 #ifndef SUNGEARENGINE_ECSUTILS_H
 #define SUNGEARENGINE_ECSUTILS_H
 
+#include <entt/entity/entity.hpp>
+
 #include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore::ECS

@@ -6,6 +6,9 @@
 #include <SGCore/Logger/Logger.h>
 
 #include "AudioDevice.h"
+
+#include <iostream>
+
 #include "AudioUtils.h"
 
 SGCore::AudioDevice::AudioDevice(const char* deviceName)

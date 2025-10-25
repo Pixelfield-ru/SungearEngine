@@ -5,6 +5,8 @@
 #ifndef SUNGEARENGINE_UIDOCUMENT_H
 #define SUNGEARENGINE_UIDOCUMENT_H
 
+#include <pugixml.hpp>
+
 #include "SGCore/Memory/Assets/IAsset.h"
 
 #include "SGCore/UI/Elements/UIRoot.h"

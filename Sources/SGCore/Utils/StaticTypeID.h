@@ -6,6 +6,9 @@
 #define SUNGEARENGINE_STATICTYPEID_H
 
 #include <set>
+#include <iostream>
+#include <fmt/format.h>
+
 #include "SGCore/Utils/Macroses.h"
 
 /// Pass current class type as first argument and its type ID as second argument.\n

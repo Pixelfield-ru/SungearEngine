@@ -4,6 +4,9 @@
 
 #include "Frustum.h"
 
+#include <glm/fwd.hpp>
+#include <glm/matrix.hpp>
+
 Frustum::Frustum(glm::mat4 m)
 {
     m = glm::transpose(m);

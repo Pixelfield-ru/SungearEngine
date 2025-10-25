@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_IVERTEXATTRIBUTE_H
 #define SUNGEARENGINE_IVERTEXATTRIBUTE_H
 
-#include <SGCore/pch.h>
-
 #include "GraphicsDataTypes.h"
 //#include "IVertexBufferLayout.h"
 

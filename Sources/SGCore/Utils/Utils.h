@@ -1,11 +1,18 @@
 #ifndef SUNGEARENGINE_UTILS_H
 #define SUNGEARENGINE_UTILS_H
 
+#include <algorithm>
 #include <codecvt>
 #include <locale>
 #include <array>
 #include <chrono>
+#include <filesystem>
+#include <memory>
+#include <source_location>
 #include <sstream>
+#include <unordered_set>
+#include <vector>
+#include <cwctype>
 
 #include "TypeTraits.h"
 #include "Platform.h"

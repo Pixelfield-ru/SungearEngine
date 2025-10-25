@@ -5,7 +5,14 @@
 #ifndef SUNGEARENGINE_SERDE_H
 #define SUNGEARENGINE_SERDE_H
 
+// for json implementation
+#include <rapidjson/rapidjson.h>
+#include <rapidjson/document.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/prettywriter.h>
+
 #include <optional>
+
 #include "SGCore/Utils/Assert.h"
 
 #include "SGCore/Utils/TypeTraits.h"

@@ -2,10 +2,17 @@
 // Created by Ilya on 18.11.2023.
 //
 
+#include <imgui_impl_opengl3.h>
+
 #include "ImGuiLayer.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/API/GAPIType.h"
 #include "SGCore/Graphics/API/IRenderer.h"
+#include "SGCore/Utils/Platform.h"
+
+#if SG_PLATFORM_PC
+#include <imgui_impl_glfw.h>
+#endif
 
 void SGCore::ImGuiWrap::ImGuiLayer::init() noexcept
 {
@@ -25,9 +32,9 @@ void SGCore::ImGuiWrap::ImGuiLayer::init() noexcept
     if (gapiType == GAPIType::SG_API_TYPE_GL4 ||
         gapiType == GAPIType::SG_API_TYPE_GL46)
     {
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
         ImGui_ImplGlfw_InitForOpenGL(CoreMain::getWindow().m_handle, true);
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
         ImGui_ImplOpenGL3_Init();
     }
@@ -42,9 +49,9 @@ void SGCore::ImGuiWrap::ImGuiLayer::destroy() noexcept
         gapiType == GAPIType::SG_API_TYPE_GL46)
     {
         ImGui_ImplOpenGL3_DestroyDeviceObjects();
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
         ImGui_ImplGlfw_Shutdown();
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
         ImGui_ImplOpenGL3_Shutdown();
     }
@@ -66,9 +73,9 @@ void SGCore::ImGuiWrap::ImGuiLayer::beginFrame() noexcept
         gapiType == GAPIType::SG_API_TYPE_GL46)
     {
         ImGui_ImplOpenGL3_NewFrame();
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
         ImGui_ImplGlfw_NewFrame();
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
     }
 

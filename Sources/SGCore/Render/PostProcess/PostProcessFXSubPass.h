@@ -5,6 +5,8 @@
 #ifndef SUNGEARENGINE_POSTPROCESSFXSUBPASS_H
 #define SUNGEARENGINE_POSTPROCESSFXSUBPASS_H
 
+#include <functional>
+
 #include "SGCore/Graphics/API/GraphicsDataTypes.h"
 #include "SGCore/Main/CoreGlobals.h"
 

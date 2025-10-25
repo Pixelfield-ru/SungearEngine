@@ -5,12 +5,13 @@
 #ifndef SUNGEARENGINE_ENTITYBASEINFO_H
 #define SUNGEARENGINE_ENTITYBASEINFO_H
 
-#include <SGCore/pch.h>
+#include <entt/entity/entity.hpp>
+#include <glm/vec3.hpp>
+#include <vector>
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/Unique/UniqueName.h"
 #include "SGCore/ECS/Component.h"
-#include "EntityRef.h"
 #include "SGCore/Utils/Unique/UniqueColor.h"
 
 namespace SGCore

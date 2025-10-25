@@ -5,9 +5,9 @@
 #ifndef SUNGEARENGINE_FILEUTILS_H
 #define SUNGEARENGINE_FILEUTILS_H
 
-#include <SGCore/pch.h>
+#include <fstream>
 
-#include <SGCore/Logger/Logger.h>
+#include "SGCore/Logger/Logger.h"
 
 namespace SGCore::FileUtils
 {

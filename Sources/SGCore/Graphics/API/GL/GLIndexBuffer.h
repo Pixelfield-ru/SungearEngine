@@ -3,9 +3,9 @@
 #ifndef SUNGEARENGINE_GLINDEXBUFFER_H
 #define SUNGEARENGINE_GLINDEXBUFFER_H
 
-#include <SGCore/pch.h>
+#include <glad/glad.h>
 
-#include "../IIndexBuffer.h"
+#include "SGCore/Graphics/API/IIndexBuffer.h"
 
 namespace SGCore
 {

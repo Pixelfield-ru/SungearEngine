@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_ATMOSPHERE_H
 #define SUNGEARENGINE_ATMOSPHERE_H
 
-#include <SGCore/pch.h>
+#include <map>
 
 #include "SGCore/Render/MeshBase.h"
 #include "SGCore/ECS/Component.h"

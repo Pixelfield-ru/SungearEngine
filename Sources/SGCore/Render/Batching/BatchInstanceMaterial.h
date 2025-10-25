@@ -5,7 +5,8 @@
 #ifndef SUNGEARENGINE_BATCHINSTANCEMATERIAL_H
 #define SUNGEARENGINE_BATCHINSTANCEMATERIAL_H
 
-#include <entt/entity/entity.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 #include "SGCore/Main/CoreGlobals.h"
 

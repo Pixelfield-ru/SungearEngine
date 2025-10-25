@@ -9,7 +9,7 @@
 
 #include "../Utils/Platform.h"
 
-#ifdef SG_PLATFORM_OS_WINDOWS
+#if SG_PLATFORM_OS_WINDOWS
 #include <WinSock2.h>
 #endif
 

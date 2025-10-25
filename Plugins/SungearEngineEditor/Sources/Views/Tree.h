@@ -5,7 +5,6 @@
 #ifndef SUNGEARENGINEEDITOR_TREE_H
 #define SUNGEARENGINEEDITOR_TREE_H
 
-#include <SGCore/pch.h>
 #include <SGCore/Main/CoreGlobals.h>
 #include <SGCore/Utils/Unique/UniqueNamesManager.h>
 #include <SGCore/Graphics/API/ITexture2D.h>

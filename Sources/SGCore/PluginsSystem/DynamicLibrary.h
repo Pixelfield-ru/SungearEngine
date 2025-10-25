@@ -10,15 +10,15 @@
 
 #include <functional>
 
-#if defined(SG_PLATFORM_OS_LINUX) || defined(SG_PLATFORM_OS_ANDROID)
+#if SG_PLATFORM_OS_LINUX || SG_PLATFORM_OS_ANDROID
 #include <dlfcn.h>
-#elif defined(SG_PLATFORM_OS_WINDOWS)
+#elif SG_PLATFORM_OS_WINDOWS
 #include <windows.h>
 #endif
 
-#ifdef SG_PLATFORM_OS_WINDOWS
+#if SG_PLATFORM_OS_WINDOWS
 #define DL_POSTFIX ".dll"
-#elif defined(SG_PLATFORM_OS_LINUX) || defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_LINUX || SG_PLATFORM_OS_ANDROID
 #define DL_POSTFIX ".so"
 #endif
 
@@ -30,12 +30,12 @@ namespace SGCore
      */
     struct DynamicLibrary
     {
-        #if defined(SG_PLATFORM_OS_LINUX) || defined(SG_PLATFORM_OS_ANDROID)
+        #if SG_PLATFORM_OS_LINUX || SG_PLATFORM_OS_ANDROID
         /**
          * Native (system) the type of dynamic library handler.
          */
         using native_handler_t = void*;
-        #elif defined(SG_PLATFORM_OS_WINDOWS)
+        #elif SG_PLATFORM_OS_WINDOWS
         /**
          * Native (system) the type of dynamic library handler.
          */
@@ -62,13 +62,13 @@ namespace SGCore
 
             const std::string u8Path = Utils::toUTF8(pluginDLPath.u16string());
             
-            #if defined(SG_PLATFORM_OS_LINUX) || defined(SG_PLATFORM_OS_ANDROID)
+            #if SG_PLATFORM_OS_LINUX || SG_PLATFORM_OS_ANDROID
             m_nativeHandler = dlopen(u8Path.c_str(), RTLD_NOW | RTLD_GLOBAL);
             if(!m_nativeHandler)
             {
                 err += dlerror();
             }
-            #elif defined(SG_PLATFORM_OS_WINDOWS)
+            #elif SG_PLATFORM_OS_WINDOWS
             m_nativeHandler = LoadLibraryA(u8Path.c_str());
             if(!m_nativeHandler)
             {
@@ -85,10 +85,10 @@ namespace SGCore
         void unload()
         {
             if(!m_nativeHandler) return;
-            #if defined(SG_PLATFORM_OS_LINUX) || defined(SG_PLATFORM_OS_ANDROID)
+            #if SG_PLATFORM_OS_LINUX || SG_PLATFORM_OS_ANDROID
             dlclose(m_nativeHandler);
             m_nativeHandler = nullptr;
-            #elif defined(SG_PLATFORM_OS_WINDOWS)
+            #elif SG_PLATFORM_OS_WINDOWS
             FreeLibrary(m_nativeHandler);
             m_nativeHandler = nullptr;
             #endif
@@ -118,13 +118,13 @@ namespace SGCore
             }
             else
             {
-                #if defined(SG_PLATFORM_OS_LINUX) || defined(SG_PLATFORM_OS_ANDROID)
+                #if SG_PLATFORM_OS_LINUX || SG_PLATFORM_OS_ANDROID
                 T* field  = (T*) dlsym(m_nativeHandler, symbolName);
                 if(!field)
                 {
                     err += dlerror();
                 }
-                #elif defined(SG_PLATFORM_OS_WINDOWS)
+                #elif SG_PLATFORM_OS_WINDOWS
                 T* field = (T*) GetProcAddress(m_nativeHandler, symbolName);
                 if(!field)
                 {
@@ -162,7 +162,7 @@ namespace SGCore
         }
         
     private:
-        #ifdef SG_PLATFORM_OS_WINDOWS
+        #if SG_PLATFORM_OS_WINDOWS
         static std::string getLastWindowsError()
         {
             DWORD errorMessageID = GetLastError();
@@ -189,21 +189,21 @@ namespace SGCore
         {
             std::function<Result(Args...)> operator()(native_handler_t nativeHandler, const char* funcName, std::string& err) const noexcept
             {
-                #if defined(SG_PLATFORM_OS_LINUX) || defined(SG_PLATFORM_OS_ANDROID)
+                #if SG_PLATFORM_OS_LINUX || SG_PLATFORM_OS_ANDROID
                 using func_t = Result(*)(Args...);
-                #elif defined(SG_PLATFORM_OS_WINDOWS)
+                #elif SG_PLATFORM_OS_WINDOWS
                 using func_t = Result(__cdecl *)(Args...);
                 #endif
                 
                 func_t func = nullptr;
                 
-                #if defined(SG_PLATFORM_OS_LINUX) || defined(SG_PLATFORM_OS_ANDROID)
+                #if SG_PLATFORM_OS_LINUX || SG_PLATFORM_OS_ANDROID
                 func = (func_t) dlsym(nativeHandler, funcName);
                 if(!func)
                 {
                     err += dlerror();
                 }
-                #elif defined(SG_PLATFORM_OS_WINDOWS)
+                #elif SG_PLATFORM_OS_WINDOWS
                 func = (func_t) GetProcAddress(nativeHandler, funcName);
                 if(!func)
                 {

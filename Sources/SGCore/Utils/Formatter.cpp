@@ -3,6 +3,9 @@
 //
 
 #include "Formatter.h"
+
+#include <fmt/format.h>
+
 #include "Utils.h"
 
 std::string SGCore::Formatter::format(const std::string& text) const

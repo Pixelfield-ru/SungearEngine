@@ -5,6 +5,8 @@
 #ifndef SUNGEARENGINE_CSSMATHNODE_H
 #define SUNGEARENGINE_CSSMATHNODE_H
 
+#include <vector>
+
 #include "SGCore/Main/CoreGlobals.h"
 #include "CSSMathSign.h"
 #include "SGCore/UI/CSS/CSSDimensionQualifier.h"

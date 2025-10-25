@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_SVGIMAGE_H
 #define SUNGEARENGINE_SVGIMAGE_H
 
-#include <SGCore/pch.h>
-
 #include "IAsset.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SVGImageSpecialization.h"

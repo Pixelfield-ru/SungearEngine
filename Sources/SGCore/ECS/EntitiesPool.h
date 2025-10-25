@@ -5,7 +5,8 @@
 #ifndef SUNGEARENGINE_ENTITIESPOOL_H
 #define SUNGEARENGINE_ENTITIESPOOL_H
 
-#include <SGCore/pch.h>
+#include <mutex>
+#include <vector>
 
 #include "SGCore/Main/CoreGlobals.h"
 

@@ -3,7 +3,11 @@
 //
 #include "PhysicsWorld3D.h"
 
+// for glm/gtx/matrix_decompose.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/matrix_decompose.hpp>
+
+#include <BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
 
 #include "PhysicsDebugDraw.h"
 #include "Rigidbody3D.h"

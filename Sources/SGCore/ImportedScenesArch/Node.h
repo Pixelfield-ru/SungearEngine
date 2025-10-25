@@ -1,9 +1,6 @@
 #ifndef SUNGEARENGINE_NODE_H
 #define SUNGEARENGINE_NODE_H
 
-#include <SGCore/pch.h>
-#include <SGCore/Memory/AssetManager.h>
-
 #include "IMeshData.h"
 #include "SGCore/Scene/Scene.h"
 

@@ -2,12 +2,12 @@
 // Created by stuka on 04.07.2023.
 //
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/rotate_vector.hpp"
 
 #include "Controllables3DUpdater.h"
 #include "SGCore/Input/PCInput.h"
 #include "SGCore/Main/CoreMain.h"
-#include "SGCore/Math/MathUtils.h"
 #include "SGCore/Scene/Scene.h"
 #include "Transform.h"
 #include "SGCore/Render/RenderingBase.h"

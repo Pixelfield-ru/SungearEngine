@@ -2,6 +2,8 @@
 // Created by stuka on 02.05.2023.
 //
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include <glm/gtc/type_ptr.hpp>
 #include <execution>
 #include <glm/gtx/rotate_vector.hpp>

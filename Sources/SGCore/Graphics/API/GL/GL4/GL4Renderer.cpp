@@ -1,5 +1,7 @@
 #include "GL4Renderer.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include "SGCore/Main/CoreMain.h"
 
 #include "SGCore/Render/RenderingBase.h"
@@ -13,30 +15,33 @@
 
 void SGCore::GL4Renderer::init() noexcept
 {
-#ifdef SG_PLATFORM_PC
-    LOG_I("SGCore", "-----------------------------------");
-    LOG_I("SGCore", "GLRenderer initializing...");
+    LOG_I(SGCORE_TAG, "-----------------------------------");
+    LOG_I(SGCORE_TAG, "GLRenderer initializing...");
 
+#if SG_PLATFORM_PC
     if(!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     {
-        LOG_I("SGCore", "Failed to initialize GLRenderer.");
+        LOG_I(SGCORE_TAG, "Failed to initialize GLAD.");
     }
     else
     {
-        LOG_I("SGCore", "GLRenderer initialized!");
+        LOG_I(SGCORE_TAG, "GLAD initialized!");
     }
-
-    printInfo();
-    LOG_I("SGCore", "-----------------------------------");
-/*#elif defined(SG_PLATFORM_OS_ANDROID)
-    if(int version = gladLoadGL())
-    {
-        LOG_I("SGCore", "GLES renderer initialized! Version: {}", version);
-    }*/
-#endif
-
+#elif SG_PLATFORM_OS_ANDROID
     // -------------------------------------
 
+    if(!gladLoadGLES2Loader((GLADloadproc) eglGetProcAddress))
+    {
+        LOG_I(SGCORE_TAG, "Failed to initialize GLAD.");
+    }
+    else
+    {
+        LOG_I(SGCORE_TAG, "GLAD initialized!");
+    }
+#endif
+
+    printInfo();
+    LOG_I(SGCORE_TAG, "-----------------------------------");
 
     DeviceGLInfo::init();
 

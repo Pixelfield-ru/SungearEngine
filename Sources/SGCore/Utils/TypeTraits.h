@@ -26,6 +26,9 @@
 
 #include <cstdint>
 #include <type_traits>
+#include <utility>
+#include <tuple>
+#include <memory>
 
 namespace SGCore
 {

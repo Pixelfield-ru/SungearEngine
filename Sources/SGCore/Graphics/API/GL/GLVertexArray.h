@@ -7,9 +7,9 @@
 #ifndef SUNGEARENGINE_GLVERTEXARRAY_H
 #define SUNGEARENGINE_GLVERTEXARRAY_H
 
-#include "../IVertexArray.h"
+#include <glad/glad.h>
 
-#include <SGCore/pch.h>
+#include "SGCore/Graphics/API/IVertexArray.h"
 
 namespace SGCore
 {

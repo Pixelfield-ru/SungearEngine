@@ -5,6 +5,11 @@
 #ifndef SUNGEARENGINE_AABB_H
 #define SUNGEARENGINE_AABB_H
 
+// for glm/gtx/matrix_decompose.hpp
+#define GLM_ENABLE_EXPERIMENTAL
+
+#include <glm/gtx/matrix_decompose.hpp>
+
 #include "MathUtils.h"
 #include "SGCore/ECS/Component.h"
 #include "SGCore/ImportedScenesArch/Vertex.h"

@@ -5,7 +5,6 @@
 #ifndef SUNGEARENGINE_IGEOMETRYPASS_H
 #define SUNGEARENGINE_IGEOMETRYPASS_H
 
-#include <SGCore/pch.h>
 #include "SGCore/Render/IRenderPass.h"
 
 #include "SGCore/Main/CoreGlobals.h"

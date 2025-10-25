@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include <functional>
+#include <filesystem>
 
 #include "SGCore/Main/CoreGlobals.h"
 

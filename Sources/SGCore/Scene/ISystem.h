@@ -5,12 +5,8 @@
 #ifndef NATIVECORE_ISYSTEM_H
 #define NATIVECORE_ISYSTEM_H
 
-#include <SGCore/pch.h>
-
 #include "SGCore/Threading/ThreadsManager.h"
 #include "SGCore/Threading/Thread.h"
-#include "SGCore/Utils/Marker.h"
-#include "SGCore/Utils/Singleton.h"
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/StaticTypeID.h"

@@ -7,14 +7,15 @@
 #include "SGCore/Utils/Platform.h"
 #include "SGCore/Utils/Signal.h"
 #include <sgcore_export.h>
+#include <utility>
 
-#if defined(SG_PLATFORM_PC)
+#if SG_PLATFORM_PC
     #define SG_HAS_PC_INPUT 1
 #else
     #define SG_HAS_PC_INPUT 0
 #endif
 
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
 #include <GLFW/glfw3.h>
 #endif
 

@@ -5,6 +5,9 @@
 #ifndef TRANSFORMUTILS_H
 #define TRANSFORMUTILS_H
 
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/quaternion.hpp>
+
 namespace SGCore
 {
     struct Transform;

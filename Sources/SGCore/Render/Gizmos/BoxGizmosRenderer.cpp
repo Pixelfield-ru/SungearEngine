@@ -31,6 +31,6 @@ void SGCore::BoxGizmosRenderer::fixedUpdate(const double& dt, const double& fixe
             gizmo.m_lastSize = gizmo.m_size;
         }
         
-        debugDraw->drawAABB(-gizmo.m_size / 2, gizmo.m_size / 2, gizmo.m_base.m_color);
+        debugDraw->drawAABB(-gizmo.m_size / 2.0f, gizmo.m_size / 2.0f, gizmo.m_base.m_color);
     });
 }

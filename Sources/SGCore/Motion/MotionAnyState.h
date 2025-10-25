@@ -5,6 +5,8 @@
 #ifndef MOTIONANYSTATE_H
 #define MOTIONANYSTATE_H
 
+#include <vector>
+
 #include "MotionPlannerConnection.h"
 
 namespace SGCore

@@ -182,7 +182,7 @@ SGCore::FileUtils::findFile(const std::filesystem::path& relativePath, const std
 
 std::filesystem::path SGCore::FileUtils::getAppDataPath() noexcept
 {
-#ifdef SG_PLATFORM_OS_ANDROID
+#if SG_PLATFORM_OS_ANDROID
     Java::JNINativeThreadHandler threadHandler;
     auto* env = Java::JNIManager::getEnv(threadHandler);
     auto context = Java::JNIManager::getContext();

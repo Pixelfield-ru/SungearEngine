@@ -5,7 +5,9 @@
 #ifndef SUNGEARENGINE_UUID_H
 #define SUNGEARENGINE_UUID_H
 
-#include <SGCore/pch.h>
+#include <string>
+#include <random>
+#include <sstream>
 
 namespace SGCore
 {

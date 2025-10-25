@@ -5,6 +5,8 @@
 #include "SGCore/Main/CoreGlobals.h"
 #include "Thread.h"
 
+#include <iostream>
+
 #include "ThreadsManager.h"
 #include "SGCore/Utils/Utils.h"
 #include "Task.h"

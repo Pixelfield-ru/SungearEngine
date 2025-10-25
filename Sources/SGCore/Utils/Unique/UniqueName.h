@@ -5,8 +5,11 @@
 #ifndef SUNGEARENGINE_UNIQUENAME_H
 #define SUNGEARENGINE_UNIQUENAME_H
 
-#include <SGCore/pch.h>
 #include "SGCore/Serde/Defines.h"
+
+#include <string>
+#include <memory>
+#include <cstdint>
 
 sg_predeclare_serde()
 

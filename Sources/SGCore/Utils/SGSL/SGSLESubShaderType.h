@@ -5,7 +5,7 @@
 #ifndef SGSLINTERPRETER_SGSLSUBSHADERTYPE_H
 #define SGSLINTERPRETER_SGSLSUBSHADERTYPE_H
 
-#include <SGCore/pch.h>
+#include <string>
 
 namespace SGCore
 {

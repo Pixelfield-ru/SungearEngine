@@ -1,7 +1,7 @@
 #ifndef SUNGEARENGINE_MARKER_H
 #define SUNGEARENGINE_MARKER_H
 
-#include <SGCore/pch.h>
+#include <type_traits>
 
 namespace SGCore
 {
@@ -10,6 +10,8 @@ namespace SGCore
     class Marker
     {
     public:
+        virtual ~Marker() = default;
+
         virtual bool isFlagSet(const IntT& flag) const noexcept
         {
             // 000 000 11

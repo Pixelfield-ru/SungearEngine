@@ -6,7 +6,6 @@
 #define SUNGEARENGINE_ECSREGISTRY_H
 
 #include <entt/entity/registry.hpp>
-#include <entt/fwd.hpp>
 
 #include "SGCore/Scene/EntityBaseInfo.h"
 
@@ -120,13 +119,13 @@ namespace SGCore::ECS
         }
 
         template<typename Type, typename... Other>
-        size_type remove(const EntityT& entt) noexcept
+        size_t remove(const EntityT& entt) noexcept
         {
             return m_registry.template remove<typename Type::reg_t, typename Other::reg_t...>(entt);
         }
 
         template<typename Type, typename... Other, typename It>
-        size_type remove(It first, It last) noexcept
+        size_t remove(It first, It last) noexcept
         {
             return m_registry.template remove<typename Type::reg_t, typename Other::reg_t...>(first, last);
         }

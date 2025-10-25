@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_UIELEMENT_H
 #define SUNGEARENGINE_UIELEMENT_H
 
-#include <SGCore/pch.h>
-
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Transformations/Transform.h"
 #include "CSS/CSSStyle.h"

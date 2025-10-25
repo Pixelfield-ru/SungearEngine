@@ -5,7 +5,8 @@
 #ifndef NATIVECORE_IVERTEXARRAY_H
 #define NATIVECORE_IVERTEXARRAY_H
 
-#include <SGCore/pch.h>
+#include <cstdint>
+#include <memory>
 
 namespace SGCore
 {

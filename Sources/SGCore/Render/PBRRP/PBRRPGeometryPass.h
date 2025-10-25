@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_PBRRPGEOMETRYPASS_H
 #define SUNGEARENGINE_PBRRPGEOMETRYPASS_H
 
-#include <SGCore/pch.h>
-
 #include "SGCore/Render/IRenderPass.h"
 #include "SGCore/Render/BaseRenderPasses/IGeometryPass.h"
 #include "SGCore/Scene/EntityBaseInfo.h"

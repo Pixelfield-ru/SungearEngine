@@ -5,9 +5,7 @@
 #pragma once
 
 #include <jni.h>
-
-#include <unordered_map>
-#include <unordered_set>
+#include <mutex>
 
 namespace SGCore::Java
 {

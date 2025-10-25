@@ -3,6 +3,9 @@
 //
 #include "SceneUtils.h"
 
+#include <iostream>
+#include <fmt/format.h>
+
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/ECS/Registry.h"

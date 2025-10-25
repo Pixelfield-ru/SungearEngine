@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_RENDERINGBASE_H
 #define SUNGEARENGINE_RENDERINGBASE_H
 
-#include <SGCore/pch.h>
+#include <glm/ext/matrix_clip_space.hpp>
 
 #include "SGCore/Math/Frustum.h"
 #include "SGCore/ECS/Component.h"

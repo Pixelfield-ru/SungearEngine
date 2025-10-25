@@ -10,7 +10,7 @@
 #include "SGCore/Logger/Logger.h"
 #include "SGCore/Main/CoreMain.h"
 
-#ifdef SG_PLATFORM_OS_ANDROID
+#if SG_PLATFORM_OS_ANDROID
 
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
@@ -24,7 +24,7 @@ void Java_com_pixelfield_sungearstarter_NativeMethods_startSGCore(JNIEnv* env, j
 
     if(!SGCore::Java::JNIManager::initialized())
     {
-#ifdef SG_PLATFORM_OS_ANDROID
+#if SG_PLATFORM_OS_ANDROID
         LOGCAT_E(SGCORE_TAG, "Fatal error while initializing SGCore::Java::JNIManager!")
 #else
         // todo: print error

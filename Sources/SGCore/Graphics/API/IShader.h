@@ -4,7 +4,6 @@
 #ifndef NATIVECORE_ISHADER_H
 #define NATIVECORE_ISHADER_H
 
-#include <SGCore/pch.h>
 #include "SGCore/Main/CoreMain.h"
 #include "IRenderer.h"
 // #include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"

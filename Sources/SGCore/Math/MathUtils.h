@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_MATHUTILS_H
 
 #include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 #define PI 3.141592
 

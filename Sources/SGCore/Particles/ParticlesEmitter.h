@@ -5,6 +5,10 @@
 #ifndef SUNGEARENGINE_PARTICLESEMITTER_H
 #define SUNGEARENGINE_PARTICLESEMITTER_H
 
+#include <unordered_map>
+#include <vector>
+#include <entt/entity/entity.hpp>
+
 #include "IParticlesController.h"
 #include "SGCore/ECS/Component.h"
 #include "SGCore/Main/CoreGlobals.h"

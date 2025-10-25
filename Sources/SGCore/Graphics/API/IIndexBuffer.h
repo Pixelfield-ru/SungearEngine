@@ -5,8 +5,6 @@
 #ifndef NATIVECORE_IINDEXBUFFER_H
 #define NATIVECORE_IINDEXBUFFER_H
 
-#include <SGCore/pch.h>
-
 #include "GraphicsDataTypes.h"
 
 namespace SGCore

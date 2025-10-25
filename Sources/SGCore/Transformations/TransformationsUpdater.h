@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <SGCore/pch.h>
-
 #include "SGCore/Scene/ISystem.h"
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/Utils/Signal.h"

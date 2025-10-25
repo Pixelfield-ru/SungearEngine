@@ -4,6 +4,8 @@
 
 #include "CoroUtils.h"
 
+#include <iostream>
+
 #include "SGCore/Logger/Logger.h"
 
 SGCore::Ref<SGCore::Threading::Thread> SGCore::Coro::CoroUtils::assumeCurrentThread() noexcept

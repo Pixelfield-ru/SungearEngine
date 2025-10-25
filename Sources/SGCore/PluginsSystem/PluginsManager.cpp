@@ -2,11 +2,14 @@
 // Created by ilya on 19.03.24.
 //
 
+#include <cstdlib>
+
 #include "PluginsManager.h"
 #include "SGCore/Main/CoreMain.h"
-#include "../Utils/Platform.h"
+#include "SGCore/Utils/Platform.h"
 
 #include <filesystem>
+#include <iostream>
 #include <spdlog/fmt/fmt.h>
 #include <spdlog/spdlog.h>
 #include <SGCore/Logger/Logger.h>
@@ -15,7 +18,7 @@
 #include "SGCore/Utils/FileUtils.h"
 #include "SGCore/Utils/Formatter.h"
 
-#ifdef SG_PLATFORM_OS_LINUX
+#if SG_PLATFORM_OS_LINUX
 #include <dlfcn.h>
 #endif
 

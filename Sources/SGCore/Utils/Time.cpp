@@ -58,7 +58,7 @@ std::string SGCore::Utils::getTimeAsString(const std::string& format) noexcept
 std::chrono::sys_time<std::chrono::seconds> SGCore::Utils::getStringAsTime(const std::string& dateTime,
                                                                            const std::string& format) noexcept
 {
-#if defined(SG_PLATFORM_OS_WINDOWS)
+#if SG_PLATFORM_OS_WINDOWS
     std::istringstream in { dateTime };
     std::chrono::sys_time<std::chrono::seconds> dt;
 

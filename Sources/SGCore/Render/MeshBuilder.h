@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_MESHBUILDER_H
 #define SUNGEARENGINE_MESHBUILDER_H
 
-#include <SGCore/pch.h>
-
 #include "MeshBase.h"
 
 namespace SGCore

@@ -7,9 +7,9 @@
 #ifndef SUNGEARENGINE_GLVERTEXBUFFER_H
 #define SUNGEARENGINE_GLVERTEXBUFFER_H
 
-#include <SGCore/pch.h>
+#include <glad/glad.h>
 
-#include "../IVertexBuffer.h"
+#include "SGCore/Graphics/API/IVertexBuffer.h"
 
 namespace SGCore
 {

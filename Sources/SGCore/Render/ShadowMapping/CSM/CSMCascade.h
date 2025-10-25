@@ -5,6 +5,8 @@
 #ifndef SUNGEARENGINE_CSMLEVEL_H
 #define SUNGEARENGINE_CSMLEVEL_H
 
+#include <glm/mat4x4.hpp>
+
 #include "SGCore/Main/CoreMain.h"
 
 namespace SGCore

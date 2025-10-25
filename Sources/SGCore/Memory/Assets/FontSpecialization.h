@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_FONTSPECIALIZATION_H
 #define SUNGEARENGINE_FONTSPECIALIZATION_H
 
-#include <SGCore/pch.h>
-
 #include <msdf-atlas-gen/msdf-atlas-gen/BitmapAtlasStorage.h>
 #include <msdf-atlas-gen/msdf-atlas-gen/DynamicAtlas.h>
 #include <msdf-atlas-gen/msdf-atlas-gen/glyph-generators.h>

@@ -6,6 +6,9 @@
 #define SUNGEARENGINE_SGSLETRANSLATOR_H
 
 #include <unordered_set>
+#include <filesystem>
+#include <vector>
+
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/SGSL/SGSLETranslatorConfiguration.h"
 

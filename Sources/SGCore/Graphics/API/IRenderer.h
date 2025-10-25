@@ -5,8 +5,6 @@
 #ifndef NATIVECORE_IRENDERER_H
 #define NATIVECORE_IRENDERER_H
 
-#include <SGCore/pch.h>
-
 #include "GAPIType.h"
 #include "IUniformBuffer.h"
 #include "SGCore/Transformations/Transform.h"

@@ -5,6 +5,8 @@
 #ifndef NINESLICE_H
 #define NINESLICE_H
 
+#include <glm/gtc/quaternion.hpp> 
+
 #include "UIElementMesh/UIVertex.h"
 #include "TransformTree/UIElementCache.h"
 

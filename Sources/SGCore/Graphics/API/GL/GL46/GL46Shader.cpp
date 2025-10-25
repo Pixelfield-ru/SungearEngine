@@ -1,6 +1,8 @@
 #include <SGCore/Logger/Logger.h>
 #include "GL46Shader.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Utils/SGSL/SGSLESubShader.h"

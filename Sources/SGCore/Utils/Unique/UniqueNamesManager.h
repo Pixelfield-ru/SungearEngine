@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_UNIQUENAMESMANAGER_H
 #define SUNGEARENGINE_UNIQUENAMESMANAGER_H
 
-#include <SGCore/pch.h>
-
 #include "UniqueName.h"
 #include "SGCore/Utils/Signal.h"
 

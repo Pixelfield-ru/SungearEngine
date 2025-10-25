@@ -5,6 +5,10 @@
 #ifndef SUNGEARENGINE_CMAKEUTILS_H
 #define SUNGEARENGINE_CMAKEUTILS_H
 
+#include <filesystem>
+#include <string>
+#include <vector>
+
 namespace SGCore
 {
     struct CMakePresetsFileInfo

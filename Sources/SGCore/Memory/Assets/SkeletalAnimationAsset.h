@@ -5,6 +5,10 @@
 #ifndef SUNGEARENGINE_SKELETALANIMATIONASSET_H
 #define SUNGEARENGINE_SKELETALANIMATIONASSET_H
 
+#include <glm/gtc/quaternion.hpp>
+#include <glm/vec3.hpp>
+#include <glm/ext/matrix_transform.hpp>
+
 #include "IAsset.h"
 #include "SGCore/Memory/IAssetsRefsResolver.h"
 

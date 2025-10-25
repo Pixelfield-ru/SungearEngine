@@ -1,8 +1,6 @@
 #ifndef SUNGEARENGINE_RENDERPIPELINESMANAGER_H
 #define SUNGEARENGINE_RENDERPIPELINESMANAGER_H
 
-#include <SGCore/pch.h>
-
 #include <sgcore_export.h>
 
 #include "SGCore/Utils/Signal.h"

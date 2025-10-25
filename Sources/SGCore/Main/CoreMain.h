@@ -1,8 +1,6 @@
 #ifndef NATIVECORE_COREMAIN_H
 #define NATIVECORE_COREMAIN_H
 
-#include <SGCore/pch.h>
-
 #include <sgcore_export.h>
 
 #include "Window.h"

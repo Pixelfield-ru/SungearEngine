@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_JSON_SERIALIZERFORWARD_H
 
 #include "SGCore/Serde/Common.h"
+#include <string>
 
 template<>
 struct SerializerImpl<FormatType::JSON>

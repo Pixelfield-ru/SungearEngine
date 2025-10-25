@@ -1,7 +1,6 @@
 #ifndef SUNGEARENGINE_IMATERIAL_H
 #define SUNGEARENGINE_IMATERIAL_H
 
-#include <SGCore/pch.h>
 #include "SGCore/Graphics/API/RenderState.h"
 #include "SGCore/Memory/IAssetsRefsResolver.h"
 

@@ -3,6 +3,9 @@
 //
 
 #include "CMakeUtils.h"
+
+#include <rapidjson/document.h>
+
 #include "FileUtils.h"
 
 #include <rapidjson/rapidjson.h>

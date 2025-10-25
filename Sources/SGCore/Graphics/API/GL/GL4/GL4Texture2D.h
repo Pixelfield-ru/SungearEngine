@@ -5,9 +5,9 @@
 #ifndef SUNGEARENGINE_GL4TEXTURE2D_H
 #define SUNGEARENGINE_GL4TEXTURE2D_H
 
-#include "SGCore/Graphics/API/ITexture2D.h"
+#include <glad/glad.h>
 
-#include <SGCore/pch.h>
+#include "SGCore/Graphics/API/ITexture2D.h"
 
 namespace SGCore
 {

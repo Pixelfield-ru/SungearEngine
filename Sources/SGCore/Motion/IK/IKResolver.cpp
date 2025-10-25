@@ -4,6 +4,9 @@
 
 #include "IKResolver.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/norm.hpp>
+
 #include "IKRootJoint.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Transformations/Transform.h"

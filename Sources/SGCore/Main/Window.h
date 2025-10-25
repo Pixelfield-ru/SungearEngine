@@ -1,19 +1,20 @@
 #ifndef SUNGEARENGINE_PROGRAMWINDOW_H
 #define SUNGEARENGINE_PROGRAMWINDOW_H
 
-#define GLFW_INCLUDE_NONE
-
-#include <SGCore/pch.h>
-
 #include <sgcore_export.h>
 #include "SGCore/Utils/Platform.h"
 
 #include "SGCore/Utils/Signal.h"
 
-#ifdef SG_PLATFORM_OS_ANDROID
+#if SG_PLATFORM_OS_ANDROID
 #include <jni.h>
 #include <android/native_window.h>
 #include <EGL/egl.h>
+#endif
+
+#if SG_PLATFORM_OS_WINDOWS
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
 #endif
 
 #include "SGCore/ExternalAPI/Java/Main.h"
@@ -106,13 +107,13 @@ namespace SGCore
         static inline Signal<void(Window&, const int&)> onIconify;
         static inline Signal<void(Window&, const int&, const int&)> onFrameBufferSizeChanged;
 
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
         using window_handle = GLFWwindow*;
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
         using window_handle = ANativeWindow*;
 #endif
 
-#ifdef SG_PLATFORM_OS_ANDROID
+#if SG_PLATFORM_OS_ANDROID
         friend void __AndroidImpl::setAndroidMainWindowHandle(ANativeWindow* window) noexcept;
 #endif
 
@@ -126,10 +127,10 @@ namespace SGCore
 
         ~Window() noexcept
         {
-#ifdef SG_PLATFORM_PC
+#if SG_PLATFORM_PC
             glfwMakeContextCurrent(nullptr);
             glfwSetWindowShouldClose(m_handle, GLFW_TRUE);
-#elif defined(SG_PLATFORM_OS_ANDROID)
+#elif SG_PLATFORM_OS_ANDROID
 #endif
             // glfwDestroyWindow(m_handler);
             m_handle = nullptr;
@@ -198,7 +199,7 @@ namespace SGCore
 
         window_handle m_handle = nullptr;
 
-#ifdef SG_PLATFORM_OS_ANDROID
+#if SG_PLATFORM_OS_ANDROID
         EGLDisplay m_eglDisplay = EGL_NO_DISPLAY;
         EGLSurface m_eglSurface = EGL_NO_SURFACE;
         EGLContext m_eglContext = EGL_NO_CONTEXT;

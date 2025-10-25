@@ -2,6 +2,9 @@
 // Created by stuka on 06.05.2025.
 //
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/scalar_multiplication.hpp> // used for operator* for vec * int
+
 #include "Terrain.h"
 
 #include "SGCore/Graphics/API/ITexture2D.h"

@@ -5,11 +5,14 @@
 #ifndef SUNGEARENGINE_RIGIDBODY3D_H
 #define SUNGEARENGINE_RIGIDBODY3D_H
 
+#include <BulletCollision/btBulletCollisionCommon.h>
 #include <BulletCollision/CollisionShapes/btCompoundShape.h>
-#include <SGCore/pch.h>
+#include <glm/vec3.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <vector>
 
 #include "SGCore/Main/CoreGlobals.h"
-#include "SGCore/Utils/Marker.h"
 #include "SGCore/ECS/Component.h"
 #include "Common.h"
 #include "SGCore/Serde/Defines.h"

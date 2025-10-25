@@ -5,6 +5,8 @@
 #ifndef SUNGEARENGINE_CSSDIMENSIONQUALIFIER_H
 #define SUNGEARENGINE_CSSDIMENSIONQUALIFIER_H
 
+#include <string>
+
 namespace SGCore::UI
 {
     enum struct CSSDimensionQualifier

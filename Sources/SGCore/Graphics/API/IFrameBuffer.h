@@ -5,10 +5,12 @@
 #ifndef SUNGEARENGINE_IFRAMEBUFFER_H
 #define SUNGEARENGINE_IFRAMEBUFFER_H
 
-#include <SGCore/pch.h>
+#include <set>
+#include <unordered_map>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 #include "GraphicsDataTypes.h"
-#include "IFrameBufferAttachment.h"
 #include "SGCore/Utils/Unique/UniqueName.h"
 #include "SGCore/Main/CoreGlobals.h"
 

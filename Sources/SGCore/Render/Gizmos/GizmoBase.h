@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_GIZMOBASE_H
 #define SUNGEARENGINE_GIZMOBASE_H
 
-#include <SGCore/pch.h>
-
 #include "SGCore/Render/MeshBase.h"
 #include "SGCore/Graphics/API/RenderState.h"
 

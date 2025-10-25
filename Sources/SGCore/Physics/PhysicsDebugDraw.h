@@ -5,11 +5,7 @@
 #ifndef SUNGEARENGINE_PHYSICSDEBUGDRAW_H
 #define SUNGEARENGINE_PHYSICSDEBUGDRAW_H
 
-#include <SGCore/pch.h>
-
-#include "SGCore/Main/CoreGlobals.h"
-#include "SGCore/Utils/Signal.h"
-#include "SGCore/Graphics/API/RenderState.h"
+#include <LinearMath/btIDebugDraw.h>
 
 namespace SGCore
 {

@@ -9,6 +9,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
 #include <array>
+#include <vector>
 
 #include "SGCore/Utils/Macroses.h"
 #include "SGCore/Utils/Unique/UniqueColor.h"

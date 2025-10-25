@@ -5,14 +5,11 @@
 #ifndef SUNGEARENGINE_IVIEW_H
 #define SUNGEARENGINE_IVIEW_H
 
-#include <SGCore/pch.h>
-
 #include "SGCore/Utils/Unique/UUID.h"
 #include "SGCore/Utils/Signal.h"
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/Unique/UniqueName.h"
 #include "SGCore/Utils/Unique/UniqueNamesManager.h"
-#include "SGCore/Utils/Utils.h"
 
 namespace SGCore::ImGuiWrap
 {

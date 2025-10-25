@@ -2,6 +2,8 @@
 // Created by stuka on 08.06.2023.
 //
 
+#include <glad/glad.h>
+
 #include "GL46UniformBuffer.h"
 
 SGCore::GL46UniformBuffer::~GL46UniformBuffer()

@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_FONTSMANAGER_H
 #define SUNGEARENGINE_FONTSMANAGER_H
 
-#include <SGCore/pch.h>
-
 #include <sgcore_export.h>
 
 #include <msdf-atlas-gen/msdf-atlas-gen/msdf-atlas-gen.h>

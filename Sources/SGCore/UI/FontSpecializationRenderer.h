@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_FONTSPECIALIZATIONRENDERER_H
 #define SUNGEARENGINE_FONTSPECIALIZATIONRENDERER_H
 
-#include <SGCore/pch.h>
-
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Graphics/API/RenderState.h"
 #include "SGCore/Memory/AssetRef.h"

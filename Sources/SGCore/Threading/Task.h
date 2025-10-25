@@ -5,9 +5,10 @@
 #ifndef THREADINGAPI_TASK_H
 #define THREADINGAPI_TASK_H
 
-#include <SGCore/pch.h>
-
-#include "SGCore/Utils/Signal.h"
+#include <atomic>
+#include <mutex>
+#include <memory>
+#include <functional>
 
 namespace SGCore::Threading
 {

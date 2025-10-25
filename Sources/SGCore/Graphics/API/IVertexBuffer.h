@@ -7,8 +7,6 @@
 #ifndef NATIVECORE_IVERTEXBUFFER_H
 #define NATIVECORE_IVERTEXBUFFER_H
 
-#include <SGCore/pch.h>
-
 #include "GraphicsDataTypes.h"
 
 namespace SGCore

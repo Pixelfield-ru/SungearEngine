@@ -5,7 +5,6 @@
 #ifndef NATIVECORE_IASSET_H
 #define NATIVECORE_IASSET_H
 
-#include <SGCore/pch.h>
 #include <SGCore/Utils/StringInterpolation/InterpolatedPath.h>
 #include "SGCore/Utils/Unique/UUID.h"
 #include "SGCore/Utils/StaticTypeID.h"
@@ -13,7 +12,6 @@
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/Unique/UniqueName.h"
 #include "SGCore/Utils/Signal.h"
-#include "SGCore/Serde/SerializationType.h"
 #include "SGCore/Memory/AssetsLoadPolicy.h"
 #include "SGCore/Threading/Thread.h"
 #include "SGCore/Threading/ThreadsManager.h"

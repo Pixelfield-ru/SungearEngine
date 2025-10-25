@@ -57,8 +57,6 @@
 
  add_library(${PROJECT_NAME} SHARED ${SGCORE_SOURCES})
 
- target_precompile_headers(${PROJECT_NAME} PUBLIC pch.h)
-
  include(GenerateExportHeader)
  generate_export_header(${PROJECT_NAME})
 
@@ -91,7 +89,6 @@
          imgui::imgui
          pugixml
          EnTT::EnTT
-         spdlog::spdlog
          glad::glad
          OpenAL::OpenAL
          glaze::glaze
@@ -103,6 +100,7 @@
          rectpack2D::rectpack2D
          Boost::system
          Boost::asio
+         spdlog::spdlog
 
          ${SG_BULLET_LIBS}
          ${FREETYPE_LIBRARIES}

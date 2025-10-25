@@ -5,6 +5,8 @@
 #ifndef SUNGEARENGINE_IKJOINT_H
 #define SUNGEARENGINE_IKJOINT_H
 
+#include <glm/vec3.hpp>
+
 #include "SGCore/ECS/Component.h"
 
 namespace SGCore
