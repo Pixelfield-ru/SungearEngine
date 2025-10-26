@@ -71,7 +71,7 @@
     - ✔️ Windows
     - 🔨 MacOS
     - ✔️ Linux
-    - 🔨 Android
+    - ✔️ Android (partial: Input does not supported)
     - ❌ iOS
     - ❌ Web
 
