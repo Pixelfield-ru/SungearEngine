@@ -66,7 +66,7 @@ namespace SGCore::FileUtils
 
     std::filesystem::path findFile(const std::filesystem::path& relativePath, const std::filesystem::path& fileName);
 
-    std::filesystem::path getAppDataPath() noexcept;
+    std::filesystem::path getAppResourcesPath() noexcept;
 }
 
 #endif // SUNGEARENGINE_FILEUTILS_H

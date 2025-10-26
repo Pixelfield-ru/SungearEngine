@@ -5,6 +5,7 @@
 #ifndef SUNGEARENGINEEDITOR_DIRECTORYEXPLORER_H
 #define SUNGEARENGINEEDITOR_DIRECTORYEXPLORER_H
 
+#include <map>
 #include <SGCore/ImGuiWrap/Views/IView.h>
 #include <SGCore/Graphics/API/ITexture2D.h>
 #include <SGCore/Memory/Assets/SVGImage.h>

@@ -180,7 +180,7 @@ SGCore::FileUtils::findFile(const std::filesystem::path& relativePath, const std
     return "";
 }
 
-std::filesystem::path SGCore::FileUtils::getAppDataPath() noexcept
+std::filesystem::path SGCore::FileUtils::getAppResourcesPath() noexcept
 {
 #if SG_PLATFORM_OS_ANDROID
     Java::JNINativeThreadHandler threadHandler;
@@ -201,6 +201,6 @@ std::filesystem::path SGCore::FileUtils::getAppDataPath() noexcept
 
     return result;
 #else
-    return "";
+    return ".";
 #endif
 }

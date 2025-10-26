@@ -3,6 +3,7 @@
 
 #include <sgcore_export.h>
 
+#include "Config.h"
 #include "Window.h"
 #include "SGCore/Utils/Timer.h"
 
@@ -26,7 +27,10 @@ namespace SGCore
         
         CoreMain() = delete;
 
-        static void start();
+        static void init();
+        static void startCycle() noexcept;
+
+        static Config loadConfig(const std::filesystem::path& configPath);
 
         static Window& getWindow() noexcept;
 

@@ -10,6 +10,7 @@
 #include <SGCore/Graphics/API/ITexture2D.h>
 #include <SGCore/Memory/Assets/SVGImage.h>
 #include <array>
+#include <imgui.h>
 
 namespace SGE
 {

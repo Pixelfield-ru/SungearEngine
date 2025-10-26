@@ -3,6 +3,11 @@
 //
 #include "EntitiesManipulator.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 void SGE::EntitiesManipulator::getDeltaBetweenMatrices(const glm::mat4& originalMatrix, const glm::mat4& updatedMatrix,
                                                        glm::vec3& deltaTranslation, glm::quat& deltaRotation,
                                                        glm::vec3& deltaScale) noexcept

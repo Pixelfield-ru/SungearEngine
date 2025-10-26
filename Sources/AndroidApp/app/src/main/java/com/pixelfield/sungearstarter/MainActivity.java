@@ -3,6 +3,7 @@ package com.pixelfield.sungearstarter;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.opengl.EGL14;
@@ -15,6 +16,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.io.File;
+import java.util.Objects;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -22,18 +24,6 @@ import java.io.File;
  */
 public class MainActivity extends Activity implements SurfaceHolder.Callback {
     private SurfaceView surfaceView;
-
-    public static String getDeviceArchitecture() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            String[] abis = Build.SUPPORTED_ABIS;
-            if (abis != null && abis.length > 0) {
-                return abis[0];
-            }
-        }
-
-        // for old Android versions
-        return Build.CPU_ABI;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,15 +44,26 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 
     }
 
+    @SuppressLint("UnsafeDynamicallyLoadedCode")
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {
-        Log.d("SungearStarter", "Loading SGCore.so...");
-        final var appInfo = getApplicationInfo();
-        System.load(appInfo.sourceDir  + "!/lib/" + getDeviceArchitecture() + "/SGCore.so");
-
-        NativeMethods.startSGCore(this.getApplicationContext(), holder.getSurface());
-
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        final String externalStorage = Objects.requireNonNull(getExternalFilesDir(null)).getAbsolutePath();
+        final String internalStorage = Objects.requireNonNull(getFilesDir()).getAbsolutePath();
+
+        final var appInfo = getApplicationInfo();
+
+        Log.i("SungearStarter", "External Files dir: " + externalStorage + "/assets/");
+        Log.i("SungearStarter", "Internal Files dir: " + internalStorage + "/assets/");
+        Common.copyAssets(this.getAssets(), "sungear", internalStorage + "/assets/sungear");
+
+        Log.d("SungearStarter", "Loading SGCore.so...");
+        System.load(appInfo.sourceDir  + "!/lib/" + Common.getDeviceArchitecture() + "/SGCore.so");
+
+        AndroidNativeMethods.startCore(this.getApplicationContext(), holder.getSurface());
+        AndroidNativeMethods.loadConfig(internalStorage + "/assets/sungear/SungearEngineConfig.json");
+        AndroidNativeMethods.startMainCycle();
     }
 
     @Override

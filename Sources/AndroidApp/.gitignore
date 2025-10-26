@@ -14,3 +14,4 @@
 .cxx
 local.properties
 .tmp
+/app/src/main/assets

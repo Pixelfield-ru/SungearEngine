@@ -6,7 +6,7 @@
 #include <imgui_stdlib.h>
 #include <SGCore/Graphics/API/ITexture2D.h>
 #include <nfd.h>
-#include <SGCore/Input/InputManager.h>
+#include <SGCore/Input/PCInput.h>
 #include <SGCore/PluginsSystem/PluginsManager.h>
 #include <SGCore/Memory/Assets/SVGImage.h>
 #include <SGCore/Utils/Formatter.h>
@@ -34,7 +34,7 @@ SGE::ProjectCreateDialog::ProjectCreateDialog() noexcept
                       .m_text = "OK",
                       .m_name = "OKButton",
                       .isFastClicked = [](auto& self) -> bool {
-                          return SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ENTER);
+                          return SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_ENTER);
                       },
                       .onClicked = [this](auto& self, SGCore::ImGuiWrap::IView* parentView) {
                           submit();
@@ -50,7 +50,7 @@ SGE::ProjectCreateDialog::ProjectCreateDialog() noexcept
                       .m_text = "Cancel",
                       .m_name = "CancelButton",
                       .isFastClicked = [](auto& self) -> bool {
-                          return SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ESCAPE);
+                          return SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_ESCAPE);
                       },
                       .onClicked = [this](auto& self, SGCore::ImGuiWrap::IView* parentView) {
                           cancel();

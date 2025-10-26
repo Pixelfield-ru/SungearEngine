@@ -3,84 +3,99 @@
   "version-string" : "1.0.0",
   "builtin-baseline" : "d5a87c6bcc5d3cb3f5627bfeff977280097c719c",
   "dependencies" : [ {
-    "name" : "entt",
-    "version>=" : "3.13.1"
-  }, {
-    "name" : "glm",
-    "version>=" : "1.0.1#1"
-  }, {
-    "name" : "pugixml",
-    "version>=" : "1.14"
-  }, {
-    "name" : "stb",
-    "version>=" : "2023-04-11#1"
-  }, {
-    "name" : "vcpkg-cmake-config",
-    "version>=" : "2022-02-06#1"
-  }, {
-    "name" : "vcpkg-cmake-get-vars",
-    "version>=" : "2023-12-31"
-  }, {
-    "name" : "vcpkg-cmake",
-    "version>=" : "2023-05-04"
-  }, {
-    "name" : "glfw3",
-    "version>=" : "3.4"
-  }, {
-    "name" : "imgui",
-    "features" : [ "glfw-binding", "opengl3-binding", "docking-experimental" ],
-    "version>=" : "1.90.7"
-  }, {
-    "name" : "spdlog",
-    "version>=" : "1.13.0"
-  }, {
-    "name" : "glad",
-    "version>=" : "0.1.36"
-  }, {
-    "name" : "openal-soft",
-    "version>=" : "1.23.1"
-  }, {
-    "name" : "nativefiledialog-extended",
-    "version>=" : "1.2.1#0"
-  }, {
-    "name" : "lunasvg",
-    "version>=" : "2.3.8"
-  }, {
-    "name" : "rapidjson",
-    "version>=" : "2023-07-17#1"
-  }, {
-    "name" : "bullet3",
-    "version>=" : "3.25#1"
-  }, {
     "name" : "assimp",
     "version>=" : "5.3.1#4"
-  }, {
-    "name" : "pugixml",
-    "version>=" : "1.14"
   }, {
     "name" : "boost-stacktrace",
     "version>=" : "1.84.0"
   }, {
+    "name" : "bullet3",
+    "version>=" : "3.25#1"
+  }, {
+    "name" : "entt",
+    "version>=" : "3.15.0#0"
+  }, {
     "name" : "freetype",
-    "version>=" : "2.13.2"
+    "version>=" : "2.13.3"
+  }, {
+    "name" : "glad",
+    "features" : [
+      "extensions",
+      {
+        "name": "gl-api-46",
+        "platform": "windows | linux | osx"
+      },
+      {
+        "name": "gles2-api-32",
+        "platform": "android"
+      }
+    ],
+    "version>=" : "0.1.36"
+  }, {
+    "name" : "glm",
+    "version>=" : "1.0.1#1"
+  }, {
+    "name" : "imgui",
+    "features": [
+      "opengl3-binding",
+      "docking-experimental",
+      {
+        "name": "glfw-binding",
+        "platform": "!android"
+      }
+    ],
+    "version>=" : "1.90.7"
+  }, {
+    "name" : "pugixml",
+    "version>=" : "1.15"
+  }, {
+    "name" : "spdlog",
+    "version>=" : "1.13.0"
+  }, {
+    "name" : "stb",
+    "version>=" : "2024-07-29#1"
+  }, {
+    "name" : "vcpkg-cmake",
+    "version>=" : "2023-05-04"
+  }, {
+    "name" : "vcpkg-cmake-config",
+    "version>=" : "2022-02-06#1"
+  }, {
+    "name" : "glfw3",
+    "version>=" : "3.4",
+    "platform": "!android"
+  }, {
+    "name" : "openal-soft",
+    "version>=" : "1.23.1"
+  }, {
+    "name" : "lunasvg",
+    "version>=" : "3.3.0"
+  }, {
+    "name" : "rapidjson",
+    "version>=" : "2023-07-17#1"
   }, {
     "name" : "libbacktrace",
     "version>=" : "2023-11-30",
-    "platform": "linux"
+    "platform" : "linux"
   }, {
     "name" : "antlr4",
     "version>=" : "4.13.1"
   }, {
     "name" : "skia",
-    "version>=" : "129#3"
+    "version>=" : "129#3",
+    "platform": "!android"
   }, {
     "name" : "gli",
-    "version>=": "2021-07-06#2"
+    "version>=" : "2021-07-06#2"
   }, {
     "name" : "meshoptimizer",
     "version>=" : "0.22"
   }, {
     "name" : "boost-asio",
     "version>=" : "1.88.0#0"
-  }]
+  }, {
+    "name" : "nativefiledialog-extended",
+    "version>=" : "1.2.1#0",
+    "platform": "!android & !ios & !uwp"
+  } ]
 }

@@ -1,42 +1,11 @@
 {
-  "version": 2,
+  "version": 5,
+  "include": [
+    "cmake/presets/x64-windows.json",
+    "cmake/presets/x64-linux.json",
+    "cmake/presets/arm64-android.json"
+  ],
   "configurePresets": [
-    {
-      "binaryDir": "cmake-build-release",
-      "generator": "Ninja",
-      "name": "release-host",
-      "cacheVariables": {
-        "SG_BUILD_TYPE": "Release",
-        "CMAKE_BUILD_TYPE": "Release",
-        "SG_BUILD_PRESET": "release-host",
-        "CMAKE_TOOLCHAIN_FILE" : "$env{SUNGEAR_SOURCES_ROOT}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-      }
-    },
-    {
-      "binaryDir": "cmake-build-debug",
-      "generator": "Ninja",
-      "name": "debug-host",
-      "cacheVariables": {
-        "SG_BUILD_TYPE": "Debug",
-        "CMAKE_BUILD_TYPE": "Debug",
-        "SG_BUILD_PRESET": "debug-host",
-        "CMAKE_TOOLCHAIN_FILE" : "$env{SUNGEAR_SOURCES_ROOT}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-      }
-    },
-    {
-      "binaryDir": "cmake-build-release-mingw-x86-64",
-      "generator": "Ninja",
-      "name": "x86-64-mingw-release",
-      "cacheVariables": {
-        "SG_BUILD_TYPE": "Release",
-        "CMAKE_SYSTEM_NAME" : "MinGW",
-        "CMAKE_SYSTEM_PROCESSOR": "x64",
-        "CMAKE_BUILD_TYPE": "Release",
-        "SG_BUILD_PRESET": "x86-64-mingw-release",
 
-        "VCPKG_TARGET_TRIPLET" : "sg-x64-mingw-dynamic-release",
-        "CMAKE_TOOLCHAIN_FILE" : "$env{SUNGEAR_SOURCES_ROOT}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-      }
-    }
   ]
 }

@@ -431,7 +431,8 @@ int main()
     CoreMain::getRenderTimer().onUpdate.connect<&onUpdate>();
     CoreMain::getFixedTimer().onUpdate.connect<&onFixedUpdate>();
 
-    CoreMain::start();
+    CoreMain::init();
+    CoreMain::startCycle();
 
     return 0;
 }

@@ -451,7 +451,8 @@ int main()
     SGCore::CoreMain::getRenderTimer().onUpdate.connect<&onUpdate>();
     SGCore::CoreMain::getFixedTimer().onUpdate.connect<&onFixedUpdate>();
 
-    SGCore::CoreMain::start();
+    SGCore::CoreMain::init();
+    SGCore::CoreMain::startCycle();
 
     return 0;
 }

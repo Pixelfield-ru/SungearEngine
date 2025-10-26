@@ -76,10 +76,10 @@
          ${JNI_INCLUDE_DIRS}
          )
 
- message("CMAKE_BUILD_TYPE: " ${CMAKE_BUILD_TYPE})
+ message(STATUS "CMAKE_BUILD_TYPE: " ${CMAKE_BUILD_TYPE})
 
- message("Bullet Include Dir: " ${BULLET_INCLUDE_DIRS})
- message("Bullet Libraries: " ${SG_BULLET_LIBS})
+ message(STATUS "Bullet Include Dir: " ${BULLET_INCLUDE_DIRS})
+ message(STATUS "Bullet Libraries: " ${SG_BULLET_LIBS})
 
  target_link_libraries(${PROJECT_NAME} PUBLIC
          PNG::PNG
@@ -123,8 +123,7 @@
   target_link_libraries(${PROJECT_NAME} PUBLIC
           ${CMAKE_DL_LIBS}
           ${Backtrace_LIBRARY}
-          tbb
-          antlr4_static)
- else()
-  target_link_libraries(${PROJECT_NAME} PUBLIC antlr4_static)
+          tbb)
  endif()
+
+ target_link_libraries(${PROJECT_NAME} PUBLIC antlr4_static)

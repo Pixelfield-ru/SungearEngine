@@ -4,7 +4,7 @@
 
 #include "DialogWindowsManager.h"
 #include "Styles/StylesManager.h"
-#include <SGCore/Input/InputManager.h>
+#include <SGCore/Input/PCInput.h>
 
 void SGE::DialogWindowsManager::init() noexcept
 {
@@ -119,7 +119,7 @@ SGE::DialogWindowsManager::createThreeButtonsWindow(const std::string& windowNam
                              .m_name = firstButtonText,
                              .isFastClicked = [](auto& self) -> bool
                              {
-                                 return SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ENTER);
+                                 return SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_ENTER);
                              },
                              .onClicked = [](auto& self, SGCore::ImGuiWrap::IView* parentView)
                              {
@@ -149,7 +149,7 @@ SGE::DialogWindowsManager::createThreeButtonsWindow(const std::string& windowNam
                              .m_name = thirdButtonText,
                              .isFastClicked = [](auto& self) -> bool
                              {
-                                 return SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ESCAPE);
+                                 return SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_ESCAPE);
                              },
                              .onClicked = [](auto& self, SGCore::ImGuiWrap::IView* parentView)
                              {
@@ -179,7 +179,7 @@ SGE::DialogWindowsManager::createTwoButtonsWindow(const std::string& windowName,
                              .m_name = firstButtonText,
                              .isFastClicked = [](auto& self) -> bool
                              {
-                                 return SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ENTER);
+                                 return SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_ENTER);
                              },
                              .onClicked = [](auto& self, SGCore::ImGuiWrap::IView* parentView)
                              {
@@ -198,7 +198,7 @@ SGE::DialogWindowsManager::createTwoButtonsWindow(const std::string& windowName,
                              .m_name = secondButtonText,
                              .isFastClicked = [](auto& self) -> bool
                              {
-                                 return SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ESCAPE);
+                                 return SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_ESCAPE);
                              },
                              .onClicked = [](auto& self, SGCore::ImGuiWrap::IView* parentView)
                              {
@@ -226,7 +226,7 @@ SGCore::Ref<SGE::DialogWindow> SGE::DialogWindowsManager::createOneButtonWindow(
                              .m_name = firstButtonText,
                              .isFastClicked = [](auto& self) -> bool
                              {
-                                 return SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ENTER);
+                                 return SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_ENTER);
                              },
                              .onClicked = [](auto& self, SGCore::ImGuiWrap::IView* parentView)
                              {

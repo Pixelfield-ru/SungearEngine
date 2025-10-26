@@ -5,7 +5,7 @@
 #include "SGCore/Utils/Singleton.h"
 #include "Views/DialogWindowsManager.h"
 #include <SGCore/Main/CoreMain.h>
-#include <SGCore/Input/InputManager.h>
+#include <SGCore/Input/PCInput.h>
 #include <SGCore/ImGuiWrap/ImGuiLayer.h>
 #include <SGCore/Logger/Logger.h>
 #include <SGCore/Utils/StringInterpolation/InterpolationResolver.h>
@@ -87,7 +87,7 @@ void SGE::SungearEngineEditor::update(const double& dt, const double& fixedDt)
         }
     }
 
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_Y) && !ImGui::GetIO().WantTextInput)
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_Y) && !ImGui::GetIO().WantTextInput)
     {
         SGCore::AssetManager::getInstance()->createPackage("./", "assets");
 
@@ -110,17 +110,17 @@ void SGE::SungearEngineEditor::update(const double& dt, const double& fixedDt)
         StylesManager::init();*/
     }
 
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_L) && !ImGui::GetIO().WantTextInput)
+    if(SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_L) && !ImGui::GetIO().WantTextInput)
     {
         SGCore::AssetManager::getInstance()->loadPackage("./", "assets");
     }
 
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_F11))
+    if(SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_F11))
     {
         SGCore::CoreMain::getWindow().setFullscreen(!SGCore::CoreMain::getWindow().isFullscreen());
     }
 
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_N) && !ImGui::GetIO().WantTextInput)
+    if(SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_N) && !ImGui::GetIO().WantTextInput)
     {
         auto shaders = SGCore::AssetManager::getInstance()->getAssetsWithType<SGCore::IShader>();
         for(const auto& shader : shaders)

@@ -7,6 +7,7 @@
 
 #include <SGCore/ImGuiWrap/Views/IView.h>
 #include <SGCore/Render/Camera3D.h>
+#include <imgui.h>
 #include <ImGuizmo/ImGuizmo.h>
 
 #include "Utils/EntitiesManipulator.h"

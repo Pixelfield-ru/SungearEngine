@@ -4,6 +4,7 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
+#include "Config.h"
 #include "SGCore/Render/Camera3D.h"
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Logger/Logger.h"
@@ -15,17 +16,19 @@
 #include "SGCore/Physics/PhysicsWorld3D.h"
 #include "SGCore/UI/FontsManager.h"
 #include "SGCore/Audio/AudioDevice.h"
-#include "SGCore/Coro/CoroScheduler.h"
 #include "SGCore/ImGuiWrap/ImGuiLayer.h"
 #include "SGCore/PluginsSystem/PluginsManager.h"
 #include "SGCore/MetaInfo/MetaInfo.h"
 #include "SGCore/Utils/StringInterpolation/InterpolationResolver.h"
 #include "SGCore/Utils/SGSL/SGSLETranslator.h"
 #include "SGCore/Input/PCInput.h"
+#include "SGCore/Serde/Serde.h"
+#include "SGCore/Serde/StandardSerdeSpecs/STD.h"
+#include "SGCore/Serde/StandardSerdeSpecs/Utils.h"
 
-void SGCore::CoreMain::start()
+void SGCore::CoreMain::init()
 {
-    const std::string finalLogFileName = FileUtils::getAppDataPath().string() + "/logs/sg_log_" + Utils::getTimeAsString("%Y_%m_%d_%H_%M_%S") + ".log";
+    const std::string finalLogFileName = FileUtils::getAppResourcesPath().string() + "/logs/sg_log_" + Utils::getTimeAsString("%Y_%m_%d_%H_%M_%S") + ".log";
     
     HwExceptionHandler::setApplicationName("Sungear Engine");
     HwExceptionHandler::setOutputLogFilePath(finalLogFileName);
@@ -143,18 +146,52 @@ void SGCore::CoreMain::start()
 
     m_fixedTimer.resetTimer();
     m_renderTimer.resetTimer();
+}
 
+void SGCore::CoreMain::startCycle() noexcept
+{
     while (!m_window.shouldClose())
     {
         Threading::ThreadsManager::getMainThread()->processTasks();
-        
+
         m_fixedTimer.startFrame();
         m_renderTimer.startFrame();
 
         // Coro::CoroScheduler::process();
     }
-    
+
     spdlog::shutdown();
+}
+
+SGCore::Config SGCore::CoreMain::loadConfig(const std::filesystem::path& configPath)
+{
+    Config loadedConfig;
+    std::string configLoadLog;
+    Serde::Serializer::fromFormat(
+        FileUtils::readFile(configPath),
+        loadedConfig, Serde::FormatType::JSON, configLoadLog);
+
+    if(!configLoadLog.empty())
+    {
+        LOG_E(SGCORE_TAG,
+              "Can not load config by path: '{}'.\nError: {}",
+              SGCore::Utils::toUTF8(configPath.u16string()),
+              configLoadLog);
+    }
+    else
+    {
+        for(const auto& loadablePluginConfig : loadedConfig.m_loadablePlugins)
+        {
+            if(!loadablePluginConfig.m_enabled) continue;
+
+            PluginsManager::loadPlugin(loadablePluginConfig.m_pluginName,
+                                       loadablePluginConfig.m_pluginPath.resolved(),
+                                       loadablePluginConfig.m_pluginEntryArgs,
+                                       loadablePluginConfig.m_pluginCMakeBuildDir);
+        }
+    }
+
+    return loadedConfig;
 }
 
 void SGCore::CoreMain::fixedUpdateStart(const double& dt, const double& fixedDt)

@@ -99,8 +99,6 @@ set(VCPKG_C_FLAGS_RELEASE "${VCPKG_C_FLAGS_RELEASE} ${CMAKE_C_FLAGS_RELEASE}")
 set(VCPKG_CXX_FLAGS "${VCPKG_CXX_FLAGS} ${CMAKE_CXX_FLAGS}")
 set(VCPKG_C_FLAGS "${VCPKG_C_FLAGS} ${CMAKE_C_FLAGS}")
 
-# message("cxx compiler flags: ${CMAKE_CXX_FLAGS}")
-
 # multiple definition because of bullet library
 set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition -Wno-return-type")
 

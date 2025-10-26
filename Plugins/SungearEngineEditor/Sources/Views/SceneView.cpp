@@ -4,13 +4,12 @@
 
 #include "SceneView.h"
 #include "EditorScene.h"
-#include "ImGuiUtils.h"
 #include <imgui_internal.h>
+#include "ImGuiUtils.h"
 #include <SGCore/Graphics/API/ITexture2D.h>
 #include <SGCore/Memory/AssetManager.h>
 #include <SGCore/Graphics/API/IFrameBuffer.h>
-#include <SGCore/Input/InputManager.h>
-#include <SGCore/Input/InputListener.h>
+#include <SGCore/Input/PCInput.h>
 #include <SGCore/Memory/Assets/ModelAsset.h>
 #include <SGCore/Utils/StringInterpolation/InterpolationResolver.h>
 #include <SGCore/Render/Mesh.h>
@@ -34,8 +33,6 @@ bool SGE::SceneView::begin()
 
 void SGE::SceneView::renderBody()
 {
-    auto mainInputListener = SGCore::InputManager::getMainInputListener();
-
     SGCore::Ref<SGCore::Camera3D> editorCamera3D;
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5, 0.5));
@@ -88,11 +85,11 @@ void SGE::SceneView::renderBody()
             const bool isMouseDoubleClicked = ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
 
             // picking entity
-            if(mainInputListener->mouseButtonPressed(SGCore::MouseButton::MOUSE_BUTTON_LEFT) &&
+            if(SGCore::Input::PC::mouseButtonPressed(SGCore::Input::MouseButton::MOUSE_BUTTON_LEFT) &&
                ImGui::IsWindowHovered() && !ImGuizmo::IsOver())
             {
-                const glm::vec2 mousePos = { mainInputListener->getCursorPositionX(),
-                                             mainInputListener->getCursorPositionY() };
+                const glm::vec2 mousePos = { SGCore::Input::PC::getCursorPositionX(),
+                                             SGCore::Input::PC::getCursorPositionY() };
 
                 auto attachment2 = layeredFrameReceiver->m_layersFrameBuffer
                         ->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2);
@@ -111,7 +108,7 @@ void SGE::SceneView::renderBody()
 
                 auto& cameraPickedEntities = (*camera3D)->m_pickedEntities;
 
-                auto leftControlDown = mainInputListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT_CONTROL);
+                auto leftControlDown = SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_LEFT_CONTROL);
 
                 // picking
                 if(pickedEntity == entt::null && !leftControlDown)
@@ -252,8 +249,8 @@ void SGE::SceneView::renderBody()
             // glViewport(0, 0, windowSize.x, windowSize.y);
         }
 
-        if(mainInputListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT_CONTROL) &&
-           mainInputListener->keyboardKeyPressed(SGCore::KeyboardKey::KEY_B) &&
+        if(SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_LEFT_CONTROL) &&
+           SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_B) &&
            !ImGui::GetIO().WantTextInput)
         {
             const auto& scenePath = currentEditorScene->m_scene->m_metaInfo.m_sceneLocalPath;
@@ -264,7 +261,7 @@ void SGE::SceneView::renderBody()
 
     const bool isThisViewFocused = ImGui::IsWindowFocused();
 
-    if(mainInputListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT_CONTROL) && mainInputListener->keyboardKeyPressed(SGCore::KeyboardKey::KEY_C) && isThisViewFocused)
+    if(SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_LEFT_CONTROL) && SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_C) && isThisViewFocused)
     {
         if(!m_entitiesManipulator.m_manipulatingEntities.empty())
         {
@@ -274,7 +271,7 @@ void SGE::SceneView::renderBody()
         }
     }
 
-    if(mainInputListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT_CONTROL) && mainInputListener->keyboardKeyPressed(SGCore::KeyboardKey::KEY_V) && isThisViewFocused)
+    if(SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_LEFT_CONTROL) && SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_V) && isThisViewFocused)
     {
         std::string entitiesDeserLog;
 

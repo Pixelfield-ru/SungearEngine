@@ -7,7 +7,7 @@
 #include "Styles/StylesManager.h"
 #include <imgui_internal.h>
 #include <imgui.h>
-#include <SGCore/Input/InputManager.h>
+#include <SGCore/Input/PCInput.h>
 
 SGE::SettingsView::SettingsView()
 {
@@ -23,7 +23,7 @@ SGE::SettingsView::SettingsView()
                       .m_text = "OK",
                       .m_name = "OKButton",
                       .isFastClicked = [](auto& self) -> bool {
-                          return SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ENTER);
+                          return SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_ENTER);
                       },
                       .onClicked = [this](auto& self,SGCore::ImGuiWrap::IView* parentView) {
                           std::printf("engine settings ok clicked\n");
@@ -49,7 +49,7 @@ SGE::SettingsView::SettingsView()
                       .m_text = "Cancel",
                       .m_name = "CancelButton",
                       .isFastClicked = [](auto& self) -> bool {
-                          return SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ESCAPE);
+                          return SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_ESCAPE);
                       },
                       .onClicked = [this](auto& self, SGCore::ImGuiWrap::IView* parentView) {
                           onCancelPressed();

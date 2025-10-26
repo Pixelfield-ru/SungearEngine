@@ -5,6 +5,8 @@
 #ifndef SUNGEARENGINEEDITOR_DOCKEDWINDOW_H
 #define SUNGEARENGINEEDITOR_DOCKEDWINDOW_H
 
+#include <imgui.h>
+
 #include <SGCore/Main/CoreGlobals.h>
 #include <SGCore/ImGuiWrap/Views/IView.h>
 
