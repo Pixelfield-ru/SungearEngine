@@ -349,9 +349,9 @@ void SGE::ProjectCreateDialog::submit()
             return;
         }
 
-        SGCore::CMakePresetsFileInfo projectCMakePresetsFileInfo(cmakePresetsPath);
+        SGCore::CMake::PresetsFileInfo projectCMakePresetsFileInfo(cmakePresetsPath);
         // loading preset using current engine preset
-        const SGCore::CMakePresetsFileInfo::Preset* projectPreset = projectCMakePresetsFileInfo.getPreset(SG_BUILD_PRESET);
+        const SGCore::CMake::Preset* projectPreset = projectCMakePresetsFileInfo.getPreset(SG_BUILD_PRESET);
         if(!projectPreset)
         {
             m_error = fmt::format("CMakePresets.json of this project does not contain preset '{}' that is needed to build this project.", SG_BUILD_PRESET);

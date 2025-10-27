@@ -27,7 +27,7 @@ std::filesystem::path SGCore::IPlugin::getLocalPath() const noexcept
 
 std::string SGCore::IPlugin::getName() const noexcept
 {
-    return m_version;
+    return m_name;
 }
 
 std::string SGCore::IPlugin::getVersion() const noexcept

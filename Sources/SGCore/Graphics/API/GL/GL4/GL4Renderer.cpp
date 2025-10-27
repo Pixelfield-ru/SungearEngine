@@ -348,7 +348,11 @@ void SGCore::GL4Renderer::bindScreenFrameBuffer() const noexcept
 const SGCore::Ref<SGCore::GL4Renderer>& SGCore::GL4Renderer::getInstance() noexcept
 {
     static Ref<GL4Renderer> s_instancePointer(new GL4Renderer);
+// #if SG_PLATFORM_PC
     s_instancePointer->m_apiType = SG_API_TYPE_GL4;
+/*#else
+    s_instancePointer->m_apiType = SG_API_TYPE_GLES3;
+#endif*/
 
     return s_instancePointer;
 }

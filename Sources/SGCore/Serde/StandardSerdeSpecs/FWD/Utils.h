@@ -5,6 +5,7 @@
 #pragma once
 
 #include "SGCore/Serde/Serde.h"
+#include "SGCore/Utils/CMakeUtils.h"
 
 namespace SGCore
 {
@@ -14,6 +15,11 @@ namespace SGCore
     struct UniqueName;
     class UniqueNameWrapper;
     struct EntityBaseInfo;
+
+    namespace CMake
+    {
+        struct PresetsFileInfo;
+    }
 }
 
 namespace SGCore::Serde
@@ -91,5 +97,35 @@ namespace SGCore::Serde
         static void serialize(SerializableValueView<const InterpolatedPath, TFormatType>& valueView) noexcept;
 
         static void deserialize(DeserializableValueView<InterpolatedPath, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== CMake::Preset FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<CMake::Preset, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        sg_serde_define_type_name("SGCore::CMake::Preset")
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const CMake::Preset, TFormatType>& valueView, const CMake::PresetsFileInfo& presetsFile) noexcept;
+
+        static void deserialize(DeserializableValueView<CMake::Preset, TFormatType>& valueView, const CMake::PresetsFileInfo& presetsFile) noexcept;
+    };
+
+    // ======================================================== CMake::PresetsFileInfo FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<CMake::PresetsFileInfo, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        sg_serde_define_type_name("SGCore::CMake::PresetsFileInfo")
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const CMake::PresetsFileInfo, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<CMake::PresetsFileInfo, TFormatType>& valueView) noexcept;
     };
 }

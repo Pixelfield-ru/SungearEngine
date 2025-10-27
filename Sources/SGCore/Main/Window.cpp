@@ -4,6 +4,7 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "Window.h"
 #include "CoreMain.h"
+#include "SGCore/ExternalAPI/Java/JNIManager.h"
 
 #include "SGCore/Input/PCInput.h"
 #include "SGCore/Logger/AndroidLogcat.h"
@@ -119,6 +120,13 @@ void SGCore::Window::create()
         return;
     }
 
+    m_eglSurface = eglCreateWindowSurface(m_eglDisplay, m_eglConfig, m_handle, nullptr);
+    if(m_eglSurface == EGL_NO_SURFACE)
+    {
+        LOG_E(SGCORE_TAG, "SGCore: Failed to create EGL Surface. In: {}", SG_CURRENT_LOCATION_STR);
+        return;
+    }
+
     // todo: customizable
     const EGLint contextAttribs[] = {
         EGL_CONTEXT_CLIENT_VERSION, 3,
@@ -160,6 +168,7 @@ void SGCore::Window::makeCurrent() noexcept
 #if SG_PLATFORM_PC
         glfwMakeContextCurrent(m_handle);
 #elif SG_PLATFORM_OS_ANDROID
+        LOG_I(SGCORE_TAG, "EGL Display was made current")
         eglMakeCurrent(m_eglDisplay, m_eglSurface, m_eglSurface, m_eglContext);
 #endif
     }
@@ -298,6 +307,8 @@ void SGCore::Window::getSize(int& sizeX, int& sizeY) noexcept
 #if SG_PLATFORM_PC
     glfwGetWindowSize(m_handle, &sizeX, &sizeY);
 #elif SG_PLATFORM_OS_ANDROID
+    sizeX = ANativeWindow_getWidth(m_handle);
+    sizeY = ANativeWindow_getHeight(m_handle);
 #endif
 }
 
@@ -306,6 +317,7 @@ void SGCore::Window::getBordersSize(int& left, int& top, int& right, int& bottom
 #if SG_PLATFORM_PC
     glfwGetWindowFrameSize(m_handle, &left, &top, &right, &bottom);
 #elif SG_PLATFORM_OS_ANDROID
+
 #endif
 }
 
@@ -422,6 +434,32 @@ int SGCore::Window::getPrimaryMonitorRefreshRate() noexcept
 #if SG_PLATFORM_PC
     return glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate;
 #elif SG_PLATFORM_OS_ANDROID
-    return 0;
+    Java::JNINativeThreadHandler threadHandler;
+    auto* jniEnv = Java::JNIManager::getEnv(threadHandler);
+    auto* jniContext = Java::JNIManager::getContext();
+
+    jclass contextClass = jniEnv->GetObjectClass(jniContext);
+    jmethodID getSystemServiceFunction = jniEnv->GetMethodID(contextClass, "getSystemService",
+                                                             "(Ljava/lang/String;)Ljava/lang/Object;");
+
+    jstring displayServiceStr = jniEnv->NewStringUTF("display");
+    jobject displayManager = jniEnv->CallObjectMethod(jniContext, getSystemServiceFunction, displayServiceStr);
+    jniEnv->DeleteLocalRef(displayServiceStr);
+
+    jclass displayManagerClass = jniEnv->FindClass("android/hardware/display/DisplayManager");
+    jmethodID getDisplayFunction = jniEnv->GetMethodID(displayManagerClass, "getDisplay", "(I)Landroid/view/Display;");
+
+    // getting primary display (0)
+    jobject display = jniEnv->CallObjectMethod(displayManager, getDisplayFunction, 0);
+
+    jclass displayClass = jniEnv->FindClass("android/view/Display");
+    jmethodID getRefreshRateMethod = jniEnv->GetMethodID(displayClass, "getRefreshRate", "()F");
+
+    const float refreshRate = jniEnv->CallFloatMethod(display, getRefreshRateMethod);
+
+    jniEnv->DeleteLocalRef(displayManager);
+    jniEnv->DeleteLocalRef(display);
+
+    return refreshRate;
 #endif
 }

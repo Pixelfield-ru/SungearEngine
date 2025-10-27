@@ -8,37 +8,41 @@
 #include <filesystem>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
-namespace SGCore
+#include "SGCore/Serde/Defines.h"
+
+sg_predeclare_serde()
+
+namespace SGCore::CMake
 {
-    struct CMakePresetsFileInfo
+    struct Preset
     {
-        struct Preset
-        {
-            std::string m_name;
-            std::string m_binaryDir;
-            std::string m_buildType;
-        };
+        std::string m_name;
+        std::string m_binaryDir;
+        std::unordered_map<std::string, std::string> m_cachedVariables;
+    };
 
-        explicit CMakePresetsFileInfo(const std::filesystem::path& cmakePresetsPath) noexcept;
+    struct PresetsFileInfo
+    {
+        sg_serde_as_friend()
 
-        CMakePresetsFileInfo(const CMakePresetsFileInfo&) = default;
-        CMakePresetsFileInfo(CMakePresetsFileInfo&&) = default;
+        PresetsFileInfo() noexcept = default;;
+        explicit PresetsFileInfo(const std::filesystem::path& cmakePresetsPath) noexcept;
+        PresetsFileInfo(const PresetsFileInfo&) = default;
+        PresetsFileInfo(PresetsFileInfo&&) = default;
 
-        CMakePresetsFileInfo& operator=(const CMakePresetsFileInfo&) = default;
-        CMakePresetsFileInfo& operator=(CMakePresetsFileInfo&&) = default;
+        PresetsFileInfo& operator=(const PresetsFileInfo&) = default;
+        PresetsFileInfo& operator=(PresetsFileInfo&&) = default;
 
         [[nodiscard]] const Preset* getPreset(const std::string& name) const noexcept;
 
         [[nodiscard]] const std::vector<Preset>& getPresets() const noexcept;
 
     private:
+        std::filesystem::path m_path;
         std::vector<Preset> m_presets;
-    };
-
-    struct CMakeUtils
-    {
-
+        std::vector<PresetsFileInfo> m_includedFiles;
     };
 }
 

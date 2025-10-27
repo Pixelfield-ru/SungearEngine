@@ -237,8 +237,8 @@ void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot
         return;
     }
 
-    SGCore::CMakePresetsFileInfo projectCMakePresetsFileInfo(cmakePresetsPath);
-    const SGCore::CMakePresetsFileInfo::Preset* projectPreset = projectCMakePresetsFileInfo.getPreset(cmakePresetName);
+    SGCore::CMake::PresetsFileInfo projectCMakePresetsFileInfo(cmakePresetsPath);
+    const SGCore::CMake::Preset* projectPreset = projectCMakePresetsFileInfo.getPreset(cmakePresetName);
     if(!projectPreset)
     {
         LOG_E(SGEDITOR_TAG,
