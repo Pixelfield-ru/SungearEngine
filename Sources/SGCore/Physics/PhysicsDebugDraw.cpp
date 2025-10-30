@@ -22,9 +22,10 @@
 
 void SGCore::PhysicsDebugDraw::drawLine(const btVector3& from, const btVector3& to, const btVector3& color)
 {
-    if(RenderPipelinesManager::getCurrentRenderPipeline())
+    const auto& pipelinesManager = RenderPipelinesManager::instance();
+    if(pipelinesManager.getCurrentRenderPipeline())
     {
-        RenderPipelinesManager::getCurrentRenderPipeline()->getRenderPass<DebugDraw>()->drawLine({ from.x(), from.y(), from.z() }, { to.x(), to.y(), to.z() }, { color.x(), color.y(), color.z(), 1.0f });
+        pipelinesManager.getCurrentRenderPipeline()->getRenderPass<DebugDraw>()->drawLine({ from.x(), from.y(), from.z() }, { to.x(), to.y(), to.z() }, { color.x(), color.y(), color.z(), 1.0f });
     }
 }
 

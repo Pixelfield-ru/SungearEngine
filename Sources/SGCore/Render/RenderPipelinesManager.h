@@ -14,19 +14,16 @@ namespace SGCore
     {
         template<typename PipelineT>
         requires(std::is_base_of_v<IRenderPipeline, PipelineT>)
-        static Ref<PipelineT> createRenderPipeline() noexcept
+        Ref<PipelineT> createRenderPipeline() const noexcept
         {
             return MakeRef<PipelineT>();
         }
 
-        static void subscribeToRenderPipelineSetEvent(Slot<void()>& slot)
-        {
-            onRenderPipelineSet += slot;
-        }
+        void subscribeToRenderPipelineSetEvent(Slot<void()>& slot);
 
         template<typename PipelineT>
         requires(std::is_base_of_v<IRenderPipeline, PipelineT>)
-        static void setCurrentRenderPipeline() noexcept
+        void setCurrentRenderPipeline() noexcept
         {
             auto renderPipeline = getRenderPipeline<PipelineT>();
 
@@ -42,11 +39,11 @@ namespace SGCore
             onRenderPipelineSet();
         }
 
-        static Ref<IRenderPipeline> getCurrentRenderPipeline() noexcept;
+        Ref<IRenderPipeline> getCurrentRenderPipeline() const noexcept;
         
         template<typename PipelineT>
         requires(std::is_base_of_v<IRenderPipeline, PipelineT>)
-        static void registerRenderPipeline(const Ref<PipelineT>& renderPipeline) noexcept
+        void registerRenderPipeline(const Ref<PipelineT>& renderPipeline) noexcept
         {
             if(getRenderPipeline<PipelineT>())
             {
@@ -60,15 +57,18 @@ namespace SGCore
                 renderPass->create(renderPipeline);
             }
 
+            LOG_I(SGCORE_TAG, "Registered render pipeline with type '{}'.", typeid(PipelineT).name())
+
             m_renderPipelines.push_back(renderPipeline);
         }
         
         template<typename PipelineT>
         requires(std::is_base_of_v<IRenderPipeline, PipelineT>)
-        static Ref<PipelineT> getRenderPipeline() noexcept
+        Ref<PipelineT> getRenderPipeline() const noexcept
         {
             for(const auto& renderPipeline : m_renderPipelines)
             {
+                LOG_I(SGCORE_TAG, "Trying to get render pipeline: {}", typeid(*renderPipeline).name());
                 if(SG_INSTANCEOF(renderPipeline.get(), PipelineT))
                 {
                     return std::static_pointer_cast<PipelineT>(renderPipeline);
@@ -78,11 +78,15 @@ namespace SGCore
             return nullptr;
         }
 
-    private:
-        static inline std::vector<Ref<IRenderPipeline>> m_renderPipelines;
-        static inline Ref<IRenderPipeline> m_currentRenderPipeline;
+        static SG_NOINLINE RenderPipelinesManager& instance() noexcept;
 
-        static inline Signal<void()> onRenderPipelineSet;
+    private:
+        RenderPipelinesManager() = default;
+
+        std::vector<Ref<IRenderPipeline>> m_renderPipelines;
+        Ref<IRenderPipeline> m_currentRenderPipeline;
+
+        Signal<void()> onRenderPipelineSet;
     };
 }
 

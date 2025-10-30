@@ -55,7 +55,7 @@ SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
     m_uniformBuffer->setLayoutLocation(4);
     m_uniformBuffer->prepare();
 
-    auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
+    auto renderPipeline = RenderPipelinesManager::instance().getCurrentRenderPipeline();
     if(renderPipeline)
     {
         auto geomPass = renderPipeline->getRenderPass<IGeometryPass>();

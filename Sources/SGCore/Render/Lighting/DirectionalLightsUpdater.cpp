@@ -48,7 +48,7 @@ SGCore::DirectionalLightsUpdater::DirectionalLightsUpdater() noexcept
     m_uniformBuffer->setLayoutLocation(3);
     m_uniformBuffer->prepare();
 
-    auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
+    auto renderPipeline = RenderPipelinesManager::instance().getCurrentRenderPipeline();
 
     if(renderPipeline)
     {

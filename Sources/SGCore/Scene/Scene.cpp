@@ -160,7 +160,7 @@ void SGCore::Scene::update(const double& dt, const double& fixedDt)
     
     m_update_executionTime = timeDiff<double, std::milli>(t0, t1);
 
-    auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
+    auto renderPipeline = RenderPipelinesManager::instance().getCurrentRenderPipeline();
 
     if(renderPipeline)
     {

@@ -77,14 +77,14 @@ SGCore::DebugDraw::DebugDraw()
     
     // ==============================================
     
-    RenderPipelinesManager::subscribeToRenderPipelineSetEvent(m_onRenderPipelineSetEventListener);
+    RenderPipelinesManager::instance().subscribeToRenderPipelineSetEvent(m_onRenderPipelineSetEventListener);
     
     // ==============================================
 
     m_meshRenderState.m_useIndices = true;
     m_meshRenderState.m_drawMode = SGDrawMode::SGG_LINES;
     
-    auto currentRenderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
+    auto currentRenderPipeline = RenderPipelinesManager::instance().getCurrentRenderPipeline();
     if(currentRenderPipeline)
     {
         m_linesShader = Ref<IShader>(CoreMain::getRenderer()->createShader());
@@ -209,5 +209,5 @@ void SGCore::DebugDraw::onRenderPipelineSet() noexcept
 {
     m_linesShader = Ref<IShader>(CoreMain::getRenderer()->createShader());
     m_linesShader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
-            *RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["LinesDebugDrawShader"]));
+            *RenderPipelinesManager::instance().getCurrentRenderPipeline()->m_shadersPaths["LinesDebugDrawShader"]));
 }

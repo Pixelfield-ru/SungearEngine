@@ -27,6 +27,11 @@ void SGCore::IRenderPipeline::render(Scene* scene) noexcept
     m_renderPassesExecutionTime = (t1 - t0) * 1000.0;
 }
 
+SGCore::IRenderPipeline::~IRenderPipeline()
+{
+
+}
+
 double SGCore::IRenderPipeline::getRenderPassesExecutionTime() const noexcept
 {
     return m_renderPassesExecutionTime;

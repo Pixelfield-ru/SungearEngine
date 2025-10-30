@@ -5,10 +5,9 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/compatibility.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "MotionPlannersResolver.h"
-
-#include <glm/gtc/type_ptr.hpp>
 
 #include "SGCore/Scene/Scene.h"
 #include "MotionPlannerConnection.h"
@@ -26,7 +25,7 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
 
     if(m_debugDrawPassRef.expired())
     {
-        m_debugDrawPassRef = RenderPipelinesManager::getCurrentRenderPipeline()->getRenderPass<DebugDraw>();
+        m_debugDrawPassRef = RenderPipelinesManager::instance().getCurrentRenderPipeline()->getRenderPass<DebugDraw>();
     }
 
     auto registry = lockedScene->getECSRegistry();
@@ -356,7 +355,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
 
     currentEntityTransform->m_isAnimated = isBoneAnimated;
 
-    auto debugRenderPass = RenderPipelinesManager::getCurrentRenderPipeline()->getRenderPass<DebugDraw>();
+    auto debugRenderPass = RenderPipelinesManager::instance().getCurrentRenderPipeline()->getRenderPass<DebugDraw>();
 
     // drawing skeleton ==============================================
     if(currentBone && debugRenderPass && debugRenderPass->m_mode != DebugDrawMode::NO_DEBUG)

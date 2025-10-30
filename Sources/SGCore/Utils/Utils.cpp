@@ -60,6 +60,8 @@ bool SGCore::Utils::isSubpath(const std::filesystem::path& path, const std::file
 
 std::filesystem::path SGCore::Utils::normalizePath(const std::filesystem::path& path) noexcept
 {
+    LOGCAT_I(SGCORE_TAG, "Normalized path: '{}'", Utils::toUTF8(path.u16string()))
+
     auto finalPath = path.lexically_normal();
 
     finalPath = replaceAll<char>(

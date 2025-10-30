@@ -13,8 +13,11 @@
 
 void SGCore::SunShadowsPass::create(const Ref<IRenderPipeline>& parentRenderPipeline)
 {
-    auto shaderFile = AssetManager::getInstance()->loadAsset<TextFileAsset>(
-        *parentRenderPipeline->m_shadersPaths["ShadowsGen/BatchingShader"]);
+    const auto batchingShader = parentRenderPipeline->m_shadersPaths["ShadowsGen/BatchingShader"];
+
+    AssetRef<TextFileAsset> shaderFile;
+
+    shaderFile = AssetManager::getInstance()->loadAsset<TextFileAsset>(*batchingShader);
 
     m_renderState.m_depthFunc = SGDepthStencilFunc::SGG_LESS;
     m_renderState.m_globalBlendingState.m_useBlending = false;

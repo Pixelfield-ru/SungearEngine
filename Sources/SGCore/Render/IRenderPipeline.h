@@ -14,11 +14,13 @@ namespace SGCore
     class IShader;
     struct IRenderPass;
 
-    struct IRenderPipeline : public std::enable_shared_from_this<IRenderPipeline>
+    struct SGCORE_EXPORT IRenderPipeline : public std::enable_shared_from_this<IRenderPipeline>
     {
-        Paths m_shadersPaths;
+        virtual ~IRenderPipeline();
 
         virtual void render(Scene* scene) noexcept;
+
+        Paths m_shadersPaths;
 
         std::vector<Ref<IRenderPass>> m_renderPasses;
 

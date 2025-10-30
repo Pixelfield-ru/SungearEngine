@@ -17,7 +17,13 @@ void SGCore::BoxGizmosRenderer::fixedUpdate(const double& dt, const double& fixe
 
     if(!lockedScene) return;
 
-    auto debugDraw = RenderPipelinesManager::getCurrentRenderPipeline()->getRenderPass<DebugDraw>();
+    auto currentRenderPipeline = RenderPipelinesManager::instance().getCurrentRenderPipeline();
+    if(!currentRenderPipeline)
+    {
+        return;
+    }
+
+    auto debugDraw = currentRenderPipeline->getRenderPass<DebugDraw>();
 
     if(!debugDraw) return;
 

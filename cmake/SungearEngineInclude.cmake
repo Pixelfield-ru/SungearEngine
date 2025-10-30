@@ -53,6 +53,14 @@ if(SG_TARGET_OS_LINUX)
 elseif(SG_TARGET_OS_WINDOWS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi")
 elseif(SG_TARGET_OS_ANDROID)
+    add_definitions(-DANDROID_STL="c++_static")
+    add_definitions(-DANDROID_CPP_FEATURES="exceptions rtti")
+
+    set(ANDROID_STL "c++_static")
+    set(CMAKE_ANDROID_STL_TYPE c++_static)
+    set(CMAKE_ANDROID_RTTI ON)
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -frtti -g -fno-pie")
 endif()
 
 set(VCPKG_CXX_FLAGS_DEBUG "${VCPKG_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS_DEBUG}")

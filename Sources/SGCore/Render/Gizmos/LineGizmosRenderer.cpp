@@ -16,7 +16,7 @@ void SGCore::LineGizmosRenderer::fixedUpdate(const double& dt, const double& fix
 
     if(!lockedScene) return;
 
-    auto debugDraw = RenderPipelinesManager::getCurrentRenderPipeline()->getRenderPass<DebugDraw>();
+    auto debugDraw = RenderPipelinesManager::instance().getCurrentRenderPipeline()->getRenderPass<DebugDraw>();
 
     if(!debugDraw) return;
 

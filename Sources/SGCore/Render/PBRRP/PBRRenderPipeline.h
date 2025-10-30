@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef SUNGEARENGINE_CAMERARENDERINGSYSTEM_H
-#define SUNGEARENGINE_CAMERARENDERINGSYSTEM_H
-
 #include "SGCore/Render/IRenderPipeline.h"
 
 namespace SGCore
@@ -10,12 +7,13 @@ namespace SGCore
     class IMeshData;
     class IMaterial;
 
-    struct PBRRenderPipeline : public IRenderPipeline
+    struct SGCORE_EXPORT PBRRenderPipeline : public IRenderPipeline
     {
+        // android: do not remove and do not =default
+        ~PBRRenderPipeline() override;
+
         PBRRenderPipeline();
         SG_COPY_CTOR(PBRRenderPipeline);
         SG_MOVE_CTOR(PBRRenderPipeline);
     };
 }
-
-#endif //SUNGEARENGINE_CAMERARENDERINGSYSTEM_H

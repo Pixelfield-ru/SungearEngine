@@ -177,7 +177,7 @@ SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
     
     // ==================================================================
     
-    RenderPipelinesManager::subscribeToRenderPipelineSetEvent(m_onRenderPipelineSetEventListener);
+    RenderPipelinesManager::instance().subscribeToRenderPipelineSetEvent(m_onRenderPipelineSetEventListener);
     
     // ==================================================================
 
@@ -185,7 +185,7 @@ SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
     m_meshRenderState.m_useFacesCulling = false;
     m_meshRenderState.m_drawMode = SGDrawMode::SGG_TRIANGLES;
 
-    auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
+    auto renderPipeline = RenderPipelinesManager::instance().getCurrentRenderPipeline();
 
     if(renderPipeline)
     {
@@ -467,7 +467,7 @@ void SGCore::UI::FontSpecializationRenderer::resetRenderer() noexcept
 
 void SGCore::UI::FontSpecializationRenderer::onRenderPipelineSet() noexcept
 {
-    m_textShader = AssetManager::getInstance()->loadAsset<IShader>(*RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["StandardTextShader"]);
+    m_textShader = AssetManager::getInstance()->loadAsset<IShader>(*RenderPipelinesManager::instance().getCurrentRenderPipeline()->m_shadersPaths["StandardTextShader"]);
     
     updateUniforms();
 }

@@ -7,6 +7,7 @@
 #include "SGCore/Serde/Serde.h"
 
 #include <memory>
+#include <list>
 
 namespace SGCore::Serde
 {

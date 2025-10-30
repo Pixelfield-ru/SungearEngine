@@ -6,3 +6,7 @@ set(VCPKG_CMAKE_SYSTEM_VERSION 28)
 set(VCPKG_MAKE_BUILD_TRIPLET "--host=aarch64-linux-android")
 set(VCPKG_CMAKE_CONFIGURE_OPTIONS -DANDROID_ABI=arm64-v8a)
 set(ANDROID_ABI arm64-v8a)
+
+set(ANDROID_STL gnustl_static)
+set(CMAKE_ANDROID_STL_TYPE gnustl_static)
+set(CMAKE_ANDROID_RTTI ON)

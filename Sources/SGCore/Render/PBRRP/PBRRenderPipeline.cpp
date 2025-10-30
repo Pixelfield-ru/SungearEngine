@@ -18,6 +18,10 @@
 #include "SGCore/Render/BaseRenderPasses/UIRenderPass.h"
 #include "SGCore/Render/PostProcess/PostProcessBuffersClearPass.h"
 
+SGCore::PBRRenderPipeline::~PBRRenderPipeline()
+{
+}
+
 SGCore::PBRRenderPipeline::PBRRenderPipeline()
 {
     m_shadersPaths.addPath(
