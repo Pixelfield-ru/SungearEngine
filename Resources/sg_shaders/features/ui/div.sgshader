@@ -1,7 +1,5 @@
-#ifdef SG_GLSL4
+#if defined(SG_GLSL4) || defined(SG_GLES32)
     #include "sg_shaders/impl/glsl4/ui/div.glsl"
-#else
-    #ifdef SG_HLSL
-        #error "UI div shader is not implemented for HLSL!"
-    #endif
+#elif defined(SG_HLSL)
+    #error UI div shader is not implemented for HLSL!
 #endif

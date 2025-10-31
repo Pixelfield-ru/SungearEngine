@@ -16,7 +16,7 @@ float calcPoissonShadow(
     const float shadowsMinCoeff = 0.0;
 
     float fragmentVisibility = 1.0;
-    float downstep = (1.0 - shadowsMinCoeff) / dirLight.shadowSamplesCount;
+    float downstep = (1.0 - shadowsMinCoeff) / float(dirLight.shadowSamplesCount);
 
     float rand = random(projCoords.xy);
     float rotAngle = rand * PI;

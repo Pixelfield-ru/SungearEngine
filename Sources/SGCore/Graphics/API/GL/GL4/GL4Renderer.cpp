@@ -278,8 +278,13 @@ void SGCore::GL4Renderer::renderArrayInstanced(const Ref<IVertexArray>& vertexAr
 SGCore::GL46Shader* SGCore::GL4Renderer::createShader() const
 {
     auto* shader = new GL46Shader;
+#if SG_PLATFORM_PC
     shader->m_version = "400 core";
     shader->addDefine(SGShaderDefineType::SGG_OTHER_DEFINE, ShaderDefine("SG_GLSL4", ""));
+#elif SG_PLATFORM_OS_ANDROID
+    shader->m_version = "320 es";
+    shader->addDefine(SGShaderDefineType::SGG_OTHER_DEFINE, ShaderDefine("SG_GLES32", ""));
+#endif
 
     // shader->setRawName("SGUnknownShader");
 

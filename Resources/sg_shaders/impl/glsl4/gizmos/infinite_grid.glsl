@@ -19,8 +19,8 @@ out vec3 vs_UVAttribute;
 
 vec3 unprojectPoint(float x, float y, float z, mat4 view, mat4 projection)
 {
-    mat4 view_inverse = inverse (view);
-    mat4 projection_inverse = inverse (projection);
+    mat4 view_inverse = inverse(view);
+    mat4 projection_inverse = inverse(projection);
     vec4 unprojected_point = view_inverse * projection_inverse * vec4 (x, y, z, 1.0);
 
     return unprojected_point.xyz / unprojected_point.w;
@@ -86,12 +86,12 @@ vec4 grid(vec3 fragPosition3D, float scale)
     //}
 
     vec2 coord = fragPosition3D.xz * scale;
-    vec2 derivative = fwidth (coord);
-    vec2 grid = abs (fract (coord - 0.5) - 0.5) / derivative / 15.0;
-    float line = min (grid.x, grid.y);
-    float minimum_z = min (derivative.y, 1);
-    float minimum_x = min (derivative.x, 1);
-    vec4 color = vec4 (0.2, 0.2, 0.2, 1.0 - min (line, 1.0));
+    vec2 derivative = fwidth(coord);
+    vec2 grid = abs(fract (coord - 0.5) - 0.5) / derivative / 15.0;
+    float line = min(grid.x, grid.y);
+    float minimum_z = min(derivative.y, 1.0);
+    float minimum_x = min(derivative.x, 1.0);
+    vec4 color = vec4 (0.2, 0.2, 0.2, 1.0 - min(line, 1.0));
 
     // z axis color
     //if (fragPosition3D.x > -0.1 * minimum_x
@@ -128,7 +128,7 @@ float computeDepth(vec3 position)
 float computeLinearDepth(vec3 position)
 {
     float near = 0.5;
-    float far = 250;
+    float far = 250.0;
     vec4 clipSpacePosition = camera.projectionMatrix * camera.viewMatrix * vec4(position.xyz, 1.0);
     float clipSpaceDepth = (clipSpacePosition.z / clipSpacePosition.w) * 2.0 - 1.0;
     float linearDepth = (2.0 * near * far) / (far + near - clipSpaceDepth * (far - near));
@@ -144,9 +144,9 @@ void main()
     gl_FragDepth = computeDepth(fragPosition3D);
 
     float linearDepth = computeLinearDepth(fragPosition3D);
-    float fading = max(0, (0.5 - linearDepth));
+    float fading = max(0.0, (0.5 - linearDepth));
 
-    vec4 gridColor = (grid(fragPosition3D, 1) + grid(fragPosition3D, 1)) * float(t > 0);
+    vec4 gridColor = (grid(fragPosition3D, 1.0) + grid(fragPosition3D, 1.0)) * float(t > 0.0);
     gridColor.a *= fading;
 
     if(gridColor.a < 0.05) discard;

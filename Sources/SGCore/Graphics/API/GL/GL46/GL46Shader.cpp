@@ -113,6 +113,10 @@ GLuint SGCore::GL46Shader::compileSubShader(SGCore::SGSLESubShaderType shaderTyp
     std::string additionalShaderInfo =
             "#version " + m_version + "\n";
 
+#if SG_PLATFORM_OS_ANDROID
+    additionalShaderInfo += "precision mediump float;\n";
+#endif
+
     std::string codeToCompile = additionalShaderInfo + code;
 
     GLint glShaderType = -1;

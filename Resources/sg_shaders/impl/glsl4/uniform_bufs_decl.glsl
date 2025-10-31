@@ -51,7 +51,7 @@ uniform ObjectTransform objectTransform;
     vec3 p0;
 };*/
 
-uniform samplerBuffer u_bonesMatricesUniformBuffer;
+uniform mediump samplerBuffer u_bonesMatricesUniformBuffer;
 uniform int u_isAnimatedMesh;
 
 #ifndef SG_NOT_INCLUDE_LIGHTS

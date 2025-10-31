@@ -40,6 +40,8 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
 
     Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
 
+    LOG_I(SGCORE_TAG, "Creating framebuffers for LayeredFrameReceiver. Primary monitor size: {}x{}", primaryMonitorWidth, primaryMonitorHeight)
+
     /*primaryMonitorWidth = 4096;
     primaryMonitorHeight = 4096;*/
 
@@ -71,35 +73,35 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     m_layersFrameBuffer->addAttachment(
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2, // CONTAINS PICKING COLORS
             SGGColorFormat::SGG_RGB,
-            SGGColorInternalFormat::SGG_RGB32_FLOAT,
+            SGGColorInternalFormat::SGG_RGB16_FLOAT,
             0,
             0
     );
     m_layersFrameBuffer->addAttachment(
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3, // COLOR FOR STOCHASTIC TRANSPARENCY
             SGGColorFormat::SGG_RGBA,
-            SGGColorInternalFormat::SGG_RGBA32_FLOAT,
+            SGGColorInternalFormat::SGG_RGBA16_FLOAT,
             0,
             0
     );
     m_layersFrameBuffer->addAttachment(
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4, // GBUFFER WORLD POS
             SGGColorFormat::SGG_RGB,
-            SGGColorInternalFormat::SGG_RGB32_FLOAT,
+            SGGColorInternalFormat::SGG_RGB16_FLOAT,
             0,
             0
     );
     m_layersFrameBuffer->addAttachment(
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT5, // GBUFFER FRAGMENT NORMAL
             SGGColorFormat::SGG_RGB,
-            SGGColorInternalFormat::SGG_RGB32_FLOAT,
+            SGGColorInternalFormat::SGG_RGB16_FLOAT,
             0,
             0
     );
     m_layersFrameBuffer->addAttachment(
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT6, // GBUFFER VERTEX NORMAL
             SGGColorFormat::SGG_RGB,
-            SGGColorInternalFormat::SGG_RGB32_FLOAT,
+            SGGColorInternalFormat::SGG_RGB16_FLOAT,
             0,
             0
     );
@@ -150,7 +152,7 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     m_layersFXFrameBuffer->addAttachment(
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7, // ATTACHMENT WITH APPLIED FX
             SGGColorFormat::SGG_RGBA,
-            SGGColorInternalFormat::SGG_RGBA32_FLOAT,
+            SGGColorInternalFormat::SGG_RGBA16_FLOAT,
             0,
             0
     );

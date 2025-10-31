@@ -131,7 +131,7 @@ void SGCore::FileUtils::writeToFile(const std::filesystem::path& path, const std
 {
     if(createDirectories)
     {
-        if(!path.parent_path().empty())
+        if(!path.parent_path().empty() && !std::filesystem::exists(path.parent_path()))
         {
             std::filesystem::create_directories(path.parent_path().string());
         }
@@ -180,7 +180,7 @@ SGCore::FileUtils::findFile(const std::filesystem::path& relativePath, const std
     return "";
 }
 
-std::filesystem::path SGCore::FileUtils::getAppResourcesPath() noexcept
+std::filesystem::path SGCore::FileUtils::getAppPublicResourcesPath() noexcept
 {
 #if SG_PLATFORM_OS_ANDROID
     Java::JNINativeThreadHandler threadHandler;
@@ -189,6 +189,31 @@ std::filesystem::path SGCore::FileUtils::getAppResourcesPath() noexcept
 
     const jclass contextClass = env->GetObjectClass(context);
     const jmethodID getFilesDirMethod = env->GetMethodID(contextClass, "getExternalFilesDir", "(Ljava/lang/String;)Ljava/io/File;");
+    const jobject filesDir = env->CallObjectMethod(context, getFilesDirMethod, nullptr);
+
+    const jclass fileClass = env->FindClass("java/io/File");
+    const jmethodID getPathMethod = env->GetMethodID(fileClass, "getAbsolutePath", "()Ljava/lang/String;");
+    const auto path = (jstring)env->CallObjectMethod(filesDir, getPathMethod);
+
+    const char* pathChars = env->GetStringUTFChars(path, nullptr);
+    std::filesystem::path result(pathChars);
+    env->ReleaseStringUTFChars(path, pathChars);
+
+    return result;
+#else
+    return ".";
+#endif
+}
+
+std::filesystem::path SGCore::FileUtils::getAppPrivateResourcesPath() noexcept
+{
+#if SG_PLATFORM_OS_ANDROID
+    Java::JNINativeThreadHandler threadHandler;
+    auto* env = Java::JNIManager::getEnv(threadHandler);
+    auto context = Java::JNIManager::getContext();
+
+    const jclass contextClass = env->GetObjectClass(context);
+    const jmethodID getFilesDirMethod = env->GetMethodID(contextClass, "getFilesDir", "(Ljava/lang/String;)Ljava/io/File;");
     const jobject filesDir = env->CallObjectMethod(context, getFilesDirMethod, nullptr);
 
     const jclass fileClass = env->FindClass("java/io/File");

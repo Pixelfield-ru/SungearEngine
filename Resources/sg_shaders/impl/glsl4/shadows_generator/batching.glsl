@@ -43,8 +43,8 @@ out VSOut
 } vsOut;
 
 // transforms of instances in batch
-uniform samplerBuffer u_transformsTextureBuffer;
-uniform samplerBuffer u_materialsTextureBuffer;
+uniform mediump samplerBuffer u_transformsTextureBuffer;
+uniform mediump samplerBuffer u_materialsTextureBuffer;
 
 void main()
 {
@@ -109,9 +109,9 @@ in VSOut
 } vsIn[];
 
 // vertices of instances in batch
-uniform samplerBuffer u_verticesTextureBuffer;
+uniform mediump samplerBuffer u_verticesTextureBuffer;
 // indices of vertices of instances in batch
-uniform isamplerBuffer u_indicesTextureBuffer;
+uniform mediump isamplerBuffer u_indicesTextureBuffer;
 
 /*uniform mat4 CSMLightSpaceMatricies[16];
 uniform int CSMCascadesCount;*/
@@ -183,8 +183,8 @@ void main()
     finalUV.y = 1.0 - finalUV.y;
     #endif
 
-    vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.x);
-    vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.y);
+    vec2 texUVOffset = vec2(unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.x));
+    vec2 texSize = vec2(unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.y));
 
     if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y && texUVOffset.x < batchAtlasSize.x && texUVOffset.y < batchAtlasSize.y)
     {

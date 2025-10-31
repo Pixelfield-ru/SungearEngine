@@ -285,6 +285,74 @@ void SGCore::Window::getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept
     sizeX = primaryVideoMode->width;
     sizeY = primaryVideoMode->height;
 #elif SG_PLATFORM_OS_ANDROID
+    // caching result
+    static std::pair<int, int> impl = []() -> std::pair<int, int> {
+        Java::JNINativeThreadHandler threadHandler;
+        auto* env = Java::JNIManager::getEnv(threadHandler);
+        auto* context = Java::JNIManager::getContext();
+
+        if(!env || !context)
+        {
+            LOG_E(SGCORE_TAG, "Cannot getPrimaryMonitorSize: JNIManager is not initialized.")
+            return { 1920, 1080 };
+        }
+
+        // getting display metrics
+        jclass metricsClass = env->FindClass("android/util/DisplayMetrics");
+        if (!metricsClass)
+        {
+            LOG_E(SGCORE_TAG, "Cannot find DisplayMetrics class");
+            return { 1920, 1080 };
+        }
+
+        jmethodID constructor = env->GetMethodID(metricsClass, "<init>", "()V");
+        jobject metrics = env->NewObject(metricsClass, constructor);
+
+        // getting system service
+        jclass contextClass = env->FindClass("android/content/Context");
+        jfieldID windowServiceField = env->GetStaticFieldID(contextClass, "WINDOW_SERVICE", "Ljava/lang/String;");
+        jstring windowServiceStr = (jstring)env->GetStaticObjectField(contextClass, windowServiceField);
+
+        jmethodID getSystemService = env->GetMethodID(contextClass, "getSystemService", "(Ljava/lang/String;)Ljava/lang/Object;");
+        jobject windowManager = env->CallObjectMethod(context, getSystemService, windowServiceStr);
+
+        if (!windowManager)
+        {
+            LOG_E(SGCORE_TAG, "Cannot get WindowManager");
+            return { 1920, 1080 };
+        }
+
+        jclass wmClass = env->GetObjectClass(windowManager);
+        jmethodID getDefaultDisplay = env->GetMethodID(wmClass, "getDefaultDisplay", "()Landroid/view/Display;");
+        jobject display = env->CallObjectMethod(windowManager, getDefaultDisplay);
+
+        jclass displayClass = env->GetObjectClass(display);
+        jmethodID getRealMetrics = env->GetMethodID(displayClass, "getRealMetrics", "(Landroid/util/DisplayMetrics;)V");
+        env->CallVoidMethod(display, getRealMetrics, metrics);
+
+        jfieldID widthField = env->GetFieldID(metricsClass, "widthPixels", "I");
+        jfieldID heightField = env->GetFieldID(metricsClass, "heightPixels", "I");
+
+        int screenWidth = env->GetIntField(metrics, widthField);
+        int screenHeight = env->GetIntField(metrics, heightField);
+
+        LOG_I(SGCORE_TAG, "Real screen size: {}x{}", screenWidth, screenHeight);
+
+        // cleanup
+        env->DeleteLocalRef(metricsClass);
+        env->DeleteLocalRef(metrics);
+        env->DeleteLocalRef(contextClass);
+        env->DeleteLocalRef(windowServiceStr);
+        env->DeleteLocalRef(windowManager);
+        env->DeleteLocalRef(wmClass);
+        env->DeleteLocalRef(display);
+        env->DeleteLocalRef(displayClass);
+
+        return { screenWidth, screenHeight };
+    }();
+
+    sizeX = impl.first;
+    sizeY = impl.second;
 #endif
 }
 

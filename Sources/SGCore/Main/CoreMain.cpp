@@ -28,7 +28,7 @@
 
 void SGCore::CoreMain::init()
 {
-    const std::string finalLogFileName = FileUtils::getAppResourcesPath().string() + "/logs/sg_log_" + Utils::getTimeAsString("%Y_%m_%d_%H_%M_%S") + ".log";
+    const std::string finalLogFileName = FileUtils::getAppPublicResourcesPath().string() + "/logs/sg_log_" + Utils::getTimeAsString("%Y_%m_%d_%H_%M_%S") + ".log";
     
     HwExceptionHandler::setApplicationName("Sungear Engine");
     HwExceptionHandler::setOutputLogFilePath(finalLogFileName);

@@ -32,7 +32,7 @@ void Java_com_pixelfield_sungearstarter_AndroidNativeMethods_startCore(JNIEnv* e
         return;
     }
 
-    SGCore::PathInterpolationMarkupSpec::setKey("appResources", SGCore::FileUtils::getAppResourcesPath());
+    SGCore::PathInterpolationMarkupSpec::setKey("appResources", SGCore::FileUtils::getAppPublicResourcesPath());
 
     SGCore::__AndroidImpl::setAndroidMainWindowHandle(ANativeWindow_fromSurface(env, surface));
 

@@ -60,7 +60,7 @@ void SGE::InspectorView::renderBody()
     {
         ImGui::Text("Profiler (TO REMOVE)");
 
-        auto currentRenderPipeline = SGCore::RenderPipelinesManager::getCurrentRenderPipeline();
+        auto currentRenderPipeline = SGCore::RenderPipelinesManager::instance().getCurrentRenderPipeline();
 
         ImGui::Text("Render (render pipeline '%s'):", typeid(*currentRenderPipeline).name());
 
@@ -90,7 +90,7 @@ void SGE::InspectorView::renderBody()
 
     if(ImGui::CollapsingHeader("Engine Settings"))
     {
-        auto debugRenderPass = SGCore::RenderPipelinesManager::getCurrentRenderPipeline()->getRenderPass<SGCore::DebugDraw>();
+        auto debugRenderPass = SGCore::RenderPipelinesManager::instance().getCurrentRenderPipeline()->getRenderPass<SGCore::DebugDraw>();
 
         static const char* debugModes[] {
             "No debug", "Wireframe"

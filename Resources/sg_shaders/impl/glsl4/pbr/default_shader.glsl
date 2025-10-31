@@ -189,7 +189,7 @@ void main()
     {
         if(mat_diffuseSamplers_CURRENT_COUNT > 0)
         {
-            float mixCoeff = 1.0 / mat_diffuseSamplers_CURRENT_COUNT;
+            float mixCoeff = 1.0 / float(mat_diffuseSamplers_CURRENT_COUNT);
 
             diffuseColor.rgba = vec4(0.0, 0.0, 0.0, 0.0);
 
@@ -205,7 +205,7 @@ void main()
     {
         if(mat_specularSamplers_CURRENT_COUNT > 0)
         {
-            float mixCoeff = 1.0 / mat_specularSamplers_CURRENT_COUNT;
+            float mixCoeff = 1.0 / float(mat_specularSamplers_CURRENT_COUNT);
 
             specularCoeff = 0.0;
 
@@ -226,7 +226,7 @@ void main()
         {
             if(mat_lightmapSamplers_CURRENT_COUNT > 0)
             {
-                float mixCoeff = 1.0 / mat_lightmapSamplers_CURRENT_COUNT;
+                float mixCoeff = 1.0 / float(mat_lightmapSamplers_CURRENT_COUNT);
 
                 aoRoughnessMetallic.r = 0.0;
 
@@ -240,7 +240,7 @@ void main()
         {
             if(mat_diffuseRoughnessSamplers_CURRENT_COUNT > 0)
             {
-                float mixCoeff = 1.0 / mat_diffuseRoughnessSamplers_CURRENT_COUNT;
+                float mixCoeff = 1.0 / float(mat_diffuseRoughnessSamplers_CURRENT_COUNT);
 
                 aoRoughnessMetallic.g = 0.0;
 
@@ -256,7 +256,7 @@ void main()
         {
             if(mat_metalnessSamplers_CURRENT_COUNT > 0)
             {
-                float mixCoeff = 1.0 / mat_metalnessSamplers_CURRENT_COUNT;
+                float mixCoeff = 1.0 / float(mat_metalnessSamplers_CURRENT_COUNT);
 
                 aoRoughnessMetallic.b = 0.0;
 
@@ -272,7 +272,7 @@ void main()
 
     if(mat_normalsSamplers_CURRENT_COUNT > 0)
     {
-        float mixCoeff = 1.0 / mat_normalsSamplers_CURRENT_COUNT;
+        float mixCoeff = 1.0 / float(mat_normalsSamplers_CURRENT_COUNT);
 
         for (int i = 0; i < mat_normalsSamplers_CURRENT_COUNT; ++i)
         {

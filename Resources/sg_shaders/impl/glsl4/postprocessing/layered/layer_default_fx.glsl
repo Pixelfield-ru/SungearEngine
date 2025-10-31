@@ -46,7 +46,7 @@ const float EPSILON = 0.00001f;
 
 out vec4 fragColor;
 
-uniform float u_FogDensity = 0.001;
+const float u_FogDensity = 0.001;
 
 vec3 Uncharted2Tonemap(vec3 x)
 {

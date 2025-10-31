@@ -186,8 +186,10 @@ vec2 vogelDiskSample(int sampleIndex, int samplesCount, float phi)
 {
     float GoldenAngle = 2.4f;
 
-    float r = sqrt(float(sampleIndex) + 0.5f) / sqrt(float(samplesCount));
-    float theta = sampleIndex * GoldenAngle + phi;
+    float sampleIndexFloat = float(sampleIndex);
+
+    float r = sqrt(sampleIndexFloat + 0.5f) / sqrt(float(samplesCount));
+    float theta = sampleIndexFloat * GoldenAngle + phi;
 
     float sine = sin(theta);
     float cosine = cos(theta);

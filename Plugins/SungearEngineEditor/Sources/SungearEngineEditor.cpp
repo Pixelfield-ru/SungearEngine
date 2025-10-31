@@ -25,9 +25,9 @@ SGE::SungearEngineEditor::~SungearEngineEditor()
 
 std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>& args)
 {
-    auto pbrrpPipeline = SGCore::RenderPipelinesManager::createRenderPipeline<SGCore::PBRRenderPipeline>();
-    SGCore::RenderPipelinesManager::registerRenderPipeline(pbrrpPipeline);
-    SGCore::RenderPipelinesManager::setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();
+    auto pbrrpPipeline = SGCore::RenderPipelinesManager::instance().createRenderPipeline<SGCore::PBRRenderPipeline>();
+    SGCore::RenderPipelinesManager::instance().registerRenderPipeline(pbrrpPipeline);
+    SGCore::RenderPipelinesManager::instance().setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();
 
     SGCore::PathInterpolationMarkupSpec::setKey("sgEditorPath", getLocalPath());
 
@@ -68,7 +68,7 @@ std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>
 void SGE::SungearEngineEditor::update(const double& dt, const double& fixedDt)
 {
     const auto currentScene = SGCore::Scene::getCurrentScene();
-    const auto renderPipeline = SGCore::RenderPipelinesManager::getCurrentRenderPipeline();
+    const auto renderPipeline = SGCore::RenderPipelinesManager::instance().getCurrentRenderPipeline();
     if(currentScene && renderPipeline)
     {
         const auto debugDraw = renderPipeline->getRenderPass<SGCore::DebugDraw>();

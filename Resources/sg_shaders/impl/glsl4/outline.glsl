@@ -85,7 +85,7 @@ void main()
 
         // todo: idk why this pass only with calculating pixelSize.
         // if we dont calculate pixelSize then ouline will be incorrect for different distance between fragment and camera
-        vec2 pixelSize = 1.0 / textureSize(u_outlineBuffer, 0).xy;
+        vec2 pixelSize = 1.0 / vec2(textureSize(u_outlineBuffer, 0).xy);
 
         const float boxSize = 1.0;
 
@@ -103,7 +103,7 @@ void main()
             }
         }
 
-        col.rgb /= count;
+        col.rgb /= float(count);
 
         vec3 curCol = texture(u_outlineBuffer, vs_quadUV).rgb;
 

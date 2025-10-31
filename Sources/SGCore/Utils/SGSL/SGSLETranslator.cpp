@@ -40,7 +40,9 @@ void SGCore::SGSLETranslator::processCode(const std::filesystem::path& path, con
 
         std::uniform_int_distribution<> distrib(1, 1'000'000);
 
-        FileUtils::writeToFile(std::filesystem::path(m_config.m_outputDebugDirectoryPath) / (savePath + "_" + subShaderType + ".shader." + std::to_string(distrib(gen))), s.getCode(), false, true);
+        const auto compiledShaderPath = std::filesystem::path(m_config.m_outputDebugDirectoryPath) / (savePath + "_" + subShaderType + ".shader");
+        LOG_I(SGCORE_TAG, "Path of compiled shader cache: '{}'", Utils::toUTF8(compiledShaderPath.u16string()))
+        FileUtils::writeToFile(compiledShaderPath, s.getCode(), false, true);
     }
 }
 

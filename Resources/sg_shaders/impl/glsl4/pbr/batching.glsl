@@ -60,8 +60,8 @@ out VSOut
 } vsOut;
 
 // transforms of instances in batch
-uniform samplerBuffer u_transformsTextureBuffer;
-uniform samplerBuffer u_materialsTextureBuffer;
+uniform mediump samplerBuffer u_transformsTextureBuffer;
+uniform mediump samplerBuffer u_materialsTextureBuffer;
 
 void main()
 {
@@ -183,9 +183,9 @@ in VSOut
 } vsIn[];
 
 // vertices of instances in batch
-uniform samplerBuffer u_verticesTextureBuffer;
+uniform mediump samplerBuffer u_verticesTextureBuffer;
 // indices of vertices of instances in batch
-uniform isamplerBuffer u_indicesTextureBuffer;
+uniform mediump isamplerBuffer u_indicesTextureBuffer;
 
 void main()
 {
@@ -219,7 +219,7 @@ void main()
         gsOut.normal = normalize(vertexNormal);
         gsOut.worldNormal = normalize(mat3(transpose(inverse(vsIn[0].instanceModelMatrix))) * vertexNormal);
         gsOut.vertexPos = vertexPos;
-        gsOut.verticesIndices = verticesIndices;
+        gsOut.verticesIndices = vec3(verticesIndices);
 
         // 0.0 IN w COMPONENT IS CORRECT!!
         vec3 T = normalize(vec3(vsIn[0].instanceModelMatrix * vec4(vertexTangent, 0.0)));
@@ -336,8 +336,8 @@ void main()
 	vec2 fractUV = fract(finalUV);
 
     {
-        vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.x);
-        vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.y);
+        vec2 texUVOffset = vec2(unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.x));
+        vec2 texSize = vec2(unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.y));
 
         diffuseColor.rgba = vec4(0.0, 0.0, 0.0, 0.0);
 
@@ -355,8 +355,8 @@ void main()
 
     {
         {
-            vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets1.r1.z);
-            vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets1.r1.w);
+            vec2 texUVOffset = vec2(unpackU32ToU16Vec2(gsIn.uvOffsets1.r1.z));
+            vec2 texSize = vec2(unpackU32ToU16Vec2(gsIn.uvOffsets1.r1.w));
 
             if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y)
             {
@@ -371,8 +371,8 @@ void main()
         }
 
         {
-            vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r1.z);
-            vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r1.w);
+            vec2 texUVOffset = vec2(unpackU32ToU16Vec2(gsIn.uvOffsets0.r1.z));
+            vec2 texSize = vec2(unpackU32ToU16Vec2(gsIn.uvOffsets0.r1.w));
 
             if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y)
             {
@@ -389,8 +389,8 @@ void main()
         }
 
         {
-            vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets1.r2.x);
-            vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets1.r2.y);
+            vec2 texUVOffset = vec2(unpackU32ToU16Vec2(gsIn.uvOffsets1.r2.x));
+            vec2 texSize = vec2(unpackU32ToU16Vec2(gsIn.uvOffsets1.r2.y));
 
             if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y)
             {
@@ -408,8 +408,8 @@ void main()
     }
 
     {
-        vec2 texUVOffset = unpackU32ToU16Vec2(gsIn.uvOffsets0.r3.z);
-        vec2 texSize = unpackU32ToU16Vec2(gsIn.uvOffsets0.r3.w);
+        vec2 texUVOffset = vec2(unpackU32ToU16Vec2(gsIn.uvOffsets0.r3.z));
+        vec2 texSize = vec2(unpackU32ToU16Vec2(gsIn.uvOffsets0.r3.w));
 
         if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y)
         {

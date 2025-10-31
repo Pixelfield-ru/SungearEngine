@@ -37,6 +37,8 @@ uniform sampler2D u_bufferToDisplay;
 // bool
 uniform bool u_flipOutput;
 
+out vec4 fragColor;
+
 void main()
 {
     // gl_FragColor = vec4(vsIn.UV, 1.0, 1.0);
@@ -51,7 +53,8 @@ void main()
 
     // gl_FragColor = vec4(texture(u_bufferToDisplay, vec2(vsIn.UV.x - 1.0, uvY) / 2.0).xyz, 1.0);
     // gl_FragColor = vec4(col.r, col.r, col.r, 1.0);
-    gl_FragColor = col;
+    // gl_FragColor = col;
+    fragColor = col;
 }
 
 #end

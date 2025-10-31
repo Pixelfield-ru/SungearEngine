@@ -1,7 +1,5 @@
-#ifdef SG_GLSL4
+#if defined(SG_GLSL4) || defined(SG_GLES32)
     #include "sg_shaders/impl/glsl4/shadows_generator/batching.glsl"
-#else
-    #ifdef SG_HLSL
-        #error "Standard Batch Shadows Generator shader is not implemented for HLSL!"
-    #endif
+#elif defined(SG_HLSL)
+    #error Standard Batch Shadows Generator shader is not implemented for HLSL!
 #endif
