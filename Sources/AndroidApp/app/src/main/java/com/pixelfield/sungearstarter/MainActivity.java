@@ -16,6 +16,10 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.Objects;
 
 /**
@@ -57,6 +61,23 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
         Log.i("SungearStarter", "External Files dir: " + externalStorage + "/assets/");
         Log.i("SungearStarter", "Internal Files dir: " + internalStorage + "/assets/");
         Common.copyAssets(this.getAssets(), "sungear", internalStorage + "/assets/sungear");
+
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            try {
+                Files.walk(Paths.get(externalStorage + "/logs"))
+                        .sorted(Comparator.reverseOrder()) // удаляем сначала файлы, потом папки
+                        .forEach(p -> {
+                            try {
+                                Files.delete(p);
+                                Log.i("SungearStarter", "Удалено: " + p);
+                            } catch (IOException e) {
+                                Log.i("SungearStarter", "Ошибка удаления: " + p + " - " + e.getMessage());
+                            }
+                        });
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }*/
 
         Log.d("SungearStarter", "Loading SGCore.so...");
         System.load(appInfo.sourceDir  + "!/lib/" + Common.getDeviceArchitecture() + "/SGCore.so");

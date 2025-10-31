@@ -192,6 +192,7 @@ void SGCore::GL4FrameBuffer::clearAttachment(const SGFrameBufferAttachmentType& 
 void SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmentType,
                                            SGGColorFormat format,
                                            SGGColorInternalFormat internalFormat,
+                                           SGGDataType dataType,
                                            const int& mipLevel,
                                            const int& layer,
                                            bool useMultisampling,
@@ -240,6 +241,7 @@ void SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmen
     newAttachment->m_layer = layer;
     newAttachment->m_useMultisampling = useMultisampling;
     newAttachment->m_multisamplingSamplesCount = multisamplingSamplesCount;
+    newAttachment->m_dataType = dataType;
 
     newAttachment->createAsFrameBufferAttachment(shared_from_this(), attachmentType);
 
@@ -315,10 +317,11 @@ void
 SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmentType,
                                       SGGColorFormat format,
                                       SGGColorInternalFormat internalFormat,
+                                      SGGDataType dataType,
                                       const int& mipLevel,
                                       const int& layer)
 {
-    addAttachment(attachmentType, format, internalFormat, mipLevel, layer, false, 8);
+    addAttachment(attachmentType, format, internalFormat, dataType, mipLevel, layer, false, 8);
 }
 
 void SGCore::GL4FrameBuffer::attachAttachment(const SGCore::Ref<SGCore::ITexture2D>& otherAttachment) noexcept

@@ -27,7 +27,9 @@ void SGCore::VkFrameBuffer::destroy()
 void
 SGCore::VkFrameBuffer::addAttachment(SGFrameBufferAttachmentType,
                                      SGGColorFormat format,
-                                     SGGColorInternalFormat internalFormat, const int& mipLevel,
+                                     SGGColorInternalFormat internalFormat,
+                                     SGGDataType dataType,
+                                     const int& mipLevel,
                                      const int& layer)
 {
 

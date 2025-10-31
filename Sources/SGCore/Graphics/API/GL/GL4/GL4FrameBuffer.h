@@ -49,12 +49,14 @@ namespace SGCore
         void addAttachment(SGFrameBufferAttachmentType,
                            SGGColorFormat format,
                            SGGColorInternalFormat internalFormat,
+                           SGGDataType dataType,
                            const int& mipLevel,
                            const int& layer) override;
         
         void addAttachment(SGFrameBufferAttachmentType attachmentType,
                            SGGColorFormat format,
                            SGGColorInternalFormat internalFormat,
+                           SGGDataType dataType,
                            const int& mipLevel,
                            const int& layer,
                            bool useMultisampling,

@@ -52,7 +52,8 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     m_layersFrameBuffer->addAttachment(
             SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
             SGGColorFormat::SGG_DEPTH_COMPONENT,
-            SGGColorInternalFormat::SGG_DEPTH_COMPONENT24,
+            SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
+            SGGDataType::SGG_UNSIGNED_SHORT,
             0,
             0
     );
@@ -60,6 +61,7 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // CONTAINS LAYERS VOLUMES
             SGGColorFormat::SGG_RGBA,
             SGGColorInternalFormat::SGG_RGBA8,
+            SGGDataType::SGG_UNSIGNED_BYTE,
             0,
             0
     );
@@ -67,6 +69,7 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1, // CONTAINS COLORS FROM LAYERS
             SGGColorFormat::SGG_RGBA,
             SGGColorInternalFormat::SGG_RGBA8,
+            SGGDataType::SGG_UNSIGNED_BYTE,
             0,
             0
     );
@@ -74,6 +77,7 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2, // CONTAINS PICKING COLORS
             SGGColorFormat::SGG_RGB,
             SGGColorInternalFormat::SGG_RGB16_FLOAT,
+            SGGDataType::SGG_FLOAT,
             0,
             0
     );
@@ -81,6 +85,7 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3, // COLOR FOR STOCHASTIC TRANSPARENCY
             SGGColorFormat::SGG_RGBA,
             SGGColorInternalFormat::SGG_RGBA16_FLOAT,
+            SGGDataType::SGG_FLOAT,
             0,
             0
     );
@@ -88,6 +93,7 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4, // GBUFFER WORLD POS
             SGGColorFormat::SGG_RGB,
             SGGColorInternalFormat::SGG_RGB16_FLOAT,
+            SGGDataType::SGG_FLOAT,
             0,
             0
     );
@@ -95,6 +101,7 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT5, // GBUFFER FRAGMENT NORMAL
             SGGColorFormat::SGG_RGB,
             SGGColorInternalFormat::SGG_RGB16_FLOAT,
+            SGGDataType::SGG_FLOAT,
             0,
             0
     );
@@ -102,6 +109,7 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT6, // GBUFFER VERTEX NORMAL
             SGGColorFormat::SGG_RGB,
             SGGColorInternalFormat::SGG_RGB16_FLOAT,
+            SGGDataType::SGG_FLOAT,
             0,
             0
     );
@@ -139,6 +147,7 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // IMPROVISED STENCIL BUFFER
             SGGColorFormat::SGG_RGB,
             SGGColorInternalFormat::SGG_RGB8,
+            SGGDataType::SGG_UNSIGNED_BYTE,
             0,
             0
     );
@@ -146,6 +155,7 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1, // CONTAINS OBJECTS THAT MUST BE OUTLINED
             SGGColorFormat::SGG_RGB,
             SGGColorInternalFormat::SGG_RGB8,
+            SGGDataType::SGG_UNSIGNED_BYTE,
             0,
             0
     );
@@ -153,6 +163,7 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7, // ATTACHMENT WITH APPLIED FX
             SGGColorFormat::SGG_RGBA,
             SGGColorInternalFormat::SGG_RGBA16_FLOAT,
+            SGGDataType::SGG_FLOAT,
             0,
             0
     );

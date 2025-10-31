@@ -246,6 +246,7 @@ enum class SGGDataType
     SGG_BYTE
 };
 
+
 enum class SGTextureType
 {
     SGTT_EMISSIVE,

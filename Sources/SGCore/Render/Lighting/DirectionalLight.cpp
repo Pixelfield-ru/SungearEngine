@@ -17,6 +17,7 @@ SGCore::DirectionalLight::DirectionalLight() noexcept
     m_base.m_shadowMap->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
                                       SGGColorFormat::SGG_DEPTH_COMPONENT,
                                       SGGColorInternalFormat::SGG_DEPTH_COMPONENT32F,
+                                      SGGDataType::SGG_FLOAT,
                                       0,
                                       0);
     m_base.m_shadowMap->unbind();

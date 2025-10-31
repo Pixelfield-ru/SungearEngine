@@ -250,6 +250,9 @@ namespace GLGraphicsTypesCaster
             case SGGDataType::SGG_INT3: return GL_INT;
             case SGGDataType::SGG_INT4: return GL_INT;
 
+            case SGGDataType::SGG_UNSIGNED_SHORT: return GL_UNSIGNED_SHORT;
+            case SGGDataType::SGG_SHORT: return GL_SHORT;
+
             case SGGDataType::SGG_FLOAT: return GL_FLOAT;
             case SGGDataType::SGG_FLOAT2: return GL_FLOAT;
             case SGGDataType::SGG_FLOAT3: return GL_FLOAT;

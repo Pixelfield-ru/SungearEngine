@@ -34,9 +34,10 @@ void SGCore::ImGuiWrap::ImGuiLayer::init() noexcept
     {
 #if SG_PLATFORM_PC
         ImGui_ImplGlfw_InitForOpenGL(CoreMain::getWindow().m_handle, true);
-#elif SG_PLATFORM_OS_ANDROID
-#endif
         ImGui_ImplOpenGL3_Init();
+#elif SG_PLATFORM_OS_ANDROID
+        ImGui_ImplOpenGL3_Init("#version 320 es");
+#endif
     }
 }
 

@@ -162,8 +162,7 @@ void SGCore::GL4Texture2D::createAsFrameBufferAttachment(const SGCore::Ref<SGCor
                      m_width, m_height,
                      0,
                      GLGraphicsTypesCaster::sggFormatToGL(m_format),
-                // todo: make customizable
-                     GL_FLOAT,
+                     GLGraphicsTypesCaster::sggDataTypeToGL(m_dataType),
                      nullptr
         );
 
@@ -190,7 +189,7 @@ void SGCore::GL4Texture2D::createAsFrameBufferAttachment(const SGCore::Ref<SGCor
                      0,
                      GLGraphicsTypesCaster::sggFormatToGL(m_format),
                 // todo: make customizable
-                     GL_UNSIGNED_INT_24_8,
+                     GLGraphicsTypesCaster::sggDataTypeToGL(m_dataType),
                      nullptr
         );
 
@@ -223,7 +222,7 @@ void SGCore::GL4Texture2D::createAsFrameBufferAttachment(const SGCore::Ref<SGCor
                          m_width, m_height,
                          0,
                          GLGraphicsTypesCaster::sggFormatToGL(m_format),
-                         GL_FLOAT,
+                         GLGraphicsTypesCaster::sggDataTypeToGL(m_dataType),
                          nullptr
             );
         }

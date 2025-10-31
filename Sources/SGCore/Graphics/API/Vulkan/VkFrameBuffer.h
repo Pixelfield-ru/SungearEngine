@@ -19,7 +19,9 @@ namespace SGCore
         void destroy() override;
         
         void addAttachment(SGFrameBufferAttachmentType,
-                           SGGColorFormat format, SGGColorInternalFormat internalFormat,
+                           SGGColorFormat format,
+                           SGGColorInternalFormat internalFormat,
+                           SGGDataType dataType,
                            const int& mipLevel,
                            const int& layer) override;
 

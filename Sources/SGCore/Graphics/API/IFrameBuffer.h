@@ -64,12 +64,14 @@ namespace SGCore
         virtual void addAttachment(SGFrameBufferAttachmentType attachmentType,
                                    SGGColorFormat format,
                                    SGGColorInternalFormat internalFormat,
+                                   SGGDataType dataType,
                                    const int& mipLevel,
                                    const int& layer) = 0;
         
         virtual void addAttachment(SGFrameBufferAttachmentType attachmentType,
                                    SGGColorFormat format,
                                    SGGColorInternalFormat internalFormat,
+                                   SGGDataType dataType,
                                    const int& mipLevel,
                                    const int& layer,
                                    bool useMultisampling,
