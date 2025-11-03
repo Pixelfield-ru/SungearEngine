@@ -43,6 +43,10 @@
       {
         "name": "glfw-binding",
         "platform": "!android"
+      },
+      {
+        "name": "android-binding",
+        "platform": "android"
       }
     ],
     "version>=" : "1.90.7"

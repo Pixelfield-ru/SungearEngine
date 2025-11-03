@@ -12,6 +12,8 @@
 
 #if SG_PLATFORM_PC
 #include <imgui_impl_glfw.h>
+#elif SG_PLATFORM_OS_ANDROID
+#include <imgui_impl_android.h>
 #endif
 
 void SGCore::ImGuiWrap::ImGuiLayer::init() noexcept
@@ -36,6 +38,7 @@ void SGCore::ImGuiWrap::ImGuiLayer::init() noexcept
         ImGui_ImplGlfw_InitForOpenGL(CoreMain::getWindow().m_handle, true);
         ImGui_ImplOpenGL3_Init();
 #elif SG_PLATFORM_OS_ANDROID
+        ImGui_ImplAndroid_Init(CoreMain::getWindow().m_handle);
         ImGui_ImplOpenGL3_Init("#version 320 es");
 #endif
     }
@@ -53,6 +56,7 @@ void SGCore::ImGuiWrap::ImGuiLayer::destroy() noexcept
 #if SG_PLATFORM_PC
         ImGui_ImplGlfw_Shutdown();
 #elif SG_PLATFORM_OS_ANDROID
+        ImGui_ImplAndroid_Shutdown();
 #endif
         ImGui_ImplOpenGL3_Shutdown();
     }
@@ -77,6 +81,7 @@ void SGCore::ImGuiWrap::ImGuiLayer::beginFrame() noexcept
 #if SG_PLATFORM_PC
         ImGui_ImplGlfw_NewFrame();
 #elif SG_PLATFORM_OS_ANDROID
+        ImGui_ImplAndroid_NewFrame();
 #endif
     }
 
@@ -90,7 +95,7 @@ void SGCore::ImGuiWrap::ImGuiLayer::endFrame() noexcept
     ImGui::Render();
 
     if (gapiType == GAPIType::SG_API_TYPE_GL4 ||
-        gapiType == GAPIType::SG_API_TYPE_GL46)
+        gapiType == GAPIType::SG_API_TYPE_GL46 || gapiType == GAPIType::SG_API_TYPE_GLES3)
     {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
@@ -126,6 +131,7 @@ void SGCore::ImGuiWrap::ImGuiLayer::destroyDeviceObjects() noexcept
         case SGCore::SG_API_TYPE_GLES2:
             break;
         case SGCore::SG_API_TYPE_GLES3:
+            ImGui_ImplOpenGL3_DestroyDeviceObjects();
             break;
         case SGCore::SG_API_TYPE_VULKAN:
             break;

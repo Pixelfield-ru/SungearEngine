@@ -20,7 +20,7 @@
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "SGCore/Graphics/API/IFrameBufferAttachment.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
-#include "SGCore/Input/InputManager.h"
+#include "SGCore/Input/PCInput.h"
 #include "SGCore/UI/FontsManager.h"
 #include "SGCore/UI/Elements/Text.h"
 
@@ -40,9 +40,9 @@ SGCore::Ref<SGCore::RenderingBase> cameraRenderingBase { };
 
 void coreInit()
 {
-    auto pbrrpPipeline = SGCore::RenderPipelinesManager::createRenderPipeline<SGCore::PBRRenderPipeline>();
-    SGCore::RenderPipelinesManager::registerRenderPipeline(pbrrpPipeline);
-    SGCore::RenderPipelinesManager::setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();
+    auto pbrrpPipeline = SGCore::RenderPipelinesManager::instance().createRenderPipeline<SGCore::PBRRenderPipeline>();
+    SGCore::RenderPipelinesManager::instance().registerRenderPipeline(pbrrpPipeline);
+    SGCore::RenderPipelinesManager::instance().setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();
 
     scene = SGCore::MakeRef<SGCore::Scene>();
     scene->createDefaultSystems();
@@ -129,14 +129,14 @@ void coreInit()
         std::cout << "glfw error after glfwSetCharCallback: " << error << std::endl;
     }
 
-    SGCore::InputManager::getMainInputListener()->onKeyboardKeyStateChanged += [](SGCore::Window& inWindow, SGCore::KeyboardKey key, SGCore::KeyState state) {
+    SGCore::Input::PC::onKeyboardKeyEvent += [](SGCore::Window& inWindow, SGCore::Input::KeyboardKey key, int scancode, SGCore::Input::KeyState state, int mods) {
         auto elem = uiDocument->findElement("InputText");
         auto* textElem = static_cast<SGCore::UI::Text*>(elem.get());
-        if(key == SGCore::KeyboardKey::KEY_BACKSPACE && (state == SGCore::KeyState::REPEAT || state == SGCore::KeyState::PRESS) && !textElem->m_text.empty())
+        if(key == SGCore::Input::KeyboardKey::KEY_BACKSPACE && (state == SGCore::Input::KeyState::REPEAT || state == SGCore::Input::KeyState::PRESS) && !textElem->m_text.empty())
         {
             textElem->m_text.erase(textElem->m_text.length() - 1);
         }
-        else if(key == SGCore::KeyboardKey::KEY_ENTER && (state == SGCore::KeyState::REPEAT || state == SGCore::KeyState::PRESS))
+        else if(key == SGCore::Input::KeyboardKey::KEY_ENTER && (state == SGCore::Input::KeyState::REPEAT || state == SGCore::Input::KeyState::PRESS))
         {
             textElem->m_text += U'\n';
         }
@@ -179,12 +179,12 @@ void onUpdate(const double& dt, const double& fixedDt)
         quadMeshData->m_indices.size()
     );
 
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_1))
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_1))
     {
         uiDocument->reloadFromDisk();
     }
 
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_2))
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_2))
     {
         auto shaders = SGCore::AssetManager::getInstance()->getAssetsWithType<SGCore::IShader>();
         for(const auto& shader : shaders)

@@ -26,7 +26,7 @@ std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::create(const size
     
     glGenBuffers(1, &m_handler);
     bind();
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(byteSize), nullptr,
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLuint64>(byteSize), nullptr,
                  GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
     
     return shared_from_this();
@@ -45,12 +45,12 @@ void SGCore::GLVertexBuffer::subDataOnGAPISide(const void* data, const size_t& b
 
     if(isPutData)
     {
-        glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) bytesCount, data,
+        glBufferData(GL_ARRAY_BUFFER, (GLuint64) bytesCount, data,
                      GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
     }
     else
     {
-        glBufferSubData(GL_ARRAY_BUFFER, (GLsizeiptr) bytesOffset, (GLsizeiptr) bytesCount, data);
+        glBufferSubData(GL_ARRAY_BUFFER, (GLuint64) bytesOffset, (GLuint64) bytesCount, data);
     }
 }
 

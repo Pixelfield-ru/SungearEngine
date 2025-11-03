@@ -43,7 +43,7 @@ std::shared_ptr<SGCore::IIndexBuffer> SGCore::GLIndexBuffer::putData(const std::
 {
     if(data.empty()) return shared_from_this();
 
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr) (data.size() * sizeof(data[0])), &data[0],
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLuint64) (data.size() * sizeof(data[0])), &data[0],
                  GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
 
     /*if(CoreMain::getRenderer()->m_currentBoundVertexArray)
@@ -61,7 +61,7 @@ void SGCore::GLIndexBuffer::subData
 
     // m_data.insert(m_data.begin() + offset, data.begin(), data.end());
     
-    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset * sizeof(data[0]), (GLsizeiptr) (data.size() * sizeof(data[0])),
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset * sizeof(data[0]), (GLuint64) (data.size() * sizeof(data[0])),
                     data.data());
 }
 
@@ -69,7 +69,7 @@ void SGCore::GLIndexBuffer::subData(std::uint32_t* data, const size_t& elementsC
 {
     if(elementsCount == 0) return;
     
-    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset * sizeof(data[0]), (GLsizeiptr) (elementsCount * sizeof(data[0])),
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset * sizeof(data[0]), (GLuint64) (elementsCount * sizeof(data[0])),
                     data);
 }
 

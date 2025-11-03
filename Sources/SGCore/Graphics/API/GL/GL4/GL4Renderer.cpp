@@ -98,12 +98,12 @@ bool SGCore::GL4Renderer::confirmSupport() noexcept
     int glMajorVersion = DeviceGLInfo::getVersion()[0] - '0';
     int glMinorVersion = DeviceGLInfo::getVersion()[2] - '0';
 
-    if(glMajorVersion < 4)
+    /*if(glMajorVersion < 4)
     {
         LOG_E(SGCORE_TAG, "OpengGL 4.0 is not supported!\n{}", SG_CURRENT_LOCATION_STR);
 
         return false;
-    }
+    }*/
 
     return true;
 }
@@ -240,11 +240,11 @@ void SGCore::GL4Renderer::renderArray(const Ref<IVertexArray>& vertexArray,
 
     if(!meshRenderState.m_useIndices)
     {
-        glDrawArrays(drawMode, 0, (GLsizei) verticesCount);
+        glDrawArrays(drawMode, 0, (GLuint64) verticesCount);
     }
     else
     {
-        glDrawElements(drawMode, (GLsizei) indicesCount,
+        glDrawElements(drawMode, (GLuint64) indicesCount,
                        GL_UNSIGNED_INT, nullptr);
     }
 }
