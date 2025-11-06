@@ -149,13 +149,51 @@ void SGCore::Window::create()
 
 void SGCore::Window::recreate()
 {
-#if SG_PLATFORM_PC
-    glfwMakeContextCurrent(nullptr);
-    glfwDestroyWindow(m_handle);
-#elif SG_PLATFORM_OS_ANDROID
+#if SG_PLATFORM_OS_ANDROID
+    // saving window handle for android platform
+    const auto lastHandle = m_handle.load();
+#endif
+
+    destroy();
+
+#if SG_PLATFORM_OS_ANDROID
+    // storing handle
+    m_handle = lastHandle;
 #endif
 
     create();
+}
+
+void SGCore::Window::destroy()
+{
+#if SG_PLATFORM_PC
+    glfwMakeContextCurrent(nullptr);
+    glfwDestroyWindow(m_handle);
+    // glfwSetWindowShouldClose(m_handle, GLFW_TRUE);
+#elif SG_PLATFORM_OS_ANDROID
+    if(m_eglDisplay != EGL_NO_DISPLAY)
+    {
+        eglMakeCurrent(m_eglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+
+        if(m_eglContext != EGL_NO_CONTEXT)
+        {
+            eglDestroyContext(m_eglDisplay, m_eglContext);
+            m_eglContext = EGL_NO_CONTEXT;
+        }
+
+        if(m_eglSurface != EGL_NO_SURFACE)
+        {
+            eglDestroySurface(m_eglDisplay, m_eglSurface);
+            m_eglSurface = EGL_NO_SURFACE;
+        }
+
+        eglTerminate(m_eglDisplay);
+        m_eglDisplay = EGL_NO_DISPLAY;
+    }
+#endif
+    // glfwDestroyWindow(m_handler);
+
+    m_handle = nullptr;
 }
 
 void SGCore::Window::makeCurrent() noexcept
@@ -169,7 +207,10 @@ void SGCore::Window::makeCurrent() noexcept
         glfwMakeContextCurrent(m_handle);
 #elif SG_PLATFORM_OS_ANDROID
         LOG_I(SGCORE_TAG, "EGL Display was made current")
-        eglMakeCurrent(m_eglDisplay, m_eglSurface, m_eglSurface, m_eglContext);
+        if(!eglMakeCurrent(m_eglDisplay, m_eglSurface, m_eglSurface, m_eglContext))
+        {
+            LOG_E(SGCORE_TAG, "Failed to eglMakeCurrent: {}", eglGetError())
+        }
 #endif
     }
 }
@@ -272,6 +313,11 @@ void SGCore::Window::setShouldClose(const bool& shouldClose) noexcept
     glfwSetWindowShouldClose(m_handle, shouldClose);
 #elif SG_PLATFORM_OS_ANDROID
 #endif
+}
+
+void SGCore::Window::setShouldRecreate(bool value) noexcept
+{
+    m_shouldRecreate = value;
 }
 
 #pragma endregion
@@ -446,7 +492,10 @@ void SGCore::Window::swapBuffers()
 #if SG_PLATFORM_PC
     glfwSwapBuffers(m_handle);
 #elif SG_PLATFORM_OS_ANDROID
-    eglSwapBuffers(m_eglDisplay, m_eglSurface);
+    if(!eglSwapBuffers(m_eglDisplay, m_eglSurface))
+    {
+        LOG_E(SGCORE_TAG, "eglSwapBuffers() failed: {}", eglGetError());
+    }
 #endif
 
     auto t1 = Utils::getTimeSecondsAsDouble();
@@ -460,6 +509,12 @@ void SGCore::Window::pollEvents()
     glfwPollEvents();
 #elif SG_PLATFORM_OS_ANDROID
 #endif
+
+    if(m_shouldRecreate)
+    {
+        recreate();
+        m_shouldRecreate = false;
+    }
 }
 
 void SGCore::Window::setFullscreen(bool fullscreen) noexcept
@@ -494,7 +549,7 @@ double SGCore::Window::getSwapBuffersExecutionTime() const noexcept
 
 SGCore::Window::window_handle SGCore::Window::getNativeHandle() noexcept
 {
-    return m_handle;
+    return m_handle.load();
 }
 
 int SGCore::Window::getPrimaryMonitorRefreshRate() noexcept

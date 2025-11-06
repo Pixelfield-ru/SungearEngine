@@ -9,6 +9,8 @@ public class AndroidNativeMethods {
     // todo: make java sungear core api
     static native void startMainCycle();
 
+    static native void recreateWindow(Surface surfaceView);
+
     // todo: make java sungear core api
     static native void loadConfig(String configPath);
 }

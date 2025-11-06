@@ -43,7 +43,15 @@ void Java_com_pixelfield_sungearstarter_AndroidNativeMethods_startMainCycle(JNIE
 {
     SGCore::CoreMain::startCycle();
 
+    ANativeWindow_release(SGCore::CoreMain::getWindow().getNativeHandle());
     SGCore::Java::JNIManager::cleanup(env);
+}
+
+void Java_com_pixelfield_sungearstarter_AndroidNativeMethods_recreateWindow(JNIEnv* env, jclass thisClass, jobject surface)
+{
+    ANativeWindow_release(SGCore::CoreMain::getWindow().getNativeHandle());
+    SGCore::__AndroidImpl::setAndroidMainWindowHandle(ANativeWindow_fromSurface(env, surface));
+    SGCore::CoreMain::getWindow().setShouldRecreate(true);
 }
 
 void SGCore::__AndroidImpl::setAndroidMainWindowHandle(ANativeWindow* window) noexcept

@@ -20,6 +20,8 @@ extern "C" {
   // todo: make java sungear core api
   JNIEXPORT void JNICALL Java_com_pixelfield_sungearstarter_AndroidNativeMethods_startMainCycle(JNIEnv* env, jclass thisClass);
 
+  JNIEXPORT void JNICALL Java_com_pixelfield_sungearstarter_AndroidNativeMethods_recreateWindow(JNIEnv* env, jclass thisClass, jobject surface);
+
   // todo: make java sungear core api
   JNIEXPORT void JNICALL Java_com_pixelfield_sungearstarter_AndroidNativeMethods_loadConfig(JNIEnv* env, jclass thisClass, jstring configPath);
 

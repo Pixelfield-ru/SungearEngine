@@ -110,7 +110,7 @@ namespace SGCore
 #if SG_PLATFORM_PC
         using window_handle = GLFWwindow*;
 #elif SG_PLATFORM_OS_ANDROID
-        using window_handle = ANativeWindow*;
+        using window_handle = std::atomic<ANativeWindow*>;
 #endif
 
 #if SG_PLATFORM_OS_ANDROID
@@ -127,17 +127,12 @@ namespace SGCore
 
         ~Window() noexcept
         {
-#if SG_PLATFORM_PC
-            glfwMakeContextCurrent(nullptr);
-            glfwSetWindowShouldClose(m_handle, GLFW_TRUE);
-#elif SG_PLATFORM_OS_ANDROID
-#endif
-            // glfwDestroyWindow(m_handler);
-            m_handle = nullptr;
+            destroy();
         }
 
         void create();
         void recreate();
+        void destroy();
 
         void swapBuffers();
         void pollEvents();
@@ -162,6 +157,8 @@ namespace SGCore
         // -----------------
 
         void setShouldClose(const bool&) noexcept;
+
+        void setShouldRecreate(bool value) noexcept;
         
         void setFullscreen(bool fullscreen) noexcept;
         bool isFullscreen() const noexcept;
@@ -188,6 +185,8 @@ namespace SGCore
 
     private:
         WindowConfig m_config;
+
+        std::atomic<bool> m_shouldRecreate = false;
         
         double m_swapBuffersExecutionTime = 0.0;
 

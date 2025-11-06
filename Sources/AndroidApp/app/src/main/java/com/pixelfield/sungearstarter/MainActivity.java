@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.opengl.EGL14;
 import android.opengl.EGL15;
 import android.opengl.EGLConfig;
@@ -28,6 +29,7 @@ import java.util.Objects;
  */
 public class MainActivity extends Activity implements SurfaceHolder.Callback {
     private SurfaceView surfaceView;
+    private static boolean isCoreInitialized = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +47,19 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
-
     }
 
     @SuppressLint("UnsafeDynamicallyLoadedCode")
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+        // surface changed
+        if(isCoreInitialized)
+        {
+            AndroidNativeMethods.recreateWindow(holder.getSurface());
+            return;
+        }
 
         final String externalStorage = Objects.requireNonNull(getExternalFilesDir(null)).getAbsolutePath();
         final String internalStorage = Objects.requireNonNull(getFilesDir()).getAbsolutePath();
@@ -82,9 +90,18 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
         Log.d("SungearStarter", "Loading SGCore.so...");
         System.load(appInfo.sourceDir  + "!/lib/" + Common.getDeviceArchitecture() + "/SGCore.so");
 
-        AndroidNativeMethods.startCore(this.getApplicationContext(), holder.getSurface());
+        /*AndroidNativeMethods.startCore(this.getApplicationContext(), holder.getSurface());
         AndroidNativeMethods.loadConfig(internalStorage + "/assets/sungear/SungearEngineConfig.json");
-        AndroidNativeMethods.startMainCycle();
+        AndroidNativeMethods.startMainCycle();*/
+
+        new Thread(() -> {
+            AndroidNativeMethods.startCore(this.getApplicationContext(), holder.getSurface());
+            AndroidNativeMethods.loadConfig(internalStorage + "/assets/sungear/SungearEngineConfig.json");
+            AndroidNativeMethods.startMainCycle();
+            Log.i("SungearStarter", "kekeekekeke");
+        }).start();
+
+        isCoreInitialized = true;
     }
 
     @Override

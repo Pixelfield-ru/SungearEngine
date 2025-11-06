@@ -36,15 +36,16 @@ namespace SGCore
                 return;
             }*/
 
-            std::cerr << formatted << std::endl;
+            LOG_E_UNFORMATTED(SGCORE_TAG, formatted)
+            // std::cerr << formatted << std::endl;
             // fprintf( stderr, formatted.c_str());
         }
         
         static void init() noexcept
         {
             // todo:
-            /*glEnable(GL_DEBUG_OUTPUT);
-            glDebugMessageCallback(messageCallback, 0);*/
+            glEnable(GL_DEBUG_OUTPUT);
+            glDebugMessageCallback(messageCallback, 0);
 
             GLint extensionsNum = 0;
             glGetIntegerv(GL_NUM_EXTENSIONS, &extensionsNum);
