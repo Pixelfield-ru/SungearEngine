@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.PixelFormat;
 import android.opengl.EGL14;
 import android.opengl.EGL15;
 import android.opengl.EGLConfig;
@@ -57,7 +58,8 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
         // surface changed
         if(isCoreInitialized)
         {
-            AndroidNativeMethods.recreateWindow(holder.getSurface());
+            AndroidNativeMethods.onAppInstanceRestore(getApplicationContext(), holder.getSurface());
+            // AndroidNativeMethods.recreateWindow(holder.getSurface());
             return;
         }
 

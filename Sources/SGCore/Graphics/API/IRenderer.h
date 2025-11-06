@@ -31,6 +31,8 @@ namespace SGCore
     class ITexture2D;
     class IShader;
 
+    struct IGPUObjectsStorage;
+
     // todo: make description of funcs
     class IRenderer
     {
@@ -125,6 +127,9 @@ namespace SGCore
         [[nodiscard]] virtual IMeshData* createMeshData() const = 0;
 
         virtual void bindScreenFrameBuffer() const noexcept = 0;
+
+        virtual IGPUObjectsStorage& storage() noexcept = 0;
+        virtual const IGPUObjectsStorage& storage() const noexcept = 0;
 
         [[nodiscard]] GAPIType getGAPIType() const noexcept;
 

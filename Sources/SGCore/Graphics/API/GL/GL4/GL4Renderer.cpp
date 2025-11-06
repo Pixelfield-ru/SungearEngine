@@ -350,6 +350,16 @@ void SGCore::GL4Renderer::bindScreenFrameBuffer() const noexcept
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+SGCore::IGPUObjectsStorage& SGCore::GL4Renderer::storage() noexcept
+{
+    return m_storage;
+}
+
+const SGCore::IGPUObjectsStorage& SGCore::GL4Renderer::storage() const noexcept
+{
+    return m_storage;
+}
+
 const SGCore::Ref<SGCore::GL4Renderer>& SGCore::GL4Renderer::getInstance() noexcept
 {
     static Ref<GL4Renderer> s_instancePointer(new GL4Renderer);

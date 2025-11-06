@@ -70,8 +70,14 @@ namespace SGCore
         [[nodiscard]] VkMeshData* createMeshData() const override;
 
         void bindScreenFrameBuffer() const noexcept final;
+
+        IGPUObjectsStorage& storage() noexcept final;
+        const IGPUObjectsStorage& storage() const noexcept final;
         
         static const std::shared_ptr<VkRenderer>& getInstance() noexcept;
+
+    private:
+        std::optional<IGPUObjectsStorage*> m_dummyStorage;
     };
 }
 

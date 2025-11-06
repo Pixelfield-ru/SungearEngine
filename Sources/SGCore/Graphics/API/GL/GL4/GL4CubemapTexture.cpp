@@ -54,7 +54,7 @@ void SGCore::GL4CubemapTexture::subTextureDataOnGAPISide(const std::uint8_t* dat
 }
 
 void SGCore::GL4CubemapTexture::createAsFrameBufferAttachment
-(const SGCore::Ref<SGCore::IFrameBuffer>& parentFrameBuffer, SGFrameBufferAttachmentType attachmentType)
+(SGCore::IFrameBuffer* parentFrameBuffer, SGFrameBufferAttachmentType attachmentType)
 {
 
 }

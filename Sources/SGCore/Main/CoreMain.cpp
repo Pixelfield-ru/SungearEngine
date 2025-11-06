@@ -248,6 +248,13 @@ void SGCore::CoreMain::updateEnd(const double& dt, const double& fixedDt)
 {
     m_window.swapBuffers();
     m_window.pollEvents();
+
+    // always restore state after window recreation
+    if(m_shouldRestoreState)
+    {
+        restoreState();
+        m_shouldRestoreState = false;
+    }
 }
 
 void SGCore::CoreMain::onFrameBufferResize(SGCore::Window& window, const int& width, const int& height) noexcept
@@ -290,4 +297,22 @@ std::uint16_t SGCore::CoreMain::getFPS() noexcept
 std::filesystem::path SGCore::CoreMain::getSungearEngineRootPath() noexcept
 {
     return s_sungearEngineRootPath;
+}
+
+void SGCore::CoreMain::setShouldRestoreState(bool shouldRestore) noexcept
+{
+    m_shouldRestoreState = shouldRestore;
+}
+
+bool SGCore::CoreMain::isShouldRestoreState() noexcept
+{
+    return m_shouldRestoreState;
+}
+
+void SGCore::CoreMain::restoreState() noexcept
+{
+    for(const auto& plugin : PluginsManager::getPlugins())
+    {
+        plugin->getPlugin()->restoreState();
+    }
 }

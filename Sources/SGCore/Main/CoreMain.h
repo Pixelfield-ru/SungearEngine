@@ -42,12 +42,27 @@ namespace SGCore
         static std::uint16_t getFPS() noexcept;
 
         SG_NOINLINE static std::filesystem::path getSungearEngineRootPath() noexcept;
+
+        /**
+         * Lazy restore of state. Does always in main thread where render cycle is running.
+         * @param shouldRestore Should the app restore state?
+         */
+        static void setShouldRestoreState(bool shouldRestore) noexcept;
+
+        static bool isShouldRestoreState() noexcept;
+
+        /**
+         * Immediately restores state of app.
+         */
+        static void restoreState() noexcept;
     
     private:
         static inline std::filesystem::path s_sungearEngineRootPath;
 
         static inline Window m_window {};
         static inline Ref<IRenderer> m_renderer;
+
+        static inline std::atomic<bool> m_shouldRestoreState { false };
         
         static inline Timer m_renderTimer { true, 1200};
         static inline Timer m_fixedTimer { true, 100.0 };

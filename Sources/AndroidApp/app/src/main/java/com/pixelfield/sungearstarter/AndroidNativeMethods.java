@@ -6,6 +6,8 @@ import android.view.Surface;
 public class AndroidNativeMethods {
     static native void startCore(Context context, Surface surfaceView);
 
+    static native void onAppInstanceRestore(Context context, Surface surfaceView);
+
     // todo: make java sungear core api
     static native void startMainCycle();
 

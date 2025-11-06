@@ -18,6 +18,7 @@
 #include "GL4FrameBuffer.h"
 #include "GL4CubemapTexture.h"
 #include "GL4UniformBuffer.h"
+#include "SGCore/Graphics/API/GL/GLObjectsStorage.h"
 
 namespace SGCore
 {
@@ -25,11 +26,6 @@ namespace SGCore
 
     class GL4Renderer : public IRenderer
     {
-    protected:
-        GL4Renderer() noexcept = default;
-
-        static inline Ref<GL4Renderer> m_instance;
-
     public:
         GL4Renderer(const GL4Renderer&) = delete;
         GL4Renderer(GL4Renderer&&) = delete;
@@ -85,7 +81,17 @@ namespace SGCore
 
         void bindScreenFrameBuffer() const noexcept final;
 
+        IGPUObjectsStorage& storage() noexcept final;
+        const IGPUObjectsStorage& storage() const noexcept final;
+
         static const Ref<GL4Renderer>& getInstance() noexcept;
+
+    protected:
+        GL4Renderer() noexcept = default;
+
+        static inline Ref<GL4Renderer> m_instance;
+
+        GLObjectsStorage m_storage;
     };
 }
 

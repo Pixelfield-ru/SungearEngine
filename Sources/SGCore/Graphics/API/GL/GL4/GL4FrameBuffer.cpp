@@ -243,7 +243,7 @@ void SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmen
     newAttachment->m_multisamplingSamplesCount = multisamplingSamplesCount;
     newAttachment->m_dataType = dataType;
 
-    newAttachment->createAsFrameBufferAttachment(shared_from_this(), attachmentType);
+    newAttachment->createAsFrameBufferAttachment(this, attachmentType);
 
     // todo: make check for errors function
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);

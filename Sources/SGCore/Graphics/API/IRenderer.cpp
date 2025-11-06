@@ -54,6 +54,13 @@ void SGCore::IRenderer::renderTextureOnScreen(const ITexture2D* texture, bool fl
 {
     bindScreenFrameBuffer();
 
+    // trying to reload screen shader
+    // todo: bad idea
+    if(!m_screenShader)
+    {
+        m_screenShader = SGCore::AssetManager::getInstance()->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
+    }
+
     m_screenShader->bind();
 
     m_screenShader->useInteger("u_flipOutput", flipOutput);

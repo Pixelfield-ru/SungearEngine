@@ -206,11 +206,13 @@ void SGCore::Window::makeCurrent() noexcept
 #if SG_PLATFORM_PC
         glfwMakeContextCurrent(m_handle);
 #elif SG_PLATFORM_OS_ANDROID
-        LOG_I(SGCORE_TAG, "EGL Display was made current")
         if(!eglMakeCurrent(m_eglDisplay, m_eglSurface, m_eglSurface, m_eglContext))
         {
             LOG_E(SGCORE_TAG, "Failed to eglMakeCurrent: {}", eglGetError())
+            return;
         }
+
+        LOG_I(SGCORE_TAG, "EGL Display was made current")
 #endif
     }
 }

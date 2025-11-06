@@ -29,6 +29,7 @@ namespace SGCore
 
         virtual void update(const double& dt, const double& fixedDt) { }
         virtual void fixedUpdate(const double& dt, const double& fixedDt) { }
+        virtual void restoreState() { }
 
         /**
          * Virtual plugin destructor.

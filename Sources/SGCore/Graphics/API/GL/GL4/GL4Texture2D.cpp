@@ -141,7 +141,7 @@ void SGCore::GL4Texture2D::create() noexcept
     #endif
 }
 
-void SGCore::GL4Texture2D::createAsFrameBufferAttachment(const SGCore::Ref<SGCore::IFrameBuffer>& parentFrameBuffer,
+void SGCore::GL4Texture2D::createAsFrameBufferAttachment(IFrameBuffer* parentFrameBuffer,
                                                          SGFrameBufferAttachmentType attachmentType)
 {
     destroyOnGPU();

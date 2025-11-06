@@ -111,6 +111,16 @@ void SGCore::VkRenderer::bindScreenFrameBuffer() const noexcept
     // todo: impl
 }
 
+SGCore::IGPUObjectsStorage& SGCore::VkRenderer::storage() noexcept
+{
+    return **m_dummyStorage;
+}
+
+const SGCore::IGPUObjectsStorage& SGCore::VkRenderer::storage() const noexcept
+{
+    return **m_dummyStorage;
+}
+
 const std::shared_ptr<SGCore::VkRenderer>& SGCore::VkRenderer::getInstance() noexcept
 {
     static std::shared_ptr<VkRenderer> s_instancePointer(new VkRenderer);

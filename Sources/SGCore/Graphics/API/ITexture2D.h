@@ -130,7 +130,7 @@ namespace SGCore
             create();
         }
 
-        virtual void createAsFrameBufferAttachment(const Ref<IFrameBuffer>& parentFrameBuffer, SGFrameBufferAttachmentType attachmentType) = 0;
+        virtual void createAsFrameBufferAttachment(IFrameBuffer* parentFrameBuffer, SGFrameBufferAttachmentType attachmentType) = 0;
 
         /**
          * PLEASE NOTE THAT INTERNAL FORMAT OF data BUFFER MUST BE EQUAL TO INTERNAL FORMAT OF THIS TEXTURE.

@@ -14,6 +14,7 @@
 
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
+#include <android/native_activity.h>
 
 #include "SGCore/Utils/FileUtils.h"
 #include "SGCore/Utils/StringInterpolation/InterpolationResolver.h"
@@ -39,6 +40,12 @@ void Java_com_pixelfield_sungearstarter_AndroidNativeMethods_startCore(JNIEnv* e
     SGCore::CoreMain::init();
 }
 
+void Java_com_pixelfield_sungearstarter_AndroidNativeMethods_onAppInstanceRestore(JNIEnv* env, jclass thisClass, jobject context, jobject surface)
+{
+    Java_com_pixelfield_sungearstarter_AndroidNativeMethods_recreateWindow(env, thisClass, surface);
+    SGCore::CoreMain::setShouldRestoreState(true);
+}
+
 void Java_com_pixelfield_sungearstarter_AndroidNativeMethods_startMainCycle(JNIEnv* env, jclass thisClass)
 {
     SGCore::CoreMain::startCycle();
@@ -49,8 +56,9 @@ void Java_com_pixelfield_sungearstarter_AndroidNativeMethods_startMainCycle(JNIE
 
 void Java_com_pixelfield_sungearstarter_AndroidNativeMethods_recreateWindow(JNIEnv* env, jclass thisClass, jobject surface)
 {
-    ANativeWindow_release(SGCore::CoreMain::getWindow().getNativeHandle());
+    const auto lastWindowHandle = SGCore::CoreMain::getWindow().getNativeHandle();
     SGCore::__AndroidImpl::setAndroidMainWindowHandle(ANativeWindow_fromSurface(env, surface));
+    ANativeWindow_release(lastWindowHandle);
     SGCore::CoreMain::getWindow().setShouldRecreate(true);
 }
 
