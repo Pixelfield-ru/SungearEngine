@@ -33,7 +33,10 @@ void SGCore::Instancing::setBaseMeshData(const AssetRef<IMeshData>& meshData) no
         if(!m_instancesTransformsBuffer)
         {
             m_instancesTransformsBuffer = Ref<IVertexBuffer>(CoreMain::getRenderer()->createVertexBuffer());
-            m_instancesTransformsBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_instancesTransforms);
+            m_instancesTransformsBuffer->setUsage(SGGUsage::SGG_DYNAMIC);
+            m_instancesTransformsBuffer->create();
+            m_instancesTransformsBuffer->bind();
+            m_instancesTransformsBuffer->putData(m_instancesTransforms);
         }
 
         m_vertexArray->bind();

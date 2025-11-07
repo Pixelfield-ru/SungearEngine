@@ -14,8 +14,7 @@ namespace SGCore
 {
     class GLVertexBufferLayout : public IVertexBufferLayout
     {
-    private:
-        std::uint32_t m_stride = 0;
+        friend struct GL4Renderer;
 
     public:
         Ref<IVertexBufferLayout> prepare() noexcept override;
@@ -37,6 +36,11 @@ namespace SGCore
         Ref<IVertexBufferLayout> enableAttributes() noexcept override;
 
         Ref<IVertexBufferLayout> addAttribute(Ref<IVertexAttribute> attribute) noexcept override;
+
+    private:
+        GLVertexBufferLayout() noexcept = default;
+
+        std::uint32_t m_stride = 0;
     };
 }
 

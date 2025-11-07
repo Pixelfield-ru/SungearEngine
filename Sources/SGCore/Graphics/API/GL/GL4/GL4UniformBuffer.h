@@ -9,11 +9,13 @@ namespace SGCore
 {
     class GL4UniformBuffer : public IUniformBuffer
     {
+        friend struct GL4Renderer;
+
     public:
         std::uint32_t m_handler = 0;
 
         void subDataOnGAPISide(const std::int64_t& offset, const int& size) noexcept final;
-    public:
+
         ~GL4UniformBuffer() override;
 
         void bind() noexcept final;
@@ -23,6 +25,9 @@ namespace SGCore
         void setLayoutLocation(const std::uint16_t& location) noexcept final;
 
         void destroy() noexcept final;
+
+    protected:
+        GL4UniformBuffer() noexcept = default;
     };
 }
 

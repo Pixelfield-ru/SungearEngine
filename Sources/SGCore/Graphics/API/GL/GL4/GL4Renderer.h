@@ -24,9 +24,8 @@ namespace SGCore
 {
     class CoreMain;
 
-    class GL4Renderer : public IRenderer
+    struct GL4Renderer : IRenderer
     {
-    public:
         GL4Renderer(const GL4Renderer&) = delete;
         GL4Renderer(GL4Renderer&&) = delete;
 
@@ -66,16 +65,16 @@ namespace SGCore
         void checkForErrors(const std::source_location& location = std::source_location::current()) noexcept override;
 
         // TODO: create docs
-        [[nodiscard]] GL46Shader* createShader() const override;
+        [[nodiscard]] GL46Shader* createShader() override;
 
-        [[nodiscard]] GLVertexArray* createVertexArray() const override;
-        [[nodiscard]] GLVertexBuffer* createVertexBuffer() const override;
-        [[nodiscard]] GLVertexBufferLayout* createVertexBufferLayout() const override;
-        [[nodiscard]] GLIndexBuffer* createIndexBuffer() const override;
-        [[nodiscard]] GL4Texture2D* createTexture2D() const override;
-        [[nodiscard]] GL4CubemapTexture* createCubemapTexture() const override;
-        [[nodiscard]] GL4UniformBuffer* createUniformBuffer() const override;
-        [[nodiscard]] GL4FrameBuffer* createFrameBuffer() const override;
+        [[nodiscard]] GLVertexArray* createVertexArray() override;
+        [[nodiscard]] GLVertexBuffer* createVertexBuffer() override;
+        [[nodiscard]] GLVertexBufferLayout* createVertexBufferLayout() override;
+        [[nodiscard]] GLIndexBuffer* createIndexBuffer() override;
+        [[nodiscard]] GL4Texture2D* createTexture2D() override;
+        [[nodiscard]] GL4CubemapTexture* createCubemapTexture() override;
+        [[nodiscard]] GL4UniformBuffer* createUniformBuffer() override;
+        [[nodiscard]] GL4FrameBuffer* createFrameBuffer() override;
 
         [[nodiscard]] IMeshData* createMeshData() const override;
 
@@ -88,8 +87,6 @@ namespace SGCore
 
     protected:
         GL4Renderer() noexcept = default;
-
-        static inline Ref<GL4Renderer> m_instance;
 
         GLObjectsStorage m_storage;
     };

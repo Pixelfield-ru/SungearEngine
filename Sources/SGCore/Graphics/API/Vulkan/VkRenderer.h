@@ -56,16 +56,15 @@ namespace SGCore
         void checkForErrors(const std::source_location& location = std::source_location::current()) noexcept override;
 
         // TODO: create docs
-        [[nodiscard]] VkShader* createShader() const override;
-
-        [[nodiscard]] VkVertexArray* createVertexArray() const override;
-        [[nodiscard]] VkVertexBuffer* createVertexBuffer() const override;
-        [[nodiscard]] VkVertexBufferLayout* createVertexBufferLayout() const override;
-        [[nodiscard]] VkIndexBuffer* createIndexBuffer() const override;
-        [[nodiscard]] VkTexture2D* createTexture2D() const override;
-        [[nodiscard]] VkCubemapTexture* createCubemapTexture() const override;
-        [[nodiscard]] VkUniformBuffer* createUniformBuffer() const override;
-        [[nodiscard]] VkFrameBuffer* createFrameBuffer() const override;
+        [[nodiscard]] VkShader* createShader() override;
+        [[nodiscard]] VkVertexArray* createVertexArray() override;
+        [[nodiscard]] VkVertexBuffer* createVertexBuffer() override;
+        [[nodiscard]] VkVertexBufferLayout* createVertexBufferLayout() override;
+        [[nodiscard]] VkIndexBuffer* createIndexBuffer() override;
+        [[nodiscard]] VkTexture2D* createTexture2D() override;
+        [[nodiscard]] VkCubemapTexture* createCubemapTexture() override;
+        [[nodiscard]] VkUniformBuffer* createUniformBuffer() override;
+        [[nodiscard]] VkFrameBuffer* createFrameBuffer() override;
 
         [[nodiscard]] VkMeshData* createMeshData() const override;
 

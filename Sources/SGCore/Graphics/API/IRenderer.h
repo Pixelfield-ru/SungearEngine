@@ -75,7 +75,7 @@ namespace SGCore
                                  const MeshRenderState& meshRenderState,
                                  const int& verticesCount,
                                  const int& indicesCount) { }
-        
+
         virtual void renderArrayInstanced(const Ref<IVertexArray>& vertexArray,
                                           const MeshRenderState& meshRenderState,
                                           const int& verticesCount,
@@ -113,16 +113,15 @@ namespace SGCore
 
         virtual void checkForErrors(const std::source_location& = std::source_location::current()) noexcept { }
 
-        [[nodiscard]] virtual IShader* createShader() const = 0;
-
-        [[nodiscard]] virtual IVertexBuffer* createVertexBuffer() const = 0;
-        [[nodiscard]] virtual IVertexArray* createVertexArray() const = 0;
-        [[nodiscard]] virtual IVertexBufferLayout* createVertexBufferLayout() const = 0;
-        [[nodiscard]] virtual IIndexBuffer* createIndexBuffer() const = 0;
-        [[nodiscard]] virtual ITexture2D* createTexture2D() const = 0;
-        [[nodiscard]] virtual ICubemapTexture* createCubemapTexture() const = 0;
-        [[nodiscard]] virtual IUniformBuffer* createUniformBuffer() const = 0;
-        [[nodiscard]] virtual IFrameBuffer* createFrameBuffer() const = 0;
+        [[nodiscard]] virtual IShader* createShader() = 0;
+        [[nodiscard]] virtual IVertexBuffer* createVertexBuffer() = 0;
+        [[nodiscard]] virtual IVertexArray* createVertexArray() = 0;
+        [[nodiscard]] virtual IVertexBufferLayout* createVertexBufferLayout() = 0;
+        [[nodiscard]] virtual IIndexBuffer* createIndexBuffer() = 0;
+        [[nodiscard]] virtual ITexture2D* createTexture2D() = 0;
+        [[nodiscard]] virtual ICubemapTexture* createCubemapTexture() = 0;
+        [[nodiscard]] virtual IUniformBuffer* createUniformBuffer() = 0;
+        [[nodiscard]] virtual IFrameBuffer* createFrameBuffer() = 0;
 
         [[nodiscard]] virtual IMeshData* createMeshData() const = 0;
 

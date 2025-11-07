@@ -9,7 +9,7 @@
 
 namespace SGCore
 {
-    class IIndexBuffer : public std::enable_shared_from_this<IIndexBuffer>
+    class IIndexBuffer
     {
     protected:
         SGGUsage m_usage = SGGUsage::SGG_STATIC;
@@ -17,16 +17,21 @@ namespace SGCore
     public:
         virtual ~IIndexBuffer() = default;
 
-        virtual std::shared_ptr<IIndexBuffer> create() = 0;
-        virtual std::shared_ptr<IIndexBuffer> create(const size_t& byteSize) = 0;
+        virtual void create() = 0;
+        virtual void create(const size_t& byteSize) = 0;
         virtual void destroy() = 0;
 
-        virtual std::shared_ptr<IIndexBuffer> putData(const std::vector<std::uint32_t>& data) = 0;
+        virtual void putData(const std::vector<std::uint32_t>& data) = 0;
         virtual void subData(const std::vector<std::uint32_t>& data, const int& offset) = 0;
         virtual void subData(std::uint32_t* data, const size_t& elementsCount, const int& offset) = 0;
-        virtual std::shared_ptr<IIndexBuffer> bind() = 0;
+        virtual void bind() = 0;
 
-        virtual std::shared_ptr<IIndexBuffer> setUsage(SGGUsage) = 0;
+        virtual void setUsage(SGGUsage) = 0;
+
+        const std::vector<std::uint32_t> getData() const noexcept;
+
+    protected:
+        std::vector<std::uint32_t> m_data;
     };
 }
 

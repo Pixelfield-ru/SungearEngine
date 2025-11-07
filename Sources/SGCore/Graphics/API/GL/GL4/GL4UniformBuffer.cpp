@@ -6,9 +6,15 @@
 
 #include "GL4UniformBuffer.h"
 
+#include "SGCore/Graphics/API/IRenderer.h"
+#include "SGCore/Graphics/API/GL/GLObjectsStorage.h"
+#include "SGCore/Main/CoreMain.h"
+
 SGCore::GL4UniformBuffer::~GL4UniformBuffer()
 {
     destroy();
+
+    static_cast<GLObjectsStorage&>(CoreMain::getRenderer()->storage()).m_uniformBuffers.erase(this);
 }
 
 void SGCore::GL4UniformBuffer::bind() noexcept

@@ -19,19 +19,23 @@ bool SGCore::GL46Renderer::confirmSupport() noexcept
     return true;
 }
 
-SGCore::GL46Shader* SGCore::GL46Renderer::createShader() const
+SGCore::GL46Shader* SGCore::GL46Renderer::createShader()
 {
     auto* shader = new GL46Shader;
     shader->m_version = "460";
 
-    //GPUObjectsStorage::addShader(shader->weak_from_this());
+    m_storage.m_shaders.insert(shader);
 
     return shader;
 }
 
-SGCore::GL46Texture2D* SGCore::GL46Renderer::createTexture2D() const
+SGCore::GL46Texture2D* SGCore::GL46Renderer::createTexture2D()
 {
-    return new GL46Texture2D;
+    auto* tex = new GL46Texture2D;
+
+    m_storage.m_textures.insert(tex);
+
+    return tex;
 }
 
 const std::shared_ptr<SGCore::GL46Renderer>& SGCore::GL46Renderer::getInstance() noexcept

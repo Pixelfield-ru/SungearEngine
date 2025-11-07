@@ -13,6 +13,9 @@ namespace SGCore
 {
     class GL46Shader : public IShader
     {
+        friend struct GL4Renderer;
+        friend class GL46Renderer;
+
     public:
         ~GL46Shader() noexcept override;
 
@@ -45,6 +48,8 @@ namespace SGCore
         bool isUniformExists(const std::string& uniformName) const noexcept;
 
     private:
+        GL46Shader() noexcept = default;
+
         void doCompile() override;
 
         GLuint compileSubShader(SGSLESubShaderType shaderType, const std::string& code);

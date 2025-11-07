@@ -10,14 +10,14 @@
 
 namespace SGCore
 {
-    class IVertexArray : public std::enable_shared_from_this<IVertexArray>
+    class IVertexArray
     {
     public:
         std::uint64_t m_indicesCount = 0;
 
         virtual ~IVertexArray() = default;
 
-        virtual std::shared_ptr<IVertexArray> create() = 0;
+        virtual void create() = 0;
         virtual void destroy() = 0;
 
         virtual void bind() = 0;

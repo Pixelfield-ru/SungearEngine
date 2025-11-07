@@ -30,9 +30,8 @@ namespace SGCore
 
         bool confirmSupport() noexcept override;
 
-        [[nodiscard]] GL46Shader* createShader() const override;
-
-        [[nodiscard]] GL46Texture2D* createTexture2D() const final;
+        [[nodiscard]] GL46Shader* createShader() override;
+        [[nodiscard]] GL46Texture2D* createTexture2D() final;
 
         static const std::shared_ptr<GL46Renderer>& getInstance() noexcept;
     

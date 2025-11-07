@@ -11,25 +11,23 @@ SGCore::GLVertexBuffer::~GLVertexBuffer() noexcept
     GLVertexBuffer::destroy();
 }
 
-std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::create() noexcept
+void SGCore::GLVertexBuffer::create() noexcept
 {
     destroy();
 
     glGenBuffers(1, &m_handler);
-
-    return shared_from_this();
 }
 
-std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::create(const size_t& byteSize) noexcept
+void SGCore::GLVertexBuffer::create(const size_t& byteSize) noexcept
 {
     destroy();
-    
+
+    m_data.resize(byteSize);
+
     glGenBuffers(1, &m_handler);
     bind();
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLuint64>(byteSize), nullptr,
                  GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
-    
-    return shared_from_this();
 }
 
 void SGCore::GLVertexBuffer::destroy() noexcept
@@ -54,16 +52,12 @@ void SGCore::GLVertexBuffer::subDataOnGAPISide(const void* data, const size_t& b
     }
 }
 
-std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::bind() noexcept
+void SGCore::GLVertexBuffer::bind() noexcept
 {
     glBindBuffer(GL_ARRAY_BUFFER, m_handler);
-    
-    return shared_from_this();
 }
 
-std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::setUsage(SGGUsage usage) noexcept
+void SGCore::GLVertexBuffer::setUsage(SGGUsage usage) noexcept
 {
     m_usage = usage;
-
-    return shared_from_this();
 }

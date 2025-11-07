@@ -13,16 +13,14 @@ SGCore::GLIndexBuffer::~GLIndexBuffer() noexcept
     destroy();
 }
 
-std::shared_ptr<SGCore::IIndexBuffer> SGCore::GLIndexBuffer::create() noexcept
+void SGCore::GLIndexBuffer::create() noexcept
 {
     destroy();
 
     glGenBuffers(1, &m_handler);
-
-    return shared_from_this();
 }
 
-std::shared_ptr<SGCore::IIndexBuffer> SGCore::GLIndexBuffer::create(const size_t& byteSize) noexcept
+void SGCore::GLIndexBuffer::create(const size_t& byteSize) noexcept
 {
     destroy();
     
@@ -30,8 +28,6 @@ std::shared_ptr<SGCore::IIndexBuffer> SGCore::GLIndexBuffer::create(const size_t
     bind();
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(byteSize), nullptr,
                  GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
-    
-    return shared_from_this();
 }
 
 void SGCore::GLIndexBuffer::destroy() noexcept
@@ -39,27 +35,23 @@ void SGCore::GLIndexBuffer::destroy() noexcept
     glDeleteBuffers(1, &m_handler);
 }
 
-std::shared_ptr<SGCore::IIndexBuffer> SGCore::GLIndexBuffer::putData(const std::vector<std::uint32_t>& data) noexcept
+void SGCore::GLIndexBuffer::putData(const std::vector<std::uint32_t>& data) noexcept
 {
-    if(data.empty()) return shared_from_this();
+    if(data.empty()) return;
+
+    m_data.resize(data.size());
+    std::memcpy(m_data.data(), data.data(), data.size() * sizeof(data[0]));
 
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLuint64) (data.size() * sizeof(data[0])), &data[0],
                  GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
-
-    /*if(CoreMain::getRenderer()->m_currentBoundVertexArray)
-    {
-        CoreMain::getRenderer()->m_currentBoundVertexArray->m_indicesCount = m_data.size();
-    }*/
-
-    return shared_from_this();
 }
 
 void SGCore::GLIndexBuffer::subData
         (const std::vector<std::uint32_t>& data, const int& offset) noexcept
 {
-    if(data.empty()) return;
+    if(data.empty() || (offset + data.size()) > std::ssize(m_data)) return;
 
-    // m_data.insert(m_data.begin() + offset, data.begin(), data.end());
+    std::memcpy(m_data.data() + offset, data.data(), data.size() * sizeof(data[0]));
     
     glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset * sizeof(data[0]), (GLuint64) (data.size() * sizeof(data[0])),
                     data.data());
@@ -67,24 +59,22 @@ void SGCore::GLIndexBuffer::subData
 
 void SGCore::GLIndexBuffer::subData(std::uint32_t* data, const size_t& elementsCount, const int& offset) noexcept
 {
-    if(elementsCount == 0) return;
-    
+    if(elementsCount == 0 || (offset + elementsCount) > std::ssize(m_data)) return;
+
+    std::memcpy(m_data.data() + offset, data, elementsCount * sizeof(data[0]));
+
     glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset * sizeof(data[0]), (GLuint64) (elementsCount * sizeof(data[0])),
                     data);
 }
 
-std::shared_ptr<SGCore::IIndexBuffer> SGCore::GLIndexBuffer::bind() noexcept
+void SGCore::GLIndexBuffer::bind() noexcept
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_handler);
 
     // CoreMain::getRenderer().m_currentBoundIndexBuffer = this;
-
-    return shared_from_this();
 }
 
-std::shared_ptr<SGCore::IIndexBuffer> SGCore::GLIndexBuffer::setUsage(SGGUsage usage) noexcept
+void SGCore::GLIndexBuffer::setUsage(SGGUsage usage) noexcept
 {
     m_usage = usage;
-
-    return shared_from_this();
 }

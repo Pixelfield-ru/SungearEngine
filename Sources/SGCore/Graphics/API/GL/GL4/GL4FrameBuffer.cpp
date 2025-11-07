@@ -9,6 +9,14 @@
 #include "GL4Texture2D.h"
 
 #include "SGCore/Graphics/API/GL/DeviceGLInfo.h"
+#include "SGCore/Graphics/API/GL/GLObjectsStorage.h"
+
+SGCore::GL4FrameBuffer::~GL4FrameBuffer() noexcept
+{
+    GL4FrameBuffer::destroy();
+
+    static_cast<GLObjectsStorage&>(CoreMain::getRenderer()->storage()).m_frameBuffers.erase(this);
+}
 
 void SGCore::GL4FrameBuffer::bindAttachment
 (const SGFrameBufferAttachmentType& attachmentType, const std::uint8_t& textureBlock)

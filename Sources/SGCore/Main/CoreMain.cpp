@@ -313,6 +313,7 @@ void SGCore::CoreMain::restoreState() noexcept
 {
     for(const auto& plugin : PluginsManager::getPlugins())
     {
+        getRenderer()->storage().recreateAll();
         plugin->getPlugin()->restoreState();
     }
 }

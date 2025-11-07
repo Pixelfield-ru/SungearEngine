@@ -4,14 +4,11 @@
 
 #pragma once
 
-#ifndef NATIVECORE_IVERTEXBUFFER_H
-#define NATIVECORE_IVERTEXBUFFER_H
-
 #include "GraphicsDataTypes.h"
 
 namespace SGCore
 {
-    class IVertexBuffer : public std::enable_shared_from_this<IVertexBuffer>
+    class IVertexBuffer
     {
     protected:
         SGGUsage m_usage = SGGUsage::SGG_STATIC;
@@ -19,40 +16,57 @@ namespace SGCore
     public:
         virtual ~IVertexBuffer() = default;
 
-        virtual std::shared_ptr<IVertexBuffer> create() = 0;
-        virtual std::shared_ptr<IVertexBuffer> create(const size_t& byteSize) = 0;
+        virtual void create() = 0;
+        virtual void create(const size_t& byteSize) = 0;
         virtual void destroy() = 0;
         
         template<typename DataType>
         requires(std::is_trivially_copyable_v<DataType>)
-        std::shared_ptr<IVertexBuffer> putData(const std::vector<DataType>& data) noexcept
+        void putData(const std::vector<DataType>& data) noexcept
         {
-            subDataOnGAPISide(data.data(), data.size() * sizeof(DataType), 0, true);
-            
-            return shared_from_this();
+            static constexpr auto sizeof_type = sizeof(DataType);
+
+            m_data.resize(data.size() * sizeof_type);
+            std::memcpy(m_data.data(), data.data(), data.size() * sizeof_type);
+
+            subDataOnGAPISide(data.data(), data.size() * sizeof_type, 0, true);
         }
         
         template<typename DataType>
         requires(std::is_trivially_copyable_v<DataType>)
         void subData(const std::vector<DataType>& data, const size_t& elementsOffset) noexcept
         {
-            subDataOnGAPISide(data.data(), data.size() * sizeof(DataType), elementsOffset * sizeof(DataType), false);
+            static constexpr auto sizeof_type = sizeof(DataType);
+
+            if((elementsOffset + data.size()) * sizeof_type > m_data.size()) return;
+
+            std::memcpy(m_data.data() + elementsOffset * sizeof_type, data.data(), data.size() * sizeof_type);
+
+            subDataOnGAPISide(data.data(), data.size() * sizeof_type, elementsOffset * sizeof_type, false);
         }
         
         template<typename DataType>
         requires(std::is_trivially_copyable_v<DataType>)
         void subData(const DataType* data, const size_t& elementsCount, const size_t& elementsOffset) noexcept
         {
-            subDataOnGAPISide(data, elementsCount * sizeof(DataType), elementsOffset * sizeof(DataType), false);
+            static constexpr auto sizeof_type = sizeof(DataType);
+
+            if((elementsOffset + elementsCount) * sizeof_type > m_data.size()) return;
+
+            std::memcpy(m_data.data() + elementsOffset * sizeof_type, data, elementsCount * sizeof_type);
+
+            subDataOnGAPISide(data, elementsCount * sizeof_type, elementsOffset * sizeof_type, false);
         }
         
-        virtual std::shared_ptr<IVertexBuffer> bind() = 0;
+        virtual void bind() = 0;
 
-        virtual std::shared_ptr<IVertexBuffer> setUsage(SGGUsage) = 0;
-        
+        virtual void setUsage(SGGUsage) = 0;
+
+        const std::vector<std::uint8_t>& getData() const noexcept;
+
     protected:
+        std::vector<std::uint8_t> m_data;
+
         virtual void subDataOnGAPISide(const void* data, const size_t& bytesCount, const size_t& bytesOffset, bool isPutData) = 0;
     };
 }
-
-#endif //NATIVECORE_IVERTEXBUFFER_H

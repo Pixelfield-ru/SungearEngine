@@ -275,7 +275,7 @@ void SGCore::GL4Renderer::renderArrayInstanced(const Ref<IVertexArray>& vertexAr
     }
 }
 
-SGCore::GL46Shader* SGCore::GL4Renderer::createShader() const
+SGCore::GL46Shader* SGCore::GL4Renderer::createShader()
 {
     auto* shader = new GL46Shader;
 #if SG_PLATFORM_PC
@@ -288,54 +288,60 @@ SGCore::GL46Shader* SGCore::GL4Renderer::createShader() const
 
     // shader->setRawName("SGUnknownShader");
 
+    m_storage.m_shaders.insert(shader);
+
     return shader;
 }
 
-SGCore::GLVertexArray* SGCore::GL4Renderer::createVertexArray() const
+SGCore::GLVertexArray* SGCore::GL4Renderer::createVertexArray()
 {
-    return new GLVertexArray;
+    auto* vao = new GLVertexArray;
+    m_storage.m_vertexArrays.insert(vao);
+    return vao;
 }
 
-SGCore::GLVertexBuffer* SGCore::GL4Renderer::createVertexBuffer() const
+SGCore::GLVertexBuffer* SGCore::GL4Renderer::createVertexBuffer()
 {
     return new GLVertexBuffer;
 }
 
-SGCore::GLVertexBufferLayout* SGCore::GL4Renderer::createVertexBufferLayout() const
+SGCore::GLVertexBufferLayout* SGCore::GL4Renderer::createVertexBufferLayout()
 {
     return new GLVertexBufferLayout;
 }
 
-SGCore::GLIndexBuffer* SGCore::GL4Renderer::createIndexBuffer() const
+SGCore::GLIndexBuffer* SGCore::GL4Renderer::createIndexBuffer()
 {
     return new GLIndexBuffer;
 }
 
-SGCore::GL4Texture2D* SGCore::GL4Renderer::createTexture2D() const
+SGCore::GL4Texture2D* SGCore::GL4Renderer::createTexture2D()
 {
     auto* tex = new GL4Texture2D;
-    // tex->setRawName("SGUnknownTexture2D");
+    m_storage.m_textures.insert(tex);
 
     return tex;
 }
 
-SGCore::GL4CubemapTexture* SGCore::GL4Renderer::createCubemapTexture() const
+SGCore::GL4CubemapTexture* SGCore::GL4Renderer::createCubemapTexture()
 {
     auto* tex = new GL4CubemapTexture;
-    // tex->setRawName("SGUnknownCubemapTexture");
+    m_storage.m_textures.insert(tex);
 
-    return new GL4CubemapTexture;
+    return tex;
 }
 
-SGCore::GL4UniformBuffer* SGCore::GL4Renderer::createUniformBuffer() const
+SGCore::GL4UniformBuffer* SGCore::GL4Renderer::createUniformBuffer()
 {
-    return new GL4UniformBuffer;
+    auto* ub = new GL4UniformBuffer;
+    m_storage.m_uniformBuffers.insert(ub);
+    return ub;
 }
 
-SGCore::GL4FrameBuffer* SGCore::GL4Renderer::createFrameBuffer() const
+SGCore::GL4FrameBuffer* SGCore::GL4Renderer::createFrameBuffer()
 {
     auto* fb = new GL4FrameBuffer;
-    // fb->setRawName("SGUnknownFrameBuffer");
+    m_storage.m_frameBuffers.insert(fb);
 
     return fb;
 }

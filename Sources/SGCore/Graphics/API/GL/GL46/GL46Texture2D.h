@@ -11,6 +11,8 @@ namespace SGCore
 {
     class GL46Texture2D : public GL4Texture2D
     {
+        friend class GL46Renderer;
+
     public:
         friend class AssetManager;
 
@@ -22,6 +24,9 @@ namespace SGCore
         void bind(const std::uint8_t& textureUnit) const noexcept final;
 
         GL46Texture2D& operator=(const Ref<ITexture2D>& other) final;
+
+    protected:
+        GL46Texture2D() noexcept = default;
     };
 }
 

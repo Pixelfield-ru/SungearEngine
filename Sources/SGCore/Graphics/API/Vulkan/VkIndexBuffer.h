@@ -15,17 +15,17 @@ namespace SGCore
     public:
         ~VkIndexBuffer() noexcept override;
 
-        std::shared_ptr<IIndexBuffer> create() noexcept final;
-        std::shared_ptr<IIndexBuffer> create(const size_t& byteSize) noexcept final;
+        void create() noexcept final;
+        void create(const size_t& byteSize) noexcept final;
 
         void destroy() noexcept final;
 
-        std::shared_ptr<IIndexBuffer> putData(const std::vector<std::uint32_t>& data) noexcept final;
+        void putData(const std::vector<std::uint32_t>& data) noexcept final;
         void subData(const std::vector<std::uint32_t>& data, const int& offset) noexcept final;
         void subData(std::uint32_t* data, const size_t& elementsCount, const int& offset) noexcept final;
-        std::shared_ptr<IIndexBuffer> bind() noexcept final;
+        void bind() noexcept final;
 
-        std::shared_ptr<IIndexBuffer> setUsage(SGGUsage) noexcept final;
+        void setUsage(SGGUsage) noexcept final;
 
     };
 }

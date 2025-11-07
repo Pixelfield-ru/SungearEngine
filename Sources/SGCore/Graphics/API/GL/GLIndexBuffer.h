@@ -11,23 +11,27 @@ namespace SGCore
 {
     class GLIndexBuffer : public IIndexBuffer
     {
-    private:
-        GLuint m_handler = 0;
+        friend struct GL4Renderer;
 
     public:
         ~GLIndexBuffer() noexcept override;
 
-        std::shared_ptr<IIndexBuffer> create() noexcept override;
-        std::shared_ptr<IIndexBuffer> create(const size_t& byteSize) noexcept override;
+        void create() noexcept override;
+        void create(const size_t& byteSize) noexcept override;
 
         void destroy() noexcept final;
 
-        std::shared_ptr<IIndexBuffer> putData(const std::vector<std::uint32_t>& data) noexcept override;
+        void putData(const std::vector<std::uint32_t>& data) noexcept override;
         void subData(const std::vector<std::uint32_t>& data, const int& offset) noexcept override;
         void subData(std::uint32_t* data, const size_t& elementsCount, const int& offset) noexcept override;
-        std::shared_ptr<IIndexBuffer> bind() noexcept override;
+        void bind() noexcept override;
 
-        std::shared_ptr<IIndexBuffer> setUsage(SGGUsage) noexcept override;
+        void setUsage(SGGUsage) noexcept override;
+
+    private:
+        GLIndexBuffer() noexcept = default;
+
+        GLuint m_handler = 0;
     };
 }
 

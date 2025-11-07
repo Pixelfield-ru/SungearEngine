@@ -14,7 +14,7 @@ namespace SGCore
     public:
         ~VkVertexArray() noexcept override;
 
-        std::shared_ptr<IVertexArray> create() noexcept final;
+        void create() noexcept final;
         void destroy() noexcept final;
 
         void bind() noexcept final;

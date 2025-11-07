@@ -13,12 +13,9 @@ namespace SGCore
 {
     class GL4Texture2D : public ITexture2D
     {
-    protected:
-        GLuint m_textureHandler = 0;
-        GLuint m_textureBufferHandler = 0;
-
     public:
         friend class AssetManager;
+        friend struct GL4Renderer;
 
         ~GL4Texture2D() noexcept override;
 
@@ -36,6 +33,12 @@ namespace SGCore
         void* getTextureBufferNativeHandler() const noexcept override;
         
         GL4Texture2D& operator=(const Ref<ITexture2D>& other) override;
+
+    protected:
+        GLuint m_textureHandler = 0;
+        GLuint m_textureBufferHandler = 0;
+
+        GL4Texture2D() noexcept = default;
     };
 }
 

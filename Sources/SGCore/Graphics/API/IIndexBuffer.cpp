@@ -3,3 +3,8 @@
 //
 
 #include "IIndexBuffer.h"
+
+const std::vector<std::uint32_t> SGCore::IIndexBuffer::getData() const noexcept
+{
+    return m_data;
+}

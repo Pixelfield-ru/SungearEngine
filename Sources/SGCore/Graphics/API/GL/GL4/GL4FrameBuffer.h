@@ -13,10 +13,10 @@ namespace SGCore
 {
     class GL4FrameBuffer : public IFrameBuffer
     {
-    private:
-        GLuint m_handler = 0;
-
+        friend struct GL4Renderer;
     public:
+        ~GL4FrameBuffer() noexcept override;
+
         void bindAttachment(const SGFrameBufferAttachmentType& attachmentType,
                                                      const std::uint8_t& textureBlock) override;
 
@@ -65,6 +65,11 @@ namespace SGCore
         void attachAttachment(const Ref<ITexture2D>& otherAttachment) noexcept override;
 
         [[nodiscard]] glm::vec3 readPixelsFromAttachment(const glm::vec2& mousePos, SGFrameBufferAttachmentType attachmentType) const noexcept final;
+
+    protected:
+        GL4FrameBuffer() noexcept = default;
+
+        GLuint m_handler = 0;
     };
 }
 

@@ -10,9 +10,11 @@
 SGCore::GLVertexArray::~GLVertexArray() noexcept
 {
     GLVertexArray::destroy();
+
+    static_cast<GLObjectsStorage&>(CoreMain::getRenderer()->storage()).m_vertexArrays.erase(this);
 }
 
-std::shared_ptr<SGCore::IVertexArray> SGCore::GLVertexArray::create() noexcept
+void SGCore::GLVertexArray::create() noexcept
 {
     destroy();
 
@@ -21,8 +23,6 @@ std::shared_ptr<SGCore::IVertexArray> SGCore::GLVertexArray::create() noexcept
     #ifdef SUNGEAR_DEBUG
     GL4Renderer::getInstance()->checkForErrors();
     #endif
-
-    return shared_from_this();
 }
 
 void SGCore::GLVertexArray::destroy() noexcept

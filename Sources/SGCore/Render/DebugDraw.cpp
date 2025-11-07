@@ -28,15 +28,19 @@ SGCore::DebugDraw::DebugDraw()
     m_linesIndices.resize(m_maxLines * 2);
     
     m_linesVertexArray = std::shared_ptr<IVertexArray>(CoreMain::getRenderer()->createVertexArray());
-    m_linesVertexArray->create()->bind();
-    
+    m_linesVertexArray->create();
+    m_linesVertexArray->bind();
+
     // ==============================================
     
     m_linesPositionsVertexBuffer = std::shared_ptr<IVertexBuffer>(
             CoreMain::getRenderer()->createVertexBuffer()
     );
     
-    m_linesPositionsVertexBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_linesPositions);
+    m_linesPositionsVertexBuffer->setUsage(SGGUsage::SGG_DYNAMIC);
+    m_linesPositionsVertexBuffer->create();
+    m_linesPositionsVertexBuffer->bind();
+    m_linesPositionsVertexBuffer->putData(m_linesPositions);
     
     std::shared_ptr<IVertexBufferLayout> bufferLayout = Ref<IVertexBufferLayout>(CoreMain::getRenderer()->createVertexBufferLayout());
     bufferLayout
@@ -53,7 +57,10 @@ SGCore::DebugDraw::DebugDraw()
             CoreMain::getRenderer()->createVertexBuffer()
     );
     
-    m_linesColorsVertexBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_linesColors);
+    m_linesColorsVertexBuffer->setUsage(SGGUsage::SGG_DYNAMIC);
+    m_linesColorsVertexBuffer->create();
+    m_linesColorsVertexBuffer->bind();
+    m_linesColorsVertexBuffer->putData(m_linesColors);
     
     bufferLayout->reset();
     bufferLayout
@@ -73,7 +80,10 @@ SGCore::DebugDraw::DebugDraw()
     }
     
     m_linesIndexBuffer = Ref<IIndexBuffer>(CoreMain::getRenderer()->createIndexBuffer());
-    m_linesIndexBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_linesIndices);
+    m_linesIndexBuffer->setUsage(SGGUsage::SGG_DYNAMIC);
+    m_linesIndexBuffer->create();
+    m_linesIndexBuffer->bind();
+    m_linesIndexBuffer->putData(m_linesIndices);
     
     // ==============================================
     

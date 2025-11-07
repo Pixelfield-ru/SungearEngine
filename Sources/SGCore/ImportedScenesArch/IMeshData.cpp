@@ -37,13 +37,17 @@ SGCore::IMeshData::IMeshData()
 void SGCore::IMeshData::prepare()
 {
     m_vertexArray = std::shared_ptr<IVertexArray>(CoreMain::getRenderer()->createVertexArray());
-    m_vertexArray->create()->bind();
+    m_vertexArray->create();
+    m_vertexArray->bind();
 
     // ---------------- preparing positions -------
     m_verticesBuffer = std::shared_ptr<IVertexBuffer>(
             CoreMain::getRenderer()->createVertexBuffer()
             );
-    m_verticesBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_vertices);
+    m_verticesBuffer->setUsage(SGGUsage::SGG_DYNAMIC);
+    m_verticesBuffer->create();
+    m_verticesBuffer->bind();
+    m_verticesBuffer->putData(m_vertices);
 
     m_verticesColorsBuffers.clear();
 
@@ -52,7 +56,11 @@ void SGCore::IMeshData::prepare()
         auto verticesColorsBuffer = std::shared_ptr<IVertexBuffer>(
                 CoreMain::getRenderer()->createVertexBuffer()
         );
-        verticesColorsBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_verticesColors[i].m_colors);
+
+        verticesColorsBuffer->setUsage(SGGUsage::SGG_DYNAMIC);
+        verticesColorsBuffer->create();
+        verticesColorsBuffer->bind();
+        verticesColorsBuffer->putData(m_verticesColors[i].m_colors);
 
         m_verticesColorsBuffers.push_back(verticesColorsBuffer);
     }
@@ -61,7 +69,10 @@ void SGCore::IMeshData::prepare()
 
     // ------ preparing indices -------------------
     m_indicesBuffer = std::shared_ptr<IIndexBuffer>(CoreMain::getRenderer()->createIndexBuffer());
-    m_indicesBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_indices);
+    m_indicesBuffer->setUsage(SGGUsage::SGG_DYNAMIC);
+    m_indicesBuffer->create();
+    m_indicesBuffer->bind();
+    m_indicesBuffer->putData(m_indices);
     // --------------------------------------------
 
     Ref<IVertexBufferLayout> bufferLayout = Ref<IVertexBufferLayout>(CoreMain::getRenderer()->createVertexBufferLayout());

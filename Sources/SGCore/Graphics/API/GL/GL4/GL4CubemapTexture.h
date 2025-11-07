@@ -13,6 +13,8 @@ namespace SGCore
 {
     class GL4CubemapTexture : public ICubemapTexture
     {
+        friend struct GL4Renderer;
+
     public:
         void create() override;
         void createAsFrameBufferAttachment(IFrameBuffer* parentFrameBuffer, SGFrameBufferAttachmentType attachmentType) override;
@@ -29,7 +31,9 @@ namespace SGCore
 
         GL4CubemapTexture& operator=(const Ref<ITexture2D>& other) override;
 
-    private:
+    protected:
+        GL4CubemapTexture() noexcept = default;
+
         GLuint m_cubemapHandler = 0;
     };
 }

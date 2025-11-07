@@ -16,14 +16,18 @@
 void SGCore::UI::UIElementMesh::prepare() noexcept
 {
     m_vertexArray = std::shared_ptr<IVertexArray>(CoreMain::getRenderer()->createVertexArray());
-    m_vertexArray->create()->bind();
+    m_vertexArray->create();
+    m_vertexArray->bind();
 
     // ============================================================ preparing vertices
 
     m_verticesBuffer = std::shared_ptr<IVertexBuffer>(
             CoreMain::getRenderer()->createVertexBuffer()
             );
-    m_verticesBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_vertices);
+    m_verticesBuffer->setUsage(SGGUsage::SGG_DYNAMIC);
+    m_verticesBuffer->create();
+    m_verticesBuffer->bind();
+    m_verticesBuffer->putData(m_vertices);
 
     // ============================================================ preparing positions
 
@@ -70,7 +74,10 @@ void SGCore::UI::UIElementMesh::prepare() noexcept
     // ============================================================ preparing indices
 
     m_indicesBuffer = std::shared_ptr<IIndexBuffer>(CoreMain::getRenderer()->createIndexBuffer());
-    m_indicesBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_indices);
+    m_indicesBuffer->setUsage(SGGUsage::SGG_DYNAMIC);
+    m_indicesBuffer->create();
+    m_indicesBuffer->bind();
+    m_indicesBuffer->putData(m_indices);
 }
 
 void SGCore::UI::UIElementMesh::update() noexcept

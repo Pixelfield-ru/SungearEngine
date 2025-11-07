@@ -13,18 +13,21 @@
 
 namespace SGCore
 {
-    class GLVertexArray : public IVertexArray
+    struct GLVertexArray : IVertexArray
     {
-    private:
-        GLuint m_handler = 0;
+        friend struct GL4Renderer;
 
-    public:
         ~GLVertexArray() noexcept override;
 
-        std::shared_ptr<IVertexArray> create() noexcept override;
+        void create() noexcept override;
         void destroy() noexcept override;
 
         void bind() noexcept override;
+
+    private:
+        GLVertexArray() noexcept = default;
+
+        GLuint m_handler = 0;
     };
 }
 

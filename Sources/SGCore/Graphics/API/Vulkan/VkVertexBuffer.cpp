@@ -9,14 +9,14 @@ SGCore::VkVertexBuffer::~VkVertexBuffer() noexcept
     destroy();
 }
 
-std::shared_ptr<SGCore::IVertexBuffer> SGCore::VkVertexBuffer::create() noexcept
+void SGCore::VkVertexBuffer::create() noexcept
 {
-    return shared_from_this();
+
 }
 
-std::shared_ptr<SGCore::IVertexBuffer> SGCore::VkVertexBuffer::create(const size_t& byteSize) noexcept
+void SGCore::VkVertexBuffer::create(const size_t& byteSize) noexcept
 {
-    return shared_from_this();
+
 }
 
 void SGCore::VkVertexBuffer::destroy() noexcept
@@ -30,13 +30,13 @@ void SGCore::VkVertexBuffer::subDataOnGAPISide(const void* data, const size_t& b
 
 }
 
-std::shared_ptr<SGCore::IVertexBuffer> SGCore::VkVertexBuffer::bind() noexcept
+void SGCore::VkVertexBuffer::bind() noexcept
 {
-    return shared_from_this();
+
 }
 
-std::shared_ptr<SGCore::IVertexBuffer> SGCore::VkVertexBuffer::setUsage(SGGUsage) noexcept
+void SGCore::VkVertexBuffer::setUsage(SGGUsage) noexcept
 {
-    return shared_from_this();
+
 }
 
