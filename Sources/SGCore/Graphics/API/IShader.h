@@ -14,7 +14,6 @@
 #include "SGCore/Memory/AssetWeakRef.h"
 
 #include "SGCore/Memory/Assets/TextFileAsset.h"
-#include "SGCore/Memory/Assets/IAssetObserver.h"
 
 #include "IUniformBuffer.h"
 #include "ShaderDefine.h"

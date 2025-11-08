@@ -45,11 +45,11 @@ SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
         m_charactersMatricesVertexBuffer = std::shared_ptr<IVertexBuffer>(
                 CoreMain::getRenderer()->createVertexBuffer()
         );
-        
         m_charactersMatricesVertexBuffer->setUsage(SGGUsage::SGG_DYNAMIC);
         m_charactersMatricesVertexBuffer->create();
         m_charactersMatricesVertexBuffer->bind();
         m_charactersMatricesVertexBuffer->putData(m_charactersMatrices);
+        m_charactersVertexArray->addVertexBuffer(m_charactersMatricesVertexBuffer.get());
         
         std::shared_ptr<IVertexBufferLayout> bufferLayout = Ref<IVertexBufferLayout>(
                 CoreMain::getRenderer()->createVertexBufferLayout());
@@ -111,6 +111,7 @@ SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
         m_charactersColorsVertexBuffer->create();
         m_charactersColorsVertexBuffer->bind();
         m_charactersColorsVertexBuffer->putData(m_charactersColors);
+        m_charactersVertexArray->addVertexBuffer(m_charactersColorsVertexBuffer.get());
         
         bufferLayout->reset();
         bufferLayout
@@ -129,11 +130,11 @@ SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
         m_charactersUVsVertexBuffer = std::shared_ptr<IVertexBuffer>(
                 CoreMain::getRenderer()->createVertexBuffer()
         );
-        
         m_charactersUVsVertexBuffer->setUsage(SGGUsage::SGG_DYNAMIC);
         m_charactersUVsVertexBuffer->create();
         m_charactersUVsVertexBuffer->bind();
         m_charactersUVsVertexBuffer->putData(m_charactersUVs);
+        m_charactersVertexArray->addVertexBuffer(m_charactersUVsVertexBuffer.get());
         
         bufferLayout->reset();
         bufferLayout
@@ -150,11 +151,11 @@ SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
         m_charactersPositionsBuffer = std::shared_ptr<IVertexBuffer>(
                 CoreMain::getRenderer()->createVertexBuffer()
         );
-        
         m_charactersPositionsBuffer->setUsage(SGGUsage::SGG_DYNAMIC);
         m_charactersPositionsBuffer->create();
         m_charactersPositionsBuffer->bind();
         m_charactersPositionsBuffer->putData(m_charactersVerticesPositions);
+        m_charactersVertexArray->addVertexBuffer(m_charactersPositionsBuffer.get());
         
         bufferLayout->reset();
         bufferLayout
@@ -176,6 +177,7 @@ SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
         m_charactersAdditionalParamsVertexBuffer->create();
         m_charactersAdditionalParamsVertexBuffer->bind();
         m_charactersAdditionalParamsVertexBuffer->putData(m_charactersAdditionalParams);
+        m_charactersVertexArray->addVertexBuffer(m_charactersAdditionalParamsVertexBuffer.get());
 
         bufferLayout->reset();
         bufferLayout

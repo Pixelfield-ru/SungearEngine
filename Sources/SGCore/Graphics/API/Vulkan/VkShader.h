@@ -14,11 +14,11 @@ namespace SGCore
     {
         ~VkShader() noexcept override;
 
+        void destroy() noexcept final;
+
         void bind() const noexcept final;
 
         void useUniformBuffer(const Ref<IUniformBuffer>&) override;
-
-        void destroy() noexcept final;
 
         std::int32_t getShaderUniformLocation(const std::string& uniformName) noexcept final;
 

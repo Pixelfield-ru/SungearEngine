@@ -41,6 +41,8 @@ SGCore::DebugDraw::DebugDraw()
     m_linesPositionsVertexBuffer->create();
     m_linesPositionsVertexBuffer->bind();
     m_linesPositionsVertexBuffer->putData(m_linesPositions);
+
+    m_linesVertexArray->addVertexBuffer(m_linesPositionsVertexBuffer.get());
     
     std::shared_ptr<IVertexBufferLayout> bufferLayout = Ref<IVertexBufferLayout>(CoreMain::getRenderer()->createVertexBufferLayout());
     bufferLayout
@@ -61,7 +63,9 @@ SGCore::DebugDraw::DebugDraw()
     m_linesColorsVertexBuffer->create();
     m_linesColorsVertexBuffer->bind();
     m_linesColorsVertexBuffer->putData(m_linesColors);
-    
+
+    m_linesVertexArray->addVertexBuffer(m_linesColorsVertexBuffer.get());
+
     bufferLayout->reset();
     bufferLayout
             ->addAttribute(std::shared_ptr<IVertexAttribute>(
@@ -84,6 +88,8 @@ SGCore::DebugDraw::DebugDraw()
     m_linesIndexBuffer->create();
     m_linesIndexBuffer->bind();
     m_linesIndexBuffer->putData(m_linesIndices);
+
+    m_linesVertexArray->setIndexBuffer(m_linesIndexBuffer.get());
     
     // ==============================================
     

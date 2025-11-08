@@ -9,6 +9,11 @@ SGCore::VkShader::~VkShader() noexcept
     destroy();
 }
 
+void SGCore::VkShader::destroy() noexcept
+{
+
+}
+
 void SGCore::VkShader::doCompile() noexcept
 {
 
@@ -20,11 +25,6 @@ void SGCore::VkShader::bind() const noexcept
 }
 
 void SGCore::VkShader::useUniformBuffer(const Ref<IUniformBuffer> &)
-{
-
-}
-
-void SGCore::VkShader::destroy() noexcept
 {
 
 }

@@ -7,20 +7,37 @@
 
 #include <cstdint>
 #include <memory>
+#include <unordered_set>
 
 namespace SGCore
 {
+    class IVertexBuffer;
+    class IIndexBuffer;
+
     class IVertexArray
     {
+        friend class IVertexBuffer;
+        friend class IIndexBuffer;
+
     public:
         std::uint64_t m_indicesCount = 0;
 
-        virtual ~IVertexArray() = default;
+        virtual ~IVertexArray();
 
         virtual void create() = 0;
         virtual void destroy() = 0;
 
         virtual void bind() = 0;
+
+        void addVertexBuffer(IVertexBuffer* vertexBuffer) noexcept;
+        void setIndexBuffer(IIndexBuffer* indexBuffer) noexcept;
+
+        const std::unordered_set<IVertexBuffer*>& getVertexBuffers() noexcept;
+        IIndexBuffer* getIndexBuffer() noexcept;
+
+    private:
+        std::unordered_set<IVertexBuffer*> m_vertexBuffers;
+        IIndexBuffer* m_indexBuffer {};
     };
 }
 

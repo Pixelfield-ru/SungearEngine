@@ -30,7 +30,6 @@ namespace SGCore::UI
         
         Ref<IVertexArray> m_charactersVertexArray;
         Ref<IVertexBuffer> m_charactersPositionsBuffer;
-        Ref<IIndexBuffer> m_charactersIndexBuffer;
         Ref<IVertexBuffer> m_charactersMatricesVertexBuffer;
         Ref<IVertexBuffer> m_charactersColorsVertexBuffer;
         Ref<IVertexBuffer> m_charactersUVsVertexBuffer;

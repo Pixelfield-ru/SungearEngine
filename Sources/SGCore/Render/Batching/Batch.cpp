@@ -25,11 +25,13 @@ SGCore::Batch::Batch() noexcept
     m_fakeVertexArray->bind();
 
     m_fakeVerticesBuffer = Ref<IVertexBuffer>(CoreMain::getRenderer()->createVertexBuffer());
-
     m_fakeVerticesBuffer->setUsage(SGGUsage::SGG_DYNAMIC);
     m_fakeVerticesBuffer->create();
     m_fakeVerticesBuffer->bind();
     m_fakeVerticesBuffer->putData(m_instanceTriangles);
+
+    m_fakeVertexArray->addVertexBuffer(m_fakeVerticesBuffer.get());
+
 
     std::shared_ptr<IVertexBufferLayout> bufferLayout = Ref<IVertexBufferLayout>(CoreMain::getRenderer()->createVertexBufferLayout());
 

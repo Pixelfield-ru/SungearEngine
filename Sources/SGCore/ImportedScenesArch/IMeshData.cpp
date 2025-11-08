@@ -49,6 +49,8 @@ void SGCore::IMeshData::prepare()
     m_verticesBuffer->bind();
     m_verticesBuffer->putData(m_vertices);
 
+    m_vertexArray->addVertexBuffer(m_verticesBuffer.get());
+
     m_verticesColorsBuffers.clear();
 
     for(size_t i = 0; i < m_verticesColors.size(); ++i)
@@ -62,6 +64,8 @@ void SGCore::IMeshData::prepare()
         verticesColorsBuffer->bind();
         verticesColorsBuffer->putData(m_verticesColors[i].m_colors);
 
+        m_vertexArray->addVertexBuffer(verticesColorsBuffer.get());
+
         m_verticesColorsBuffers.push_back(verticesColorsBuffer);
     }
 
@@ -73,7 +77,9 @@ void SGCore::IMeshData::prepare()
     m_indicesBuffer->create();
     m_indicesBuffer->bind();
     m_indicesBuffer->putData(m_indices);
-    // --------------------------------------------
+
+    m_vertexArray->setIndexBuffer(m_indicesBuffer.get());
+    // -------------------------------------------
 
     Ref<IVertexBufferLayout> bufferLayout = Ref<IVertexBufferLayout>(CoreMain::getRenderer()->createVertexBufferLayout());
     bindBuffersToVertexArray(m_vertexArray, bufferLayout);

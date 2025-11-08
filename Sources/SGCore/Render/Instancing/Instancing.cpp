@@ -37,6 +37,8 @@ void SGCore::Instancing::setBaseMeshData(const AssetRef<IMeshData>& meshData) no
             m_instancesTransformsBuffer->create();
             m_instancesTransformsBuffer->bind();
             m_instancesTransformsBuffer->putData(m_instancesTransforms);
+
+            m_vertexArray->addVertexBuffer(m_instancesTransformsBuffer.get());
         }
 
         m_vertexArray->bind();

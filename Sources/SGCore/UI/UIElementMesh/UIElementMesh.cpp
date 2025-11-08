@@ -28,6 +28,7 @@ void SGCore::UI::UIElementMesh::prepare() noexcept
     m_verticesBuffer->create();
     m_verticesBuffer->bind();
     m_verticesBuffer->putData(m_vertices);
+    m_vertexArray->addVertexBuffer(m_verticesBuffer.get());
 
     // ============================================================ preparing positions
 
@@ -78,6 +79,7 @@ void SGCore::UI::UIElementMesh::prepare() noexcept
     m_indicesBuffer->create();
     m_indicesBuffer->bind();
     m_indicesBuffer->putData(m_indices);
+    m_vertexArray->setIndexBuffer(m_indicesBuffer.get());
 }
 
 void SGCore::UI::UIElementMesh::update() noexcept

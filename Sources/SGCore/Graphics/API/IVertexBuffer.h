@@ -8,13 +8,17 @@
 
 namespace SGCore
 {
+    class IVertexArray;
+
     class IVertexBuffer
     {
+        friend class IVertexArray;
+
     protected:
         SGGUsage m_usage = SGGUsage::SGG_STATIC;
 
     public:
-        virtual ~IVertexBuffer() = default;
+        virtual ~IVertexBuffer();
 
         virtual void create() = 0;
         virtual void create(const size_t& byteSize) = 0;
@@ -66,6 +70,7 @@ namespace SGCore
 
     protected:
         std::vector<std::uint8_t> m_data;
+        IVertexArray* m_parentVertexArray { };
 
         virtual void subDataOnGAPISide(const void* data, const size_t& bytesCount, const size_t& bytesOffset, bool isPutData) = 0;
     };

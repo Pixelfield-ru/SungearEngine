@@ -9,8 +9,12 @@
 
 namespace SGCore
 {
+    class IVertexArray;
+
     class IIndexBuffer
     {
+        friend class IVertexArray;
+
     protected:
         SGGUsage m_usage = SGGUsage::SGG_STATIC;
 
@@ -32,6 +36,9 @@ namespace SGCore
 
     protected:
         std::vector<std::uint32_t> m_data;
+
+    private:
+        IVertexArray* m_parentVertexArray { };
     };
 }
 
