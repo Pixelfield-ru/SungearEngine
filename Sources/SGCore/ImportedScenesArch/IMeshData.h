@@ -147,7 +147,6 @@ namespace SGCore
         void generatePhysicalMesh() noexcept;
 
         void bindBuffersToVertexArray(const Ref<IVertexArray>& toVertexArray,
-                                      const Ref<IVertexBufferLayout>& vertexBufferLayout,
                                       std::uint16_t vertexAttribsIDOffset = 0) noexcept;
 
         Ref<IVertexArray> getVertexArray() const noexcept;

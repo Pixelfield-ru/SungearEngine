@@ -7,9 +7,6 @@
 
 #include "SGCore/Graphics/API/GL/GL46/GL46Shader.h"
 #include "SGCore/Graphics/API/GL/GLVertexArray.h"
-#include "SGCore/Graphics/API/GL/GLVertexBuffer.h"
-#include "SGCore/Graphics/API/GL/GLVertexBufferLayout.h"
-#include "SGCore/Graphics/API/GL/GLIndexBuffer.h"
 #include "SGCore/Graphics/API/GL/GL46/GL46Texture2D.h"
 #include "SGCore/Graphics/API/GL/GL46/GL46UniformBuffer.h"
 

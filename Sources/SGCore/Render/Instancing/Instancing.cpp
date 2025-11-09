@@ -9,7 +9,6 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Graphics/API/IVertexArray.h"
 #include "SGCore/Graphics/API/IVertexBuffer.h"
-#include "SGCore/Graphics/API/IVertexBufferLayout.h"
 #include "SGCore/ImportedScenesArch/IMeshData.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 
@@ -44,70 +43,29 @@ void SGCore::Instancing::setBaseMeshData(const AssetRef<IMeshData>& meshData) no
         m_vertexArray->bind();
         m_instancesTransformsBuffer->bind();
 
-        const auto bufferLayout = Ref<IVertexBufferLayout>(CoreMain::getRenderer()->createVertexBufferLayout());
-
         std::uint16_t currentAttribID = 0;
 
         for(std::uint8_t i = 0; i < 4; ++i)
         {
-            auto instanceMatrixVec4Attrib = bufferLayout->createVertexAttribute(currentAttribID,
-                "instanceMatrixVec4_" + std::to_string(i),
-                SGGDataType::SGG_FLOAT4,
-                4,
-                false,
-                sizeof(BatchInstanceTransform),
-                offsetof(BatchInstanceTransform, m_modelMatrix) + 4 * sizeof(float) * i,
-                1);
-
-            bufferLayout->reset();
-            bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(instanceMatrixVec4Attrib))->prepare()->enableAttributes();
+            m_instancesTransformsBuffer->addAttribute(currentAttribID, 4, SGGDataType::SGG_FLOAT, false,
+                                                      sizeof(BatchInstanceTransform),
+                                                      offsetof(BatchInstanceTransform, m_modelMatrix) + 4 * sizeof(float) * i, 1);
 
             ++currentAttribID;
         }
 
-        auto instancePositionAttrib = bufferLayout->createVertexAttribute(currentAttribID,
-                                                                          "instancePosition",
-                                                                          SGGDataType::SGG_FLOAT4,
-                                                                          4,
-                                                                          false,
-                                                                          sizeof(BatchInstanceTransform),
-                                                                          offsetof(BatchInstanceTransform, m_position),
-                                                                          1);
-
-        bufferLayout->reset();
-        bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(instancePositionAttrib))->prepare()->enableAttributes();
-
+        m_instancesTransformsBuffer->addAttribute(currentAttribID, 4, SGGDataType::SGG_FLOAT, false, sizeof(BatchInstanceTransform), offsetof(BatchInstanceTransform, m_position), 1);
         ++currentAttribID;
 
-        auto instanceRotationAttrib = bufferLayout->createVertexAttribute(currentAttribID,
-                                                                      "instanceRotation",
-                                                                      SGGDataType::SGG_FLOAT4,
-                                                                      4,
-                                                                      false,
-                                                                      sizeof(BatchInstanceTransform),
-                                                                      offsetof(BatchInstanceTransform, m_rotation),
-                                                                      1);
-
-        bufferLayout->reset();
-        bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(instanceRotationAttrib))->prepare()->enableAttributes();
-
+        m_instancesTransformsBuffer->addAttribute(currentAttribID, 4, SGGDataType::SGG_FLOAT, false, sizeof(BatchInstanceTransform), offsetof(BatchInstanceTransform, m_rotation), 1);
         ++currentAttribID;
 
-        auto instanceScaleAttrib = bufferLayout->createVertexAttribute(currentAttribID,
-                                                                      "instanceScale",
-                                                                      SGGDataType::SGG_FLOAT4,
-                                                                      4,
-                                                                      false,
-                                                                      sizeof(BatchInstanceTransform),
-                                                                      offsetof(BatchInstanceTransform, m_scale),
-                                                                      1);
-
-        bufferLayout->reset();
-        bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(instanceScaleAttrib))->prepare()->enableAttributes();
-
+        m_instancesTransformsBuffer->addAttribute(currentAttribID, 4, SGGDataType::SGG_FLOAT, false, sizeof(BatchInstanceTransform), offsetof(BatchInstanceTransform, m_scale), 1);
         ++currentAttribID;
 
-        m_baseMeshData->bindBuffersToVertexArray(m_vertexArray, bufferLayout, currentAttribID);
+        m_instancesTransformsBuffer->useAttributes();
+
+        m_baseMeshData->bindBuffersToVertexArray(m_vertexArray, currentAttribID);
     }
 }
 

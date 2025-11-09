@@ -8,10 +8,8 @@
 #include "SGCore/Graphics/API/GL/GL46/GL46Shader.h"
 #include "SGCore/Graphics/API/GL/GLVertexArray.h"
 #include "SGCore/Graphics/API/GL/GLVertexBuffer.h"
-#include "SGCore/Graphics/API/GL/GLVertexBufferLayout.h"
 #include "SGCore/Graphics/API/GL/GLIndexBuffer.h"
 #include "SGCore/Graphics/API/GL/GL4/GL4Texture2D.h"
-#include "SGCore/Graphics/API/GL/GL46/GL46UniformBuffer.h"
 
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/ImportedScenesArch/IMeshData.h"
@@ -69,7 +67,6 @@ namespace SGCore
 
         [[nodiscard]] GLVertexArray* createVertexArray() override;
         [[nodiscard]] GLVertexBuffer* createVertexBuffer() override;
-        [[nodiscard]] GLVertexBufferLayout* createVertexBufferLayout() override;
         [[nodiscard]] GLIndexBuffer* createIndexBuffer() override;
         [[nodiscard]] GL4Texture2D* createTexture2D() override;
         [[nodiscard]] GL4CubemapTexture* createCubemapTexture() override;

@@ -40,3 +40,13 @@ void SGCore::VkVertexBuffer::setUsage(SGGUsage) noexcept
 
 }
 
+void SGCore::VkVertexBuffer::addAttribute(std::uint32_t location, std::int32_t scalarsCount, SGGDataType dataType,
+                                          bool isNormalized, std::int32_t stride, std::uint64_t offsetInStruct,
+                                          std::int32_t divisor) noexcept
+{
+}
+
+void SGCore::VkVertexBuffer::useAttributes() const noexcept
+{
+}
+

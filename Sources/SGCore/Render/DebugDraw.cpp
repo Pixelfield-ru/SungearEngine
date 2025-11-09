@@ -10,8 +10,6 @@
 #include "SGCore/Graphics/API/IVertexBuffer.h"
 #include "SGCore/Graphics/API/IIndexBuffer.h"
 #include "SGCore/Graphics/API/IRenderer.h"
-#include "SGCore/Graphics/API/IVertexBufferLayout.h"
-#include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
@@ -43,15 +41,9 @@ SGCore::DebugDraw::DebugDraw()
     m_linesPositionsVertexBuffer->putData(m_linesPositions);
 
     m_linesVertexArray->addVertexBuffer(m_linesPositionsVertexBuffer.get());
-    
-    std::shared_ptr<IVertexBufferLayout> bufferLayout = Ref<IVertexBufferLayout>(CoreMain::getRenderer()->createVertexBufferLayout());
-    bufferLayout
-            ->addAttribute(std::shared_ptr<IVertexAttribute>(
-                    bufferLayout->createVertexAttribute(0,
-                                                        "linesPositionsAttribute",
-                                                        SGGDataType::SGG_FLOAT3))
-            )
-            ->prepare()->enableAttributes();
+
+    m_linesPositionsVertexBuffer->addAttribute(0, 3, SGGDataType::SGG_FLOAT, false, (4 + 3) * sizeof(float), 0);
+    m_linesPositionsVertexBuffer->useAttributes();
     
     // ==============================================
     
@@ -66,14 +58,8 @@ SGCore::DebugDraw::DebugDraw()
 
     m_linesVertexArray->addVertexBuffer(m_linesColorsVertexBuffer.get());
 
-    bufferLayout->reset();
-    bufferLayout
-            ->addAttribute(std::shared_ptr<IVertexAttribute>(
-                    bufferLayout->createVertexAttribute(1,
-                                                        "linesColorsAttribute",
-                                                        SGGDataType::SGG_FLOAT4))
-            )
-            ->prepare()->enableAttributes();
+    m_linesColorsVertexBuffer->addAttribute(1, 4, SGGDataType::SGG_FLOAT, false, (4 + 3) * sizeof(float), 3 * sizeof(float));
+    m_linesColorsVertexBuffer->useAttributes();
     
     // ==============================================
     

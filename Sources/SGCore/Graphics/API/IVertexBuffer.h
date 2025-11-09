@@ -66,6 +66,23 @@ namespace SGCore
 
         virtual void setUsage(SGGUsage) = 0;
 
+        virtual void addAttribute(std::uint32_t location,
+                                  std::int32_t scalarsCount,
+                                  SGGDataType dataType,
+                                  bool isNormalized,
+                                  std::int32_t stride,
+                                  std::uint64_t offsetInStruct,
+                                  std::int32_t divisor) noexcept = 0;
+
+        void addAttribute(std::uint32_t location,
+                          std::int32_t scalarsCount,
+                          SGGDataType dataType,
+                          bool isNormalized,
+                          std::int32_t stride,
+                          std::uint64_t offsetInStruct) noexcept;
+
+        virtual void useAttributes() const noexcept = 0;
+
         const std::vector<std::uint8_t>& getData() const noexcept;
 
     protected:

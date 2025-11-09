@@ -22,6 +22,16 @@ namespace SGCore
         void bind() noexcept final;
 
         void setUsage(SGGUsage) noexcept final;
+
+        void addAttribute(std::uint32_t location,
+                          std::int32_t scalarsCount,
+                          SGGDataType dataType,
+                          bool isNormalized,
+                          std::int32_t stride,
+                          std::uint64_t offsetInStruct,
+                          std::int32_t divisor) noexcept final;
+
+        void useAttributes() const noexcept final;
     
     protected:
         void subDataOnGAPISide(const void* data, const size_t& bytesCount, const size_t& bytesOffset, bool isPutData) noexcept override;

@@ -116,7 +116,6 @@ namespace SGCore
         [[nodiscard]] virtual IShader* createShader() = 0;
         [[nodiscard]] virtual IVertexBuffer* createVertexBuffer() = 0;
         [[nodiscard]] virtual IVertexArray* createVertexArray() = 0;
-        [[nodiscard]] virtual IVertexBufferLayout* createVertexBufferLayout() = 0;
         [[nodiscard]] virtual IIndexBuffer* createIndexBuffer() = 0;
         [[nodiscard]] virtual ITexture2D* createTexture2D() = 0;
         [[nodiscard]] virtual ICubemapTexture* createCubemapTexture() = 0;

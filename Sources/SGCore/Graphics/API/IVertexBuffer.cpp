@@ -14,6 +14,16 @@ SGCore::IVertexBuffer::~IVertexBuffer()
     }
 }
 
+void SGCore::IVertexBuffer::addAttribute(std::uint32_t location,
+                                         std::int32_t scalarsCount,
+                                         SGGDataType dataType,
+                                         bool isNormalized,
+                                         std::int32_t stride,
+                                         std::uint64_t offsetInStruct) noexcept
+{
+    addAttribute(location, scalarsCount, dataType, isNormalized, stride, offsetInStruct, 0);
+}
+
 const std::vector<std::uint8_t>& SGCore::IVertexBuffer::getData() const noexcept
 {
     return m_data;

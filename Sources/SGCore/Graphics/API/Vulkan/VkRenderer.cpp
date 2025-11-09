@@ -71,11 +71,6 @@ SGCore::VkVertexBuffer* SGCore::VkRenderer::createVertexBuffer()
     return new VkVertexBuffer;
 }
 
-SGCore::VkVertexBufferLayout* SGCore::VkRenderer::createVertexBufferLayout()
-{
-    return new VkVertexBufferLayout;
-}
-
 SGCore::VkIndexBuffer* SGCore::VkRenderer::createIndexBuffer()
 {
     return new VkIndexBuffer;

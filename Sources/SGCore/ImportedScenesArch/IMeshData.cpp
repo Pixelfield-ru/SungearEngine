@@ -13,8 +13,6 @@
 #include "SGCore/Graphics/API/IVertexArray.h"
 #include "SGCore/Graphics/API/IVertexBuffer.h"
 #include "SGCore/Graphics/API/IIndexBuffer.h"
-#include "SGCore/Graphics/API/IVertexAttribute.h"
-#include "SGCore/Graphics/API/IVertexBufferLayout.h"
 
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 
@@ -81,8 +79,7 @@ void SGCore::IMeshData::prepare()
     m_vertexArray->setIndexBuffer(m_indicesBuffer.get());
     // -------------------------------------------
 
-    Ref<IVertexBufferLayout> bufferLayout = Ref<IVertexBufferLayout>(CoreMain::getRenderer()->createVertexBufferLayout());
-    bindBuffersToVertexArray(m_vertexArray, bufferLayout);
+    bindBuffersToVertexArray(m_vertexArray);
 }
 
 void SGCore::IMeshData::destroy() noexcept
@@ -247,142 +244,52 @@ void SGCore::IMeshData::generatePhysicalMesh() noexcept
 }
 
 void SGCore::IMeshData::bindBuffersToVertexArray(const Ref<IVertexArray>& toVertexArray,
-                                                 const Ref<IVertexBufferLayout>& vertexBufferLayout,
                                                  std::uint16_t vertexAttribsIDOffset) noexcept
 {
     const auto maxVertexAttribsCount = GPUDeviceInfo::getMaxVertexAttribsCount();
 
     toVertexArray->bind();
 
-    // ---------------- adding positions -------
     m_verticesBuffer->bind();
 
-    const auto bufferLayout = vertexBufferLayout;
-
-    auto positionsAttrib = bufferLayout->createVertexAttribute(vertexAttribsIDOffset + 0,
-                                                               "positionsAttribute",
-                                                               SGGDataType::SGG_FLOAT3,
-                                                               3,
-                                                               false,
-                                                               sizeof(Vertex),
-                                                               0,
-                                                               0);
-
-    bufferLayout->reset();
-    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(positionsAttrib))->prepare()->enableAttributes();
+    // ---------------- adding positions -------
+    m_verticesBuffer->addAttribute(vertexAttribsIDOffset + 0, 3, SGGDataType::SGG_FLOAT, false, sizeof(Vertex), 0);
     // --------------------------------------------
 
     // ----- adding uv -------------------------
-    auto uvAttrib = bufferLayout->createVertexAttribute(vertexAttribsIDOffset + 1,
-                                                        "UVAttribute",
-                                                        SGGDataType::SGG_FLOAT3,
-                                                        3,
-                                                        false,
-                                                        sizeof(Vertex),
-                                                        offsetof(Vertex, m_uv),
-                                                        0);
-
-    bufferLayout->reset();
-    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(uvAttrib))->prepare()->enableAttributes();
+    m_verticesBuffer->addAttribute(vertexAttribsIDOffset + 1, 3, SGGDataType::SGG_FLOAT, false, sizeof(Vertex), offsetof(Vertex, m_uv));
     // --------------------------------------------
 
     // ---------- adding normals ---------------
-    auto normalAttrib = bufferLayout->createVertexAttribute(vertexAttribsIDOffset + 2,
-                                                            "normalsAttribute",
-                                                            SGGDataType::SGG_FLOAT3,
-                                                            3,
-                                                            false,
-                                                            sizeof(Vertex),
-                                                            offsetof(Vertex, m_normal),
-                                                            0);
-
-    bufferLayout->reset();
-    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(normalAttrib))->prepare()->enableAttributes();
+    m_verticesBuffer->addAttribute(vertexAttribsIDOffset + 2, 3, SGGDataType::SGG_FLOAT, false, sizeof(Vertex), offsetof(Vertex, m_normal));
     // --------------------------------------------
 
     // ---------- adding tangents ---------------
-    auto tangentAttrib = bufferLayout->createVertexAttribute(vertexAttribsIDOffset + 3,
-                                                             "tangentsAttribute",
-                                                             SGGDataType::SGG_FLOAT3,
-                                                             3,
-                                                             false,
-                                                             sizeof(Vertex),
-                                                             offsetof(Vertex, m_tangent),
-                                                             0);
-
-    bufferLayout->reset();
-    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(tangentAttrib))->prepare()->enableAttributes();
+    m_verticesBuffer->addAttribute(vertexAttribsIDOffset + 3, 3, SGGDataType::SGG_FLOAT, false, sizeof(Vertex), offsetof(Vertex, m_tangent));
     // --------------------------------------------
 
     // ---------- adding bitangents ---------------
-    auto bitangentAttrib = bufferLayout->createVertexAttribute(vertexAttribsIDOffset + 4,
-                                                               "bitangentsAttribute",
-                                                               SGGDataType::SGG_FLOAT3,
-                                                               3,
-                                                               false,
-                                                               sizeof(Vertex),
-                                                               offsetof(Vertex, m_bitangent),
-                                                               0);
-
-    bufferLayout->reset();
-    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(bitangentAttrib))->prepare()->enableAttributes();
+    m_verticesBuffer->addAttribute(vertexAttribsIDOffset + 4, 3, SGGDataType::SGG_FLOAT, false, sizeof(Vertex), offsetof(Vertex, m_bitangent));
     // --------------------------------------------
 
     // ---------- adding bones ids ---------------
-    auto bonesIDsAttrib0 = bufferLayout->createVertexAttribute(vertexAttribsIDOffset + 5,
-                                                               "bonesIDsAttribute0",
-                                                               SGGDataType::SGG_INT4,
-                                                               4,
-                                                               false,
-                                                               sizeof(Vertex),
-                                                               offsetof(Vertex, m_bonesIDs),
-                                                               0);
-
-    bufferLayout->reset();
-    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(bonesIDsAttrib0))->prepare()->enableAttributes();
+    m_verticesBuffer->addAttribute(vertexAttribsIDOffset + 5, 4, SGGDataType::SGG_INT, false, sizeof(Vertex), offsetof(Vertex, m_bonesIDs));
     // --------------------------------------------
 
     // ---------- adding bones ids ---------------
-    auto bonesIDsAttrib1 = bufferLayout->createVertexAttribute(vertexAttribsIDOffset + 6,
-                                                               "bonesIDsAttribute1",
-                                                               SGGDataType::SGG_INT4,
-                                                               4,
-                                                               false,
-                                                               sizeof(Vertex),
-                                                               offsetof(Vertex, m_bonesIDs) + 4 * sizeof(std::int32_t),
-                                                               0);
-
-    bufferLayout->reset();
-    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(bonesIDsAttrib1))->prepare()->enableAttributes();
+    m_verticesBuffer->addAttribute(vertexAttribsIDOffset + 6, 4, SGGDataType::SGG_INT, false, sizeof(Vertex), offsetof(Vertex, m_bonesIDs) + 4 * sizeof(std::int32_t));
     // --------------------------------------------
 
     // ---------- adding bones weights ---------------
-    auto bonesWeightsAttrib0 = bufferLayout->createVertexAttribute(vertexAttribsIDOffset + 7,
-                                                                   "bonesWeightsAttribute0",
-                                                                   SGGDataType::SGG_FLOAT4,
-                                                                   4,
-                                                                   false,
-                                                                   sizeof(Vertex),
-                                                                   offsetof(Vertex, m_bonesWeights),
-                                                                   0);
-
-    bufferLayout->reset();
-    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(bonesWeightsAttrib0))->prepare()->enableAttributes();
+    m_verticesBuffer->addAttribute(vertexAttribsIDOffset + 7, 4, SGGDataType::SGG_FLOAT, false, sizeof(Vertex), offsetof(Vertex, m_bonesWeights));
     // --------------------------------------------
 
     // ---------- preparing bones weights ---------------
-    auto bonesWeightsAttrib1 = bufferLayout->createVertexAttribute(vertexAttribsIDOffset + 8,
-                                                                   "bonesWeightsAttribute",
-                                                                   SGGDataType::SGG_FLOAT4,
-                                                                   4,
-                                                                   false,
-                                                                   sizeof(Vertex),
-                                                                   offsetof(Vertex, m_bonesWeights) + 4 * sizeof(float),
-                                                                   0);
-
-    bufferLayout->reset();
-    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(bonesWeightsAttrib1))->prepare()->enableAttributes();
+    m_verticesBuffer->addAttribute(vertexAttribsIDOffset + 8, 4, SGGDataType::SGG_FLOAT, false, sizeof(Vertex), offsetof(Vertex, m_bonesWeights) + 4 * sizeof(float));
     // --------------------------------------------
+
+    // enabling attributes
+    m_verticesBuffer->useAttributes();
 
     // ---------------- adding vertices color -------
 
@@ -392,14 +299,8 @@ void SGCore::IMeshData::bindBuffersToVertexArray(const Ref<IVertexArray>& toVert
 
         m_verticesColorsBuffers[i]->bind();
 
-        bufferLayout->reset();
-        bufferLayout
-                ->addAttribute(std::shared_ptr<IVertexAttribute>(
-                        bufferLayout->createVertexAttribute(vertexAttribsIDOffset + i + 9,
-                                                            "vertexColor" + std::to_string(i) + "Attribute",
-                                                            SGGDataType::SGG_FLOAT4))
-                )
-                ->prepare()->enableAttributes();
+        m_verticesColorsBuffers[i]->addAttribute(vertexAttribsIDOffset + i + 9, 4, SGGDataType::SGG_FLOAT, false, 4 * sizeof(float), 0);
+        m_verticesColorsBuffers[i]->useAttributes();
     }
 
     // -------------------------------------------------

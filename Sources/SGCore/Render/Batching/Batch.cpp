@@ -8,8 +8,6 @@
 #include "SGCore/Graphics/API/IVertexBuffer.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Graphics/API/IVertexArray.h"
-#include "SGCore/Graphics/API/IVertexAttribute.h"
-#include "SGCore/Graphics/API/IVertexBufferLayout.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
@@ -32,41 +30,23 @@ SGCore::Batch::Batch() noexcept
 
     m_fakeVertexArray->addVertexBuffer(m_fakeVerticesBuffer.get());
 
-
-    std::shared_ptr<IVertexBufferLayout> bufferLayout = Ref<IVertexBufferLayout>(CoreMain::getRenderer()->createVertexBufferLayout());
-
+    m_fakeVerticesBuffer->bind();
     // ---------- preparing uvs offsets0 ---------------
+    std::uint8_t currentVertexAttribID = 0;
 
-    auto instanceTriangleAttrib = bufferLayout->createVertexAttribute(0,
-                                                               "instanceTriangle",
-                                                               SGGDataType::SGG_INT2,
-                                                               2,
-                                                               false,
-                                                               sizeof(BatchTriangle),
-                                                               0,
-                                                               0);
-
-    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(instanceTriangleAttrib))->prepare()->enableAttributes();
-
-    std::uint8_t currentVertexAttribID = 1;
+    m_fakeVerticesBuffer->addAttribute(currentVertexAttribID, 2, SGGDataType::SGG_INT, false, sizeof(BatchTriangle), 0);
+    ++currentVertexAttribID;
 
     // ---------- preparing uvs offsets ---------------
     for(std::uint8_t i = 0; i < texture_types_count / 2; ++i)
     {
-        auto uvOffsetsAttrib = bufferLayout->createVertexAttribute(currentVertexAttribID,
-                                                               "uvOffsets" + std::to_string(i),
-                                                               SGGDataType::SGG_INT4,
-                                                               4,
-                                                               false,
-                                                               sizeof(BatchTriangle),
-                                                               offsetof(BatchTriangle, m_atlasesUVsOffset) + i * sizeof(glm::u32vec4),
-                                                               0);
-
-        bufferLayout->reset();
-        bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(uvOffsetsAttrib))->prepare()->enableAttributes();
+        m_fakeVerticesBuffer->addAttribute(currentVertexAttribID, 4, SGGDataType::SGG_INT, false, sizeof(BatchTriangle),
+                                           offsetof(BatchTriangle, m_atlasesUVsOffset) + i * sizeof(glm::u32vec4));
 
         ++currentVertexAttribID;
     }
+
+    m_fakeVerticesBuffer->useAttributes();
 
     // ==============================================================
     // creating true buffers

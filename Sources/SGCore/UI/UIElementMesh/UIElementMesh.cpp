@@ -6,8 +6,6 @@
 
 #include "SGCore/Graphics/API/IIndexBuffer.h"
 #include "SGCore/Graphics/API/IVertexBuffer.h"
-#include "SGCore/Graphics/API/IVertexAttribute.h"
-#include "SGCore/Graphics/API/IVertexBufferLayout.h"
 #include "SGCore/Graphics/API/IVertexArray.h"
 
 #include "SGCore/Graphics/API/IRenderer.h"
@@ -31,46 +29,15 @@ void SGCore::UI::UIElementMesh::prepare() noexcept
     m_vertexArray->addVertexBuffer(m_verticesBuffer.get());
 
     // ============================================================ preparing positions
-
-    std::shared_ptr<IVertexBufferLayout> bufferLayout = std::shared_ptr<IVertexBufferLayout>(CoreMain::getRenderer()->createVertexBufferLayout());
-    auto positionsAttrib = bufferLayout->createVertexAttribute(0,
-                                                               "positionsAttribute",
-                                                               SGGDataType::SGG_FLOAT3,
-                                                               3,
-                                                               false,
-                                                               sizeof(UIVertex),
-                                                               0,
-                                                               0);
-
-    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(positionsAttrib))->prepare()->enableAttributes();
+    m_verticesBuffer->addAttribute(0, 3, SGGDataType::SGG_FLOAT, false, sizeof(UIVertex), 0);
 
     // ============================================================ preparing UV
-
-    auto uvAttrib = bufferLayout->createVertexAttribute(1,
-                                                        "UVAttribute",
-                                                        SGGDataType::SGG_FLOAT2,
-                                                        2,
-                                                        false,
-                                                        sizeof(UIVertex),
-                                                        offsetof(UIVertex, m_uv),
-                                                        0);
-
-    bufferLayout->reset();
-    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(uvAttrib))->prepare()->enableAttributes();
+    m_verticesBuffer->addAttribute(1, 2, SGGDataType::SGG_FLOAT, false, sizeof(UIVertex), offsetof(UIVertex, m_uv));
 
     // ============================================================ preparing slice index
+    m_verticesBuffer->addAttribute(2, 1, SGGDataType::SGG_INT, false, sizeof(UIVertex), offsetof(UIVertex, m_sliceIndex));
 
-    auto sliceIndexAttrib = bufferLayout->createVertexAttribute(2,
-                                                                "sliceIndexAttribute",
-                                                                SGGDataType::SGG_INT,
-                                                                1,
-                                                                false,
-                                                                sizeof(UIVertex),
-                                                                offsetof(UIVertex, m_sliceIndex),
-                                                                0);
-
-    bufferLayout->reset();
-    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(sliceIndexAttrib))->prepare()->enableAttributes();
+    m_verticesBuffer->useAttributes();
 
     // ============================================================ preparing indices
 

@@ -11,6 +11,7 @@
 
 namespace SGCore::UI
 {
+#pragma pack(push, 1)
     struct UIVertex
     {
         glm::vec3 m_position;
@@ -19,6 +20,7 @@ namespace SGCore::UI
         // for 9-slicing
         std::int32_t m_sliceIndex = 0;
     };
+#pragma pack(pop)
 }
 
 #endif //UIVERTEX_H

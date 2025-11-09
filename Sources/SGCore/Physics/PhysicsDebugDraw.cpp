@@ -3,21 +3,8 @@
 //
 
 #include "PhysicsDebugDraw.h"
-#include "SGCore/Main/CoreMain.h"
-#include "SGCore/Graphics/API/IVertexArray.h"
-#include "SGCore/Graphics/API/IVertexBuffer.h"
-#include "SGCore/Graphics/API/IIndexBuffer.h"
-#include "SGCore/Graphics/API/IRenderer.h"
-#include "SGCore/Graphics/API/IVertexBufferLayout.h"
-#include "SGCore/Graphics/API/IShader.h"
-#include "SGCore/Graphics/API/IShader.h"
-#include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
-#include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
-#include "SGCore/Transformations/Transform.h"
-#include "SGCore/Scene/Scene.h"
-#include "SGCore/Render/Camera3D.h"
 #include "SGCore/Render/DebugDraw.h"
 
 void SGCore::PhysicsDebugDraw::drawLine(const btVector3& from, const btVector3& to, const btVector3& color)

@@ -14,10 +14,8 @@
 #include "SGCore/Graphics/API/IVertexBuffer.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/API/IRenderer.h"
-#include "SGCore/Graphics/API/IVertexAttribute.h"
-#include "SGCore/Graphics/API/IVertexBufferLayout.h"
-#include "SGCore/Graphics/API/IIndexBuffer.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
+#include "SGCore/Render/Batching/BatchInstanceTransform.h"
 
 // todo: fix rendering with indices
 SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
@@ -50,56 +48,20 @@ SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
         m_charactersMatricesVertexBuffer->bind();
         m_charactersMatricesVertexBuffer->putData(m_charactersMatrices);
         m_charactersVertexArray->addVertexBuffer(m_charactersMatricesVertexBuffer.get());
-        
-        std::shared_ptr<IVertexBufferLayout> bufferLayout = Ref<IVertexBufferLayout>(
-                CoreMain::getRenderer()->createVertexBufferLayout());
 
-        auto modelMatrixAttrib0 = bufferLayout->createVertexAttribute(0,
-                                                               "characterModelMatrix",
-                                                               SGGDataType::SGG_FLOAT4,
-                                                               4,
-                                                               false,
-                                                               16 * 4,
-                                                               0,
-                                                               0);
+        // 1 row of model matrix
+        m_charactersMatricesVertexBuffer->addAttribute(0, 4, SGGDataType::SGG_FLOAT, false, 16 * 4, 0);
 
-        bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(modelMatrixAttrib0))->prepare()->enableAttributes();
+        // 2 row of model matrix
+        m_charactersMatricesVertexBuffer->addAttribute(1, 4, SGGDataType::SGG_FLOAT, false, 16 * 4, 4 * 4);
 
-        auto modelMatrixAttrib1 = bufferLayout->createVertexAttribute(1,
-                                                               "characterModelMatrix",
-                                                               SGGDataType::SGG_FLOAT4,
-                                                               4,
-                                                               false,
-                                                               16 * 4,
-                                                               4 * 4,
-                                                               0);
+        // 3 row of model matrix
+        m_charactersMatricesVertexBuffer->addAttribute(2, 4, SGGDataType::SGG_FLOAT, false, 16 * 4, 8 * 4);
 
-        bufferLayout->reset();
-        bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(modelMatrixAttrib1))->prepare()->enableAttributes();
+        // 4 row of model matrix
+        m_charactersMatricesVertexBuffer->addAttribute(3, 4, SGGDataType::SGG_FLOAT, false, 16 * 4, 12 * 4);
 
-        auto modelMatrixAttrib2 = bufferLayout->createVertexAttribute(2,
-                                                                       "characterModelMatrix",
-                                                                       SGGDataType::SGG_FLOAT4,
-                                                                       4,
-                                                                       false,
-                                                                       16 * 4,
-                                                                       8 * 4,
-                                                                       0);
-
-        bufferLayout->reset();
-        bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(modelMatrixAttrib2))->prepare()->enableAttributes();
-
-        auto modelMatrixAttrib3 = bufferLayout->createVertexAttribute(3,
-                                                                       "characterModelMatrix",
-                                                                       SGGDataType::SGG_FLOAT4,
-                                                                       4,
-                                                                       false,
-                                                                       16 * 4,
-                                                                       12 * 4,
-                                                                       0);
-
-        bufferLayout->reset();
-        bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(modelMatrixAttrib3))->prepare()->enableAttributes();
+        m_charactersMatricesVertexBuffer->useAttributes();
         
         // ======
         
@@ -112,16 +74,9 @@ SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
         m_charactersColorsVertexBuffer->bind();
         m_charactersColorsVertexBuffer->putData(m_charactersColors);
         m_charactersVertexArray->addVertexBuffer(m_charactersColorsVertexBuffer.get());
-        
-        bufferLayout->reset();
-        bufferLayout
-                ->addAttribute(std::shared_ptr<IVertexAttribute>(
-                        bufferLayout->createVertexAttribute(4,
-                                                            "characterColor",
-                                                            SGGDataType::SGG_FLOAT4,
-                                                            (size_t) 0))
-                )
-                ->prepare()->enableAttributes();
+
+        m_charactersColorsVertexBuffer->addAttribute(4, 4, SGGDataType::SGG_FLOAT, false, 4 * sizeof(float), 0);
+        m_charactersColorsVertexBuffer->useAttributes();
         
         // ======
         
@@ -135,16 +90,9 @@ SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
         m_charactersUVsVertexBuffer->bind();
         m_charactersUVsVertexBuffer->putData(m_charactersUVs);
         m_charactersVertexArray->addVertexBuffer(m_charactersUVsVertexBuffer.get());
-        
-        bufferLayout->reset();
-        bufferLayout
-                ->addAttribute(std::shared_ptr<IVertexAttribute>(
-                        bufferLayout->createVertexAttribute(5,
-                                                            "characterUV",
-                                                            SGGDataType::SGG_FLOAT2,
-                                                            (size_t) 0))
-                )
-                ->prepare()->enableAttributes();
+
+        m_charactersUVsVertexBuffer->addAttribute(5, 2, SGGDataType::SGG_FLOAT, false, 2 * sizeof(float), 0);
+        m_charactersUVsVertexBuffer->useAttributes();
         
         // =========================
         
@@ -156,16 +104,9 @@ SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
         m_charactersPositionsBuffer->bind();
         m_charactersPositionsBuffer->putData(m_charactersVerticesPositions);
         m_charactersVertexArray->addVertexBuffer(m_charactersPositionsBuffer.get());
-        
-        bufferLayout->reset();
-        bufferLayout
-                ->addAttribute(std::shared_ptr<IVertexAttribute>(
-                        bufferLayout->createVertexAttribute(6,
-                                                            "characterVertexPosition",
-                                                            SGGDataType::SGG_FLOAT3,
-                                                            (size_t) 0))
-                )
-                ->prepare()->enableAttributes();
+
+        m_charactersPositionsBuffer->addAttribute(6, 3, SGGDataType::SGG_FLOAT, false, 3 * sizeof(float), 0);
+        m_charactersPositionsBuffer->useAttributes();
 
         // =========================
 
@@ -179,15 +120,8 @@ SGCore::UI::FontSpecializationRenderer::FontSpecializationRenderer()
         m_charactersAdditionalParamsVertexBuffer->putData(m_charactersAdditionalParams);
         m_charactersVertexArray->addVertexBuffer(m_charactersAdditionalParamsVertexBuffer.get());
 
-        bufferLayout->reset();
-        bufferLayout
-                ->addAttribute(std::shared_ptr<IVertexAttribute>(
-                        bufferLayout->createVertexAttribute(7,
-                                                            "characterAdditionalParams",
-                                                            SGGDataType::SGG_FLOAT2,
-                                                            (size_t) 0))
-                )
-                ->prepare()->enableAttributes();
+        m_charactersAdditionalParamsVertexBuffer->addAttribute(7, 2, SGGDataType::SGG_FLOAT, false, 2 * sizeof(float), 0);
+        m_charactersAdditionalParamsVertexBuffer->useAttributes();
     }
     
     // ==================================================================

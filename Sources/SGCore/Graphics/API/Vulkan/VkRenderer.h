@@ -9,7 +9,6 @@
 #include "VkShader.h"
 #include "VkVertexArray.h"
 #include "VkVertexBuffer.h"
-#include "VkVertexBufferLayout.h"
 #include "VkIndexBuffer.h"
 #include "VkTexture2D.h"
 #include "VkUniformBuffer.h"
@@ -59,7 +58,6 @@ namespace SGCore
         [[nodiscard]] VkShader* createShader() override;
         [[nodiscard]] VkVertexArray* createVertexArray() override;
         [[nodiscard]] VkVertexBuffer* createVertexBuffer() override;
-        [[nodiscard]] VkVertexBufferLayout* createVertexBufferLayout() override;
         [[nodiscard]] VkIndexBuffer* createIndexBuffer() override;
         [[nodiscard]] VkTexture2D* createTexture2D() override;
         [[nodiscard]] VkCubemapTexture* createCubemapTexture() override;

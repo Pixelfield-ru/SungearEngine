@@ -305,11 +305,6 @@ SGCore::GLVertexBuffer* SGCore::GL4Renderer::createVertexBuffer()
     return new GLVertexBuffer;
 }
 
-SGCore::GLVertexBufferLayout* SGCore::GL4Renderer::createVertexBufferLayout()
-{
-    return new GLVertexBufferLayout;
-}
-
 SGCore::GLIndexBuffer* SGCore::GL4Renderer::createIndexBuffer()
 {
     return new GLIndexBuffer;
