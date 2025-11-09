@@ -53,7 +53,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
     @SuppressLint("UnsafeDynamicallyLoadedCode")
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {
-        // setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         // surface changed
         if(isCoreInitialized)

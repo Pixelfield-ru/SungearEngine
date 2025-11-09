@@ -24,6 +24,7 @@ void SGCore::GLObjectsStorage::recreateAll() noexcept
 
         frameBuffer->destroy();
         frameBuffer->create();
+        frameBuffer->bind();
 
         for(const auto& attachment : frameBuffer->getAttachments())
         {
@@ -59,8 +60,30 @@ void SGCore::GLObjectsStorage::recreateAll() noexcept
     for(const auto& vao : m_vertexArrays)
     {
         vao->destroy();
-        // todo: make vertex buffers & index buffers recreation
+
         vao->create();
+        vao->bind();
+
+        for(auto* vbo : vao->getVertexBuffers())
+        {
+            vbo->destroy();
+
+            vbo->create();
+            vbo->bind();
+            vbo->putData(vbo->getData());
+            vbo->useAttributes();
+        }
+
+        auto* ibo = vao->getIndexBuffer();
+
+        if(ibo)
+        {
+            ibo->destroy();
+
+            ibo->create();
+            ibo->bind();
+            ibo->putData(ibo->getData());
+        }
     }
 
     // ========================================== recreating uniform buffers
@@ -103,6 +126,16 @@ void SGCore::GLObjectsStorage::clear() noexcept
     for(const auto& vao : m_vertexArrays)
     {
         vao->destroy();
+
+        for(const auto& vbo : vao->getVertexBuffers())
+        {
+            vao->destroy();
+        }
+
+        if(vao->getIndexBuffer())
+        {
+            vao->getIndexBuffer()->destroy();
+        }
     }
 
     // ========================================== destroying uniform buffers
