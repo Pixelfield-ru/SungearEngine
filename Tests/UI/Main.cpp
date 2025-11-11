@@ -48,7 +48,7 @@ void coreInit()
     scene->createDefaultSystems();
 
     SGCore::Scene::setCurrentScene(scene);
-    
+
     cssFile = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::CSSFile>("${enginePath}/Tests/UI/Resources/test.css");
     uiDocument = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::UIDocument>("${enginePath}/Tests/UI/Resources/test.xml");
     auto tmpDoc = uiDocument;

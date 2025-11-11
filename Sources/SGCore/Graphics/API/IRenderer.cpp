@@ -85,3 +85,8 @@ SGCore::RenderState& SGCore::IRenderer::getCachedRenderState() noexcept
 {
     return m_cachedRenderState;
 }
+
+SGCore::MeshRenderState& SGCore::IRenderer::getCachedMeshRenderState() noexcept
+{
+    return m_cachedMeshRenderState;
+}

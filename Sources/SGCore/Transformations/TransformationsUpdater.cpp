@@ -75,6 +75,22 @@ void SGCore::TransformationsUpdater::updateTransform(const EntityBaseInfo::reg_t
 {
     if(currentEntityTransform && currentEntityBaseInfo.m_isActive)
     {
+        LOG_I(SGCORE_TAG, "Updating transform of entity '{}'. Position: {}, {}, {}. Quat rotation: {}, {}, {}, {}. Yaw pitch roll: {}, {}, {}. Scale: {}, {}, {}",
+            std::to_underlying(currentEntity),
+            currentEntityTransform->m_ownTransform.m_position.x,
+            currentEntityTransform->m_ownTransform.m_position.y,
+            currentEntityTransform->m_ownTransform.m_position.z,
+            currentEntityTransform->m_ownTransform.m_rotation.x,
+            currentEntityTransform->m_ownTransform.m_rotation.y,
+            currentEntityTransform->m_ownTransform.m_rotation.z,
+            currentEntityTransform->m_ownTransform.m_rotation.w,
+            currentEntityTransform->m_ownTransform.m_yawPitchRoll.x,
+            currentEntityTransform->m_ownTransform.m_yawPitchRoll.y,
+            currentEntityTransform->m_ownTransform.m_yawPitchRoll.z,
+            currentEntityTransform->m_ownTransform.m_scale.x,
+            currentEntityTransform->m_ownTransform.m_scale.y,
+            currentEntityTransform->m_ownTransform.m_scale.z)
+
         Ref<Rigidbody3D> rigidbody3D;
 
         {

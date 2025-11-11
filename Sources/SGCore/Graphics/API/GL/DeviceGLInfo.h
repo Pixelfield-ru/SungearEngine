@@ -7,9 +7,11 @@
 
 #include <iostream>
 #include <glad/glad.h>
+#include <set>
 
 #include "SGCore/Logger/Logger.h"
 #include "SGCore/Utils/Utils.h"
+#include "SGCore/Utils/Macroses.h"
 
 namespace SGCore
 {

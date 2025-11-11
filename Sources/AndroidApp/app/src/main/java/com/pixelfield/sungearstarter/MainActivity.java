@@ -59,7 +59,6 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
         if(isCoreInitialized)
         {
             AndroidNativeMethods.onAppInstanceRestore(getApplicationContext(), holder.getSurface());
-            // AndroidNativeMethods.recreateWindow(holder.getSurface());
             return;
         }
 

@@ -4,6 +4,7 @@
 
 #include "GLObjectsStorage.h"
 
+#include "DeviceGLInfo.h"
 #include "GL46/GL46Shader.h"
 #include "SGCore/Graphics/API/GL/GL4/GL4FrameBuffer.h"
 #include "SGCore/Graphics/API/GL/GL4/GL4Texture2D.h"
@@ -14,6 +15,10 @@
 
 void SGCore::GLObjectsStorage::recreateAll() noexcept
 {
+    // todo: debug
+
+    DeviceGLInfo::init();
+
     // ======================================== recreating framebuffers
     for(auto& frameBuffer : m_frameBuffers)
     {
@@ -92,6 +97,9 @@ void SGCore::GLObjectsStorage::recreateAll() noexcept
         uniformBuffer->destroy();
         uniformBuffer->prepare();
     }
+
+    CoreMain::getRenderer()->useState(CoreMain::getRenderer()->getCachedRenderState(), true);
+    CoreMain::getRenderer()->useMeshRenderState(CoreMain::getRenderer()->getCachedMeshRenderState(), true);
 }
 
 void SGCore::GLObjectsStorage::clear() noexcept

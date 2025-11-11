@@ -551,7 +551,11 @@ double SGCore::Window::getSwapBuffersExecutionTime() const noexcept
 
 SGCore::Window::window_handle SGCore::Window::getNativeHandle() noexcept
 {
+#if SG_PLATFORM_OS_ANDROID
     return m_handle.load();
+#else
+    return m_handle;
+#endif
 }
 
 int SGCore::Window::getPrimaryMonitorRefreshRate() noexcept

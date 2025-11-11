@@ -4,6 +4,8 @@
 
 #include "GL4FrameBuffer.h"
 
+#include <ranges>
+
 #include "SGCore/Graphics/API/GL/GLGraphicsTypesCaster.h"
 #include "SGCore/Main/CoreMain.h"
 #include "GL4Texture2D.h"
@@ -52,6 +54,15 @@ void SGCore::GL4FrameBuffer::bindAttachmentToDrawIn
             GLenum(GL_COLOR_ATTACHMENT0 + (std::to_underlying(attachmentType) - std::to_underlying(
                                                SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)))
         };
+
+        std::string attachmentsString;
+        for(auto attachment : buffers)
+        {
+            attachmentsString += "ATTACHMENT" + std::to_string(attachment - GL_COLOR_ATTACHMENT0) + ", ";
+        }
+
+        LOG_I(SGCORE_TAG, "Binding attachments FROM std::vector: {}", attachmentsString)
+
         glDrawBuffers(1, buffers);
     }
 }
@@ -81,7 +92,15 @@ void SGCore::GL4FrameBuffer::bindAttachmentsToDrawIn
         ++curAttachment;
     }
 
-    glDrawBuffers(attachmentsTypes.size(), attachmentsToBind.data());
+    std::string attachmentsString;
+    for(auto attachment : attachmentsToBind)
+    {
+        attachmentsString += "ATTACHMENT" + std::to_string(attachment - GL_COLOR_ATTACHMENT0) + ", ";
+    }
+
+    LOG_I(SGCORE_TAG, "Binding attachments FROM std::vector: {}", attachmentsString)
+
+    glDrawBuffers(attachmentsToBind.size(), attachmentsToBind.data());
 }
 
 void SGCore::GL4FrameBuffer::bindAttachmentsToDrawIn
@@ -103,7 +122,15 @@ void SGCore::GL4FrameBuffer::bindAttachmentsToDrawIn
         ++curAttachment;
     }
 
-    glDrawBuffers(attachmentsTypes.size(), attachmentsToBind.data());
+    std::string attachmentsString;
+    for(auto attachment : attachmentsToBind)
+    {
+        attachmentsString += "ATTACHMENT" + std::to_string(attachment - GL_COLOR_ATTACHMENT0) + ", ";
+    }
+
+    LOG_I(SGCORE_TAG, "Binding attachments FROM std::set: {}", attachmentsString)
+
+    glDrawBuffers(attachmentsToBind.size(), attachmentsToBind.data());
 }
 
 void SGCore::GL4FrameBuffer::unbindAttachmentToReadFrom()
@@ -113,6 +140,8 @@ void SGCore::GL4FrameBuffer::unbindAttachmentToReadFrom()
 
 void SGCore::GL4FrameBuffer::unbindAttachmentToDrawIn()
 {
+    LOG_I(SGCORE_TAG, "BINDING DRAW BUFFER: NONE")
+
     const GLenum buf[] = { GL_NONE };
     glDrawBuffers(1, buf);
 }

@@ -127,7 +127,7 @@ namespace SGCore
         // CONTAINS OUTPUT FX
         Ref<IFrameBuffer> m_layersFXFrameBuffer;
         // ATTACHMENT THAT ARE USED TO RENDER IN THEM.
-        std::set<SGFrameBufferAttachmentType> m_attachmentToRenderIn {
+        std::vector<SGFrameBufferAttachmentType> m_attachmentToRenderIn {
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // BY DEFAULT CONTAINS LAYERS VOLUMES
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1, // BY DEFAULT CONTAINS COLORS FROM LAYERS
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2, // BY DEFAULT CONTAINS PICKING COLORS

@@ -132,6 +132,7 @@ namespace SGCore
         [[nodiscard]] GAPIType getGAPIType() const noexcept;
 
         [[nodiscard]] RenderState& getCachedRenderState() noexcept;
+        [[nodiscard]] MeshRenderState& getCachedMeshRenderState() noexcept;
 
     protected:
         GAPIType m_apiType = SG_API_TYPE_UNKNOWN;
