@@ -31,6 +31,7 @@ import java.util.Objects;
 public class MainActivity extends Activity implements SurfaceHolder.Callback {
     private SurfaceView surfaceView;
     private static boolean isCoreInitialized = false;
+    private static boolean isCoreAlreadyStarted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +57,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         // surface changed
-        if(isCoreInitialized)
+        if(isCoreAlreadyStarted)
         {
             AndroidNativeMethods.onAppInstanceRestore(getApplicationContext(), holder.getSurface());
             return;
@@ -95,14 +96,17 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
         AndroidNativeMethods.loadConfig(internalStorage + "/assets/sungear/SungearEngineConfig.json");
         AndroidNativeMethods.startMainCycle();*/
 
+        isCoreAlreadyStarted = true;
+
         new Thread(() -> {
             AndroidNativeMethods.startCore(this.getApplicationContext(), holder.getSurface());
             AndroidNativeMethods.loadConfig(internalStorage + "/assets/sungear/SungearEngineConfig.json");
+
+            isCoreInitialized = true;
+
             AndroidNativeMethods.startMainCycle();
             Log.i("SungearStarter", "kekeekekeke");
         }).start();
-
-        isCoreInitialized = true;
     }
 
     @Override

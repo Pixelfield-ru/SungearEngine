@@ -53,28 +53,28 @@ SGCore::Batch::Batch() noexcept
 
     m_verticesBuffer = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
     m_verticesBuffer->m_textureBufferUsage = SGGUsage::SGG_DYNAMIC;
-    m_verticesBuffer->m_isTextureBuffer = true;
+    m_verticesBuffer->m_type = SGTextureType::SG_TEXTURE_BUFFER;
     m_verticesBuffer->create(m_vertices.data(), 0, 1, 1,
                              SGGColorInternalFormat::SGG_RGB32_FLOAT,
                              SGGColorFormat::SGG_RGB);
 
     m_indicesBuffer = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
     m_indicesBuffer->m_textureBufferUsage = SGGUsage::SGG_DYNAMIC;
-    m_indicesBuffer->m_isTextureBuffer = true;
+    m_indicesBuffer->m_type = SGTextureType::SG_TEXTURE_BUFFER;
     m_indicesBuffer->create(m_indices.data(), 0, 1, 1,
                             SGGColorInternalFormat::SGG_RGB32_UNSIGNED_INT,
                             SGGColorFormat::SGG_RGB_INTEGER);
 
     m_instancesTransformsBuffer = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
     m_instancesTransformsBuffer->m_textureBufferUsage = SGGUsage::SGG_DYNAMIC;
-    m_instancesTransformsBuffer->m_isTextureBuffer = true;
+    m_instancesTransformsBuffer->m_type = SGTextureType::SG_TEXTURE_BUFFER;
     m_instancesTransformsBuffer->create(m_transforms.data(), 0, 1, 1,
                                         SGGColorInternalFormat::SGG_RGBA32_FLOAT,
                                         SGGColorFormat::SGG_RGBA);
 
     m_instancesMaterialsBuffer = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
     m_instancesMaterialsBuffer->m_textureBufferUsage = SGGUsage::SGG_DYNAMIC;
-    m_instancesMaterialsBuffer->m_isTextureBuffer = true;
+    m_instancesMaterialsBuffer->m_type = SGTextureType::SG_TEXTURE_BUFFER;
     m_instancesMaterialsBuffer->create(m_transforms.data(), 0, 1, 1,
                                        SGGColorInternalFormat::SGG_RGBA32_FLOAT,
                                        SGGColorFormat::SGG_RGBA);
@@ -450,7 +450,7 @@ void SGCore::Batch::insertEntityImpl(ECS::entity_t entity, const ECS::registry_t
     {
         for(std::uint8_t i = 0; i < mesh.m_base.getMaterial()->getTextures().size(); ++i)
         {
-            const auto textureType = static_cast<SGTextureType>(i);
+            const auto textureType = static_cast<SGTextureSlot>(i);
             const auto& texturesVec = mesh.m_base.getMaterial()->getTextures()[i];
 
             // auto& atlas = m_atlases[i];
@@ -592,7 +592,7 @@ void SGCore::Batch::updateTextureDataInTriangles() noexcept
         for(std::uint8_t i = 0; i < texture_types_count; ++i)
         {
             // if texture of this type is not acceptable
-            if(!m_acceptableTextureTypes.contains(static_cast<SGTextureType>(i)))
+            if(!m_acceptableTextureTypes.contains(static_cast<SGTextureSlot>(i)))
             {
                 atlasTextureInfo[i] = { -1, -1 };
                 continue;

@@ -429,26 +429,26 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(aiMesh* aiMe
           "Current material: {}",
           Utils::toUTF8(sgMeshData->m_material->getPath().resolved().u16string()));
 
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_EMISSIVE, SGTextureType::SGTT_EMISSIVE);
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_AMBIENT_OCCLUSION, SGTextureType::SGTT_AMBIENT_OCCLUSION);
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_AMBIENT, SGTextureType::SGTT_AMBIENT);
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_DIFFUSE_ROUGHNESS, SGTextureType::SGTT_DIFFUSE_ROUGHNESS);
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_DIFFUSE, SGTextureType::SGTT_DIFFUSE);
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_DISPLACEMENT, SGTextureType::SGTT_DISPLACEMENT);
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_HEIGHT, SGTextureType::SGTT_HEIGHT);
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_NORMALS, SGTextureType::SGTT_NORMALS);
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_BASE_COLOR, SGTextureType::SGTT_BASE_COLOR);
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_CLEARCOAT, SGTextureType::SGTT_CLEARCOAT);
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_EMISSION_COLOR, SGTextureType::SGTT_EMISSION_COLOR);
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_LIGHTMAP, SGTextureType::SGTT_LIGHTMAP);
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_METALNESS, SGTextureType::SGTT_METALNESS);
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_NORMAL_CAMERA, SGTextureType::SGTT_NORMAL_CAMERA);
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_OPACITY, SGTextureType::SGTT_OPACITY);
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_REFLECTION, SGTextureType::SGTT_REFLECTION);
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_SHEEN, SGTextureType::SGTT_SHEEN);
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_SHININESS, SGTextureType::SGTT_SHININESS);
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_SPECULAR, SGTextureType::SGTT_SPECULAR);
-    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_TRANSMISSION, SGTextureType::SGTT_TRANSMISSION);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_EMISSIVE, SGTextureSlot::SGTT_EMISSIVE);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_AMBIENT_OCCLUSION, SGTextureSlot::SGTT_AMBIENT_OCCLUSION);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_AMBIENT, SGTextureSlot::SGTT_AMBIENT);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_DIFFUSE_ROUGHNESS, SGTextureSlot::SGTT_DIFFUSE_ROUGHNESS);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_DIFFUSE, SGTextureSlot::SGTT_DIFFUSE);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_DISPLACEMENT, SGTextureSlot::SGTT_DISPLACEMENT);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_HEIGHT, SGTextureSlot::SGTT_HEIGHT);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_NORMALS, SGTextureSlot::SGTT_NORMALS);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_BASE_COLOR, SGTextureSlot::SGTT_BASE_COLOR);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_CLEARCOAT, SGTextureSlot::SGTT_CLEARCOAT);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_EMISSION_COLOR, SGTextureSlot::SGTT_EMISSION_COLOR);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_LIGHTMAP, SGTextureSlot::SGTT_LIGHTMAP);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_METALNESS, SGTextureSlot::SGTT_METALNESS);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_NORMAL_CAMERA, SGTextureSlot::SGTT_NORMAL_CAMERA);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_OPACITY, SGTextureSlot::SGTT_OPACITY);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_REFLECTION, SGTextureSlot::SGTT_REFLECTION);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_SHEEN, SGTextureSlot::SGTT_SHEEN);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_SHININESS, SGTextureSlot::SGTT_SHININESS);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_SPECULAR, SGTextureSlot::SGTT_SPECULAR);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_TRANSMISSION, SGTextureSlot::SGTT_TRANSMISSION);
 
     // optimizing mesh ================================================================================================
 
@@ -501,7 +501,7 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(aiMesh* aiMe
 void SGCore::ModelAsset::loadTextures(aiMaterial* aiMat,
                                       AssetRef<IMaterial>& sgMaterial,
                                       const aiTextureType& aiTexType,
-                                      const SGTextureType& sgMaterialTextureType)
+                                      const SGTextureSlot& sgMaterialTextureType)
 {
     for(unsigned i = 0; i < aiMat->GetTextureCount(aiTexType); i++)
     {

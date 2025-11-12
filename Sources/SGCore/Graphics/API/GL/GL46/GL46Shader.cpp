@@ -98,7 +98,12 @@ void SGCore::GL46Shader::destroy() noexcept
         glDeleteShader(shaderPartHandler);
     }
 
-    glDeleteProgram(m_programHandler);
+    if(m_programHandler != 0)
+    {
+        glDeleteProgram(m_programHandler);
+    }
+
+    m_programHandler = 0;
 
     // TODO:: SGP0
     #ifdef SUNGEAR_DEBUG

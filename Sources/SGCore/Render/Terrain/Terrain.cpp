@@ -72,7 +72,7 @@ void SGCore::Terrain::generate(Terrain::reg_t& terrain,
 void SGCore::Terrain::generatePhysicalMesh(Terrain::reg_t& terrain, const Mesh& terrainMesh, std::int32_t stepSize) noexcept
 {
     // get first displacement tex
-    const auto displacementTex = terrainMesh.m_base.getMaterial()->getTexture(SGTextureType::SGTT_DISPLACEMENT, 0);
+    const auto displacementTex = terrainMesh.m_base.getMaterial()->getTexture(SGTextureSlot::SGTT_DISPLACEMENT, 0);
     if(!displacementTex) return;
 
     const auto meshData = terrainMesh.m_base.getMeshData();

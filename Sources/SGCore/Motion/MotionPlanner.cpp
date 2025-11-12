@@ -12,7 +12,7 @@ SGCore::MotionPlanner::MotionPlanner() noexcept
 
     m_bonesMatricesBuffer = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
     m_bonesMatricesBuffer->m_textureBufferUsage = SGGUsage::SGG_DYNAMIC;
-    m_bonesMatricesBuffer->m_isTextureBuffer = true;
+    m_bonesMatricesBuffer->m_type = SGTextureType::SG_TEXTURE_BUFFER;
     m_bonesMatricesBuffer->create<float>(m_bonesMatricesData.data(), std::uint32_t(m_bonesMatricesData.size() / 4) + 1 , 1, 1,
                                          SGGColorInternalFormat::SGG_RGBA32_FLOAT,
                                          SGGColorFormat::SGG_RGBA);

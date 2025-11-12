@@ -29,7 +29,7 @@ void SGCore::IMaterial::doLoad(const InterpolatedPath& path)
 }
 
 SGCore::AssetRef<SGCore::ITexture2D>
-SGCore::IMaterial::findAndAddTexture2D(const SGTextureType& textureType,
+SGCore::IMaterial::findAndAddTexture2D(const SGTextureSlot& textureType,
                                        const InterpolatedPath& path,
                                        AssetManager& toAssetManager)
 {
@@ -42,12 +42,12 @@ SGCore::IMaterial::findAndAddTexture2D(const SGTextureType& textureType,
 }
 
 void
-SGCore::IMaterial::addTexture2D(const SGTextureType& textureType, const SGCore::AssetRef<SGCore::ITexture2D>& tex)
+SGCore::IMaterial::addTexture2D(const SGTextureSlot& textureType, const SGCore::AssetRef<SGCore::ITexture2D>& tex)
 {
     m_textures[std::to_underlying(textureType)].push_back(tex);
 }
 
-void SGCore::IMaterial::replaceTexture(SGTextureType textureType, int textureIndex, const AssetRef<ITexture2D>& newTex)
+void SGCore::IMaterial::replaceTexture(SGTextureSlot textureType, int textureIndex, const AssetRef<ITexture2D>& newTex)
 {
     const auto textureTypeUnderlying = std::to_underlying(textureType);
     if(textureTypeUnderlying >= m_textures.size()) return;
@@ -59,7 +59,7 @@ void SGCore::IMaterial::replaceTexture(SGTextureType textureType, int textureInd
     texturesWithType[textureIndex] = newTex;
 }
 
-SGCore::AssetRef<SGCore::ITexture2D> SGCore::IMaterial::getTexture(const SGTextureType& textureType,
+SGCore::AssetRef<SGCore::ITexture2D> SGCore::IMaterial::getTexture(const SGTextureSlot& textureType,
     int textureIndex) noexcept
 {
     const auto& texVec = m_textures[std::to_underlying(textureType)];
@@ -130,7 +130,7 @@ void SGCore::IMaterial::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetMa
 
 void SGCore::IMaterial::onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept
 {
-    constexpr auto texturesTypesCount = std::to_underlying(SGTextureType::SGTT_COUNT);
+    constexpr auto texturesTypesCount = std::to_underlying(SGTextureSlot::SGTT_COUNT);
 
     for(int i = 0; i < texturesTypesCount; ++i)
     {

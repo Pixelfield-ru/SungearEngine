@@ -19,6 +19,8 @@ namespace SGCore
         friend class AssetManager;
         sg_assets_refs_resolver_as_friend
 
+        ICubemapTexture() noexcept;
+
         std::vector<AssetRef<ITexture2D>> m_parts;
 
     protected:

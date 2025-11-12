@@ -172,7 +172,7 @@ void coreInit()
                 mainAssetManager->loadAsset<SGCore::IShader>(
                         *SGCore::RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["SkyboxShader"]);
         standardCubemapMaterial->m_meshRenderState.m_useFacesCulling = false;
-        standardCubemapMaterial->addTexture2D(SGTextureType::SGTT_SKYBOX, standardCubemap);SGCore::ECS::entity_t atmosphereEntity;
+        standardCubemapMaterial->addTexture2D(SGTextureSlot::SGTT_SKYBOX, standardCubemap);SGCore::ECS::entity_t atmosphereEntity;
 
         std::vector<SGCore::ECS::entity_t> skyboxEntities;
         auto cubeModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("cube_model");

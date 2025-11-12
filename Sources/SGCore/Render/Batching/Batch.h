@@ -31,30 +31,30 @@ namespace SGCore
         BatchInstanceMaterial m_defaultMaterial { };
 
         // All texture types are acceptable by default.
-        std::unordered_set<SGTextureType> m_acceptableTextureTypes {
-            SGTextureType::SGTT_EMISSIVE,
-            SGTextureType::SGTT_AMBIENT_OCCLUSION,
-            SGTextureType::SGTT_AMBIENT,
-            SGTextureType::SGTT_DIFFUSE_ROUGHNESS,
-            SGTextureType::SGTT_DIFFUSE,
-            SGTextureType::SGTT_DISPLACEMENT,
-            SGTextureType::SGTT_HEIGHT,
-            SGTextureType::SGTT_NORMALS,
-            SGTextureType::SGTT_BASE_COLOR,
-            SGTextureType::SGTT_CLEARCOAT,
-            SGTextureType::SGTT_EMISSION_COLOR,
-            SGTextureType::SGTT_LIGHTMAP,
-            SGTextureType::SGTT_METALNESS,
-            SGTextureType::SGTT_NORMAL_CAMERA,
-            SGTextureType::SGTT_OPACITY,
-            SGTextureType::SGTT_REFLECTION,
-            SGTextureType::SGTT_SHEEN,
-            SGTextureType::SGTT_SHININESS,
-            SGTextureType::SGTT_SPECULAR,
-            SGTextureType::SGTT_TRANSMISSION,
-            SGTextureType::SGTT_SKYBOX,
-            SGTextureType::SGTT_NOISE,
-            SGTextureType::SGTT_SHADOW_MAP2D
+        std::unordered_set<SGTextureSlot> m_acceptableTextureTypes {
+            SGTextureSlot::SGTT_EMISSIVE,
+            SGTextureSlot::SGTT_AMBIENT_OCCLUSION,
+            SGTextureSlot::SGTT_AMBIENT,
+            SGTextureSlot::SGTT_DIFFUSE_ROUGHNESS,
+            SGTextureSlot::SGTT_DIFFUSE,
+            SGTextureSlot::SGTT_DISPLACEMENT,
+            SGTextureSlot::SGTT_HEIGHT,
+            SGTextureSlot::SGTT_NORMALS,
+            SGTextureSlot::SGTT_BASE_COLOR,
+            SGTextureSlot::SGTT_CLEARCOAT,
+            SGTextureSlot::SGTT_EMISSION_COLOR,
+            SGTextureSlot::SGTT_LIGHTMAP,
+            SGTextureSlot::SGTT_METALNESS,
+            SGTextureSlot::SGTT_NORMAL_CAMERA,
+            SGTextureSlot::SGTT_OPACITY,
+            SGTextureSlot::SGTT_REFLECTION,
+            SGTextureSlot::SGTT_SHEEN,
+            SGTextureSlot::SGTT_SHININESS,
+            SGTextureSlot::SGTT_SPECULAR,
+            SGTextureSlot::SGTT_TRANSMISSION,
+            SGTextureSlot::SGTT_SKYBOX,
+            SGTextureSlot::SGTT_NOISE,
+            SGTextureSlot::SGTT_SHADOW_MAP2D
         };
 
         Batch() noexcept;

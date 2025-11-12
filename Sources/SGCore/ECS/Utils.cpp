@@ -18,7 +18,7 @@ SGCore::ECS::entity_t SGCore::ECS::Utils::createDecal(registry_t& inRegistry, en
     static auto planeMeshData = mainAssetManager->loadAsset<ModelAsset>("${enginePath}/Resources/models/standard/cube.obj")->m_rootNode->m_children[0]->m_meshesData[0];
     static auto planeMaterial = []() {
         auto mat = mainAssetManager->getOrAddAssetByAlias<IMaterial>("sg_decals_standard_material");
-        mat->findAndAddTexture2D(SGTextureType::SGTT_DIFFUSE, "${enginePath}/Resources/textures/chess.jpg");
+        mat->findAndAddTexture2D(SGTextureSlot::SGTT_DIFFUSE, "${enginePath}/Resources/textures/chess.jpg");
         mat->m_meshRenderState.m_useFacesCulling = false;
 
         return mat;

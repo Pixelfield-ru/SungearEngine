@@ -297,6 +297,7 @@ SGCore::GLVertexArray* SGCore::GL4Renderer::createVertexArray()
 {
     auto* vao = new GLVertexArray;
     m_storage.m_vertexArrays.insert(vao);
+
     return vao;
 }
 
@@ -330,6 +331,7 @@ SGCore::GL4UniformBuffer* SGCore::GL4Renderer::createUniformBuffer()
 {
     auto* ub = new GL4UniformBuffer;
     m_storage.m_uniformBuffers.insert(ub);
+
     return ub;
 }
 

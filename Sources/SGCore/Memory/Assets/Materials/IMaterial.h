@@ -46,7 +46,7 @@ namespace SGCore
         * @param path Path to texture.
         * @return this
         */
-        AssetRef<ITexture2D> findAndAddTexture2D(const SGTextureType& textureType,
+        AssetRef<ITexture2D> findAndAddTexture2D(const SGTextureSlot& textureType,
                                                  const InterpolatedPath& path,
                                                  AssetManager& toAssetManager = *AssetManager::getInstance());
 
@@ -55,7 +55,7 @@ namespace SGCore
          * @param textureType Material type of texture
          * @param tex Texture to add.
          */
-        void addTexture2D(const SGTextureType& textureType,
+        void addTexture2D(const SGTextureSlot& textureType,
                           const AssetRef<ITexture2D>& tex);
 
         /**
@@ -64,9 +64,9 @@ namespace SGCore
          * @param textureIndex  Index of texture in vector of texture with type \ptextureType . Array of textures can contain multiple texture with same type.
          * @param newTex New texture that will replace old texture.
          */
-        void replaceTexture(SGTextureType textureType, int textureIndex, const AssetRef<ITexture2D>& newTex);
+        void replaceTexture(SGTextureSlot textureType, int textureIndex, const AssetRef<ITexture2D>& newTex);
 
-        AssetRef<ITexture2D> getTexture(const SGTextureType& textureType, int textureIndex) noexcept;
+        AssetRef<ITexture2D> getTexture(const SGTextureSlot& textureType, int textureIndex) noexcept;
 
         void copyTexturesRefs(IMaterial* to) const noexcept;
 
@@ -123,7 +123,7 @@ namespace SGCore
     protected:
         // some textures can be atlases
         std::array<std::vector<AssetRef<ITexture2D>>, texture_types_count> m_textures;
-        // std::unordered_map<SGTextureType, std::vector<AssetRef<ITexture2D>>> m_textures;
+        // std::unordered_map<SGTextureSlot, std::vector<AssetRef<ITexture2D>>> m_textures;
 
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept;
 

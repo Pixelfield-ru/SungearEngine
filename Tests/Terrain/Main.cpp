@@ -244,7 +244,7 @@ void coreInit()
             mainAssetManager->loadAsset<SGCore::IShader>(
                     *SGCore::RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["SkyboxShader"]);
     standardCubemapMaterial->m_meshRenderState.m_useFacesCulling = false;
-    standardCubemapMaterial->addTexture2D(SGTextureType::SGTT_SKYBOX, standardCubemap);
+    standardCubemapMaterial->addTexture2D(SGTextureSlot::SGTT_SKYBOX, standardCubemap);
 
     // ======
 
@@ -280,14 +280,14 @@ void coreInit()
     standardTerrainMaterial->m_meshRenderState.m_facesCullingPolygonsOrder = SGPolygonsOrder::SGG_CCW;
     //standardTerrainMaterial->m_meshRenderState.m_useIndices = false;
     standardTerrainMaterial->m_meshRenderState.m_drawMode = SGDrawMode::SGG_PATCHES;
-    standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE, terrainDiffuseTex);
-    standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_DISPLACEMENT, terrainDisplacementTex);
-    standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_NORMALS, terrainNormalsTex);
-    standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_LIGHTMAP, terrainAORoughnessMetalTex);
-    standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE_ROUGHNESS, terrainAORoughnessMetalTex);
-    standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_METALNESS, terrainAORoughnessMetalTex);
-    standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_HEIGHT, terrainHeightmapTex);
-    standardTerrainMaterial->addTexture2D(SGTextureType::SGTT_NOISE, terrainTilingNoiseTex);
+    standardTerrainMaterial->addTexture2D(SGTextureSlot::SGTT_DIFFUSE, terrainDiffuseTex);
+    standardTerrainMaterial->addTexture2D(SGTextureSlot::SGTT_DISPLACEMENT, terrainDisplacementTex);
+    standardTerrainMaterial->addTexture2D(SGTextureSlot::SGTT_NORMALS, terrainNormalsTex);
+    standardTerrainMaterial->addTexture2D(SGTextureSlot::SGTT_LIGHTMAP, terrainAORoughnessMetalTex);
+    standardTerrainMaterial->addTexture2D(SGTextureSlot::SGTT_DIFFUSE_ROUGHNESS, terrainAORoughnessMetalTex);
+    standardTerrainMaterial->addTexture2D(SGTextureSlot::SGTT_METALNESS, terrainAORoughnessMetalTex);
+    standardTerrainMaterial->addTexture2D(SGTextureSlot::SGTT_HEIGHT, terrainHeightmapTex);
+    standardTerrainMaterial->addTexture2D(SGTextureSlot::SGTT_NOISE, terrainTilingNoiseTex);
 
     // creating terrain material ==============================
 
@@ -299,13 +299,13 @@ void coreInit()
     testMaterial->m_meshRenderState.m_facesCullingPolygonsOrder = SGPolygonsOrder::SGG_CCW;
     //standardTerrainMaterial->m_meshRenderState.m_useIndices = false;
     testMaterial->m_meshRenderState.m_drawMode = SGDrawMode::SGG_TRIANGLES;
-    /*testMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE, terrainDiffuseTex);
-    testMaterial->addTexture2D(SGTextureType::SGTT_DISPLACEMENT, terrainDisplacementTex);
-    testMaterial->addTexture2D(SGTextureType::SGTT_NORMALS, terrainNormalsTex);
-    testMaterial->addTexture2D(SGTextureType::SGTT_LIGHTMAP, terrainAORoughnessMetalTex);
-    testMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE_ROUGHNESS, terrainAORoughnessMetalTex);
-    testMaterial->addTexture2D(SGTextureType::SGTT_METALNESS, terrainAORoughnessMetalTex);
-    testMaterial->addTexture2D(SGTextureType::SGTT_HEIGHT, terrainHeightmapTex);*/
+    /*testMaterial->addTexture2D(SGTextureSlot::SGTT_DIFFUSE, terrainDiffuseTex);
+    testMaterial->addTexture2D(SGTextureSlot::SGTT_DISPLACEMENT, terrainDisplacementTex);
+    testMaterial->addTexture2D(SGTextureSlot::SGTT_NORMALS, terrainNormalsTex);
+    testMaterial->addTexture2D(SGTextureSlot::SGTT_LIGHTMAP, terrainAORoughnessMetalTex);
+    testMaterial->addTexture2D(SGTextureSlot::SGTT_DIFFUSE_ROUGHNESS, terrainAORoughnessMetalTex);
+    testMaterial->addTexture2D(SGTextureSlot::SGTT_METALNESS, terrainAORoughnessMetalTex);
+    testMaterial->addTexture2D(SGTextureSlot::SGTT_HEIGHT, terrainHeightmapTex);*/
 
     // creating terrain entity ================================
 
@@ -375,12 +375,12 @@ void coreInit()
     terrainDecalEntity = SGCore::ECS::Utils::createDecal(*ecsRegistry.get());
 
     terrainDecalMaterial = mainAssetManager->getOrAddAssetByAlias<SGCore::IMaterial>("terrain_decal_material_0");
-    terrainDecalMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE, terrainDecalDiffuseTex0);
-    /*terrainDecalMaterial->addTexture2D(SGTextureType::SGTT_LIGHTMAP, terrainDecalAOTex);
-    terrainDecalMaterial->addTexture2D(SGTextureType::SGTT_HEIGHT, terrainDecalHeightTex);
-    terrainDecalMaterial->addTexture2D(SGTextureType::SGTT_METALNESS, terrainDecalMetallicTex);
-    terrainDecalMaterial->addTexture2D(SGTextureType::SGTT_NORMALS, terrainDecalNormalTex);
-    terrainDecalMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE_ROUGHNESS, terrainDecalRoughnessTex);*/
+    terrainDecalMaterial->addTexture2D(SGTextureSlot::SGTT_DIFFUSE, terrainDecalDiffuseTex0);
+    /*terrainDecalMaterial->addTexture2D(SGTextureSlot::SGTT_LIGHTMAP, terrainDecalAOTex);
+    terrainDecalMaterial->addTexture2D(SGTextureSlot::SGTT_HEIGHT, terrainDecalHeightTex);
+    terrainDecalMaterial->addTexture2D(SGTextureSlot::SGTT_METALNESS, terrainDecalMetallicTex);
+    terrainDecalMaterial->addTexture2D(SGTextureSlot::SGTT_NORMALS, terrainDecalNormalTex);
+    terrainDecalMaterial->addTexture2D(SGTextureSlot::SGTT_DIFFUSE_ROUGHNESS, terrainDecalRoughnessTex);*/
     terrainDecalMaterial->setMetallicFactor(0.0f);
     terrainDecalMaterial->setShininess(0.0f);
     terrainDecalMaterial->setRoughnessFactor(1.0f);
@@ -583,12 +583,12 @@ void onUpdate(const double& dt, const double& fixedDt)
         if(mainInputListener->keyboardKeyReleased(SGCore::KeyboardKey::KEY_F1))
         {
             currentTerrainOp = TerrainOp::TERRAIN_GROW;
-            terrainDecalMaterial->replaceTexture(SGTextureType::SGTT_DIFFUSE, 0, terrainDecalDiffuseTex0);
+            terrainDecalMaterial->replaceTexture(SGTextureSlot::SGTT_DIFFUSE, 0, terrainDecalDiffuseTex0);
         }
         else if(mainInputListener->keyboardKeyReleased(SGCore::KeyboardKey::KEY_F2))
         {
             currentTerrainOp = TerrainOp::TERRAIN_LOWER;
-            terrainDecalMaterial->replaceTexture(SGTextureType::SGTT_DIFFUSE, 0, terrainDecalDiffuseTex1);
+            terrainDecalMaterial->replaceTexture(SGTextureSlot::SGTT_DIFFUSE, 0, terrainDecalDiffuseTex1);
         }
 
         if(mainInputListener->keyboardKeyReleased(SGCore::KeyboardKey::KEY_PAGE_UP))

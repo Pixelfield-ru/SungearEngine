@@ -164,6 +164,13 @@ enum class SGFrameBufferAttachmentType
     SGG_NOT_ATTACHMENT
 };
 
+enum class SGTextureType
+{
+    SG_TEXTURE2D,
+    SG_TEXTURE_BUFFER,
+    SG_TEXTURE_CUBEMAP
+};
+
 static bool isDepthAttachment(const SGFrameBufferAttachmentType& attachmentType) noexcept
 {
     return attachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0 &&
@@ -247,7 +254,7 @@ enum class SGGDataType
 };
 
 
-enum class SGTextureType
+enum class SGTextureSlot
 {
     SGTT_EMISSIVE,
     SGTT_AMBIENT_OCCLUSION,
@@ -279,7 +286,7 @@ enum class SGTextureType
     SGTT_COUNT = SGTT_NONE
 };
 
-static constexpr std::uint16_t texture_types_count = std::to_underlying(SGTextureType::SGTT_COUNT);
+static constexpr std::uint16_t texture_types_count = std::to_underlying(SGTextureSlot::SGTT_COUNT);
 
 template<typename DataType>
 requires(std::is_scalar_v<DataType>)
@@ -313,265 +320,265 @@ static constexpr SGGDataType getSGDataTypeFromCPPType() noexcept
     return SGGDataType::SGG_NONE;
 }
 
-static SGTextureType sgStandardTextureFromString(const std::string& textureType) noexcept
+static SGTextureSlot sgStandardTextureFromString(const std::string& textureType) noexcept
 {
     if(textureType == "SGTT_EMISSIVE")
     {
-        return SGTextureType::SGTT_EMISSIVE;
+        return SGTextureSlot::SGTT_EMISSIVE;
     }
     if(textureType == "SGTT_AMBIENT_OCCLUSION")
     {
-        return SGTextureType::SGTT_AMBIENT_OCCLUSION;
+        return SGTextureSlot::SGTT_AMBIENT_OCCLUSION;
     }
     if(textureType == "SGTT_AMBIENT")
     {
-        return SGTextureType::SGTT_AMBIENT;
+        return SGTextureSlot::SGTT_AMBIENT;
     }
     if(textureType == "SGTT_DIFFUSE_ROUGHNESS")
     {
-        return SGTextureType::SGTT_DIFFUSE_ROUGHNESS;
+        return SGTextureSlot::SGTT_DIFFUSE_ROUGHNESS;
     }
     if(textureType == "SGTT_DIFFUSE")
     {
-        return SGTextureType::SGTT_DIFFUSE;
+        return SGTextureSlot::SGTT_DIFFUSE;
     }
     if(textureType == "SGTT_DISPLACEMENT")
     {
-        return SGTextureType::SGTT_DISPLACEMENT;
+        return SGTextureSlot::SGTT_DISPLACEMENT;
     }
     if(textureType == "SGTT_HEIGHT")
     {
-        return SGTextureType::SGTT_HEIGHT;
+        return SGTextureSlot::SGTT_HEIGHT;
     }
     if(textureType == "SGTT_NORMALS")
     {
-        return SGTextureType::SGTT_NORMALS;
+        return SGTextureSlot::SGTT_NORMALS;
     }
     if(textureType == "SGTT_BASE_COLOR")
     {
-        return SGTextureType::SGTT_BASE_COLOR;
+        return SGTextureSlot::SGTT_BASE_COLOR;
     }
     if(textureType == "SGTT_CLEARCOAT")
     {
-        return SGTextureType::SGTT_CLEARCOAT;
+        return SGTextureSlot::SGTT_CLEARCOAT;
     }
     if(textureType == "SGTT_EMISSION_COLOR")
     {
-        return SGTextureType::SGTT_EMISSION_COLOR;
+        return SGTextureSlot::SGTT_EMISSION_COLOR;
     }
     if(textureType == "SGTT_LIGHTMAP")
     {
-        return SGTextureType::SGTT_LIGHTMAP;
+        return SGTextureSlot::SGTT_LIGHTMAP;
     }
     if(textureType == "SGTT_METALNESS")
     {
-        return SGTextureType::SGTT_METALNESS;
+        return SGTextureSlot::SGTT_METALNESS;
     }
     if(textureType == "SGTT_NORMAL_CAMERA")
     {
-        return SGTextureType::SGTT_NORMAL_CAMERA;
+        return SGTextureSlot::SGTT_NORMAL_CAMERA;
     }
     if(textureType == "SGTT_OPACITY")
     {
-        return SGTextureType::SGTT_OPACITY;
+        return SGTextureSlot::SGTT_OPACITY;
     }
     if(textureType == "SGTT_REFLECTION")
     {
-        return SGTextureType::SGTT_REFLECTION;
+        return SGTextureSlot::SGTT_REFLECTION;
     }
     if(textureType == "SGTT_SHEEN")
     {
-        return SGTextureType::SGTT_SHEEN;
+        return SGTextureSlot::SGTT_SHEEN;
     }
     if(textureType == "SGTT_SHININESS")
     {
-        return SGTextureType::SGTT_SHININESS;
+        return SGTextureSlot::SGTT_SHININESS;
     }
     if(textureType == "SGTT_SPECULAR")
     {
-        return SGTextureType::SGTT_SPECULAR;
+        return SGTextureSlot::SGTT_SPECULAR;
     }
     if(textureType == "SGTT_TRANSMISSION")
     {
-        return SGTextureType::SGTT_TRANSMISSION;
+        return SGTextureSlot::SGTT_TRANSMISSION;
     }
     if(textureType == "SGTT_SKYBOX")
     {
-        return SGTextureType::SGTT_SKYBOX;
+        return SGTextureSlot::SGTT_SKYBOX;
     }
     if(textureType == "SGTT_NOISE")
     {
-        return SGTextureType::SGTT_NOISE;
+        return SGTextureSlot::SGTT_NOISE;
     }
     if(textureType == "SGTT_SHADOW_MAP2D")
     {
-        return SGTextureType::SGTT_SHADOW_MAP2D;
+        return SGTextureSlot::SGTT_SHADOW_MAP2D;
     }
     if(textureType == "SGTT_NONE")
     {
-        return SGTextureType::SGTT_NONE;
+        return SGTextureSlot::SGTT_NONE;
     }
 
-    return SGTextureType::SGTT_NONE;
+    return SGTextureSlot::SGTT_NONE;
 }
 
-static std::string sgStandardTextureTypeToString(const SGTextureType& sgMaterialTextureType) noexcept
+static std::string sgStandardTextureTypeToString(const SGTextureSlot& sgMaterialTextureType) noexcept
 {
     switch(sgMaterialTextureType)
     {
-        case SGTextureType::SGTT_EMISSIVE: return "SGTT_EMISSIVE";
-        case SGTextureType::SGTT_AMBIENT_OCCLUSION: return "SGTT_AMBIENT_OCCLUSION";
-        case SGTextureType::SGTT_AMBIENT: return "SGTT_AMBIENT";
-        case SGTextureType::SGTT_DIFFUSE_ROUGHNESS: return "SGTT_DIFFUSE_ROUGHNESS";
-        case SGTextureType::SGTT_DIFFUSE: return "SGTT_DIFFUSE";
-        case SGTextureType::SGTT_DISPLACEMENT: return "SGTT_DISPLACEMENT";
-        case SGTextureType::SGTT_HEIGHT: return "SGTT_HEIGHT";
-        case SGTextureType::SGTT_NORMALS: return "SGTT_NORMALS";
-        case SGTextureType::SGTT_BASE_COLOR: return "SGTT_BASE_COLOR";
-        case SGTextureType::SGTT_CLEARCOAT: return "SGTT_CLEARCOAT";
-        case SGTextureType::SGTT_EMISSION_COLOR: return "SGTT_EMISSION_COLOR";
-        case SGTextureType::SGTT_LIGHTMAP: return "SGTT_LIGHTMAP";
-        case SGTextureType::SGTT_METALNESS: return "SGTT_METALNESS";
-        case SGTextureType::SGTT_NORMAL_CAMERA: return "SGTT_NORMAL_CAMERA";
-        case SGTextureType::SGTT_OPACITY: return "SGTT_OPACITY";
-        case SGTextureType::SGTT_REFLECTION: return "SGTT_REFLECTION";
-        case SGTextureType::SGTT_SHEEN: return "SGTT_SHEEN";
-        case SGTextureType::SGTT_SHININESS: return "SGTT_SHININESS";
-        case SGTextureType::SGTT_SPECULAR: return "SGTT_SPECULAR";
-        case SGTextureType::SGTT_TRANSMISSION: return "SGTT_TRANSMISSION";
-        case SGTextureType::SGTT_SKYBOX: return "SGTT_SKYBOX";
-        case SGTextureType::SGTT_NOISE: return "SGTT_NOISE";
+        case SGTextureSlot::SGTT_EMISSIVE: return "SGTT_EMISSIVE";
+        case SGTextureSlot::SGTT_AMBIENT_OCCLUSION: return "SGTT_AMBIENT_OCCLUSION";
+        case SGTextureSlot::SGTT_AMBIENT: return "SGTT_AMBIENT";
+        case SGTextureSlot::SGTT_DIFFUSE_ROUGHNESS: return "SGTT_DIFFUSE_ROUGHNESS";
+        case SGTextureSlot::SGTT_DIFFUSE: return "SGTT_DIFFUSE";
+        case SGTextureSlot::SGTT_DISPLACEMENT: return "SGTT_DISPLACEMENT";
+        case SGTextureSlot::SGTT_HEIGHT: return "SGTT_HEIGHT";
+        case SGTextureSlot::SGTT_NORMALS: return "SGTT_NORMALS";
+        case SGTextureSlot::SGTT_BASE_COLOR: return "SGTT_BASE_COLOR";
+        case SGTextureSlot::SGTT_CLEARCOAT: return "SGTT_CLEARCOAT";
+        case SGTextureSlot::SGTT_EMISSION_COLOR: return "SGTT_EMISSION_COLOR";
+        case SGTextureSlot::SGTT_LIGHTMAP: return "SGTT_LIGHTMAP";
+        case SGTextureSlot::SGTT_METALNESS: return "SGTT_METALNESS";
+        case SGTextureSlot::SGTT_NORMAL_CAMERA: return "SGTT_NORMAL_CAMERA";
+        case SGTextureSlot::SGTT_OPACITY: return "SGTT_OPACITY";
+        case SGTextureSlot::SGTT_REFLECTION: return "SGTT_REFLECTION";
+        case SGTextureSlot::SGTT_SHEEN: return "SGTT_SHEEN";
+        case SGTextureSlot::SGTT_SHININESS: return "SGTT_SHININESS";
+        case SGTextureSlot::SGTT_SPECULAR: return "SGTT_SPECULAR";
+        case SGTextureSlot::SGTT_TRANSMISSION: return "SGTT_TRANSMISSION";
+        case SGTextureSlot::SGTT_SKYBOX: return "SGTT_SKYBOX";
+        case SGTextureSlot::SGTT_NOISE: return "SGTT_NOISE";
 
-        case SGTextureType::SGTT_SHADOW_MAP2D: return "SGTT_SHADOW_MAP2D";
+        case SGTextureSlot::SGTT_SHADOW_MAP2D: return "SGTT_SHADOW_MAP2D";
 
-        case SGTextureType::SGTT_NONE: return "SGTT_NONE";
+        case SGTextureSlot::SGTT_NONE: return "SGTT_NONE";
     }
 
     return "";
 }
 
-static const std::string& sgStandardTextureTypeNameToStandardUniformName(const SGTextureType& sgMaterialTextureType) noexcept
+static const std::string& sgStandardTextureTypeNameToStandardUniformName(const SGTextureSlot& sgMaterialTextureType) noexcept
 {
     switch(sgMaterialTextureType)
     {
-        case SGTextureType::SGTT_EMISSIVE:
+        case SGTextureSlot::SGTT_EMISSIVE:
         {
             static std::string name = "mat_emissiveSamplers";
             return name;
         }
-        case SGTextureType::SGTT_AMBIENT_OCCLUSION:
+        case SGTextureSlot::SGTT_AMBIENT_OCCLUSION:
         {
             static std::string name = "mat_ambientOcclusionSamplers";
             return name;
         }
-        case SGTextureType::SGTT_AMBIENT:
+        case SGTextureSlot::SGTT_AMBIENT:
         {
             static std::string name = "mat_ambientSamplers";
             return name;
         }
-        case SGTextureType::SGTT_DIFFUSE_ROUGHNESS:
+        case SGTextureSlot::SGTT_DIFFUSE_ROUGHNESS:
         {
             static std::string name = "mat_diffuseRoughnessSamplers";
             return name;
         }
-        case SGTextureType::SGTT_DIFFUSE:
+        case SGTextureSlot::SGTT_DIFFUSE:
         {
             static std::string name = "mat_diffuseSamplers";
             return name;
         }
-        case SGTextureType::SGTT_DISPLACEMENT:
+        case SGTextureSlot::SGTT_DISPLACEMENT:
         {
             static std::string name = "mat_displacementSamplers";
             return name;
         }
-        case SGTextureType::SGTT_HEIGHT:
+        case SGTextureSlot::SGTT_HEIGHT:
         {
             static std::string name = "mat_heightSamplers";
             return name;
         }
-        case SGTextureType::SGTT_NORMALS:
+        case SGTextureSlot::SGTT_NORMALS:
         {
             static std::string name = "mat_normalsSamplers";
             return name;
         }
-        case SGTextureType::SGTT_BASE_COLOR:
+        case SGTextureSlot::SGTT_BASE_COLOR:
         {
             static std::string name = "mat_baseColorSamplers";
             return name;
         }
-        case SGTextureType::SGTT_CLEARCOAT:
+        case SGTextureSlot::SGTT_CLEARCOAT:
         {
             static std::string name = "mat_clearCoatSamplers";
             return name;
         }
-        case SGTextureType::SGTT_EMISSION_COLOR:
+        case SGTextureSlot::SGTT_EMISSION_COLOR:
         {
             static std::string name = "mat_emissionColorSamplers";
             return name;
         }
-        case SGTextureType::SGTT_LIGHTMAP:
+        case SGTextureSlot::SGTT_LIGHTMAP:
         {
             static std::string name = "mat_lightmapSamplers";
             return name;
         }
-        case SGTextureType::SGTT_METALNESS:
+        case SGTextureSlot::SGTT_METALNESS:
         {
             static std::string name = "mat_metalnessSamplers";
             return name;
         }
-        case SGTextureType::SGTT_NORMAL_CAMERA:
+        case SGTextureSlot::SGTT_NORMAL_CAMERA:
         {
             static std::string name = "mat_normalCameraSamplers";
             return name;
         }
-        case SGTextureType::SGTT_OPACITY:
+        case SGTextureSlot::SGTT_OPACITY:
         {
             static std::string name = "mat_opacitySamplers";
             return name;
         }
-        case SGTextureType::SGTT_REFLECTION:
+        case SGTextureSlot::SGTT_REFLECTION:
         {
             static std::string name = "mat_reflectionSamplers";
             return name;
         }
-        case SGTextureType::SGTT_SHEEN:
+        case SGTextureSlot::SGTT_SHEEN:
         {
             static std::string name = "mat_sheenSamplers";
             return name;
         }
-        case SGTextureType::SGTT_SHININESS:
+        case SGTextureSlot::SGTT_SHININESS:
         {
             static std::string name = "mat_shininessSamplers";
             return name;
         }
-        case SGTextureType::SGTT_SPECULAR:
+        case SGTextureSlot::SGTT_SPECULAR:
         {
             static std::string name = "mat_specularSamplers";
             return name;
         }
-        case SGTextureType::SGTT_TRANSMISSION:
+        case SGTextureSlot::SGTT_TRANSMISSION:
         {
             static std::string name = "mat_transmissionSamplers";
             return name;
         }
-        case SGTextureType::SGTT_SKYBOX:
+        case SGTextureSlot::SGTT_SKYBOX:
         {
             static std::string name = "mat_skyboxSamplers";
             return name;
         }
-        case SGTextureType::SGTT_NOISE:
+        case SGTextureSlot::SGTT_NOISE:
         {
             static std::string name = "mat_noiseSamplers";
             return name;
         }
         
-        case SGTextureType::SGTT_SHADOW_MAP2D:
+        case SGTextureSlot::SGTT_SHADOW_MAP2D:
         {
             static std::string name = "mat_shadowMap2DSamplers";
             return name;
         }
         
-        case SGTextureType::SGTT_NONE:
+        case SGTextureSlot::SGTT_NONE:
         {
             static std::string name = "noneSamplers";
             return name;

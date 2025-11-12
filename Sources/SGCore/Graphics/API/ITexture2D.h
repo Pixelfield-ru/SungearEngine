@@ -40,6 +40,8 @@ namespace SGCore
         sg_implement_type_id(ITexture2D, 1)
 
         virtual ~ITexture2D() = default;
+
+        SGTextureType m_type = SGTextureType::SG_TEXTURE2D;
         
         SGGColorInternalFormat m_internalFormat = SGGColorInternalFormat::SGG_RGBA8;
         SGGColorFormat m_format = SGGColorFormat::SGG_RGBA;
@@ -53,7 +55,6 @@ namespace SGCore
         
         bool m_isCompressedFormat = false;
 
-        bool m_isTextureBuffer = false;
         SGGUsage m_textureBufferUsage = SGGUsage::SGG_STATIC;
 
         bool m_useMultisampling = false;
@@ -142,7 +143,7 @@ namespace SGCore
         {
             const int dataChannelsSize = getSGGInternalFormatChannelsSizeInBytes(m_internalFormat);
 
-            if(m_frameBufferAttachmentType != SGFrameBufferAttachmentType::SGG_NOT_ATTACHMENT || !m_isTextureBuffer) return;
+            if(m_frameBufferAttachmentType != SGFrameBufferAttachmentType::SGG_NOT_ATTACHMENT || m_type != SGTextureType::SG_TEXTURE_BUFFER) return;
 
             // we are using size of data type to check if out of bounds. NOT SIZE OF CHANNEL
             if((elementsOffset + elementsCount) * dataChannelsSize > m_width * m_height * dataChannelsSize)
@@ -182,7 +183,7 @@ namespace SGCore
         {
             const int dataChannelsSize = getSGGInternalFormatChannelsSizeInBytes(m_internalFormat);
 
-            if(m_frameBufferAttachmentType != SGFrameBufferAttachmentType::SGG_NOT_ATTACHMENT || m_isTextureBuffer) return;
+            if(m_frameBufferAttachmentType != SGFrameBufferAttachmentType::SGG_NOT_ATTACHMENT || m_type != SGTextureType::SG_TEXTURE2D) return;
 
             if(size_t(areaOffsetX * areaOffsetY + areaWidth * areaHeight) * dataChannelsSize > size_t(m_width * m_height) * dataChannelsSize)
             {

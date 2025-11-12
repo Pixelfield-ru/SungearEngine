@@ -26,7 +26,7 @@ void SGCore::GL4Texture2D::create() noexcept
 {
     destroyOnGPU();
     
-    if(m_isTextureBuffer)
+    if(m_type == SGTextureType::SG_TEXTURE_BUFFER)
     {
         glGenBuffers(1, &m_textureBufferHandler);
         glBindBuffer(GL_TEXTURE_BUFFER, m_textureBufferHandler);
@@ -43,7 +43,6 @@ void SGCore::GL4Texture2D::create() noexcept
     else
     {
         glGenTextures(1, &m_textureHandler);
-
         glBindTexture(GL_TEXTURE_2D, m_textureHandler);
 
         glPixelStorei(GL_UNPACK_ALIGNMENT, getSGGInternalFormatChannelsSizeInBytes(m_internalFormat) / m_channelsCount);
@@ -180,7 +179,6 @@ void SGCore::GL4Texture2D::createAsFrameBufferAttachment(IFrameBuffer* parentFra
     }
     else if(isDepthStencilAttachment(attachmentType))
     {
-
         glGenTextures(1, &m_textureHandler);
         glBindTexture(GL_TEXTURE_2D, m_textureHandler);
 
@@ -287,22 +285,24 @@ void SGCore::GL4Texture2D::subTextureDataOnGAPISide(const std::uint8_t* data, st
 
 void SGCore::GL4Texture2D::destroyOnGPU() noexcept
 {
-    if(m_textureHandler != static_cast<decltype(m_textureHandler)>(-1))
+    if(m_textureHandler == 0 && m_textureBufferHandler == 0) return;
+
+    if(m_type != SGTextureType::SG_TEXTURE_BUFFER)
     {
         glDeleteTextures(1, &m_textureHandler);
     }
-    if(m_textureBufferHandler != static_cast<decltype(m_textureBufferHandler)>(-1))
+    else
     {
         glDeleteBuffers(1, &m_textureBufferHandler);
     }
 
-    m_textureHandler = -1;
-    m_textureBufferHandler = -1;
+    m_textureHandler = 0;
+    m_textureBufferHandler = 0;
 }
 
 void SGCore::GL4Texture2D::bind(const std::uint8_t& textureUnit) const noexcept
 {
-    if(!m_isTextureBuffer)
+    if(m_type != SGTextureType::SG_TEXTURE_BUFFER)
     {
         glActiveTexture(GL_TEXTURE0 + textureUnit);
         glBindTexture(GL_TEXTURE_2D, m_textureHandler);

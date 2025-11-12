@@ -65,7 +65,7 @@ namespace SGCore
 
         void processNode(const aiNode*, const aiScene*, std::shared_ptr<Node>& outputNode, meshes_map& outputMeshes) noexcept;
         AssetRef<IMeshData> processMesh(aiMesh*, const aiScene*, const meshes_map& inputMeshes) noexcept;
-        void loadTextures(aiMaterial* aiMat, AssetRef<IMaterial>& sgMaterial, const aiTextureType& aiTexType, const SGTextureType& sgMaterialTextureType);
+        void loadTextures(aiMaterial* aiMat, AssetRef<IMaterial>& sgMaterial, const aiTextureType& aiTexType, const SGTextureSlot& sgMaterialTextureType);
 
         void prepareNodeMeshes(const Ref<Node>& node) noexcept;
 
