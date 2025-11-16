@@ -73,6 +73,7 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             0,
             0
     );
+    m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1)->m_clearColor = { 1.0, 1.0, 0.0, 1.0 };
     m_layersFrameBuffer->addAttachment(
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2, // CONTAINS PICKING COLORS
             SGGColorFormat::SGG_RGB,

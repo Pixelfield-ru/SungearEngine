@@ -54,12 +54,12 @@ namespace SGCore
 
         GLuint compileSubShader(SGSLESubShaderType shaderType, const std::string& code);
 
-        GLuint m_programHandler = 0;
+        GLuint m_programHandle = 0;
 
         std::unordered_map<std::string, GLint> m_cachedLocations;
 
         // vertex, fragment, geometry, compute, tesselation control and tesselation evaluation shaders
-        std::vector<GLuint> m_subShadersHandlers;
+        std::vector<std::pair<SGSLESubShaderType, GLuint>> m_subShadersHandles;
     };
 }
 

@@ -41,6 +41,7 @@ void SGCore::IShader::compile(const SGCore::AssetRef<SGCore::TextFileAsset>& tex
         addDefine(SGShaderDefineType::SGG_OTHER_DEFINE, ShaderDefine("SG_VS_MAX_ATTRIBS_COUNT", std::to_string(GPUDeviceInfo::getMaxVertexAttribsCount())));
     }
 
+    destroy();
     doCompile();
 }
 

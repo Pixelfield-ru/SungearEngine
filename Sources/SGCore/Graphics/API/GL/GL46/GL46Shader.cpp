@@ -20,6 +20,8 @@ SGCore::GL46Shader::~GL46Shader() noexcept
 // destroys shaders and shader program in gpu side and compiles new shaders and shader program
 void SGCore::GL46Shader::doCompile()
 {
+    m_cachedLocations.clear();
+
     auto shaderAnalyzedFile = getAnalyzedFile();
     auto fileAsset = getFile();
 
@@ -40,77 +42,94 @@ void SGCore::GL46Shader::doCompile()
 
     for(const auto& subShader : shaderAnalyzedFile->getSubShaders())
     {
-        m_subShadersHandlers.push_back(compileSubShader(subShader.getType(), definesCode + "\n" + subShader.getCode()));
+        m_subShadersHandles.push_back({ subShader.getType(), compileSubShader(subShader.getType(), definesCode + "\n" + subShader.getCode()) });
     }
 
     // -----------------------------------------------
 
     // gl side -------------------------------------------
-    m_programHandler = glCreateProgram();
+    m_programHandle = glCreateProgram();
 
-    for(const GLuint shaderPartHandler : m_subShadersHandlers)
+    for(const auto& [shaderPartType, shaderPartHandle] : m_subShadersHandles)
     {
-        glAttachShader(m_programHandler, shaderPartHandler);
+        if(shaderPartHandle == 0)
+        {
+            LOG_E(SGCORE_TAG,
+                  "Cannot create shader program: {} shader was not compiled and has handle equals to 0! Path: ",
+                  sgsleSubShaderTypeToString(shaderPartType),
+                  Utils::toUTF8(getPath().raw().u16string()))
+
+            destroy();
+
+            return;
+        }
+        glAttachShader(m_programHandle, shaderPartHandle);
     }
 
-    glLinkProgram(m_programHandler);
+    glLinkProgram(m_programHandle);
 
     GLint linked = GL_FALSE;
-    glGetProgramiv(m_programHandler, GL_LINK_STATUS, &linked);
+    glGetProgramiv(m_programHandle, GL_LINK_STATUS, &linked);
     if(!linked)
     {
         GLint maxLogLength = 0;
-        glGetProgramiv(m_programHandler, GL_INFO_LOG_LENGTH, &maxLogLength);
+        glGetProgramiv(m_programHandle, GL_INFO_LOG_LENGTH, &maxLogLength);
 
         if(maxLogLength > 0)
         {
             std::vector<GLchar> infoLog(maxLogLength);
-            glGetProgramInfoLog(m_programHandler, maxLogLength, &maxLogLength, &infoLog[0]);
+            glGetProgramInfoLog(m_programHandle, maxLogLength, &maxLogLength, &infoLog[0]);
 
             LOG_E(SGCORE_TAG,
-                  "Error in shader by path: {}\n{}",
+                  "Error in shader program by path: {}\n{}",
                   fileAsset->getPath().resolved().string(),
                   infoLog.data());
         }
 
         destroy();
+
+        return;
     }
 
-    for(const GLuint shaderHandler : m_subShadersHandlers)
+    for(auto& [shaderPartType, shaderPartHandle] : m_subShadersHandles)
     {
-        glDetachShader(m_programHandler, shaderHandler);
-        glDeleteShader(shaderHandler);
-    }
+        glDetachShader(m_programHandle, shaderPartHandle);
+        glDeleteShader(shaderPartHandle);
 
-    m_cachedLocations.clear();
+        shaderPartHandle = 0;
+    }
 }
 
 void SGCore::GL46Shader::bind() const noexcept
 {
-    glUseProgram(m_programHandler);
+    glUseProgram(m_programHandle);
 }
 
 // TODO: watch SGP1
 void SGCore::GL46Shader::destroy() noexcept
 {
-    for(const GLuint shaderPartHandler : m_subShadersHandlers)
+    LOG_I(SGCORE_TAG, "Destroying shader program with handle '{}'", m_programHandle)
+
+    for(const auto& [shaderPartType, shaderPartHandle] : m_subShadersHandles)
     {
-        glDeleteShader(shaderPartHandler);
+        if(shaderPartHandle == 0) continue;
+
+        glDeleteShader(shaderPartHandle);
     }
 
-    if(m_programHandler != 0)
+    if(m_programHandle != 0)
     {
-        glDeleteProgram(m_programHandler);
+        glDeleteProgram(m_programHandle);
     }
 
-    m_programHandler = 0;
+    m_programHandle = 0;
 
     // TODO:: SGP0
     #ifdef SUNGEAR_DEBUG
     //GL4Renderer::getInstance()->checkForErrors();
     #endif
 
-    m_subShadersHandlers.clear();
+    m_subShadersHandles.clear();
 }
 
 GLuint SGCore::GL46Shader::compileSubShader(SGCore::SGSLESubShaderType shaderType, const std::string& code)
@@ -143,43 +162,43 @@ GLuint SGCore::GL46Shader::compileSubShader(SGCore::SGSLESubShaderType shaderTyp
         LOG_E(SGCORE_TAG,
               "Error while compiling subshader! Unknown type of subshader.\n{}", SG_CURRENT_LOCATION_STR);
 
-        return -1;
+        return 0;
     }
 
     // gl side -------------------------------------------
-    const GLuint shaderPartHandler = glCreateShader(glShaderType);
+    const GLuint shaderPartHandle = glCreateShader(glShaderType);
 
     const auto* castedCode = (const GLchar*) codeToCompile.c_str();
-    glShaderSource(shaderPartHandler, 1, &castedCode, nullptr);
+    glShaderSource(shaderPartHandle, 1, &castedCode, nullptr);
 
-    glCompileShader(shaderPartHandler);
+    glCompileShader(shaderPartHandle);
 
     GLint compiled = GL_FALSE;
-    glGetShaderiv(shaderPartHandler, GL_COMPILE_STATUS, &compiled);
+    glGetShaderiv(shaderPartHandle, GL_COMPILE_STATUS, &compiled);
 
     if(!compiled)
     {
         GLint maxLogLength = 0;
-        glGetShaderiv(shaderPartHandler, GL_INFO_LOG_LENGTH, &maxLogLength);
+        glGetShaderiv(shaderPartHandle, GL_INFO_LOG_LENGTH, &maxLogLength);
 
         std::vector<GLchar> infoLog(maxLogLength);
-        glGetShaderInfoLog(shaderPartHandler, maxLogLength, &maxLogLength, &infoLog[0]);
+        glGetShaderInfoLog(shaderPartHandle, maxLogLength, &maxLogLength, &infoLog[0]);
 
-        glDeleteShader(shaderPartHandler);
+        glDeleteShader(shaderPartHandle);
 
         LOG_E(SGCORE_TAG,
               "Error in shader by path: {}\n{}",
               fileAsset->getPath().resolved().string(),
-             infoLog.data());
+              infoLog.data());
 
-        return -1;
+        return 0;
     }
 
     #ifdef SUNGEAR_DEBUG
     GL4Renderer::getInstance()->checkForErrors();
     #endif
 
-    return shaderPartHandler;
+    return shaderPartHandle;
 }
 
 
@@ -190,19 +209,19 @@ std::int32_t SGCore::GL46Shader::getShaderUniformLocation(const std::string& uni
     /*const auto& foundLocation = m_cachedLocations.find(uniformName);
     if(foundLocation == m_cachedLocations.cend())
     {
-        GLint location = glGetUniformLocation(m_programHandler, uniformName.c_str());
+        GLint location = glGetUniformLocation(m_programHandle, uniformName.c_str());
         m_cachedLocations[uniformName] = location;
         return location;
     }
     return foundLocation->second;*/
 
-    return glGetUniformLocation(m_programHandler, uniformName.c_str());
+    return glGetUniformLocation(m_programHandle, uniformName.c_str());
 }
 
 void SGCore::GL46Shader::useUniformBuffer(const Ref<IUniformBuffer>& uniformBuffer)
 {
-    auto uniformBufferIdx = glGetUniformBlockIndex(m_programHandler, uniformBuffer->m_blockName.c_str());
-    glUniformBlockBinding(m_programHandler, uniformBufferIdx,
+    auto uniformBufferIdx = glGetUniformBlockIndex(m_programHandle, uniformBuffer->m_blockName.c_str());
+    glUniformBlockBinding(m_programHandle, uniformBufferIdx,
                           uniformBuffer->getLayoutLocation());
 }
 
@@ -275,7 +294,7 @@ void SGCore::GL46Shader::useTextureBlock(const std::string& uniformName, const i
 
 bool SGCore::GL46Shader::isUniformExists(const std::string& uniformName) const noexcept
 {
-    return glGetUniformLocation(m_programHandler, uniformName.c_str()) != -1;
+    return glGetUniformLocation(m_programHandle, uniformName.c_str()) != -1;
 }
 
 void SGCore::GL46Shader::useMaterialFactors(const SGCore::IMaterial* material)
@@ -311,11 +330,11 @@ void SGCore::GL46Shader::useMaterialFactors(const SGCore::IMaterial* material)
 /*
 SGCore::API::GL46::GL46Shader& SGCore::API::GL46::GL46Shader::operator=(SGCore::API::GL46::GL46Shader&& other) noexcept
 {
-    this->m_programHandler = other.m_programHandler;
-    other.m_programHandler = 0;
+    this->m_programHandle = other.m_programHandle;
+    other.m_programHandle = 0;
 
-    this->m_shadersHandlers = other.m_shadersHandlers;
-    other.m_shadersHandlers = {};
+    this->m_shadersHandles = other.m_shadersHandles;
+    other.m_shadersHandles = {};
 
     return *this;
 }

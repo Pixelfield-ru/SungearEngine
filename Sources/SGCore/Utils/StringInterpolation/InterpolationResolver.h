@@ -12,6 +12,12 @@
 
 namespace SGCore
 {
+    namespace Impl
+    {
+        std::unordered_map<std::string, std::filesystem::path>& getInterpolationMarkupGlobalData(std::filesystem::path*) noexcept;
+        std::unordered_map<std::string, std::string>& getInterpolationMarkupGlobalData(std::string*) noexcept;
+    }
+
     template<typename>
     struct InterpolationMarkupSpec;
 
@@ -21,21 +27,24 @@ namespace SGCore
         template<typename>
         friend struct InterpolationMarkupSpec;
 
-        static SG_NOINLINE const auto& getGlobalMarkup() noexcept
+        static const auto& getGlobalMarkup() noexcept
         {
-            return s_globalMarkup;
+            return getMutableGlobalMarkup();
         }
 
         static const T* getByKey(const std::string& key) noexcept
         {
-            auto it = s_globalMarkup.find(key);
-            if (it == s_globalMarkup.end()) return nullptr;
+            auto it = getMutableGlobalMarkup().find(key);
+            if (it == getMutableGlobalMarkup().end()) return nullptr;
 
             return &it->second;
         }
 
     private:
-        SGCORE_EXPORT static inline std::unordered_map<std::string, T> s_globalMarkup;
+        static std::unordered_map<std::string, T>& getMutableGlobalMarkup() noexcept
+        {
+            return Impl::getInterpolationMarkupGlobalData((T*) nullptr);
+        }
     };
 
     template<typename T>
@@ -55,7 +64,7 @@ namespace SGCore
     {
         static void setKey(const std::string& key, const std::filesystem::path& asValue) noexcept
         {
-            InterpolationMarkupData<std::filesystem::path>::s_globalMarkup[key] = Utils::normalizePath(asValue);
+            InterpolationMarkupData<std::filesystem::path>::getMutableGlobalMarkup()[key] = Utils::normalizePath(asValue);
         }
     };
 

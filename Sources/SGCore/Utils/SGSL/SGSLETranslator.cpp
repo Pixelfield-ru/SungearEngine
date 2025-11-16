@@ -3,6 +3,9 @@
 //
 
 #include "SGSLETranslator.h"
+
+#include "SGCore/Memory/AssetManager.h"
+#include "SGCore/Memory/Assets/TextFileAsset.h"
 #include "SGCore/Utils/FileUtils.h"
 #include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"
 
@@ -128,6 +131,7 @@ std::string SGCore::SGSLETranslator::preprocessorPass(const std::filesystem::pat
             if(wordPair.first == "#include")
             {
                 auto includedFilePair = readExpr(i + wordPair.second, code, "\"", "\"");
+                const std::filesystem::path notResolvedIncludedFilePath = includedFilePair.first;
                 std::filesystem::path includedFilePath = Utils::getRealPath(includedFilePair.first);
                 if(!std::filesystem::exists(includedFilePath))
                 {
@@ -145,13 +149,21 @@ std::string SGCore::SGSLETranslator::preprocessorPass(const std::filesystem::pat
                     }
                 }
 
+                // if still does not exist then setting includedFilePath exactly to path that was specified in include directive
+                if(!std::filesystem::exists(includedFilePath))
+                {
+                    includedFilePath = notResolvedIncludedFilePath;
+                }
+
                 if(!m_includedPaths.contains(includedFilePath))
                 {
-                    if(std::filesystem::exists(includedFilePath))
+                    const auto includedFile = AssetManager::getInstance()->loadAsset<TextFileAsset>(includedFilePath.u16string());
+
+                    if(includedFile)
                     {
                         LOG_I(SGCORE_TAG, "Including path: '{}'", Utils::toUTF8(includedFilePath.u16string()));
 
-                        outputCode += preprocessorPass(includedFilePath, FileUtils::readFile(includedFilePath));
+                        outputCode += preprocessorPass(includedFilePath, includedFile->getData());
 
                         m_includedPaths.insert(includedFilePath);
                     }
