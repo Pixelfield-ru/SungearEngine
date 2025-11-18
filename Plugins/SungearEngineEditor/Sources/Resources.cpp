@@ -51,7 +51,7 @@ void SGE::Resources::loadStandardResources(SGCore::AssetManager& toManager) noex
                 toManager.loadAsset<SGCore::IShader>(*SGCore::Paths::getDefaultPaths()["Shaders/InfiniteGrid"]);
         standardGridMaterial->m_meshRenderState.m_useFacesCulling = false;
 
-        standardCubemapMaterial->addTexture2D(SGTextureType::SGTT_SKYBOX, standardCubemap);
+        standardCubemapMaterial->addTexture2D(SGTextureSlot::SGTT_SKYBOX, standardCubemap);
     }
 
     toManager.loadAssetWithAlias<SGCore::ModelAsset>(

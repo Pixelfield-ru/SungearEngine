@@ -77,7 +77,7 @@ if(SG_TARGET_OS_LINUX)
 elseif(SG_TARGET_OS_WINDOWS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi")
 elseif(SG_TARGET_OS_ANDROID)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -frtti -g -fno-pie")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -frtti -g -fno-pie -fvisibility=default")
 endif()
 
 set(VCPKG_CXX_FLAGS_DEBUG "${VCPKG_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS_DEBUG}")
@@ -87,8 +87,10 @@ set(VCPKG_C_FLAGS_RELEASE "${VCPKG_C_FLAGS_RELEASE} ${CMAKE_C_FLAGS_RELEASE}")
 set(VCPKG_CXX_FLAGS "${VCPKG_CXX_FLAGS} ${CMAKE_CXX_FLAGS}")
 set(VCPKG_C_FLAGS "${VCPKG_C_FLAGS} ${CMAKE_C_FLAGS}")
 
+message(STATUS "CMAKE_SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
+
 # multiple definition because of bullet library
-set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition -Wno-return-type")
+set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-export-dynamic -Wl,-Bsymbolic")
 
 message("CMAKE_SIZEOF_VOID_P: ${CMAKE_SIZEOF_VOID_P}")
 

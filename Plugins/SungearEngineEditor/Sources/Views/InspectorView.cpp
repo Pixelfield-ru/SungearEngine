@@ -433,7 +433,7 @@ void SGE::InspectorView::inspectMaterial() const noexcept
         for(size_t i = 0; i < m_currentMaterial->getTextures().size(); ++i)
         {
             const auto& texturesTyped = m_currentMaterial->getTextures()[i];
-            const SGTextureType textureType = static_cast<SGTextureType>(i);
+            const SGTextureSlot textureType = static_cast<SGTextureSlot>(i);
             const std::string textureTypeString = sgStandardTextureTypeToString(textureType);
 
             if(ImGui::CollapsingHeader(textureTypeString.c_str()))

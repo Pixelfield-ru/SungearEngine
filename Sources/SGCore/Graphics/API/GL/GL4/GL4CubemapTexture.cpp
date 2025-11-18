@@ -5,7 +5,6 @@
 #include "GL4CubemapTexture.h"
 #include "SGCore/Graphics/API/GL/GLGraphicsTypesCaster.h"
 
-// todo: impl 
 void SGCore::GL4CubemapTexture::create()
 {
     m_isLoaded = true;
@@ -15,8 +14,16 @@ void SGCore::GL4CubemapTexture::create()
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapHandler);
 
     std::uint8_t currentPartId = 0;
-    for(const auto& part : m_parts)
+    for(auto& part : m_parts)
     {
+        LOG_I(SGCORE_TAG, "Adding cubemap part '{}'", currentPartId)
+
+        // all parts must be loaded at this time
+        if(!part)
+        {
+            AssetManager::resolveAssetReference(getParentAssetManager().get(), part);
+        }
+
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + currentPartId,
                      0,
                      GLGraphicsTypesCaster::sggInternalFormatToGL(part->m_internalFormat),

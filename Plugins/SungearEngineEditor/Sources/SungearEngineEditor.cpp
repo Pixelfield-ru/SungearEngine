@@ -15,8 +15,13 @@
 #include <SGCore/Render/DebugDraw.h>
 #include <SGCore/Render/RenderPipelinesManager.h>
 #include <SGCore/Render/PBRRP/PBRRenderPipeline.h>
+#include <SGCore/Utils/SDFTexture.h>
 
 #include "Resources.h"
+
+SG_SERDE_DECLARE_EXTERNAL_CONNECTION(SGCore::AABB<>, MyAABB, MyAABBSerde)
+SG_SERDE_REGISTER_EXTERNAL_SERIALIZER(SGCore::AABB<>, MyAABB, MyAABBSerde)
+SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER(SGCore::AABB<>, MyAABB, MyAABBSerde)
 
 SGE::SungearEngineEditor::~SungearEngineEditor()
 {

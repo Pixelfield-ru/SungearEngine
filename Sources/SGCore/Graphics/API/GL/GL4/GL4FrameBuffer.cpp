@@ -61,8 +61,6 @@ void SGCore::GL4FrameBuffer::bindAttachmentToDrawIn
             attachmentsString += "ATTACHMENT" + std::to_string(attachment - GL_COLOR_ATTACHMENT0) + ", ";
         }
 
-        LOG_I(SGCORE_TAG, "Binding attachments FROM std::vector: {}", attachmentsString)
-
         glDrawBuffers(1, buffers);
     }
 }
@@ -98,8 +96,6 @@ void SGCore::GL4FrameBuffer::bindAttachmentsToDrawIn
         attachmentsString += "ATTACHMENT" + std::to_string(attachment - GL_COLOR_ATTACHMENT0) + ", ";
     }
 
-    LOG_I(SGCORE_TAG, "Binding attachments FROM std::vector: {}", attachmentsString)
-
     glDrawBuffers(attachmentsToBind.size(), attachmentsToBind.data());
 }
 
@@ -128,8 +124,6 @@ void SGCore::GL4FrameBuffer::bindAttachmentsToDrawIn
         attachmentsString += "ATTACHMENT" + std::to_string(attachment - GL_COLOR_ATTACHMENT0) + ", ";
     }
 
-    LOG_I(SGCORE_TAG, "Binding attachments FROM std::set: {}", attachmentsString)
-
     glDrawBuffers(attachmentsToBind.size(), attachmentsToBind.data());
 }
 
@@ -140,8 +134,6 @@ void SGCore::GL4FrameBuffer::unbindAttachmentToReadFrom()
 
 void SGCore::GL4FrameBuffer::unbindAttachmentToDrawIn()
 {
-    LOG_I(SGCORE_TAG, "BINDING DRAW BUFFER: NONE")
-
     const GLenum buf[] = { GL_NONE };
     glDrawBuffers(1, buf);
 }

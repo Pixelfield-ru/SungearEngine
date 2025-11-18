@@ -13,6 +13,8 @@
 
 #include <optional>
 
+#include <sgcore_export.h>
+
 #include "SGCore/Utils/Assert.h"
 
 #include "SGCore/Utils/TypeTraits.h"
@@ -21,6 +23,7 @@
 
 #include "Common.h"
 #include "Defines.h"
+#include "SGCore/Logger/Logger.h"
 
 /**
  *  Sungear Engine Core Serde.\n\n
@@ -87,6 +90,24 @@ namespace SGCore::Serde
     // ==============================================================================
     // ==============================================================================
 
+    /// DO NOT USE IN EXTERNAL PROJECTS.
+    namespace Impl
+    {
+        /// Be careful with reference that this function returns. It can be invalidated if new serializer will be added.\n
+        /// DO NOT STORE REFERENCE.
+        std::vector<std::byte*>& getExternalSerializers(size_t serializerTypeHash) noexcept;
+        /// Be careful with reference that this function returns. It can be invalidated if new deserializer will be added.\n
+        /// DO NOT STORE REFERENCE.
+        std::vector<std::byte*>& getExternalDeserializers(size_t serializerTypeHash) noexcept;
+
+        template<typename T, FormatType TFormatType, typename... SharedDataT>
+        size_t getStorageTypeHash() noexcept
+        {
+            static size_t hash = constexprHash(GENERATOR_PRETTY_FUNCTION);
+            return hash;
+        }
+    }
+
     template<FormatType TFormatType, typename... SharedDataT>
     struct IExternalSerializer
     {
@@ -107,10 +128,29 @@ namespace SGCore::Serde
     struct ExternalSerializersStorage
     {
         template<FormatType TFormatType, typename... SharedDataT>
-        static auto& storage() noexcept
+        static auto storage() noexcept
         {
-            static std::vector<IExternalSerializer<TFormatType, SharedDataT...>*> serializers;
-            return serializers;
+            static size_t type_hash = Impl::getStorageTypeHash<T, TFormatType, SharedDataT...>();
+            const auto typedSerializers = []() {
+                std::vector<IExternalSerializer<TFormatType, SharedDataT...>*> result;
+
+                const auto serializers = Impl::getExternalSerializers(type_hash);
+                for(auto* serializer : serializers)
+                {
+                    result.push_back(reinterpret_cast<IExternalSerializer<TFormatType, SharedDataT...>*>(serializer));
+                }
+
+                return result;
+            }();
+
+            return typedSerializers;
+        }
+
+        template<FormatType TFormatType, typename... SharedDataT>
+        static void addSerializer(IExternalSerializer<TFormatType, SharedDataT...>* serializer) noexcept
+        {
+            static size_t type_hash = Impl::getStorageTypeHash<T, TFormatType, SharedDataT...>();
+            Impl::getExternalSerializers(type_hash).push_back(reinterpret_cast<std::byte*>(serializer));
         }
     };
 
@@ -118,10 +158,29 @@ namespace SGCore::Serde
     struct ExternalDeserializersStorage
     {
         template<FormatType TFormatType, typename... SharedDataT>
-        static auto& storage() noexcept
+        static auto storage() noexcept
         {
-            static std::vector<IExternalDeserializer<TFormatType, SharedDataT...>*> deserializers;
-            return deserializers;
+            static size_t type_hash = Impl::getStorageTypeHash<T, TFormatType, SharedDataT...>();
+            const auto typedDeserializers = []() {
+                std::vector<IExternalDeserializer<TFormatType, SharedDataT...>*> result;
+
+                const auto deserializers = Impl::getExternalDeserializers(type_hash);
+                for(auto* deserializer : deserializers)
+                {
+                    result.push_back(reinterpret_cast<IExternalDeserializer<TFormatType, SharedDataT...>*>(deserializer));
+                }
+
+                return result;
+            }();
+
+            return typedDeserializers;
+        }
+
+        template<FormatType TFormatType, typename... SharedDataT>
+        static void addDeserializer(IExternalDeserializer<TFormatType, SharedDataT...>* deserializer) noexcept
+        {
+            static size_t type_hash = Impl::getStorageTypeHash<T, TFormatType, SharedDataT...>();
+            Impl::getExternalDeserializers(type_hash).push_back(reinterpret_cast<std::byte*>(deserializer));
         }
     };
 

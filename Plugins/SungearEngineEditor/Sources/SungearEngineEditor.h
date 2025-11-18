@@ -15,6 +15,40 @@
 
 #define SGEDITOR_TAG "SGEditor"
 
+#include <SGCore/Serde/Serde.h>
+#include <SGCore/Serde/StandardSerdeSpecs/SerdeSpecs.h>
+
+struct MyAABB : SGCore::AABB<>
+{
+    float m_value = 0;
+};
+
+namespace SGCore::Serde
+{
+    template<FormatType TFormatType>
+    struct SerdeSpec<MyAABB, TFormatType> :
+            BaseTypes<AABB<>>,
+            DerivedTypes<>
+    {
+        sg_serde_define_type_name("MyAABB")
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const MyAABB, TFormatType>& valueView) noexcept
+        {
+            valueView.container().addMember("m_value", valueView.m_data->m_value);
+        }
+
+        static void deserialize(DeserializableValueView<MyAABB, TFormatType>& valueView) noexcept
+        {
+            const auto value = valueView.container().template getMember<float>("m_value");
+            if(value)
+            {
+                valueView.m_data->m_value = *value;
+            }
+        }
+    };
+}
+
 namespace SGE
 {
     struct SungearEngineEditor : public SGCore::IPlugin

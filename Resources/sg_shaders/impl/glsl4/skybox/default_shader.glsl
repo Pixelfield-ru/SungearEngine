@@ -101,7 +101,7 @@ void main()
     {
         if(calculateStochasticTransparencyComponents(skyboxCol.rgb, skyboxCol.a, layerSTColor, layerColor, vs_UVAttribute.xy, 0))
         {
-            discard;
+            // discard;
         }
 
         // calculateWBOITComponents(skyboxCol.rgb, skyboxCol.a, gl_FragCoord.z, layerWBOITColorAccum, layerColor, layerWBOITReveal, 0);

@@ -24,8 +24,6 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
 
     if(childOwnTransform.m_position != childOwnTransform.m_lastPosition)
     {
-        LOG_I(SGCORE_TAG, "Updating position")
-
         childOwnTransform.m_translationMatrix = glm::translate(glm::mat4(1.0), childOwnTransform.m_position);
 
         // std::cout << "pos : " << ownTransform.m_position.x << ", " << ownTransform.m_position.y << ", " << ownTransform.m_position.z << std::endl;
@@ -50,8 +48,6 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
 
     if(childOwnTransform.m_lastRotation != childOwnTransform.m_rotation)
     {
-        LOG_I(SGCORE_TAG, "Updating rotation")
-
         childOwnTransform.m_rotationMatrix = glm::toMat4(childOwnTransform.m_rotation);
 
         const glm::vec3& column1 = childOwnTransform.m_rotationMatrix[0];
@@ -85,8 +81,6 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
 
     if(childOwnTransform.m_lastScale != childOwnTransform.m_scale)
     {
-        LOG_I(SGCORE_TAG, "Updating scale")
-
         childOwnTransform.m_scaleMatrix = glm::scale(glm::mat4(1.0),
                                                 childOwnTransform.m_scale
         );

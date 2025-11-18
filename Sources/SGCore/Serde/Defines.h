@@ -159,7 +159,7 @@ struct SG_CONCAT(SerdeName, _Deserializer) final : SGCore::Serde::IExternalDeser
 #define SG_SERDE_REGISTER_EXTERNAL_SERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, FormatType, Line, ...) \
 auto SG_CONCAT(_SG_DECLARE_SERIALIZER_SPEC_, Line) = []() { \
     static SG_CONCAT(SerdeName, _Serializer)<FormatType __VA_OPT__(,) __VA_ARGS__> serializer; \
-    SGCore::Serde::ExternalSerializersStorage<Base>::storage<FormatType __VA_OPT__(,) __VA_ARGS__>().push_back(&serializer); \
+    SGCore::Serde::ExternalSerializersStorage<Base>::addSerializer<FormatType __VA_OPT__(,) __VA_ARGS__>(&serializer); \
     return true; \
 }();
 
@@ -174,7 +174,7 @@ auto SG_CONCAT(_SG_DECLARE_SERIALIZER_SPEC_, Line) = []() { \
 #define SG_SERDE_REGISTER_EXTERNAL_DESERIALIZER_FOR_FORMAT_IMPL(Base, Derived, SerdeName, FormatType, Line, ...) \
 auto SG_CONCAT(_SG_DECLARE_DESERIALIZER_SPEC_, Line) = []() { \
     static SG_CONCAT(SerdeName, _Deserializer)<FormatType __VA_OPT__(,) __VA_ARGS__> deserializer; \
-    SGCore::Serde::ExternalDeserializersStorage<Base>::storage<FormatType __VA_OPT__(,) __VA_ARGS__>().push_back(&deserializer); \
+    SGCore::Serde::ExternalDeserializersStorage<Base>::addDeserializer<FormatType __VA_OPT__(,) __VA_ARGS__>(&deserializer); \
     return true; \
 }();
 

@@ -140,7 +140,7 @@ void SGCore::IMaterial::onMemberAssetsReferencesResolveImpl(AssetManager* update
         {
             auto& texture = textures[j];
 
-            LOG_W(SGCORE_TAG, "Resolving texture for IMaterial");
+            LOG_I(SGCORE_TAG, "Resolving texture for IMaterial. Texture type: '{}'", i);
             AssetManager::resolveAssetReference(updatedAssetManager, texture);
         }
     }
@@ -149,6 +149,7 @@ void SGCore::IMaterial::onMemberAssetsReferencesResolveImpl(AssetManager* update
     {
         if(!shader) continue;
 
+        LOG_I(SGCORE_TAG, "Resolving SHADER for IMaterial. Shader tag: '{}'", tag);
         AssetManager::resolveAssetReference(updatedAssetManager, shader);
     }
 }
