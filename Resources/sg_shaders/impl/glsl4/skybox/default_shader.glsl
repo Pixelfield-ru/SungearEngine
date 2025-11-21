@@ -18,7 +18,7 @@ void main()
 
     vs_fragWorldPos = vec3(objectTransform.modelMatrix * vec4(positionsAttribute, 1.0));
 
-    // gl_Position = camera.spaceMatrix * objectModelMatrix * vec4(positionsAttribute, 1.0);
+    // gl_Position = camera.projectionSpaceMatrix * objectTransform.modelMatrix  * vec4(positionsAttribute, 1.0);
     gl_Position = camera.projectionMatrix * mat4(mat3(camera.viewMatrix)) * objectTransform.modelMatrix * vec4(positionsAttribute, 1.0);
     //vec4 pos = projectionMatrix * mat4(mat3(viewMatrix)) * vec4(positionsAttribute, 1.0);
     //gl_Position = vec4(pos.xy, pos.w, pos.w);
@@ -101,12 +101,14 @@ void main()
     {
         if(calculateStochasticTransparencyComponents(skyboxCol.rgb, skyboxCol.a, layerSTColor, layerColor, vs_UVAttribute.xy, 0))
         {
-            // discard;
+            discard;
         }
 
         // calculateWBOITComponents(skyboxCol.rgb, skyboxCol.a, gl_FragCoord.z, layerWBOITColorAccum, layerColor, layerWBOITReveal, 0);
 
+        // layerColor = vec4(0.0, 0.0, 1.0, 1.0);
         layerColor = skyboxCol;
+        // layerColor = vec4(vs_UVAttribute.xy, 0.0, 1.0);
         // layerWBOITReveal = 0.0;
 
         /*calculateWBOITComponents(skyboxCol.rgb, skyboxCol.a, gl_FragCoord.z, layerColor, layerWBOITAccumAlpha.r);

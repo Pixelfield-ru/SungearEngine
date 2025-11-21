@@ -147,7 +147,7 @@ void SGCore::IMaterial::onMemberAssetsReferencesResolveImpl(AssetManager* update
 
     for(auto& [tag, shader] : m_shaders)
     {
-        if(!shader) continue;
+        // if(!shader) continue;
 
         LOG_I(SGCORE_TAG, "Resolving SHADER for IMaterial. Shader tag: '{}'", tag);
         AssetManager::resolveAssetReference(updatedAssetManager, shader);

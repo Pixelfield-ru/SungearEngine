@@ -15,6 +15,8 @@ void SGCore::SGSLETranslator::processCode(const std::filesystem::path& path, con
     const std::string preprocessedCode = preprocessorPass(path, code);
     // std::cout << preprocessedCode << std::endl;
 
+    // LOG_I(SGCORE_TAG, "SGSLETranslator preprocessed code:\n{}", preprocessedCode)
+
     translateCode(path, preprocessedCode, toAnalyzedFile);
 
     std::string savePath = Utils::toUTF8(path.u16string());
@@ -233,16 +235,20 @@ void SGCore::SGSLETranslator::translateCode(const std::filesystem::path& path, c
             bool isValidKeyWordFound = false;
 
             auto wordPair = readWord(i, code);
-            const auto& word = wordPair.first;
+            const auto word = Utils::trim(wordPair.first, std::string(" \t\n\r\f\v"));
             const auto& wordOffset = wordPair.second;
+            // LOG_I(SGCORE_TAG, "SGSLETranslator: got word '{}'", word)
+
             // trying to process shader type directives
             {
                 if(word == "#vertex")
                 {
+                    // LOG_I(SGCORE_TAG, "SGSLETranslator: got vertex shader")
                     curSubShaderType = SGSLESubShaderType::SST_VERTEX;
                 }
                 else if(word == "#fragment")
                 {
+                    // LOG_I(SGCORE_TAG, "SGSLETranslator: got fragment shader")
                     curSubShaderType = SGSLESubShaderType::SST_FRAGMENT;
                 }
                 else if(word == "#geometry")
@@ -277,6 +283,8 @@ void SGCore::SGSLETranslator::translateCode(const std::filesystem::path& path, c
 
                         break;
                     }
+
+                    // LOG_I(SGCORE_TAG, "SGSLETranslator: got subshader with type '{}'", std::to_underlying(curSubShaderType))
 
                     metSubShaders.insert(curSubShaderType);
 
@@ -343,6 +351,7 @@ void SGCore::SGSLETranslator::translateCode(const std::filesystem::path& path, c
         {
             if(!metSubShaders.contains(it->m_type))
             {
+                // LOG_I(SGCORE_TAG, "SGSLETranslator: removing subshader with type '{}'", std::to_underlying(it->m_type))
                 it = toAnalyzedFile->m_subShaders.erase(it);
             }
             else

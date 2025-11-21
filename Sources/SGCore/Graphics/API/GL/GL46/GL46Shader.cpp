@@ -140,7 +140,7 @@ GLuint SGCore::GL46Shader::compileSubShader(SGCore::SGSLESubShaderType shaderTyp
             "#version " + m_version + "\n";
 
 #if SG_PLATFORM_OS_ANDROID
-    additionalShaderInfo += "precision mediump float;\n";
+    additionalShaderInfo += "precision highp float;\n";
 #endif
 
     std::string codeToCompile = additionalShaderInfo + code;

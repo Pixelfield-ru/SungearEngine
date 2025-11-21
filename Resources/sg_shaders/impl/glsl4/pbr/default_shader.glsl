@@ -97,7 +97,8 @@ void main()
     vsOut.vertexColor0 = getVertexColor0();
     vsOut.vertexColor1 = getVertexColor1();
 
-    gl_Position = camera.projectionSpaceMatrix * vec4(vsOut.fragPos, 1.0);
+    // gl_Position = camera.projectionSpaceMatrix * vec4(vsOut.fragPos, 1.0);
+    gl_Position = camera.projectionSpaceMatrix * objectTransform.modelMatrix * vec4(positionsAttribute, 1.0);
 }
 
 #end
@@ -200,7 +201,7 @@ void main()
         }
     }
 
-    if(diffuseColor.a < 0.05) discard;
+    // if(diffuseColor.a < 0.05) discard;
 
     {
         if(mat_specularSamplers_CURRENT_COUNT > 0)
@@ -442,17 +443,17 @@ void main()
 
     // todo: make
     // if(u_isStochasticTransparencyEnabled) // todo: impl
-    {
+    /*{
 
         bool isSTNotPassed = calculateStochasticTransparencyComponents(finalCol.rgb, diffuseColor.a, layerSTColor, layerColor, vsIn.UV, u_isTransparentPass);
-
-        // gl_SampleMask[0] = coverage;
 
         if(isSTNotPassed)
         {
             discard;
         }
-    }
+    }*/
+
+    layerColor.rgba = vec4(1.0);
 
 
 

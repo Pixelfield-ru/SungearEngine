@@ -13,7 +13,7 @@ vec3 atmosphereScattering(vec3 r, vec3 ro,
 
     // Calculate the step size of the primary ray.
     vec2 p = raySphereIntersection(ro, r, rAtmos);
-    if (p.x > p.y) return vec3(0,0,0);
+    if (p.x > p.y) return vec3(0.0,0.0,0.0);
     p.y = min(p.y, raySphereIntersection(ro, r, rPlanet).x);
     float iStepSize = (p.y - p.x) / float(iSteps);
 

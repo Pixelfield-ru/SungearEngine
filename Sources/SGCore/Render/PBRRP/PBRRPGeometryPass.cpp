@@ -5,6 +5,9 @@
 #include <entt/entt.hpp>
 
 #include "PBRRPGeometryPass.h"
+
+#include <glm/gtx/string_cast.hpp>
+
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
 #include "SGCore/Render/Mesh.h"
@@ -82,6 +85,8 @@ void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipe
     auto terrainsView = registry->view<EntityBaseInfo, Mesh, Transform, Terrain>(ECS::ExcludeTypes<DisableMeshGeometryPass, Decal>{});
     auto batchesView = registry->view<Batch>(ECS::ExcludeTypes<DisableMeshGeometryPass>{});
     auto instancingView = registry->view<EntityBaseInfo, Instancing>(ECS::ExcludeTypes<DisableMeshGeometryPass, Decal>{});
+
+    m_opaqueEntitiesRenderState.use();
     
     camerasView.each([&opaqueMeshesView, &transparentMeshesView, &terrainsView, &batchesView, &registry, &instancingView, this]
                              (const ECS::entity_t& cameraEntity,
@@ -108,9 +113,7 @@ void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipe
             );
         }
 
-        m_opaqueEntitiesRenderState.use();
-
-        terrainsView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, this](
+        /*terrainsView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, this](
             const ECS::entity_t& terrainEntity,
             EntityBaseInfo::reg_t& terrainEntityBaseInfo,
             Mesh::reg_t& mesh,
@@ -130,7 +133,7 @@ void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipe
                           "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
 
                 renderTerrainMesh(registry, terrainEntity, terrainTransform, mesh, terrain, terrainEntityBaseInfo, camera3DBaseInfo, meshPPLayer);
-            });
+            });*/
 
         // =====================================================================================================
         // =====================================================================================================
@@ -171,7 +174,7 @@ void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipe
         // =====================================================================================================
 
         // rendering batches
-        batchesView.each([&cameraLayeredFrameReceiver, &registry, cameraEntity, &cameraRenderingBase, &cameraCSMTarget, this](Batch& batch) {
+        /*batchesView.each([&cameraLayeredFrameReceiver, &registry, cameraEntity, &cameraRenderingBase, &cameraCSMTarget, this](Batch& batch) {
             // todo: add getting batch layer
             Ref<PostProcessLayer> meshPPLayer = cameraLayeredFrameReceiver->getDefaultLayer();
 
@@ -203,13 +206,13 @@ void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipe
                 batch.getTrianglesCount(),
                 0
             );
-        });
+        });*/
 
         // =====================================================================================================
         // =====================================================================================================
         // =====================================================================================================
 
-        if(m_instancingShader)
+        /*if(m_instancingShader)
         {
             m_instancingShader->bind();
             m_instancingShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
@@ -324,13 +327,13 @@ void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipe
                     }
                 }
             }
-        });
+        });*/
 
         // =====================================================================================================
         // =====================================================================================================
         // =====================================================================================================
 
-        if(m_shader)
+        /*if(m_shader)
         {
             m_shader->bind();
         }
@@ -368,7 +371,7 @@ void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipe
                 renderMesh(registry, meshEntity, meshTransform, mesh,
                            meshedEntityBaseInfo, camera3DBaseInfo, cameraRenderingBase, cameraCSMTarget, meshPPLayer, false, cameraLayeredFrameReceiver);
             }
-        });
+        });*/
 
         if(cameraLayeredFrameReceiver)
         {
@@ -382,7 +385,7 @@ void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipe
     
     renderedInOctrees = 0;
     
-    camerasView.each([&opaqueMeshesView, &transparentMeshesView,
+    /*camerasView.each([&opaqueMeshesView, &transparentMeshesView,
                       &renderPipeline, &scene, &registry, this]
                              (const ECS::entity_t& cameraEntity,
                               const EntityBaseInfo::reg_t& camera3DBaseInfo,
@@ -409,9 +412,9 @@ void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipe
                                  cameraLayeredFrameReceiver, n);
             }
         });
-    });
+    });*/
 
-    m_afterRenderState.use();
+    // m_afterRenderState.use();
 
     // std::cout << "renderedInOctrees: " << renderedInOctrees << std::endl;
 }
@@ -440,10 +443,19 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
     
     if(shaderToUse)
     {
+        LOG_I(SGCORE_TAG,
+            "Using shader: {}, material: {}, vertices count: {}, indices count: {}",
+            Utils::toUTF8(shaderToUse->getPath().raw().u16string()),
+            Utils::toUTF8(mesh.m_base.getMaterial()->getPath().raw().u16string()),
+            mesh.m_base.getMeshData()->m_vertices.size(),
+            mesh.m_base.getMeshData()->m_indices.size())
+
         // binding shaderToUse only if it is custom shader
         if(shaderToUse == meshGeomShader)
         {
             shaderToUse->bind();
+            CoreMain::getRenderer()->m_viewMatricesBuffer->bind();
+            CoreMain::getRenderer()->m_programDataBuffer->bind();
             shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
             shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
         }
@@ -451,6 +463,7 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
         {
             shaderToUse->useMatrix("objectTransform.modelMatrix",
                                    meshTransform->m_finalTransform.m_animatedModelMatrix);
+            LOG_I(SGCORE_TAG, "Rendering mesh: {}\n{}", Utils::toUTF8(mesh.m_base.getMeshData()->getPath().resolved().u16string()), glm::to_string(meshTransform->m_finalTransform.m_animatedModelMatrix))
             shaderToUse->useVectorf("objectTransform.position", meshTransform->m_finalTransform.m_position);
 
             const auto* meshedEntityPickableComponent = registry->tryGet<Pickable>(meshEntity);
