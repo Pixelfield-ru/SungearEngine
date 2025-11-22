@@ -70,7 +70,9 @@ namespace SGCore
 
         IGPUObjectsStorage& storage() noexcept final;
         const IGPUObjectsStorage& storage() const noexcept final;
-        
+
+        void reload() noexcept override;
+
         static const std::shared_ptr<VkRenderer>& getInstance() noexcept;
 
     private:

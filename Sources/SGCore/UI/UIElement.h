@@ -42,6 +42,7 @@ namespace SGCore::UI
 
         std::vector<Ref<UIElement>> m_children;
         Weak<UIElement> m_parent;
+        std::unordered_set<std::string> m_places;
 
         // =================== XML ATTRIBUTES
         AssetRef<CSSStyle> m_mainStyle;
@@ -79,6 +80,7 @@ namespace SGCore::UI
                             UIElementCache& thisElementCache) noexcept;
 
         Ref<UIElement> findElement(const std::string& name) noexcept;
+        Ref<UIElement> findPlace(const std::string& placeName) const noexcept;
 
         template<typename FuncT>
         requires(std::is_invocable_v<FuncT, UIElement*, UIElement*>)

@@ -86,19 +86,17 @@ SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIDocument::processUIElement(UIDo
     std::cout << "node: " << xmlNode.name() << std::endl;
 
     const auto foundTemplate = inDocument.findTemplate(xmlNode.name());
+    const bool usesTemplate = foundTemplate != nullptr;
 
     auto nodeProcessor = UIElementsProcessorsRegistry::getProcessor(xmlNode.name());
     if(!nodeProcessor)
     {
         // if template then node processor is not required. in this case template will just unroll without intermediate element
-        if(foundTemplate && parent)
+        if(usesTemplate)
         {
             if(parent)
             {
-                for(const auto& element : foundTemplate->m_children)
-                {
-                    parent->m_children.push_back(element->copy());
-                }
+                UITemplateUsageProcessor::processElement(foundTemplate, &inDocument, parent, xmlNode);
             }
 
             return nullptr;
@@ -110,17 +108,37 @@ SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIDocument::processUIElement(UIDo
 
     // NOTE (for template): creating user-defined intermediate element if element uses template
     Ref<UIElement> outputElement = nodeProcessor->allocateElement();
-    // if current node uses template
-    if(foundTemplate)
+
+    if(!usesTemplate)
     {
-        // then unroll template in user-defined intermediate element
-        for(const auto& element : foundTemplate->m_children)
+        // assigning place
+        for(const auto placeNode : xmlNode.children("place"))
         {
-            outputElement->m_children.push_back(element->copy());
+            if(const auto placeNameAttrib = placeNode.attribute("name"))
+            {
+                outputElement->m_places.insert(placeNameAttrib.as_string());
+            }
+            else
+            {
+                LOG_W(SGCORE_TAG, "Place node must have 'name' attribute")
+            }
         }
     }
 
+    // if current node uses template
+    if(usesTemplate)
+    {
+        // then unroll template in user-defined intermediate element
+        UITemplateUsageProcessor::processElement(foundTemplate, &inDocument, outputElement, xmlNode);
+    }
+
     nodeProcessor->processElement(&inDocument, outputElement, xmlNode);
+
+    // if element uses template then we are not processing children because they were processed in UITemplateUsageProcessor
+    if(usesTemplate)
+    {
+        return outputElement;
+    }
 
     if(!outputElement) return nullptr;
     // if we proceed <template> tag then do not add this template to elements tree
@@ -192,7 +210,7 @@ Ref<SGCore::UI::UIElement> SGCore::UI::UIDocument::findElement(const std::string
     return m_rootElement->findElement(elementName);
 }
 
-Ref<SGCore::UI::UIElement> SGCore::UI::UIDocument::findTemplate(const std::string& templateName) const noexcept
+Ref<SGCore::UI::TemplateElement> SGCore::UI::UIDocument::findTemplate(const std::string& templateName) const noexcept
 {
     if(templateName.empty()) return nullptr;
 

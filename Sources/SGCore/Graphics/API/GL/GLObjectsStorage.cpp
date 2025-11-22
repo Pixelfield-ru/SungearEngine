@@ -15,10 +15,6 @@
 
 void SGCore::GLObjectsStorage::recreateAll() noexcept
 {
-    // todo: debug
-
-    DeviceGLInfo::init();
-
     // FIRST MUST DESTROY ALL OBJECT THEN CREATE ALL OBJECTS!!! ITS VERY IMPORTANT
 
     // ========================================== destroying textures

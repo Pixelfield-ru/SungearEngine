@@ -49,7 +49,7 @@ void SGCore::UI::EventsHandlingSystem::update(const double& dt, const double& fi
                 currentElementCache.m_currentFrameStyles.push_back(currentUIElement.m_mainStyle.get());
             }
         },
-         *uiComponent.m_document.get(),
+        *uiComponent.m_document.get(),
         stopToken);
     });
 }

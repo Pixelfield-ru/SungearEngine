@@ -6,6 +6,7 @@
 
 #include "UIElementNodeProcessor.h"
 #include "SGCore/Main/CoreGlobals.h"
+#include "UITemplateUsageProcessor.h"
 
 namespace SGCore::UI
 {
@@ -16,9 +17,9 @@ namespace SGCore::UI
          * @param nodeType Node type name.
          * @return Null or instance.
          */
-        SG_NOINLINE static Ref<UIElementNodeProcessor> getProcessor(const std::string& nodeType) noexcept;
+        static Ref<UIElementNodeProcessor> getProcessor(const std::string& nodeType) noexcept;
 
-        SG_NOINLINE static void setProcessorForType(std::string nodeType, const Ref<UIElementNodeProcessor>& processor) noexcept;
+        static void setProcessorForType(std::string nodeType, const Ref<UIElementNodeProcessor>& processor) noexcept;
 
     private:
         static inline std::unordered_map<std::string, Ref<UIElementNodeProcessor>> s_nodesProcessors;

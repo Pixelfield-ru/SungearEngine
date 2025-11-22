@@ -113,7 +113,7 @@ void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipe
             );
         }
 
-        /*terrainsView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, this](
+        terrainsView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, this](
             const ECS::entity_t& terrainEntity,
             EntityBaseInfo::reg_t& terrainEntityBaseInfo,
             Mesh::reg_t& mesh,
@@ -133,7 +133,7 @@ void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipe
                           "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
 
                 renderTerrainMesh(registry, terrainEntity, terrainTransform, mesh, terrain, terrainEntityBaseInfo, camera3DBaseInfo, meshPPLayer);
-            });*/
+        });
 
         // =====================================================================================================
         // =====================================================================================================
@@ -174,7 +174,7 @@ void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipe
         // =====================================================================================================
 
         // rendering batches
-        /*batchesView.each([&cameraLayeredFrameReceiver, &registry, cameraEntity, &cameraRenderingBase, &cameraCSMTarget, this](Batch& batch) {
+        batchesView.each([&cameraLayeredFrameReceiver, &registry, cameraEntity, &cameraRenderingBase, &cameraCSMTarget, this](Batch& batch) {
             // todo: add getting batch layer
             Ref<PostProcessLayer> meshPPLayer = cameraLayeredFrameReceiver->getDefaultLayer();
 
@@ -206,13 +206,13 @@ void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipe
                 batch.getTrianglesCount(),
                 0
             );
-        });*/
+        });
 
         // =====================================================================================================
         // =====================================================================================================
         // =====================================================================================================
 
-        /*if(m_instancingShader)
+        if(m_instancingShader)
         {
             m_instancingShader->bind();
             m_instancingShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
@@ -327,13 +327,13 @@ void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipe
                     }
                 }
             }
-        });*/
+        });
 
         // =====================================================================================================
         // =====================================================================================================
         // =====================================================================================================
 
-        /*if(m_shader)
+        if(m_shader)
         {
             m_shader->bind();
         }
@@ -371,7 +371,7 @@ void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipe
                 renderMesh(registry, meshEntity, meshTransform, mesh,
                            meshedEntityBaseInfo, camera3DBaseInfo, cameraRenderingBase, cameraCSMTarget, meshPPLayer, false, cameraLayeredFrameReceiver);
             }
-        });*/
+        });
 
         if(cameraLayeredFrameReceiver)
         {
@@ -385,7 +385,7 @@ void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipe
     
     renderedInOctrees = 0;
     
-    /*camerasView.each([&opaqueMeshesView, &transparentMeshesView,
+    camerasView.each([&opaqueMeshesView, &transparentMeshesView,
                       &renderPipeline, &scene, &registry, this]
                              (const ECS::entity_t& cameraEntity,
                               const EntityBaseInfo::reg_t& camera3DBaseInfo,
@@ -412,9 +412,9 @@ void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipe
                                  cameraLayeredFrameReceiver, n);
             }
         });
-    });*/
+    });
 
-    // m_afterRenderState.use();
+    m_afterRenderState.use();
 
     // std::cout << "renderedInOctrees: " << renderedInOctrees << std::endl;
 }

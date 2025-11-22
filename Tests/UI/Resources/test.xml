@@ -9,18 +9,18 @@
         </div>
 
         <button name="Button0">Click me!</button>
-        <h1>Привет, это шаблон h1</h1>
+
     </div>
 
     <my-template>
-        <place.body>
-
-        </place.body>
+        <place-at name="body">
+            <button>Placed button</button>
+        </place-at>
     </my-template>
 
     <my-template>
-        <place.body>
+        <place-at name="body">
 
-        </place.body>
+        </place-at>
     </my-template>
 </xml>

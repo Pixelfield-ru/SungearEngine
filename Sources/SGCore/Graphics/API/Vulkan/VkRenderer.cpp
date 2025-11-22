@@ -116,6 +116,11 @@ const SGCore::IGPUObjectsStorage& SGCore::VkRenderer::storage() const noexcept
     return **m_dummyStorage;
 }
 
+void SGCore::VkRenderer::reload() noexcept
+{
+
+}
+
 const std::shared_ptr<SGCore::VkRenderer>& SGCore::VkRenderer::getInstance() noexcept
 {
     static std::shared_ptr<VkRenderer> s_instancePointer(new VkRenderer);

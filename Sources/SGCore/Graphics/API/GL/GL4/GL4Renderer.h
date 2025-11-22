@@ -80,6 +80,8 @@ namespace SGCore
         IGPUObjectsStorage& storage() noexcept final;
         const IGPUObjectsStorage& storage() const noexcept final;
 
+        void reload() noexcept override;
+
         static const Ref<GL4Renderer>& getInstance() noexcept;
 
     protected:

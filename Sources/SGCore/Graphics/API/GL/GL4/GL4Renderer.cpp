@@ -369,6 +369,12 @@ const SGCore::IGPUObjectsStorage& SGCore::GL4Renderer::storage() const noexcept
     return m_storage;
 }
 
+void SGCore::GL4Renderer::reload() noexcept
+{
+    DeviceGLInfo::init();
+    m_storage.recreateAll();
+}
+
 const SGCore::Ref<SGCore::GL4Renderer>& SGCore::GL4Renderer::getInstance() noexcept
 {
     static Ref<GL4Renderer> s_instancePointer(new GL4Renderer);

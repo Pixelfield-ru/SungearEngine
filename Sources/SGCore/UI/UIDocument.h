@@ -14,6 +14,7 @@
 namespace SGCore::UI
 {
     struct CSSFile;
+    struct TemplateElement;
     
     struct UIDocument : public IAsset
     {
@@ -24,14 +25,14 @@ namespace SGCore::UI
         pugi::xml_document m_document;
 
         Ref<UIRoot> m_rootElement;
-        std::vector<Ref<UIElement>> m_templates;
+        std::vector<Ref<TemplateElement>> m_templates;
 
         std::vector<AssetRef<CSSFile>> m_includedCSSFiles;
         std::vector<AssetRef<UIDocument>> m_includedUIDocuments;
 
         [[nodiscard]] AssetRef<CSSStyle> findStyle(const std::string& selector) const noexcept;
         [[nodiscard]] Ref<UIElement> findElement(const std::string& elementName) const noexcept;
-        [[nodiscard]] Ref<UIElement> findTemplate(const std::string& templateName) const noexcept;
+        [[nodiscard]] Ref<TemplateElement> findTemplate(const std::string& templateName) const noexcept;
 
         template<typename FuncT>
         requires(std::is_invocable_v<FuncT, UIElement*, UIElement*>)

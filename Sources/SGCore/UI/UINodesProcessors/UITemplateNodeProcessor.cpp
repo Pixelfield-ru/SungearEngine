@@ -18,11 +18,18 @@ void SGCore::UI::UITemplateNodeProcessor::processElement(UIDocument* inDocument,
 {
     auto* templateElement = static_cast<TemplateElement*>(element.get());
 
-    auto nameAttrib = elementNode.find_attribute([](const pugi::xml_attribute& attribute) {
+    const auto nameAttrib = elementNode.attribute("name");
+    if(nameAttrib)
+    {
+        templateElement->m_name = nameAttrib.as_string();
+    }
+    else
+    {
+        LOG_W(SGCORE_TAG, "XML template element must have name attribute.")
+    }
+    /*auto nameAttrib = elementNode.find_attribute([](const pugi::xml_attribute& attribute) {
         return attribute.name() == std::string("name");
-    });
-
-    templateElement->m_name = nameAttrib.as_string();
+    });*/
 
     for(const auto& setting : elementNode.children())
     {
@@ -44,5 +51,5 @@ void SGCore::UI::UITemplateNodeProcessor::processElement(UIDocument* inDocument,
         }
     }
 
-    inDocument->m_templates.push_back(element);
+    inDocument->m_templates.push_back(std::static_pointer_cast<TemplateElement>(element));
 }

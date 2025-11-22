@@ -21,6 +21,7 @@ bool SGCore::UI::UIActiveEventHandler::testElement(UIElement& element,
 {
     const auto& transformElement = transformTree.m_elements[elementIndexInTransformTree];
     const auto elementColor = transformElement.m_elementCurrentCache.m_uniqueColor.color();
+    // std::cout << "color under mouse: " << attachedCameraReceiver.m_pickingColorUnderMouse.x << ", " << attachedCameraReceiver.m_pickingColorUnderMouse.y << ", " << attachedCameraReceiver.m_pickingColorUnderMouse.z << std::endl;
     return (glm::vec3) elementColor == attachedCameraReceiver.m_pickingColorUnderMouse && Input::PC::mouseButtonDown(Input::MouseButton::MOUSE_BUTTON_LEFT);
 }
 

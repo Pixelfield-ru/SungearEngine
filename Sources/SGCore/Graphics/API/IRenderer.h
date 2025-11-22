@@ -129,6 +129,8 @@ namespace SGCore
         virtual IGPUObjectsStorage& storage() noexcept = 0;
         virtual const IGPUObjectsStorage& storage() const noexcept = 0;
 
+        virtual void reload() noexcept = 0;
+
         [[nodiscard]] GAPIType getGAPIType() const noexcept;
 
         [[nodiscard]] RenderState& getCachedRenderState() noexcept;

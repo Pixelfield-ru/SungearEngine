@@ -12,7 +12,7 @@ SGCore::UI::CSSStyle::CSSStyle() noexcept
     m_font = FontsManager::getInstance().getAssetManager()->getAsset<Font, AssetStorageType::BY_ALIAS>("JetBrains Mono");
 
     // using 64 to generate big MSDF atlas
-    m_fontSpecializationSettings.m_height = 64;
+    m_fontSpecializationSettings.m_height = 32;
     setFontSpecializationSettings(m_fontSpecializationSettings);
 
     // default value if field font-size not exists

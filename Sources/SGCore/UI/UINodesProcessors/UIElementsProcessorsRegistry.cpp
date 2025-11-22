@@ -11,6 +11,8 @@
 #include "UITemplateNodeProcessor.h"
 #include "UITextNodeProcessor.h"
 
+// std::unordered_map<std::string, SGCore::Ref<SGCore::UI::UIElementNodeProcessor>> SGCore::UI::UIElementsProcessorsRegistry::s_nodesProcessors{};
+
 SGCore::Ref<SGCore::UI::UIElementNodeProcessor> SGCore::UI::UIElementsProcessorsRegistry::getProcessor(const std::string& nodeType) noexcept
 {
     auto it = s_nodesProcessors.find(nodeType);

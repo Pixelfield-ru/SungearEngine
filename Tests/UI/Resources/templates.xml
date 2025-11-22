@@ -4,8 +4,10 @@
     <template name="my-template">
         <elements>
             <div>
-                <div class="text-box" placeName="body">
+                <div class="text-box">
                     <text class="test-text-1">Hello, I am template!</text>
+
+                    <place name="body"/>
                 </div>
 
                 <button>Click me!</button>

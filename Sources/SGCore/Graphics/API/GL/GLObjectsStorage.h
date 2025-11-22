@@ -11,9 +11,9 @@
 namespace SGCore
 {
     class GL4UniformBuffer;
-    struct GL4FrameBuffer;
-    struct GL4Texture2D;
-    struct GL46Shader;
+    class GL4FrameBuffer;
+    class GL4Texture2D;
+    class GL46Shader;
     struct GLVertexArray;
     class ITexture2D;
 
@@ -23,9 +23,9 @@ namespace SGCore
         friend class GL46Renderer;
 
         friend class GL4UniformBuffer;
-        friend struct GL4FrameBuffer;
-        friend struct GL4Texture2D;
-        friend struct GL46Shader;
+        friend class GL4FrameBuffer;
+        friend class GL4Texture2D;
+        friend class GL46Shader;
         friend struct GLVertexArray;
 
         void recreateAll() noexcept override;
