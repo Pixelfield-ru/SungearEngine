@@ -20,7 +20,7 @@
 
     <my-template>
         <place-at name="body">
-
+            <button>Placed button2</button>
         </place-at>
     </my-template>
 </xml>

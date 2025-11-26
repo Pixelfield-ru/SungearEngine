@@ -31,23 +31,30 @@ void SGCore::UI::UITemplateNodeProcessor::processElement(UIDocument* inDocument,
         return attribute.name() == std::string("name");
     });*/
 
+    // firstly processing attributes to add all attributes values in template
+    for(const auto& setting : elementNode.children())
+    {
+        if(setting.name() == std::string("attribute"))
+        {
+
+        }
+    }
+
     for(const auto& setting : elementNode.children())
     {
         if(setting.name() == std::string("elements"))
         {
             for(const auto& unrollNode : setting.children())
             {
+                // todo: maybe pass not nullptr but templateElement
+                // todo: make attributes storage in template element
+                // todo: make function to get attribute or placeholder
                 auto unrolledElement = UIDocument::processUIElement(*inDocument, nullptr, unrollNode);
                 if(unrolledElement)
                 {
                     templateElement->m_children.push_back(std::move(unrolledElement));
                 }
             }
-        }
-
-        if(setting.name() == std::string("attribute"))
-        {
-
         }
     }
 

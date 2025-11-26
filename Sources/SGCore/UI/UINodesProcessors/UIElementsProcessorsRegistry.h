@@ -19,6 +19,8 @@ namespace SGCore::UI
          */
         static Ref<UIElementNodeProcessor> getProcessor(const std::string& nodeType) noexcept;
 
+        static bool hasProcessor(const std::string& nodeType) noexcept;
+
         static void setProcessorForType(std::string nodeType, const Ref<UIElementNodeProcessor>& processor) noexcept;
 
     private:

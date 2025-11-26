@@ -4,6 +4,7 @@
 
 #include "UITemplateUsageProcessor.h"
 
+#include "UIElementsProcessorsRegistry.h"
 #include "SGCore/UI/UIDocument.h"
 #include "SGCore/UI/Elements/TemplateElement.h"
 
@@ -12,10 +13,16 @@ void SGCore::UI::UITemplateUsageProcessor::processElement(const Ref<TemplateElem
                                                           const Ref<UIElement>& element,
                                                           const pugi::xml_node& elementNode) noexcept
 {
+    std::vector<Ref<UIElement>> unrolledElements;
+
     // unrolling template
     for(const auto& childElement : templateElement->m_children)
     {
-        element->m_children.push_back(childElement->copy());
+        const auto instantiation = childElement->copy();
+        instantiation->m_parent = element;
+
+        element->m_children.push_back(instantiation);
+        unrolledElements.push_back(instantiation);
     }
 
     // then processing places
@@ -43,7 +50,24 @@ void SGCore::UI::UITemplateUsageProcessor::processElement(const Ref<TemplateElem
 
             const std::string placeName = placeNameAttrib.as_string();
 
-            const auto place = element->m_places.contains(placeName) ? element : element->findPlace(placeName);
+            Ref<UIElement> place;
+            if(element->m_places.contains(placeName))
+            {
+                place = element;
+            }
+            else
+            {
+                for(const auto& instantiation : unrolledElements)
+                {
+                    if(instantiation->m_places.contains(placeName))
+                    {
+                        place = instantiation;
+                        break;
+                    }
+
+                    place = instantiation->findPlace(placeName);
+                }
+            }
 
             if(!place)
             {

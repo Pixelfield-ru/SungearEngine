@@ -108,6 +108,10 @@ SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIDocument::processUIElement(UIDo
 
     // NOTE (for template): creating user-defined intermediate element if element uses template
     Ref<UIElement> outputElement = nodeProcessor->allocateElement();
+    if(outputElement)
+    {
+        outputElement->m_parent = parent;
+    }
 
     if(!usesTemplate)
     {

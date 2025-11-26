@@ -24,6 +24,11 @@ SGCore::Ref<SGCore::UI::UIElementNodeProcessor> SGCore::UI::UIElementsProcessors
     return nullptr;
 }
 
+bool SGCore::UI::UIElementsProcessorsRegistry::hasProcessor(const std::string& nodeType) noexcept
+{
+    return s_nodesProcessors.contains(nodeType);
+}
+
 void SGCore::UI::UIElementsProcessorsRegistry::setProcessorForType(std::string nodeType, const Ref<UIElementNodeProcessor>& processor) noexcept
 {
     s_nodesProcessors.emplace(std::move(nodeType), processor);

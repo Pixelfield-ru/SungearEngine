@@ -1,12 +1,24 @@
 <xml>
     <include type="stylesheet" path="test.css"/>
 
+    <template name="test-template">
+        <elements>
+            <div class="text-box">
+                <text class="test-text-1">Hello, I am template!</text>
+            </div>
+        </elements>
+    </template>
+
     <template name="my-template">
+        <attribute name="text-class">
+            <default value="h1"/>
+        </attribute>
+
         <elements>
             <div>
-                <div class="text-box">
-                    <text class="test-text-1">Hello, I am template!</text>
+                <test-template/>
 
+                <div>
                     <place name="body"/>
                 </div>
 

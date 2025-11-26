@@ -125,6 +125,8 @@ void SGCore::UI::UIElement::doCopy(const Ref<UIElement>& to) const noexcept
 
     to->m_shader = m_shader;
 
+    to->m_places = m_places;
+
     for(const auto& child : m_children)
     {
         to->m_children.push_back(child->copy());
