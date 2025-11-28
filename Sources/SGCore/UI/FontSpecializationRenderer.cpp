@@ -152,7 +152,9 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
     
     if(!lockedSpec) return;
 
-    if(text->m_text.empty())
+    const std::u32string* usedText = text->m_text.get();
+
+    if(usedText->empty())
     {
         text->m_textSize.y = 0;
         return;
@@ -173,9 +175,9 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
     const FontGlyph* unknownGlyph = lockedSpec->tryGetGlyph('?');
     const FontGlyph* spaceGlyph = lockedSpec->tryGetGlyph(' ');
 
-    for(size_t i = 0; i < text->m_text.size(); ++i)
+    for(size_t i = 0; i < usedText->size(); ++i)
     {
-        auto c = text->m_text[i];
+        auto c = (*usedText)[i];
 
         if(m_currentDrawingCharacter >= m_maxCharactersCount - 1) return;
 

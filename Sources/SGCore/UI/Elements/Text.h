@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_UITEXT_H
 
 #include "SGCore/Memory/Assets/FontSpecialization.h"
+#include "SGCore/UI/AttributeValue.h"
 #include "SGCore/UI/UIElement.h"
 #include "SGCore/Utils/Macroses.h"
 
@@ -26,7 +27,8 @@ namespace SGCore::UI
         copy_operator(Text) = default;
         move_operator(Text) = default;
 
-        std::u32string m_text;
+        AttributeValue<std::u32string> m_text;
+        // std::u32string m_text;
 
         bool draw(const LayeredFrameReceiver::reg_t& cameraReceiver,
                   const Transform& elementTransform,

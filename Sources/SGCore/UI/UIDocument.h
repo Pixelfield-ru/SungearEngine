@@ -7,6 +7,7 @@
 
 #include <pugixml.hpp>
 
+#include "BindingsStorage.h"
 #include "SGCore/Memory/Assets/IAsset.h"
 
 #include "SGCore/UI/Elements/UIRoot.h"
@@ -29,6 +30,8 @@ namespace SGCore::UI
 
         std::vector<AssetRef<CSSFile>> m_includedCSSFiles;
         std::vector<AssetRef<UIDocument>> m_includedUIDocuments;
+
+        BindingsStorage m_bindingsStorage;
 
         [[nodiscard]] AssetRef<CSSStyle> findStyle(const std::string& selector) const noexcept;
         [[nodiscard]] Ref<UIElement> findElement(const std::string& elementName) const noexcept;

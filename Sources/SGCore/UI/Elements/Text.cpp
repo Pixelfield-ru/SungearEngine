@@ -25,16 +25,18 @@ bool SGCore::UI::Text::draw(const LayeredFrameReceiver::reg_t& cameraReceiver,
     {
         Ref<FontSpecialization> fontSpec = font->getSpecialization(lastStyle->getFontSpecializationSettings());
 
+        const std::u32string* usedText = m_text.get();
+
         if(fontSpec)
         {
             // filling the glyphs vector if vector does not match ===
-            if(m_glyphs.size() != m_text.size())
+            if(m_glyphs.size() != usedText->size())
             {
                 clearGlyphs();
 
-                for(size_t i = 0; i < m_text.size(); ++i)
+                for(size_t i = 0; i < usedText->size(); ++i)
                 {
-                    m_glyphs.push_back(fontSpec->tryGetGlyph(m_text[i]));
+                    m_glyphs.push_back(fontSpec->tryGetGlyph((*usedText)[i]));
                     m_lineBreaks.push_back(false);
                 }
             }

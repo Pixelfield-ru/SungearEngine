@@ -117,8 +117,9 @@ void coreInit()
 
     glfwSetCharCallback(SGCore::CoreMain::getWindow().getNativeHandle(), [](GLFWwindow* window, unsigned int c) {
         std::cout << "char: " << c << std::endl;
-        auto text = uiDocument->findElement("InputText");
-        static_cast<SGCore::UI::Text*>(text.get())->m_text += c;
+        const auto elem = uiDocument->findElement("InputText");
+        auto* asTextElem = static_cast<SGCore::UI::Text*>(elem.get());
+        (*asTextElem->m_text.get()) += c;
     });
 
     const char* error { };
@@ -132,13 +133,15 @@ void coreInit()
     SGCore::Input::PC::onKeyboardKeyEvent += [](SGCore::Window& inWindow, SGCore::Input::KeyboardKey key, int scancode, SGCore::Input::KeyState state, int mods) {
         auto elem = uiDocument->findElement("InputText");
         auto* textElem = static_cast<SGCore::UI::Text*>(elem.get());
-        if(key == SGCore::Input::KeyboardKey::KEY_BACKSPACE && (state == SGCore::Input::KeyState::REPEAT || state == SGCore::Input::KeyState::PRESS) && !textElem->m_text.empty())
+        auto* usedText = textElem->m_text.get();
+
+        if(key == SGCore::Input::KeyboardKey::KEY_BACKSPACE && (state == SGCore::Input::KeyState::REPEAT || state == SGCore::Input::KeyState::PRESS) && !usedText->empty())
         {
-            textElem->m_text.erase(textElem->m_text.length() - 1);
+            usedText->erase(usedText->length() - 1);
         }
         else if(key == SGCore::Input::KeyboardKey::KEY_ENTER && (state == SGCore::Input::KeyState::REPEAT || state == SGCore::Input::KeyState::PRESS))
         {
-            textElem->m_text += U'\n';
+            (*usedText) += U'\n';
         }
     };
 }
