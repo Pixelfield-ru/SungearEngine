@@ -55,6 +55,12 @@ namespace SGCore::UI
                                                              const Ref<UIElement>& parent,
                                                              const pugi::xml_node& xmlNode) noexcept;
 
+        /**
+         * @param xmlNode XML node.
+         * @return Line and column of xmlNode in XML file.
+         */
+        std::pair<ptrdiff_t, ptrdiff_t> getLocationInFile(const pugi::xml_node& xmlNode) noexcept;
+
     protected:
         void doLoad(const InterpolatedPath& path) override;
 
@@ -67,6 +73,10 @@ namespace SGCore::UI
 
     private:
         void applyDefaultStylesToNonStyledElementsImpl(const Ref<UIElement>& element) noexcept;
+
+        std::optional<std::string> readXmlFileAndBuildOffsets(const std::filesystem::path& filePath) noexcept;
+
+        std::vector<std::ptrdiff_t> m_debugOffsets;
     };
 }
 

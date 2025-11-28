@@ -5,14 +5,14 @@
 
     <div name="InputDiv">
         <div class="text-box" name="InputDiv1">
-            <text class="test-text-1" name="InputText">NONE</text>
+            <text class="test-text-1" name="InputText">{{ myText }}</text>
         </div>
 
         <button name="Button0">Click me!</button>
 
     </div>
 
-    <my-template>
+    <my-template unknown-attrib="unknown">
         <place-at name="body">
             <button>Placed button</button>
         </place-at>

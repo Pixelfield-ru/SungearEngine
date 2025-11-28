@@ -10,9 +10,7 @@
     </template>
 
     <template name="my-template">
-        <attribute name="text-class">
-            <default value="h1"/>
-        </attribute>
+        <attribute name="text-class"/>
 
         <elements>
             <div>

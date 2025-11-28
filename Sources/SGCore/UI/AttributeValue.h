@@ -62,13 +62,22 @@ namespace SGCore::UI
             return std::get<Binding>(m_value).template getAs<T>();
         }
 
+        T getOr(const T& _default = {}) const noexcept
+        {
+            const T* value = get();
+            if(!value)
+            {
+                return _default;
+            }
+
+            return *value;
+        }
+
         AttributeValue& operator=(const AttributeValue& other) noexcept = default;
         AttributeValue& operator=(AttributeValue&& other) noexcept = default;
 
         AttributeValue& operator=(Binding other) noexcept
         {
-            if(this == std::addressof(other)) return *this;
-
             m_value = std::move(other);
 
             return *this;

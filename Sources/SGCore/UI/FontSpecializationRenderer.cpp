@@ -154,7 +154,7 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
 
     const std::u32string* usedText = text->m_text.get();
 
-    if(usedText->empty())
+    if(!usedText || usedText->empty())
     {
         text->m_textSize.y = 0;
         return;

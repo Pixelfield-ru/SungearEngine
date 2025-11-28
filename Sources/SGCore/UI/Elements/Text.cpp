@@ -29,18 +29,21 @@ bool SGCore::UI::Text::draw(const LayeredFrameReceiver::reg_t& cameraReceiver,
 
         if(fontSpec)
         {
-            // filling the glyphs vector if vector does not match ===
-            if(m_glyphs.size() != usedText->size())
+            if(usedText)
             {
-                clearGlyphs();
-
-                for(size_t i = 0; i < usedText->size(); ++i)
+                // filling the glyphs vector if vector does not match ===
+                if(m_glyphs.size() != usedText->size())
                 {
-                    m_glyphs.push_back(fontSpec->tryGetGlyph((*usedText)[i]));
-                    m_lineBreaks.push_back(false);
+                    clearGlyphs();
+
+                    for(size_t i = 0; i < usedText->size(); ++i)
+                    {
+                        m_glyphs.push_back(fontSpec->tryGetGlyph((*usedText)[i]));
+                        m_lineBreaks.push_back(false);
+                    }
                 }
+                // ======================================================
             }
-            // ======================================================
 
             fontSpec->getRenderer()->drawText(this, elementTransform, elementCache);
         }

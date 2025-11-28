@@ -8,6 +8,7 @@
 
 #include "SGCore/UI/UIDocument.h"
 #include "SGCore/UI/UIElementAttributeType.h"
+#include "SGCore/UI/Utils.h"
 #include "SGCore/UI/Elements/Text.h"
 
 SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UITextNodeProcessor::allocateElement() noexcept
@@ -21,7 +22,17 @@ void SGCore::UI::UITextNodeProcessor::processElement(UIDocument* inDocument,
 {
     auto* textElement = static_cast<Text*>(element.get());
 
-    textElement->m_text = Utils::fromUTF8<char32_t>(elementNode.text().as_string());
+    const std::string text = elementNode.text().as_string();
+    // std::u32string text = SGCore::Utils::fromUTF8<char32_t>(elementNode.text().as_string());
+    if(const auto variable = UI::Utils::extractVariable(text))
+    {
+        const auto binding = inDocument->m_bindingsStorage.getBinding(*variable);
+        textElement->m_text = binding;
+    }
+    else
+    {
+        textElement->m_text = SGCore::Utils::fromUTF8<char32_t>(text);
+    }
 
     for(const auto& attribute : elementNode.attributes())
     {

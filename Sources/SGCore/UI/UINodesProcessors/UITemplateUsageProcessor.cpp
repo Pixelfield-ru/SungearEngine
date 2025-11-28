@@ -85,4 +85,44 @@ void SGCore::UI::UITemplateUsageProcessor::processElement(const Ref<TemplateElem
             }
         }
     }
+
+    const auto nodeColumnLine = inDocument->getLocationInFile(elementNode);
+
+    // checking if template usage has unknown attributes
+    for(const auto& attrib : elementNode.attributes())
+    {
+        if(!templateElement->m_attributes.contains(attrib.name()))
+        {
+            LOG_W(SGCORE_TAG,
+                  "In UI Document by path '{}' in instantiation of template '{}': unknown attribute '{}' of template was used. Attribute was ignored\n"
+                  "Line: {}\n"
+                  "Column: {}",
+                  SGCore::Utils::toUTF8(inDocument->getPath().resolved().u16string()),
+                  templateElement->m_name,
+                  attrib.name(),
+                  nodeColumnLine.first,
+                  nodeColumnLine.second)
+        }
+    }
+
+    // then processing template attributes
+    for(const auto& [templateAttribName, templateAttrib] : templateElement->m_attributes)
+    {
+        const auto& attrib = elementNode.attribute(templateAttribName);
+        if(!attrib && templateAttrib.m_isRequired)
+        {
+            LOG_E(SGCORE_TAG,
+                  "In UI Document by path '{}' in instantiation of template '{}': attribute '{}' is required\n"
+                  "Line: {}\n"
+                  "Column: {}",
+                  SGCore::Utils::toUTF8(inDocument->getPath().resolved().u16string()),
+                  templateElement->m_name,
+                  templateAttribName,
+                  nodeColumnLine.first,
+                  nodeColumnLine.second)
+            continue;
+        }
+
+        // todo: continue
+    }
 }

@@ -21,7 +21,20 @@ void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
 
     m_templates.clear();
 
+    m_bindingsStorage.clear();
+
+    m_debugOffsets.clear();
+
     const std::string u8Path = Utils::toUTF8(path.resolved().u16string());
+
+    const auto xmlContent = readXmlFileAndBuildOffsets(path.resolved());
+    if(!xmlContent)
+    {
+        LOG_E(SGCORE_TAG,
+              "In UI document: Cannot read XML file by path '{}'",
+              SGCore::Utils::toUTF8(path.resolved().u16string()))
+        return;
+    }
 
     pugi::xml_parse_result parseResult = m_document.load_file(u8Path.c_str());
     
@@ -164,6 +177,16 @@ SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIDocument::processUIElement(UIDo
     return outputElement;
 }
 
+std::pair<ptrdiff_t, ptrdiff_t> SGCore::UI::UIDocument::getLocationInFile(const pugi::xml_node& xmlNode) noexcept
+{
+    const auto offset = xmlNode.offset_debug();
+
+    const auto it = std::ranges::lower_bound(m_debugOffsets, offset);
+    const size_t index = it - m_debugOffsets.begin();
+
+    return std::make_pair(1 + index, index == 0 ? offset + 1 : offset - m_debugOffsets[index - 1]);
+}
+
 void SGCore::UI::UIDocument::applyDefaultStylesToNonStyledElements() noexcept
 {
     applyDefaultStylesToNonStyledElementsImpl(m_rootElement);
@@ -189,6 +212,31 @@ void SGCore::UI::UIDocument::applyDefaultStylesToNonStyledElementsImpl(const Ref
     {
         applyDefaultStylesToNonStyledElementsImpl(child);
     }
+}
+
+std::optional<std::string> SGCore::UI::UIDocument::readXmlFileAndBuildOffsets(const std::filesystem::path& filePath) noexcept
+{
+    std::ifstream file(filePath, std::ios::binary);
+    if(!file.is_open())
+    {
+        return std::nullopt;
+    }
+
+    std::string fileContent;
+
+    // Читаем весь файл сразу в строку
+    fileContent.assign(std::istreambuf_iterator<char>(file),
+                       std::istreambuf_iterator<char>());
+
+    // Теперь ищем позиции новых строк в уже загруженной строке
+    std::size_t pos = 0;
+    while((pos = fileContent.find('\n', pos)) != std::string::npos)
+    {
+        m_debugOffsets.push_back(pos);
+        ++pos;
+    }
+
+    return fileContent;
 }
 
 SGCore::AssetRef<SGCore::UI::CSSStyle>

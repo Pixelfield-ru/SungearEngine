@@ -102,10 +102,10 @@ void SGCore::MeshBuilder::buildSphereVariant1(SGCore::MeshBase& meshBase, const 
     float degLeft = 360.0f;
 
     // vertices count for every circle in sphere
-    int circleVerticesNum = (int) floorf(360.0f / angleIncrement);
+    const int circleVerticesNum = (int) floorf(360.0f / angleIncrement);
 
     // circle x-offset
-    float circlesXOffset = (radius * 2.0f) / ((float) (circleVerticesNum));
+    const float circlesXOffset = (radius * 2.0f) / ((float) (circleVerticesNum));
 
     glm::vec3 curPos = {0.0, 0.0, 0.0};
 

@@ -169,10 +169,10 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
                     const auto fontSpec =
                         lockedFont->getSpecialization(textStyle->getFontSpecializationSettings());
 
-                    const std::u32string* usedText = asTextElement->m_text.get();
+                    const std::u32string usedText = asTextElement->m_text.getOr();
 
                     // iterating through all characters :(
-                    for(size_t i = 0; i < usedText->size() && i < asTextElement->m_glyphs.size(); ++i)
+                    for(size_t i = 0; i < usedText.size() && i < asTextElement->m_glyphs.size(); ++i)
                     {
                         const auto* glyph = asTextElement->m_glyphs[i];
                         if(!glyph) continue;

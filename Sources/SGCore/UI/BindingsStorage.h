@@ -19,7 +19,7 @@ namespace SGCore::UI
         template<typename T>
         T* getAs() noexcept
         {
-            if(m_binding->type() == typeid(T*) || m_binding->type() == typeid(const T*))
+            if(m_binding->type() == typeid(T*))
             {
                 return std::any_cast<T*>(*m_binding);
             }
@@ -30,9 +30,9 @@ namespace SGCore::UI
         template<typename T>
         const T* getAs() const noexcept
         {
-            if(m_binding->type() == typeid(T*) || m_binding->type() == typeid(const T*))
+            if(m_binding->type() == typeid(T*))
             {
-                return std::any_cast<const T*>(*m_binding);
+                return std::any_cast<T*>(*m_binding);
             }
 
             return nullptr;
@@ -73,6 +73,11 @@ namespace SGCore::UI
             binding.m_binding = newBinding;
 
             return binding;
+        }
+
+        void clear() noexcept
+        {
+            m_bindingsAccess.clear();
         }
 
     private:

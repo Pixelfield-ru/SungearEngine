@@ -36,7 +36,24 @@ void SGCore::UI::UITemplateNodeProcessor::processElement(UIDocument* inDocument,
     {
         if(setting.name() == std::string("attribute"))
         {
+            const auto attribNameAttrib = setting.attribute("name");
 
+            if(!attribNameAttrib)
+            {
+                LOG_W(SGCORE_TAG,
+                      "In UI document by path '{}': attribute of template '{}' must have name",
+                      SGCore::Utils::toUTF8(inDocument->getPath().resolved().u16string()),
+                      templateElement->m_name)
+                continue;
+            }
+
+            auto& templateAttrib = templateElement->m_attributes[attribNameAttrib.as_string()];
+
+            if(const auto defaultValueAttrib = setting.attribute("defaultValue"))
+            {
+                templateAttrib.m_defaultValue = SGCore::Utils::fromUTF8<char32_t>(defaultValueAttrib.as_string());
+                templateAttrib.m_isRequired = false;
+            }
         }
     }
 
