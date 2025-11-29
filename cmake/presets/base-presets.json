@@ -5,6 +5,10 @@
       "generator": "Ninja",
       "name": "release-x64-base",
       "hidden": true,
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
       "cacheVariables": {
         "SG_BUILD_TYPE": "Release",
         "CMAKE_BUILD_TYPE": "Release",
@@ -17,6 +21,10 @@
       "generator": "Ninja",
       "name": "debug-x64-base",
       "hidden": true,
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
       "cacheVariables": {
         "SG_BUILD_TYPE": "Debug",
         "CMAKE_BUILD_TYPE": "Debug",
