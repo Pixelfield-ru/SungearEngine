@@ -4,7 +4,7 @@
     <template name="test-template">
         <elements>
             <div class="text-box">
-                <text class="test-text-1">Hello, I am template!</text>
+                <text class="test-text-1">Test</text>
             </div>
         </elements>
     </template>

@@ -21,6 +21,7 @@ void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
 
     m_templates.clear();
 
+    // todo: bindings are missed after document reloading
     m_bindingsStorage.clear();
 
     m_debugOffsets.clear();
@@ -36,7 +37,7 @@ void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
         return;
     }
 
-    pugi::xml_parse_result parseResult = m_document.load_file(u8Path.c_str());
+    pugi::xml_parse_result parseResult = m_document.load_string(xmlContent->c_str());
     
     if(!parseResult)
     {
