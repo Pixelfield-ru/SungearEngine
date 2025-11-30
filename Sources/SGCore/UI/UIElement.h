@@ -5,6 +5,7 @@
 #ifndef SUNGEARENGINE_UIELEMENT_H
 #define SUNGEARENGINE_UIELEMENT_H
 
+#include "AttributeValue.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Transformations/Transform.h"
 #include "CSS/CSSStyle.h"
@@ -46,6 +47,7 @@ namespace SGCore::UI
 
         // =================== XML ATTRIBUTES
         AssetRef<CSSStyle> m_mainStyle;
+        // AttributeValue<AssetRef<CSSStyle>> m_mainStyle;
         // std::variant<AttributeValue<std::string>, AssetRef<CSSStyle>> m_mainStyle;
         std::string m_name;
         // ===================

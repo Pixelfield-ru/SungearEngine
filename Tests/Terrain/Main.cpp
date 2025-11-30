@@ -15,7 +15,7 @@
 #include "SGCore/Serde/Components/NonSavable.h"
 #include "SGCore/Transformations/Controllable3D.h"
 #include "SGCore/Graphics/API/ICubemapTexture.h"
-#include "SGCore/Input/InputManager.h"
+#include "SGCore/Input/PCInput.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Physics/Rigidbody3D.h"
 #include "SGCore/Render/Alpha/TransparentEntityTag.h"
@@ -148,10 +148,12 @@ void coreInit()
 {
     auto mainAssetManager = SGCore::AssetManager::getInstance();
 
+    auto& pipelinesManager = SGCore::RenderPipelinesManager::instance();
+
     // setting pipeline that will render our scene
-    auto pbrrpPipeline = SGCore::RenderPipelinesManager::createRenderPipeline<SGCore::PBRRenderPipeline>();
-    SGCore::RenderPipelinesManager::registerRenderPipeline(pbrrpPipeline);
-    SGCore::RenderPipelinesManager::setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();
+    auto pbrrpPipeline = pipelinesManager.createRenderPipeline<SGCore::PBRRenderPipeline>();
+    pipelinesManager.registerRenderPipeline(pbrrpPipeline);
+    pipelinesManager.setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();
 
     // creating scene
     scene = SGCore::MakeRef<SGCore::Scene>();
@@ -242,7 +244,7 @@ void coreInit()
     auto standardCubemapMaterial = mainAssetManager->getOrAddAssetByAlias<SGCore::IMaterial>("standard_skybox_material0");
     standardCubemapMaterial->m_shaders["GeometryPass"] =
             mainAssetManager->loadAsset<SGCore::IShader>(
-                    *SGCore::RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["SkyboxShader"]);
+                    *pipelinesManager.getCurrentRenderPipeline()->m_shadersPaths["SkyboxShader"]);
     standardCubemapMaterial->m_meshRenderState.m_useFacesCulling = false;
     standardCubemapMaterial->addTexture2D(SGTextureSlot::SGTT_SKYBOX, standardCubemap);
 
@@ -275,7 +277,7 @@ void coreInit()
     auto standardTerrainMaterial = mainAssetManager->getOrAddAssetByAlias<SGCore::IMaterial>("standard_terrain_material");
     standardTerrainMaterial->m_shaders["GeometryPass"] =
             mainAssetManager->loadAsset<SGCore::IShader>(
-                    *SGCore::RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["StandardTerrainShader"]);
+                    *pipelinesManager.getCurrentRenderPipeline()->m_shadersPaths["StandardTerrainShader"]);
     standardTerrainMaterial->m_meshRenderState.m_useFacesCulling = false;
     standardTerrainMaterial->m_meshRenderState.m_facesCullingPolygonsOrder = SGPolygonsOrder::SGG_CCW;
     //standardTerrainMaterial->m_meshRenderState.m_useIndices = false;
@@ -294,7 +296,7 @@ void coreInit()
     auto testMaterial = mainAssetManager->getOrAddAssetByAlias<SGCore::IMaterial>("test_material_0");
     testMaterial->m_shaders["GeometryPass"] =
             mainAssetManager->loadAsset<SGCore::IShader>(
-                    *SGCore::RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["StandardMeshShader"]);
+                    *pipelinesManager.getCurrentRenderPipeline()->m_shadersPaths["StandardMeshShader"]);
     testMaterial->m_meshRenderState.m_useFacesCulling = false;
     testMaterial->m_meshRenderState.m_facesCullingPolygonsOrder = SGPolygonsOrder::SGG_CCW;
     //standardTerrainMaterial->m_meshRenderState.m_useIndices = false;
@@ -438,9 +440,9 @@ void onUpdate(const double& dt, const double& fixedDt)
     if(SGCore::Scene::getCurrentScene())
     {
         SGCore::Scene::getCurrentScene()->update(dt, fixedDt);
-    }
 
-    const auto mainInputListener = SGCore::InputManager::getMainInputListener();
+        SGCore::CoreMain::getRenderer()->renderTextureOnScreen(attachmentToDisplay.get());
+    }
 
     /*if(mainInputListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT))
     {
@@ -456,20 +458,20 @@ void onUpdate(const double& dt, const double& fixedDt)
     auto& terrainTransform = scene->getECSRegistry()->get<SGCore::Transform>(terrainEntity);
     auto& terrain = scene->getECSRegistry()->get<SGCore::Terrain>(terrainEntity);
 
-    if(mainInputListener->keyboardKeyReleased(SGCore::KeyboardKey::KEY_3))
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_3))
     {
         // terrainTransform->m_ownTransform.m_rotation = glm::identity<glm::quat>();
         terrainTransform->m_ownTransform.m_rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(0, 0, 1)) * terrainTransform->m_ownTransform.m_rotation;
 
     }
 
-    if(mainInputListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_9))
+    if(SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_9))
     {
         auto& atmosphereScattering = scene->getECSRegistry()->get<SGCore::Atmosphere>(atmosphereEntity);
         atmosphereScattering.m_sunRotation.x += 10.0f * dt;
     }
 
-    if(mainInputListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_0))
+    if(SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_0))
     {
         auto& atmosphereScattering = scene->getECSRegistry()->get<SGCore::Atmosphere>(atmosphereEntity);
         atmosphereScattering.m_sunRotation.x -= 10.0f * dt;
@@ -483,8 +485,8 @@ void onUpdate(const double& dt, const double& fixedDt)
         SGCore::CoreMain::getWindow().getSize(windowSizeX, windowSizeY);
 
         const glm::vec2 cursorPos {
-            mainInputListener->getCursorPositionX(),
-            windowSizeY - mainInputListener->getCursorPositionY()
+            SGCore::Input::PC::getCursorPositionX(),
+            windowSizeY - SGCore::Input::PC::getCursorPositionY()
         };
 
         const auto& attachment4 = layeredFrameReceiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4);
@@ -519,16 +521,18 @@ void onUpdate(const double& dt, const double& fixedDt)
         decalTransform->m_ownTransform.m_position = worldPos;
         decalTransform->m_ownTransform.m_rotation = rotation * glm::angleAxis(glm::radians(-90.0f), glm::vec3 { 1.0f, 0.0f, 0.0f });
 
-        if(mainInputListener->mouseButtonDown(SGCore::MouseButton::MOUSE_BUTTON_LEFT))
+        if(SGCore::Input::PC::mouseButtonDown(SGCore::Input::MouseButton::MOUSE_BUTTON_LEFT))
         {
             const glm::vec3 decalRelativePos = worldPos - terrainTransform->m_finalTransform.m_position + glm::vec3 { terrain.getPatchSize() / 2.0f, 0.0f, terrain.getPatchSize() / 2.0f };
 
             const glm::vec2 pixelSize {
-                (terrain.getPatchSize() * terrain.getSize().x) / (float) terrainDisplacementTex->getWidth(),
-                (terrain.getPatchSize() * terrain.getSize().y) / (float) terrainDisplacementTex->getHeight()
+                float(terrain.getPatchSize() * terrain.getSize().x) / (float) terrainDisplacementTex->getWidth(),
+                float(terrain.getPatchSize() * terrain.getSize().y) / (float) terrainDisplacementTex->getHeight()
             };
 
             const glm::ivec2 indices { std::floor(decalRelativePos.x / pixelSize.x), std::floor(decalRelativePos.z / pixelSize.y) };
+
+            std::cout << "indices: " << indices.x << ", " << indices.y << std::endl;
 
             const float paintRadius = (decalTransform->m_ownTransform.m_scale.x / pixelSize.x);
             const int growRegionHalfSizeX = (int) paintRadius;
@@ -544,7 +548,8 @@ void onUpdate(const double& dt, const double& fixedDt)
                         {
                             if(glm::length(glm::vec2 { x, y }) < paintRadius)
                             {
-                                const size_t finalIndex = indices.x + x + (indices.y + y) * terrainDisplacementTex->getWidth();
+                                // const size_t finalIndex = indices.x + x + (indices.y + y) * terrainDisplacementTex->getWidth();
+                                const size_t finalIndex = indices.x + (indices.y) * terrainDisplacementTex->getWidth();
                                 if(finalIndex > 0 && finalIndex < terrainDisplacementData.size())
                                 {
                                     terrainDisplacementData[finalIndex] += terrainGrowSpeed;
@@ -577,21 +582,21 @@ void onUpdate(const double& dt, const double& fixedDt)
             }
 
             terrainDisplacementTex->bind(0);
-            terrainDisplacementTex->subTextureData(terrainDisplacementData.data(), terrainDisplacementTex->getWidth(), terrainDisplacementTex->getHeight(), 0, 0);
+            terrainDisplacementTex->subTextureData(reinterpret_cast<const std::uint8_t*>(terrainDisplacementData.data()), terrainDisplacementTex->getWidth(), terrainDisplacementTex->getHeight(), 0, 0);
         }
 
-        if(mainInputListener->keyboardKeyReleased(SGCore::KeyboardKey::KEY_F1))
+        if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_F1))
         {
             currentTerrainOp = TerrainOp::TERRAIN_GROW;
             terrainDecalMaterial->replaceTexture(SGTextureSlot::SGTT_DIFFUSE, 0, terrainDecalDiffuseTex0);
         }
-        else if(mainInputListener->keyboardKeyReleased(SGCore::KeyboardKey::KEY_F2))
+        else if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_F2))
         {
             currentTerrainOp = TerrainOp::TERRAIN_LOWER;
             terrainDecalMaterial->replaceTexture(SGTextureSlot::SGTT_DIFFUSE, 0, terrainDecalDiffuseTex1);
         }
 
-        if(mainInputListener->keyboardKeyReleased(SGCore::KeyboardKey::KEY_PAGE_UP))
+        if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_PAGE_UP))
         {
             switch(currentTerrainOp)
             {
@@ -610,7 +615,7 @@ void onUpdate(const double& dt, const double& fixedDt)
             }
         }
 
-        if(mainInputListener->keyboardKeyReleased(SGCore::KeyboardKey::KEY_PAGE_DOWN))
+        if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_PAGE_DOWN))
         {
             switch(currentTerrainOp)
             {
@@ -629,34 +634,17 @@ void onUpdate(const double& dt, const double& fixedDt)
             }
         }
 
-        if(mainInputListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_EQUAL))
+        if(SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_EQUAL))
         {
             decalTransform->m_ownTransform.m_scale += 0.1f;
         }
-        else if(mainInputListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_MINUS))
+        else if(SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_MINUS))
         {
             decalTransform->m_ownTransform.m_scale -= 0.1f;
         }
     }
 
-    // rendering frame buffer attachment from camera to screen
-    screenShader->bind();
-
-    // use this to flip screen output
-    screenShader->useInteger("u_flipOutput", false);
-
-    // someTexture->bind(0);
-    attachmentToDisplay->bind(0);
-    screenShader->useTextureBlock("u_bufferToDisplay", 0);
-
-    SGCore::CoreMain::getRenderer()->renderArray(
-        quadMeshData->getVertexArray(),
-        quadMeshRenderState,
-        quadMeshData->m_vertices.size(),
-        quadMeshData->m_indices.size()
-    );
-
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_2))
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_2))
     {
         auto shaders = SGCore::AssetManager::getInstance()->getAssetsWithType<SGCore::IShader>();
         for(const auto& shader : shaders)
@@ -665,18 +653,18 @@ void onUpdate(const double& dt, const double& fixedDt)
         }
     }
 
-    if (SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_4))
+    if (SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_4))
     {
         auto& cameraTransform = scene->getECSRegistry()->get<SGCore::Transform>(mainCamera);
         createBallAndApplyImpulse(cameraTransform->m_ownTransform.m_position, cameraTransform->m_ownTransform.m_forward * 200000.0f / 10.0f);
     }
 
-    if (SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_5))
+    if (SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_5))
     {
         regenerateTerrainPhysicalMesh(terrainEntity);
     }
 
-    if (SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_6))
+    if (SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_6))
     {
         if(scene->getSystem<SGCore::PhysicsWorld3D>()->getDebugDraw()->getDebugMode() != btIDebugDraw::DBG_NoDebug)
         {

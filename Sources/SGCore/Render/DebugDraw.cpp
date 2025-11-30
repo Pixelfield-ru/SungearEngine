@@ -42,7 +42,7 @@ SGCore::DebugDraw::DebugDraw()
 
     m_linesVertexArray->addVertexBuffer(m_linesPositionsVertexBuffer.get());
 
-    m_linesPositionsVertexBuffer->addAttribute(0, 3, SGGDataType::SGG_FLOAT, false, (4 + 3) * sizeof(float), 0);
+    m_linesPositionsVertexBuffer->addAttribute(0, 3, SGGDataType::SGG_FLOAT, false, 3 * sizeof(float), 0);
     m_linesPositionsVertexBuffer->useAttributes();
     
     // ==============================================
@@ -58,7 +58,7 @@ SGCore::DebugDraw::DebugDraw()
 
     m_linesVertexArray->addVertexBuffer(m_linesColorsVertexBuffer.get());
 
-    m_linesColorsVertexBuffer->addAttribute(1, 4, SGGDataType::SGG_FLOAT, false, (4 + 3) * sizeof(float), 3 * sizeof(float));
+    m_linesColorsVertexBuffer->addAttribute(1, 4, SGGDataType::SGG_FLOAT, false, 4 * sizeof(float), 0);
     m_linesColorsVertexBuffer->useAttributes();
     
     // ==============================================

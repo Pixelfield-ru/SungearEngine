@@ -4,6 +4,9 @@
 
 #include "Main.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/ext.hpp>
+
 #include <SGCore/Memory/AssetManager.h>
 #include <SGCore/UI/CSS/CSSFile.h>
 #include <SGCore/Main/CoreMain.h>
@@ -13,29 +16,30 @@
 #include <SGCore/Render/LayeredFrameReceiver.h>
 #include <SGCore/Render/RenderingBase.h>
 
-#include "SGCore/Actions/KeyboardKeyDownAction.h"
-#include "SGCore/Actions/KeyboardKeyReleasedAction.h"
-#include "SGCore/Motion/MotionPlanner.h"
-#include "SGCore/Motion/MotionPlannerConnection.h"
-#include "SGCore/Audio/AudioListener.h"
-#include "SGCore/Audio/AudioSource.h"
-#include "SGCore/Coro/CoroScheduler.h"
-#include "SGCore/Graphics/API/IFrameBuffer.h"
-#include "SGCore/Graphics/API/ITexture2D.h"
-#include "SGCore/Input/InputManager.h"
-#include "SGCore/Memory/Assets/ModelAsset.h"
-#include "SGCore/Render/Camera3D.h"
-#include "SGCore/Render/Alpha/TransparentEntityTag.h"
-#include "SGCore/Render/Picking/Pickable.h"
-#include "SGCore/Render/SpacePartitioning/IgnoreOctrees.h"
-#include "SGCore/Serde/Components/NonSavable.h"
-#include "SGCore/Transformations/Controllable3D.h"
-#include "SGCore/Render/Mesh.h"
-#include "SGCore/Render/Atmosphere/Atmosphere.h"
-#include "SGCore/Memory/Assets/Materials/IMaterial.h"
-#include "SGCore/Graphics/API/ICubemapTexture.h"
-#include "SGCore/Memory/Assets/AnimationsFile.h"
-#include "SGCore/Memory/Assets/AudioTrackAsset.h"
+#include <SGCore/Actions/KeyboardKeyDownAction.h>
+#include <SGCore/Actions/KeyboardKeyReleasedAction.h>
+#include <SGCore/Motion/MotionPlanner.h>
+#include <SGCore/Motion/MotionPlannerConnection.h>
+#include <SGCore/Audio/AudioListener.h>
+#include <SGCore/Audio/AudioSource.h>
+#include <SGCore/Coro/CoroScheduler.h>
+#include <SGCore/Graphics/API/IFrameBuffer.h>
+#include <SGCore/Graphics/API/ITexture2D.h>
+#include <SGCore/Input/PCInput.h>
+#include <SGCore/Memory/Assets/ModelAsset.h>
+#include <SGCore/Render/Camera3D.h>
+#include <SGCore/Render/Alpha/TransparentEntityTag.h>
+#include <SGCore/Render/Picking/Pickable.h>
+#include <SGCore/Render/SpacePartitioning/IgnoreOctrees.h>
+#include <SGCore/Serde/Components/NonSavable.h>
+#include <SGCore/Transformations/Controllable3D.h>
+#include <SGCore/Render/Mesh.h>
+#include <SGCore/Render/Atmosphere/Atmosphere.h>
+#include <SGCore/Memory/Assets/Materials/IMaterial.h>
+#include <SGCore/Graphics/API/ICubemapTexture.h>
+#include <SGCore/Memory/Assets/AnimationsFile.h>
+#include <SGCore/Memory/Assets/AudioTrackAsset.h>
+#include <SGCore/Coro/Task.h>
 
 #if SG_PLATFORM_OS_WINDOWS
 #ifdef __cplusplus
@@ -49,9 +53,7 @@ extern "C" {
 #endif
 #endif
 
-SGCore::AssetRef<SGCore::IShader> screenShader;
 SGCore::Ref<SGCore::Scene> scene;
-SGCore::Ref<SGCore::IMeshData> quadMeshData;
 SGCore::AssetRef<SGCore::ITexture2D> someTexture;
 SGCore::AssetRef<SGCore::AudioTrackAsset> copterSound;
 SGCore::MeshRenderState quadMeshRenderState;
@@ -70,10 +72,12 @@ void coreInit()
 {
     auto mainAssetManager = SGCore::AssetManager::getInstance();
 
+    auto& renderPipelinesManager = SGCore::RenderPipelinesManager::instance();
+
     // setting pipeline that will render our scene
-    auto pbrrpPipeline = SGCore::RenderPipelinesManager::createRenderPipeline<SGCore::PBRRenderPipeline>();
-    SGCore::RenderPipelinesManager::registerRenderPipeline(pbrrpPipeline);
-    SGCore::RenderPipelinesManager::setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();
+    auto pbrrpPipeline = renderPipelinesManager.createRenderPipeline<SGCore::PBRRenderPipeline>();
+    renderPipelinesManager.registerRenderPipeline(pbrrpPipeline);
+    renderPipelinesManager.setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();
 
     // creating scene
     scene = SGCore::MakeRef<SGCore::Scene>();
@@ -86,7 +90,6 @@ void coreInit()
         "cube_model",
         "${enginePath}/Resources/models/standard/cube.obj"
     );
-    screenShader = mainAssetManager->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
     // TEST!!!
     someTexture = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/no_material.png");
 
@@ -142,7 +145,7 @@ void coreInit()
     auto standardCubemapMaterial = mainAssetManager->getOrAddAssetByAlias<SGCore::IMaterial>("standard_skybox_material0");
     standardCubemapMaterial->m_shaders["GeometryPass"] =
             mainAssetManager->loadAsset<SGCore::IShader>(
-                    *SGCore::RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["SkyboxShader"]);
+                    *renderPipelinesManager.getCurrentRenderPipeline()->m_shadersPaths["SkyboxShader"]);
     standardCubemapMaterial->m_meshRenderState.m_useFacesCulling = false;
     standardCubemapMaterial->addTexture2D(SGTextureSlot::SGTT_SKYBOX, standardCubemap);
 
@@ -163,7 +166,6 @@ void coreInit()
 
     auto& skyboxMesh = scene->getECSRegistry()->get<SGCore::Mesh>(atmosphereEntity);
     auto& atmosphereScattering = scene->getECSRegistry()->emplace<SGCore::Atmosphere>(atmosphereEntity);
-    atmosphereScattering.m_sunRotation.z = 90.0;
     skyboxMesh.m_base.setMaterial(SGCore::AssetManager::getInstance()->getAsset<SGCore::IMaterial, SGCore::AssetStorageType::BY_ALIAS>("standard_skybox_material0"));
 
     auto& skyboxTransform = scene->getECSRegistry()->get<SGCore::Transform>(atmosphereEntity);
@@ -188,9 +190,9 @@ void coreInit()
 
         // auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/fsb_operator/scene.gltf/skeletons/GLTF_created_0_rootJoint");
 
-        // auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf/skeletons/GLTF_created_0_rootJoint");
+        auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf/skeletons/GLTF_created_0_rootJoint");
 
-        auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf/skeletons/_rootJoint");
+        // auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf/skeletons/_rootJoint");
 
         // auto modelSkeletonAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Skeleton>("${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx/skeletons/mixamorig:Hips");
 
@@ -220,8 +222,8 @@ void coreInit()
 
             // auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/tec/scene.gltf/animations");
 
-            // auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf/animations");
-            auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf/animations");
+            auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf/animations");
+            // auto animations0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AnimationsFile>("${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf/animations");
 
             auto& motionPlanner = SGCore::Scene::getCurrentScene()->getECSRegistry()->emplace<SGCore::MotionPlanner>(
                 entities[0]);
@@ -233,7 +235,7 @@ void coreInit()
             copterAudioSource.attachAudioTrack(copterSound);
             copterAudioSource.setRolloffFactor(0.5f);
             copterAudioSource.setIsLooping(true);
-            copterAudioSource.setState(SGCore::AudioSourceState::STOPPED);
+            copterAudioSource.setState(SGCore::AudioSourceState::PLAYING);
             copterAudioSource.setType(SGCore::AudioSourceType::POSITIONAL);
 
             // SGCore::Transform::reg_t& huTaoTransform = SGCore::Scene::getCurrentScene()->getECSRegistry()->get<SGCore::Transform>(entities[0]);
@@ -294,44 +296,13 @@ void coreInit()
 
     // SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/Fast Run.fbx");
 
-    // SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf");
+    SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/drone/scene.gltf");
 
-    SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf");
+    // SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Tests/ModelDraw/Resources/hu_tao_animated/scene.gltf");
 
     // SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelAsset, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Models/vss/scene.gltf");
 
     // creating quad model for drawing camera framebuffer attachment to screen ======================================
-
-    quadMeshData = SGCore::Ref<SGCore::IMeshData>(SGCore::CoreMain::getRenderer()->createMeshData());
-
-    quadMeshData->m_vertices.resize(4);
-
-    quadMeshData->m_vertices[0] = {
-        .m_position = { -1, -1, 0.0f }
-    };
-
-    quadMeshData->m_vertices[1] = {
-        .m_position = { -1, 1, 0.0f }
-    };
-
-    quadMeshData->m_vertices[2] = {
-        .m_position = { 1, 1, 0.0f }
-    };
-
-    quadMeshData->m_vertices[3] = {
-        .m_position = { 1, -1, 0.0f }
-    };
-
-    quadMeshData->m_indices.resize(6);
-
-    quadMeshData->m_indices[0] = 0;
-    quadMeshData->m_indices[1] = 2;
-    quadMeshData->m_indices[2] = 1;
-    quadMeshData->m_indices[3] = 0;
-    quadMeshData->m_indices[4] = 3;
-    quadMeshData->m_indices[5] = 2;
-
-    quadMeshData->prepare();
 }
 
 double g_dt = 0.0f;
@@ -357,11 +328,12 @@ void onUpdate(const double& dt, const double& fixedDt)
 {
     g_dt = dt;
 
-    const auto& mainListener = SGCore::InputManager::getMainInputListener();
+    const auto currentScene = SGCore::Scene::getCurrentScene();
 
-    if(SGCore::Scene::getCurrentScene())
+    if(currentScene)
     {
-        auto& cameraTransform = SGCore::Scene::getCurrentScene()->getECSRegistry()->get<SGCore::Transform>(mainCamera);
+        auto& cameraTransform = currentScene->getECSRegistry()->get<SGCore::Transform>(mainCamera);
+        auto& frameReceiver = currentScene->getECSRegistry()->get<SGCore::LayeredFrameReceiver>(mainCamera);
 
         SGCore::AudioListener::setPosition(cameraTransform->m_finalTransform.m_position);
         SGCore::AudioListener::setOrientation(cameraTransform->m_finalTransform.m_forward, cameraTransform->m_finalTransform.m_up);
@@ -370,49 +342,34 @@ void onUpdate(const double& dt, const double& fixedDt)
 
         const float characterSpeed = 3.0f;
 
-        if(mainListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_UP))
+        if(SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_UP))
         {
             characterTransform->m_ownTransform.m_position += characterTransform->m_finalTransform.m_up * characterSpeed * dt;
         }
-        if(mainListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_DOWN))
+        if(SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_DOWN))
         {
             characterTransform->m_ownTransform.m_position -= characterTransform->m_finalTransform.m_up * characterSpeed * dt;
         }
-        if(mainListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT))
+        if(SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_LEFT))
         {
             characterTransform->m_ownTransform.m_position -= characterTransform->m_finalTransform.m_right * characterSpeed * dt;
         }
-        if(mainListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_RIGHT))
+        if(SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_RIGHT))
         {
             characterTransform->m_ownTransform.m_position += characterTransform->m_finalTransform.m_right * characterSpeed * dt;
         }
 
-        if(mainListener->keyboardKeyReleased(SGCore::KeyboardKey::KEY_M))
+        if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_M))
         {
-            moveSmoothly(characterEntity, characterTransform->m_ownTransform.m_position + characterTransform->m_ownTransform.m_up * 10.0f, 0.01f).run();
+            moveSmoothly(characterEntity, characterTransform->m_ownTransform.m_position + characterTransform->m_ownTransform.m_up * 10.0f, 0.01f);
         }
 
-        SGCore::Scene::getCurrentScene()->update(dt, fixedDt);
+        currentScene->update(dt, fixedDt);
+
+        SGCore::CoreMain::getRenderer()->renderTextureOnScreen(attachmentToDisplay.get(), false);
     }
 
-    // rendering frame buffer attachment from camera to screen
-    screenShader->bind();
-
-    // use this to flip screen output
-    screenShader->useInteger("u_flipOutput", false);
-
-    // someTexture->bind(0);
-    attachmentToDisplay->bind(0);
-    screenShader->useTextureBlock("u_bufferToDisplay", 0);
-
-    SGCore::CoreMain::getRenderer()->renderArray(
-        quadMeshData->getVertexArray(),
-        quadMeshRenderState,
-        quadMeshData->m_vertices.size(),
-        quadMeshData->m_indices.size()
-    );
-
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_2))
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_2))
     {
         auto shaders = SGCore::AssetManager::getInstance()->getAssetsWithType<SGCore::IShader>();
         for(const auto& shader : shaders)
@@ -421,17 +378,17 @@ void onUpdate(const double& dt, const double& fixedDt)
         }
     }
 
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_3))
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_3))
     {
         testIdleNode->m_isPaused = !testIdleNode->m_isPaused;
     }
 
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_MINUS))
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_MINUS))
     {
         testIdleNode->m_animationSpeed -= 0.1f;
     }
 
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_KP_ADD))
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_KP_ADD))
     {
         testIdleNode->m_animationSpeed += 0.1f;
     }

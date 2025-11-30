@@ -1,5 +1,5 @@
 #if defined(SG_GLSL4) || defined(SG_GLES32)
     #include "sg_shaders/impl/glsl4/pbr/terrain.glsl"
-#else defined(SG_HLSL)
+#elif defined(SG_HLSL)
     #error Standard PBR terrain shader is not implemented for HLSL!
 #endif

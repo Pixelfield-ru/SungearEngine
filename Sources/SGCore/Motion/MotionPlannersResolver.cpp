@@ -96,6 +96,8 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
         {
             // std::cout << "playing nodes: " << nodesToInterpolate.size() << std::endl;
 
+            const auto begin = std::chrono::high_resolution_clock::now();
+
             // animating bones
             processMotionNodes(dt,
                                registry,
@@ -107,6 +109,12 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
                                transform,
                                nullptr,
                                updatedBonesCount);
+
+            const auto end = std::chrono::high_resolution_clock::now();
+
+            const auto duration_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+
+            std::cout << "processMotionNodes time: " << duration_ns.count() << std::endl;
         }
 
         // updating count of bones in data vector

@@ -4,6 +4,7 @@
 
 #include "PCInput.h"
 
+#include "SGCore/Main/CoreMain.h"
 #include "SGCore/Main/Window.h"
 
 void SGCore::Input::PC::startFrame() noexcept
@@ -17,6 +18,17 @@ void SGCore::Input::PC::startFrame() noexcept
 
     m_cursorPositionDeltaX = m_cursorPositionX - m_cursorPositionLastX;
     m_cursorPositionDeltaY = m_cursorPositionY - m_cursorPositionLastY;
+
+    if(CoreMain::getWindow().isHideAndCentralizeCursor())
+    {
+        int windowSizeX;
+        int windowSizeY;
+
+        CoreMain::getWindow().getSize(windowSizeX, windowSizeY);
+        setCursorPosition((float) windowSizeX / 2.0f, (float) windowSizeY / 2.0f);
+
+        updateCursorPosition();
+    }
 }
 
 bool SGCore::Input::PC::keyboardKeyDown(KeyboardKey key) noexcept

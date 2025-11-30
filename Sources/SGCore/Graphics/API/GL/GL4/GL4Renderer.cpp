@@ -223,7 +223,7 @@ void SGCore::GL4Renderer::renderMeshData(const IMeshData* meshData,
                        GL_UNSIGNED_INT, nullptr);
     }
 
-    glBindVertexArray(0);
+    // glBindVertexArray(0);
 }
 
 void SGCore::GL4Renderer::renderArray(const Ref<IVertexArray>& vertexArray,
@@ -250,7 +250,7 @@ void SGCore::GL4Renderer::renderArray(const Ref<IVertexArray>& vertexArray,
                        GL_UNSIGNED_INT, nullptr);
     }
 
-    glBindVertexArray(0);
+    // glBindVertexArray(0);
 }
 
 void SGCore::GL4Renderer::renderArrayInstanced(const Ref<IVertexArray>& vertexArray,
@@ -278,7 +278,7 @@ void SGCore::GL4Renderer::renderArrayInstanced(const Ref<IVertexArray>& vertexAr
                                 GL_UNSIGNED_INT, nullptr, instancesCount);
     }
 
-    glBindVertexArray(0);
+    // glBindVertexArray(0);
 }
 
 SGCore::GL46Shader* SGCore::GL4Renderer::createShader()

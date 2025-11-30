@@ -13,6 +13,7 @@ void main()
 {
     fs_lineCol = linesColorsAttribute;
 
+    // gl_Position = vec4(linesPositionsAttribute, 1.0);
     gl_Position = camera.projectionSpaceMatrix * vec4(linesPositionsAttribute, 1.0);
 }
 

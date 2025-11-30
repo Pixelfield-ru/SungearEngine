@@ -28,14 +28,16 @@ void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double&
         TransformBase& ownTransform = transform->m_ownTransform;
         TransformBase& finalTransform = transform->m_finalTransform;
 
+        const float inverseFactor = controllable3D.m_inverseMouse ? -1.0f : 1.0f;
+
         if(!ownTransform.m_blockRotation)
         {
             ownTransform.m_yawPitchRoll.x -=
                     (float) Input::PC::getCursorPositionDeltaY() *
-                    controllable3D.m_rotationSensitive;
+                    controllable3D.m_rotationSensitive * inverseFactor;
             ownTransform.m_yawPitchRoll.y -=
                     (float) Input::PC::getCursorPositionDeltaX() *
-                    controllable3D.m_rotationSensitive;
+                    controllable3D.m_rotationSensitive * inverseFactor;
         }
 
         if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_R))
