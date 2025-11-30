@@ -1,9 +1,4 @@
-//
-// Created by stuka on 18.01.2025.
-//
-
-#ifndef SUNGEARENGINE_CSSSELECTOR_H
-#define SUNGEARENGINE_CSSSELECTOR_H
+#pragma once
 
 #include <vector>
 
@@ -18,6 +13,7 @@
 
 #include "SGCore/UI/Math/CSSMathNode.h"
 #include "SGCore/Utils/Macroses.h"
+#include "StyleProperty.h"
 
 namespace SGCore::UI
 {
@@ -41,29 +37,60 @@ namespace SGCore::UI
 #pragma region Properties
         // ============================================================== properties
 
+// iterate through all style properties names
+#define style_properties(prop) \
+    prop(m_display) \
+    prop(m_flexDirection) 
+
         DisplayKeyword m_display = DisplayKeyword::KW_FLEX;
         FlexboxKeyword m_flexDirection = FlexboxKeyword::KW_ROW;
         FlexboxKeyword m_flexWrap = FlexboxKeyword::KW_NOWRAP;
 
-        PropertyValue<PositionAndSizeKeyword::KW_AUTO, Ref<StyleMathNode>> m_width;
-        PropertyValue<PositionAndSizeKeyword::KW_AUTO, Ref<StyleMathNode>> m_height;
+        using SizeStyleProperty = std::variant<PositionAndSizeKeyword, Ref<StyleMathNode>>;
+        SizeStyleProperty m_width;
+        SizeStyleProperty m_height;
 
-        /// top, right, bottom, left
-        PropertyValue<UniversalKeyword::KW_UNSET, Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>> m_padding;
+        using PaddingStyleProperty = std::variant<UniversalKeyword, Ref<StyleMathNode>>;
+        PaddingStyleProperty m_paddingLeft;
+        PaddingStyleProperty m_paddingRight;
+        PaddingStyleProperty m_paddingBottom;
+        PaddingStyleProperty m_paddingTop;
 
-        PropertyValue<PositionAndSizeKeyword::KW_UNSET, Ref<StyleMathNode>, Ref<StyleMathNode>> m_gap;
+        std::variant<
+            std::tuple<
+                RefStyleProperty<&Style::m_paddingLeft, &Style::m_paddingRight>, 
+                RefStyleProperty<&Style::m_paddingTop, &Style::m_paddingBottom>
+            >,
+            RefStyleProperty<&Style::m_paddingLeft, &Style::m_paddingRight, &Style::m_paddingTop, &Style::m_paddingBottom>
+        > m_padding;
 
-        PropertyValue<UniversalKeyword::KW_UNSET, BorderRadiusAlternativeValue> m_bottomLeftBorderRadius;
-        PropertyValue<UniversalKeyword::KW_UNSET, BorderRadiusAlternativeValue> m_topLeftBorderRadius;
-        PropertyValue<UniversalKeyword::KW_UNSET, BorderRadiusAlternativeValue> m_topRightBorderRadius;
-        PropertyValue<UniversalKeyword::KW_UNSET, BorderRadiusAlternativeValue> m_bottomRightBorderRadius;
+        
+        using GapStyleProperty = SizeStyleProperty;
+        GapStyleProperty m_rowGap;
+        GapStyleProperty m_collumnGap;
+        
+        RefStyleProperty<&Style::m_rowGap, &Style::m_collumnGap> m_gap;
 
-        PropertyValue<ColorKeyword::KW_TRANSPARENT, Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>> m_backgroundColor;
+        struct BorderRadius final
+        {
+            Ref<StyleMathNode> m_radiusX;
+            Ref<StyleMathNode> m_radiusY;
+        };
+        using BorderRadiusStyleProperty = std::variant<UniversalKeyword, BorderRadius>;
+        BorderRadiusStyleProperty m_bottomLeftBorderRadius;
+        BorderRadiusStyleProperty m_topLeftBorderRadius;
+        BorderRadiusStyleProperty m_topRightBorderRadius;
+        BorderRadiusStyleProperty m_bottomRightBorderRadius;
+
+        std::variant<
+            ColorKeyword, 
+            std::tuple<Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>>
+        > m_backgroundColor;
 
         AssetWeakRef<Font> m_font;
 
         /// Used as scale.
-        PropertyValue<FontSizeKeyword::KW_UNSET, Ref<StyleMathNode>> m_fontSize;
+        std::variant<FontSizeKeyword, Ref<StyleMathNode>> m_fontSize;
 
         // ==============================================================
 #pragma endregion Properties
@@ -116,5 +143,3 @@ namespace SGCore::UI
         mutable size_t m_pseudoClassHash = 0;
     };
 }
-
-#endif //SUNGEARENGINE_CSSSELECTOR_H
