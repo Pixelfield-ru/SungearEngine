@@ -14,7 +14,7 @@
 #define CSS_KEYWORD(name, value) static constexpr std::int64_t name = value;
 #define CSS_DECLARE_UNIVERSAL_KEYWORDS KW_INHERIT, KW_INITIAL, KW_UNSET, KW_UNKNOWN
 
-namespace SGCore::UI
+namespace SGCore::UI::depreciated
 {
     enum struct UniversalKeyword
     {

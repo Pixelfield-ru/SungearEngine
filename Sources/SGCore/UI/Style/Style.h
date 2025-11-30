@@ -13,6 +13,8 @@
 #include "SGCore/Utils/Macroses.h"
 #include "StyleProperty.h"
 
+
+
 namespace SGCore::UI
 {
     struct Style : IAsset
@@ -37,27 +39,27 @@ namespace SGCore::UI
 
 // iterate through all style properties names
 #define style_properties(prop) \
-    prop(m_display, display, display) \
-    prop(m_flexDirection, flex-direction, flexDirection) \
-    prop(m_flexWrap, flex-wrap, flexWrap) \
-    prop(m_width, width, width) \
-    prop(m_height, height, height) \
-    prop(m_paddingLeft, padding-left, paddingLeft) \
-    prop(m_paddingRight, padding-right, paddingRight) \
-    prop(m_paddingBottom, padding-bottom, paddingBottom) \
-    prop(m_paddingTop, padding-top, paddingTop) \
-    prop(m_padding, padding, padding) \
-    prop(m_rowGap, row-gap, rowGap) \
-    prop(m_collumnGap, collumn-gap, collumnGap) \
-    prop(m_gap, gap, gap) \
-    prop(m_bottomLeftBorderRadius, bottom-left-border-radius, bottomLeftBorderRadius) \
-    prop(m_topLeftBorderRadius, top-left-border-radius, topLeftBorderRadius) \
-    prop(m_topRightBorderRadius, top-right-border-radius, topRightBorderRadius) \
-    prop(m_bottomRightBorderRadius, bottom-right-border-radius, bottomRightBorderRadius) \
-    prop(m_borderRadius, border-radius, borderRadius) \
-    prop(m_backgroundColor, background-color, backgroundColor) \
-    prop(m_fontSize, font-size, fontSize)
-    
+    prop(display) \
+    prop(flexDirection) \
+    prop(flexWrap) \
+    prop(width) \
+    prop(height) \
+    prop(paddingLeft) \
+    prop(paddingRight) \
+    prop(paddingBottom) \
+    prop(paddingTop) \
+    prop(padding) \
+    prop(rowGap) \
+    prop(columnGap) \
+    prop(gap) \
+    prop(bottomLeftBorderRadius) \
+    prop(topLeftBorderRadius) \
+    prop(topRightBorderRadius) \
+    prop(bottomRightBorderRadius) \
+    prop(borderRadius) \
+    prop(backgroundColor) \
+    prop(fontSize)
+
 
         DisplayKeyword m_display = DisplayKeyword::FLEX;
         FlexboxKeyword m_flexDirection = FlexboxKeyword::ROW;
@@ -87,12 +89,12 @@ namespace SGCore::UI
             RefStyleProperty<&Style::m_paddingLeft, &Style::m_paddingRight, &Style::m_paddingTop, &Style::m_paddingBottom>
         > m_padding;
 
-        
+
         using GapStyleProperty = SizeStyleProperty;
         GapStyleProperty m_rowGap = PositionAndSizeKeyword::UNSET;
-        GapStyleProperty m_collumnGap = PositionAndSizeKeyword::UNSET;
+        GapStyleProperty m_columnGap = PositionAndSizeKeyword::UNSET;
         
-        RefStyleProperty<&Style::m_rowGap, &Style::m_collumnGap> m_gap;
+        RefStyleProperty<&Style::m_rowGap, &Style::m_columnGap> m_gap;
 
         struct BorderRadius final
         {
@@ -119,7 +121,7 @@ namespace SGCore::UI
         std::variant<
             ColorKeyword, 
             std::tuple<Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>>, // rgba
-            std::tuple<Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>>, // rgb
+            std::tuple<Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>> // rgb
         > m_backgroundColor = ColorKeyword::UNSET;
 
         AssetWeakRef<Font> m_font;
@@ -177,4 +179,4 @@ namespace SGCore::UI
         mutable size_t m_selectorHash = 0;
         mutable size_t m_pseudoClassHash = 0;
     };
-}
+};
