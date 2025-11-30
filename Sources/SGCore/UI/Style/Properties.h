@@ -2,7 +2,7 @@
 
 #include "SGCore/Utils/Macroses.h"
 
-#define UNIVERSAL_KEYWORDS(defineProperty) defineProperty(KW_INHERIT, inherit, inherit) defineProperty(KW_INITIAL, initial, initial) defineProperty(KW_UNSET, unset, unset) defineProperty(KW_UNKNOWN, unknown, unknown)
+#define UNIVERSAL_KEYWORDS(defineProperty) defineProperty(INHERIT, inherit, inherit) defineProperty(INITIAL, initial, initial) defineProperty(UNSET, unset, unset) defineProperty(UNKNOWN, unknown, unknown)
 
 // iterate through all enum properties
 #define enum_properties(defineEnum, defineProperty) \
