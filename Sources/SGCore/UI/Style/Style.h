@@ -39,8 +39,27 @@ namespace SGCore::UI
 
 // iterate through all style properties names
 #define style_properties(prop) \
-    prop(m_display) \
-    prop(m_flexDirection) 
+    prop(m_display, display, display) \
+    prop(m_flexDirection, flex-direction, flexDirection) \
+    prop(m_flexWrap, flex-wrap, flexWrap) \
+    prop(m_width, width, width) \
+    prop(m_height, height, height) \
+    prop(m_paddingLeft, padding-left, paddingLeft) \
+    prop(m_paddingRight, padding-right, paddingRight) \
+    prop(m_paddingBottom, padding-bottom, paddingBottom) \
+    prop(m_paddingTop, padding-top, paddingTop) \
+    prop(m_padding, padding, padding) \
+    prop(m_rowGap, row-gap, rowGap) \
+    prop(m_collumnGap, collumn-gap, collumnGap) \
+    prop(m_gap, gap, gap) \
+    prop(m_bottomLeftBorderRadius, bottom-left-border-radius, bottomLeftBorderRadius) \
+    prop(m_topLeftBorderRadius, top-left-border-radius, topLeftBorderRadius) \
+    prop(m_topRightBorderRadius, top-right-border-radius, topRightBorderRadius) \
+    prop(m_bottomRightBorderRadius, bottom-right-border-radius, bottomRightBorderRadius) \
+    prop(m_borderRadius, border-radius, borderRadius) \
+    prop(m_backgroundColor, background-color, backgroundColor) \
+    prop(m_fontSize, font-size, fontSize)
+    
 
         DisplayKeyword m_display = DisplayKeyword::KW_FLEX;
         FlexboxKeyword m_flexDirection = FlexboxKeyword::KW_ROW;
@@ -57,6 +76,12 @@ namespace SGCore::UI
         PaddingStyleProperty m_paddingTop;
 
         std::variant<
+            std::tuple<
+                RefStyleProperty<&Style::m_paddingLeft>,
+                RefStyleProperty<&Style::m_paddingRight>,
+                RefStyleProperty<&Style::m_paddingTop>,
+                RefStyleProperty<&Style::m_paddingBottom>
+            >,
             std::tuple<
                 RefStyleProperty<&Style::m_paddingLeft, &Style::m_paddingRight>, 
                 RefStyleProperty<&Style::m_paddingTop, &Style::m_paddingBottom>
@@ -81,6 +106,16 @@ namespace SGCore::UI
         BorderRadiusStyleProperty m_topLeftBorderRadius;
         BorderRadiusStyleProperty m_topRightBorderRadius;
         BorderRadiusStyleProperty m_bottomRightBorderRadius;
+
+        std::variant<
+            std::tuple<
+                RefStyleProperty<&Style::m_bottomLeftBorderRadius>, 
+                RefStyleProperty<&Style::m_bottomRightBorderRadius>, 
+                RefStyleProperty<&Style::m_topLeftBorderRadius>,
+                RefStyleProperty<&Style::m_topRightBorderRadius>
+            >,
+            RefStyleProperty<&Style::m_bottomLeftBorderRadius, &Style::m_bottomRightBorderRadius, &Style::m_topLeftBorderRadius, &Style::m_topRightBorderRadius>
+        > m_borderRadius;
 
         std::variant<
             ColorKeyword, 
