@@ -5,9 +5,7 @@
 #include "../Parser/XML/CSS/PropertiesAlternativeValues/BorderRadiusAlternativeValue.h"
 #include "SGCore/UI/TransformTree/UIElementCache.h"
 #include "SGCore/Memory/Assets/IAsset.h"
-#include "SGCore/UI/Parser/XML/CSS/PropertyValues/CSSPropertyValue.h"
-
-#include "../Parser/XML/CSS/PropertyValues/CSSPropertyValueKeywords.h"
+#include "EnumProperties.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Memory/Assets/Font.h"
 
@@ -61,19 +59,19 @@ namespace SGCore::UI
     prop(m_fontSize, font-size, fontSize)
     
 
-        DisplayKeyword m_display = DisplayKeyword::KW_FLEX;
-        FlexboxKeyword m_flexDirection = FlexboxKeyword::KW_ROW;
-        FlexboxKeyword m_flexWrap = FlexboxKeyword::KW_NOWRAP;
+        DisplayKeyword m_display = DisplayKeyword::FLEX;
+        FlexboxKeyword m_flexDirection = FlexboxKeyword::ROW;
+        FlexboxKeyword m_flexWrap = FlexboxKeyword::NOWRAP;
 
         using SizeStyleProperty = std::variant<PositionAndSizeKeyword, Ref<StyleMathNode>>;
-        SizeStyleProperty m_width;
-        SizeStyleProperty m_height;
+        SizeStyleProperty m_width = PositionAndSizeKeyword::UNSET;
+        SizeStyleProperty m_height = PositionAndSizeKeyword::UNSET;
 
         using PaddingStyleProperty = std::variant<UniversalKeyword, Ref<StyleMathNode>>;
-        PaddingStyleProperty m_paddingLeft;
-        PaddingStyleProperty m_paddingRight;
-        PaddingStyleProperty m_paddingBottom;
-        PaddingStyleProperty m_paddingTop;
+        PaddingStyleProperty m_paddingLeft = UniversalKeyword::UNSET;
+        PaddingStyleProperty m_paddingRight = UniversalKeyword::UNSET;
+        PaddingStyleProperty m_paddingBottom = UniversalKeyword::UNSET;
+        PaddingStyleProperty m_paddingTop = UniversalKeyword::UNSET;
 
         std::variant<
             std::tuple<
@@ -91,8 +89,8 @@ namespace SGCore::UI
 
         
         using GapStyleProperty = SizeStyleProperty;
-        GapStyleProperty m_rowGap;
-        GapStyleProperty m_collumnGap;
+        GapStyleProperty m_rowGap = PositionAndSizeKeyword::UNSET;
+        GapStyleProperty m_collumnGap = PositionAndSizeKeyword::UNSET;
         
         RefStyleProperty<&Style::m_rowGap, &Style::m_collumnGap> m_gap;
 
@@ -101,11 +99,12 @@ namespace SGCore::UI
             Ref<StyleMathNode> m_radiusX;
             Ref<StyleMathNode> m_radiusY;
         };
+
         using BorderRadiusStyleProperty = std::variant<UniversalKeyword, BorderRadius>;
-        BorderRadiusStyleProperty m_bottomLeftBorderRadius;
-        BorderRadiusStyleProperty m_topLeftBorderRadius;
-        BorderRadiusStyleProperty m_topRightBorderRadius;
-        BorderRadiusStyleProperty m_bottomRightBorderRadius;
+        BorderRadiusStyleProperty m_bottomLeftBorderRadius = UniversalKeyword::UNSET;
+        BorderRadiusStyleProperty m_topLeftBorderRadius = UniversalKeyword::UNSET;
+        BorderRadiusStyleProperty m_topRightBorderRadius = UniversalKeyword::UNSET;
+        BorderRadiusStyleProperty m_bottomRightBorderRadius = UniversalKeyword::UNSET;
 
         std::variant<
             std::tuple<
@@ -119,8 +118,9 @@ namespace SGCore::UI
 
         std::variant<
             ColorKeyword, 
-            std::tuple<Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>>
-        > m_backgroundColor;
+            std::tuple<Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>>, // rgba
+            std::tuple<Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>>, // rgb
+        > m_backgroundColor = ColorKeyword::UNSET;
 
         AssetWeakRef<Font> m_font;
 
