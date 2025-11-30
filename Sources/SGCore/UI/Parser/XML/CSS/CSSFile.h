@@ -8,7 +8,7 @@
 #include "SGCore/Memory/Assets/IAsset.h"
 #include "SGCore/Memory/AssetRef.h"
 
-#include "CSSStyle.h"
+#include "SGCore/UI/Style/Style.h"
 
 #include <antlr4-runtime.h>
 
@@ -26,9 +26,9 @@ namespace SGCore::UI
 
         friend struct ANTLRCSSListener;
 
-        [[nodiscard]] AssetRef<CSSStyle> findStyle(const std::string& selector) const noexcept;
+        [[nodiscard]] AssetRef<Style> findStyle(const std::string& selector) const noexcept;
 
-        const std::vector<AssetRef<CSSStyle>>& getStyles() const noexcept;
+        const std::vector<AssetRef<Style>>& getStyles() const noexcept;
 
     protected:
         void doLoad(const InterpolatedPath& path) final;
@@ -39,7 +39,7 @@ namespace SGCore::UI
         void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
 
         std::vector<AssetRef<CSSFile>> m_importedFiles;
-        std::vector<AssetRef<CSSStyle>> m_styles;
+        std::vector<AssetRef<Style>> m_styles;
     };
 }
 

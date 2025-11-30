@@ -7,36 +7,36 @@
 
 #include <vector>
 
-#include "PropertiesAlternativeValues/BorderRadiusAlternativeValue.h"
+#include "../Parser/XML/CSS/PropertiesAlternativeValues/BorderRadiusAlternativeValue.h"
 #include "SGCore/UI/TransformTree/UIElementCache.h"
 #include "SGCore/Memory/Assets/IAsset.h"
-#include "SGCore/UI/CSS/PropertyValues/CSSPropertyValue.h"
+#include "SGCore/UI/Parser/XML/CSS/PropertyValues/CSSPropertyValue.h"
 
-#include "PropertyValues/CSSPropertyValueKeywords.h"
+#include "../Parser/XML/CSS/PropertyValues/CSSPropertyValueKeywords.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Memory/Assets/Font.h"
 
-#include "SGCore/UI/CSS/Math/CSSMathNode.h"
+#include "SGCore/UI/Math/CSSMathNode.h"
 #include "SGCore/Utils/Macroses.h"
 
 namespace SGCore::UI
 {
-    struct CSSStyle : IAsset
+    struct Style : IAsset
     {
         sg_serde_as_friend();
 
-        sg_implement_type_id(CSSStyle, 34)
+        sg_implement_type_id(Style, 34)
 
         friend struct ANTLRCSSListener;
         friend struct CSSFile;
 
-        CSSStyle() noexcept;
+        Style() noexcept;
 
-        copy_constructor(CSSStyle) = default;
-        move_constructor(CSSStyle) = default;
+        copy_constructor(Style) = default;
+        move_constructor(Style) = default;
 
-        copy_operator(CSSStyle) = default;
-        move_operator(CSSStyle) = default;
+        copy_operator(Style) = default;
+        move_operator(Style) = default;
 
 #pragma region Properties
         // ============================================================== properties
@@ -45,31 +45,31 @@ namespace SGCore::UI
         FlexboxKeyword m_flexDirection = FlexboxKeyword::KW_ROW;
         FlexboxKeyword m_flexWrap = FlexboxKeyword::KW_NOWRAP;
 
-        CSSPropertyValue<PositionAndSizeKeyword::KW_AUTO, Ref<CSSMathNode>> m_width;
-        CSSPropertyValue<PositionAndSizeKeyword::KW_AUTO, Ref<CSSMathNode>> m_height;
+        PropertyValue<PositionAndSizeKeyword::KW_AUTO, Ref<StyleMathNode>> m_width;
+        PropertyValue<PositionAndSizeKeyword::KW_AUTO, Ref<StyleMathNode>> m_height;
 
         /// top, right, bottom, left
-        CSSPropertyValue<UniversalKeyword::KW_UNSET, Ref<CSSMathNode>, Ref<CSSMathNode>, Ref<CSSMathNode>, Ref<CSSMathNode>> m_padding;
+        PropertyValue<UniversalKeyword::KW_UNSET, Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>> m_padding;
 
-        CSSPropertyValue<PositionAndSizeKeyword::KW_UNSET, Ref<CSSMathNode>, Ref<CSSMathNode>> m_gap;
+        PropertyValue<PositionAndSizeKeyword::KW_UNSET, Ref<StyleMathNode>, Ref<StyleMathNode>> m_gap;
 
-        CSSPropertyValue<UniversalKeyword::KW_UNSET, BorderRadiusAlternativeValue> m_bottomLeftBorderRadius;
-        CSSPropertyValue<UniversalKeyword::KW_UNSET, BorderRadiusAlternativeValue> m_topLeftBorderRadius;
-        CSSPropertyValue<UniversalKeyword::KW_UNSET, BorderRadiusAlternativeValue> m_topRightBorderRadius;
-        CSSPropertyValue<UniversalKeyword::KW_UNSET, BorderRadiusAlternativeValue> m_bottomRightBorderRadius;
+        PropertyValue<UniversalKeyword::KW_UNSET, BorderRadiusAlternativeValue> m_bottomLeftBorderRadius;
+        PropertyValue<UniversalKeyword::KW_UNSET, BorderRadiusAlternativeValue> m_topLeftBorderRadius;
+        PropertyValue<UniversalKeyword::KW_UNSET, BorderRadiusAlternativeValue> m_topRightBorderRadius;
+        PropertyValue<UniversalKeyword::KW_UNSET, BorderRadiusAlternativeValue> m_bottomRightBorderRadius;
 
-        CSSPropertyValue<ColorKeyword::KW_TRANSPARENT, Ref<CSSMathNode>, Ref<CSSMathNode>, Ref<CSSMathNode>, Ref<CSSMathNode>> m_backgroundColor;
+        PropertyValue<ColorKeyword::KW_TRANSPARENT, Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>> m_backgroundColor;
 
         AssetWeakRef<Font> m_font;
 
         /// Used as scale.
-        CSSPropertyValue<FontSizeKeyword::KW_UNSET, Ref<CSSMathNode>> m_fontSize;
+        PropertyValue<FontSizeKeyword::KW_UNSET, Ref<StyleMathNode>> m_fontSize;
 
         // ==============================================================
 #pragma endregion Properties
 
         // first - hash of pseudo class name. second - style
-        std::unordered_map<size_t, AssetRef<CSSStyle>> m_pseudoClassesStyles;
+        std::unordered_map<size_t, AssetRef<Style>> m_pseudoClassesStyles;
 
         [[nodiscard]] const std::string& getSelector() const noexcept;
         [[nodiscard]] const std::string& getPseudoName() const noexcept;
@@ -87,7 +87,7 @@ namespace SGCore::UI
 
         Ref<FontSpecialization> getFontSpecialization() const noexcept;
 
-        void copy(CSSStyle& to) const noexcept;
+        void copy(Style& to) const noexcept;
 
     protected:
         // todo: maybe vector with pseudo class handlers

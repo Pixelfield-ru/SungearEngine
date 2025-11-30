@@ -33,7 +33,7 @@ namespace SGCore::UI
 
         BindingsStorage m_bindingsStorage;
 
-        [[nodiscard]] AssetRef<CSSStyle> findStyle(const std::string& selector) const noexcept;
+        [[nodiscard]] AssetRef<Style> findStyle(const std::string& selector) const noexcept;
         [[nodiscard]] Ref<UIElement> findElement(const std::string& elementName) const noexcept;
         [[nodiscard]] Ref<TemplateElement> findTemplate(const std::string& templateName) const noexcept;
 

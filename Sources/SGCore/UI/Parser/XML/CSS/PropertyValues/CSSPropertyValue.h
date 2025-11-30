@@ -23,7 +23,7 @@ namespace SGCore::UI
      * @tparam ValuesT - Used to accept implicit bunch of value (it can be keywords or something else)
      */
     template<auto DefaultKeyword, typename... ValuesT>
-    struct CSSPropertyValue
+    struct PropertyValue
     {
         using keywords_enum_t = decltype(DefaultKeyword);
 

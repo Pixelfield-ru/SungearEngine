@@ -7,9 +7,9 @@
 
 #include "SGCore/UI/FontsManager.h"
 #include "SGCore/UI/ANTLR4CSS3Generated/css3Parser.h"
-#include "SGCore/UI/CSS/CSSPropertyType.h"
-#include "SGCore/UI/CSS/PropertyValues/CSSPropertyValueKeywords.h"
-#include "SGCore/UI/CSS/CSSStyle.h"
+#include "SGCore/UI/Parser/XML/CSS/CSSPropertyType.h"
+#include "SGCore/UI/Parser/XML/CSS/PropertyValues/CSSPropertyValueKeywords.h"
+#include "SGCore/UI/Style/Style.h"
 
 namespace SGCore::UI
 {
@@ -24,7 +24,7 @@ namespace SGCore::UI
                                     const std::string& propertyName,
                                     const std::string& propertyCurrentValue) noexcept
         {
-            CSSStyle* currentStyle = antlrcssListener->m_currentStyle;
+            Style* currentStyle = antlrcssListener->m_currentStyle;
 
             auto* expr = propertyDeclContext->expr();
 

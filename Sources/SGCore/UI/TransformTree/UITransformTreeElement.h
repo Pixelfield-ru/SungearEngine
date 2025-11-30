@@ -13,7 +13,7 @@ namespace SGCore::UI
 {
     struct UIElement;
     struct UITransformTree;
-    struct CSSStyle;
+    struct Style;
 
     struct UITransformTreeElement
     {

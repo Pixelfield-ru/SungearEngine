@@ -7,8 +7,8 @@
 
 #include "CSSPropertyProcessorCommon.h"
 #include "SGCore/UI/ANTLR4CSS3Generated/css3Parser.h"
-#include "SGCore/UI/CSS/ANTLRCSSListener.h"
-#include "SGCore/UI/CSS/PropertyValues/CSSPropertyValueKeywords.h"
+#include "SGCore/UI/Parser/XML/CSS/ANTLRCSSListener.h"
+#include "SGCore/UI/Parser/XML/CSS/PropertyValues/CSSPropertyValueKeywords.h"
 
 namespace SGCore::UI
 {
@@ -23,7 +23,7 @@ namespace SGCore::UI
                                     const std::string& propertyName,
                                     const std::string& propertyCurrentValue) noexcept
         {
-            CSSStyle* currentStyle = antlrcssListener->m_currentStyle;
+            Style* currentStyle = antlrcssListener->m_currentStyle;
 
             auto* expr = propertyDeclContext->expr();
 
@@ -33,7 +33,7 @@ namespace SGCore::UI
 
                 auto termValue = CSSPropertyProcessorCommon::processKnownTerm<UniversalKeyword>(antlrcssListener, currentStyle, knownTerm, 0, propertyName);
 
-                if(std::holds_alternative<Ref<CSSMathNode>>(termValue))
+                if(std::holds_alternative<Ref<StyleMathNode>>(termValue))
                 {
                     auto mathNode = std::get<1>(termValue);
                     currentStyle->m_fontSize.m_value = mathNode;

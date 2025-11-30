@@ -45,7 +45,7 @@ namespace SGCore::UI
 
                 auto& colorTuple = std::get<1>(currentSelector->m_backgroundColor.m_value);
 
-                std::array<Ref<CSSMathNode>*, 4> colorArr = {
+                std::array<Ref<StyleMathNode>*, 4> colorArr = {
                         &std::get<0>(colorTuple),
                         &std::get<1>(colorTuple),
                         &std::get<2>(colorTuple),
@@ -67,7 +67,7 @@ namespace SGCore::UI
                         }
                         else if(currentComponent->calcValue()->calc())
                         {
-                            auto mathNode = MakeRef<CSSMathNode>();
+                            auto mathNode = MakeRef<StyleMathNode>();
 
                             antlrcssListener->processCalculation(currentComponent->calcValue()->calc(),
                                                                  propertyName,
@@ -104,7 +104,7 @@ namespace SGCore::UI
                     }
                     else if(alphaComponent->calcValue()->calc())
                     {
-                        auto mathNode = MakeRef<CSSMathNode>();
+                        auto mathNode = MakeRef<StyleMathNode>();
 
                         antlrcssListener->processCalculation(alphaComponent->calcValue()->calc(),
                                                              propertyName,

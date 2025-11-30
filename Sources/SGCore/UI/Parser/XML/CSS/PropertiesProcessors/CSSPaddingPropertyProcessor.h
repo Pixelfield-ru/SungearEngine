@@ -6,7 +6,7 @@
 #define CSSPADDINGPROPERTYPROCESSOR_H
 
 #include "CSSPropertyProcessorCommon.h"
-#include "SGCore/UI/CSS/ANTLRCSSListener.h"
+#include "SGCore/UI/Parser/XML/CSS/ANTLRCSSListener.h"
 
 namespace SGCore::UI
 {
@@ -14,7 +14,7 @@ namespace SGCore::UI
     struct CSSPropertyProcessor<CSSPropertyType::PT_PADDING>
     {
     private:
-        using term_value_t = std::variant<UniversalKeyword, Ref<CSSMathNode>>;
+        using term_value_t = std::variant<UniversalKeyword, Ref<StyleMathNode>>;
 
     public:
 
@@ -46,7 +46,7 @@ namespace SGCore::UI
                 auto termValue = CSSPropertyProcessorCommon::processKnownTerm<PositionAndSizeKeyword>(
                     antlrcssListener, currentSelector, knownTerm, 0, propertyName);
 
-                if(std::holds_alternative<Ref<CSSMathNode>>(termValue))
+                if(std::holds_alternative<Ref<StyleMathNode>>(termValue))
                 {
                     auto mathNode = std::get<1>(termValue);
 

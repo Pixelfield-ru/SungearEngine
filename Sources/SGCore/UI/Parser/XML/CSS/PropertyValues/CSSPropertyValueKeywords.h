@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-#include "SGCore/UI/CSS/CSSPropertyType.h"
+#include "SGCore/UI/Parser/XML/CSS/CSSPropertyType.h"
 
 #include "SGCore/Utils/TypeTraits.h"
 

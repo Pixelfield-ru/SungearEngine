@@ -8,7 +8,7 @@
 
 SGCore::UI::Text::Text() noexcept
 {
-    m_mainStyle = AssetManager::getInstance()->getOrAddAssetByAlias<CSSStyle>("sgui_default_text_style");
+    m_mainStyle = AssetManager::getInstance()->getOrAddAssetByAlias<Style>("sgui_default_text_style");
 }
 
 bool SGCore::UI::Text::draw(const LayeredFrameReceiver::reg_t& cameraReceiver,

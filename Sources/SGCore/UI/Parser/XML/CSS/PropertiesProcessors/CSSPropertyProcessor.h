@@ -5,10 +5,10 @@
 #ifndef SUNGEARENGINE_CSSPROPERTYPROCESSOR_H
 #define SUNGEARENGINE_CSSPROPERTYPROCESSOR_H
 
-#include "SGCore/UI/CSS/CSSPropertyType.h"
+#include "SGCore/UI/Parser/XML/CSS/CSSPropertyType.h"
 
 #include "SGCore/Utils/TypeTraits.h"
-#include "SGCore/UI/CSS/ANTLRCSSListener.h"
+#include "SGCore/UI/Parser/XML/CSS/ANTLRCSSListener.h"
 
 namespace SGCore::UI
 {

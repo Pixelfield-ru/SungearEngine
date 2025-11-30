@@ -6,7 +6,7 @@
 
 #include <stb_image_write.h>
 #include <SGCore/Memory/AssetManager.h>
-#include <SGCore/UI/CSS/CSSFile.h>
+#include <SGCore/UI/Parser/XML/CSS/CSSFile.h>
 #include <SGCore/Main/CoreMain.h>
 #include <SGCore/Scene/Scene.h>
 #include <SGCore/Render/RenderPipelinesManager.h>

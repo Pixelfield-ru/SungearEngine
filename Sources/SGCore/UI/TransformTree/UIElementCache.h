@@ -16,7 +16,7 @@
 
 namespace SGCore::UI
 {
-    struct CSSStyle;
+    struct Style;
 
     /**
      * Used to store calculated properties of UI element.
@@ -52,7 +52,7 @@ namespace SGCore::UI
         // non copyable in context of UIElementCache
         UniqueColor m_uniqueColor;
 
-        std::vector<CSSStyle*> m_currentFrameStyles;
+        std::vector<Style*> m_currentFrameStyles;
 
         glm::vec2 m_contentSize { };
 

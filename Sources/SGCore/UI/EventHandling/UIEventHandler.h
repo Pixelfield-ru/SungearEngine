@@ -28,7 +28,7 @@ namespace SGCore
 namespace SGCore::UI
 {
     struct UIElement;
-    struct CSSStyle;
+    struct Style;
     struct UIDocument;
     struct UITransformTree;
 

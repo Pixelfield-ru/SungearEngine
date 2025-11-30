@@ -4,14 +4,14 @@
 
 #include "UIRoot.h"
 #include "SGCore/UI/NineSlice.h"
-#include "SGCore/UI/CSS/Math/CSSMathNumericNode.h"
+#include "SGCore/UI/Math/CSSMathNumericNode.h"
 #include "SGCore/UI/UIElementMesh/UIElementMesh.h"
 
 SGCore::UI::UIRoot::UIRoot() noexcept
 {
     m_shader = AssetManager::getInstance()->loadAsset<IShader>("${enginePath}/Resources/sg_shaders/features/ui/div.sgshader");
     // default style for root
-    m_mainStyle = AssetManager::getInstance()->getOrAddAssetByAlias<CSSStyle>("sgui_root_style");
+    m_mainStyle = AssetManager::getInstance()->getOrAddAssetByAlias<Style>("sgui_root_style");
 
     auto bottomRightRadius = MakeRef<CSSMathNumericNode>();
     bottomRightRadius->m_value = 30.0f;
@@ -46,7 +46,7 @@ void SGCore::UI::UIRoot::doCalculateLayout(const UIElementCache* parentElementCa
 {
     for(auto* style : thisElementCache.m_currentFrameStyles)
     {
-        // todo: move into CSSStyle struct to calculate all selector props
+        // todo: move into Styles struct to calculate all selector props
         style->calculateCache(parentElementCache, thisElementCache);
     }
 

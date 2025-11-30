@@ -5,13 +5,13 @@
 #include "UIDocument.h"
 #include <spdlog/spdlog.h>
 
-#include "CSS/CSSFile.h"
+#include "Parser/XML/CSS/CSSFile.h"
 #include "Elements/Text.h"
 #include "SGCore/Logger/Logger.h"
 
 #include "UINodesProcessors/UIElementsProcessorsRegistry.h"
 #include "UINodesProcessors/UIRootNodeProcessor.h"
-#include "CSS/CSSFile.h"
+#include "Parser/XML/CSS/CSSFile.h"
 #include "Elements/TemplateElement.h"
 
 void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
@@ -240,7 +240,7 @@ std::optional<std::string> SGCore::UI::UIDocument::readXmlFileAndBuildOffsets(co
     return fileContent;
 }
 
-SGCore::AssetRef<SGCore::UI::CSSStyle>
+SGCore::AssetRef<SGCore::UI::Style>
 SGCore::UI::UIDocument::findStyle(const std::string& selectorName) const noexcept
 {
     if(selectorName.empty()) return nullptr;

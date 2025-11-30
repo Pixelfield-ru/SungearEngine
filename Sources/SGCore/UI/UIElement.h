@@ -7,7 +7,7 @@
 
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Transformations/Transform.h"
-#include "CSS/CSSStyle.h"
+#include "SGCore/UI/Style/Style.h"
 #include "SGCore/Memory/AssetRef.h"
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
@@ -45,7 +45,7 @@ namespace SGCore::UI
         std::unordered_set<std::string> m_places;
 
         // =================== XML ATTRIBUTES
-        AssetRef<CSSStyle> m_mainStyle;
+        AssetRef<Style> m_mainStyle;
         std::string m_name;
         // ===================
 

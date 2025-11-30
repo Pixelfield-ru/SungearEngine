@@ -9,7 +9,7 @@
 
 namespace SGCore::UI
 {
-    struct CSSMathNumericNode : CSSMathNode
+    struct CSSMathNumericNode : StyleMathNode
     {
         float m_value = 0.0f;
 

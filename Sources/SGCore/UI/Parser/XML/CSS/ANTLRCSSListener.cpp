@@ -48,7 +48,7 @@ void SGCore::UI::ANTLRCSSListener::enterSelector(css3Parser::SelectorContext* ct
     {
         newSelectorPath /= currentSelector + ":" + currentPseudoClass;
 
-        auto pseudo = assetManager->getOrAddAssetByPath<CSSStyle>(newSelectorPath);
+        auto pseudo = assetManager->getOrAddAssetByPath<Style>(newSelectorPath);
 
         pseudo->m_selector = currentSelector;
         pseudo->m_pseudoClass = currentPseudoClass;
@@ -70,7 +70,7 @@ void SGCore::UI::ANTLRCSSListener::enterSelector(css3Parser::SelectorContext* ct
             return;
         }
 
-        m_toCSSFile->m_styles.push_back(assetManager->getOrAddAssetByPath<CSSStyle>(newSelectorPath));
+        m_toCSSFile->m_styles.push_back(assetManager->getOrAddAssetByPath<Style>(newSelectorPath));
 
         m_currentStyle = m_toCSSFile->m_styles.rbegin()->get();
 
@@ -248,7 +248,7 @@ void SGCore::UI::ANTLRCSSListener::resolvePseudos() noexcept
             enterKnownDeclaration(decl);
         }
 
-        selector->m_pseudoClassesStyles[constexprHash(pseudo->m_pseudoClass.c_str())] = AssetManager::getInstance()->getOrAddAssetByPath<CSSStyle>(pseudo->getPath());
+        selector->m_pseudoClassesStyles[constexprHash(pseudo->m_pseudoClass.c_str())] = AssetManager::getInstance()->getOrAddAssetByPath<Style>(pseudo->getPath());
     }
 
     m_pseudosToResolve.clear();
@@ -256,7 +256,7 @@ void SGCore::UI::ANTLRCSSListener::resolvePseudos() noexcept
 
 void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* currentANTLRNode,
                                                       const std::string& currentPropertyName,
-                                                      const Ref<CSSMathNode>& currentParentMathNode,
+                                                      const Ref<StyleMathNode>& currentParentMathNode,
                                                       const std::unordered_set<CSSDimensionQualifier>& supportedQualifiers) noexcept
 {
     const bool isAllQualifiersSupported = supportedQualifiers.contains(CSSDimensionQualifier::DQ_ANY);
@@ -304,7 +304,7 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
 
                 if(asExpr->calcOperand(i)->calcValue()->calcNestedValue())
                 {
-                    auto newParentMathNode = MakeRef<CSSMathNode>();
+                    auto newParentMathNode = MakeRef<StyleMathNode>();
 
                     if(asExpr->calcOperand(i)->calcValue()->calcNestedValue()->Minus())
                     {
@@ -406,7 +406,7 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
                 }
                 if(asExpr->calcOperand(i)->calcValue()->calc())
                 {
-                    auto newParentMathNode = MakeRef<CSSMathNode>();
+                    auto newParentMathNode = MakeRef<StyleMathNode>();
 
                     currentParentMathNode->m_operands.push_back(newParentMathNode);
 

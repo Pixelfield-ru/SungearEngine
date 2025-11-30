@@ -9,17 +9,17 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "CSSMathSign.h"
-#include "SGCore/UI/CSS/CSSDimensionQualifier.h"
+#include "SGCore/UI/Parser/XML/CSS/CSSDimensionQualifier.h"
 
 namespace SGCore::UI
 {
-    struct CSSStyle;
+    struct Style;
 
-    struct CSSMathNode
+    struct StyleMathNode
     {
-        virtual ~CSSMathNode() = default;
+        virtual ~StyleMathNode() = default;
 
-        std::vector<Ref<CSSMathNode>> m_operands;
+        std::vector<Ref<StyleMathNode>> m_operands;
         CSSMathSign m_sign = CSSMathSign::MS_NO_SIGN;
         /// Can be only PLUS or MINUS.
         CSSMathSign m_unarySign = CSSMathSign::MS_PLUS;
@@ -29,7 +29,7 @@ namespace SGCore::UI
 
         /**
          * Iterates through current (and child node if \p recursed flag is enabled) and groups all continuous sequences of numeric nodes with
-         * priority sign (\p * or \p /) into one CSSMathNode.
+         * priority sign (\p * or \p /) into one StyleMathNode.
          * @param recursed - Is recursively run through the children is needed.
          */
         void resolvePriorities(bool recursed = true) noexcept;

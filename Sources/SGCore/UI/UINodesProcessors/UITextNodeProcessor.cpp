@@ -58,7 +58,7 @@ void SGCore::UI::UITextNodeProcessor::processElement(UIDocument* inDocument,
                 else
                 {
                     // todo: maybe setting some default selector??
-                    textElement->m_mainStyle = AssetManager::getInstance()->getOrAddAssetByAlias<CSSStyle>("sgui_default_text_style");
+                    textElement->m_mainStyle = AssetManager::getInstance()->getOrAddAssetByAlias<Style>("sgui_default_text_style");
                 }
 
                 textElement->clearGlyphs();

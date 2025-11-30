@@ -12,16 +12,16 @@
 
 #include "SGCore/Memory/AssetManager.h"
 
-SGCore::AssetRef<SGCore::UI::CSSStyle> SGCore::UI::CSSFile::findStyle(const std::string& selector) const noexcept
+SGCore::AssetRef<SGCore::UI::Style> SGCore::UI::CSSFile::findStyle(const std::string& selector) const noexcept
 {
-    auto foundIt = std::find_if(m_styles.begin(), m_styles.end(), [&selector](const AssetRef<CSSStyle>& style) {
+    auto foundIt = std::find_if(m_styles.begin(), m_styles.end(), [&selector](const AssetRef<Style>& style) {
         return style->getSelector() == selector;
     });
 
     return foundIt == m_styles.end() ? nullptr : *foundIt;
 }
 
-const std::vector<SGCore::AssetRef<SGCore::UI::CSSStyle>>& SGCore::UI::CSSFile::getStyles() const noexcept
+const std::vector<SGCore::AssetRef<SGCore::UI::Style>>& SGCore::UI::CSSFile::getStyles() const noexcept
 {
     return m_styles;
 }

@@ -5,7 +5,7 @@
 
 #include "SGCore/Logger/Logger.h"
 
-float SGCore::UI::CSSMathNode::calculate(const float* parentSelectorValue) const noexcept
+float SGCore::UI::StyleMathNode::calculate(const float* parentSelectorValue) const noexcept
 {
     float result = 0.0f;
 
@@ -39,7 +39,7 @@ float SGCore::UI::CSSMathNode::calculate(const float* parentSelectorValue) const
             }
             case CSSMathSign::MS_NO_SIGN:
             {
-                LOG_E(SGCORE_TAG, "CSSMathNode: unexpected error!: math node has sign equals to MS_NO_SIGN!");
+                LOG_E(SGCORE_TAG, "StyleMathNode: unexpected error!: math node has sign equals to MS_NO_SIGN!");
 
                 continue;
             }
@@ -55,7 +55,7 @@ float SGCore::UI::CSSMathNode::calculate(const float* parentSelectorValue) const
     }
 }
 
-void SGCore::UI::CSSMathNode::resolvePriorities(bool recursed) noexcept
+void SGCore::UI::StyleMathNode::resolvePriorities(bool recursed) noexcept
 {
     for(size_t i = 0; i < m_operands.size(); ++i)
     {
@@ -69,7 +69,7 @@ void SGCore::UI::CSSMathNode::resolvePriorities(bool recursed) noexcept
                 currentOperand->resolvePriorities(recursed);
             }
 
-            const auto newNode = MakeRef<CSSMathNode>();
+            const auto newNode = MakeRef<StyleMathNode>();
 
             newNode->m_operands.push_back(currentOperand);
 
@@ -77,7 +77,7 @@ void SGCore::UI::CSSMathNode::resolvePriorities(bool recursed) noexcept
 
             for(size_t j = i + 1; j < m_operands.size();)
             {
-                Ref<CSSMathNode> nextOperand = m_operands[j];
+                Ref<StyleMathNode> nextOperand = m_operands[j];
 
                 if(recursed)
                 {

@@ -5,23 +5,23 @@
 #ifndef CSSPROPERTYPROCESSORCOMMON_H
 #define CSSPROPERTYPROCESSORCOMMON_H
 
-#include "SGCore/UI/CSS/ANTLRCSSListener.h"
+#include "SGCore/UI/Parser/XML/CSS/ANTLRCSSListener.h"
 
 namespace SGCore::UI
 {
     struct CSSPropertyProcessorCommon
     {
         template<typename KeywordT>
-        static std::variant<KeywordT, Ref<CSSMathNode>> processKnownTerm(
+        static std::variant<KeywordT, Ref<StyleMathNode>> processKnownTerm(
             ANTLRCSSListener* antlrcssListener,
-            CSSStyle* currentStyle,
+            Style* currentStyle,
             css3Parser::KnownTermContext* knownTerm,
             const size_t& termIndex,
             const std::string& propertyName) noexcept
         {
             if(knownTerm->calc()) // width: calc(...)
             {
-                auto mathNode = MakeRef<CSSMathNode>();
+                auto mathNode = MakeRef<StyleMathNode>();
 
                 antlrcssListener->processCalculation(knownTerm->calc(),
                                                      propertyName,

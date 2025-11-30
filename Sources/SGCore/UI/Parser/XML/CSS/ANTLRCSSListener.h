@@ -13,12 +13,12 @@
 #include "CSSFile.h"
 #include "SGCore/Memory/AssetRef.h"
 
-#include "SGCore/UI/CSS/Math/CSSMathNode.h"
-#include "SGCore/UI/CSS/Math/CSSMathNumericNode.h"
+#include "SGCore/UI/Math/CSSMathNode.h"
+#include "SGCore/UI/Math/CSSMathNumericNode.h"
 
 namespace SGCore::UI
 {
-    struct CSSMathNode;
+    struct StyleMathNode;
 
     struct ANTLRCSSListener : public css3ParserBaseListener
     {
@@ -46,7 +46,7 @@ namespace SGCore::UI
          */
         void processCalculation(antlr4::tree::ParseTree* currentANTLRNode,
                                 const std::string& currentPropertyName,
-                                const Ref<CSSMathNode>& currentParentMathNode,
+                                const Ref<StyleMathNode>& currentParentMathNode,
                                 const std::unordered_set<CSSDimensionQualifier>& supportedQualifiers) noexcept;
 
         void printInvalidCountOfTermsInPropertyError(const std::string& propertyName,
@@ -83,9 +83,9 @@ namespace SGCore::UI
                                   const std::string& currentHex,
                                   const std::string& defaultSetKeyword) const noexcept;
 
-        CSSStyle* m_currentStyle { };
-        CSSStyle* m_currentPseudoClassStyle { };
-        std::unordered_map<CSSStyle*, std::vector<css3Parser::KnownDeclarationContext*>> m_pseudosToResolve;
+        Style* m_currentStyle { };
+        Style* m_currentPseudoClassStyle { };
+        std::unordered_map<Style*, std::vector<css3Parser::KnownDeclarationContext*>> m_pseudosToResolve;
         std::unordered_set<size_t> m_importedFilesHashes;
     };
 }

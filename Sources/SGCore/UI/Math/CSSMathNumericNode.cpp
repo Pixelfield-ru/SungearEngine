@@ -3,7 +3,7 @@
 //
 #include "CSSMathNumericNode.h"
 
-#include "SGCore/UI/CSS/CSSStyle.h"
+#include "SGCore/UI/Style/Style.h"
 
 float SGCore::UI::CSSMathNumericNode::calculate(const float* parentSelectorValue) const noexcept
 {

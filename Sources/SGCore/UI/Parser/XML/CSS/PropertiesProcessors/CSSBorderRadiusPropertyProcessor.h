@@ -6,10 +6,10 @@
 #define CSSROUNDINGPROPERTYPROCESSOR_H
 
 #include "CSSPropertyProcessorCommon.h"
-#include "SGCore/UI/CSS/CSSPropertyType.h"
+#include "SGCore/UI/Parser/XML/CSS/CSSPropertyType.h"
 
 #include "SGCore/Utils/TypeTraits.h"
-#include "SGCore/UI/CSS/ANTLRCSSListener.h"
+#include "SGCore/UI/Parser/XML/CSS/ANTLRCSSListener.h"
 
 namespace SGCore::UI
 {
@@ -17,7 +17,7 @@ namespace SGCore::UI
     struct CSSPropertyProcessor<CSSPropertyType::PT_BORDER_RADIUS>
     {
     private:
-        using term_value_t = std::variant<UniversalKeyword, Ref<CSSMathNode>>;
+        using term_value_t = std::variant<UniversalKeyword, Ref<StyleMathNode>>;
 
     public:
 
@@ -51,7 +51,7 @@ namespace SGCore::UI
 
                 auto termValue = CSSPropertyProcessorCommon::processKnownTerm<UniversalKeyword>(antlrcssListener, currentSelector, knownTerm, 0, propertyName);
 
-                if(std::holds_alternative<Ref<CSSMathNode>>(termValue))
+                if(std::holds_alternative<Ref<StyleMathNode>>(termValue))
                 {
                     const auto finalValue = BorderRadiusAlternativeValue {
                         .m_radiusX = std::get<1>(termValue),

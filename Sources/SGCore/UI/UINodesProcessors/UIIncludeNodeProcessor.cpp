@@ -5,7 +5,7 @@
 #include "UIIncludeNodeProcessor.h"
 
 #include "SGCore/UI/UIElementAttributeType.h"
-#include "SGCore/UI/CSS/CSSFile.h"
+#include "SGCore/UI/Parser/XML/CSS/CSSFile.h"
 #include "UINodesProcessorsUtils.h"
 
 Ref<SGCore::UI::UIElement> SGCore::UI::UIIncludeNodeProcessor::allocateElement() noexcept
