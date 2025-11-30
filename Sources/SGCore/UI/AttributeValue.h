@@ -42,6 +42,19 @@ namespace SGCore::UI
             }
         }
 
+        template<typename F0, typename F1>
+        void valueOrBinding(F0&& valueFunc, F1&& bindingFunc) const noexcept
+        {
+            if(std::holds_alternative<T>(m_value))
+            {
+                valueFunc(std::get<T>(m_value));
+            }
+            else
+            {
+                bindingFunc(std::get<Binding>(m_value));
+            }
+        }
+
         T* get() noexcept
         {
             if(std::holds_alternative<T>(m_value))
@@ -71,6 +84,16 @@ namespace SGCore::UI
             }
 
             return *value;
+        }
+
+        bool hasValue() const noexcept
+        {
+            return std::holds_alternative<T>(m_value);
+        }
+
+        bool hasBinding() const noexcept
+        {
+            return std::holds_alternative<Binding>(m_value);
         }
 
         AttributeValue& operator=(const AttributeValue& other) noexcept = default;

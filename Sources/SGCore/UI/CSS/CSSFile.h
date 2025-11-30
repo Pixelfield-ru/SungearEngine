@@ -12,10 +12,6 @@
 
 #include <antlr4-runtime.h>
 
-#include "SGCore/UI/ANTLR4CSS3Generated/css3Lexer.h"
-#include "SGCore/UI/ANTLR4CSS3Generated/css3Parser.h"
-#include "SGCore/UI/ANTLR4CSS3Generated/css3ParserBaseListener.h"
-
 namespace SGCore::UI
 {
     struct CSSFile : IAsset

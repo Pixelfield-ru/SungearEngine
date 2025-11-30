@@ -46,6 +46,7 @@ namespace SGCore::UI
 
         // =================== XML ATTRIBUTES
         AssetRef<CSSStyle> m_mainStyle;
+        // std::variant<AttributeValue<std::string>, AssetRef<CSSStyle>> m_mainStyle;
         std::string m_name;
         // ===================
 
@@ -80,7 +81,7 @@ namespace SGCore::UI
                             UIElementCache& thisElementCache) noexcept;
 
         Ref<UIElement> findElement(const std::string& name) noexcept;
-        Ref<UIElement> findPlace(const std::string& placeName) const noexcept;
+        void findPlace(const std::string& placeName, std::vector<Ref<UIElement>>& foundPlaces) const noexcept;
 
         template<typename FuncT>
         requires(std::is_invocable_v<FuncT, UIElement*, UIElement*>)

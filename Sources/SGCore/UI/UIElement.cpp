@@ -106,16 +106,17 @@ SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIElement::findElement(const std:
     return nullptr;
 }
 
-SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIElement::findPlace(const std::string& placeName) const noexcept
+void SGCore::UI::UIElement::findPlace(const std::string& placeName, std::vector<Ref<UIElement>>& foundPlaces) const noexcept
 {
     for(const auto& child : m_children)
     {
-        if(child->m_places.contains(placeName)) return child;
+        if(child->m_places.contains(placeName))
+        {
+            foundPlaces.push_back(child);
+        }
 
-        if(auto found = child->findPlace(placeName)) return found;
+        child->findPlace(placeName, foundPlaces);
     }
-
-    return nullptr;
 }
 
 void SGCore::UI::UIElement::doCopy(const Ref<UIElement>& to) const noexcept

@@ -9,6 +9,8 @@ SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::TemplateElement::copy() const noe
     auto element = MakeRef<TemplateElement>();
     UIElement::doCopy(element);
 
+    element->m_attributes = m_attributes;
+
     return element;
 }
 

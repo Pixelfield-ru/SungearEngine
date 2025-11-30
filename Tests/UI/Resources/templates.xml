@@ -14,11 +14,13 @@
 
         <elements>
             <div>
-                <test-template/>
+                <test-template>hello lol</test-template>
 
                 <div>
                     <place name="body"/>
                 </div>
+
+                <place name="body"/>
 
                 <button>Click me!</button>
                 <button>Click me too!</button>

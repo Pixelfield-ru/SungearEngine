@@ -50,29 +50,28 @@ void SGCore::UI::UITemplateUsageProcessor::processElement(const Ref<TemplateElem
 
             const std::string placeName = placeNameAttrib.as_string();
 
-            Ref<UIElement> place;
-            if(element->m_places.contains(placeName))
+            std::vector<Ref<UIElement>> places;
+            /*if(element->m_places.contains(placeName))
             {
-                place = element;
+                places.push_back(element);
             }
-            else
+
+            element->findPlace(placeName, places);*/
+
+            for(const auto& instantiation : unrolledElements)
             {
-                for(const auto& instantiation : unrolledElements)
+                if(instantiation->m_places.contains(placeName))
                 {
-                    if(instantiation->m_places.contains(placeName))
-                    {
-                        place = instantiation;
-                        break;
-                    }
-
-                    place = instantiation->findPlace(placeName);
+                    places.push_back(instantiation);
                 }
+
+                instantiation->findPlace(placeName, places);
             }
 
-            if(!place)
+            if(places.empty())
             {
                 LOG_E(SGCORE_TAG,
-                      "Unable to find place with name '{}' to insert elements in template '{}'",
+                      "Unable to find any place with name '{}' to insert elements in template '{}'",
                       placeName,
                       templateElement->m_name)
                 continue;
@@ -81,7 +80,10 @@ void SGCore::UI::UITemplateUsageProcessor::processElement(const Ref<TemplateElem
             // adding all elements under place in place
             for(const auto& placedElement : placedElements)
             {
-                place->m_children.push_back(placedElement->copy());
+                for(const auto& place : places)
+                {
+                    place->m_children.push_back(placedElement->copy());
+                }
             }
         }
     }
@@ -91,18 +93,17 @@ void SGCore::UI::UITemplateUsageProcessor::processElement(const Ref<TemplateElem
     // checking if template usage has unknown attributes
     for(const auto& attrib : elementNode.attributes())
     {
-        if(!templateElement->m_attributes.contains(attrib.name()))
-        {
-            LOG_W(SGCORE_TAG,
-                  "In UI Document by path '{}' in instantiation of template '{}': unknown attribute '{}' of template was used. Attribute was ignored\n"
-                  "Line: {}\n"
-                  "Column: {}",
-                  SGCore::Utils::toUTF8(inDocument->getPath().resolved().u16string()),
-                  templateElement->m_name,
-                  attrib.name(),
-                  nodeColumnLine.first,
-                  nodeColumnLine.second)
-        }
+        if(templateElement->m_attributes.contains(attrib.name())) continue;
+
+        LOG_W(SGCORE_TAG,
+              "In UI Document by path '{}' in instantiation of template '{}': unknown attribute '{}' of template was used. Attribute was ignored\n"
+              "Line: {}\n"
+              "Column: {}",
+              SGCore::Utils::toUTF8(inDocument->getPath().resolved().u16string()),
+              templateElement->m_name,
+              attrib.name(),
+              nodeColumnLine.first,
+              nodeColumnLine.second)
     }
 
     // then processing template attributes
@@ -122,6 +123,8 @@ void SGCore::UI::UITemplateUsageProcessor::processElement(const Ref<TemplateElem
                   nodeColumnLine.second)
             continue;
         }
+
+
 
         // todo: continue
     }

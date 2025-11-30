@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_IKJOINT_H
 
 #include <glm/vec3.hpp>
+#include <optional>
 
 #include "SGCore/ECS/Component.h"
 
