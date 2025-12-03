@@ -1,7 +1,3 @@
-//
-// Created by stuka on 05.10.2025.
-//
-
 #pragma once
 
 #include "Div.h"

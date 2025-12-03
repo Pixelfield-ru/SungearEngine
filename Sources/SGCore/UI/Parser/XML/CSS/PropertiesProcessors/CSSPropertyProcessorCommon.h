@@ -12,7 +12,7 @@ namespace SGCore::UI
     struct CSSPropertyProcessorCommon
     {
         template<typename KeywordT>
-        static std::variant<KeywordT, Ref<StyleMathNode>> processKnownTerm(
+        static std::variant<KeywordT, Ref<DynValueNode>> processKnownTerm(
             ANTLRCSSListener* antlrcssListener,
             Style* currentStyle,
             css3Parser::KnownTermContext* knownTerm,
@@ -21,7 +21,7 @@ namespace SGCore::UI
         {
             if(knownTerm->calc()) // width: calc(...)
             {
-                auto mathNode = MakeRef<StyleMathNode>();
+                auto mathNode = MakeRef<DynValueNode>();
 
                 antlrcssListener->processCalculation(knownTerm->calc(),
                                                      propertyName,

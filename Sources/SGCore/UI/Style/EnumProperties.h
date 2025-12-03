@@ -147,6 +147,8 @@ namespace SGCore::UI {
 
     enum_properties(define_enum, define_prop)
 
+    #undef define_prop
+    #undef define_enum
 
     [[nodiscard]] constexpr char toLower(const char c) noexcept {
         return c >= 'A' && c <= 'Z' ? c + ('a' - 'A') : c;
@@ -184,6 +186,8 @@ namespace SGCore::UI {
 
     enum_properties(define_enum, define_prop)
 
+    #undef define_prop
+    #undef define_enum
 
     [[nodiscard]] consteval std::string toCamelCase(std::string str) noexcept {
         str[0] = toCapital(str[0]);
@@ -197,7 +201,7 @@ namespace SGCore::UI {
     }
 
     template<typename T>
-    [[nodiscard]] std::optional<std::string> enumPropertyValueToCamelCase(T property) noexcept {
+    [[nodiscard]] inline std::optional<std::string> enumPropertyValueToCamelCase(T property) noexcept {
         return std::nullopt;
     }
     #define define_prop(property) \
@@ -214,8 +218,6 @@ namespace SGCore::UI {
     }
 
     enum_properties(define_enum, define_prop)
-
-
 
     #undef define_prop
     #undef define_enum

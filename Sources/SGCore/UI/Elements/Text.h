@@ -1,9 +1,4 @@
-//
-// Created by stuka on 16.03.2025.
-//
-
-#ifndef SUNGEARENGINE_UITEXT_H
-#define SUNGEARENGINE_UITEXT_H
+#pragma once
 
 #include "SGCore/Memory/Assets/FontSpecialization.h"
 #include "SGCore/UI/AttributeValue.h"
@@ -59,5 +54,3 @@ namespace SGCore::UI
         void doCopy(const Ref<UIElement>& to) const noexcept override;
     };
 }
-
-#endif // SUNGEARENGINE_UITEXT_H

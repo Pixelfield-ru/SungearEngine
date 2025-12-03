@@ -5,14 +5,14 @@
 #ifndef BORDERRADIUSALTERNATIVEVALUE_H
 #define BORDERRADIUSALTERNATIVEVALUE_H
 
-#include "SGCore/UI/Math/CSSMathNode.h"
+#include "SGCore/UI/Math/DynValueNode.h"
 
 namespace SGCore::UI
 {
     struct BorderRadiusAlternativeValue final
     {
-        Ref<StyleMathNode> m_radiusX;
-        Ref<StyleMathNode> m_radiusY;
+        Ref<DynValueNode> m_radiusX;
+        Ref<DynValueNode> m_radiusY;
     };
 }
 

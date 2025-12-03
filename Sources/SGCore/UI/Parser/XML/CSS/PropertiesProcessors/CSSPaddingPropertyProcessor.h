@@ -14,7 +14,7 @@ namespace SGCore::UI
     struct CSSPropertyProcessor<CSSPropertyType::PT_PADDING>
     {
     private:
-        using term_value_t = std::variant<UniversalKeyword, Ref<StyleMathNode>>;
+        using term_value_t = std::variant<UniversalKeyword, Ref<DynValueNode>>;
 
     public:
 
@@ -46,7 +46,7 @@ namespace SGCore::UI
                 auto termValue = CSSPropertyProcessorCommon::processKnownTerm<PositionAndSizeKeyword>(
                     antlrcssListener, currentSelector, knownTerm, 0, propertyName);
 
-                if(std::holds_alternative<Ref<StyleMathNode>>(termValue))
+                if(std::holds_alternative<Ref<DynValueNode>>(termValue))
                 {
                     auto mathNode = std::get<1>(termValue);
 

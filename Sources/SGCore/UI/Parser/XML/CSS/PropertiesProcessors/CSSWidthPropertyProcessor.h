@@ -41,7 +41,7 @@ namespace SGCore::UI
             {
                 if(knownTerm->calc()) // width: calc(...)
                 {
-                    auto mathNode = MakeRef<StyleMathNode>();
+                    auto mathNode = MakeRef<DynValueNode>();
 
                     antlrcssListener->processCalculation(knownTerm->calc(),
                                                          propertyName,

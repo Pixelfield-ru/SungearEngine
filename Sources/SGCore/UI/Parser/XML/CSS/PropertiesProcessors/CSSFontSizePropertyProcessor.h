@@ -33,7 +33,7 @@ namespace SGCore::UI
 
                 auto termValue = CSSPropertyProcessorCommon::processKnownTerm<UniversalKeyword>(antlrcssListener, currentStyle, knownTerm, 0, propertyName);
 
-                if(std::holds_alternative<Ref<StyleMathNode>>(termValue))
+                if(std::holds_alternative<Ref<DynValueNode>>(termValue))
                 {
                     auto mathNode = std::get<1>(termValue);
                     currentStyle->m_fontSize.m_value = mathNode;

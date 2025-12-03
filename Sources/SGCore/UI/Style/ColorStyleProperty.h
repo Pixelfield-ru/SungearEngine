@@ -6,9 +6,9 @@
 namespace SGCore::UI
 {
 	struct ColorStyleProperty final {
-		Ref<StyleMathNode> alpha;
-		Ref<StyleMathNode> red;
-		Ref<StyleMathNode> green;
-		Ref<StyleMathNode> blue;
+		Ref<DynValueNode> alpha;
+		Ref<DynValueNode> red;
+		Ref<DynValueNode> green;
+		Ref<DynValueNode> blue;
 	};
 }

@@ -13,7 +13,7 @@
 #include "CSSFile.h"
 #include "SGCore/Memory/AssetRef.h"
 
-#include "SGCore/UI/Math/CSSMathNode.h"
+#include "SGCore/UI/Math/DynValueNode.h"
 #include "SGCore/UI/Math/CSSMathNumericNode.h"
 
 namespace SGCore::UI
@@ -46,7 +46,7 @@ namespace SGCore::UI
          */
         void processCalculation(antlr4::tree::ParseTree* currentANTLRNode,
                                 const std::string& currentPropertyName,
-                                const Ref<StyleMathNode>& currentParentMathNode,
+                                const Ref<DynValueNode>& currentParentMathNode,
                                 const std::unordered_set<CSSDimensionQualifier>& supportedQualifiers) noexcept;
 
         void printInvalidCountOfTermsInPropertyError(const std::string& propertyName,

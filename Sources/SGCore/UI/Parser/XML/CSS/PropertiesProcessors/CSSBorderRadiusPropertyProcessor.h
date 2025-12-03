@@ -17,7 +17,7 @@ namespace SGCore::UI
     struct CSSPropertyProcessor<CSSPropertyType::PT_BORDER_RADIUS>
     {
     private:
-        using term_value_t = std::variant<UniversalKeyword, Ref<StyleMathNode>>;
+        using term_value_t = std::variant<UniversalKeyword, Ref<DynValueNode>>;
 
     public:
 
@@ -51,7 +51,7 @@ namespace SGCore::UI
 
                 auto termValue = CSSPropertyProcessorCommon::processKnownTerm<UniversalKeyword>(antlrcssListener, currentSelector, knownTerm, 0, propertyName);
 
-                if(std::holds_alternative<Ref<StyleMathNode>>(termValue))
+                if(std::holds_alternative<Ref<DynValueNode>>(termValue))
                 {
                     const auto finalValue = BorderRadiusAlternativeValue {
                         .m_radiusX = std::get<1>(termValue),

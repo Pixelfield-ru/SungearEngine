@@ -1,9 +1,4 @@
-//
-// Created by stuka on 25.01.2025.
-//
-
-#ifndef SUNGEARENGINE_ROOT_H
-#define SUNGEARENGINE_ROOT_H
+#pragma once
 
 #include "SGCore/UI/UIElement.h"
 #include "SGCore/Utils/Macroses.h"
@@ -31,5 +26,3 @@ namespace SGCore::UI
         void doGenerateMesh(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept final;
     };
 }
-
-#endif //SUNGEARENGINE_ROOT_H

@@ -256,7 +256,7 @@ void SGCore::UI::ANTLRCSSListener::resolvePseudos() noexcept
 
 void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* currentANTLRNode,
                                                       const std::string& currentPropertyName,
-                                                      const Ref<StyleMathNode>& currentParentMathNode,
+                                                      const Ref<DynValueNode>& currentParentMathNode,
                                                       const std::unordered_set<CSSDimensionQualifier>& supportedQualifiers) noexcept
 {
     const bool isAllQualifiersSupported = supportedQualifiers.contains(CSSDimensionQualifier::DQ_ANY);
@@ -304,7 +304,7 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
 
                 if(asExpr->calcOperand(i)->calcValue()->calcNestedValue())
                 {
-                    auto newParentMathNode = MakeRef<StyleMathNode>();
+                    auto newParentMathNode = MakeRef<DynValueNode>();
 
                     if(asExpr->calcOperand(i)->calcValue()->calcNestedValue()->Minus())
                     {
@@ -406,7 +406,7 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
                 }
                 if(asExpr->calcOperand(i)->calcValue()->calc())
                 {
-                    auto newParentMathNode = MakeRef<StyleMathNode>();
+                    auto newParentMathNode = MakeRef<DynValueNode>();
 
                     currentParentMathNode->m_operands.push_back(newParentMathNode);
 
