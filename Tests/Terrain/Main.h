@@ -7,6 +7,8 @@
 
 void coreInit();
 
+void saveTerrainDisplacementMap() noexcept;
+
 void onUpdate(const double& dt, const double& fixedDt);
 void onFixedUpdate(const double& dt, const double& fixedDt);
 

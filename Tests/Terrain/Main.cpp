@@ -4,6 +4,8 @@
 
 #include "Main.h"
 
+#include <stb_image_write.h>
+
 #include "SGCore/ECS/Utils.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Memory/AssetManager.h"
@@ -193,10 +195,33 @@ void coreInit()
     terrainAORoughnessMetalTex = mainAssetManager->loadAsset<SGCore::ITexture2D>(SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Resources/textures/test_terrain/ao_roughness_metal.png");
     terrainTilingNoiseTex = mainAssetManager->loadAsset<SGCore::ITexture2D>(SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, "${enginePath}/Resources/textures/test_terrain/tiling_noise.png");
     // terrainDisplacementTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test_heightmap0.png");
+
     terrainDisplacementTex = mainAssetManager->getOrAddAssetByAlias<SGCore::ITexture2D>("test_heightmap");
 
-    terrainDisplacementData.resize(1000 * 1000);
+    if(std::filesystem::exists("terrain_displacement.bin"))
+    {
+        size_t texByteSize = 0;
+        const auto* texBinContent = SGCore::FileUtils::readBytes("terrain_displacement.bin", texByteSize);
 
+        terrainDisplacementData.resize(1000 * 1000);
+
+        memcpy(terrainDisplacementData.data(), texBinContent, texByteSize);
+
+        delete texBinContent;
+
+        /*terrainDisplacementTex = mainAssetManager->loadAsset<SGCore::ITexture2D>("terrain_displacement.hdr");
+
+        terrainDisplacementData.resize(1000 * 1000);
+
+        memcpy(terrainDisplacementData.data(), terrainDisplacementTex->getData(), terrainDisplacementTex->getWidth() * terrainDisplacementTex->getHeight() * sizeof(float));*/
+        // terrainDisplacementTex->getData()
+    }
+    else
+    {
+        terrainDisplacementData.resize(1000 * 1000);
+    }
+
+    terrainDisplacementTex->m_dataType = SGGDataType::SGG_FLOAT;
     terrainDisplacementTex->create(terrainDisplacementData.data(), 1000, 1000, 1, SGGColorInternalFormat::SGG_R32_FLOAT, SGGColorFormat::SGG_R);
 
     // creating camera entity
@@ -433,6 +458,25 @@ void coreInit()
     quadMeshData->prepare();
 }
 
+void saveTerrainDisplacementMap() noexcept
+{
+    const int displacementTexWidth = terrainDisplacementTex->getWidth();
+    const int displacementTexHeight = terrainDisplacementTex->getHeight();
+
+    SGCore::FileUtils::writeBytes("terrain_displacement.bin", 0, reinterpret_cast<char*>(terrainDisplacementTex->getData()), displacementTexWidth * displacementTexHeight * sizeof(float) ,false);
+
+    /*std::vector<float> rgbData;
+    rgbData.resize(displacementTexWidth * displacementTexHeight * 1);
+
+    for(int i = 0; i < displacementTexWidth * displacementTexHeight; ++i)
+    {
+        rgbData[i] = terrainDisplacementData[i];
+    }
+
+    int result = stbi_write_hdr("terrain_displacement.hdr", displacementTexWidth, displacementTexHeight, 1, rgbData.data());
+    std::cout << "result of saving displacement: " << result << std::endl;*/
+}
+
 void onUpdate(const double& dt, const double& fixedDt)
 {
     SGCore::CoreMain::getWindow().setTitle("Tesselation Test. FPS: " + std::to_string(SGCore::CoreMain::getFPS()));
@@ -548,8 +592,8 @@ void onUpdate(const double& dt, const double& fixedDt)
                         {
                             if(glm::length(glm::vec2 { x, y }) < paintRadius)
                             {
-                                // const size_t finalIndex = indices.x + x + (indices.y + y) * terrainDisplacementTex->getWidth();
-                                const size_t finalIndex = indices.x + (indices.y) * terrainDisplacementTex->getWidth();
+                                const size_t finalIndex = indices.x + x + (indices.y + y) * terrainDisplacementTex->getWidth();
+                                // const size_t finalIndex = indices.x + (indices.y) * terrainDisplacementTex->getWidth();
                                 if(finalIndex > 0 && finalIndex < terrainDisplacementData.size())
                                 {
                                     terrainDisplacementData[finalIndex] += terrainGrowSpeed;
@@ -674,6 +718,11 @@ void onUpdate(const double& dt, const double& fixedDt)
         {
             scene->getSystem<SGCore::PhysicsWorld3D>()->getDebugDraw()->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
         }
+    }
+
+    if (SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_7))
+    {
+        saveTerrainDisplacementMap();
     }
 }
 

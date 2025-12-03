@@ -392,6 +392,8 @@ void main()
     finalUV.y = 1.0 - tessEvalIn.UV.y;
     #endif
 
+    // finalUV /= 100.0;
+
     float voronoi = texture(mat_noiseSamplers[0], finalUV * 1.0).r;
     vec3 voronoiCol = voronoiColor(finalUV * 10.0);
     // finalUV = rotateUV(tessEvalIn.fragPos.xz, voronoiCol.r * voronoiCol.g * voronoiCol.b, vec2(0.0)) * 0.05;

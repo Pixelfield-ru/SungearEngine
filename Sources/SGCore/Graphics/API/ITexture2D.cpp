@@ -34,6 +34,8 @@ void SGCore::ITexture2D::doLoad(const InterpolatedPath& path)
     
     if(ext == ".png" || ext == ".jpg" || ext == ".jpeg")
     {
+        m_dataType = SGGDataType::SGG_UNSIGNED_BYTE;
+
         /*stbi_load_from_memory(m_textureData.get(), readBytes, &m_width, &m_height,
                               &m_channelsCount, channelsDesired);*/
         m_textureData = data_ptr(
@@ -50,6 +52,8 @@ void SGCore::ITexture2D::doLoad(const InterpolatedPath& path)
         {
             m_internalFormat = SGGColorInternalFormat::SGG_RGB8;
             m_format = SGGColorFormat::SGG_RGB;
+
+            std::cout << "three channel tex" << std::endl;
         }
         else if(m_channelsCount == 2)
         {
@@ -64,6 +68,42 @@ void SGCore::ITexture2D::doLoad(const InterpolatedPath& path)
             m_format = SGGColorFormat::SGG_R;
 
             std::cout << "one channel tex" << std::endl;
+        }
+    }
+    else if(ext == ".hdr")
+    {
+        m_dataType = SGGDataType::SGG_FLOAT;
+
+        m_textureData = data_ptr(
+            reinterpret_cast<std::uint8_t*>(stbi_loadf(getPath().resolved().string().data(),
+                                                       &m_width, &m_height,
+                                                       &m_channelsCount, channelsDesired)));
+
+        if(m_channelsCount == 4)
+        {
+            m_internalFormat = SGGColorInternalFormat::SGG_RGBA32_FLOAT;
+            m_format = SGGColorFormat::SGG_RGBA;
+        }
+        else if(m_channelsCount == 3)
+        {
+            m_internalFormat = SGGColorInternalFormat::SGG_RGB32_FLOAT;
+            m_format = SGGColorFormat::SGG_RGB;
+
+            std::cout << "three channel FLOAT tex" << std::endl;
+        }
+        else if(m_channelsCount == 2)
+        {
+            m_internalFormat = SGGColorInternalFormat::SGG_RG32_FLOAT;
+            m_format = SGGColorFormat::SGG_RG;
+
+            std::cout << "two channel FLOAT tex" << std::endl;
+        }
+        else if(m_channelsCount == 1)
+        {
+            m_internalFormat = SGGColorInternalFormat::SGG_R32_FLOAT;
+            m_format = SGGColorFormat::SGG_R;
+
+            std::cout << "one channel FLOAT tex" << std::endl;
         }
     }
     else if(ext == ".dds")
