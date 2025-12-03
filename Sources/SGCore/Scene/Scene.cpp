@@ -24,7 +24,7 @@
 #include "SGCore/Render/Instancing/InstancingUpdater.h"
 #include "SGCore/Serde/Serde.h"
 #include "SGCore/Serde/StandardSerdeSpecs/SerdeSpecs.h"
-#include "../UI/Systems/UILayoutCalculator.h"
+#include "SGCore/UI/Systems/UILayoutCalculator.h"
 #include "SGCore/UI/EventHandling/EventsHandlingSystem.h"
 
 SGCore::Scene::Scene()

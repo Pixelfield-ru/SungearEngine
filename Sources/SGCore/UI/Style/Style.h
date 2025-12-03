@@ -9,7 +9,7 @@
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Memory/Assets/Font.h"
 
-#include "SGCore/UI/Math/CSSMathNode.h"
+#include "SGCore/UI/Math/DynValueNode.h"
 #include "SGCore/Utils/Macroses.h"
 #include "StyleProperty.h"
 
@@ -17,11 +17,11 @@
 
 namespace SGCore::UI
 {
-    struct Style : IAsset
+    struct Style
     {
         sg_serde_as_friend();
 
-        sg_implement_type_id(Style, 34)
+        // sg_implement_type_id(Style, 34)
 
         friend struct ANTLRCSSListener;
         friend struct CSSFile;
@@ -65,11 +65,11 @@ namespace SGCore::UI
         FlexboxKeyword m_flexDirection = FlexboxKeyword::ROW;
         FlexboxKeyword m_flexWrap = FlexboxKeyword::NOWRAP;
 
-        using SizeStyleProperty = std::variant<PositionAndSizeKeyword, Ref<StyleMathNode>>;
+        using SizeStyleProperty = std::variant<PositionAndSizeKeyword, Ref<DynValueNode>>;
         SizeStyleProperty m_width = PositionAndSizeKeyword::UNSET;
         SizeStyleProperty m_height = PositionAndSizeKeyword::UNSET;
 
-        using PaddingStyleProperty = std::variant<UniversalKeyword, Ref<StyleMathNode>>;
+        using PaddingStyleProperty = std::variant<UniversalKeyword, Ref<DynValueNode>>;
         PaddingStyleProperty m_paddingLeft = UniversalKeyword::UNSET;
         PaddingStyleProperty m_paddingRight = UniversalKeyword::UNSET;
         PaddingStyleProperty m_paddingBottom = UniversalKeyword::UNSET;
@@ -98,8 +98,8 @@ namespace SGCore::UI
 
         struct BorderRadius final
         {
-            Ref<StyleMathNode> m_radiusX;
-            Ref<StyleMathNode> m_radiusY;
+            Ref<DynValueNode> m_radiusX;
+            Ref<DynValueNode> m_radiusY;
         };
 
         using BorderRadiusStyleProperty = std::variant<UniversalKeyword, BorderRadius>;
@@ -120,14 +120,14 @@ namespace SGCore::UI
 
         std::variant<
             ColorKeyword, 
-            std::tuple<Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>>, // rgba
-            std::tuple<Ref<StyleMathNode>, Ref<StyleMathNode>, Ref<StyleMathNode>> // rgb
+            std::tuple<Ref<DynValueNode>, Ref<DynValueNode>, Ref<DynValueNode>, Ref<DynValueNode>>, // rgba
+            std::tuple<Ref<DynValueNode>, Ref<DynValueNode>, Ref<DynValueNode>> // rgb
         > m_backgroundColor = ColorKeyword::UNSET;
 
         AssetWeakRef<Font> m_font;
 
         /// Used as scale.
-        std::variant<FontSizeKeyword, Ref<StyleMathNode>> m_fontSize;
+        std::variant<FontSizeKeyword, Ref<DynValueNode>> m_fontSize;
 
         // ==============================================================
 #pragma endregion Properties
@@ -160,14 +160,14 @@ namespace SGCore::UI
         // if condition is true, then we must take pseudo class name from CSSPseudoClassHandler that returns true and then
         // pass current UIElement to apply(...) function of CSSPseudoClassHandler to do pseudo-class-specific actions
 
-        /// NOT SUPPORTED
+        /*/// NOT SUPPORTED
         void doLoad(const InterpolatedPath& path) final;
 
         // todo: impl
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept final;
 
         // NOT SUPPORTED
-        void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
+        void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;*/
 
     private:
         FontSpecializationSettings m_fontSpecializationSettings;

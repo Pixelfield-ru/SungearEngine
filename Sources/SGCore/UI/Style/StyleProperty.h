@@ -2,6 +2,7 @@
 
 #include <variant>
 #include "Style.h"
+#include "SGCore/UI/Utils.h"
 
 namespace SGCore::UI
 {
@@ -14,8 +15,8 @@ namespace SGCore::UI
         std::variant<Underlying> m_value;
     };
 
-    template<auto... Member>
+    template<auto... Members>
     struct RefStyleProperty {
-        // using MemberType = std::remove_reference_t<std::invoke_result_t<decltype(Member), Style>>;
+        using MemberType = std::remove_reference_t<std::invoke_result_t<decltype(Utils::FirstGenericOf<Members...>), Style>>;
     };
 }

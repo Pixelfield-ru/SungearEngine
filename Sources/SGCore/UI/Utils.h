@@ -10,4 +10,7 @@
 namespace SGCore::UI::Utils
 {
     std::optional<std::string> extractVariable(const std::string& text);
+
+    template<auto First, auto... Rest>
+    auto FirstGenericOf = First;
 }

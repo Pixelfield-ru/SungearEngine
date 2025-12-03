@@ -11,9 +11,9 @@ SGCore::UI::UIRoot::UIRoot() noexcept
 {
     m_shader = AssetManager::getInstance()->loadAsset<IShader>("${enginePath}/Resources/sg_shaders/features/ui/div.sgshader");
     // default style for root
-    m_mainStyle = AssetManager::getInstance()->getOrAddAssetByAlias<Style>("sgui_root_style");
+    // m_mainStyle = AssetManager::getInstance()->getOrAddAssetByAlias<Style>("sgui_root_style");
 
-    auto bottomRightRadius = MakeRef<CSSMathNumericNode>();
+    /*auto bottomRightRadius = MakeRef<CSSMathNumericNode>();
     bottomRightRadius->m_value = 30.0f;
 
     m_mainStyle->m_bottomRightBorderRadius.setWithAlternative({});
@@ -21,6 +21,7 @@ SGCore::UI::UIRoot::UIRoot() noexcept
         .m_radiusX = bottomRightRadius,
         .m_radiusY = bottomRightRadius
     };
+    */
 
     /*auto topPadding = MakeRef<CSSMathNumericNode>();
     topPadding->m_value = 250;
@@ -29,7 +30,7 @@ SGCore::UI::UIRoot::UIRoot() noexcept
     m_mainStyle->m_padding.getFromAlternativeValue<0>() = topPadding;
     m_mainStyle->m_padding.getFromAlternativeValue<3>() = topPadding;*/
     
-    m_mainStyle->m_display = UI::DisplayKeyword::KW_BLOCK;
+    m_mainStyle->m_display = UI::DisplayKeyword::BLOCK;
 }
 
 SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIRoot::copy() const noexcept
