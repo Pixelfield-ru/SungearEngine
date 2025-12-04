@@ -13,8 +13,6 @@
 #include "SGCore/Utils/Macroses.h"
 #include "StyleProperty.h"
 
-
-
 namespace SGCore::UI
 {
     struct Style

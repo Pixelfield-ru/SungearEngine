@@ -1,6 +1,3 @@
-//
-// Created by stuka on 25.01.2025.
-//
 #include "UIElement.h"
 
 #include "UIElementMesh/UIElementMesh.h"
