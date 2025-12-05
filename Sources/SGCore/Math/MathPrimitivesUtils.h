@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_MATHPRIMITIVESUTILS_H
 #define SUNGEARENGINE_MATHPRIMITIVESUTILS_H
 
-#include "SGUtils/pch.h"
+#include <glm/glm.hpp>
 
 #include "AABB.h"
 
@@ -15,7 +15,7 @@ namespace SGCore::MathPrimitivesUtils
     requires(std::is_scalar_v<ScalarT>)
     struct RayIntersectionInfo
     {
-        ScalarT m_hitDistance = 0;
+        ScalarT m_hitDistance = std::numeric_limits<ScalarT>::max();
         bool m_isIntersected = false;
     };
     
@@ -130,8 +130,86 @@ namespace SGCore::MathPrimitivesUtils
             }
         }
         
-        intersectionInfo.m_hitDistance = 0;
+        intersectionInfo.m_hitDistance = std::numeric_limits<float>::max();
         intersectionInfo.m_isIntersected = false;
+    }
+
+    template<typename ScalarT = float>
+    static void rayTriangleIntersection(const glm::vec<3, ScalarT, glm::defaultp>& rayOrigin,
+                                        const glm::vec<3, ScalarT, glm::defaultp>& rayDirection,
+                                        const glm::vec<3, ScalarT, glm::defaultp>& vertex0,
+                                        const glm::vec<3, ScalarT, glm::defaultp>& vertex1,
+                                        const glm::vec<3, ScalarT, glm::defaultp>& vertex2,
+                                        RayIntersectionInfo<ScalarT>& intersectionInfo,
+                                        const ScalarT& epsilon = 1e-8)
+    {
+        intersectionInfo.m_hitDistance = std::numeric_limits<float>::max();
+        intersectionInfo.m_isIntersected = false;
+
+        const auto edge1 = vertex1 - vertex0;
+        const auto edge2 = vertex2 - vertex0;
+        const auto h = glm::cross(rayDirection, edge2);
+        float a = glm::dot(edge1, h);
+
+        if (a > -epsilon && a < epsilon)
+        {
+            return;
+        }
+
+        float f = 1.0f / a;
+        const auto s = rayOrigin - vertex0;
+        float u = f * glm::dot(s, h);
+
+        if (u < 0.0f || u > 1.0f)
+        {
+            return;
+        }
+
+        const auto q = glm::cross(s, edge1);
+        const float v = f * glm::dot(rayDirection, q);
+
+        if (v < 0.0f || u + v > 1.0f)
+        {
+            return;
+        }
+
+        float t = f * glm::dot(edge2, q);
+        if(t > epsilon)
+        {
+            intersectionInfo.m_hitDistance = t;
+            intersectionInfo.m_isIntersected = true;
+        }
+    }
+
+    template<typename ScalarT = float>
+    static void rayQuadIntersection(const glm::vec<3, ScalarT, glm::defaultp>& rayOrigin,
+                                    const glm::vec<3, ScalarT, glm::defaultp>& rayDirection,
+                                    const glm::vec<3, ScalarT, glm::defaultp>& vertex0,
+                                    const glm::vec<3, ScalarT, glm::defaultp>& vertex1,
+                                    const glm::vec<3, ScalarT, glm::defaultp>& vertex2,
+                                    const glm::vec<3, ScalarT, glm::defaultp>& vertex3,
+                                    RayIntersectionInfo<ScalarT>& intersectionInfo,
+                                    const ScalarT& epsilon = 1e-8)
+    {
+        intersectionInfo.m_hitDistance = std::numeric_limits<float>::max();
+        intersectionInfo.m_isIntersected = false;
+
+        RayIntersectionInfo<> triangleIntersectionInfo0;
+        RayIntersectionInfo<> triangleIntersectionInfo1;
+
+        rayTriangleIntersection(rayOrigin, rayDirection, vertex0, vertex1, vertex2, triangleIntersectionInfo0);
+        rayTriangleIntersection(rayOrigin, rayDirection, vertex0, vertex2, vertex3, triangleIntersectionInfo1);
+
+        if(triangleIntersectionInfo0.m_hitDistance < triangleIntersectionInfo1.m_hitDistance)
+        {
+            intersectionInfo = triangleIntersectionInfo0;
+            return;
+        }
+
+        if(triangleIntersectionInfo1.m_hitDistance < triangleIntersectionInfo0.m_hitDistance)
+        {
+            intersectionInfo = triangleIntersectionInfo1;
+        }
     }
     
     template<typename ScalarT = float>

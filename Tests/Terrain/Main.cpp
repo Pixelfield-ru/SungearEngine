@@ -5,6 +5,8 @@
 #include "Main.h"
 
 #include <stb_image_write.h>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
 
 #include "SGCore/ECS/Utils.h"
 #include "SGCore/Main/CoreMain.h"
@@ -32,6 +34,10 @@
 
 #include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
 #include <BulletCollision/CollisionShapes/btCompoundShape.h>
+
+#include "SGCore/Navigation/NavGrid3D.h"
+#include "SGCore/Render/DebugDraw.h"
+#include "SGCore/Render/Terrain/TerrainUtils.h"
 
 #if SG_PLATFORM_OS_WINDOWS
 #ifdef __cplusplus
@@ -76,6 +82,9 @@ SGCore::AssetRef<SGCore::ITexture2D> terrainDisplacementTex;
 SGCore::AssetRef<SGCore::ITexture2D> terrainNormalsTex;
 SGCore::AssetRef<SGCore::ITexture2D> terrainAORoughnessMetalTex;
 SGCore::AssetRef<SGCore::ITexture2D> terrainTilingNoiseTex;
+
+std::vector<SGCore::Vertex> terrainDisplacedVertices;
+std::vector<std::uint32_t> terrainDisplacedIndices;
 
 std::vector<float> terrainDisplacementData;
 
@@ -135,7 +144,7 @@ void regenerateTerrainPhysicalMesh(SGCore::ECS::entity_t terrainEntity)
     terrainRigidbody->removeFromWorld();
 
     // generating terrain physical mesh
-    SGCore::Terrain::generatePhysicalMesh(terrainComponent, terrainMesh, 5);
+    terrainComponent.generatePhysicalMesh(terrainMesh, 5);
 
     SGCore::Ref<btBvhTriangleMeshShape> terrainRigidbodyShape = SGCore::MakeRef<btBvhTriangleMeshShape>(terrainMeshData->m_physicalMesh.get(), true);
     btTransform terrainShapeTransform;
@@ -144,6 +153,24 @@ void regenerateTerrainPhysicalMesh(SGCore::ECS::entity_t terrainEntity)
     terrainRigidbody->addShape(terrainShapeTransform, terrainRigidbodyShape);
 
     terrainRigidbody->reAddToWorld();
+}
+
+void regenerateTerrainNavGrid(SGCore::ECS::entity_t terrainEntity)
+{
+    terrainDisplacedVertices.clear();
+    terrainDisplacedIndices.clear();
+
+    const auto ecsRegistry = scene->getECSRegistry();
+
+    auto& terrainComponent = ecsRegistry->get<SGCore::Terrain>(terrainEntity);
+    auto& terrainNavGrid = ecsRegistry->get<SGCore::NavGrid3D>(terrainEntity);
+
+    SGCore::TerrainUtils::calculateVerticesUsingDisplacementMap(terrainComponent, terrainDisplacementTex.get(), 10, terrainDisplacedVertices, terrainDisplacedIndices);
+
+    terrainNavGrid.build(terrainDisplacementTex.get(), terrainComponent.m_heightScale, terrainMeshData->m_aabb, *ecsRegistry);
+    // terrainNavGrid.build(terrainDisplacedVertices, terrainDisplacedIndices, 4, terrainMeshData->m_aabb, *ecsRegistry);
+
+    std::cout << "terrain nav grid nodes count: " << terrainNavGrid.m_nodes.size() << std::endl;
 }
 
 void coreInit()
@@ -343,21 +370,28 @@ void coreInit()
     ecsRegistry->emplace<SGCore::NonSavable>(terrainEntity);
     auto& terrainMesh = ecsRegistry->emplace<SGCore::Mesh>(terrainEntity);
     auto& terrainComponent = ecsRegistry->emplace<SGCore::Terrain>(terrainEntity);
+    auto& terrainNavGrid = ecsRegistry->emplace<SGCore::NavGrid3D>(terrainEntity);
 
     // creating terrain mesh ====
     terrainMeshData = mainAssetManager->createAndAddAsset<SGCore::IMeshData>();
 
-    SGCore::Terrain::generate(terrainComponent, terrainMeshData, 40, 40, 100);
+    terrainComponent.generate(terrainMeshData, 40, 40, 100);
 
     terrainMesh.m_base.setMeshData(terrainMeshData);
     terrainMesh.m_base.setMaterial(standardTerrainMaterial);
+
+    std::cout << "terrain aabb min: " << glm::to_string(terrainMeshData->m_aabb.m_min) << ", terrain aabb max: " << glm::to_string(terrainMeshData->m_aabb.m_max) << std::endl;
+
+    terrainNavGrid.m_cellSize = 10.0f;
+
+    regenerateTerrainNavGrid(terrainEntity);
 
     // creating rigidbody for terrain
     auto terrainRigidbody = scene->getECSRegistry()->emplace<SGCore::Rigidbody3D>(terrainEntity,
         SGCore::MakeRef<SGCore::Rigidbody3D>(scene->getSystem<SGCore::PhysicsWorld3D>()));
 
     // generating terrain physical mesh
-    SGCore::Terrain::generatePhysicalMesh(terrainComponent, terrainMesh, 10);
+   terrainComponent.generatePhysicalMesh(terrainMesh, 10);
 
     SGCore::Ref<btBvhTriangleMeshShape> terrainRigidbodyShape = SGCore::MakeRef<btBvhTriangleMeshShape>(terrainMeshData->m_physicalMesh.get(), true);
     btTransform terrainShapeTransform;
@@ -501,6 +535,10 @@ void onUpdate(const double& dt, const double& fixedDt)
     auto& decalTransform = scene->getECSRegistry()->get<SGCore::Transform>(terrainDecalEntity);
     auto& terrainTransform = scene->getECSRegistry()->get<SGCore::Transform>(terrainEntity);
     auto& terrain = scene->getECSRegistry()->get<SGCore::Terrain>(terrainEntity);
+    auto& terrainNavGrid = scene->getECSRegistry()->get<SGCore::NavGrid3D>(terrainEntity);
+
+    const auto debugDraw = SGCore::RenderPipelinesManager::instance().getCurrentRenderPipeline()->getRenderPass<SGCore::DebugDraw>();
+    const auto& physicsDebugDraw = scene->getSystem<SGCore::PhysicsWorld3D>()->getDebugDraw();
 
     if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_3))
     {
@@ -697,33 +735,87 @@ void onUpdate(const double& dt, const double& fixedDt)
         }
     }
 
-    if (SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_4))
+    if(SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_4))
     {
         auto& cameraTransform = scene->getECSRegistry()->get<SGCore::Transform>(mainCamera);
         createBallAndApplyImpulse(cameraTransform->m_ownTransform.m_position, cameraTransform->m_ownTransform.m_forward * 200000.0f / 10.0f);
     }
 
-    if (SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_5))
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_5))
     {
         regenerateTerrainPhysicalMesh(terrainEntity);
     }
 
-    if (SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_6))
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_6))
     {
-        if(scene->getSystem<SGCore::PhysicsWorld3D>()->getDebugDraw()->getDebugMode() != btIDebugDraw::DBG_NoDebug)
+        if(physicsDebugDraw->getDebugMode() != btIDebugDraw::DBG_NoDebug)
         {
-            scene->getSystem<SGCore::PhysicsWorld3D>()->getDebugDraw()->setDebugMode(btIDebugDraw::DBG_NoDebug);
+            physicsDebugDraw->setDebugMode(btIDebugDraw::DBG_NoDebug);
         }
         else
         {
-            scene->getSystem<SGCore::PhysicsWorld3D>()->getDebugDraw()->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+            physicsDebugDraw->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
         }
     }
 
-    if (SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_7))
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_7))
     {
         saveTerrainDisplacementMap();
     }
+
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_F3))
+    {
+        terrainNavGrid.applyModelMatrix(terrainTransform->m_finalTransform.m_animatedModelMatrix);
+    }
+
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_F4))
+    {
+        if(debugDraw->m_mode != SGCore::NO_DEBUG)
+        {
+            debugDraw->m_mode = SGCore::NO_DEBUG;
+        }
+        else
+        {
+            debugDraw->m_mode = SGCore::WIREFRAME;
+        }
+    }
+
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_F5))
+    {
+        regenerateTerrainNavGrid(terrainEntity);
+    }
+
+    if(debugDraw->m_mode != SGCore::NO_DEBUG)
+    {
+        /*for(size_t i = 0; i < terrainDisplacedIndices.size(); i += 4)
+        {
+            const auto v0 = terrainDisplacedVertices[terrainDisplacedIndices[i]].m_position;
+            const auto v1 = terrainDisplacedVertices[terrainDisplacedIndices[i + 1]].m_position;
+            const auto v2 = terrainDisplacedVertices[terrainDisplacedIndices[i + 2]].m_position;
+            const auto v3 = terrainDisplacedVertices[terrainDisplacedIndices[i + 3]].m_position;
+
+            debugDraw->drawLine(v0, v1, { 0.47, 0.87, 0.78, 1.0 });
+            debugDraw->drawLine(v1, v2,  { 0.47, 0.87, 0.78, 1.0 });
+            debugDraw->drawLine(v2, v3,  { 0.47, 0.87, 0.78, 1.0 });
+            debugDraw->drawLine(v3, v0,  { 0.47, 0.87, 0.78, 1.0 });
+        }*/
+        for(const auto& node : terrainNavGrid.m_nodes)
+        {
+            const auto leftBottom = node.m_position - glm::vec3 { node.m_size / 2.0f, 0, node.m_size / 2.0f };
+            const auto leftTop = node.m_position + glm::vec3 { -node.m_size / 2.0f, 0.0f, node.m_size / 2.0f };
+            const auto rightTop = node.m_position + glm::vec3 { node.m_size / 2.0f, 0, node.m_size / 2.0f };
+            const auto rightBottom = node.m_position + glm::vec3 { node.m_size / 2.0f, 0.0f, -node.m_size / 2.0f };
+
+            debugDraw->drawLine(leftBottom, leftTop, { 0.47, 0.87, 0.78, 1.0 });
+            debugDraw->drawLine(leftTop, rightTop,  { 0.47, 0.87, 0.78, 1.0 });
+            debugDraw->drawLine(rightTop, rightBottom,  { 0.47, 0.87, 0.78, 1.0 });
+            debugDraw->drawLine(rightBottom, leftBottom,  { 0.47, 0.87, 0.78, 1.0 });
+
+            debugDraw->drawLine(node.m_position, node.m_position + glm::vec3 { 0.0f, 5.0f, 0.0f },  { 0.91, 0.40, 0.42, 1.0 });
+        }
+    }
+
+    // debugDraw->drawLine({ 0, 0, 0 }, { 0, 10, 0 },  { 0.91, 0.40, 0.42, 1.0 });
 }
 
 void onFixedUpdate(const double& dt, const double& fixedDt)
