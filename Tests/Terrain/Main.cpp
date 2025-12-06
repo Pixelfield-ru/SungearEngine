@@ -36,6 +36,7 @@
 #include <BulletCollision/CollisionShapes/btCompoundShape.h>
 
 #include "SGCore/Navigation/NavGrid3D.h"
+#include "SGCore/Navigation/NavMesh/NavMesh.h"
 #include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/Terrain/TerrainUtils.h"
 
@@ -163,14 +164,43 @@ void regenerateTerrainNavGrid(SGCore::ECS::entity_t terrainEntity)
     const auto ecsRegistry = scene->getECSRegistry();
 
     auto& terrainComponent = ecsRegistry->get<SGCore::Terrain>(terrainEntity);
-    auto& terrainNavGrid = ecsRegistry->get<SGCore::NavGrid3D>(terrainEntity);
+    // auto& terrainNavGrid = ecsRegistry->get<SGCore::Navigation::NavGrid3D>(terrainEntity);
+    auto& terrainNavMesh = ecsRegistry->get<SGCore::Navigation::NavMesh>(terrainEntity);
 
     SGCore::TerrainUtils::calculateVerticesUsingDisplacementMap(terrainComponent, terrainDisplacementTex.get(), 10, terrainDisplacedVertices, terrainDisplacedIndices);
 
-    terrainNavGrid.build(terrainDisplacementTex.get(), terrainComponent.m_heightScale, terrainMeshData->m_aabb, *ecsRegistry);
+    std::vector<SGCore::MathPrimitivesUtils::Triangle<>> inputTriangles;
+
+    for(size_t i = 0; i < terrainDisplacedVertices.size(); i += 4)
+    {
+        const auto& v0 = terrainDisplacedVertices[terrainDisplacedIndices[i] + 0];
+        const auto& v1 = terrainDisplacedVertices[terrainDisplacedIndices[i] + 1];
+        const auto& v2 = terrainDisplacedVertices[terrainDisplacedIndices[i] + 2];
+        const auto& v3 = terrainDisplacedVertices[terrainDisplacedIndices[i] + 3];
+
+        SGCore::MathPrimitivesUtils::Triangle<> tri0 {
+            .m_vertices = { v0.m_position, v1.m_position, v2.m_position }
+        };
+
+        SGCore::MathPrimitivesUtils::Triangle<> tri1 {
+            .m_vertices = { v1.m_position, v2.m_position, v3.m_position }
+        };
+
+        tri0.calculateNormal();
+        tri1.calculateNormal();
+
+        inputTriangles.push_back(tri0);
+        inputTriangles.push_back(tri1);
+    }
+
+    terrainNavMesh.useStandardSteps();
+    terrainNavMesh.build(inputTriangles);
+
+
+    // terrainNavGrid.build(terrainDisplacementTex.get(), terrainComponent.m_heightScale, terrainMeshData->m_aabb, *ecsRegistry);
     // terrainNavGrid.build(terrainDisplacedVertices, terrainDisplacedIndices, 4, terrainMeshData->m_aabb, *ecsRegistry);
 
-    std::cout << "terrain nav grid nodes count: " << terrainNavGrid.m_nodes.size() << std::endl;
+    // std::cout << "terrain nav grid nodes count: " << terrainNavGrid.m_nodes.size() << std::endl;
 }
 
 void coreInit()
@@ -370,7 +400,8 @@ void coreInit()
     ecsRegistry->emplace<SGCore::NonSavable>(terrainEntity);
     auto& terrainMesh = ecsRegistry->emplace<SGCore::Mesh>(terrainEntity);
     auto& terrainComponent = ecsRegistry->emplace<SGCore::Terrain>(terrainEntity);
-    auto& terrainNavGrid = ecsRegistry->emplace<SGCore::NavGrid3D>(terrainEntity);
+    // auto& terrainNavGrid = ecsRegistry->emplace<SGCore::Navigation::NavGrid3D>(terrainEntity);
+    auto& terrainNavMesh = ecsRegistry->emplace<SGCore::Navigation::NavMesh>(terrainEntity);
 
     // creating terrain mesh ====
     terrainMeshData = mainAssetManager->createAndAddAsset<SGCore::IMeshData>();
@@ -382,7 +413,7 @@ void coreInit()
 
     std::cout << "terrain aabb min: " << glm::to_string(terrainMeshData->m_aabb.m_min) << ", terrain aabb max: " << glm::to_string(terrainMeshData->m_aabb.m_max) << std::endl;
 
-    terrainNavGrid.m_cellSize = 10.0f;
+    // terrainNavGrid.m_cellSize = 10.0f;
 
     regenerateTerrainNavGrid(terrainEntity);
 
@@ -391,7 +422,7 @@ void coreInit()
         SGCore::MakeRef<SGCore::Rigidbody3D>(scene->getSystem<SGCore::PhysicsWorld3D>()));
 
     // generating terrain physical mesh
-   terrainComponent.generatePhysicalMesh(terrainMesh, 10);
+    terrainComponent.generatePhysicalMesh(terrainMesh, 10);
 
     SGCore::Ref<btBvhTriangleMeshShape> terrainRigidbodyShape = SGCore::MakeRef<btBvhTriangleMeshShape>(terrainMeshData->m_physicalMesh.get(), true);
     btTransform terrainShapeTransform;
@@ -535,7 +566,8 @@ void onUpdate(const double& dt, const double& fixedDt)
     auto& decalTransform = scene->getECSRegistry()->get<SGCore::Transform>(terrainDecalEntity);
     auto& terrainTransform = scene->getECSRegistry()->get<SGCore::Transform>(terrainEntity);
     auto& terrain = scene->getECSRegistry()->get<SGCore::Terrain>(terrainEntity);
-    auto& terrainNavGrid = scene->getECSRegistry()->get<SGCore::NavGrid3D>(terrainEntity);
+    // auto& terrainNavGrid = scene->getECSRegistry()->get<SGCore::Navigation::NavGrid3D>(terrainEntity);
+    auto& terrainNavMesh = scene->getECSRegistry()->get<SGCore::Navigation::NavMesh>(terrainEntity);
 
     const auto debugDraw = SGCore::RenderPipelinesManager::instance().getCurrentRenderPipeline()->getRenderPass<SGCore::DebugDraw>();
     const auto& physicsDebugDraw = scene->getSystem<SGCore::PhysicsWorld3D>()->getDebugDraw();
@@ -765,7 +797,7 @@ void onUpdate(const double& dt, const double& fixedDt)
 
     if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_F3))
     {
-        terrainNavGrid.applyModelMatrix(terrainTransform->m_finalTransform.m_animatedModelMatrix);
+        // terrainNavGrid.applyModelMatrix(terrainTransform->m_finalTransform.m_animatedModelMatrix);
     }
 
     if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_F4))
@@ -799,7 +831,7 @@ void onUpdate(const double& dt, const double& fixedDt)
             debugDraw->drawLine(v2, v3,  { 0.47, 0.87, 0.78, 1.0 });
             debugDraw->drawLine(v3, v0,  { 0.47, 0.87, 0.78, 1.0 });
         }*/
-        for(const auto& node : terrainNavGrid.m_nodes)
+        /*for(const auto& node : terrainNavGrid.m_nodes)
         {
             const auto leftBottom = node.m_position - glm::vec3 { node.m_size / 2.0f, 0, node.m_size / 2.0f };
             const auto leftTop = node.m_position + glm::vec3 { -node.m_size / 2.0f, 0.0f, node.m_size / 2.0f };
@@ -812,7 +844,7 @@ void onUpdate(const double& dt, const double& fixedDt)
             debugDraw->drawLine(rightBottom, leftBottom,  { 0.47, 0.87, 0.78, 1.0 });
 
             debugDraw->drawLine(node.m_position, node.m_position + glm::vec3 { 0.0f, 5.0f, 0.0f },  { 0.91, 0.40, 0.42, 1.0 });
-        }
+        }*/
     }
 
     // debugDraw->drawLine({ 0, 0, 0 }, { 0, 10, 0 },  { 0.91, 0.40, 0.42, 1.0 });

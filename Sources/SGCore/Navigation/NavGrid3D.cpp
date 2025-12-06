@@ -10,12 +10,13 @@
 #include "SGCore/Graphics/API/GraphicsDataTypes.h"
 #include "SGCore/Math/MathPrimitivesUtils.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
+#include "SGCore/ImportedScenesArch/Vertex.h"
 
-void SGCore::NavGrid3D::build(const std::vector<Vertex>& meshVertices,
-                              const std::vector<std::uint32_t>& meshIndices,
-                              std::uint8_t verticesPerPrimitiveCount,
-                              const AABB<>& meshAABB,
-                              const ECS::registry_t& sceneRegistry) noexcept
+void SGCore::Navigation::NavGrid3D::build(const std::vector<Vertex>& meshVertices,
+                                          const std::vector<std::uint32_t>& meshIndices,
+                                          std::uint8_t verticesPerPrimitiveCount,
+                                          const AABB<>& meshAABB,
+                                          const ECS::registry_t& sceneRegistry) noexcept
 {
     m_nodes.clear();
 
@@ -37,10 +38,10 @@ void SGCore::NavGrid3D::build(const std::vector<Vertex>& meshVertices,
     }
 }
 
-void SGCore::NavGrid3D::build(const ITexture2D* displacementMap,
-                              float displacementHeightScale,
-                              const AABB<>& meshAABB,
-                              const ECS::registry_t& sceneRegistry) noexcept
+void SGCore::Navigation::NavGrid3D::build(const ITexture2D* displacementMap,
+                                          float displacementHeightScale,
+                                          const AABB<>& meshAABB,
+                                          const ECS::registry_t& sceneRegistry) noexcept
 {
     m_nodes.clear();
 
@@ -79,7 +80,7 @@ void SGCore::NavGrid3D::build(const ITexture2D* displacementMap,
     }
 }
 
-void SGCore::NavGrid3D::applyModelMatrix(const glm::mat4& modelMatrix) noexcept
+void SGCore::Navigation::NavGrid3D::applyModelMatrix(const glm::mat4& modelMatrix) noexcept
 {
     for(auto& node : m_nodes)
     {
@@ -87,10 +88,10 @@ void SGCore::NavGrid3D::applyModelMatrix(const glm::mat4& modelMatrix) noexcept
     }
 }
 
-std::optional<float> SGCore::NavGrid3D::getHeightAt(const std::vector<Vertex>& meshVertices,
-                                                    const std::vector<std::uint32_t>& meshIndices,
-                                                    const glm::vec2& position,
-                                                    std::uint8_t verticesPerPrimitiveCount) noexcept
+std::optional<float> SGCore::Navigation::NavGrid3D::getHeightAt(const std::vector<Vertex>& meshVertices,
+                                                                const std::vector<std::uint32_t>& meshIndices,
+                                                                const glm::vec2& position,
+                                                                std::uint8_t verticesPerPrimitiveCount) noexcept
 {
     const auto rayStart = glm::vec3 { position.x, 1000.0f, position.y};
     const glm::vec3 rayDir { 0, -1, 0 };

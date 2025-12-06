@@ -14,7 +14,10 @@ namespace SGCore
 {
     struct Vertex;
     class ITexture2D;
+}
 
+namespace SGCore::Navigation
+{
     struct NavGrid3D : ECS::Component<NavGrid3D, const NavGrid3D>
     {
         struct Node

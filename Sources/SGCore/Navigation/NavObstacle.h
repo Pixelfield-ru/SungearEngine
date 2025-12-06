@@ -6,7 +6,7 @@
 
 #include "SGCore/ECS/Component.h"
 
-namespace SGCore
+namespace SGCore::Navigation
 {
     struct NavObstacle : ECS::Component<NavObstacle, const NavObstacle>
     {
