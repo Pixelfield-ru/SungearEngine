@@ -4,14 +4,18 @@
 
 #pragma once
 
+#include <vector>
 #include <limits>
+#include <glm/vec3.hpp>
 
 #include "INavMeshBuildStep.h"
+#include "SGCore/Math/MathPrimitivesUtils.h"
 
 namespace SGCore::Navigation
 {
     struct NavVoxel
     {
+        // is voxel inside triangle (geometry)
         bool m_isSolid {};
         bool m_isWalkable {};
         float m_distanceToEdge = std::numeric_limits<float>::max();
@@ -20,6 +24,27 @@ namespace SGCore::Navigation
 
     struct VoxelizationStep : INavMeshBuildStep
     {
+        std::vector<NavVoxel> m_voxels;
+        std::int32_t m_voxelGridWidth {};
+        std::int32_t m_voxelGridHeight {};
+        std::int32_t m_voxelGridDepth {};
+        glm::vec3 m_voxelGridOrigin {};
+
         void process(NavMesh& navMesh, const NavMeshConfig& config) noexcept override;
+
+        std::int32_t worldToVoxelX(float wx, float cellSize) const noexcept;
+        std::int32_t worldToVoxelY(float wy, float cellHeight) const noexcept;
+        std::int32_t worldToVoxelZ(float wz, float cellSize) const noexcept;
+
+        glm::vec3 voxelToWorld(const glm::i32vec3& voxelPos, float cellSize, float cellHeight) const noexcept;
+
+        float voxelToWorldX(std::int32_t vx, float cellSize) const noexcept;
+        float voxelToWorldY(std::int32_t vy, float cellHeight) const noexcept;
+        float voxelToWorldZ(std::int32_t vz, float cellSize) const noexcept;
+
+        NavVoxel& getVoxel(std::int32_t x, std::int32_t y, std::int32_t z) noexcept;
+
+    private:
+        bool isVoxelInTriangle(std::int32_t vx, std::int32_t vy, std::int32_t vz, const MathPrimitivesUtils::Triangle<>& tri, const NavMeshConfig& config) const;
     };
 }

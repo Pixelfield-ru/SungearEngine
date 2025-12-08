@@ -57,9 +57,14 @@ void SGCore::TerrainUtils::calculateVerticesUsingDisplacementMap(const Terrain::
             }).r * terrain.m_heightScale;
 
             glm::vec3 v0(x, v0Height, z);
+            glm::vec3 v1(x, v1Height, z + stepSize);
+            glm::vec3 v2(x + stepSize, v2Height, z);
+            glm::vec3 v3(x + stepSize, v3Height, z + stepSize);
+
+            /*glm::vec3 v0(x, v0Height, z);
             glm::vec3 v1((x + stepSize), v2Height, z);
             glm::vec3 v2((x + stepSize), v3Height, (z + stepSize));
-            glm::vec3 v3(x, v1Height, (z + stepSize));
+            glm::vec3 v3(x, v1Height, (z + stepSize));*/
 
             v0.x = (v0.x - terrain.getPatchSize() / 2.0f);
             v0.z = (v0.z - terrain.getPatchSize() / 2.0f);

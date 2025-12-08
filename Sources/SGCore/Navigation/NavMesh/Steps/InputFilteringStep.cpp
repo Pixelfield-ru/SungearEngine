@@ -32,7 +32,7 @@ void SGCore::Navigation::InputFilteringStep::process(NavMesh& navMesh, const Nav
 
     for(const auto& tri : m_walkableTriangles)
     {
-        for(int i = 0; i < 3; ++i)
+        for(std::uint8_t i = 0; i < 3; ++i)
         {
             m_sceneAABB.m_min = glm::min(m_sceneAABB.m_min, tri.m_vertices[i]);
             m_sceneAABB.m_max = glm::max(m_sceneAABB.m_max, tri.m_vertices[i]);
