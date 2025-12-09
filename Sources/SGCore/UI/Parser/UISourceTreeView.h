@@ -10,6 +10,6 @@ namespace SGCore::UI
     {
         virtual ~UISourceTreeView() = default;
 
-        virtual SGCore::Utils::PolymorphicIterator<UISourceTreeView&> children();
+        virtual Ref<SGCore::Utils::PolymorphicIterator<UISourceTreeView&>> children();
     };
 }

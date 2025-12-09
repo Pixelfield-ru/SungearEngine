@@ -1,26 +1,27 @@
 #pragma once
-#include "PolymorphicIterator.h"
+#include "PolyIter.h"
+#include "SGCore/Utils/Optional.h"
 
 namespace SGCore::Utils
 {
-    template<typename T, typename Container, typename Iterator> requires requires(Container container, Iterator iterator) {
-        { container.begin() } -> std::same_as<Iterator>;
-        { container.end() } -> std::same_as<Iterator>;
-
-        { ++iterator } -> std::same_as<Iterator&>;
-        { iterator != iterator } -> std::same_as<bool>;
-        { *iterator } -> std::same_as<T>;
-    }
-    struct PolymorphicIteratorStaticIteratorWrapper final : PolymorphicIterator<T>
+    template<typename Container> requires
+        requires (Container container) {
+            { container.begin() };
+        } &&
+        std::forward_iterator<decltype(std::declval<Container>().begin())>
+    struct StaticWrapperPolyIter final : PolyIter<decltype(*std::declval<Container>().begin())>
     {
-        explicit PolymorphicIteratorStaticIteratorWrapper(const Container& container) : m_iter(container.begin()), m_end(container.end()) {};
+        using IterType = decltype(std::declval<Container>().begin());
+        using ValueType = decltype(*std::declval<Container>().begin());
+
+        explicit StaticWrapperPolyIter(const Container container) : m_iter(container.begin()), m_end(container.end()) {};
 
         bool m_first = false;
-        Iterator m_iter;
-        Iterator m_end;
-        ~PolymorphicIteratorStaticIteratorWrapper() override = default;
+        IterType m_iter;
+        IterType m_end;
+        ~StaticWrapperPolyIter() override = default;
 
-        std::optional<T> next() override {
+        Optional<ValueType> next() noexcept override {
             if (!m_first) {
                 m_first = true;
                 return *m_iter;

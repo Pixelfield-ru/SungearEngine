@@ -10,14 +10,12 @@ namespace SGCore::UI
     {
         ~XMLSourceTreeView() override;
 
-        pugi::xml_node rootNode;
+        XMLSourceTreeView(const pugi::xml_node& node) : m_node(node) {};
 
-        SGCore::Utils::PolymorphicIterator<UISourceTreeView&> children() override {
-            auto w = SGCore::Utils::PolymorphicIteratorStaticIteratorWrapper<
-                pugi::xml_node,
-                pugi::xml_object_range<pugi::xml_node_iterator>,
-                pugi::xml_node_iterator
-            >(rootNode.children());
+        pugi::xml_node m_node;
+
+        Ref<SGCore::Utils::PolymorphicIterator<UISourceTreeView&>> children() override {
+
         }
     };
 }
