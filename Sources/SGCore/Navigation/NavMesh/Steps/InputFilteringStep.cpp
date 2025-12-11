@@ -10,7 +10,7 @@
 
 void SGCore::Navigation::InputFilteringStep::process(NavMesh& navMesh, const NavMeshConfig& config) noexcept
 {
-    m_walkableTriangles.clear();
+    /*m_walkableTriangles.clear();
 
     const float maxSlopeCos = cos(glm::radians(config.m_agentMaxSlope));
     const glm::vec3 up = MathUtils::up3;
@@ -25,12 +25,12 @@ void SGCore::Navigation::InputFilteringStep::process(NavMesh& navMesh, const Nav
         }
     }
 
-    if (m_walkableTriangles.empty()) return;
+    if (m_walkableTriangles.empty()) return;*/
 
-    m_sceneAABB.m_min = m_walkableTriangles[0].m_vertices[0];
-    m_sceneAABB.m_max = m_walkableTriangles[0].m_vertices[0];
+    m_sceneAABB.m_min = navMesh.m_inputSceneTriangles[0].m_vertices[0];
+    m_sceneAABB.m_max = navMesh.m_inputSceneTriangles[0].m_vertices[0];
 
-    for(const auto& tri : m_walkableTriangles)
+    for(const auto& tri : navMesh.m_inputSceneTriangles)
     {
         for(std::uint8_t i = 0; i < 3; ++i)
         {
@@ -43,6 +43,8 @@ void SGCore::Navigation::InputFilteringStep::process(NavMesh& navMesh, const Nav
     m_sceneAABB.m_min -= glm::vec3(padding);
     m_sceneAABB.m_max += glm::vec3(padding);
 
-    std::cout << "SGCore::Navigation::InputFilteringStep: filtered " << m_walkableTriangles.size()
-              << " walkable triangles from " << navMesh.m_inputSceneTriangles.size() << std::endl;
+    std::cout << std::format(
+        "SGCore::Navigation::InputFilteringStep: scene AABB: min: {}, {}, {}; max: {}, {}, {}",
+        m_sceneAABB.m_min.x, m_sceneAABB.m_min.y, m_sceneAABB.m_min.z, m_sceneAABB.m_max.x, m_sceneAABB.m_max.y,
+        m_sceneAABB.m_max.z) << std::endl;
 }

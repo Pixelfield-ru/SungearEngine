@@ -12,13 +12,18 @@
 
 void SGCore::Navigation::HeightfieldBuildStep::process(NavMesh& navMesh, const NavMeshConfig& config) noexcept
 {
-    std::cout << "SGCore::Navigation::HeightfieldBuildStep start" << std::endl;
+    /*std::cout << "SGCore::Navigation::HeightfieldBuildStep start" << std::endl;
 
     const auto inputFilteringStep = navMesh.getStep<InputFilteringStep>();
     const auto voxelizationStep = navMesh.getStep<VoxelizationStep>();
 
-    m_heightfieldWidth = voxelizationStep->m_voxelGridWidth;
-    m_heightfieldDepth = voxelizationStep->m_voxelGridDepth;
+    const auto& sceneAABB = inputFilteringStep->m_sceneAABB;
+
+    m_heightfieldWidth = std::int32_t((sceneAABB.m_max.x - sceneAABB.m_min.x) / config.m_cellSize) + 1;
+    m_heightfieldHeight = std::int32_t((sceneAABB.m_max.y - sceneAABB.m_min.y) / config.m_cellHeight) + 1;
+    m_heightfieldDepth = std::int32_t((sceneAABB.m_max.z - sceneAABB.m_min.z) / config.m_cellSize) + 1;
+
+    m_heightfieldOrigin = inputFilteringStep->m_sceneAABB.m_min;
 
     m_cells.clear();
     m_cells.resize(m_heightfieldWidth * m_heightfieldDepth);
@@ -44,7 +49,7 @@ void SGCore::Navigation::HeightfieldBuildStep::process(NavMesh& navMesh, const N
             float lowestCeiling = std::numeric_limits<float>::max();
             bool foundWalkable = false;
 
-            for(std::int32_t y = 0; y < voxelizationStep->m_voxelGridHeight; ++y)
+            for(std::int32_t y = 0; y < m_heightfieldHeight; ++y)
             {
                 if(!voxelizationStep->getVoxel(x, y, z).m_isWalkable) continue;
 
@@ -55,7 +60,7 @@ void SGCore::Navigation::HeightfieldBuildStep::process(NavMesh& navMesh, const N
                 // checking voxels above current
                 for(std::int32_t dy = 1; dy <= agentHeightCells; ++dy)
                 {
-                    if(y + dy >= voxelizationStep->m_voxelGridHeight || voxelizationStep->getVoxel(x, y + dy, z).m_isSolid)
+                    if(y + dy >= m_heightfieldHeight || voxelizationStep->getVoxel(x, y + dy, z).m_isSolid)
                     {
                         hasSpaceAbove = false;
                         break;
@@ -130,7 +135,7 @@ void SGCore::Navigation::HeightfieldBuildStep::process(NavMesh& navMesh, const N
         }
     }
 
-    std::cout << std::format("SGCore::Navigation::HeightfieldBuildStep: filtered {} cells with steep slopes from {} cells", filteredCount, m_cells.size()) << std::endl;
+    std::cout << std::format("SGCore::Navigation::HeightfieldBuildStep: filtered {} cells with steep slopes from {} cells", filteredCount, m_cells.size()) << std::endl;*/
 }
 
 SGCore::Navigation::HeightfieldCell& SGCore::Navigation::HeightfieldBuildStep::getCell(std::int32_t x, std::int32_t y) noexcept

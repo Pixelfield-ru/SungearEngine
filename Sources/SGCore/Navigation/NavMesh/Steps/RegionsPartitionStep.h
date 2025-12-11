@@ -8,7 +8,7 @@
 
 namespace SGCore::Navigation
 {
-    struct FilterErosionStep : INavMeshBuildStep
+    struct RegionsPartitionStep : INavMeshBuildStep
     {
         void process(NavMesh& navMesh, const NavMeshConfig& config) noexcept override;
     };

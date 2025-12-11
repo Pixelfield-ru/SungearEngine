@@ -404,6 +404,8 @@ void coreInit()
     auto& terrainComponent = ecsRegistry->emplace<SGCore::Terrain>(terrainEntity);
     // auto& terrainNavGrid = ecsRegistry->emplace<SGCore::Navigation::NavGrid3D>(terrainEntity);
     auto& terrainNavMesh = ecsRegistry->emplace<SGCore::Navigation::NavMesh>(terrainEntity);
+    terrainNavMesh.m_config.m_cellHeight = 5.0f;
+    terrainNavMesh.m_config.m_cellSize = 5.0f;
 
     // creating terrain mesh ====
     terrainMeshData = mainAssetManager->createAndAddAsset<SGCore::IMeshData>();
@@ -853,15 +855,46 @@ void onUpdate(const double& dt, const double& fixedDt)
 
         const auto& navMeshConfig = terrainNavMesh.m_config;
 
-        /*
-        for(const auto& tri : inputFilteringStep->m_walkableTriangles)
+        /*for(const auto& tri : inputFilteringStep->m_walkableTriangles)
         {
             debugDraw->drawLine(tri.m_vertices[0], tri.m_vertices[1], { 0.47, 0.87, 0.78, 1.0 });
             debugDraw->drawLine(tri.m_vertices[1], tri.m_vertices[2], { 0.47, 0.87, 0.78, 1.0 });
             debugDraw->drawLine(tri.m_vertices[2], tri.m_vertices[0], { 0.47, 0.87, 0.78, 1.0 });
         }*/
 
-        for(std::int32_t z = 0; z < voxelizationStep->m_voxelGridDepth; ++z)
+        for(const auto& voxel : voxelizationStep->m_voxels)
+        {
+            /*const glm::vec3 min = voxelizationStep->voxelToWorld(
+                                                                      voxel.m_position, navMeshConfig.m_cellSize,
+                                                                      navMeshConfig.m_cellHeight) - glm::vec3(
+                                                                      navMeshConfig.m_cellSize * 0.5f,
+                                                                      navMeshConfig.m_cellHeight * 0.5f,
+                                                                      navMeshConfig.m_cellSize * 0.5f);*/
+
+            const glm::vec3 min = voxelizationStep->voxelToWorld(
+                                      voxel.m_position, navMeshConfig.m_cellSize,
+                                      navMeshConfig.m_cellHeight) - glm::vec3(
+                                      navMeshConfig.m_cellSize * 0.5f,
+                                      navMeshConfig.m_cellHeight * 0.5f,
+                                      navMeshConfig.m_cellSize * 0.5f);
+
+            const glm::vec3 max = min + glm::vec3(navMeshConfig.m_cellSize,
+                                                  navMeshConfig.m_cellHeight,
+                                                  navMeshConfig.m_cellSize);
+
+
+            // debugDraw->drawAABB(min, max, { 0.47, 0.87, 0.78, 1.0 });
+            if(voxel.m_isWalkable)
+            {
+                debugDraw->drawAABB(min, max, { 0.47, 0.87, 0.78, 1.0 });
+            }
+            else
+            {
+                debugDraw->drawAABB(min, max, { 1.0, 0.0, 0.0, 1.0 });
+            }
+        }
+
+        /*for(std::int32_t z = 0; z < voxelizationStep->m_voxelGridDepth; ++z)
         {
             for(std::int32_t x = 0; x < voxelizationStep->m_voxelGridWidth; ++x)
             {
@@ -890,7 +923,7 @@ void onUpdate(const double& dt, const double& fixedDt)
                     }
                 }
             }
-        }
+        }*/
     }
 
     // debugDraw->drawLine({ 0, 0, 0 }, { 0, 10, 0 },  { 0.91, 0.40, 0.42, 1.0 });

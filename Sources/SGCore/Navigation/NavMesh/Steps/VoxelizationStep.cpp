@@ -22,9 +22,13 @@ void SGCore::Navigation::VoxelizationStep::process(NavMesh& navMesh, const NavMe
     m_voxelGridDepth = std::int32_t((sceneAABB.m_max.z - sceneAABB.m_min.z) / config.m_cellSize) + 1;
 
     m_voxels.clear();
-    m_voxels.resize(m_voxelGridWidth * m_voxelGridHeight * m_voxelGridDepth);
+    m_voxelsMap.clear();
 
-    for(const auto& tri : inputFilteringStep->m_walkableTriangles)
+    // m_voxels.resize(m_voxelGridWidth * m_voxelGridHeight * m_voxelGridDepth);
+    m_voxels.reserve(m_voxelGridWidth * m_voxelGridHeight);
+    m_voxelsMap.reserve(m_voxelGridWidth * m_voxelGridHeight);
+
+    for(const auto& tri : navMesh.m_inputSceneTriangles)
     {
         const auto minXZ = tri.minXZ();
         const auto maxXZ = tri.maxXZ();
@@ -53,14 +57,16 @@ void SGCore::Navigation::VoxelizationStep::process(NavMesh& navMesh, const NavMe
             {
                 for(auto y = minYv; y <= maxYv; y++)
                 {
-                    if(isVoxelInTriangle(x, y, z, tri, config))
-                    {
-                        if(x >= 0 && x < m_voxelGridWidth && y >= 0 && y < m_voxelGridHeight && z >= 0 && z < m_voxelGridDepth)
-                        {
-                            NavVoxel& v = m_voxels[(z * m_voxelGridHeight + y) * m_voxelGridWidth + x];
-                            v.m_isSolid = true;
-                        }
-                    }
+                    if(!isVoxelInTriangle(x, y, z, tri, config)) continue;
+
+                    if(!(x >= 0 && x < m_voxelGridWidth && y >= 0 && y < m_voxelGridHeight && z >= 0 && z < m_voxelGridDepth)) continue;
+
+                    NavVoxel v;
+                    v.m_isWalkable = true;
+                    v.m_position = { x, y, z };
+                    m_voxels.push_back(v);
+
+                    m_voxelsMap[{ x, y, z }] = m_voxels.size() - 1;
                 }
             }
         }
@@ -70,36 +76,40 @@ void SGCore::Navigation::VoxelizationStep::process(NavMesh& navMesh, const NavMe
 
     const std::int32_t agentHeightCells = std::int32_t(ceil(config.m_agentHeight / config.m_cellHeight));
 
-    for(std::int32_t z = 0; z < m_voxelGridDepth; z++)
+    /*for(std::int32_t z = 0; z < m_voxelGridDepth; z++)
     {
         for(std::int32_t x = 0; x < m_voxelGridWidth; x++)
         {
             for(std::int32_t y = 0; y < m_voxelGridHeight; y++)
             {
-                if(getVoxel(x, y, z).m_isSolid)
-                {
-                    // is there is enough space above the voxel
-                    bool hasEnoughSpace = true;
-                    for(std::int32_t dy = 1; dy <= agentHeightCells; dy++)
-                    {
-                        if(y + dy >= m_voxelGridHeight || getVoxel(x, y + dy, z).m_isSolid)
-                        {
-                            hasEnoughSpace = false;
-                            break;
-                        }
-                    }
+                if(!getVoxel(x, y, z).m_isSolid) continue;
 
-                    if(hasEnoughSpace)
+                // is there is enough space above the voxel
+                bool hasEnoughSpace = true;
+                for(std::int32_t dy = 1; dy <= agentHeightCells; dy++)
+                {
+                    if(y + dy >= m_voxelGridHeight || getVoxel(x, y + dy, z).m_isSolid)
                     {
-                        getVoxel(x, y, z).m_isWalkable = true;
+                        hasEnoughSpace = false;
+                        break;
                     }
+                }
+
+                if(hasEnoughSpace)
+                {
+                    getVoxel(x, y, z).m_isWalkable = true;
                 }
             }
         }
-    }
+    }*/
 
-    std::cout << "SGCore::Navigation::VoxelizationStep: created grid with size " << std::format("{}x{}x{}", m_voxelGridWidth, m_voxelGridHeight, m_voxelGridDepth)
-              << std::format(", byte size: {}", m_voxels.size() * sizeof(NavVoxel)) << std::endl;
+    std::cout << std::format(
+        "SGCore::Navigation::VoxelizationStep: created grid with size {}x{}x{}, grid byte size: {}, mapping byte size (approx): {}",
+        m_voxelGridWidth,
+        m_voxelGridHeight,
+        m_voxelGridDepth,
+        m_voxels.size() * sizeof(NavVoxel),
+        m_voxelsMap.size() * sizeof(NavVoxel)) << std::endl;
 }
 
 std::int32_t SGCore::Navigation::VoxelizationStep::worldToVoxelX(float wx, float cellSize) const noexcept

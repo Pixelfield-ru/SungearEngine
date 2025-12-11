@@ -24,7 +24,26 @@ namespace SGCore
         template<glm::length_t N, typename T, glm::qualifier Q>
         static size_t hashVector(const glm::vec<N, T, Q>& vec) noexcept
         {
-            return std::hash<T>()(vec.x) ^ std::hash<T>()(vec.y);
+            size_t hash = 0;
+            if constexpr(requires { vec.x; })
+            {
+                hash = std::hash<T>()(vec.x);
+            }
+            if constexpr(requires { vec.y; })
+            {
+                hash ^= std::hash<T>()(vec.y);
+            }
+            if constexpr(requires { vec.z; })
+            {
+                hash ^= std::hash<T>()(vec.z);
+            }
+            if constexpr(requires { vec.w; })
+            {
+                hash ^= std::hash<T>()(vec.w);
+            }
+
+            return hash;
+            // return std::hash<T>()(vec.x) ^ std::hash<T>()(vec.y);
         }
         
         template<typename VecT>

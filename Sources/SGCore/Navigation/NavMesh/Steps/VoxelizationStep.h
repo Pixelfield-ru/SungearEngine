@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <limits>
+#include <unordered_map>
 #include <glm/vec3.hpp>
 
 #include "INavMeshBuildStep.h"
@@ -15,16 +16,19 @@ namespace SGCore::Navigation
 {
     struct NavVoxel
     {
-        // is voxel inside triangle (geometry)
-        bool m_isSolid {};
         bool m_isWalkable {};
         float m_distanceToEdge = std::numeric_limits<float>::max();
         std::int32_t m_regionID {};
+
+        glm::ivec3 m_position {};
+
+        // float m_heightOffsetToGeometry {};
     };
 
     struct VoxelizationStep : INavMeshBuildStep
     {
         std::vector<NavVoxel> m_voxels;
+        std::unordered_map<glm::ivec3, size_t, MathUtils::GLMVectorHash<glm::ivec3>> m_voxelsMap;
         std::int32_t m_voxelGridWidth {};
         std::int32_t m_voxelGridHeight {};
         std::int32_t m_voxelGridDepth {};
@@ -44,7 +48,6 @@ namespace SGCore::Navigation
 
         NavVoxel& getVoxel(std::int32_t x, std::int32_t y, std::int32_t z) noexcept;
 
-    private:
         bool isVoxelInTriangle(std::int32_t vx, std::int32_t vy, std::int32_t vz, const MathPrimitivesUtils::Triangle<>& tri, const NavMeshConfig& config) const;
     };
 }

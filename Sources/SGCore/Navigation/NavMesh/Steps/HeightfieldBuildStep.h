@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <vector>
+#include <glm/vec3.hpp>
 
 #include "INavMeshBuildStep.h"
 
@@ -21,7 +22,9 @@ namespace SGCore::Navigation
     struct HeightfieldBuildStep : INavMeshBuildStep
     {
         std::int32_t m_heightfieldWidth {};
+        std::int32_t m_heightfieldHeight {};
         std::int32_t m_heightfieldDepth {};
+        glm::vec3 m_heightfieldOrigin {};
 
         std::vector<HeightfieldCell> m_cells;
 
