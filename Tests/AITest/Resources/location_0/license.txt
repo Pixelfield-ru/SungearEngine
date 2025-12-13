@@ -1,0 +1,11 @@
+Model Information:
+* title:	Location
+* source:	https://sketchfab.com/3d-models/location-48e48d66e9454b688647030094b5dfc8
+* author:	Kseniia (https://sketchfab.com/ksusher)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Location" (https://sketchfab.com/3d-models/location-48e48d66e9454b688647030094b5dfc8) by Kseniia (https://sketchfab.com/ksusher) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

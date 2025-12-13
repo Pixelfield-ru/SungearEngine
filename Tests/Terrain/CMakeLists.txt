@@ -2,23 +2,20 @@ include(../../cmake/utils.cmake)
 
 project(SGTerrainTest)
 
-file(GLOB_RECURSE SGTERRAINTEST_SOURCES Main.cpp Main.h)
-
-set(SG_EXEC_NAME ${PROJECT_NAME})
+set(SGPROJECT_SOURCES Main.cpp Main.h)
 
 find_package(spdlog CONFIG REQUIRED)
 
-add_executable(${SG_EXEC_NAME} ${SGTERRAINTEST_SOURCES})
+add_executable(${PROJECT_NAME} ${SGPROJECT_SOURCES})
 
-target_include_directories(${SG_EXEC_NAME} PRIVATE
+target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/Sources
         ${CMAKE_SOURCE_DIR}/Externals
-        ${CMAKE_SOURCE_DIR}/Externals/OpenGL/include
 )
 
-target_link_libraries(${SG_EXEC_NAME} PUBLIC
+target_link_libraries(${PROJECT_NAME} PUBLIC
         spdlog::spdlog
         SGCore
 )
 
-copy_sgcore_dlls(${SG_EXEC_NAME})
+copy_sgcore_dlls(${PROJECT_NAME})

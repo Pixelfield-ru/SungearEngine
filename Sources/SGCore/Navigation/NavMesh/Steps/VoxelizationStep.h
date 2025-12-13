@@ -20,7 +20,7 @@ namespace SGCore::Navigation
         float m_distanceToEdge = std::numeric_limits<float>::max();
         std::int32_t m_regionID {};
 
-        glm::ivec3 m_position {};
+        glm::i32vec3 m_position {};
 
         // float m_heightOffsetToGeometry {};
     };
@@ -28,7 +28,7 @@ namespace SGCore::Navigation
     struct VoxelizationStep : INavMeshBuildStep
     {
         std::vector<NavVoxel> m_voxels;
-        std::unordered_map<glm::ivec3, size_t, MathUtils::GLMVectorHash<glm::ivec3>> m_voxelsMap;
+        std::unordered_map<glm::i32vec3, size_t, MathUtils::GLMVectorHash<glm::ivec3>> m_voxelsMap;
         std::int32_t m_voxelGridWidth {};
         std::int32_t m_voxelGridHeight {};
         std::int32_t m_voxelGridDepth {};

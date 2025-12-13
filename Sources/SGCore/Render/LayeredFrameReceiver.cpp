@@ -52,8 +52,8 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     m_layersFrameBuffer->addAttachment(
             SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
             SGGColorFormat::SGG_DEPTH_COMPONENT,
-            SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
-            SGGDataType::SGG_UNSIGNED_SHORT,
+            SGGColorInternalFormat::SGG_DEPTH_COMPONENT32,
+            SGGDataType::SGG_UNSIGNED_INT,
             0,
             0
     );
@@ -162,7 +162,7 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     m_layersFXFrameBuffer->addAttachment(
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7, // ATTACHMENT WITH APPLIED FX
             SGGColorFormat::SGG_RGBA,
-            SGGColorInternalFormat::SGG_RGBA16_FLOAT,
+            SGGColorInternalFormat::SGG_RGBA32_FLOAT,
             SGGDataType::SGG_FLOAT,
             0,
             0

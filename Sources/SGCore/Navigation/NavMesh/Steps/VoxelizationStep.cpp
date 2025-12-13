@@ -28,6 +28,9 @@ void SGCore::Navigation::VoxelizationStep::process(NavMesh& navMesh, const NavMe
     m_voxels.reserve(m_voxelGridWidth * m_voxelGridHeight);
     m_voxelsMap.reserve(m_voxelGridWidth * m_voxelGridHeight);
 
+    const float maxSlopeCos = cos(glm::radians(config.m_agentMaxSlope));
+    const glm::vec3 up = MathUtils::up3;
+
     for(const auto& tri : navMesh.m_inputSceneTriangles)
     {
         const auto minXZ = tri.minXZ();
@@ -61,8 +64,11 @@ void SGCore::Navigation::VoxelizationStep::process(NavMesh& navMesh, const NavMe
 
                     if(!(x >= 0 && x < m_voxelGridWidth && y >= 0 && y < m_voxelGridHeight && z >= 0 && z < m_voxelGridDepth)) continue;
 
+                    const float slopeCos = glm::abs(glm::dot(tri.m_normal, up));
+
                     NavVoxel v;
-                    v.m_isWalkable = true;
+                    // marking voxel as non-walkable because of too steep slope (if too steep) or true if normal
+                    v.m_isWalkable = slopeCos >= maxSlopeCos;
                     v.m_position = { x, y, z };
                     m_voxels.push_back(v);
 

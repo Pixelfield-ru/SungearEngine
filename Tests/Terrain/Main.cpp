@@ -806,13 +806,13 @@ void onUpdate(const double& dt, const double& fixedDt)
 
     if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_F4))
     {
-        if(debugDraw->m_mode != SGCore::NO_DEBUG)
+        if(debugDraw->m_mode != SGCore::DebugDrawMode::NO_DEBUG)
         {
-            debugDraw->m_mode = SGCore::NO_DEBUG;
+            debugDraw->m_mode = SGCore::DebugDrawMode::NO_DEBUG;
         }
         else
         {
-            debugDraw->m_mode = SGCore::WIREFRAME;
+            debugDraw->m_mode = SGCore::DebugDrawMode::WIREFRAME;
         }
     }
 
@@ -821,7 +821,7 @@ void onUpdate(const double& dt, const double& fixedDt)
         regenerateTerrainNavGrid(terrainEntity);
     }
 
-    if(debugDraw->m_mode != SGCore::NO_DEBUG)
+    if(debugDraw->m_mode != SGCore::DebugDrawMode::NO_DEBUG)
     {
         /*for(size_t i = 0; i < terrainDisplacedIndices.size(); i += 4)
         {

@@ -13,7 +13,7 @@
 
 namespace SGCore
 {
-    enum DebugDrawMode
+    enum class DebugDrawMode
     {
         NO_DEBUG,
         WIREFRAME
