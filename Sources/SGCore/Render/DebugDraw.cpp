@@ -207,6 +207,37 @@ void SGCore::DebugDraw::resetRenderer() noexcept
     m_currentDrawingLine = 0;
 }
 
+std::uint32_t SGCore::DebugDraw::getMaxLinesCount() const noexcept
+{
+    return m_maxLines;
+}
+
+void SGCore::DebugDraw::setMaxLinesCount(std::uint32_t maxLinesCount) noexcept
+{
+    m_maxLines = maxLinesCount;
+
+    m_linesVertexArray->bind();
+
+    m_linesPositions.resize(m_maxLines * 6);
+    m_linesColors.resize(m_maxLines * 8);
+    m_linesIndices.resize(m_maxLines * 2);
+
+    m_linesPositionsVertexBuffer->bind();
+    m_linesPositionsVertexBuffer->putData(m_linesPositions);
+
+    m_linesColorsVertexBuffer->bind();
+    m_linesColorsVertexBuffer->putData(m_linesColors);
+
+    for(std::uint32_t i = 0; i < m_maxLines; i += 2)
+    {
+        m_linesIndices[i] = i;
+        m_linesIndices[i + 1] = i + 1;
+    }
+
+    m_linesIndexBuffer->bind();
+    m_linesIndexBuffer->putData(m_linesIndices);
+}
+
 void SGCore::DebugDraw::onRenderPipelineSet() noexcept
 {
     m_linesShader = Ref<IShader>(CoreMain::getRenderer()->createShader());

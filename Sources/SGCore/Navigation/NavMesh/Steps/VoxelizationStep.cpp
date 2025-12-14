@@ -52,6 +52,8 @@ void SGCore::Navigation::VoxelizationStep::process(NavMesh& navMesh, const NavMe
         const std::int32_t minYv = worldToVoxelY(minY, config.m_cellHeight);
         const std::int32_t maxYv = worldToVoxelY(maxY, config.m_cellHeight);
 
+        const float triangleHeight = maxY - minY;
+
         // marking solid voxels
 
         for(auto x = minX; x <= maxX; x++)
@@ -67,9 +69,17 @@ void SGCore::Navigation::VoxelizationStep::process(NavMesh& navMesh, const NavMe
                     const float slopeCos = glm::abs(glm::dot(tri.m_normal, up));
 
                     NavVoxel v;
-                    // marking voxel as non-walkable because of too steep slope (if too steep) or true if normal
-                    v.m_isWalkable = slopeCos >= maxSlopeCos;
+                    v.m_isWalkable = true;
+                    // v.m_isWalkable = true;
                     v.m_position = { x, y, z };
+
+                    // marking voxel as non-walkable because of too steep slope (if too steep) or true if normal
+                    // todo: how to check steep slopes??
+                    /*if(slopeCos >= maxSlopeCos && triangleHeight > config.m_agentMaxClimb)
+                    {
+                        v.m_isWalkable = false;
+                    }*/
+
                     m_voxels.push_back(v);
 
                     m_voxelsMap[{ x, y, z }] = m_voxels.size() - 1;

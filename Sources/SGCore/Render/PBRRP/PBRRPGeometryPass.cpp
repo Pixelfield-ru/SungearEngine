@@ -443,13 +443,6 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
     
     if(shaderToUse)
     {
-        LOG_I(SGCORE_TAG,
-            "Using shader: {}, material: {}, vertices count: {}, indices count: {}",
-            Utils::toUTF8(shaderToUse->getPath().raw().u16string()),
-            Utils::toUTF8(mesh.m_base.getMaterial()->getPath().raw().u16string()),
-            mesh.m_base.getMeshData()->m_vertices.size(),
-            mesh.m_base.getMeshData()->m_indices.size())
-
         // binding shaderToUse only if it is custom shader
         if(shaderToUse == meshGeomShader)
         {
@@ -463,7 +456,7 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
         {
             shaderToUse->useMatrix("objectTransform.modelMatrix",
                                    meshTransform->m_finalTransform.m_animatedModelMatrix);
-            LOG_I(SGCORE_TAG, "Rendering mesh: {}\n{}", Utils::toUTF8(mesh.m_base.getMeshData()->getPath().resolved().u16string()), glm::to_string(meshTransform->m_finalTransform.m_animatedModelMatrix))
+
             shaderToUse->useVectorf("objectTransform.position", meshTransform->m_finalTransform.m_position);
 
             const auto* meshedEntityPickableComponent = registry->tryGet<Pickable>(meshEntity);

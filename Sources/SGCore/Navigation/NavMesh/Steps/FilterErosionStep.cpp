@@ -19,6 +19,7 @@ void SGCore::Navigation::FilterErosionStep::process(NavMesh& navMesh, const NavM
 
     const std::int32_t agentHeightInVoxels = std::ceil(config.m_agentHeight / config.m_cellHeight);
     const std::int32_t agentRadiusInVoxels = std::ceil(config.m_agentRadius / config.m_cellSize);
+    const std::int32_t agentMaxClimbInVoxels = std::floor(config.m_agentMaxClimb / config.m_cellHeight);
 
     size_t filteredVoxelsCount = 0;
 
@@ -27,7 +28,7 @@ void SGCore::Navigation::FilterErosionStep::process(NavMesh& navMesh, const NavM
         if(!voxel.m_isWalkable) continue;
 
         // filtering too low spaces
-        for(std::int32_t y = 1; y <= agentHeightInVoxels; ++y)
+        for(std::int32_t y = agentMaxClimbInVoxels; y <= agentHeightInVoxels; ++y)
         {
             for(std::int32_t x = -agentRadiusInVoxels; x <= agentRadiusInVoxels; ++x)
             {

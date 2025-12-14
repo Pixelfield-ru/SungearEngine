@@ -99,6 +99,9 @@ void coreInit()
 
     auto ecsRegistry = scene->getECSRegistry();
 
+    const auto debugDraw = SGCore::RenderPipelinesManager::instance().getCurrentRenderPipeline()->getRenderPass<SGCore::DebugDraw>();
+    debugDraw->setMaxLinesCount(100'000'000);
+
     // ================================================================
 
     // creating camera entity
@@ -150,9 +153,9 @@ void coreInit()
     navMesh.useStandardSteps();
     navMesh.m_config.m_cellHeight = 5.0f;
     navMesh.m_config.m_cellSize = 5.0f;
-    navMesh.m_config.m_agentRadius = 5.0f;
-    navMesh.m_config.m_agentHeight = 10.0f;
-    navMesh.m_config.m_agentMaxClimb = 3.0f;
+    navMesh.m_config.m_agentRadius = 10.0f;
+    navMesh.m_config.m_agentHeight = 30.0f;
+    navMesh.m_config.m_agentMaxClimb = 16.0f;
 
     // ================================================================
     // loading models
