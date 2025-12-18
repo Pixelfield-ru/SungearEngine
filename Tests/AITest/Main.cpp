@@ -151,18 +151,23 @@ void coreInit()
 
     auto& navMesh = ecsRegistry->emplace<SGCore::Navigation::NavMesh>(navMeshEntity);
     navMesh.useStandardSteps();
-    navMesh.m_config.m_cellHeight = 5.0f;
-    navMesh.m_config.m_cellSize = 5.0f;
+    /*navMesh.m_config.m_cellHeight = 5.0f;
+    navMesh.m_config.m_cellSize = 5.0f;*/
+    navMesh.m_config.m_cellHeight = 1.0f;
+    navMesh.m_config.m_cellSize = 1.0f;
     navMesh.m_config.m_agentRadius = 10.0f;
+    // navMesh.m_config.m_agentHeight = 30.0f;
     navMesh.m_config.m_agentHeight = 30.0f;
-    navMesh.m_config.m_agentMaxClimb = 16.0f;
+    navMesh.m_config.m_agentMaxClimb = 10.0f;
+    // navMesh.m_config.m_agentMaxClimb = 2.0f;
 
     // ================================================================
     // loading models
 
     std::vector<SGCore::ECS::entity_t> locationEntities;
 
-    auto locationModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/AITest/Resources/location_0/scene.gltf");
+    // auto locationModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/AITest/Resources/location_0/scene.gltf");
+    auto locationModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/AITest/Resources/location_1/ai_test.gltf");
     locationModel->m_rootNode->addOnScene(scene, SG_LAYER_OPAQUE_NAME, [&locationEntities, &ecsRegistry](const auto& entity) {
         locationEntities.push_back(entity);
 

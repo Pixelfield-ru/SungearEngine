@@ -7,6 +7,7 @@
 #include "Steps/FilterErosionStep.h"
 #include "Steps/HeightfieldBuildStep.h"
 #include "Steps/InputFilteringStep.h"
+#include "Steps/RegionsPartitionStep.h"
 #include "Steps/VoxelizationStep.h"
 
 void SGCore::Navigation::NavMesh::useStandardSteps() noexcept
@@ -20,6 +21,7 @@ void SGCore::Navigation::NavMesh::useStandardSteps() noexcept
     // todo: optional: filter erosion (step 3)
     addStep(2, MakeRef<FilterErosionStep>());
     // todo: optional: region partitioner (step 4)
+    addStep(3, MakeRef<RegionsPartitionStep>());
     // todo: required: contour builder (step 5)
     // todo: optional: contour simplifier (step 6)
     // todo: required: triangulator (step 7)

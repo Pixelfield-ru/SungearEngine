@@ -13,12 +13,15 @@
 
 void SGCore::Navigation::FilterErosionStep::process(NavMesh& navMesh, const NavMeshConfig& config) noexcept
 {
+    // todo: OPTIMIZE!! VERY SLOW STEP!!
+
     const auto voxelizationStep = navMesh.getStep<VoxelizationStep>();
 
     // filtering too narrow spaces and too low =========================================
 
     const std::int32_t agentHeightInVoxels = std::ceil(config.m_agentHeight / config.m_cellHeight);
     const std::int32_t agentRadiusInVoxels = std::ceil(config.m_agentRadius / config.m_cellSize);
+    // todo: maybe provides bad result
     const std::int32_t agentMaxClimbInVoxels = std::floor(config.m_agentMaxClimb / config.m_cellHeight);
 
     size_t filteredVoxelsCount = 0;

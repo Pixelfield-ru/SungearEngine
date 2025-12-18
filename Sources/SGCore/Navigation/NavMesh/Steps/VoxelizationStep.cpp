@@ -56,22 +56,26 @@ void SGCore::Navigation::VoxelizationStep::process(NavMesh& navMesh, const NavMe
 
         // marking solid voxels
 
-        for(auto x = minX; x <= maxX; x++)
+        for(auto x = minX; x <= maxX; ++x)
         {
-            for(auto z = minZ; z <= maxZ; z++)
+            for(auto z = minZ; z <= maxZ; ++z)
             {
-                for(auto y = minYv; y <= maxYv; y++)
+                for(auto y = minYv; y <= maxYv; ++y)
                 {
                     if(!isVoxelInTriangle(x, y, z, tri, config)) continue;
 
                     if(!(x >= 0 && x < m_voxelGridWidth && y >= 0 && y < m_voxelGridHeight && z >= 0 && z < m_voxelGridDepth)) continue;
+
+                    const auto voxelPos = glm::i32vec3 { x, y, z };
+
+                    if(m_voxelsMap.contains(voxelPos)) continue;
 
                     const float slopeCos = glm::abs(glm::dot(tri.m_normal, up));
 
                     NavVoxel v;
                     v.m_isWalkable = true;
                     // v.m_isWalkable = true;
-                    v.m_position = { x, y, z };
+                    v.m_position = voxelPos;
 
                     // marking voxel as non-walkable because of too steep slope (if too steep) or true if normal
                     // todo: how to check steep slopes??
@@ -82,7 +86,7 @@ void SGCore::Navigation::VoxelizationStep::process(NavMesh& navMesh, const NavMe
 
                     m_voxels.push_back(v);
 
-                    m_voxelsMap[{ x, y, z }] = m_voxels.size() - 1;
+                    m_voxelsMap[voxelPos] = m_voxels.size() - 1;
                 }
             }
         }

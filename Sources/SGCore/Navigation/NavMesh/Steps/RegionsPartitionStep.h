@@ -23,12 +23,16 @@ namespace SGCore::Navigation
 
     struct RegionsPartitionStep : INavMeshBuildStep
     {
+        std::vector<Region> m_regions;
+
         void process(NavMesh& navMesh, const NavMeshConfig& config) noexcept override;
 
     private:
-        void floodFill(const Ref<VoxelizationStep>& voxelizationStep,
+        void floodFill(Region& region,
+                       const Ref<VoxelizationStep>& voxelizationStep,
                        const NavVoxel& voxel,
                        size_t voxelIndex,
-                       std::unordered_set<size_t>& visitedVoxels) noexcept;
+                       std::unordered_set<size_t>& visitedVoxels,
+                       const NavMeshConfig& config) noexcept;
     };
 }

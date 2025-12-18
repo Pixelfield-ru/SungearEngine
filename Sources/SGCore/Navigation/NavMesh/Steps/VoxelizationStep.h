@@ -28,7 +28,7 @@ namespace SGCore::Navigation
     struct VoxelizationStep : INavMeshBuildStep
     {
         std::vector<NavVoxel> m_voxels;
-        std::unordered_map<glm::i32vec3, size_t, MathUtils::GLMVectorHash<glm::ivec3>> m_voxelsMap;
+        std::unordered_map<glm::i32vec3, size_t, MathUtils::GLMVectorHash<glm::i32vec3>> m_voxelsMap;
         std::int32_t m_voxelGridWidth {};
         std::int32_t m_voxelGridHeight {};
         std::int32_t m_voxelGridDepth {};
