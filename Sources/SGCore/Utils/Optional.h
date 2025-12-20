@@ -14,7 +14,7 @@ namespace SGCore::Utils
     {
         using std::optional<std::reference_wrapper<T>>::optional;
 
-        Optional(T& ref) : std::optional<std::reference_wrapper<T>>(std::ref(ref)) {}
+        explicit(false) Optional(T& ref) : std::optional<std::reference_wrapper<T>>(std::ref(ref)) {}
         T& value() noexcept { return this->std::optional<std::reference_wrapper<T>>::value().get(); }
         const T& value() const noexcept { return this->std::optional<std::reference_wrapper<T>>::value().get(); }
 
