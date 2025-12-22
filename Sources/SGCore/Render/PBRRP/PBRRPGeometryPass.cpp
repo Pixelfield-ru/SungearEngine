@@ -385,7 +385,7 @@ void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipe
     
     renderedInOctrees = 0;
     
-    camerasView.each([&opaqueMeshesView, &transparentMeshesView,
+    /*camerasView.each([&opaqueMeshesView, &transparentMeshesView,
                       &renderPipeline, &scene, &registry, this]
                              (const ECS::entity_t& cameraEntity,
                               const EntityBaseInfo::reg_t& camera3DBaseInfo,
@@ -412,7 +412,7 @@ void SGCore::PBRRPGeometryPass::render(const Scene* scene, const Ref<IRenderPipe
                                  cameraLayeredFrameReceiver, n);
             }
         });
-    });
+    });*/
 
     m_afterRenderState.use();
 
@@ -639,7 +639,7 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<ECS::registry_t>& reg
                                                  LayeredFrameReceiver* cameraLayeredFrameReceiver,
                                                  const SGCore::Ref<SGCore::OctreeNode>& node) noexcept
 {
-    bool isVisibleForCamera = node->m_visibleReceivers.contains(forCamera);
+    /*bool isVisibleForCamera = node->m_visibleReceivers.contains(forCamera);
     
     if(!isVisibleForCamera) return;
 
@@ -654,9 +654,6 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<ECS::registry_t>& reg
     // render all entities
     for(const auto& e : node->m_overlappedEntities)
     {
-        /*auto* tmpCullableInfo = registry->tryGet<OctreeCullable>(e);
-        Ref<OctreeCullable> cullableInfo = (tmpCullableInfo ? *tmpCullableInfo : nullptr);*/
-
         Mesh* mesh = registry->tryGet<Mesh>(e);
         auto* tmpMeshTransform = registry->tryGet<Transform>(e);
         auto meshTransform = (tmpMeshTransform ? *tmpMeshTransform : nullptr);
@@ -689,5 +686,5 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<ECS::registry_t>& reg
     if(cameraLayeredFrameReceiver)
     {
         cameraLayeredFrameReceiver->m_layersFrameBuffer->unbind();
-    }
+    }*/
 }

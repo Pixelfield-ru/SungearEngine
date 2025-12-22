@@ -77,6 +77,11 @@ void SGCore::Navigation::VoxelizationStep::process(NavMesh& navMesh, const NavMe
                     // v.m_isWalkable = true;
                     v.m_position = voxelPos;
 
+                    /*if(slopeCos >= cos(glm::radians(45.0f)))
+                    {
+                        v.m_isWalkable = false;
+                    }*/
+
                     // marking voxel as non-walkable because of too steep slope (if too steep) or true if normal
                     // todo: how to check steep slopes??
                     /*if(slopeCos >= maxSlopeCos && triangleHeight > config.m_agentMaxClimb)

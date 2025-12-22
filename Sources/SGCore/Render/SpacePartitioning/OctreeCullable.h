@@ -5,6 +5,8 @@
 #ifndef SUNGEARENGINE_CULLABLEMESH_H
 #define SUNGEARENGINE_CULLABLEMESH_H
 
+#include <unordered_map>
+
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/ECS/Component.h"
 
@@ -14,7 +16,7 @@ namespace SGCore
     
     struct OctreeCullable : ECS::Component<Ref<OctreeCullable>, Ref<const OctreeCullable>>
     {
-        Weak<OctreeNode> m_parentNode;
+        std::unordered_map<ECS::entity_t, Weak<OctreeNode>> m_parentNodes;
         
     private:
         bool m_dummy = true;

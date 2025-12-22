@@ -335,8 +335,6 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(aiMesh* aiMe
     sgMeshData->m_material = sgMeshData->getParentAssetManager()->getOrAddAssetByPath<IMaterial>(
             getPath() / "materials" / materialName
     );
-    // TODO: maybe bad variant?
-    sgMeshData->m_material->m_shaders = sgMeshData->getParentAssetManager()->loadAsset<IMaterial>("${enginePath}/Resources/materials/no_material.sgmat")->m_shaders;
 
     aiColor4D diffuseColor;
     aiColor4D specularColor;

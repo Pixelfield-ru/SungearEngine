@@ -64,7 +64,7 @@ namespace SGCore::Serde
         {
             valueView.m_data->m_referencedEntity = std::move(*m_referencedEntity);
 
-            // IT IS MUST BE GUARANTEED THAT ENTITY BASE INFO OF deserializedEntity IS ALREADY EXIST!!!
+            // IT MUST BE GUARANTEED THAT ENTITY BASE INFO OF deserializedEntity IS ALREADY EXIST!!!
             auto* entityBaseInfo = toRegistry.tryGet<EntityBaseInfo>(deserializedEntity);
             SG_ASSERT(entityBaseInfo != nullptr,
                       fmt::format("Can not mark EntityRef (points to entity '{}') as needing to resolve! "

@@ -10,8 +10,7 @@ void SGCore::OctreeNode::draw(const SGCore::Ref<SGCore::DebugDraw>& debugDraw) n
 {
     if(debugDraw->m_mode == DebugDrawMode::NO_DEBUG) return;
     
-    debugDraw->drawAABB(m_aabb.m_min, m_aabb.m_max,
-                        (!m_overlappedEntities.empty()) ? m_collidesDebugColor : m_notCollidesDebugColor);
+    debugDraw->drawAABB(m_aabb.m_min, m_aabb.m_max, m_debugColor);
 
     if(m_isSubdivided)
     {

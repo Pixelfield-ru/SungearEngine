@@ -22,8 +22,6 @@ namespace SGCore
     {
         std::vector<ECS::entity_t> m_entities;
 
-        MeshRenderState m_renderState;
-
         [[nodiscard]] AssetRef<IMeshData> getBaseMeshData() const noexcept;
         void setBaseMeshData(const AssetRef<IMeshData>& meshData) noexcept;
 

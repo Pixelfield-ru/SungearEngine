@@ -77,11 +77,6 @@ SGCore::AssetRef<SGCore::IMaterial> SGCore::Instancing::getBaseMaterial() const 
 void SGCore::Instancing::setBaseMaterial(const AssetRef<IMaterial>& material) noexcept
 {
     m_baseMaterial = material;
-
-    if(m_baseMaterial)
-    {
-        m_renderState = m_baseMaterial->m_meshRenderState;
-    }
 }
 
 SGCore::Ref<SGCore::IVertexArray> SGCore::Instancing::getVertexArray() const noexcept

@@ -254,7 +254,7 @@ void SGCore::PBRRPDecalsPass::render(const Scene* scene, const Ref<IRenderPipeli
 
             CoreMain::getRenderer()->renderArrayInstanced(
                 instancing.getVertexArray(),
-                instancing.m_renderState,
+                instancing.getBaseMaterial()->m_meshRenderState,
                 instancing.getBaseMeshData()->m_vertices.size(),
                 instancing.getBaseMeshData()->m_indices.size(),
                 instancing.getActiveEntitiesCount()

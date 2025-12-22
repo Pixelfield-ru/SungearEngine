@@ -49,12 +49,18 @@ void SGCore::Navigation::RegionsPartitionStep::floodFill(Region& region,
     const auto& voxelsMap = voxelizationStep->m_voxelsMap;
     const auto& voxels = voxelizationStep->m_voxels;
 
-    auto checkNeighborVoxelAndAdd = [&neighborVoxels, &visitedVoxels, &voxelsMap, &voxels](
+    auto isVoxelNeighbor = [&neighborVoxels, &visitedVoxels, &voxelsMap, &voxels](
+        const decltype(voxelizationStep->m_voxelsMap)::const_iterator& neighborIndexIt) noexcept -> bool {
+
+        return neighborIndexIt != voxelsMap.end() && voxels[neighborIndexIt->second].m_isWalkable;
+    };
+
+    auto checkNeighborVoxelAndAdd = [&neighborVoxels, &visitedVoxels, &isVoxelNeighbor](
         const decltype(voxelizationStep->m_voxelsMap)::const_iterator& neighborIndexIt,
         const glm::i32vec3& neighborVoxelPos,
         bool &hasVoxel) noexcept {
 
-        if(neighborIndexIt != voxelsMap.end() && voxels[neighborIndexIt->second].m_isWalkable)
+        if(isVoxelNeighbor(neighborIndexIt))
         {
             hasVoxel = true;
 
@@ -63,6 +69,61 @@ void SGCore::Navigation::RegionsPartitionStep::floodFill(Region& region,
                 neighborVoxels.push(neighborVoxelPos);
             }
         }
+    };
+
+    struct Plane
+    {
+        std::array<glm::i32vec3, 4> m_voxelsPos;
+    };
+
+    static const std::vector<Plane> planes {
+        {
+            .m_voxelsPos = { glm::i32vec3 { -1, 0, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 0, 0, -1 } }
+        },
+        {
+            .m_voxelsPos = { glm::i32vec3 { -1, 0, 0 }, { 0, 1, 0 }, { 1, 0, 0 }, { 0, -1, 0 } }
+        },
+        {
+            .m_voxelsPos = { glm::i32vec3 { 0, 0, 1 }, { 0, 1, 0 }, { 0, 0, -1 }, { 0, -1, 0 } }
+        },
+        {
+            .m_voxelsPos = { glm::i32vec3 { 0, -1, -1 }, { -1, 0, 0 }, { 1, 0, 0 }, { 0, 0, 1 } } // slope variant 1
+        },
+        {
+            .m_voxelsPos = { glm::i32vec3 { 1, -1, 0 }, { 0, 0, -1 }, { -1, 0, 0 }, { 0, 0, 1 } } // slope variant 2
+        },
+        {
+            .m_voxelsPos = { glm::i32vec3 { 0, -1, 1 }, { -1, 0, 0 }, { 0, 0, -1 }, { 1, 0, 0 } } // slope variant 3
+        },
+        {
+            .m_voxelsPos = { glm::i32vec3 { -1, -1, 0 }, { 0, 0, 1 }, { 1, 0, 0 }, { 0, 0, -1 } } // slope variant 4
+        }
+        // ============ diagonals
+        /*{
+            .m_voxelsPos = { glm::i32vec3 { -1, -1, -1 }, { -1, 0, 1 }, { 1, 1, 1 }, { 1, 0, -1 } }
+        },
+        {
+            .m_voxelsPos = { glm::i32vec3 { 1, -1, -1 }, { -1, 0, -1 }, { -1, 1, 1 }, { 1, 0, 1 } }
+        },
+        {
+            .m_voxelsPos = { glm::i32vec3 { 1, -1, 1 }, { -1, 0, 1 }, { -1, 1, -1 }, { 1, 0, -1 } }
+        },
+        {
+            .m_voxelsPos = { glm::i32vec3 { -1, -1, 1 }, { -1, 0, -1 }, { 1, 1, -1 }, { 1, 0, 1 } }
+        },
+        // =========== diagonals
+        {
+            .m_voxelsPos = { glm::i32vec3 { -1, -1, 0 }, { 0, 0, 1 }, { 1, 1, 0 }, { 0, 0, -1 } }
+        },
+        {
+            .m_voxelsPos = { glm::i32vec3 { 0, -1, -1 }, { -1, 0, 0 }, { 0, 1, 1 }, { 1, 0, 0 } }
+        },
+        {
+            .m_voxelsPos = { glm::i32vec3 { 1, -1, 0 }, { 0, 0, -1 }, { -1, 1, 0 }, { 0, 0, 1 } }
+        },
+        {
+            .m_voxelsPos = { glm::i32vec3 { 0, -1, 1 }, { -1, 0, 0 }, { 0, 1, -1 }, { 1, 0, 0 } }
+        }*/
     };
 
     while(!neighborVoxels.empty())
@@ -74,7 +135,34 @@ void SGCore::Navigation::RegionsPartitionStep::floodFill(Region& region,
         const auto currentVoxelIndexIt = voxelsMap.find(currentVoxelPos);
         const auto currentVoxelIndex = currentVoxelIndexIt->second;
 
-        const auto left = currentVoxelPos + glm::i32vec3 { -1, 0, 0 };
+        bool hasAnyPlaneWithAllVoxels = false;
+
+        for(const auto& plane : planes)
+        {
+            bool hasAllVoxelsInPlane = true;
+
+            for(const auto& voxelPos : plane.m_voxelsPos)
+            {
+                const auto pos = currentVoxelPos + voxelPos;
+
+                bool hasVoxel = false;
+
+                const auto indexIt = voxelsMap.find(pos);
+
+                checkNeighborVoxelAndAdd(indexIt, pos, hasVoxel);
+
+                hasAllVoxelsInPlane = hasAllVoxelsInPlane && hasVoxel;
+            }
+
+            hasAnyPlaneWithAllVoxels = hasAnyPlaneWithAllVoxels || hasAllVoxelsInPlane;
+        }
+
+        if(!hasAnyPlaneWithAllVoxels)
+        {
+            region.m_contourVoxelsIndices.push_back(currentVoxelIndex);
+        }
+
+        /*const auto left = currentVoxelPos + glm::i32vec3 { -1, 0, 0 };
         const auto right = currentVoxelPos + glm::i32vec3 { 1, 0, 0 };
         const auto down = currentVoxelPos + glm::i32vec3 { 0, -1, 0 };
         const auto top = currentVoxelPos + glm::i32vec3 { 0, 1, 0 };
@@ -111,7 +199,7 @@ void SGCore::Navigation::RegionsPartitionStep::floodFill(Region& region,
             (!hasLeftVoxel || !hasTopVoxel || !hasRightVoxel || !hasDownVoxel))         // X plane
         {
             region.m_contourVoxelsIndices.push_back(currentVoxelIndex);
-        }
+        }*/
 
         region.m_voxelsIndices.push_back(currentVoxelIndex);
 

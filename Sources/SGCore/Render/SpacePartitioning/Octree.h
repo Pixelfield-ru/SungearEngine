@@ -19,12 +19,10 @@ namespace SGCore
         friend struct Octree;
         
         AABB<> m_aabb;
-        std::unordered_set<ECS::entity_t> m_overlappedEntities;
         std::unordered_set<ECS::entity_t> m_visibleReceivers;
         std::array<Ref<OctreeNode>, 8> m_children;
 
-        glm::vec4 m_notCollidesDebugColor { 0, 0, 1, 1 };
-        glm::vec4 m_collidesDebugColor { 1, 0, 0, 1 };
+        glm::vec4 m_debugColor { 1, 0, 0, 1 };
 
         void draw(const Ref<DebugDraw>& debugDraw) noexcept;
 
@@ -48,8 +46,6 @@ namespace SGCore
         void clearNodeChildren(Ref<OctreeNode> node) noexcept;
         
         Ref<OctreeNode> m_root = MakeRef<OctreeNode>();
-        
-        std::unordered_set<Ref<OctreeNode>> m_notEmptyNodes;
     };
 }
 

@@ -2,7 +2,11 @@
 // Created by stuka on 13.12.2025.
 //
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include "Main.h"
+
+#include <glm/gtx/string_cast.hpp>
 
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Memory/AssetManager.h"
@@ -25,6 +29,7 @@
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Navigation/NavMesh/NavMesh.h"
 #include "SGCore/Navigation/NavMesh/Steps/InputFilteringStep.h"
+#include "SGCore/Navigation/NavMesh/Steps/RegionsPartitionStep.h"
 #include "SGCore/Navigation/NavMesh/Steps/VoxelizationStep.h"
 #include "SGCore/Render/DebugDraw.h"
 
@@ -215,9 +220,51 @@ void onUpdate(const double& dt, const double& fixedDt)
 
             const auto inputFilteringStep = navMesh.getStep<SGCore::Navigation::InputFilteringStep>();
             const auto voxelizationStep = navMesh.getStep<SGCore::Navigation::VoxelizationStep>();
+            const auto regionsPartitionStep = navMesh.getStep<SGCore::Navigation::RegionsPartitionStep>();
 
             const auto& navMeshConfig = navMesh.m_config;
 
+            for(const auto& region : regionsPartitionStep->m_regions)
+            {
+                // std::cout << std::format("contour voxels count for region: {}", region.m_contourVoxelsIndices.size()) << std::endl;
+
+                for(auto idx : region.m_contourVoxelsIndices)
+                {
+                    const auto& voxel = voxelizationStep->m_voxels[idx];
+
+                    const glm::vec3 p = voxelizationStep->voxelToWorld(
+                        voxel.m_position,
+                        navMeshConfig.m_cellSize,
+                        navMeshConfig.m_cellHeight);
+
+                    // std::cout << glm::to_string(p) << std::endl;
+
+                    debugDraw->drawLine(p, p + glm::vec3 { 0.0f, 1.0f, 0.0f }, { 0, 0, 1, 1.0 });
+                }
+
+                /*for(size_t i = 0; i < region.m_contourVoxelsIndices.size(); i += 2)
+                {
+                    if(i + 1 >= region.m_contourVoxelsIndices.size()) continue;
+
+                    const auto idx0 = region.m_contourVoxelsIndices[i + 0];
+                    const auto idx1 = region.m_contourVoxelsIndices[i + 1];
+
+                    const auto& voxel0 = voxelizationStep->m_voxels[idx0];
+                    const auto& voxel1 = voxelizationStep->m_voxels[idx1];
+
+                    const glm::vec3 p0 = voxelizationStep->voxelToWorld(
+                        voxel0.m_position,
+                        navMeshConfig.m_cellSize,
+                        navMeshConfig.m_cellHeight);
+
+                    const glm::vec3 p1 = voxelizationStep->voxelToWorld(
+                                            voxel1.m_position,
+                                            navMeshConfig.m_cellSize,
+                                            navMeshConfig.m_cellHeight);
+
+                    debugDraw->drawLine(p0, p1, { 0.47, 0.87, 0.78, 1.0 });
+                }*/
+            }
             for(const auto& voxel : voxelizationStep->m_voxels)
             {
                 const glm::vec3 min = voxelizationStep->voxelToWorld(
@@ -231,8 +278,6 @@ void onUpdate(const double& dt, const double& fixedDt)
                                                       navMeshConfig.m_cellHeight,
                                                       navMeshConfig.m_cellSize);
 
-
-                // debugDraw->drawAABB(min, max, { 0.47, 0.87, 0.78, 1.0 });
                 if(voxel.m_isWalkable)
                 {
                     debugDraw->drawAABB(min, max, { 0.47, 0.87, 0.78, 1.0 });

@@ -21,27 +21,37 @@ void SGCore::ObjectsCullingOctreesSolver::fixedUpdate(const double& dt, const do
     auto objectsCullingOctrees = registry->view<Octree, ObjectsCullingOctree>();
     auto camerasView = registry->view<Camera3D, RenderingBase, Transform>();
     objectsCullingOctrees.each([&camerasView, &registry, this](Octree::reg_t octree, ObjectsCullingOctree::reg_t&) {
-        camerasView.each([&octree, &registry, this]
+        camerasView.each([&octree, this]
         (const ECS::entity_t& cameraEntity, Camera3D::reg_t camera3D, RenderingBase::reg_t renderingBase, Transform::reg_t cameraTransform) {
-            for(const auto& n : octree->m_notEmptyNodes)
-            {
-                testNode(cameraEntity, renderingBase->m_frustum, n);
-            }
+            testNode(cameraEntity, renderingBase->m_frustum, octree->m_root, true);
         });
     });
 }
 
-void SGCore::ObjectsCullingOctreesSolver::testNode
-(const ECS::entity_t& cameraEntity, const Frustum& cameraFrustum, const Ref<OctreeNode>& node) noexcept
+void SGCore::ObjectsCullingOctreesSolver::testNode(const ECS::entity_t& cameraEntity, const Frustum& cameraFrustum,
+                                                   const Ref<OctreeNode>& node, bool isParentNodeVisible) noexcept
 {
-    bool isInFrustum = cameraFrustum.testAABB(node->m_aabb.m_min, node->m_aabb.m_max);
-    
-    if(isInFrustum)
+    bool isInFrustum = false;
+    if(isParentNodeVisible)
     {
-        node->m_visibleReceivers.insert(cameraEntity);
+        isInFrustum = cameraFrustum.testAABB(node->m_aabb.m_min, node->m_aabb.m_max);
+    
+        if(isInFrustum)
+        {
+            node->m_visibleReceivers.insert(cameraEntity);
+        }
+        else
+        {
+            node->m_visibleReceivers.erase(cameraEntity);
+        }
     }
     else
     {
         node->m_visibleReceivers.erase(cameraEntity);
+    }
+
+    for(const auto& childNode : node->m_children)
+    {
+        testNode(cameraEntity, cameraFrustum, childNode, isInFrustum);
     }
 }

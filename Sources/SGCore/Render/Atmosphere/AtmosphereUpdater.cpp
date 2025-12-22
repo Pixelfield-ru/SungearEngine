@@ -58,8 +58,8 @@ SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
     auto renderPipeline = RenderPipelinesManager::instance().getCurrentRenderPipeline();
     if(renderPipeline)
     {
-        auto geomPass = renderPipeline->getRenderPass<IGeometryPass>();
-        if(geomPass)
+        auto geomPasses = renderPipeline->getRenderPasses<IGeometryPass>();
+        for(const auto& geomPass : geomPasses)
         {
             geomPass->m_uniformBuffersToUse.push_back(m_uniformBuffer);
         }

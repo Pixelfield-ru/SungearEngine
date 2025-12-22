@@ -32,6 +32,7 @@ void SGCore::Navigation::FilterErosionStep::process(NavMesh& navMesh, const NavM
 
         // filtering too low spaces
         for(std::int32_t y = agentMaxClimbInVoxels; y <= agentHeightInVoxels; ++y)
+        // for(std::int32_t y = 1; y <= agentHeightInVoxels; ++y)
         {
             for(std::int32_t x = -agentRadiusInVoxels; x <= agentRadiusInVoxels; ++x)
             {
