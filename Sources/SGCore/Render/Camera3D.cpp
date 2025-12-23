@@ -8,7 +8,7 @@
 #include "SpacePartitioning/Octree.h"
 #include "SpacePartitioning/OctreeCullable.h"
 
-bool SGCore::Camera3D::isEntityVisibleForCamera(const Ref<ECS::registry_t>& registry, ECS::entity_t thisCameraEntity, ECS::entity_t entity)
+bool SGCore::Camera3D::isEntityVisibleForCamera(const Ref<ECS::registry_t>& registry, ECS::entity_t thisCameraEntity, ECS::entity_t entity) const noexcept
 {
     auto* tmpCullable = registry->tryGet<OctreeCullable>(entity);
     const Ref<OctreeCullable> cullable = (tmpCullable ? *tmpCullable : nullptr);

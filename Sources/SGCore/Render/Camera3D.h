@@ -19,7 +19,7 @@ namespace SGCore
         // todo: make saving
         std::vector<EntityRef> m_cullingOctrees;
 
-        bool isEntityVisibleForCamera(const Ref<ECS::registry_t>& registry, ECS::entity_t thisCameraEntity, ECS::entity_t entity);
+        bool isEntityVisibleForCamera(const Ref<ECS::registry_t>& registry, ECS::entity_t thisCameraEntity, ECS::entity_t entity) const noexcept;
 
     private:
         volatile int m_dummy = 0;

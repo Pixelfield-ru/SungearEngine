@@ -11,6 +11,8 @@
 #include "SGCore/Render/PostProcess/PostProcessPass.h"
 #include "SGCore/Render/BaseRenderPasses/OutlinePass.h"
 #include "PBRRPDirectionalLightsPass.h"
+#include "PBRRPOpaqueMeshesPass.h"
+#include "PBRRPTransparentMeshesPass.h"
 #include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/TextRenderPass.h"
 #include "SGCore/Render/BaseRenderPasses/ReceiverPickingPass.h"
@@ -110,6 +112,18 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
         // geometryPass->m_shader->m_uniformBuffer = Scope<IUniformBuffer>(CoreMain::getRenderer().createUniformBuffer());
 
         m_renderPasses.push_back(geometryPass);
+    }
+
+    {
+        auto opaquePass = MakeRef<PBRRPOpaqueMeshesPass>();
+
+        m_renderPasses.push_back(opaquePass);
+    }
+
+    {
+        auto transparentPass = MakeRef<PBRRPTransparentMeshesPass>();
+
+        m_renderPasses.push_back(transparentPass);
     }
 
     // ALWAYS AFTER GEOMETRY PASS

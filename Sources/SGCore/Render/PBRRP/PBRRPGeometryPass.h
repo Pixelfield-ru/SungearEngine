@@ -33,18 +33,6 @@ namespace SGCore
         AssetRef<IShader> m_batchShader;
         AssetRef<IShader> m_instancingShader;
 
-        void renderMesh(const Ref<ECS::registry_t>& registry,
-                        const ECS::entity_t& meshEntity,
-                        const Transform::reg_t& meshTransform,
-                        Mesh::reg_t& mesh,
-                        EntityBaseInfo::reg_t& meshedEntityBaseInfo,
-                        const EntityBaseInfo::reg_t& forCamera3DBaseInfo,
-                        const RenderingBase::reg_t& cameraRenderingBase,
-                        const CSMTarget::reg_t* cameraCSMTarget,
-                        const Ref<PostProcessLayer>& meshPPLayer,
-                        bool isTransparentPass,
-                        LayeredFrameReceiver::reg_t* forLayeredFrameReceiver) noexcept;
-
         void renderTerrainMesh(const Ref<ECS::registry_t>& registry,
                                const ECS::entity_t& terrainEntity,
                                const Transform::reg_t& terrainTransform,
