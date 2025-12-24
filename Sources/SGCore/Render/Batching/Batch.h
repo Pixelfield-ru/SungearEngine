@@ -23,7 +23,7 @@ namespace SGCore
     class ITexture2D;
     class IVertexArray;
 
-    // DO NOT SIZE COMPRESSION FOR ATLASES OF BATCH
+    // DO NOT COMPRESS SIZE OF ATLASES OF BATCH
     // todo: add aabb for batch. add camera frame receiver target layer
     struct Batch : ECS::Component<Batch, const Batch>
     {

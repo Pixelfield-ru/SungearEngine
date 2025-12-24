@@ -5,7 +5,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "PBRRPDirectionalLightsPass.h"
-#include "PBRRPGeometryPass.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "SGCore/Graphics/API/IShader.h"

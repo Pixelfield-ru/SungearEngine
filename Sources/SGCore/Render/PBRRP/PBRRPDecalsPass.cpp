@@ -38,6 +38,9 @@ void SGCore::PBRRPDecalsPass::render(const Scene* scene, const Ref<IRenderPipeli
     auto decalsView = registry->view<EntityBaseInfo, Transform, Decal, Mesh>(ECS::ExcludeTypes<DisableMeshGeometryPass>{});
     auto instancedDecalsView = registry->view<EntityBaseInfo, Decal, Instancing>(ECS::ExcludeTypes<DisableMeshGeometryPass>{});
 
+    m_meshRenderState.use();
+    m_renderState.use();
+
     camerasView.each([&decalsView, &registry, &instancedDecalsView, this](const ECS::entity_t& cameraEntity,
                                                                           const EntityBaseInfo::reg_t& camera3DBaseInfo,
                                                                           LayeredFrameReceiver&
@@ -135,20 +138,7 @@ void SGCore::PBRRPDecalsPass::render(const Scene* scene, const Ref<IRenderPipeli
                 texUnitOffset = cameraCSMTarget->bindUniformsToShader(shaderToUse.get(), cameraRenderingBase->m_zFar, texUnitOffset);
             }
 
-            auto uniformBuffsIt = m_uniformBuffersToUse.begin();
-            while(uniformBuffsIt != m_uniformBuffersToUse.end())
-            {
-                if(auto lockedUniformBuf = uniformBuffsIt->lock())
-                {
-                    shaderToUse->useUniformBuffer(lockedUniformBuf);
-
-                    ++uniformBuffsIt;
-                }
-                else
-                {
-                    uniformBuffsIt = m_uniformBuffersToUse.erase(uniformBuffsIt);
-                }
-            }
+            bindUniformBuffers(shaderToUse.get());
 
             CoreMain::getRenderer()->renderMeshData(
                     decalMesh.m_base.getMeshData().get(),
@@ -237,20 +227,7 @@ void SGCore::PBRRPDecalsPass::render(const Scene* scene, const Ref<IRenderPipeli
                 texUnitOffset = cameraCSMTarget->bindUniformsToShader(shaderToUse.get(), cameraRenderingBase->m_zFar, texUnitOffset);
             }
 
-            auto uniformBuffsIt = m_uniformBuffersToUse.begin();
-            while(uniformBuffsIt != m_uniformBuffersToUse.end())
-            {
-                if(auto lockedUniformBuf = uniformBuffsIt->lock())
-                {
-                    shaderToUse->useUniformBuffer(lockedUniformBuf);
-
-                    ++uniformBuffsIt;
-                }
-                else
-                {
-                    uniformBuffsIt = m_uniformBuffersToUse.erase(uniformBuffsIt);
-                }
-            }
+            bindUniformBuffers(shaderToUse.get());
 
             CoreMain::getRenderer()->renderArrayInstanced(
                 instancing.getVertexArray(),

@@ -17,6 +17,7 @@
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/Picking/Pickable.h"
 #include "SGCore/Render/ShadowMapping/CSM/CSMTarget.h"
+#include "SGCore/Render/Terrain/Terrain.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Utils/Assert.h"
 
@@ -37,9 +38,9 @@ void SGCore::PBRRPOpaqueMeshesPass::render(const Scene* scene, const Ref<IRender
 {
     auto registry = scene->getECSRegistry();
 
-    auto transparentMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, OpaqueEntityTag>(ECS::ExcludeTypes<DisableMeshGeometryPass, Decal>{});
+    auto transparentMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, OpaqueEntityTag>(ECS::ExcludeTypes<DisableMeshGeometryPass, Decal, Terrain>{});
 
-    m_renderState.use();
+    // m_renderState.use();
 
     iterateCameras(scene, [&](const CameraRenderingInfo& cameraRenderingInfo) {
         transparentMeshesView.each([&](const ECS::entity_t& meshEntity,

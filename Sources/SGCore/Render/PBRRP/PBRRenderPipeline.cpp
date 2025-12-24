@@ -4,14 +4,16 @@
 
 #include "PBRRenderPipeline.h"
 
+#include "PBRRPBatchingPass.h"
 #include "PBRRPDecalsPass.h"
-#include "PBRRPGeometryPass.h"
 
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Render/PostProcess/PostProcessPass.h"
 #include "SGCore/Render/BaseRenderPasses/OutlinePass.h"
 #include "PBRRPDirectionalLightsPass.h"
+#include "PBRRPInstancingPass.h"
 #include "PBRRPOpaqueMeshesPass.h"
+#include "PBRRPTerrainsPass.h"
 #include "PBRRPTransparentMeshesPass.h"
 #include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/TextRenderPass.h"
@@ -107,14 +109,6 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
     }
 
     {
-        auto geometryPass = MakeRef<PBRRPGeometryPass>();
-
-        // geometryPass->m_shader->m_uniformBuffer = Scope<IUniformBuffer>(CoreMain::getRenderer().createUniformBuffer());
-
-        m_renderPasses.push_back(geometryPass);
-    }
-
-    {
         auto opaquePass = MakeRef<PBRRPOpaqueMeshesPass>();
 
         m_renderPasses.push_back(opaquePass);
@@ -124,6 +118,24 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
         auto transparentPass = MakeRef<PBRRPTransparentMeshesPass>();
 
         m_renderPasses.push_back(transparentPass);
+    }
+
+    {
+        auto instancingPass = MakeRef<PBRRPInstancingPass>();
+
+        m_renderPasses.push_back(instancingPass);
+    }
+
+    {
+        auto batchingPass = MakeRef<PBRRPBatchingPass>();
+
+        m_renderPasses.push_back(batchingPass);
+    }
+
+    {
+        auto terrainsPass = MakeRef<PBRRPTerrainsPass>();
+
+        m_renderPasses.push_back(terrainsPass);
     }
 
     // ALWAYS AFTER GEOMETRY PASS

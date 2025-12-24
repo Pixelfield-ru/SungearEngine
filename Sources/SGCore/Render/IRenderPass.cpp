@@ -56,8 +56,8 @@ void SGCore::IRenderPass::iterateCameras(const Scene* scene, const std::function
             layeredFrameReceiver.m_attachmentToRenderIn
         );
 
-        m_renderState.use();
-        layeredFrameReceiver.m_layersFrameBuffer->useStates();
+        /*m_renderState.use();
+        layeredFrameReceiver.m_layersFrameBuffer->useStates();*/
 
         CameraRenderingInfo cameraRenderingInfo;
         cameraRenderingInfo.m_cameraEntity = cameraEntity;
