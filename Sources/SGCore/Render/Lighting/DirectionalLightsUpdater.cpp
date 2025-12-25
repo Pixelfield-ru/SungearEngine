@@ -24,9 +24,11 @@ SGCore::DirectionalLightsUpdater::DirectionalLightsUpdater() noexcept
         std::string currentDirLight = "directionalLights[" + std::to_string(i) + "]";
         
         m_uniformBuffer->putUniforms({
+                                                   IShaderUniform(currentDirLight + ".projectionSpaceMatrix", SGGDataType::SGG_MAT4),
+                                                   IShaderUniform(currentDirLight + ".orthographicSpaceMatrix", SGGDataType::SGG_MAT4),
+                                                   IShaderUniform(currentDirLight + ".orthographicMatrix", SGGDataType::SGG_MAT4),
                                                    IShaderUniform(currentDirLight + ".projectionMatrix", SGGDataType::SGG_MAT4),
                                                    IShaderUniform(currentDirLight + ".viewMatrix", SGGDataType::SGG_MAT4),
-                                                   IShaderUniform(currentDirLight + ".spaceMatrix", SGGDataType::SGG_MAT4),
                                                    IShaderUniform(currentDirLight + ".position", SGGDataType::SGG_FLOAT3),
                                                    IShaderUniform(currentDirLight + ".p0", SGGDataType::SGG_FLOAT),
                                                    IShaderUniform(currentDirLight + ".rotation", SGGDataType::SGG_FLOAT3),
@@ -77,14 +79,14 @@ void SGCore::DirectionalLightsUpdater::updateLights() noexcept
     
     auto directionalLightsView = lockedScene->getECSRegistry()->view<DirectionalLight, RenderingBase, Transform>();
     
-    int currenLightIdx = 0;
+    int currentLightIdx = 0;
     
     m_uniformBuffer->bind();
     
-    directionalLightsView.each([&currenLightIdx, this](DirectionalLight::reg_t& directionalLight, RenderingBase::reg_t& renderingBase, Transform::reg_t& transform) {
-        if(currenLightIdx < m_maxLightsCount)
+    directionalLightsView.each([&currentLightIdx, this](DirectionalLight::reg_t& directionalLight, RenderingBase::reg_t& renderingBase, Transform::reg_t& transform) {
+        if(currentLightIdx < m_maxLightsCount)
         {
-            std::string currentDirLight = "directionalLights[" + std::to_string(currenLightIdx) + "]";
+            std::string currentDirLight = "directionalLights[" + std::to_string(currentLightIdx) + "]";
             
             if(directionalLight.m_base.m_color != directionalLight.m_base.m_lastColor)
             {
@@ -105,13 +107,12 @@ void SGCore::DirectionalLightsUpdater::updateLights() noexcept
                 
                 directionalLight.m_base.m_lastIntensity = directionalLight.m_base.m_intensity;
             }
+
+            m_uniformBuffer->subData(currentDirLight + ".position", glm::value_ptr(transform->m_finalTransform.m_position), 3);
             
-            // todo make observer
-            m_uniformBuffer->subData(currentDirLight + ".position", glm::value_ptr(transform->m_ownTransform.m_position), 3);
-            
-            ++currenLightIdx;
+            ++currentLightIdx;
         }
     });
-    
-    m_uniformBuffer->subData("directionalLightsCount", { currenLightIdx });
+
+    m_uniformBuffer->subData("directionalLightsCount", { currentLightIdx });
 }

@@ -32,11 +32,13 @@
 #include "SGCore/Navigation/NavMesh/Steps/RegionsPartitionStep.h"
 #include "SGCore/Navigation/NavMesh/Steps/VoxelizationStep.h"
 #include "SGCore/Render/DebugDraw.h"
+#include "SGCore/Render/Lighting/DirectionalLight.h"
 
 SGCore::Ref<SGCore::Scene> scene;
 SGCore::ECS::entity_t mainCamera{};
 SGCore::ECS::entity_t atmosphereEntity{};
 SGCore::ECS::entity_t navMeshEntity{};
+SGCore::ECS::entity_t lightEntity{};
 SGCore::Ref<SGCore::ITexture2D> attachmentToDisplay;
 
 std::vector<SGCore::ECS::entity_t> meshesEntities;
@@ -144,7 +146,7 @@ void coreInit()
 
     auto& skyboxMesh = scene->getECSRegistry()->get<SGCore::Mesh>(atmosphereEntity);
     auto& atmosphereScattering = scene->getECSRegistry()->emplace<SGCore::Atmosphere>(atmosphereEntity);
-    atmosphereScattering.m_sunRotation.x = 0.0;
+    atmosphereScattering.m_sunRotation.x = 90.0;
     skyboxMesh.m_base.setMaterial(standardCubemapMaterial);
 
     auto& skyboxTransform = scene->getECSRegistry()->get<SGCore::Transform>(atmosphereEntity);
@@ -188,6 +190,18 @@ void coreInit()
             }
         }
     });
+
+    // ================================================================
+    // creating lighting
+
+    lightEntity = ecsRegistry->create();
+
+    auto& lightTransform = ecsRegistry->emplace<SGCore::Transform>(lightEntity, SGCore::MakeRef<SGCore::Transform>());
+    auto& dirLight = ecsRegistry->emplace<SGCore::DirectionalLight>(lightEntity);
+    auto& lightRenderingBase = ecsRegistry->emplace<SGCore::RenderingBase>(lightEntity, SGCore::MakeRef<SGCore::RenderingBase>());
+
+    lightTransform->m_ownTransform.m_position = { 0.0, 3.0, 0.0 };
+    lightTransform->m_ownTransform.m_rotation = glm::angleAxis(glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 }
 
 void onUpdate(const double& dt, const double& fixedDt)
@@ -292,6 +306,15 @@ void onUpdate(const double& dt, const double& fixedDt)
         if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_1))
         {
             regenerateNavMesh();
+        }
+
+        if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_2))
+        {
+            auto shaders = SGCore::AssetManager::getInstance()->getAssetsWithType<SGCore::IShader>();
+            for(const auto& shader : shaders)
+            {
+                shader->reloadFromDisk();
+            }
         }
     }
 }

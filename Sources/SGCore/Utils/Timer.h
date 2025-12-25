@@ -10,10 +10,10 @@ namespace SGCore
     class Timer
     {
     public:
-        Signal<void(const double&, const double&)> onUpdate;
+        Signal<void(double, double)> onUpdate;
         Signal<void()> onStart;
-        std::function<void(const double&, const double&)> onPreUpdate;
-        std::function<void(const double&, const double&)> onPostUpdate;
+        std::function<void(double, double)> onPreUpdate;
+        std::function<void(double, double)> onPostUpdate;
 
         bool m_active = true;
         bool m_cyclic = false;
@@ -21,8 +21,8 @@ namespace SGCore
         // ------------------------------------
 
         Timer() noexcept = default;
-        explicit Timer(const bool& cyclic) noexcept : m_cyclic(cyclic) { }
-        Timer(const bool& cyclic, const double& frameRate) noexcept
+        explicit Timer(bool cyclic) noexcept : m_cyclic(cyclic) { }
+        Timer(bool cyclic, double frameRate) noexcept
         {
             m_cyclic = cyclic;
             m_targetFrameRate = frameRate;

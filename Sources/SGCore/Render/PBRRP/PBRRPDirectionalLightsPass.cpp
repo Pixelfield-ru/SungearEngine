@@ -13,7 +13,9 @@
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Render/Lighting/DirectionalLight.h"
 #include "SGCore/Graphics/API/IUniformBuffer.h"
+#include "SGCore/Render/IRenderPipeline.h"
 #include "SGCore/Render/Mesh.h"
+#include "SGCore/Render/BaseRenderPasses/IGeometryPass.h"
 
 void SGCore::PBRRPDirectionalLightsPass::create(const SGCore::Ref<SGCore::IRenderPipeline>& parentRenderPipeline)
 {
@@ -25,6 +27,12 @@ void SGCore::PBRRPDirectionalLightsPass::create(const SGCore::Ref<SGCore::IRende
 void SGCore::PBRRPDirectionalLightsPass::render(const Scene* scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
 {
     m_renderTimer.startFrame();
+
+    m_renderListener = [&](double dt, double fixedDt) {
+        const auto geomPasses = renderPipeline->getRenderPasses<IGeometryPass>();
+
+
+    };
 
     /*m_renderTimerCallback->setUpdateFunction([&, renderPipeline]()
                                              {

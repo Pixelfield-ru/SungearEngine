@@ -92,7 +92,7 @@ namespace SGCore
             m_executionTimes["parallelUpdate"] = timeDiff<double, std::milli>(t0, t1);
         }
 
-        Slot<void(const double&, const double&)> m_internalUpdateListener = [this](const double& dt, const double& fixedDt) {
+        Slot<void(double, double)> m_internalUpdateListener = [this](double dt, double fixedDt) {
             internalUpdate(dt, fixedDt);
         };
 

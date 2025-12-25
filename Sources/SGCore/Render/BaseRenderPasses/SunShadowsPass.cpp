@@ -29,7 +29,7 @@ void SGCore::SunShadowsPass::create(const Ref<IRenderPipeline>& parentRenderPipe
 
     if(!m_renderTimer.onUpdate.contains(m_renderSlot))
     {
-        m_renderSlot = [this](const double& dt, const double& fixedDt) {
+        m_renderSlot = [this](double dt, double fixedDt) {
             renderShadows(Scene::getCurrentScene().get());
         };
 

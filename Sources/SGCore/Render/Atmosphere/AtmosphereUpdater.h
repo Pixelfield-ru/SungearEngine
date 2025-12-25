@@ -27,7 +27,7 @@ namespace SGCore
     private:
         void updateAtmosphere() noexcept;
 
-        Slot<void(const double&, const double&)> m_atmosphereUpdateEventListener = [this](auto, auto) {
+        Slot<void(double, double)> m_atmosphereUpdateEventListener = [this](auto, auto) {
             updateAtmosphere();
         };
     };

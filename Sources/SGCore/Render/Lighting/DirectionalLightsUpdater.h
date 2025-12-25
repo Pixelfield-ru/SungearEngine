@@ -30,7 +30,7 @@ namespace SGCore
     private:
         void updateLights() noexcept;
 
-        Slot<void(const double&, const double&)> m_lightsUpdateEventListener = [this](auto, auto) {
+        Slot<void(double, double)> m_lightsUpdateEventListener = [this](auto, auto) {
             updateLights();
         };
     };

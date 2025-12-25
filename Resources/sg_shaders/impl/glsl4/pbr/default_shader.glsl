@@ -322,7 +322,7 @@ void main()
 
     vec3 ambient = vec3(0.0);
     vec3 lo = vec3(0.0);
-    for (int i = 0; i < directionalLightsCount; i++)
+    for (int i = 0; i < directionalLightsCount; ++i)
     {
         DirectionalLight dirLight = directionalLights[i];
 

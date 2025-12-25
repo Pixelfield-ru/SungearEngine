@@ -20,7 +20,9 @@ namespace SGCore
     private:
         Timer m_renderTimer { true };
         
-        Slot<void(const double&, const double&)> m_renderListener = [](const auto&, const auto&) { };
+        Slot<void(double, double)> m_renderListener = [](auto, auto) { };
+
+        Ref<IUniformBuffer> m_uniformBuffer;
     };
 }
 

@@ -21,7 +21,7 @@ namespace SGCore
         AssetRef<IShader> m_batchShader;
         RenderState m_renderState;
         Timer m_renderTimer;
-        Slot<void(const double&, const double&)> m_renderSlot;
+        Slot<void(double, double)> m_renderSlot;
 
         void renderShadows(const Scene* scene);
 
