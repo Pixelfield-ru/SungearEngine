@@ -32,7 +32,7 @@
 #include "SGCore/Navigation/NavMesh/Steps/RegionsPartitionStep.h"
 #include "SGCore/Navigation/NavMesh/Steps/VoxelizationStep.h"
 #include "SGCore/Render/DebugDraw.h"
-#include "SGCore/Render/Lighting/DirectionalLight.h"
+#include "SGCore/Render/Lighting/SpotLight.h"
 
 SGCore::Ref<SGCore::Scene> scene;
 SGCore::ECS::entity_t mainCamera{};
@@ -197,7 +197,7 @@ void coreInit()
     lightEntity = ecsRegistry->create();
 
     auto& lightTransform = ecsRegistry->emplace<SGCore::Transform>(lightEntity, SGCore::MakeRef<SGCore::Transform>());
-    auto& dirLight = ecsRegistry->emplace<SGCore::DirectionalLight>(lightEntity);
+    auto& spotLight = ecsRegistry->emplace<SGCore::SpotLight>(lightEntity);
     auto& lightRenderingBase = ecsRegistry->emplace<SGCore::RenderingBase>(lightEntity, SGCore::MakeRef<SGCore::RenderingBase>());
 
     lightTransform->m_ownTransform.m_position = { 0.0, 3.0, 0.0 };

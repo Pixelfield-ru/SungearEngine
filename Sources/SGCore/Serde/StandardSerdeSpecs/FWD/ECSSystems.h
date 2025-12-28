@@ -17,7 +17,7 @@ namespace SGCore
     struct SphereGizmosUpdater;
     struct LineGizmosRenderer;
     class BoxGizmosRenderer;
-    struct DirectionalLightsUpdater;
+    struct SpotLightsUpdater;
     struct AtmosphereUpdater;
     struct RenderingBasesUpdater;
     struct PhysicsWorld3D;
@@ -39,7 +39,7 @@ namespace SGCore::Serde
                 PhysicsWorld3D,
                 RenderingBasesUpdater,
                 AtmosphereUpdater,
-                DirectionalLightsUpdater,
+                SpotLightsUpdater,
                 TransformationsUpdater,
                 BoxGizmosRenderer,
                 LineGizmosRenderer,
@@ -133,19 +133,19 @@ namespace SGCore::Serde
         static void deserialize(DeserializableValueView<AtmosphereUpdater, TFormatType>& valueView) noexcept;
     };
 
-    // ======================================================== DirectionalLightsUpdater FWD
+    // ======================================================== SpotLightsUpdater FWD
 
     template<FormatType TFormatType>
-    struct SerdeSpec<DirectionalLightsUpdater, TFormatType> :
+    struct SerdeSpec<SpotLightsUpdater, TFormatType> :
             BaseTypes<ISystem>,
             DerivedTypes<>
     {
-        sg_serde_define_type_name("SGCore::DirectionalLightsUpdater")
+        sg_serde_define_type_name("SGCore::SpotLightsUpdater")
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<const DirectionalLightsUpdater, TFormatType>& valueView) noexcept;
+        static void serialize(SerializableValueView<const SpotLightsUpdater, TFormatType>& valueView) noexcept;
 
-        static void deserialize(DeserializableValueView<DirectionalLightsUpdater, TFormatType>& valueView) noexcept;
+        static void deserialize(DeserializableValueView<SpotLightsUpdater, TFormatType>& valueView) noexcept;
     };
 
     // ======================================================== TransformationsUpdater FWD

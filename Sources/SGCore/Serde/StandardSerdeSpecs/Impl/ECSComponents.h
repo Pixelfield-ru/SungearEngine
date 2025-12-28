@@ -14,7 +14,7 @@
 #include "SGCore/Render/Gizmos/BoxGizmo.h"
 #include "SGCore/Render/Gizmos/LineGizmo.h"
 #include "SGCore/Render/Gizmos/SphereGizmo.h"
-#include "SGCore/Render/Lighting/DirectionalLight.h"
+#include "SGCore/Render/Lighting/SpotLight.h"
 #include "SGCore/Render/Lighting/LightBase.h"
 #include "SGCore/Render/Picking/Pickable.h"
 #include "SGCore/Physics/Rigidbody3D.h"
@@ -680,16 +680,16 @@ namespace SGCore::Serde
         }
     }
 
-    // ======================================================== impl DirectionalLight
+    // ======================================================== impl SpotLight
 
     template<FormatType TFormatType>
-    void SerdeSpec<DirectionalLight, TFormatType>::serialize(SerializableValueView<const DirectionalLight, TFormatType>& valueView) noexcept
+    void SerdeSpec<SpotLight, TFormatType>::serialize(SerializableValueView<const SpotLight, TFormatType>& valueView) noexcept
     {
         valueView.container().addMember("m_base", valueView.m_data->m_base);
     }
 
     template<FormatType TFormatType>
-    void SerdeSpec<DirectionalLight, TFormatType>::deserialize(DeserializableValueView<DirectionalLight, TFormatType>& valueView) noexcept
+    void SerdeSpec<SpotLight, TFormatType>::deserialize(DeserializableValueView<SpotLight, TFormatType>& valueView) noexcept
     {
         const auto m_base = valueView.container().template getMember<decltype(valueView.m_data->m_base)>("m_base");
         if(m_base)

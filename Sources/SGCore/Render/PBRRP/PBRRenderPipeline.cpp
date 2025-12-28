@@ -10,7 +10,7 @@
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Render/PostProcess/PostProcessPass.h"
 #include "SGCore/Render/BaseRenderPasses/OutlinePass.h"
-#include "PBRRPDirectionalLightsPass.h"
+#include "PBRRPSpotLightsPass.h"
 #include "PBRRPInstancingPass.h"
 #include "PBRRPOpaqueMeshesPass.h"
 #include "PBRRPTerrainsPass.h"
@@ -156,9 +156,9 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
     }
 
     {
-        auto directionalLightsPass = MakeRef<PBRRPDirectionalLightsPass>();
+        auto spotLightsPass = MakeRef<PBRRPSpotLightsPass>();
 
-        m_renderPasses.push_back(directionalLightsPass);
+        m_renderPasses.push_back(spotLightsPass);
     }
 
     // WARNING! UIRenderPass ALWAYS AFTER OTHER GEOMETRY PASS

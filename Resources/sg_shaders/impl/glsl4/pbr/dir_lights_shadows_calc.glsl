@@ -4,7 +4,7 @@
 // todo: make PCSS, PCF
 
 float calcPoissonShadow(
-    const in DirectionalLight dirLight,
+    const in SpotLight dirLight,
     const in vec3 projCoords,
     const in vec3 fragPos,
     const in vec3 normal,
@@ -33,8 +33,8 @@ float calcPoissonShadow(
     return fragmentVisibility;
 }
 
-float calcDirLightShadow(
-    const in DirectionalLight dirLight,
+float calcLightShadow(
+    const in SpotLight dirLight,
     const in vec3 fragPos,
     const in vec3 normal,
     const in sampler2D shadowMap

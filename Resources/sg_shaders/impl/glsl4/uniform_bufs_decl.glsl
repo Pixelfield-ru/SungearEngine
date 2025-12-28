@@ -55,14 +55,15 @@ uniform mediump samplerBuffer u_bonesMatricesUniformBuffer;
 uniform int u_isAnimatedMesh;
 
 #ifndef SG_NOT_INCLUDE_LIGHTS
-    layout(std140) uniform DirectionalLightsBlock
+    layout(std140) uniform SpotLightsBlock
     {
-        DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
-        int directionalLightsCount;
+        SpotLight sg_spotLights[SG_SPOT_LIGHTS_MAX_COUNT];
+        int sg_spotLightsCount;
     };
 
     // uniform int directionalLightsCount;
 
-    // Suitable only for one-way (directional) light sources!
-    uniform sampler2D sgmat_shadowMap2DSamplers[DIRECTIONAL_LIGHTS_MAX_COUNT];
+    // Suitable only for spot light sources!
+    uniform sampler2D sg_spotLightsShadowSamplers[SG_SPOT_LIGHTS_MAX_COUNT];
+    uniform sampler2D sg_cutoffSamplers[SG_MAX_CUTOFF_SAMPLERS];
 #endif

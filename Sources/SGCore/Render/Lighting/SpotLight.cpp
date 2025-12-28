@@ -2,13 +2,13 @@
 // Created by stuka on 03.02.2024.
 //
 
-#include "DirectionalLight.h"
+#include "SpotLight.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Graphics/API/GraphicsDataTypes.h"
 
-SGCore::DirectionalLight::DirectionalLight() noexcept
+SGCore::SpotLight::SpotLight() noexcept
 {
     m_base.m_shadowMap = Ref<IFrameBuffer>(CoreMain::getRenderer()->createFrameBuffer());
     m_base.m_shadowMap->create();

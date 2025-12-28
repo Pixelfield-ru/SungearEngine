@@ -10,11 +10,13 @@
 
 namespace SGCore
 {
-    struct DirectionalLight : ECS::Component<DirectionalLight, const DirectionalLight>
+    struct SpotLight : ECS::Component<SpotLight, const SpotLight>
     {
-        DirectionalLight() noexcept;
+        SpotLight() noexcept;
 
         LightBase m_base;
+
+        float m_cutoffRadius = 20;
     };
 }
 

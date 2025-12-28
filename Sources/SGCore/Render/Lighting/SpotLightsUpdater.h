@@ -2,8 +2,7 @@
 // Created by ilya on 14.02.24.
 //
 
-#ifndef SUNGEARENGINE_DIRECTIONALLIGHTSUPDATER_H
-#define SUNGEARENGINE_DIRECTIONALLIGHTSUPDATER_H
+#pragma once
 
 #include "SGCore/Utils/Timer.h"
 #include "SGCore/Scene/ISystem.h"
@@ -12,11 +11,11 @@ namespace SGCore
 {
     class IUniformBuffer;
     
-    struct DirectionalLightsUpdater : public ISystem
+    struct SpotLightsUpdater : public ISystem
     {
-        sg_implement_type_id(DirectionalLightsUpdater, 19)
+        sg_implement_type_id(SpotLightsUpdater, 19)
 
-        DirectionalLightsUpdater() noexcept;
+        SpotLightsUpdater() noexcept;
         
         void update(const double& dt, const double& fixedDt) final;
         
@@ -35,5 +34,3 @@ namespace SGCore
         };
     };
 }
-
-#endif //SUNGEARENGINE_DIRECTIONALLIGHTSUPDATER_H

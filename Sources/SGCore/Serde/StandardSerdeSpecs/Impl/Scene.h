@@ -19,20 +19,13 @@
 #include "SGCore/Render/Gizmos/BoxGizmo.h"
 #include "SGCore/Render/Gizmos/LineGizmo.h"
 #include "SGCore/Render/Gizmos/SphereGizmo.h"
-#include "SGCore/Render/Lighting/DirectionalLight.h"
+#include "SGCore/Render/Lighting/SpotLight.h"
 #include "SGCore/Render/Picking/Pickable.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Serde/Components/NonSavable.h"
 #include "SGCore/Transformations/Controllable3D.h"
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Audio/AudioSource.h"
-#include "SGCore/Render/RenderingBasesUpdater.h"
-#include "SGCore/Render/Atmosphere/AtmosphereUpdater.h"
-#include "SGCore/Render/Gizmos/BoxGizmosRenderer.h"
-#include "SGCore/Render/Gizmos/LineGizmosRenderer.h"
-#include "SGCore/Render/Gizmos/SphereGizmosUpdater.h"
-#include "SGCore/Render/Lighting/DirectionalLightsUpdater.h"
-#include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
 
 namespace SGCore::Serde
 {
@@ -231,11 +224,11 @@ namespace SGCore::Serde
             }
         }
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<DirectionalLight>(serializableEntity);
+            auto* component = serializableScene.getECSRegistry()->tryGet<SpotLight>(serializableEntity);
 
             if(component)
             {
-                valueView.container().addMember(SerdeSpec<DirectionalLight, TFormatType>::type_name(), *component);
+                valueView.container().addMember(SerdeSpec<SpotLight, TFormatType>::type_name(), *component);
             }
         }
         {
@@ -473,13 +466,13 @@ namespace SGCore::Serde
             }
         }
 
-        if(valueView.container().hasMember(SerdeSpec<DirectionalLight, TFormatType>::type_name()))
+        if(valueView.container().hasMember(SerdeSpec<SpotLight, TFormatType>::type_name()))
         {
-            const auto component = valueView.container().template getMember<DirectionalLight::reg_t>(SerdeSpec<DirectionalLight, TFormatType>::type_name());
+            const auto component = valueView.container().template getMember<SpotLight::reg_t>(SerdeSpec<SpotLight, TFormatType>::type_name());
 
             if(component)
             {
-                toRegistry.emplace<DirectionalLight>(entity, *component);
+                toRegistry.emplace<SpotLight>(entity, *component);
             }
         }
 

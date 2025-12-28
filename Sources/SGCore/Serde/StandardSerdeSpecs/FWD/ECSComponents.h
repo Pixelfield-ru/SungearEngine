@@ -25,7 +25,7 @@ namespace SGCore
     class UICamera;
     struct Camera3D;
     struct Controllable3D;
-    struct DirectionalLight;
+    struct SpotLight;
     struct LightBase;
     struct MeshBase;
     struct LineGizmo;
@@ -271,19 +271,19 @@ namespace SGCore::Serde
         static void deserialize(DeserializableValueView<LightBase, TFormatType>& valueView) noexcept;
     };
 
-    // ======================================================== DirectionalLight FWD
+    // ======================================================== SpotLight FWD
 
     template<FormatType TFormatType>
-    struct SerdeSpec<DirectionalLight, TFormatType> :
+    struct SerdeSpec<SpotLight, TFormatType> :
             BaseTypes<>,
             DerivedTypes<>
     {
-        sg_serde_define_type_name("SGCore::DirectionalLight")
+        sg_serde_define_type_name("SGCore::SpotLight")
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<const DirectionalLight, TFormatType>& valueView) noexcept;
+        static void serialize(SerializableValueView<const SpotLight, TFormatType>& valueView) noexcept;
 
-        static void deserialize(DeserializableValueView<DirectionalLight, TFormatType>& valueView) noexcept;
+        static void deserialize(DeserializableValueView<SpotLight, TFormatType>& valueView) noexcept;
     };
 
     // ======================================================== Controllable3D FWD

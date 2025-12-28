@@ -1,5 +1,3 @@
-#define DIRECTIONAL_LIGHTS_MAX_COUNT    5
-
 struct ProgramData
 {
     vec2 windowSize;
@@ -52,27 +50,19 @@ struct ILight
     int shadowSamplesCount;
 };
 
-// 264 байта с паддингами p0, p1, p2
-// нужно 272 байта
-struct DirectionalLight
+struct SpotLight
 {
     mat4 projectionSpaceMatrix;
-    mat4 orthographicSpaceMatrix;
-    mat4 orthographicMatrix;
-    mat4 projectionMatrix;
-    mat4 viewMatrix;
+    mat4 modelMatrix;
     vec3 position;
     float p0;
     vec3 rotation;
     float p1;
-    vec3 scale;
-    float p2;
     vec4 color;
     float intensity;
     int shadowSamplesCount;
-    float p3;
-    float p4;
-    // todo: make for dir light
+    int cutoffSamplerIndex; // -1 means sampler is not used
+    float cutoffRadius;
 };
 
 struct Atmosphere

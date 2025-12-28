@@ -322,16 +322,26 @@ void main()
 
     vec3 ambient = vec3(0.0);
     vec3 lo = vec3(0.0);
-    for (int i = 0; i < directionalLightsCount; ++i)
+    for(int i = 0; i < sg_spotLightsCount; ++i)
     {
-        DirectionalLight dirLight = directionalLights[i];
+        SpotLight spotLight = sg_spotLights[i];
 
-        vec3 lightDir = normalize(dirLight.position - vsIn.fragPos);// TRUE
+        vec3 lightDir = normalize(spotLight.position - vsIn.fragPos);// TRUE
         vec3 halfWayDir = normalize(lightDir + viewDir);// TRUE
 
-        float distance = length(dirLight.position - vsIn.fragPos);// TRUE
-        float attenuation = (1.0 / (distance * distance)) * dirLight.intensity;// TRUE
-        vec3 radiance = dirLight.color.rgb * attenuation;// TRUE
+        float distance = length(spotLight.position - vsIn.fragPos);// TRUE
+        float attenuation = (1.0 / (distance * distance)) * spotLight.intensity;// TRUE
+        vec3 radiance = spotLight.color.rgb * attenuation;// TRUE
+
+        float angle = degrees(acos(dot(-normalize(lightDir), normalize(spotLight.rotation - spotLight.position))));
+
+        if(angle > spotLight.cutoffRadius)
+        {
+            // radiance *= 0.1;
+            continue;
+            // attenuation = 100.0;
+            // continue;
+        }
 
         // energy brightness coeff (коэфф. энергетической яркости)
         float NdotL = max(dot(finalNormal, lightDir), 0.0);
@@ -341,7 +351,7 @@ void main()
 
         // ===================        shadows calc        =====================
 
-        /*dirLightsShadowCoeff += calcDirLightShadow(
+        /*dirLightsShadowCoeff += calcLightShadow(
             directionalLights[i],
             vsIn.fragPos,
             finalNormal,

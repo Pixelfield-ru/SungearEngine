@@ -2,14 +2,13 @@
 // Created by stuka on 26.11.2023.
 //
 
-#ifndef SUNGEARENGINE_PBRRPDIRECTIONALLIGHTSPASS_H
-#define SUNGEARENGINE_PBRRPDIRECTIONALLIGHTSPASS_H
+#pragma once
 
 #include "SGCore/Render/IRenderPass.h"
 
 namespace SGCore
 {
-    struct PBRRPDirectionalLightsPass : public IRenderPass
+    struct PBRRPSpotLightsPass : public IRenderPass
     {
         // todo: сделать рендер пассы с настройкой времени выполнения. то же самое сделать с системами
         
@@ -25,5 +24,3 @@ namespace SGCore
         Ref<IUniformBuffer> m_uniformBuffer;
     };
 }
-
-#endif //SUNGEARENGINE_PBRRPDIRECTIONALLIGHTSPASS_H

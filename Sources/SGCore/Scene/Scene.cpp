@@ -13,7 +13,7 @@
 #include "SGCore/Render/Gizmos/LineGizmosRenderer.h"
 #include "SGCore/Render/Gizmos/SphereGizmosUpdater.h"
 #include "SGCore/Render/Atmosphere/AtmosphereUpdater.h"
-#include "SGCore/Render/Lighting/DirectionalLightsUpdater.h"
+#include "SGCore/Render/Lighting/SpotLightsUpdater.h"
 #include "SGCore/Physics/PhysicsWorld3D.h"
 #include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
@@ -64,8 +64,8 @@ void SGCore::Scene::createDefaultSystems()
     auto atmosphereScatteringUpdater = MakeRef<AtmosphereUpdater>();
     addSystem(atmosphereScatteringUpdater);
     
-    auto directionalLightsUpdater = MakeRef<DirectionalLightsUpdater>();
-    addSystem(directionalLightsUpdater);
+    auto spotLightsUpdater = MakeRef<SpotLightsUpdater>();
+    addSystem(spotLightsUpdater);
     
     // ===================
     

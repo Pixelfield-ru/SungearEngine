@@ -17,7 +17,7 @@
 #include "SGCore/Render/Gizmos/BoxGizmosRenderer.h"
 #include "SGCore/Render/Gizmos/LineGizmosRenderer.h"
 #include "SGCore/Render/Gizmos/SphereGizmosUpdater.h"
-#include "SGCore/Render/Lighting/DirectionalLightsUpdater.h"
+#include "SGCore/Render/Lighting/SpotLightsUpdater.h"
 #include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
 #include "SGCore/Audio/AudioProcessor.h"
 #include "SGCore/Motion/MotionPlannersResolver.h"
@@ -99,13 +99,13 @@ namespace SGCore::Serde
     // =============================================== impl DirectionalLightsUpdater
 
     template<FormatType TFormatType>
-    void SerdeSpec<DirectionalLightsUpdater, TFormatType>::serialize(SerializableValueView<const DirectionalLightsUpdater, TFormatType>& valueView) noexcept
+    void SerdeSpec<SpotLightsUpdater, TFormatType>::serialize(SerializableValueView<const SpotLightsUpdater, TFormatType>& valueView) noexcept
     {
         valueView.container().addMember("m_maxLightsCount", valueView.m_data->m_maxLightsCount);
     }
 
     template<FormatType TFormatType>
-    void SerdeSpec<DirectionalLightsUpdater, TFormatType>::deserialize(DeserializableValueView<DirectionalLightsUpdater, TFormatType>& valueView) noexcept
+    void SerdeSpec<SpotLightsUpdater, TFormatType>::deserialize(DeserializableValueView<SpotLightsUpdater, TFormatType>& valueView) noexcept
     {
         const auto m_maxLightsCount = valueView.container().template getMember<decltype(valueView.m_data->m_maxLightsCount)>("m_maxLightsCount");
 
