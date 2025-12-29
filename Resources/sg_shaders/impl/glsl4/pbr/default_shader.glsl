@@ -327,21 +327,23 @@ void main()
         SpotLight spotLight = sg_spotLights[i];
 
         vec3 lightDir = normalize(spotLight.position - vsIn.fragPos);// TRUE
+
+        float theta = dot(lightDir, normalize(-spotLight.direction));
+
+        if(theta < spotLight.outerCutoff)
+        {
+            continue;
+        }
+
+        float epsilon = spotLight.innerCutoff - spotLight.outerCutoff;
+        float intensity = clamp((theta - spotLight.outerCutoff) / epsilon, 0.0, 1.0);
+
         vec3 halfWayDir = normalize(lightDir + viewDir);// TRUE
 
         float distance = length(spotLight.position - vsIn.fragPos);// TRUE
-        float attenuation = (1.0 / (distance * distance)) * spotLight.intensity;// TRUE
+        // float attenuation = (1.0 / (distance * distance)) * intensity * spotLight.intensity;// TRUE
+        float attenuation = min((1.0 / (distance * distance)) * intensity * spotLight.intensity, 10.0);// TRUE
         vec3 radiance = spotLight.color.rgb * attenuation;// TRUE
-
-        float angle = degrees(acos(dot(-normalize(lightDir), normalize(spotLight.rotation - spotLight.position))));
-
-        if(angle > spotLight.cutoffRadius)
-        {
-            // radiance *= 0.1;
-            continue;
-            // attenuation = 100.0;
-            // continue;
-        }
 
         // energy brightness coeff (коэфф. энергетической яркости)
         float NdotL = max(dot(finalNormal, lightDir), 0.0);
@@ -385,7 +387,7 @@ void main()
 
         lo += (diffuse * albedo.rgb / PI + specular) * radiance * NdotL;
 
-        ambient += 0.025 * radiance;
+        // ambient = 0.25 * albedo.rgb * ao * attenuation;
         // lo = vec3(1.0);
     }
 
@@ -426,7 +428,7 @@ void main()
         lo += (diffuse * albedo.rgb / PI + specular) * max(atmosphere.sunColor.rgb, vec3(0, 0, 0)) * NdotL * shadow * 1.0;
     }
 
-    ambient = albedo.rgb * ao * dot(atmosphere.sunPosition, vec3(0, 1, 0));
+    ambient += albedo.rgb * ao * max(dot(atmosphere.sunPosition, vec3(0, 1, 0)), 0.0);
     vec3 finalCol = ambient * vec3(1.0) * materialAmbientFactor + lo;
 
     if(u_verticesColorsAttributesCount > 0)

@@ -40,6 +40,7 @@
 #include "SGCore/Navigation/NavMesh/Steps/InputFilteringStep.h"
 #include "SGCore/Navigation/NavMesh/Steps/VoxelizationStep.h"
 #include "SGCore/Render/DebugDraw.h"
+#include "SGCore/Render/Lighting/SpotLight.h"
 #include "SGCore/Render/Terrain/TerrainUtils.h"
 
 #if SG_PLATFORM_OS_WINDOWS
@@ -64,6 +65,7 @@ SGCore::MeshRenderState quadMeshRenderState;
 SGCore::Ref<SGCore::ITexture2D> attachmentToDisplay;
 
 SGCore::ECS::entity_t mainCamera;
+SGCore::ECS::entity_t lightEntity;
 SGCore::ECS::entity_t terrainEntity;
 SGCore::ECS::entity_t atmosphereEntity;
 SGCore::ECS::entity_t terrainDecalEntity;
@@ -295,6 +297,18 @@ void coreInit()
     auto& cameraReceiver = ecsRegistry->emplace<SGCore::LayeredFrameReceiver>(mainCamera);
 
     attachmentToDisplay = cameraReceiver.m_layersFXFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7);
+
+    lightEntity = ecsRegistry->create();
+
+    auto& lightTransform = ecsRegistry->emplace<SGCore::Transform>(lightEntity, SGCore::MakeRef<SGCore::Transform>());
+    auto& spotLight = ecsRegistry->emplace<SGCore::SpotLight>(lightEntity);
+    auto& lightRenderingBase = ecsRegistry->emplace<SGCore::RenderingBase>(lightEntity, SGCore::MakeRef<SGCore::RenderingBase>());
+
+    spotLight.m_base.m_intensity = 10000.0f;
+
+    // lightTransform->m_ownTransform.m_position = { 0.0, 3.0, 0.0 };
+
+    ecsRegistry->get<SGCore::EntityBaseInfo>(mainCamera).addChild(lightEntity, *ecsRegistry);
 
     // creating skybox ==============================================================================================
 

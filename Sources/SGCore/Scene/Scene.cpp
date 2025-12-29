@@ -63,7 +63,7 @@ void SGCore::Scene::createDefaultSystems()
     
     auto atmosphereScatteringUpdater = MakeRef<AtmosphereUpdater>();
     addSystem(atmosphereScatteringUpdater);
-    
+
     auto spotLightsUpdater = MakeRef<SpotLightsUpdater>();
     addSystem(spotLightsUpdater);
     

@@ -56,5 +56,15 @@ float GGXTR(const in vec3 normal, const in vec3 medianVec, const in float roughn
 
 vec3 SchlickFresnel(const in float cosTheta, const in vec3 F0)
 {
-    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+    float x = 1.0 - clamp(cosTheta, 0.0, 1.0);
+    float x2 = x * x;
+    float x5 = x2 * x2 * x;  // x^5 без pow()
+
+    return mix(F0, vec3(1.0), x5);
+
+    /*const float epsilon = 1e-4;
+    float x = clamp(1.0 - cosTheta, epsilon, 1.0);
+
+    return F0 + (1.0 - F0) * pow(x, 5.0);*/
+    // return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }

@@ -56,13 +56,13 @@ struct SpotLight
     mat4 modelMatrix;
     vec3 position;
     float p0;
-    vec3 rotation;
-    float p1;
-    vec4 color;
+    vec3 direction;
     float intensity;
+    vec4 color;
     int shadowSamplesCount;
     int cutoffSamplerIndex; // -1 means sampler is not used
-    float cutoffRadius;
+    float innerCutoff;
+    float outerCutoff;
 };
 
 struct Atmosphere

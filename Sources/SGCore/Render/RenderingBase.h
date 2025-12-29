@@ -9,6 +9,7 @@
 
 #include "SGCore/Math/Frustum.h"
 #include "SGCore/ECS/Component.h"
+#include "SGCore/Main/CoreGlobals.h"
 
 //#include "RenderingComponentsSystem.h"
 

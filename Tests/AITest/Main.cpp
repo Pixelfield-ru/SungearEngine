@@ -200,8 +200,10 @@ void coreInit()
     auto& spotLight = ecsRegistry->emplace<SGCore::SpotLight>(lightEntity);
     auto& lightRenderingBase = ecsRegistry->emplace<SGCore::RenderingBase>(lightEntity, SGCore::MakeRef<SGCore::RenderingBase>());
 
-    lightTransform->m_ownTransform.m_position = { 0.0, 3.0, 0.0 };
-    lightTransform->m_ownTransform.m_rotation = glm::angleAxis(glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    // lightTransform->m_ownTransform.m_position = { 0.0, 3.0, 0.0 };
+
+    ecsRegistry->get<SGCore::EntityBaseInfo>(mainCamera).addChild(lightEntity, *ecsRegistry);
+    // lightTransform->m_ownTransform.m_rotation = glm::angleAxis(glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 }
 
 void onUpdate(const double& dt, const double& fixedDt)
@@ -315,6 +317,24 @@ void onUpdate(const double& dt, const double& fixedDt)
             {
                 shader->reloadFromDisk();
             }
+        }
+
+        if(SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_3))
+        // if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_3))
+        {
+            const auto lightTransform = scene->getECSRegistry()->get<SGCore::Transform>(lightEntity);
+            lightTransform->m_ownTransform.m_yawPitchRoll.x += 0.5f;
+            // lightTransform->m_ownTransform.m_rotation = glm::angleAxis(glm::radians(0.5f), glm::vec3(0, 1, 0)) * lightTransform->m_ownTransform.m_rotation;
+            // lightTransform->m_ownTransform.m_rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(0, 1, 0)) * lightTransform->m_ownTransform.m_rotation;
+        }
+
+        if(SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_4))
+        // if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_4))
+        {
+            const auto lightTransform = scene->getECSRegistry()->get<SGCore::Transform>(lightEntity);
+            lightTransform->m_ownTransform.m_yawPitchRoll.x -= 0.5f;
+            // lightTransform->m_ownTransform.m_rotation = glm::angleAxis(glm::radians(-0.5f), glm::vec3(0, 1, 0)) * lightTransform->m_ownTransform.m_rotation;
+            // lightTransform->m_ownTransform.m_rotation = glm::angleAxis(glm::radians(-90.0f), glm::vec3(0, 1, 0)) * lightTransform->m_ownTransform.m_rotation;
         }
     }
 }
