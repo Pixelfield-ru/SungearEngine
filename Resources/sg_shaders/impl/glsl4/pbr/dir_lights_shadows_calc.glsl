@@ -1,5 +1,7 @@
 #include "sg_shaders/impl/glsl4/structs_decl.glsl"
 #include "sg_shaders/impl/glsl4/math.glsl"
+#include "sg_shaders/impl/glsl4/disks.glsl"
+#include "sg_shaders/impl/glsl4/shadows_sampling/csm.glsl"
 
 // todo: make PCSS, PCF
 

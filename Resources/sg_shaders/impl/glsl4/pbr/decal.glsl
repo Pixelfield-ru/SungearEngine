@@ -72,6 +72,7 @@ layout(location = 3) out vec4 layerSTColor;
 #include "sg_shaders/impl/glsl4/pbr_base.glsl"
 #include "sg_shaders/impl/glsl4/color_correction/aces.glsl"
 #include "sg_shaders/impl/glsl4/shadows_sampling/csm.glsl"
+#include "lighting_calc.glsl"
 
 in VSOut
 {
@@ -265,66 +266,7 @@ void main()
     float roughness     = aoRoughnessMetallic.g;
     float metalness     = aoRoughnessMetallic.b;
 
-    // для формулы Шлика-Френеля
-    vec3 F0 = vec3(0.04);
-    F0 = mix(F0, albedo, metalness);
-
-    vec3 dirLightsShadowCoeff = vec3(0.0);
-
-    vec3 ambient = vec3(0.0);
-    vec3 lo = vec3(0.0);
-
-    float shadow = getCSMShadow(atmosphere.sunPosition, vsIn.fragPos);
-
-    // calculating sun
-    {
-        vec3 lightDir = normalize(atmosphere.sunPosition);
-        vec3 halfWayDir = normalize(lightDir + viewDir);
-
-        // energy brightness coeff (коэфф. энергетической яркости)
-        float NdotL = saturate(dot(finalNormal, lightDir));
-        float NdotVD = abs(dot(finalNormal, viewDir)) + 1e-5f;
-
-        // ===================        shadows calc        =====================
-
-        /*dirLightsShadowCoeff += calcDirLightShadow(
-            directionalLights[i],
-            vsIn.fragPos,
-            finalNormal,
-            sgmat_shadowMap2DSamplers[i]
-        ) * finalRadiance;*/
-
-        // ====================================================================
-
-        // cooktorrance func: DFG /
-
-        // NDF (normal distribution func)
-        float D = GGXTR(
-        finalNormal,
-        halfWayDir,
-        roughness * (1.0 - specularCoeff)
-        );// TRUE
-
-        float cosTheta = saturate(dot(halfWayDir, viewDir));
-
-        // это по сути зеркальная часть (kS)
-        vec3 F = SchlickFresnel(cosTheta, F0);// kS
-        // geometry function
-        float G = GeometrySmith(NdotVD, NdotL, roughness * (1.0 - specularCoeff));// TRUE
-
-        vec3 diffuse = vec3(1.0) - F;
-        diffuse *= (1.0 - metalness);// check diffuse color higher
-
-        vec3 ctNumerator = D * F * G;
-        float ctDenominator = 1.0 * NdotVD * NdotL;
-        vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * u_materialSpecularCol.r;
-
-        lo += (diffuse * albedo.rgb / PI + specular) * max(atmosphere.sunColor.rgb, vec3(0, 0, 0)) * NdotL * shadow * 1.0;
-    }
-
-    // ambient = ambient * albedo.rgb * ao;
-    ambient = albedo.rgb * ao * dot(atmosphere.sunPosition, vec3(0, 1, 0));
-    vec3 finalCol = ambient * materialAmbientFactor + lo;
+    vec3 finalCol = calculateLight(albedo, vsIn.fragPos, viewDir, finalNormal, roughness, specularCoeff, metalness, ao);
 
     // finalCol = vec3(tessEvalIn.UV.xy, 0.0);
     // finalCol = tessEvalIn.vertexPos;

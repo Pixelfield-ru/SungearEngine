@@ -13,16 +13,12 @@
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Graphics/API/IShader.h"
-#include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Graphics/API/IUniformBuffer.h"
 #include "SGCore/Graphics/API/IRenderer.h"
 #include <glm/gtc/type_ptr.hpp>
 #include "SGCore/Render/RenderPipelinesManager.h"
 #include "SGCore/Render/BaseRenderPasses/IGeometryPass.h"
-#include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"
 #include "AtmosphereUtils.h"
-#include "SGCore/Render/BaseRenderPasses/IDecalsPass.h"
-#include "SGCore/Render/PBRRP/PBRRPDecalsPass.h"
 
 SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
 {
@@ -62,12 +58,6 @@ SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
         for(const auto& geomPass : geomPasses)
         {
             geomPass->m_uniformBuffersToUse.push_back(m_uniformBuffer);
-        }
-
-        auto decalsPass = renderPipeline->getRenderPass<IDecalsPass>();
-        if(decalsPass)
-        {
-            decalsPass->m_uniformBuffersToUse.push_back(m_uniformBuffer);
         }
     }
     
