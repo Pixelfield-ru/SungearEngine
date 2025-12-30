@@ -188,7 +188,10 @@ size_t SGCore::IShader::bindMaterialTextures(const SGCore::AssetRef<SGCore::IMat
     {
         const auto& texturesOfType = material->getTextures()[i];
 
-        preallocUniformName = sgStandardTextureTypeNameToStandardUniformName((SGTextureSlot) i);
+        const std::string& textureUniform = sgStandardTextureTypeNameToStandardUniformName((SGTextureSlot) i);
+        const std::string& texturesCountUniform = sgStandardTextureTypeNameToStandardUniformName((SGTextureSlot) i) + "_CURRENT_COUNT";
+
+        preallocUniformName = textureUniform;
         size_t firstSize = preallocUniformName.size();
         preallocUniformName += "[0]";
         
@@ -216,33 +219,33 @@ size_t SGCore::IShader::bindMaterialTextures(const SGCore::AssetRef<SGCore::IMat
             ++offset;
         }
         
-        size_t secondSize = preallocUniformName.size();
-        
-        size_t difference = secondSize - firstSize;
-        
-        preallocUniformName.erase(preallocUniformName.size() - difference, difference);
-        preallocUniformName += "_CURRENT_COUNT";
-        
-        useInteger(preallocUniformName, arrayIdx);
+        useInteger(texturesCountUniform, arrayIdx);
     }
     
     return offset;
 }
 
-void SGCore::IShader::unbindMaterialTextures(const SGCore::AssetRef<SGCore::IMaterial>& material) noexcept
+size_t SGCore::IShader::bindTextures(const std::vector<AssetRef<ITexture2D>>& textures,
+                                     SGTextureSlot slotType,
+                                     std::uint8_t samplersOffset) noexcept
 {
-    std::string preallocUniformName;
-    preallocUniformName.resize(48);
+    static const std::string textureUniform = sgStandardTextureTypeNameToStandardUniformName(slotType);
+    static const std::string texturesCountUniform = textureUniform + "_CURRENT_COUNT";
 
-    constexpr auto texturesTypesCount = std::to_underlying(SGTextureSlot::SGTT_COUNT);
+    size_t texUnitOffset = 0;
 
-    for(int i = 0; i < texturesTypesCount; ++i)
+    for(size_t i = 0; i < textures.size(); ++i)
     {
-        preallocUniformName = sgStandardTextureTypeNameToStandardUniformName((SGTextureSlot) i);
-        preallocUniformName += "_CURRENT_COUNT";
-        
-        useInteger(preallocUniformName, 0);
+        const auto& texture = textures[i];
+        useTextureBlock(textureUniform + '[' + std::to_string(i) + ']', samplersOffset);
+        texture->bind(texUnitOffset);
+
+        ++samplersOffset;
     }
+
+    useInteger(texturesCountUniform, textures.size());
+
+    return samplersOffset;
 }
 
 size_t SGCore::IShader::bindTextureBindings(const size_t& samplersOffset) noexcept

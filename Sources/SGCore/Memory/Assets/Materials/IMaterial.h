@@ -120,6 +120,11 @@ namespace SGCore
             return m_textures;
         }
 
+        const auto& getTextures(SGTextureSlot slot) const noexcept
+        {
+            return m_textures[std::to_underlying(slot)];
+        }
+
     protected:
         // some textures can be atlases
         std::array<std::vector<AssetRef<ITexture2D>>, texture_types_count> m_textures;

@@ -13,5 +13,10 @@ namespace SGCore
         void create(const Ref<IRenderPipeline>& parentRenderPipeline) final;
 
         void render(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline) final;
+
+        void renderShadows(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline) noexcept final;
+
+    protected:
+        AssetRef<IShader> m_shadowsGenerationShader;
     };
 }

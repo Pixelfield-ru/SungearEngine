@@ -25,10 +25,9 @@ void SGCore::PBRRPOpaqueMeshesPass::create(const Ref<IRenderPipeline>& parentRen
 {
     IGeometryPass::create(parentRenderPipeline);
 
-    auto shaderFile = AssetManager::getInstance()->loadAsset<TextFileAsset>(
-                *parentRenderPipeline->m_shadersPaths["StandardMeshShader"]);
+    m_shader = AssetManager::getInstance()->loadAsset<IShader>(*parentRenderPipeline->m_shadersPaths["StandardMeshShader"]);
 
-    m_shader = AssetManager::getInstance()->loadAsset<IShader>(shaderFile->getPath());
+    m_shadowsGenerationShader = AssetManager::getInstance()->loadAsset<IShader>(*parentRenderPipeline->m_shadersPaths["ShadowsGen/ObjectShader"]);
 
     m_renderState.m_depthFunc = SGDepthStencilFunc::SGG_LESS;
     m_renderState.m_globalBlendingState.m_useBlending = false;
@@ -38,12 +37,12 @@ void SGCore::PBRRPOpaqueMeshesPass::render(const Scene* scene, const Ref<IRender
 {
     auto registry = scene->getECSRegistry();
 
-    auto transparentMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, OpaqueEntityTag>(ECS::ExcludeTypes<DisableMeshGeometryPass, Decal, Terrain>{});
+    auto opaqueMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, OpaqueEntityTag>(ECS::ExcludeTypes<DisableMeshGeometryPass, Decal, Terrain>{});
 
     // m_renderState.use();
 
     iterateCameras(scene, [&](const CameraRenderingInfo& cameraRenderingInfo) {
-        transparentMeshesView.each([&](const ECS::entity_t& meshEntity,
+        opaqueMeshesView.each([&](const ECS::entity_t& meshEntity,
                                        EntityBaseInfo::reg_t& meshedEntityBaseInfo,
                                        Mesh::reg_t& mesh, Transform::reg_t& meshTransform,
                                        const auto&) {
@@ -128,5 +127,58 @@ void SGCore::PBRRPOpaqueMeshesPass::render(const Scene* scene, const Ref<IRender
                 mesh.m_base.getMaterial()->m_meshRenderState
             );
         });
+    });
+}
+
+void SGCore::PBRRPOpaqueMeshesPass::renderShadows(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline) noexcept
+{
+    auto registry = scene->getECSRegistry();
+
+    auto opaqueMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, OpaqueEntityTag>(ECS::ExcludeTypes<DisableMeshGeometryPass, Decal, Terrain>{});
+
+    const auto& shadowGenShader = m_shadowsGenerationShader;
+
+    shadowGenShader->bind();
+
+    shadowGenShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+    shadowGenShader->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
+
+    opaqueMeshesView.each([&](const ECS::entity_t& meshEntity,
+                              EntityBaseInfo::reg_t& meshedEntityBaseInfo,
+                              Mesh::reg_t& mesh, Transform::reg_t& meshTransform,
+                              const auto&) {
+        // todo:
+        // const bool willRender = cameraRenderingInfo.m_camera3D->isEntityVisibleForCamera(registry, cameraRenderingInfo.m_cameraEntity, meshEntity);
+
+        if(!mesh.m_base.getMeshData() || !mesh.m_base.getMaterial()) return;
+
+        shadowGenShader->useMatrix("objectTransform.modelMatrix", meshTransform->m_finalTransform.m_animatedModelMatrix);
+        shadowGenShader->useVectorf("objectTransform.position", meshTransform->m_finalTransform.m_position);
+        shadowGenShader->useInteger("u_verticesColorsAttributesCount", mesh.m_base.getMeshData()->m_verticesColors.size());
+
+        size_t texUnitOffset = 0;
+        texUnitOffset = shadowGenShader->bindTextures(mesh.m_base.getMaterial()->getTextures(SGTextureSlot::SGTT_DIFFUSE), SGTextureSlot::SGTT_DIFFUSE, texUnitOffset);
+        shadowGenShader->bindTextureBindings(texUnitOffset);
+
+        bindUniformBuffers(shadowGenShader.get());
+
+        // using texture buffer with bones animated transformations
+        if(auto bonesLockedBuffer = mesh.m_base.m_bonesBuffer.lock())
+        {
+            bonesLockedBuffer->bind(texUnitOffset);
+            shadowGenShader->useTextureBlock("u_bonesMatricesUniformBuffer", texUnitOffset);
+            ++texUnitOffset;
+
+            shadowGenShader->useInteger("u_isAnimatedMesh", 1);
+        }
+        else
+        {
+            shadowGenShader->useInteger("u_isAnimatedMesh", 0);
+        }
+
+        CoreMain::getRenderer()->renderMeshData(
+            mesh.m_base.getMeshData().get(),
+            mesh.m_base.getMaterial()->m_meshRenderState
+        );
     });
 }

@@ -13,8 +13,10 @@ namespace SGCore
 {
     class IUniformBuffer;
     
-    struct IGeometryPass : public IRenderPass
+    struct IGeometryPass : IRenderPass
     {
+        virtual void renderShadows(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline) noexcept {}
+
     private:
         bool m_dummy = false;
     };

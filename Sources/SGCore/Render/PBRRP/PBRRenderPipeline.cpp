@@ -68,11 +68,6 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
             "${enginePath}/Resources/sg_shaders/features/pbr/batching.sgshader"
     );
 
-    m_shadersPaths.addPath(
-            "ShadowsGen/BatchingShader",
-            "${enginePath}/Resources/sg_shaders/features/shadows_generator/batching.sgshader"
-    );
-
 
     m_shadersPaths.addPath(
             "StandardTerrainShader",
@@ -82,6 +77,18 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
     m_shadersPaths.addPath(
             "StandardDecalShader",
             "${enginePath}/Resources/sg_shaders/features/pbr/decal.sgshader"
+    );
+
+    // ==========
+
+    m_shadersPaths.addPath(
+            "ShadowsGen/BatchingShader",
+            "${enginePath}/Resources/sg_shaders/features/shadows_generator/batching.sgshader"
+    );
+
+    m_shadersPaths.addPath(
+            "ShadowsGen/ObjectShader",
+            "${enginePath}/Resources/sg_shaders/features/shadows_generator/object.sgshader"
     );
     
     // configure render passes --------

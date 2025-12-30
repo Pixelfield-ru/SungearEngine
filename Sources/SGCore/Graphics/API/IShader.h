@@ -113,8 +113,7 @@ namespace SGCore
          * @return Offset of samplers.
          */
         size_t bindMaterialTextures(const AssetRef<IMaterial>& material, std::uint8_t samplersOffset = 0) noexcept;
-        
-        void unbindMaterialTextures(const AssetRef<IMaterial>& material) noexcept;
+        size_t bindTextures(const std::vector<AssetRef<ITexture2D>>& textures, SGTextureSlot slotType, std::uint8_t samplersOffset = 0) noexcept;
         
         /**
          * Bind all vector of m_textureBindings.
