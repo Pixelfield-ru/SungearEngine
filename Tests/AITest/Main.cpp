@@ -43,6 +43,13 @@ SGCore::Ref<SGCore::ITexture2D> attachmentToDisplay;
 
 std::vector<SGCore::ECS::entity_t> meshesEntities;
 
+SGCore::AssetRef<SGCore::ModelAsset> cartModel;
+SGCore::AssetRef<SGCore::ModelAsset> vegetableModel;
+
+std::vector<SGCore::ECS::entity_t> vegetables;
+
+SGCore::ECS::entity_t cartEntity = entt::null;
+
 void regenerateNavMesh()
 {
     const auto ecsRegistry = scene->getECSRegistry();
@@ -107,7 +114,7 @@ void coreInit()
     auto ecsRegistry = scene->getECSRegistry();
 
     const auto debugDraw = SGCore::RenderPipelinesManager::instance().getCurrentRenderPipeline()->getRenderPass<SGCore::DebugDraw>();
-    debugDraw->setMaxLinesCount(100'000'000);
+    // debugDraw->setMaxLinesCount(100'000'000);
 
     // ================================================================
 
@@ -135,7 +142,7 @@ void coreInit()
 
     std::vector<SGCore::ECS::entity_t> skyboxEntities;
     auto cubeModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("sphere_model");
-    cubeModel->m_rootNode->addOnScene(scene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities](const auto& entity) {
+    cubeModel->m_rootNode->addOnScene(scene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities](auto entity) {
         skyboxEntities.push_back(entity);
         scene->getECSRegistry()->emplace<SGCore::IgnoreOctrees>(entity);
         scene->getECSRegistry()->remove<SGCore::Pickable>(entity);
@@ -146,7 +153,6 @@ void coreInit()
 
     auto& skyboxMesh = scene->getECSRegistry()->get<SGCore::Mesh>(atmosphereEntity);
     auto& atmosphereScattering = scene->getECSRegistry()->emplace<SGCore::Atmosphere>(atmosphereEntity);
-    atmosphereScattering.m_sunRotation.x = 90.0;
     skyboxMesh.m_base.setMaterial(standardCubemapMaterial);
 
     auto& skyboxTransform = scene->getECSRegistry()->get<SGCore::Transform>(atmosphereEntity);
@@ -175,7 +181,7 @@ void coreInit()
 
     // auto locationModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/AITest/Resources/location_0/scene.gltf");
     auto locationModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/AITest/Resources/location_1/ai_test.gltf");
-    locationModel->m_rootNode->addOnScene(scene, SG_LAYER_OPAQUE_NAME, [&locationEntities, &ecsRegistry](const auto& entity) {
+    /*locationModel->m_rootNode->addOnScene(scene, SG_LAYER_OPAQUE_NAME, [&locationEntities, &ecsRegistry](auto entity) {
         locationEntities.push_back(entity);
 
         scene->getECSRegistry()->emplace<SGCore::IgnoreOctrees>(entity);
@@ -189,21 +195,68 @@ void coreInit()
                 meshesEntities.push_back(entity);
             }
         }
+    });*/
+
+    vegetableModel = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/AITest/Resources/vegetable_0/scene.gltf");
+
+    cartModel = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/AITest/Resources/cart/scene.gltf");
+    cartModel->m_rootNode->addOnScene(scene, SG_LAYER_OPAQUE_NAME, [&](auto entity) {
+        if(cartEntity == entt::null)
+        {
+            cartEntity = entity;
+        }
     });
 
-    // ================================================================
-    // creating lighting
+    using namespace std::chrono_literals;
+    startSpawnVegetables(*ecsRegistry, { 0, 0, 0 }, 20.0f, { 5000ms, 15000ms });
+}
 
-    lightEntity = ecsRegistry->create();
+SGCore::ECS::entity_t spawnVegetable(SGCore::ECS::registry_t& registry, const glm::vec3& position, const glm::vec3& scale)
+{
+    SGCore::ECS::entity_t vegetableEntity = entt::null;
+    vegetableModel->m_rootNode->addOnScene(scene, SG_LAYER_OPAQUE_NAME, [&](auto entity) {
+        if(vegetableEntity == entt::null)
+        {
+            vegetableEntity = entity;
+        }
+    });
 
-    auto& lightTransform = ecsRegistry->emplace<SGCore::Transform>(lightEntity, SGCore::MakeRef<SGCore::Transform>());
-    auto& spotLight = ecsRegistry->emplace<SGCore::SpotLight>(lightEntity);
-    auto& lightRenderingBase = ecsRegistry->emplace<SGCore::RenderingBase>(lightEntity, SGCore::MakeRef<SGCore::RenderingBase>());
+    auto& transform = registry.get<SGCore::Transform>(vegetableEntity);
+    transform->m_ownTransform.m_position = position;
+    transform->m_ownTransform.m_scale = scale;
 
-    // lightTransform->m_ownTransform.m_position = { 0.0, 3.0, 0.0 };
+    return vegetableEntity;
+}
 
-    ecsRegistry->get<SGCore::EntityBaseInfo>(mainCamera).addChild(lightEntity, *ecsRegistry);
-    // lightTransform->m_ownTransform.m_rotation = glm::angleAxis(glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+SGCore::Coro::Task<> startSpawnVegetables(SGCore::ECS::registry_t& registry, glm::vec3 areaPosition, float radius, std::pair<std::chrono::milliseconds, std::chrono::milliseconds> interval)
+{
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    volatile constexpr bool running = true;
+    while(running)
+    {
+        glm::vec3 vegetableDirection{};
+
+        {
+            std::uniform_real_distribution<float> dis(-1, 1);
+            vegetableDirection.x = dis(gen);
+        }
+
+        {
+            std::uniform_real_distribution<float> dis(-1, 1);
+            vegetableDirection.z = dis(gen);
+        }
+
+        {
+            std::uniform_real_distribution<float> dis(0, radius);
+            vegetableDirection *= dis(gen);
+        }
+
+        spawnVegetable(registry, areaPosition + vegetableDirection, { 0.1, 0.1, 0.1 });
+
+        co_await interval.first;
+    }
 }
 
 void onUpdate(const double& dt, const double& fixedDt)
@@ -230,7 +283,7 @@ void onUpdate(const double& dt, const double& fixedDt)
             }
         }
 
-        if(debugDraw->m_mode != SGCore::DebugDrawMode::NO_DEBUG)
+        /*if(debugDraw->m_mode != SGCore::DebugDrawMode::NO_DEBUG)
         {
             auto& navMesh = scene->getECSRegistry()->get<SGCore::Navigation::NavMesh>(navMeshEntity);
 
@@ -242,8 +295,6 @@ void onUpdate(const double& dt, const double& fixedDt)
 
             for(const auto& region : regionsPartitionStep->m_regions)
             {
-                // std::cout << std::format("contour voxels count for region: {}", region.m_contourVoxelsIndices.size()) << std::endl;
-
                 for(auto idx : region.m_contourVoxelsIndices)
                 {
                     const auto& voxel = voxelizationStep->m_voxels[idx];
@@ -253,34 +304,10 @@ void onUpdate(const double& dt, const double& fixedDt)
                         navMeshConfig.m_cellSize,
                         navMeshConfig.m_cellHeight);
 
-                    // std::cout << glm::to_string(p) << std::endl;
-
                     debugDraw->drawLine(p, p + glm::vec3 { 0.0f, 1.0f, 0.0f }, { 0, 0, 1, 1.0 });
                 }
-
-                /*for(size_t i = 0; i < region.m_contourVoxelsIndices.size(); i += 2)
-                {
-                    if(i + 1 >= region.m_contourVoxelsIndices.size()) continue;
-
-                    const auto idx0 = region.m_contourVoxelsIndices[i + 0];
-                    const auto idx1 = region.m_contourVoxelsIndices[i + 1];
-
-                    const auto& voxel0 = voxelizationStep->m_voxels[idx0];
-                    const auto& voxel1 = voxelizationStep->m_voxels[idx1];
-
-                    const glm::vec3 p0 = voxelizationStep->voxelToWorld(
-                        voxel0.m_position,
-                        navMeshConfig.m_cellSize,
-                        navMeshConfig.m_cellHeight);
-
-                    const glm::vec3 p1 = voxelizationStep->voxelToWorld(
-                                            voxel1.m_position,
-                                            navMeshConfig.m_cellSize,
-                                            navMeshConfig.m_cellHeight);
-
-                    debugDraw->drawLine(p0, p1, { 0.47, 0.87, 0.78, 1.0 });
-                }*/
             }
+
             for(const auto& voxel : voxelizationStep->m_voxels)
             {
                 const glm::vec3 min = voxelizationStep->voxelToWorld(
@@ -303,7 +330,7 @@ void onUpdate(const double& dt, const double& fixedDt)
                     debugDraw->drawAABB(min, max, { 1.0, 0.0, 0.0, 1.0 });
                 }
             }
-        }
+        }*/
 
         if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_1))
         {
@@ -317,24 +344,6 @@ void onUpdate(const double& dt, const double& fixedDt)
             {
                 shader->reloadFromDisk();
             }
-        }
-
-        if(SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_3))
-        // if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_3))
-        {
-            const auto lightTransform = scene->getECSRegistry()->get<SGCore::Transform>(lightEntity);
-            lightTransform->m_ownTransform.m_yawPitchRoll.x += 0.5f;
-            // lightTransform->m_ownTransform.m_rotation = glm::angleAxis(glm::radians(0.5f), glm::vec3(0, 1, 0)) * lightTransform->m_ownTransform.m_rotation;
-            // lightTransform->m_ownTransform.m_rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(0, 1, 0)) * lightTransform->m_ownTransform.m_rotation;
-        }
-
-        if(SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_4))
-        // if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_4))
-        {
-            const auto lightTransform = scene->getECSRegistry()->get<SGCore::Transform>(lightEntity);
-            lightTransform->m_ownTransform.m_yawPitchRoll.x -= 0.5f;
-            // lightTransform->m_ownTransform.m_rotation = glm::angleAxis(glm::radians(-0.5f), glm::vec3(0, 1, 0)) * lightTransform->m_ownTransform.m_rotation;
-            // lightTransform->m_ownTransform.m_rotation = glm::angleAxis(glm::radians(-90.0f), glm::vec3(0, 1, 0)) * lightTransform->m_ownTransform.m_rotation;
         }
     }
 }

@@ -34,7 +34,7 @@ namespace SGCore
 
         std::vector<Weak<IUniformBuffer>> m_uniformBuffersToUse;
 
-        virtual void create(const Ref<IRenderPipeline>& parentRenderPipeline) { };
+        virtual void create(const Ref<IRenderPipeline>& parentRenderPipeline) { }
         
         virtual void render(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline) = 0;
 

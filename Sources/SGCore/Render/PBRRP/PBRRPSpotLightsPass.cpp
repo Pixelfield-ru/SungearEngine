@@ -28,23 +28,22 @@ void SGCore::PBRRPSpotLightsPass::render(const Scene* scene, const SGCore::Ref<S
 {
     m_renderTimer.startFrame();
 
-    auto spotLightsView = scene->getECSRegistry()->view<SpotLight, RenderingBase>();
-
-    auto geomPasses = renderPipeline->getRenderPasses<IGeometryPass>();
-
     m_renderListener = [&](double dt, double fixedDt) {
-        const auto geomPasses = renderPipeline->getRenderPasses<IGeometryPass>();
+        auto spotLightsView = scene->getECSRegistry()->view<SpotLight, RenderingBase>();
+
+        auto geomPasses = renderPipeline->getRenderPasses<IGeometryPass>();
 
         spotLightsView.each([&](const SpotLight& spotLight, RenderingBase::reg_t& rendering) {
             // spotLight.m_base.m_shadowMap;
-            /*spotLight.m_base.m_shadowMap->bind();
+            spotLight.m_base.m_shadowMap->clear();
+            spotLight.m_base.m_shadowMap->bind();
 
             for(const auto geomPass : geomPasses)
             {
                 geomPass->renderShadows(scene, renderPipeline);
             }
 
-            spotLight.m_base.m_shadowMap->unbind();*/
+            spotLight.m_base.m_shadowMap->unbind();
         });
     };
 }

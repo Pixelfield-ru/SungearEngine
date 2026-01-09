@@ -2,8 +2,7 @@
 // Created by ilya on 14.02.24.
 //
 
-#ifndef SUNGEARENGINE_IGEOMETRYPASS_H
-#define SUNGEARENGINE_IGEOMETRYPASS_H
+#pragma once
 
 #include "SGCore/Render/IRenderPass.h"
 
@@ -21,5 +20,3 @@ namespace SGCore
         bool m_dummy = false;
     };
 }
-
-#endif //SUNGEARENGINE_IGEOMETRYPASS_H
