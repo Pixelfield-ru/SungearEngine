@@ -1,0 +1,161 @@
+// ReSharper disable once CppMissingIncludeGuard
+
+#ifdef define_enum
+
+#ifdef define_property
+
+#define universal_keywords(define_property) define_property(INHERIT) define_property(INITIAL) define_property(UNSET) define_property(UNKNOWN)
+
+// iterate through all enum properties
+define_enum
+(
+    UniversalKeyword,
+        universal_keywords(define_property))
+define_enum
+(
+    PositionAndSizeKeyword,
+        universal_keywords(define_property)
+        define_property(AUTO)
+        define_property(NONE)
+        define_property(NORMAL)
+        define_property(COVER)
+        define_property(CONTAIN)
+        define_property(FIXED)
+        define_property(ABSOLUTE)
+        define_property(RELATIVE)
+        define_property(STATIC)
+        define_property(STICKY)
+)
+define_enum
+(
+    ColorKeyword,
+        universal_keywords(define_property)
+        define_property(TRANSPARENT)
+        define_property(CURRENT_COLOR)
+)
+define_enum
+(
+    FontFamilyKeyword,
+        universal_keywords(define_property)
+        define_property(SERIF)
+        define_property(SANS_SERIF)
+        define_property(MONOSPACE)
+        define_property(CURSIVE)
+        define_property(FANTASY)
+        define_property(BOLD)
+        define_property(NORMAL)
+        define_property(BOLDER)
+        define_property(LIGHTER)
+        define_property(ITALIC)
+        define_property(OBLIQUE)
+)
+define_enum
+(
+    FontSizeKeyword,
+        universal_keywords(define_property)
+        define_property(XX_SMALL)
+        define_property(X_SMALL)
+        define_property(SMALL)
+        define_property(MEDIUM)
+        define_property(LARGE)
+        define_property(X_LARGE)
+        define_property(XX_LARGE)
+        define_property(SMALLER)
+        define_property(LARGER)
+)
+define_enum
+(
+    DisplayKeyword,
+        universal_keywords(define_property)
+        define_property(BLOCK)
+        define_property(INLINE)
+        define_property(FLEX)
+        define_property(GRID)
+        define_property(INLINE_BLOCK)
+        define_property(INLINE_FLEX)
+        define_property(INLINE_GRID)
+        define_property(TABLE)
+        define_property(NONE)
+)
+define_enum
+(
+    ContentOverflowKeyword,
+        universal_keywords(define_property)
+        define_property(CLIP)
+        define_property(ELLIPSIS)
+        define_property(VISIBLE)
+        define_property(HIDDEN)
+        define_property(SCROLL)
+        define_property(AUTO)
+)
+define_enum
+(
+    AnimationKeyword,
+        universal_keywords(define_property)
+        define_property(EASE)
+        define_property(LINEAR)
+        define_property(EASE_IN)
+        define_property(EASE_OUT)
+        define_property(EASE_IN_OUT)
+        define_property(INFINITE)
+        define_property(FORWARDS)
+        define_property(BACKWARDS)
+)
+define_enum
+(
+    ListKeyword,
+        universal_keywords(define_property)
+        define_property(DISC)
+        define_property(CIRCLE)
+        define_property(SQUARE)
+        define_property(DECIMAL)
+        define_property(NONE)
+)
+define_enum
+(
+    BorderKeyword,
+        universal_keywords(define_property)
+        define_property(SOLID)
+        define_property(DASHED)
+        define_property(DOTTED)
+        define_property(DOUBLE)
+        define_property(GROOVE)
+        define_property(RIDGE)
+        define_property(INSET)
+        define_property(OUTSET)
+        define_property(NONE)
+        define_property(HIDDEN)
+)
+define_enum
+(
+    ShadowKeyword,
+        universal_keywords(define_property)
+        define_property(NONE)
+        define_property(INSET)
+)
+define_enum
+(
+    FlexboxKeyword,
+        define_property(START)
+        define_property(END)
+        define_property(CENTER)
+        define_property(STRETCH)
+        define_property(SPACE_BETWEEN)
+        define_property(SPACE_AROUND)
+        define_property(SPACE_EVENLY)
+        define_property(ROW)
+        define_property(ROW_REVERSE)
+        define_property(COLUMN)
+        define_property(COLUMN_REVERSE)
+        define_property(WRAP)
+        define_property(NOWRAP)
+        define_property(WRAP_REVERSE)
+)
+
+#undef universal_keywords
+
+#undef define_property
+#undef define_enum
+
+#endif
+#endif

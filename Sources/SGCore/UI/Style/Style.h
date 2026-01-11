@@ -9,20 +9,23 @@
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Memory/Assets/Font.h"
 
-#include "SGCore/UI/Math/DynValueNode.h"
+#include "SGCore/UI/DValue/DValueSetterNode.h"
 #include "SGCore/Utils/Macroses.h"
-#include "StyleProperty.h"
+#include "../DValue/DValueCowNode.h"
+#include "SGCore/UI/DValue/DValueDestinationCacheNode.h"
 
 namespace SGCore::UI
 {
+    template<auto... Members>
+        struct RefStyleProperty {
+        // using MemberType = std::remove_reference_t<std::invoke_result_t<decltype(Utils::FirstGenericOf<Members...>), Style>>;
+    };
+
     struct Style
     {
         sg_serde_as_friend();
 
         // sg_implement_type_id(Style, 34)
-
-        friend struct ANTLRCSSListener;
-        friend struct CSSFile;
 
         Style() noexcept;
 
@@ -33,7 +36,6 @@ namespace SGCore::UI
         move_operator(Style) = default;
 
 #pragma region Properties
-        // ============================================================== properties
 
 // iterate through all style properties names
 #define style_properties(prop) \
@@ -63,15 +65,15 @@ namespace SGCore::UI
         FlexboxKeyword m_flexDirection = FlexboxKeyword::ROW;
         FlexboxKeyword m_flexWrap = FlexboxKeyword::NOWRAP;
 
-        using SizeStyleProperty = std::variant<PositionAndSizeKeyword, Ref<DynValueNode>>;
-        SizeStyleProperty m_width = PositionAndSizeKeyword::UNSET;
-        SizeStyleProperty m_height = PositionAndSizeKeyword::UNSET;
+        using SizeStyleProperty = DValue::DValueCowNode<std::variant<PositionAndSizeKeyword, float>>;
+        SizeStyleProperty m_width {PositionAndSizeKeyword::UNSET};
+        SizeStyleProperty m_height {PositionAndSizeKeyword::UNSET};
 
-        using PaddingStyleProperty = std::variant<UniversalKeyword, Ref<DynValueNode>>;
-        PaddingStyleProperty m_paddingLeft = UniversalKeyword::UNSET;
-        PaddingStyleProperty m_paddingRight = UniversalKeyword::UNSET;
-        PaddingStyleProperty m_paddingBottom = UniversalKeyword::UNSET;
-        PaddingStyleProperty m_paddingTop = UniversalKeyword::UNSET;
+        using PaddingStyleProperty = DValue::DValueCowNode<std::variant<UniversalKeyword, float>>;
+        PaddingStyleProperty m_paddingLeft {UniversalKeyword::UNSET};
+        PaddingStyleProperty m_paddingRight {UniversalKeyword::UNSET};
+        PaddingStyleProperty m_paddingBottom {UniversalKeyword::UNSET};
+        PaddingStyleProperty m_paddingTop {UniversalKeyword::UNSET};
 
         std::variant<
             std::tuple<
@@ -87,24 +89,23 @@ namespace SGCore::UI
             RefStyleProperty<&Style::m_paddingLeft, &Style::m_paddingRight, &Style::m_paddingTop, &Style::m_paddingBottom>
         > m_padding;
 
-
         using GapStyleProperty = SizeStyleProperty;
-        GapStyleProperty m_rowGap = PositionAndSizeKeyword::UNSET;
-        GapStyleProperty m_columnGap = PositionAndSizeKeyword::UNSET;
+        GapStyleProperty m_rowGap {PositionAndSizeKeyword::UNSET};
+        GapStyleProperty m_columnGap {PositionAndSizeKeyword::UNSET};
         
         RefStyleProperty<&Style::m_rowGap, &Style::m_columnGap> m_gap;
 
         struct BorderRadius final
         {
-            Ref<DynValueNode> m_radiusX;
-            Ref<DynValueNode> m_radiusY;
+            DValue::DValueCacheNode<float> m_radiusX;
+            DValue::DValueCacheNode<float> m_radiusY;
         };
 
-        using BorderRadiusStyleProperty = std::variant<UniversalKeyword, BorderRadius>;
-        BorderRadiusStyleProperty m_bottomLeftBorderRadius = UniversalKeyword::UNSET;
-        BorderRadiusStyleProperty m_topLeftBorderRadius = UniversalKeyword::UNSET;
-        BorderRadiusStyleProperty m_topRightBorderRadius = UniversalKeyword::UNSET;
-        BorderRadiusStyleProperty m_bottomRightBorderRadius = UniversalKeyword::UNSET;
+        using BorderRadiusStyleProperty = DValue::DValueCowNode<std::variant<UniversalKeyword, BorderRadius>>;
+        BorderRadiusStyleProperty m_bottomLeftBorderRadius {UniversalKeyword::UNSET};
+        BorderRadiusStyleProperty m_topLeftBorderRadius {UniversalKeyword::UNSET};
+        BorderRadiusStyleProperty m_topRightBorderRadius {UniversalKeyword::UNSET};
+        BorderRadiusStyleProperty m_bottomRightBorderRadius {UniversalKeyword::UNSET};
 
         std::variant<
             std::tuple<
@@ -118,16 +119,15 @@ namespace SGCore::UI
 
         std::variant<
             ColorKeyword, 
-            std::tuple<Ref<DynValueNode>, Ref<DynValueNode>, Ref<DynValueNode>, Ref<DynValueNode>>, // rgba
-            std::tuple<Ref<DynValueNode>, Ref<DynValueNode>, Ref<DynValueNode>> // rgb
+            std::tuple<DValue::DValueCowNode<float>, DValue::DValueCowNode<float>, DValue::DValueCowNode<float>, DValue::DValueCowNode<float>>, // rgba
+            std::tuple<DValue::DValueCowNode<float>, DValue::DValueCowNode<float>, DValue::DValueCowNode<float>> // rgb
         > m_backgroundColor = ColorKeyword::UNSET;
 
-        AssetWeakRef<Font> m_font;
+        DValue::DValueCowNode<AssetWeakRef<Font>> m_font;
 
         /// Used as scale.
-        std::variant<FontSizeKeyword, Ref<DynValueNode>> m_fontSize;
+        DValue::DValueCowNode<std::variant<FontSizeKeyword, float>> m_fontSize {10.0f};
 
-        // ==============================================================
 #pragma endregion Properties
 
         // first - hash of pseudo class name. second - style
