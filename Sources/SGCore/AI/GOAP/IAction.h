@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "State.h"
 #include "SGCore/Coro/Task.h"
 
 namespace SGCore::GOAP
@@ -12,14 +13,25 @@ namespace SGCore::GOAP
     {
         virtual ~IAction() = default;
 
-        virtual Coro::Task<> execute() noexcept = 0;
-        virtual void calculateCost() noexcept = 0;
+        Coro::Task<> execute(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept;
+
+        virtual void calculateCost(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept = 0;
 
         virtual IAction* clone() const noexcept = 0;
+
+        void addPrecondition(const State& preconditionState) noexcept;
+        bool hasPrecondition(const State& preconditionState) const noexcept;
+        void removePrecondition(const State& preconditionState) noexcept;
+        bool preconditionsComplete(ECS::registry_t& registry, ECS::entity_t forEntity) const noexcept;
 
         float getCost() const noexcept;
 
     protected:
+        virtual Coro::Task<> executeImpl(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept = 0;
+
         float m_cost = 0.0f;
+
+    private:
+        std::unordered_set<const State*> m_preconditions;
     };
 }

@@ -10,6 +10,7 @@
 #include "SGCore/Coro/CoroScheduler.h"
 #include "SGCore/Utils/Signal.h"
 #include "SGCore/Main/CoreGlobals.h"
+#include "SGCore/Utils/Timer.h"
 
 namespace SGCore::Threading
 {
@@ -52,6 +53,7 @@ namespace SGCore::Threading
         }
         
         double getExecutionTime() const noexcept;
+        double getDeltaTime() const noexcept;
         
         std::thread::id getNativeID() const noexcept;
         
@@ -75,6 +77,8 @@ namespace SGCore::Threading
         std::vector<std::shared_ptr<Task>> m_finishedTasksToExecute;
         
         std::atomic<double> m_executionTime = 0.0;
+        std::atomic<double> m_currentTime = 0.0;
+        std::atomic<double> m_deltaTime = 0.0;
 
         std::vector<Ref<Task>> m_tasks;
         std::vector<Ref<Task>> m_tasksCopy;

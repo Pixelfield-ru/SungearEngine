@@ -10,8 +10,9 @@
 #include "ThreadsManager.h"
 #include "SGCore/Utils/Utils.h"
 #include "Task.h"
+#include "SGCore/Utils/Time.h"
 
-std::shared_ptr<SGCore::Threading::Thread> SGCore::Threading::Thread::create(const std::chrono::milliseconds& sleepTime) noexcept
+    std::shared_ptr<SGCore::Threading::Thread> SGCore::Threading::Thread::create(const std::chrono::milliseconds& sleepTime) noexcept
 {
     std::lock_guard threadsAccessGuard(ThreadsManager::m_threadAccessMutex);
     
@@ -100,6 +101,11 @@ void SGCore::Threading::Thread::start() noexcept
 
         while(m_isAlive && m_isRunning)
         {
+            double lastTime = m_currentTime;
+            m_currentTime = (double) Utils::getTimeMilliseconds();
+
+            m_deltaTime = (m_currentTime - lastTime) / 1000.0;
+
             m_isTasksProcessing = true;
             processTasks();
             m_isTasksProcessing = false;
@@ -182,6 +188,11 @@ double SGCore::Threading::Thread::getExecutionTime() const noexcept
 {
     return m_executionTime.load();
 }
+
+ double SGCore::Threading::Thread::getDeltaTime() const noexcept
+ {
+    return m_deltaTime.load();
+ }
 
 std::thread::id SGCore::Threading::Thread::getNativeID() const noexcept
 {
