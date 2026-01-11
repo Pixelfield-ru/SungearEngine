@@ -9,17 +9,12 @@
 
 #include "CoroUtils.h"
 
-bool SGCore::Coro::TaskAwaitable::await_ready() const noexcept
+bool SGCore::Coro::TaskAwaitableBase::await_ready() const noexcept
 {
     return m_calledCoro.done();
 }
 
-void SGCore::Coro::TaskAwaitable::await_resume() noexcept
-{
-
-}
-
-void SGCore::Coro::TaskAwaitable::await_suspend(std::coroutine_handle<> thisCoroutine)
+void SGCore::Coro::TaskAwaitableBase::await_suspend(std::coroutine_handle<> thisCoroutine)
 {
     m_ownerCoro = thisCoroutine;
     CoroUtils::assumeCurrentThread()->m_coroScheduler.addTaskAwaitableCoro(*this);

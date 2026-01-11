@@ -72,7 +72,7 @@ void SGCore::Coro::CoroScheduler::addTimerAwaitableCoro(TimerAwaitable task) noe
     m_timerAwaitableCoros.push_back(task);
 }
 
-void SGCore::Coro::CoroScheduler::addTaskAwaitableCoro(TaskAwaitable task) noexcept
+void SGCore::Coro::CoroScheduler::addTaskAwaitableCoro(TaskAwaitableBase task) noexcept
 {
     m_taskAwaitableCoros.push_back(task);
 }

@@ -9,28 +9,50 @@
 
 namespace SGCore::Coro
 {
-    struct TaskAwaitable : IAwaitable
+    template<typename>
+    struct Task;
+
+    struct TaskAwaitableBase : IAwaitable
     {
-        explicit TaskAwaitable(std::coroutine_handle<> calledCoro)
+        explicit TaskAwaitableBase(std::coroutine_handle<> calledCoro)
         {
             m_calledCoro = calledCoro;
         }
 
         bool await_ready() const noexcept;
 
-        void await_resume() noexcept;
-
         void await_suspend(std::coroutine_handle<> thisCoroutine);
     };
 
-    template<typename>
-    struct Task;
+    template<typename T>
+    struct TaskAwaitable : TaskAwaitableBase
+    {
+        explicit TaskAwaitable(const Task<T>& calledTask) : TaskAwaitableBase(calledTask.getHandle())
+        {
+            m_calledTask = &calledTask;
+        }
+
+        T await_resume() noexcept
+        {
+            if constexpr(std::is_same_v<T, void>)
+            {
+                return;
+            }
+            else
+            {
+                return m_calledTask->getHandle().promise().get_value();
+            }
+        }
+
+    private:
+        const Task<T>* m_calledTask {};
+    };
 }
 
 template<typename T>
 auto operator co_await(const SGCore::Coro::Task<T>& otherTask)
 {
-    return SGCore::Coro::TaskAwaitable { otherTask.getHandle() };
+    return SGCore::Coro::TaskAwaitable<T>(otherTask);
 }
 
 namespace SGCore::Coro

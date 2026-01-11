@@ -10,10 +10,10 @@
 #include "SGCore/ECS/Registry.h"
 #include "SGCore/Transformations/Transform.h"
 
-SGCore::Coro::Task<> SGCore::GOAP::Goto::executeImpl(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept
+SGCore::Coro::Task<bool> SGCore::GOAP::Goto::executeImpl(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept
 {
     auto* tmpTransform = registry.tryGet<Transform>(forEntity);
-    if(!tmpTransform) co_return;
+    if(!tmpTransform) co_return false;
 
     auto& transform = *tmpTransform;
 
@@ -25,7 +25,7 @@ SGCore::Coro::Task<> SGCore::GOAP::Goto::executeImpl(ECS::registry_t& registry, 
         co_await Coro::returnToCaller();
     }
 
-    co_return;
+    co_return true;
 }
 
 void SGCore::GOAP::Goto::calculateCost(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept

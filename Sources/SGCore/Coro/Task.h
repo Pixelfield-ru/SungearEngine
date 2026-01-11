@@ -92,7 +92,11 @@ namespace SGCore::Coro
             }
         }
 
-        T get_value() { return m_value; }
+        T get_value()
+        {
+            // m_value is always not empty, in another case program is ill formed
+            return *m_value;
+        }
 
     private:
         std::optional<T> m_value = std::nullopt;

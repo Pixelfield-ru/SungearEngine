@@ -98,5 +98,8 @@
   }, {
     "name" : "boost-asio",
     "version>=" : "1.88.0#0"
+  }, {
+    "name" : "gtest",
+    "version>=" : "1.17.0#1"
   } ]
 }

@@ -27,11 +27,12 @@ namespace SGCore::GOAP
         float getCost() const noexcept;
 
     protected:
-        virtual Coro::Task<> executeImpl(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept = 0;
+        virtual Coro::Task<bool> executeImpl(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept = 0;
 
         float m_cost = 0.0f;
 
     private:
         std::unordered_set<const State*> m_preconditions;
+        std::unordered_set<const State*> m_effects;
     };
 }

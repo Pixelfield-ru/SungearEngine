@@ -8,13 +8,23 @@
 
 SGCore::Coro::Task<> SGCore::GOAP::IAction::execute(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept
 {
+    auto* goapState = registry.tryGet<EntityState>(forEntity);
+    if(!goapState) co_return;
+
     if(!preconditionsComplete(registry, forEntity))
     {
         co_return;
     }
 
-    co_await executeImpl(registry, forEntity);
-    co_return;
+    // const bool s = co_await Coro::returnToCaller();
+    const bool complete = co_await executeImpl(registry, forEntity);
+
+    if(!complete) co_return;
+
+    for(const auto& effectState : m_effects)
+    {
+        goapState->setState(*effectState, true);
+    }
 }
 
 void SGCore::GOAP::IAction::addPrecondition(const State& preconditionState) noexcept

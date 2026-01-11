@@ -21,12 +21,12 @@ namespace SGCore::Coro
 
         void addTimerAwaitableCoro(TimerAwaitable task) noexcept;
 
-        void addTaskAwaitableCoro(TaskAwaitable task) noexcept;
+        void addTaskAwaitableCoro(TaskAwaitableBase task) noexcept;
 
     private:
         std::vector<std::coroutine_handle<>> m_yieldedCoros { };
         std::vector<TimerAwaitable> m_timerAwaitableCoros { };
-        std::vector<TaskAwaitable> m_taskAwaitableCoros { };
+        std::vector<TaskAwaitableBase> m_taskAwaitableCoros { };
     };
 }
 

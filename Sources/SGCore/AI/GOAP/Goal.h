@@ -4,9 +4,20 @@
 
 #pragma once
 
+#include <unordered_set>
+
+#include "State.h"
+#include "SGCore/Main/CoreGlobals.h"
+
 namespace SGCore::GOAP
 {
     struct Goal
     {
+        void addFinalState(const State& state) noexcept;
+        void removeFinalState(const State& state) noexcept;
+        bool statesComplete(ECS::registry_t& registry, ECS::entity_t forEntity) const noexcept;
+
+    private:
+        std::unordered_set<const State*> m_finalStates;
     };
 }
