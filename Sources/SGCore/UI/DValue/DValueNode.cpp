@@ -1,7 +1,7 @@
 #include "DValueNode.h"
 
 template <typename Out>
-SGCore::UI::DValue::DValueNodeOutput<Out>::~DValueNodeOutput() {
+SGCore::UI::DValue::DValueNodeOutput<Out>::~DValueNodeOutput() noexcept {
     for (auto node : m_nextNodes) {
         node->disconnectPrevious(this);
     }
@@ -10,7 +10,7 @@ SGCore::UI::DValue::DValueNodeOutput<Out>::~DValueNodeOutput() {
 }
 
 template <typename Out>
-void SGCore::UI::DValue::DValueNodeOutput<Out>::connectNext(DValueNodeInput<Out>* next) {
+void SGCore::UI::DValue::DValueNodeOutput<Out>::connectNext(DValueNodeInput<Out>* next)noexcept {
     if (next->m_previousNode == this) {return;}
 
     if (next->m_previousNode != nullptr) {
@@ -22,25 +22,25 @@ void SGCore::UI::DValue::DValueNodeOutput<Out>::connectNext(DValueNodeInput<Out>
 }
 
 template <typename Out>
-void SGCore::UI::DValue::DValueNodeOutput<Out>::disconnectNext(DValueNodeInput<Out>* next) {
+void SGCore::UI::DValue::DValueNodeOutput<Out>::disconnectNext(DValueNodeInput<Out>* next) noexcept {
     if (m_nextNodes.erase(next)) {
         next->m_previousNode = nullptr;
     }
 }
 
 template <typename Out>
-void SGCore::UI::DValue::DValueNodeOutput<Out>::setValue(Out value) {
+void SGCore::UI::DValue::DValueNodeOutput<Out>::setValue(Out value) noexcept {
     for (auto node : m_nextNodes) {
         node->onReceived(value);
     }
 }
 
 template <typename In>
-void SGCore::UI::DValue::DValueNodeInput<In>::connectPrevious(DValueNodeOutput<In>* previous) {
+void SGCore::UI::DValue::DValueNodeInput<In>::connectPrevious(DValueNodeOutput<In>* previous) noexcept {
     previous->connectNext(this);
 }
 
 template <typename In>
-void SGCore::UI::DValue::DValueNodeInput<In>::disconnectPrevious() {
+void SGCore::UI::DValue::DValueNodeInput<In>::disconnectPrevious() noexcept {
     m_previousNode->disconnectPrevious(this);
 }

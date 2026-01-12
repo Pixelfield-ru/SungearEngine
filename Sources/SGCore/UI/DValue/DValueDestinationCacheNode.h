@@ -15,6 +15,6 @@ namespace SGCore::UI::DValue
         copy_constructor(DValueCacheNode);
         move_constructor(DValueCacheNode);
 
-        DValueNodeInput<T> m_input = [this] (T val) {m_value = val;};
+        DValueNodeInput<T> m_input {[this] (T val) {m_value = val;}};
     };
 }

@@ -18,11 +18,11 @@ namespace SGCore::UI::DValue
         copy_constructor(DValueCowNode);
         move_constructor(DValueCowNode);
 
-        explicit(false) DValueCowNode(T& initialValue) : m_value(initialValue) {}
-        explicit(false) DValueCowNode(T&& initialValue) : m_value(std::move(initialValue)) {}
+        explicit(false) DValueCowNode(T& initialValue) noexcept : m_value(initialValue) {}
+        explicit(false) DValueCowNode(T&& initialValue) noexcept : m_value(std::move(initialValue)) {}
 
-        ~DValueCowNode() = default;
+        ~DValueCowNode() noexcept = default;
 
-        T& getValue();
+        T& getValue() noexcept;
     };
 }

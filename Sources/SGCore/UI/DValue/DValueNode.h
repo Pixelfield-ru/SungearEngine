@@ -23,12 +23,12 @@ namespace SGCore::UI::DValue
         copy_constructor(DValueNodeOutput);
         move_constructor(DValueNodeOutput);
 
-        virtual ~DValueNodeOutput();
+        virtual ~DValueNodeOutput() noexcept;
 
-        void connectNext(DValueNodeInput<Out>* next);
-        void disconnectNext(DValueNodeInput<Out>* next);
+        void connectNext(DValueNodeInput<Out>* next) noexcept;
+        void disconnectNext(DValueNodeInput<Out>* next) noexcept;
 
-        void setValue(Out value);
+        void setValue(Out value) noexcept;
 
     private:
         std::unordered_set<DValueNodeInput<Out>*> m_nextNodes {};
@@ -49,12 +49,12 @@ namespace SGCore::UI::DValue
         copy_constructor(DValueNodeInput);
         move_constructor(DValueNodeInput);
 
-        explicit DValueNodeInput(decltype(onReceived) onReceived) : onReceived(onReceived) {};
+        explicit DValueNodeInput(decltype(onReceived) onReceived) noexcept : onReceived(onReceived) {};
 
-        ~DValueNodeInput() = default;
+        ~DValueNodeInput() noexcept = default;
 
-        void connectPrevious(DValueNodeOutput<In>* previous);
-        void disconnectPrevious();
+        void connectPrevious(DValueNodeOutput<In>* previous) noexcept;
+        void disconnectPrevious() noexcept;
 
     private:
         DValueNodeOutput<In>* m_previousNode = nullptr;
@@ -66,11 +66,11 @@ namespace SGCore::UI::DValue
         move_constructor(DValueNodeValueConvertor);
         copy_constructor(DValueNodeValueConvertor);
 
-        ~DValueNodeValueConvertor() override = default;
+        ~DValueNodeValueConvertor() noexcept override = default;
 
         DValueNodeInput<In> m_input {[this](In val){ this->setValue(convertPassedValue(val)); }};
 
-        virtual In convertPassedValue(Out value) = 0;
+        virtual In convertPassedValue(Out value) noexcept = 0;
     };
 
     /**
