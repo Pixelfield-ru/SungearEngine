@@ -1,6 +1,3 @@
-//
-// Created by stuka on 23.01.2025.
-//
 #include "Div.h"
 
 #include "Button.h"

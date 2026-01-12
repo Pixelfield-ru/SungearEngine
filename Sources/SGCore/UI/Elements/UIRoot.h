@@ -7,7 +7,7 @@ namespace SGCore::UI
 {
     struct UIRoot : UIElement
     {
-        SG_DECLARE_UI_ELEMENT_TYPE(xml)
+        SG_DECLARE_UI_ELEMENT_TYPE(root)
 
         UIRoot() noexcept;
 
@@ -19,9 +19,7 @@ namespace SGCore::UI
         copy_operator(UIRoot) = default;
         move_operator(UIRoot) = default;
 
-        static UIRoot createFrom() {
-
-        }
+        static UIRoot createFrom();
 
     protected:
         void doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,

@@ -1,17 +1,13 @@
 #pragma once
 
 #include <vector>
-
-#include "../Parser/XML/CSS/PropertiesAlternativeValues/BorderRadiusAlternativeValue.h"
 #include "SGCore/UI/TransformTree/UIElementCache.h"
 #include "SGCore/Memory/Assets/IAsset.h"
 #include "EnumProperties.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Memory/Assets/Font.h"
-
-#include "SGCore/UI/DValue/DValueSetterNode.h"
+#include "SGCore/UI/DValue/DValueCowNode.h"
 #include "SGCore/Utils/Macroses.h"
-#include "../DValue/DValueCowNode.h"
 #include "SGCore/UI/DValue/DValueDestinationCacheNode.h"
 
 namespace SGCore::UI

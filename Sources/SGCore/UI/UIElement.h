@@ -1,9 +1,4 @@
-//
-// Created by ilya on 23.02.24.
-//
-
-#ifndef SUNGEARENGINE_UIELEMENT_H
-#define SUNGEARENGINE_UIELEMENT_H
+#pragma once
 
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Transformations/Transform.h"
@@ -134,5 +129,3 @@ namespace SGCore::UI
         void checkForMeshGenerating(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept;
     };
 }
-
-#endif //SUNGEARENGINE_UIELEMENT_H

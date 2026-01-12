@@ -4,7 +4,7 @@
 
 #include "UIRoot.h"
 #include "SGCore/UI/NineSlice.h"
-#include "SGCore/UI/Math/CSSMathNumericNode.h"
+
 #include "SGCore/UI/UIElementMesh/UIElementMesh.h"
 
 SGCore::UI::UIRoot::UIRoot() noexcept

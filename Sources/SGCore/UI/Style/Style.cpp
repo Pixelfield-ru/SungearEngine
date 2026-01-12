@@ -3,7 +3,6 @@
 //
 #include "Style.h"
 
-#include "../Math/CSSMathNumericNode.h"
 #include "SGCore/UI/FontsManager.h"
 
 SGCore::UI::Style::Style() noexcept
