@@ -4,6 +4,8 @@
 
 #include "PCInput.h"
 
+#include <cstring>
+
 #include "SGCore/Main/Window.h"
 
 void SGCore::Input::PC::startFrame() noexcept

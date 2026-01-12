@@ -4,6 +4,7 @@
 
 #ifndef SUNGEARENGINE_METAINFO_H
 #define SUNGEARENGINE_METAINFO_H
+#include <algorithm>
 
 #ifdef _MSC_VER
 #define MI_NOINLINE __declspec(noinline)

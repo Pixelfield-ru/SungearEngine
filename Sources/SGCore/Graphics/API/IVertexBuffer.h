@@ -5,6 +5,7 @@
 #pragma once
 
 #include "GraphicsDataTypes.h"
+#include <cstring>
 
 namespace SGCore
 {
