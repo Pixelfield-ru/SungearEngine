@@ -3,11 +3,11 @@
 #include <utility>
 namespace SGCore::Utils
 {
-    template<typename Container, typename IteratorType, typename ValueType>
+    template<typename Container, typename ValueType>
     concept ForwardIteratorContainerOf = requires(Container c) {
-        typename Container::value_type;
-        typename Container::iterator;
-        typename Container::const_iterator;
+        // typename Container::value_type;
+        // typename Container::iterator;
+        // typename Container::const_iterator;
 
         { c.begin() } -> std::forward_iterator;
         { c.end() } -> std::forward_iterator;
@@ -18,7 +18,7 @@ namespace SGCore::Utils
     concept ForwardIteratorContainer = requires(Container c) {
         typename Container::value_type;
         typename Container::iterator;
-        typename Container::const_iterator;
+        // typename Container::const_iterator;
 
         { c.begin() } -> std::forward_iterator;
         { c.end() } -> std::forward_iterator;
