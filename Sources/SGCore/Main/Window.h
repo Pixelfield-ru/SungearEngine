@@ -2,9 +2,12 @@
 #define SUNGEARENGINE_PROGRAMWINDOW_H
 
 #include <sgcore_export.h>
+
 #include "SGCore/Utils/Platform.h"
 
 #include "SGCore/Utils/Signal.h"
+
+#include <string>
 
 #if SG_PLATFORM_OS_ANDROID
 #include <jni.h>
@@ -16,6 +19,12 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #endif
+
+#if SG_PLATFORM_OS_LINUX
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+#endif
+
 
 #include "SGCore/ExternalAPI/Java/Main.h"
 
