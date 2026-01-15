@@ -11,7 +11,7 @@ namespace SGCore::Utils
 
         { c.begin() } -> std::forward_iterator;
         { c.end() } -> std::forward_iterator;
-        { *c.begin() } -> std::same_as<ValueType>;
+        { *c.begin() } -> std::convertible_to<ValueType>;
     };
 
     template<typename Container>

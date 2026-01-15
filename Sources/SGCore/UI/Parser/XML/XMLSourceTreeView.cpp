@@ -1,11 +1,45 @@
 #include "XMLSourceTreeView.h"
 
 #include <cstring>
+#include <sstream>
+#include <iostream>
+#include <string>
+
+template<typename T>
+std::optional<T> tryParseFromStream(const std::string& str) {
+    std::istringstream ss(str);
+    T result;
+
+    if (char remains; ss >> result && !(ss >> remains)) {
+        return result;
+    }
+
+    return std::nullopt;
+}
+
+std::string_view SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue::UISourceTreeViewObject::
+UISourceTreeViewObjectProperty::getName() const {
+    if (auto attr = std::get_if<pugi::xml_attribute>(&m_attribute)) {
+        return attr->name();
+    }
+
+    auto& node = std::get<pugi::xml_node>(m_attribute);
+    return node.attribute("name").as_string();
+}
+
+SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue::
+UISourceTreeViewObject::UISourceTreeViewObjectProperty::getValue() {
+    if (auto attr = std::get_if<pugi::xml_attribute>(&m_attribute)) {
+        return {*attr};
+    }
+    auto& node = std::get<pugi::xml_node>(m_attribute);
+    return {node};
+}
 
 std::optional<SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue::UISourceTreeViewObject> SGCore::UI::
 XMLSourceTreeView::UISourceTreeViewValue::tryGetObject() const noexcept {
     if (const auto node = std::get_if<pugi::xml_node>(&m_node)) {
-        if (strcmp(node->name(), "object")) {
+        if (strcmp(node->name(), "object") != 0) {
             return UISourceTreeViewObject(*node);
         }
     }
@@ -19,7 +53,7 @@ getName() const noexcept {
 
 SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue::
 UISourceTreeViewComponent::getValue() noexcept {
-    return UISourceTreeViewValue(m_node);
+    return {m_node};
 }
 
 std::optional<SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue::UISourceTreeViewComponent> SGCore::UI::
@@ -42,4 +76,26 @@ std::optional<float> SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue::tryGe
         return node->as_float();
     }
     return std::nullopt;
+}
+
+std::optional<int> SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue::tryGetInt() const noexcept {
+    if (const auto attr = std::get_if<pugi::xml_attribute>(&m_node)) {
+        return attr->as_int();
+    }
+    const auto node = std::get<pugi::xml_node>(m_node);
+
+    return tryParseFromStream<int>(node.child_value());
+}
+
+SGCore::UI::XMLSourceTreeView::UISourceTreeViewHandler::UISourceTreeViewHandler(std::string_view content) {
+    m_doc.load_string(content.data());
+}
+
+SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue SGCore::UI::XMLSourceTreeView::UISourceTreeViewHandler::
+getRoot() const noexcept {
+    return UISourceTreeViewValue(m_doc.root());
+};
+
+SGCore::UI::XMLSourceTreeView::UISourceTreeViewHandler SGCore::UI::XMLSourceTreeView::create(std::string_view content) {
+    return UISourceTreeViewHandler(content);
 }

@@ -2,11 +2,16 @@
 
 #include <pugixml.hpp>
 #include <ranges>
+#include <variant>
 
 #include "SGCore/UI/Parser/UISourceTreeView.h"
+#include <range/v3/view/concat.hpp>
+
+#include "SGCore/Logger/Logger.h"
 
 namespace SGCore::UI
 {
+
     struct XMLSourceTreeView
     {
         struct UISourceTreeViewValue
@@ -17,54 +22,78 @@ namespace SGCore::UI
 
             struct UISourceTreeViewObject
             {
+                inline const static std::string propertyObjectKW = "property";
+
                 pugi::xml_node m_node;
-                explicit(false) UISourceTreeViewObject(pugi::xml_node node) : m_node(node) {}
+                explicit(false) UISourceTreeViewObject(const pugi::xml_node node) : m_node(node) {}
 
                 struct UISourceTreeViewObjectProperty
                 {
-                    explicit(false) UISourceTreeViewObjectProperty(const pugi::xml_attribute& attribute) : m_attribute(attribute) {}
+                    std::variant<pugi::xml_attribute, pugi::xml_node> m_attribute;
 
-                    pugi::xml_attribute m_attribute;
+                    explicit(false) UISourceTreeViewObjectProperty(const decltype(m_attribute)& attribute) : m_attribute(attribute) {};
 
-                    std::string_view getName();
+                    [[nodiscard]] std::string_view getName() const;
                     UISourceTreeViewValue getValue();
                 };
 
-                auto children() const noexcept  {
-                    return m_node.children() | std::ranges::views::transform([](auto val) {
+                [[nodiscard]] auto children() const noexcept  {
+                    return m_node.children()
+                    | std::ranges::views::filter([](auto val) {
+                        return val.name() != propertyObjectKW;
+                    })
+                    | std::ranges::views::transform([](auto val) {
                         return UISourceTreeViewValue(val);
                     });
                 }
 
-                auto properties() const noexcept {
-                    return m_node.attributes() | std::ranges::views::transform([](auto val) {
+                [[nodiscard]] auto properties() const noexcept {
+                    auto attrs =  m_node.attributes()
+                        | std::ranges::views::transform([](auto val) {
+                            return UISourceTreeViewObjectProperty(val);
+                    }) | std::ranges::to<std::vector>();
+
+                    auto children = m_node.children()
+                    | std::ranges::views::filter([](auto val) {
+                        return val.name() == propertyObjectKW;
+                    })
+                    | std::ranges::views::transform([](auto val) {
                         return UISourceTreeViewObjectProperty(val);
                     });
+
+                    attrs.append_range(children);
+
+                    return attrs;
                 }
             };
 
-            std::optional<UISourceTreeViewObject> tryGetObject() const noexcept;
+            [[nodiscard]] std::optional<UISourceTreeViewObject> tryGetObject() const noexcept;
 
             struct UISourceTreeViewComponent
             {
                 pugi::xml_node m_node;
 
-                std::string_view getName() const noexcept;
+                [[nodiscard]] std::string_view getName() const noexcept;
                 UISourceTreeViewValue getValue() noexcept;
             };
 
-            std::optional<UISourceTreeViewComponent> tryGetComponent() const noexcept;
+            [[nodiscard]] std::optional<UISourceTreeViewComponent> tryGetComponent() const noexcept;
 
-            std::optional<std::string_view> tryGetString() const noexcept;
-            std::optional<float> tryGetFloat() const noexcept;
+            [[nodiscard]] std::optional<std::string_view> tryGetString() const noexcept;
+            [[nodiscard]] std::optional<float> tryGetFloat() const noexcept;
+            [[nodiscard]] std::optional<int> tryGetInt() const noexcept;
         };
 
         struct UISourceTreeViewHandler
         {
-            UISourceTreeViewValue getRoot() noexcept;
+            pugi::xml_document m_doc;
+
+            explicit UISourceTreeViewHandler(std::string_view content);
+
+            UISourceTreeViewValue getRoot() const noexcept;
         };
 
         static UISourceTreeViewHandler create(std::string_view content);
-    }; static_assert(IUISourceTreeView<XMLSourceTreeView>);
+    }; static_assert(ImplUISourceTreeView<XMLSourceTreeView>);
 
 }
