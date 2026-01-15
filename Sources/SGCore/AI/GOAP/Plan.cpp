@@ -34,3 +34,19 @@ SGCore::Coro::Task<> SGCore::GOAP::Plan::execute(ECS::registry_t& registry, ECS:
 
     co_return;
 }
+
+void SGCore::GOAP::Plan::calculateCost(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept
+{
+    m_cost = 0.0f;
+
+    for(const auto& action : m_actions)
+    {
+        action->calculateCost(registry, forEntity);
+        m_cost += action->getCost();
+    }
+}
+
+float SGCore::GOAP::Plan::getCost() const noexcept
+{
+    return m_cost;
+}

@@ -27,3 +27,8 @@ bool SGCore::GOAP::Goal::statesComplete(ECS::registry_t& registry, ECS::entity_t
 
     return true;
 }
+
+const std::unordered_set<const SGCore::GOAP::State*>& SGCore::GOAP::Goal::getFinalStates() const noexcept
+{
+    return m_finalStates;
+}

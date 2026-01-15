@@ -18,14 +18,14 @@ namespace SGCore::GOAP
 
     struct Solver
     {
-        Plan resolveGoal(ECS::registry_t& registry, ECS::entity_t forEntity, const Goal& goal) const noexcept;
+        std::optional<Plan> resolveGoal(ECS::registry_t& registry, ECS::entity_t forEntity, const Goal& goal) const noexcept;
 
         template<typename ActionT, typename... CtorArgs>
         void registerActionType(CtorArgs&&... args) noexcept
         {
             static auto& actionTypeInfo = typeid(ActionT);
 
-            for(const auto& action : s_availableActions)
+            for(const auto& action : m_availableActions)
             {
                 if(typeid(*action).hash_code() == actionTypeInfo.hash_code())
                 {
@@ -33,7 +33,7 @@ namespace SGCore::GOAP
                 }
             }
 
-            s_availableActions.push_back(MakeRef<ActionT>(std::forward<CtorArgs>(args)...));
+            m_availableActions.push_back(MakeRef<ActionT>(std::forward<CtorArgs>(args)...));
         }
 
         template<typename ActionT>
@@ -41,7 +41,7 @@ namespace SGCore::GOAP
         {
             static auto& actionTypeInfo = typeid(ActionT);
 
-            for(const auto& action : s_availableActions)
+            for(const auto& action : m_availableActions)
             {
                 if(typeid(*action).hash_code() == actionTypeInfo.hash_code())
                 {
@@ -53,6 +53,6 @@ namespace SGCore::GOAP
         }
 
     private:
-        std::vector<Ref<IAction>> s_availableActions;
+        std::vector<Ref<IAction>> m_availableActions;
     };
 }
