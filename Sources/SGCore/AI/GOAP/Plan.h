@@ -11,5 +11,7 @@ namespace SGCore::GOAP
     struct Plan
     {
         std::vector<Ref<IAction>> m_actions;
+
+        Coro::Task<> execute(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept;
     };
 }

@@ -18,12 +18,19 @@ namespace SGCore::GOAP
 {
     struct State {};
 
+    /// Entity has a weapon.
     SG_DECLARE_GOAP_STATE(HAS_WEAPON)
+    /// Entity has ammo in weapon.
     SG_DECLARE_GOAP_STATE(HAS_AMMO)
+    /// Entity is in a car.
     SG_DECLARE_GOAP_STATE(IN_CAR)
+    /// Entity is in a boat.
     SG_DECLARE_GOAP_STATE(IN_BOAT)
+    /// Entity is in an airplane.
     SG_DECLARE_GOAP_STATE(IN_AIRPLANE)
+    /// Entity is alive.
     SG_DECLARE_GOAP_STATE(ALIVE)
+    /// Entity has come to point.
     SG_DECLARE_GOAP_STATE(IN_POSITION)
 
     struct EntityState : ECS::Component<EntityState, const EntityState>

@@ -23,9 +23,11 @@ namespace SGCore::GOAP
         template<typename ActionT, typename... CtorArgs>
         void registerActionType(CtorArgs&&... args) noexcept
         {
+            static auto& actionTypeInfo = typeid(ActionT);
+
             for(const auto& action : s_availableActions)
             {
-                if(typeid(*action).hash_code() == typeid(ActionT).hash_code())
+                if(typeid(*action).hash_code() == actionTypeInfo.hash_code())
                 {
                     return;
                 }
@@ -37,9 +39,11 @@ namespace SGCore::GOAP
         template<typename ActionT>
         Ref<IAction> getAction() const noexcept
         {
+            static auto& actionTypeInfo = typeid(ActionT);
+
             for(const auto& action : s_availableActions)
             {
-                if(typeid(*action).hash_code() == typeid(ActionT).hash_code())
+                if(typeid(*action).hash_code() == actionTypeInfo.hash_code())
                 {
                     return action;
                 }

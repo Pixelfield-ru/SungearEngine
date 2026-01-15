@@ -25,6 +25,8 @@ SGCore::Coro::Task<bool> SGCore::GOAP::Goto::executeImpl(ECS::registry_t& regist
         co_await Coro::returnToCaller();
     }
 
+    auto g = executeImpl(registry, forEntity).run();
+
     co_return true;
 }
 

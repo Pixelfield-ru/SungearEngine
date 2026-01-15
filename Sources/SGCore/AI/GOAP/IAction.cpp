@@ -55,6 +55,41 @@ bool SGCore::GOAP::IAction::preconditionsComplete(ECS::registry_t& registry, ECS
     return true;
 }
 
+const std::unordered_set<const SGCore::GOAP::State*>& SGCore::GOAP::IAction::getPreconditions() const noexcept
+{
+    return m_preconditions;
+}
+
+void SGCore::GOAP::IAction::addEffect(const State& effectState, bool isTemporary) noexcept
+{
+    m_effects.insert(&effectState);
+
+    if(isTemporary)
+    {
+        m_temporaryEffects.insert(&effectState);
+    }
+}
+
+bool SGCore::GOAP::IAction::hasEffect(const State& effectState) const noexcept
+{
+    return m_effects.contains(&effectState);
+}
+
+void SGCore::GOAP::IAction::removeEffect(const State& effectState) noexcept
+{
+    m_effects.erase(&effectState);
+}
+
+const std::unordered_set<const SGCore::GOAP::State*>& SGCore::GOAP::IAction::getEffects() const noexcept
+{
+    return m_effects;
+}
+
+const std::unordered_set<const SGCore::GOAP::State*>& SGCore::GOAP::IAction::getTemporaryEffects() const noexcept
+{
+    return m_temporaryEffects;
+}
+
 float SGCore::GOAP::IAction::getCost() const noexcept
 {
     return m_cost;
