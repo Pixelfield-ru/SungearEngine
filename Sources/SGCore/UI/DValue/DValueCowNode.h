@@ -1,8 +1,6 @@
 #pragma once
 
 #include <variant>
-#include "../Style/Style.h"
-#include "SGCore/UI/Utils.h"
 #include "SGCore/UI/DValue/DValueDestinationCacheNode.h"
 
 namespace SGCore::UI::DValue
@@ -23,6 +21,19 @@ namespace SGCore::UI::DValue
 
         ~DValueCowNode() noexcept = default;
 
-        T& getValue() noexcept;
+        T& getValue() const noexcept {
+            if (auto val = std::get_if<T>(&m_value)) {
+                return *val;
+            }
+            return std::get<DValueCacheNode<T>>(m_value).m_value;
+        }
+
+        template<typename TV> requires std::convertible_to<TV, T>
+        void setValue(TV&& value) noexcept {
+            m_value = std::forward<TV>(value);
+        }
+
+        T& operator*() const noexcept { return getValue(); }
+        T* operator->() const noexcept { return &getValue(); }
     };
 }
