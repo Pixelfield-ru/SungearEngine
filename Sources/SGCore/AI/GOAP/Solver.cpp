@@ -39,16 +39,10 @@ std::optional<SGCore::GOAP::Plan> SGCore::GOAP::Solver::resolveGoal(ECS::registr
 
         for(const auto& availableAction : m_availableActions)
         {
-            bool hasAllEffects = true;
-
-            for(const auto& effect : availableAction->getEffects())
-            {
-                if(!action->hasPrecondition(*effect))
-                {
-                    hasAllEffects = false;
-                    break;
-                }
-            }
+            const auto& effects = availableAction->getEffects();
+            const bool hasAllEffects = std::ranges::all_of(effects, [&](const State* effect) {
+                return action->hasPrecondition(*effect);
+            });
 
             if(hasAllEffects)
             {
