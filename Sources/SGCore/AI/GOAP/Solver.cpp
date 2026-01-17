@@ -16,93 +16,72 @@ std::optional<SGCore::GOAP::Plan> SGCore::GOAP::Solver::resolveGoal(ECS::registr
     auto* goapState = registry.tryGet<EntityState>(forEntity);
     if(!goapState) return std::nullopt;
 
-    std::vector<Ref<IAction>> finalActions;
+    std::vector<Plan> plans;
 
-    // collecting possible last actions
-    for(const auto& action : m_availableActions)
-    {
-        for(const auto& effect : action->getEffects())
+    const auto findPlans = [&](this auto&& self, Plan& currentPlan,
+                               EntityState& currentState) {
+        if(goal.statesComplete(currentState))
         {
-            if(goal.getFinalStates().contains(effect))
-            {
-                finalActions.push_back(action);
-            }
-        }
-    }
-
-    // goal is unreachable
-    if(finalActions.empty()) return std::nullopt;
-
-    // getting all actions that have those effects witch satisfy current action`s preconditions
-    const auto getBestActionsForAction = [this](const Ref<IAction>& action) {
-        std::vector<Ref<IAction>> bestActions;
-
-        for(const auto& availableAction : m_availableActions)
-        {
-            const auto& effects = availableAction->getEffects();
-            const bool hasAllEffects = std::ranges::all_of(effects, [&](const State* effect) {
-                return action->hasPrecondition(*effect);
-            });
-
-            if(hasAllEffects)
-            {
-                bestActions.push_back(availableAction);
-            }
-        }
-
-        return bestActions;
-    };
-
-    // recursively get all plans
-    const auto getAllPlans = [&](this auto&& self, const Ref<IAction>& action, Plan& currentPlan, std::vector<Plan>& outPlans) {
-        const std::vector<Ref<IAction>> bestActions = getBestActionsForAction(action);
-
-        if(bestActions.empty())
-        {
-            // if first action cannot be executed because of incompleted preconditions in EntityState
-            // then dont pushing new plan in vector. taking rbegin() because actions are in reversed order in current moment
-            if(!currentPlan.m_actions.empty() &&
-               !(*currentPlan.m_actions.rbegin())->preconditionsComplete(registry, forEntity))
-            {
-                return;
-            }
-
-            outPlans.push_back(currentPlan);
+            plans.push_back(currentPlan);
             return;
         }
 
-        // if we have one branch in tree then using currentPlan to avoid duplicating same plans
-        currentPlan.m_actions.push_back(bestActions[0]);
-        self({ bestActions[0] }, currentPlan, outPlans);
+        std::vector<Ref<IAction>> nextPossibleActions;
 
-        if(bestActions.size() == 1) return;
+        for(const auto& availableAction : m_availableActions)
+        {
+            // checking if all preconditions in available action is complete
+            if(!availableAction->preconditionsComplete(currentState))
+                continue; // action is unavailable
 
-        // if more then one branch then copying currentPlan to construct new plan
-        for(size_t i = 1; i < bestActions.size(); i++)
+            // checking if any of available actions applies any new effect to entity state
+            const bool appliesAnyNewEffect = std::ranges::any_of(
+                availableAction->getEffects(),
+                [&currentState](const State* state) {
+               return !currentState.isStateComplete(*state);
+            });
+
+            if(!appliesAnyNewEffect) continue;
+
+            nextPossibleActions.push_back(availableAction);
+        }
+
+        if(nextPossibleActions.empty()) return;
+
+        // APPLYING NEW EFFECTS ONLY AFTER SCANNING POSSIBLE NEXT ACTIONS
+        // BECAUSE STATE MUST BE IMMUTABLE WHEN SCANNING NEXT ACTIONS!
+        for(const auto& nextAction : nextPossibleActions)
+        {
+            for(const auto& effect : nextAction->getEffects())
+            {
+                currentState.getStateData(*effect).m_complete = true;
+            }
+        }
+
+        // if more then one branch then copying currentPlan and currentState to construct new plan and state
+        for(size_t i = 1; i < nextPossibleActions.size(); ++i)
         {
             auto newPlan = currentPlan;
-            newPlan.m_actions.push_back(bestActions[i]);
-            self(bestActions[i], newPlan, outPlans);
+            auto newState = currentState;
+
+            newPlan.m_actions.push_back(nextPossibleActions[i]);
+            self(newPlan, newState);
         }
+
+        // if we have one branch in tree then using currentPlan and currentState to avoid duplicating same plans and states
+        currentPlan.m_actions.push_back(nextPossibleActions[0]);
+        self(currentPlan, currentState);
     };
 
-    // all available plans
-    std::vector<Plan> plans;
-
-    // collecting all plans based on last action
-    for(const auto& finalAction : finalActions)
-    {
-        Plan plan{};
-        plan.m_actions.push_back(finalAction);
-        getAllPlans(finalAction, plan, plans);
-    }
+    EntityState currentEntityState = *goapState;
+    Plan currentPlan;
+    findPlans(currentPlan, currentEntityState);
 
     if(plans.empty()) return std::nullopt;
 
-    // reversing actions order in plan and calculating plan cost
+    // calculating costs of plans
     for(auto& plan : plans)
     {
-        std::ranges::reverse(plan.m_actions);
         plan.calculateCost(registry, forEntity);
     }
 

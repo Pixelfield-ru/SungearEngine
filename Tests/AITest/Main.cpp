@@ -8,6 +8,10 @@
 
 #include <glm/gtx/string_cast.hpp>
 
+#include "SGCore/AI/GOAP/Goal.h"
+#include "SGCore/AI/GOAP/Plan.h"
+#include "SGCore/AI/GOAP/Solver.h"
+#include "SGCore/AI/GOAP/StandardActions/Goto.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Render/Camera3D.h"
@@ -33,6 +37,10 @@
 #include "SGCore/Navigation/NavMesh/Steps/VoxelizationStep.h"
 #include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/Lighting/SpotLight.h"
+#include "Sources/States.h"
+#include "Sources/Actions/FindCart.h"
+#include "Sources/Actions/PickupCart.h"
+#include "Sources/Components/Cart.h"
 
 SGCore::Ref<SGCore::Scene> scene;
 SGCore::ECS::entity_t mainCamera{};
@@ -45,10 +53,15 @@ std::vector<SGCore::ECS::entity_t> meshesEntities;
 
 SGCore::AssetRef<SGCore::ModelAsset> cartModel;
 SGCore::AssetRef<SGCore::ModelAsset> vegetableModel;
+SGCore::AssetRef<SGCore::ModelAsset> npcModel;
 
 std::vector<SGCore::ECS::entity_t> vegetables;
 
 SGCore::ECS::entity_t cartEntity = entt::null;
+SGCore::ECS::entity_t npcEntity = entt::null;
+
+SGCore::GOAP::Solver goapSolver;
+std::optional<SGCore::GOAP::Plan> pickCartPlan;
 
 void regenerateNavMesh()
 {
@@ -181,21 +194,39 @@ void coreInit()
 
     // auto locationModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/AITest/Resources/location_0/scene.gltf");
     auto locationModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/AITest/Resources/location_1/ai_test.gltf");
-    /*locationModel->m_rootNode->addOnScene(scene, SG_LAYER_OPAQUE_NAME, [&locationEntities, &ecsRegistry](auto entity) {
-        locationEntities.push_back(entity);
 
-        scene->getECSRegistry()->emplace<SGCore::IgnoreOctrees>(entity);
-        scene->getECSRegistry()->remove<SGCore::Pickable>(entity);
-        scene->getECSRegistry()->remove<SGCore::TransparentEntityTag>(entity);
-
-        if(const auto* mesh = ecsRegistry->tryGet<SGCore::Mesh>(entity))
+    // =================================== npc setup
+    npcModel = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/ModelDraw/Resources/Idle.fbx");
+    npcModel->m_rootNode->addOnScene(scene, SG_LAYER_OPAQUE_NAME, [&](auto entity) {
+        if(npcEntity == entt::null)
         {
-            if(mesh->m_base.getMeshData())
-            {
-                meshesEntities.push_back(entity);
-            }
+            npcEntity = entity;
         }
-    });*/
+    });
+
+    auto& npcState = ecsRegistry->emplace<SGCore::GOAP::EntityState>(npcEntity);
+    auto npcTransform = ecsRegistry->get<SGCore::Transform>(npcEntity);
+    npcTransform->m_ownTransform.m_scale = { 0.008, 0.008, 0.008 };
+    npcTransform->m_ownTransform.m_position = { 0, 0, 20 };
+
+    // ====================================
+
+    // ==================================== goap setup
+
+    goapSolver.registerActionType<SGCore::GOAP::Goto>();
+    goapSolver.registerActionType<FindCart>();
+    goapSolver.registerActionType<PickupCart>();
+
+    SGCore::GOAP::Goal pickCartGoal;
+    pickCartGoal.addFinalState(HAS_CART);
+
+    pickCartPlan = goapSolver.resolveGoal(*ecsRegistry, npcEntity, pickCartGoal);
+    if(!pickCartPlan)
+    {
+        std::cout << "cannot find plan to pick cart!" << std::endl;
+    }
+
+    // ====================================
 
     vegetableModel = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${enginePath}/Tests/AITest/Resources/vegetable_0/scene.gltf");
 
@@ -207,8 +238,10 @@ void coreInit()
         }
     });
 
+    ecsRegistry->emplace<Cart>(cartEntity);
+
     using namespace std::chrono_literals;
-    startSpawnVegetables(*ecsRegistry, { 0, 0, 0 }, 20.0f, { 5000ms, 15000ms });
+    startSpawnVegetables(*ecsRegistry, { 10, 0, 0 }, 10.0f, { 5000ms, 15000ms });
 }
 
 SGCore::ECS::entity_t spawnVegetable(SGCore::ECS::registry_t& registry, const glm::vec3& position, const glm::vec3& scale)
@@ -263,88 +296,92 @@ void onUpdate(const double& dt, const double& fixedDt)
 {
     const auto currentScene = SGCore::Scene::getCurrentScene();
 
-    if(currentScene)
+    if(!currentScene) return;
+
+    currentScene->update(dt, fixedDt);
+
+    SGCore::CoreMain::getRenderer()->renderTextureOnScreen(attachmentToDisplay.get(), false);
+
+    const auto debugDraw = SGCore::RenderPipelinesManager::instance().getCurrentRenderPipeline()->getRenderPass<SGCore::DebugDraw>();
+
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_0))
     {
-        currentScene->update(dt, fixedDt);
-
-        SGCore::CoreMain::getRenderer()->renderTextureOnScreen(attachmentToDisplay.get(), false);
-
-        const auto debugDraw = SGCore::RenderPipelinesManager::instance().getCurrentRenderPipeline()->getRenderPass<SGCore::DebugDraw>();
-
-        if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_0))
+        if(debugDraw->m_mode == SGCore::DebugDrawMode::NO_DEBUG)
         {
-            if(debugDraw->m_mode == SGCore::DebugDrawMode::NO_DEBUG)
+            debugDraw->m_mode = SGCore::DebugDrawMode::WIREFRAME;
+        }
+        else
+        {
+            debugDraw->m_mode = SGCore::DebugDrawMode::NO_DEBUG;
+        }
+    }
+
+    /*if(debugDraw->m_mode != SGCore::DebugDrawMode::NO_DEBUG)
+    {
+        auto& navMesh = scene->getECSRegistry()->get<SGCore::Navigation::NavMesh>(navMeshEntity);
+
+        const auto inputFilteringStep = navMesh.getStep<SGCore::Navigation::InputFilteringStep>();
+        const auto voxelizationStep = navMesh.getStep<SGCore::Navigation::VoxelizationStep>();
+        const auto regionsPartitionStep = navMesh.getStep<SGCore::Navigation::RegionsPartitionStep>();
+
+        const auto& navMeshConfig = navMesh.m_config;
+
+        for(const auto& region : regionsPartitionStep->m_regions)
+        {
+            for(auto idx : region.m_contourVoxelsIndices)
             {
-                debugDraw->m_mode = SGCore::DebugDrawMode::WIREFRAME;
+                const auto& voxel = voxelizationStep->m_voxels[idx];
+
+                const glm::vec3 p = voxelizationStep->voxelToWorld(
+                    voxel.m_position,
+                    navMeshConfig.m_cellSize,
+                    navMeshConfig.m_cellHeight);
+
+                debugDraw->drawLine(p, p + glm::vec3 { 0.0f, 1.0f, 0.0f }, { 0, 0, 1, 1.0 });
+            }
+        }
+
+        for(const auto& voxel : voxelizationStep->m_voxels)
+        {
+            const glm::vec3 min = voxelizationStep->voxelToWorld(
+                                      voxel.m_position, navMeshConfig.m_cellSize,
+                                      navMeshConfig.m_cellHeight) - glm::vec3(
+                                      navMeshConfig.m_cellSize * 0.5f,
+                                      navMeshConfig.m_cellHeight * 0.5f,
+                                      navMeshConfig.m_cellSize * 0.5f);
+
+            const glm::vec3 max = min + glm::vec3(navMeshConfig.m_cellSize,
+                                                  navMeshConfig.m_cellHeight,
+                                                  navMeshConfig.m_cellSize);
+
+            if(voxel.m_isWalkable)
+            {
+                debugDraw->drawAABB(min, max, { 0.47, 0.87, 0.78, 1.0 });
             }
             else
             {
-                debugDraw->m_mode = SGCore::DebugDrawMode::NO_DEBUG;
+                debugDraw->drawAABB(min, max, { 1.0, 0.0, 0.0, 1.0 });
             }
         }
+    }*/
 
-        /*if(debugDraw->m_mode != SGCore::DebugDrawMode::NO_DEBUG)
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_1))
+    {
+        regenerateNavMesh();
+    }
+
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_2))
+    {
+        auto shaders = SGCore::AssetManager::getInstance()->getAssetsWithType<SGCore::IShader>();
+        for(const auto& shader : shaders)
         {
-            auto& navMesh = scene->getECSRegistry()->get<SGCore::Navigation::NavMesh>(navMeshEntity);
-
-            const auto inputFilteringStep = navMesh.getStep<SGCore::Navigation::InputFilteringStep>();
-            const auto voxelizationStep = navMesh.getStep<SGCore::Navigation::VoxelizationStep>();
-            const auto regionsPartitionStep = navMesh.getStep<SGCore::Navigation::RegionsPartitionStep>();
-
-            const auto& navMeshConfig = navMesh.m_config;
-
-            for(const auto& region : regionsPartitionStep->m_regions)
-            {
-                for(auto idx : region.m_contourVoxelsIndices)
-                {
-                    const auto& voxel = voxelizationStep->m_voxels[idx];
-
-                    const glm::vec3 p = voxelizationStep->voxelToWorld(
-                        voxel.m_position,
-                        navMeshConfig.m_cellSize,
-                        navMeshConfig.m_cellHeight);
-
-                    debugDraw->drawLine(p, p + glm::vec3 { 0.0f, 1.0f, 0.0f }, { 0, 0, 1, 1.0 });
-                }
-            }
-
-            for(const auto& voxel : voxelizationStep->m_voxels)
-            {
-                const glm::vec3 min = voxelizationStep->voxelToWorld(
-                                          voxel.m_position, navMeshConfig.m_cellSize,
-                                          navMeshConfig.m_cellHeight) - glm::vec3(
-                                          navMeshConfig.m_cellSize * 0.5f,
-                                          navMeshConfig.m_cellHeight * 0.5f,
-                                          navMeshConfig.m_cellSize * 0.5f);
-
-                const glm::vec3 max = min + glm::vec3(navMeshConfig.m_cellSize,
-                                                      navMeshConfig.m_cellHeight,
-                                                      navMeshConfig.m_cellSize);
-
-                if(voxel.m_isWalkable)
-                {
-                    debugDraw->drawAABB(min, max, { 0.47, 0.87, 0.78, 1.0 });
-                }
-                else
-                {
-                    debugDraw->drawAABB(min, max, { 1.0, 0.0, 0.0, 1.0 });
-                }
-            }
-        }*/
-
-        if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_1))
-        {
-            regenerateNavMesh();
+            shader->reloadFromDisk();
         }
+    }
 
-        if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_2))
-        {
-            auto shaders = SGCore::AssetManager::getInstance()->getAssetsWithType<SGCore::IShader>();
-            for(const auto& shader : shaders)
-            {
-                shader->reloadFromDisk();
-            }
-        }
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_3) && !pickCartPlan->isExecuting())
+    {
+        pickCartPlan->execute(*currentScene->getECSRegistry(), npcEntity);
     }
 }
 

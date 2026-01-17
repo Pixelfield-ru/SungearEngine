@@ -33,8 +33,8 @@ namespace SGCore::Threading
         Coro::CoroScheduler m_coroScheduler { };
 
         Signal<void()> onUpdate;
-        
-        ~Thread();
+
+        virtual ~Thread();
         
         virtual void start() noexcept;
         
@@ -53,7 +53,7 @@ namespace SGCore::Threading
         }
         
         double getExecutionTime() const noexcept;
-        double getDeltaTime() const noexcept;
+        virtual double getDeltaTime() const noexcept;
         
         std::thread::id getNativeID() const noexcept;
         
@@ -100,6 +100,8 @@ namespace SGCore::Threading
         void start() noexcept final { }
         
         void join() noexcept final { }
+
+        double getDeltaTime() const noexcept final;
         
     private:
         MainThread() = default;

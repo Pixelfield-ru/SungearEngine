@@ -17,7 +17,11 @@ namespace SGCore::GOAP
         void calculateCost(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept;
         float getCost() const noexcept;
 
+        bool isExecuting() const noexcept;
+
     private:
+        bool m_isExecuting = false;
+
         float m_cost = 0.0f;
     };
 }

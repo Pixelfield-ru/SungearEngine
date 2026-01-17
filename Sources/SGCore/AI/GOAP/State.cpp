@@ -4,15 +4,27 @@
 
 #include "State.h"
 
-void SGCore::GOAP::EntityState::setState(const State& state, bool completion) noexcept
+namespace SGCore::GOAP::States
 {
-    m_states[&state] = completion;
+    SG_IMPLEMENT_GOAP_STATE(HAS_WEAPON)
+    SG_IMPLEMENT_GOAP_STATE(HAS_AMMO)
+    SG_IMPLEMENT_GOAP_STATE(IN_CAR)
+    SG_IMPLEMENT_GOAP_STATE(IN_BOAT)
+    SG_IMPLEMENT_GOAP_STATE(IN_AIRPLANE)
+    SG_IMPLEMENT_GOAP_STATE(ALIVE)
+    SG_IMPLEMENT_GOAP_STATE(IN_POSITION)
+    SG_IMPLEMENT_GOAP_STATE(POSITION_FOUND)
+}
+
+SGCore::GOAP::StateData& SGCore::GOAP::EntityState::getStateData(const State& state) noexcept
+{
+    return m_states[&state];
 }
 
 bool SGCore::GOAP::EntityState::isStateComplete(const State& state) const noexcept
 {
-    const auto it = m_states.find(&state);
-    if(it == m_states.end()) return false;
+    const auto stateIt = m_states.find(&state);
+    if(stateIt == m_states.end()) return false;
 
-    return it->second;
+    return stateIt->second.m_complete;
 }

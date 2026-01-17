@@ -2,7 +2,7 @@ include(../../cmake/utils.cmake)
 
 project(SGAITest)
 
-set(SGPROJECT_SOURCES Main.cpp Main.h)
+set(SGPROJECT_SOURCES Main.cpp Main.h Sources/Components/Cart.h Sources/Actions/FindCart.cpp Sources/Actions/PickupCart.cpp Sources/States.cpp)
 
 find_package(spdlog CONFIG REQUIRED)
 

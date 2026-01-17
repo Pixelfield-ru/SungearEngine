@@ -16,6 +16,7 @@ namespace SGCore::GOAP
         void addFinalState(const State& state) noexcept;
         void removeFinalState(const State& state) noexcept;
         bool statesComplete(ECS::registry_t& registry, ECS::entity_t forEntity) const noexcept;
+        bool statesComplete(const EntityState& entityState) const noexcept;
 
         const std::unordered_set<const State*>& getFinalStates() const noexcept;
 

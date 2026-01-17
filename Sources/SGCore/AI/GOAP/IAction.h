@@ -21,6 +21,7 @@ namespace SGCore::GOAP
         bool hasPrecondition(const State& preconditionState) const noexcept;
         void removePrecondition(const State& preconditionState) noexcept;
         bool preconditionsComplete(ECS::registry_t& registry, ECS::entity_t forEntity) const noexcept;
+        bool preconditionsComplete(const EntityState& entityState) const noexcept;
 
         const std::unordered_set<const State*>& getPreconditions() const noexcept;
 

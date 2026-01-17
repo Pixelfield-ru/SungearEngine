@@ -10,6 +10,7 @@
 #include "ThreadsManager.h"
 #include "SGCore/Utils/Utils.h"
 #include "Task.h"
+#include "SGCore/Main/CoreMain.h"
 #include "SGCore/Utils/Time.h"
 
     std::shared_ptr<SGCore::Threading::Thread> SGCore::Threading::Thread::create(const std::chrono::milliseconds& sleepTime) noexcept
@@ -202,4 +203,9 @@ std::thread::id SGCore::Threading::Thread::getNativeID() const noexcept
 bool SGCore::Threading::Thread::isRunning() const noexcept
 {
     return m_isRunning;
+}
+
+double SGCore::Threading::MainThread::getDeltaTime() const noexcept
+{
+    return CoreMain::getRenderTimer().getRawDeltaTime();
 }

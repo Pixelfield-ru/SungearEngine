@@ -23,7 +23,7 @@ SGCore::Coro::Task<> SGCore::GOAP::IAction::execute(ECS::registry_t& registry, E
 
     for(const auto& effectState : m_effects)
     {
-        goapState->setState(*effectState, true);
+        goapState->getStateData(*effectState).m_complete = true;
     }
 }
 
@@ -47,12 +47,16 @@ bool SGCore::GOAP::IAction::preconditionsComplete(ECS::registry_t& registry, ECS
     auto* goapState = registry.tryGet<EntityState>(forEntity);
     if(!goapState) return false;
 
-    for(const auto& cond : m_preconditions)
-    {
-        if(!goapState->isStateComplete(*cond)) return false;
-    }
+    return std::ranges::all_of(m_preconditions, [&](const State* state) {
+       return goapState->isStateComplete(*state);
+    });
+}
 
-    return true;
+bool SGCore::GOAP::IAction::preconditionsComplete(const EntityState& entityState) const noexcept
+{
+    return std::ranges::all_of(m_preconditions, [&](const State* state) {
+       return entityState.isStateComplete(*state);
+    });
 }
 
 const std::unordered_set<const SGCore::GOAP::State*>& SGCore::GOAP::IAction::getPreconditions() const noexcept

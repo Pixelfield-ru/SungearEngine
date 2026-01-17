@@ -18,14 +18,18 @@ void SGCore::GOAP::Goal::removeFinalState(const State& state) noexcept
 
 bool SGCore::GOAP::Goal::statesComplete(ECS::registry_t& registry, ECS::entity_t forEntity) const noexcept
 {
-    auto* goapState = registry.tryGet<EntityState>(forEntity);
+    const auto* goapState = registry.tryGet<EntityState>(forEntity);
 
-    for(const auto& state : m_finalStates)
-    {
-        if(!goapState->isStateComplete(*state)) return false;
-    }
+    return std::ranges::all_of(m_finalStates, [&](const State* state) {
+        return goapState->isStateComplete(*state);
+    });
+}
 
-    return true;
+bool SGCore::GOAP::Goal::statesComplete(const EntityState& entityState) const noexcept
+{
+    return std::ranges::all_of(m_finalStates, [&](const State* state) {
+        return entityState.isStateComplete(*state);
+    });
 }
 
 const std::unordered_set<const SGCore::GOAP::State*>& SGCore::GOAP::Goal::getFinalStates() const noexcept

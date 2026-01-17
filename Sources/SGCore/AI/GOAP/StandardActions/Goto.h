@@ -12,8 +12,9 @@ namespace SGCore::GOAP
 {
     struct Goto : IAction
     {
-        glm::vec3 m_targetPosition {};
-        float m_speed = 1.0f;
+        Goto() noexcept;
+
+        float m_speed = 10.0f;
         float m_distanceErrorRate = 1.0f;
 
         void calculateCost(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept override;

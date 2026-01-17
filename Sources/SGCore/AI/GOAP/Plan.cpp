@@ -8,8 +8,14 @@
 
 SGCore::Coro::Task<> SGCore::GOAP::Plan::execute(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept
 {
+    m_isExecuting = true;
+
     auto* goapState = registry.tryGet<EntityState>(forEntity);
-    if(!goapState) co_return;
+    if(!goapState)
+    {
+        m_isExecuting = false;
+        co_return;
+    }
 
     std::vector<const State*> tempStates;
 
@@ -27,10 +33,12 @@ SGCore::Coro::Task<> SGCore::GOAP::Plan::execute(ECS::registry_t& registry, ECS:
     // resetting temporary states to false
     for(const auto* state : tempStates)
     {
-        goapState->setState(*state, false);
+        goapState->getStateData(*state).m_complete = false;
     }
 
     m_actions.clear();
+
+    m_isExecuting = false;
 
     co_return;
 }
@@ -49,4 +57,9 @@ void SGCore::GOAP::Plan::calculateCost(ECS::registry_t& registry, ECS::entity_t 
 float SGCore::GOAP::Plan::getCost() const noexcept
 {
     return m_cost;
+}
+
+bool SGCore::GOAP::Plan::isExecuting() const noexcept
+{
+    return m_isExecuting;
 }
