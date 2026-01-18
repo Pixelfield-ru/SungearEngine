@@ -14,7 +14,7 @@ SGCore::GOAP::Goto::Goto() noexcept
 {
     addPrecondition(States::POSITION_FOUND);
 
-    addEffect(States::IN_POSITION, true);
+    addEffect(States::IN_POSITION, true, true);
 }
 
 SGCore::Coro::Task<bool> SGCore::GOAP::Goto::executeImpl(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept

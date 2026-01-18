@@ -21,9 +21,9 @@ SGCore::Coro::Task<bool> SGCore::GOAP::IAction::execute(ECS::registry_t& registr
 
     if(!complete) co_return false;
 
-    for(const auto& effectState : m_effects)
+    for(const auto& [effectState, effectValue] : m_effects)
     {
-        goapState->getStateData(*effectState).m_complete = true;
+        goapState->getStateData(*effectState).m_complete = effectValue;
     }
 
     co_return true;
@@ -66,13 +66,14 @@ const std::unordered_set<const SGCore::GOAP::State*>& SGCore::GOAP::IAction::get
     return m_preconditions;
 }
 
-void SGCore::GOAP::IAction::addEffect(const State& effectState, bool isTemporary) noexcept
+void SGCore::GOAP::IAction::addEffect(const State& effectState, bool effectValue, bool isTemporary) noexcept
 {
-    m_effects.insert(&effectState);
+    const bool hasSameEffect = hasEffect(effectState);
+    m_effects[&effectState] = effectValue;
 
-    if(isTemporary)
+    if(isTemporary && hasSameEffect)
     {
-        m_temporaryEffects.insert(&effectState);
+        m_temporaryEffects.push_back(&effectState);
     }
 }
 
@@ -86,12 +87,12 @@ void SGCore::GOAP::IAction::removeEffect(const State& effectState) noexcept
     m_effects.erase(&effectState);
 }
 
-const std::unordered_set<const SGCore::GOAP::State*>& SGCore::GOAP::IAction::getEffects() const noexcept
+const std::unordered_map<const SGCore::GOAP::State*, bool>& SGCore::GOAP::IAction::getEffects() const noexcept
 {
     return m_effects;
 }
 
-const std::unordered_set<const SGCore::GOAP::State*>& SGCore::GOAP::IAction::getTemporaryEffects() const noexcept
+const std::vector<const SGCore::GOAP::State*>& SGCore::GOAP::IAction::getTemporaryEffects() const noexcept
 {
     return m_temporaryEffects;
 }

@@ -12,7 +12,9 @@ PickupCart::PickupCart() noexcept
     addPrecondition(SGCore::GOAP::States::IN_POSITION);
     addPrecondition(CART_FOUND);
 
-    addEffect(HAS_CART);
+    addEffect(HAS_CART, true);
+    addEffect(SGCore::GOAP::States::IN_POSITION, false);
+    addEffect(CART_FOUND, false);
 }
 
 void PickupCart::calculateCost(SGCore::ECS::registry_t& registry, SGCore::ECS::entity_t forEntity) noexcept

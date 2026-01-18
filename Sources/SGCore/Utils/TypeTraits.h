@@ -442,7 +442,7 @@ namespace SGCore
     // ======================================================================================================================
     // ======================================================================================================================
 
-    namespace is_iterable_detail
+    namespace iterable_detail
     {
         // To allow ADL with custom begin/end
         using std::begin;
@@ -458,7 +458,7 @@ namespace SGCore
     }
 
     template <typename T>
-    concept is_iterable = is_iterable_detail::is_iterable_impl<T>;
+    concept iterable = iterable_detail::is_iterable_impl<T>;
 
     template <typename>
     struct always_false : std::false_type {};

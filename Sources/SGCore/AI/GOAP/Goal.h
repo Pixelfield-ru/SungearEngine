@@ -13,6 +13,8 @@ namespace SGCore::GOAP
 {
     struct Goal
     {
+        std::int32_t m_priority {};
+
         void addFinalState(const State& state) noexcept;
         void removeFinalState(const State& state) noexcept;
         bool statesComplete(ECS::registry_t& registry, ECS::entity_t forEntity) const noexcept;

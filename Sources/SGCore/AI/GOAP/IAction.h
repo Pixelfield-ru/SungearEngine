@@ -25,12 +25,12 @@ namespace SGCore::GOAP
 
         const std::unordered_set<const State*>& getPreconditions() const noexcept;
 
-        void addEffect(const State& effectState, bool isTemporary = false) noexcept;
+        void addEffect(const State& effectState, bool effectValue, bool isTemporary = false) noexcept;
         bool hasEffect(const State& effectState) const noexcept;
         void removeEffect(const State& effectState) noexcept;
 
-        const std::unordered_set<const State*>& getEffects() const noexcept;
-        const std::unordered_set<const State*>& getTemporaryEffects() const noexcept;
+        const std::unordered_map<const State*, bool>& getEffects() const noexcept;
+        const std::vector<const State*>& getTemporaryEffects() const noexcept;
 
         float getCost() const noexcept;
 
@@ -43,7 +43,7 @@ namespace SGCore::GOAP
 
     private:
         std::unordered_set<const State*> m_preconditions;
-        std::unordered_set<const State*> m_effects;
-        std::unordered_set<const State*> m_temporaryEffects;
+        std::unordered_map<const State*, bool> m_effects;
+        std::vector<const State*> m_temporaryEffects;
     };
 }

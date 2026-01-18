@@ -14,8 +14,8 @@
 
 FindCart::FindCart() noexcept
 {
-    addEffect(SGCore::GOAP::States::POSITION_FOUND, true);
-    addEffect(CART_FOUND, true);
+    addEffect(SGCore::GOAP::States::POSITION_FOUND, true, true);
+    addEffect(CART_FOUND, true, true);
 }
 
 void FindCart::calculateCost(SGCore::ECS::registry_t& registry, SGCore::ECS::entity_t forEntity) noexcept

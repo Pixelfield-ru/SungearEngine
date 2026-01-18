@@ -6,7 +6,7 @@
 
 #include "SGCore/ECS/Registry.h"
 
-SGCore::Coro::Task<bool> SGCore::GOAP::Plan::execute(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept
+SGCore::Coro::Task<bool> SGCore::GOAP::Plan::execute(ECS::registry_t& registry, ECS::entity_t forEntity) const noexcept
 {
     m_isExecuting = true;
 
@@ -14,7 +14,7 @@ SGCore::Coro::Task<bool> SGCore::GOAP::Plan::execute(ECS::registry_t& registry, 
     if(!goapState)
     {
         m_isExecuting = false;
-        co_return false;;
+        co_return false;
     }
 
     std::vector<const State*> tempStates;
@@ -42,7 +42,7 @@ SGCore::Coro::Task<bool> SGCore::GOAP::Plan::execute(ECS::registry_t& registry, 
         goapState->getStateData(*state).m_complete = false;
     }
 
-    m_actions.clear();
+    // m_actions.clear();
 
     m_isExecuting = false;
 

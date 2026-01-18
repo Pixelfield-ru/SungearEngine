@@ -9,9 +9,9 @@
 #include "IAction.h"
 #include "SGCore/ECS/Registry.h"
 
-std::vector<SGCore::GOAP::Plan> SGCore::GOAP::Solver::resolveGoal(ECS::registry_t& registry,
-                                                                  ECS::entity_t forEntity,
-                                                                  const Goal& goal) const noexcept
+SGCore::GOAP::GoalSolution SGCore::GOAP::Solver::resolveGoal(ECS::registry_t& registry,
+                                                             ECS::entity_t forEntity,
+                                                             const Goal& goal) const noexcept
 {
     auto* goapState = registry.tryGet<EntityState>(forEntity);
     if(!goapState) return {};
@@ -37,8 +37,8 @@ std::vector<SGCore::GOAP::Plan> SGCore::GOAP::Solver::resolveGoal(ECS::registry_
             // checking if any of available actions applies any new effect to entity state
             const bool appliesAnyNewEffect = std::ranges::any_of(
                 availableAction->getEffects(),
-                [&currentState](const State* state) {
-               return !currentState.isStateComplete(*state);
+                [&currentState](std::pair<const State*, bool> state) {
+               return currentState.isStateComplete(*state.first) != state.second;
             });
 
             if(!appliesAnyNewEffect) continue;
@@ -52,9 +52,9 @@ std::vector<SGCore::GOAP::Plan> SGCore::GOAP::Solver::resolveGoal(ECS::registry_
         // BECAUSE STATE MUST BE IMMUTABLE WHEN SCANNING NEXT ACTIONS!
         for(const auto& nextAction : nextPossibleActions)
         {
-            for(const auto& effect : nextAction->getEffects())
+            for(const auto& [effectState, effectValue] : nextAction->getEffects())
             {
-                currentState.getStateData(*effect).m_complete = true;
+                currentState.getStateData(*effectState).m_complete = effectValue;
             }
         }
 
@@ -83,17 +83,8 @@ std::vector<SGCore::GOAP::Plan> SGCore::GOAP::Solver::resolveGoal(ECS::registry_
         plan.calculateCost(registry, forEntity);
     }
 
-    return plans;
-}
+    GoalSolution goalSolution;
+    goalSolution.insertPlans(plans);
 
-std::optional<SGCore::GOAP::Plan> SGCore::GOAP::Solver::findBestPlan(const std::vector<Plan>& availablePlans) const noexcept
-{
-    const auto cheapestPlanIt =
-            std::ranges::min_element(availablePlans,
-                                     std::less<> { },
-                                     &Plan::getCost);
-
-    if(cheapestPlanIt == availablePlans.end()) return std::nullopt;
-
-    return *cheapestPlanIt;
+    return goalSolution;
 }
