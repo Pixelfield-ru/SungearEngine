@@ -13,7 +13,7 @@ namespace SGCore::GOAP
     {
         virtual ~IAction() = default;
 
-        Coro::Task<> execute(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept;
+        Coro::Task<bool> execute(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept;
 
         virtual void calculateCost(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept = 0;
 

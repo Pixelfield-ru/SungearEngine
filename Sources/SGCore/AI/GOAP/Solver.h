@@ -18,7 +18,8 @@ namespace SGCore::GOAP
 
     struct Solver
     {
-        std::optional<Plan> resolveGoal(ECS::registry_t& registry, ECS::entity_t forEntity, const Goal& goal) const noexcept;
+        std::vector<Plan> resolveGoal(ECS::registry_t& registry, ECS::entity_t forEntity, const Goal& goal) const noexcept;
+        std::optional<Plan> findBestPlan(const std::vector<Plan>& availablePlans) const noexcept;
 
         template<typename ActionT, typename... CtorArgs>
         void registerActionType(CtorArgs&&... args) noexcept

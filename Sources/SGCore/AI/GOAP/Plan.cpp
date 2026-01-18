@@ -6,7 +6,7 @@
 
 #include "SGCore/ECS/Registry.h"
 
-SGCore::Coro::Task<> SGCore::GOAP::Plan::execute(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept
+SGCore::Coro::Task<bool> SGCore::GOAP::Plan::execute(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept
 {
     m_isExecuting = true;
 
@@ -14,14 +14,20 @@ SGCore::Coro::Task<> SGCore::GOAP::Plan::execute(ECS::registry_t& registry, ECS:
     if(!goapState)
     {
         m_isExecuting = false;
-        co_return;
+        co_return false;;
     }
 
     std::vector<const State*> tempStates;
 
+    bool planComplete = true;
+
     for(const auto& action : m_actions)
     {
-        co_await action->execute(registry, forEntity);
+        if(!co_await action->execute(registry, forEntity))
+        {
+            planComplete = false;
+            break;
+        }
 
         // collecting temporary states to reset
         for(const auto* effect : action->getTemporaryEffects())
@@ -40,7 +46,7 @@ SGCore::Coro::Task<> SGCore::GOAP::Plan::execute(ECS::registry_t& registry, ECS:
 
     m_isExecuting = false;
 
-    co_return;
+    co_return planComplete;
 }
 
 void SGCore::GOAP::Plan::calculateCost(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept

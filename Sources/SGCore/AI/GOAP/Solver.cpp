@@ -9,12 +9,12 @@
 #include "IAction.h"
 #include "SGCore/ECS/Registry.h"
 
-std::optional<SGCore::GOAP::Plan> SGCore::GOAP::Solver::resolveGoal(ECS::registry_t& registry,
-                                                                    ECS::entity_t forEntity,
-                                                                    const Goal& goal) const noexcept
+std::vector<SGCore::GOAP::Plan> SGCore::GOAP::Solver::resolveGoal(ECS::registry_t& registry,
+                                                                  ECS::entity_t forEntity,
+                                                                  const Goal& goal) const noexcept
 {
     auto* goapState = registry.tryGet<EntityState>(forEntity);
-    if(!goapState) return std::nullopt;
+    if(!goapState) return {};
 
     std::vector<Plan> plans;
 
@@ -77,20 +77,23 @@ std::optional<SGCore::GOAP::Plan> SGCore::GOAP::Solver::resolveGoal(ECS::registr
     Plan currentPlan;
     findPlans(currentPlan, currentEntityState);
 
-    if(plans.empty()) return std::nullopt;
-
     // calculating costs of plans
     for(auto& plan : plans)
     {
         plan.calculateCost(registry, forEntity);
     }
 
+    return plans;
+}
+
+std::optional<SGCore::GOAP::Plan> SGCore::GOAP::Solver::findBestPlan(const std::vector<Plan>& availablePlans) const noexcept
+{
     const auto cheapestPlanIt =
-            std::ranges::min_element(plans,
+            std::ranges::min_element(availablePlans,
                                      std::less<> { },
                                      &Plan::getCost);
 
-    if(cheapestPlanIt == plans.end()) return std::nullopt;
+    if(cheapestPlanIt == availablePlans.end()) return std::nullopt;
 
     return *cheapestPlanIt;
 }

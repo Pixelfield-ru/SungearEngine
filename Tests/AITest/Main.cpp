@@ -220,7 +220,7 @@ void coreInit()
     SGCore::GOAP::Goal pickCartGoal;
     pickCartGoal.addFinalState(HAS_CART);
 
-    pickCartPlan = goapSolver.resolveGoal(*ecsRegistry, npcEntity, pickCartGoal);
+    pickCartPlan = goapSolver.findBestPlan(goapSolver.resolveGoal(*ecsRegistry, npcEntity, pickCartGoal));
     if(!pickCartPlan)
     {
         std::cout << "cannot find plan to pick cart!" << std::endl;

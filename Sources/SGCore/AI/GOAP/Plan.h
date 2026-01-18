@@ -12,7 +12,7 @@ namespace SGCore::GOAP
     {
         std::vector<Ref<IAction>> m_actions;
 
-        Coro::Task<> execute(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept;
+        Coro::Task<bool> execute(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept;
 
         void calculateCost(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept;
         float getCost() const noexcept;
