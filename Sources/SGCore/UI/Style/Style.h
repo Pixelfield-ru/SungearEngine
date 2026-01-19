@@ -57,19 +57,19 @@ namespace SGCore::UI
     prop(fontSize)
 
 
-        DisplayKeyword m_display = DisplayKeyword::FLEX;
-        FlexboxKeyword m_flexDirection = FlexboxKeyword::ROW;
-        FlexboxKeyword m_flexWrap = FlexboxKeyword::NOWRAP;
+        DisplayKeyword m_display = DisplayKeyword::SG_FLEX;
+        FlexboxKeyword m_flexDirection = FlexboxKeyword::SG_ROW;
+        FlexboxKeyword m_flexWrap = FlexboxKeyword::SG_NOWRAP;
 
         using SizeStyleProperty = DValue::DValueCowNode<std::variant<PositionAndSizeKeyword, float>>;
-        SizeStyleProperty m_width {PositionAndSizeKeyword::UNSET};
-        SizeStyleProperty m_height {PositionAndSizeKeyword::UNSET};
+        SizeStyleProperty m_width {PositionAndSizeKeyword::SG_UNSET};
+        SizeStyleProperty m_height {PositionAndSizeKeyword::SG_UNSET};
 
         using PaddingStyleProperty = DValue::DValueCowNode<std::variant<UniversalKeyword, float>>;
-        PaddingStyleProperty m_paddingLeft {UniversalKeyword::UNSET};
-        PaddingStyleProperty m_paddingRight {UniversalKeyword::UNSET};
-        PaddingStyleProperty m_paddingBottom {UniversalKeyword::UNSET};
-        PaddingStyleProperty m_paddingTop {UniversalKeyword::UNSET};
+        PaddingStyleProperty m_paddingLeft {UniversalKeyword::SG_UNSET};
+        PaddingStyleProperty m_paddingRight {UniversalKeyword::SG_UNSET};
+        PaddingStyleProperty m_paddingBottom {UniversalKeyword::SG_UNSET};
+        PaddingStyleProperty m_paddingTop {UniversalKeyword::SG_UNSET};
 
         std::variant<
             std::tuple<
@@ -86,8 +86,8 @@ namespace SGCore::UI
         > m_padding;
 
         using GapStyleProperty = SizeStyleProperty;
-        GapStyleProperty m_rowGap {PositionAndSizeKeyword::UNSET};
-        GapStyleProperty m_columnGap {PositionAndSizeKeyword::UNSET};
+        GapStyleProperty m_rowGap {PositionAndSizeKeyword::SG_UNSET};
+        GapStyleProperty m_columnGap {PositionAndSizeKeyword::SG_UNSET};
         
         RefStyleProperty<&Style::m_rowGap, &Style::m_columnGap> m_gap;
 
@@ -98,10 +98,10 @@ namespace SGCore::UI
         };
 
         using BorderRadiusStyleProperty = DValue::DValueCowNode<std::variant<UniversalKeyword, BorderRadius>>;
-        BorderRadiusStyleProperty m_bottomLeftBorderRadius {UniversalKeyword::UNSET};
-        BorderRadiusStyleProperty m_topLeftBorderRadius {UniversalKeyword::UNSET};
-        BorderRadiusStyleProperty m_topRightBorderRadius {UniversalKeyword::UNSET};
-        BorderRadiusStyleProperty m_bottomRightBorderRadius {UniversalKeyword::UNSET};
+        BorderRadiusStyleProperty m_bottomLeftBorderRadius {UniversalKeyword::SG_UNSET};
+        BorderRadiusStyleProperty m_topLeftBorderRadius {UniversalKeyword::SG_UNSET};
+        BorderRadiusStyleProperty m_topRightBorderRadius {UniversalKeyword::SG_UNSET};
+        BorderRadiusStyleProperty m_bottomRightBorderRadius {UniversalKeyword::SG_UNSET};
 
         std::variant<
             std::tuple<
@@ -117,12 +117,12 @@ namespace SGCore::UI
             ColorKeyword, 
             std::tuple<DValue::DValueCowNode<float>, DValue::DValueCowNode<float>, DValue::DValueCowNode<float>, DValue::DValueCowNode<float>>, // rgba
             std::tuple<DValue::DValueCowNode<float>, DValue::DValueCowNode<float>, DValue::DValueCowNode<float>> // rgb
-        > m_backgroundColor = ColorKeyword::UNSET;
+        > m_backgroundColor = ColorKeyword::SG_UNSET;
 
         DValue::DValueCowNode<AssetWeakRef<Font>> m_font;
 
         /// Used as scale.
-        DValue::DValueCowNode<std::variant<FontSizeKeyword, float>> m_fontSize {10.0f};
+        DValue::DValueCowNode<std::variant<FontSizeKeyword, float>> m_fontSize {16.0f};
 
 #pragma endregion Properties
 

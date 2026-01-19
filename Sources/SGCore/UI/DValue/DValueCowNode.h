@@ -22,10 +22,10 @@ namespace SGCore::UI::DValue
         ~DValueCowNode() noexcept = default;
 
         T& getValue() const noexcept {
-            if (auto val = std::get_if<T>(&m_value)) {
+            if (auto val = std::get_if<T>(const_cast<decltype(m_value)*>(&this->m_value))) {
                 return *val;
             }
-            return std::get<DValueCacheNode<T>>(m_value).m_value;
+            return std::get_if<DValueCacheNode<T>>(const_cast<decltype(m_value)*>(&m_value))->m_value;
         }
 
         template<typename TV> requires std::convertible_to<TV, T>

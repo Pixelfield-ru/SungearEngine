@@ -1,11 +1,9 @@
 #pragma once
 
-#include "SGCore/Utils/Macroses.h"
 #include <string>
 
-
 namespace SGCore::UI {
-    #define define_property(enumPropName) enumPropName,
+    #define define_property(enumPropName) SG_##enumPropName,
     #define define_enum(name, content) \
         enum class name { \
             content \
@@ -21,12 +19,12 @@ namespace SGCore::UI {
     }
 
     template<std::size_t N>
-    struct const_string_result { char m_val[N]; consteval explicit const_string_result(char val[N]) {
+    struct ConstStringResult { char m_val[N]; consteval explicit ConstStringResult(char val[N]) {
         std::copy(val, val + N, m_val);
     } };
 
     template<std::size_t N>
-    [[nodiscard]] consteval const_string_result<N> toKebabCase(const char (&old_str) [N]) noexcept {
+    [[nodiscard]] consteval ConstStringResult<N> toKebabCase(const char (&old_str) [N]) noexcept {
         char str[N] = {'\0'};
         std::copy(old_str, old_str + N, str);
 
@@ -37,14 +35,14 @@ namespace SGCore::UI {
             }
         }
 
-        return const_string_result<N>(str);
+        return ConstStringResult<N>(str);
     }
 
     template<typename T>
     [[nodiscard]] std::optional<std::string_view> enumPropertyValueToCebabCaseName([[maybe_unused]] T property) noexcept {
         return std::nullopt;
     }
-    #define define_property(property) \
+    /*#define define_property(property) \
         case EnumType::property: \
             return toKebabCase(#property).m_val;
     #define define_enum(enumName, content) \
@@ -57,10 +55,10 @@ namespace SGCore::UI {
             return std::nullopt; \
         }
 
-    #include "EnumPropertiesIter.h"
+    #include "EnumPropertiesIter.h"*/
 
     template<std::size_t N>
-    [[nodiscard]] consteval const_string_result<N> toCamelCase(const char (&source)[N]) noexcept {
+    [[nodiscard]] consteval ConstStringResult<N> toCamelCase(const char (&source)[N]) noexcept {
         char str[N] = {'\0'};
 
         str[0] = toCapital(source[0]);
@@ -72,14 +70,14 @@ namespace SGCore::UI {
             }
         }
 
-        return const_string_result<N>(str);
+        return ConstStringResult<N>(str);
     }
 
     template<typename T>
     [[nodiscard]] inline std::optional<std::string_view> enumPropertyValueToCamelCase(T property) noexcept {
         return std::nullopt;
     }
-    #define define_property(property) \
+    /*#define define_property(property) \
         case EnumType::property: \
             return toCamelCase(#property).m_val;
     #define define_enum(enumName, content) \
@@ -92,5 +90,5 @@ namespace SGCore::UI {
         return std::nullopt; \
     }
 
-    #include "EnumPropertiesIter.h"
+    #include "EnumPropertiesIter.h"*/
 }

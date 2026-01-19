@@ -17,8 +17,9 @@ namespace SGCore::UI
         struct UISourceTreeViewValue
         {
             std::variant<pugi::xml_node, pugi::xml_attribute> m_node;
+            bool m_isObject = false;
 
-            explicit(false) UISourceTreeViewValue(const decltype(m_node)& node) : m_node(node) {}
+            explicit(false) UISourceTreeViewValue(const decltype(m_node)& node, const bool isObject = false) : m_node(node), m_isObject(isObject) {}
 
             struct UISourceTreeViewObject
             {
@@ -90,7 +91,7 @@ namespace SGCore::UI
 
             explicit UISourceTreeViewHandler(std::string_view content);
 
-            UISourceTreeViewValue getRoot() const noexcept;
+            [[nodiscard]] UISourceTreeViewValue getRoot() const noexcept;
         };
 
         static UISourceTreeViewHandler create(std::string_view content);

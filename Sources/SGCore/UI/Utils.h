@@ -7,7 +7,7 @@
 #include <optional>
 #include <string>
 
-namespace SGCore::UI::Utils
+namespace SGCore::UI::UITreeUtils
 {
     std::optional<std::string> extractVariable(const std::string& text);
 

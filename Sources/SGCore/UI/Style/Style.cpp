@@ -5,19 +5,12 @@
 
 #include "SGCore/UI/FontsManager.h"
 
-SGCore::UI::Style::Style() noexcept
+SGCore::UI::Style::Style() noexcept :
+    m_font(FontsManager::getInstance().getAssetManager()->getAsset<Font, AssetStorageType::BY_ALIAS>("JetBrains Mono"))
 {
-    // setting default font
-    m_font = FontsManager::getInstance().getAssetManager()->getAsset<Font, AssetStorageType::BY_ALIAS>("JetBrains Mono");
-
     // using 64 to generate big MSDF atlas
     m_fontSpecializationSettings.m_height = 32;
     setFontSpecializationSettings(m_fontSpecializationSettings);
-
-    // default value if field font-size not exists
-    auto fontSizeMathNode = MakeRef<CSSMathNumericNode>();
-    fontSizeMathNode->m_value = 16;
-    m_fontSize.setWithAlternative(fontSizeMathNode);
 }
 
 const std::string& SGCore::UI::Style::getSelector() const noexcept
@@ -53,12 +46,12 @@ size_t SGCore::UI::Style::getPseudoClassHash() const noexcept
 void SGCore::UI::Style::calculateCache(const UIElementCache* parentElementCache,
                                           UIElementCache& thisElementCache) noexcept
 {
-    if(m_padding.containsAlternative())
+    /*if(m_padding.containsAlternative())
     {
-        auto topPadding = m_padding.getFromAlternativeValue<0>();
-        auto rightPadding = m_padding.getFromAlternativeValue<1>();
-        auto bottomPadding = m_padding.getFromAlternativeValue<2>();
-        auto leftPadding = m_padding.getFromAlternativeValue<3>();
+        auto topPadding = *m_paddingTop;
+        auto rightPadding = *m_paddingRight;
+        auto bottomPadding = *m_paddingBottom;
+        auto leftPadding = *m_paddingLeft;
 
         if(topPadding)
         {
@@ -169,14 +162,14 @@ void SGCore::UI::Style::calculateCache(const UIElementCache* parentElementCache,
     else if(m_fontSize.containsKeyword())
     {
         // todo: make for keyword
-    }
+    }*/
 }
 
 void SGCore::UI::Style::setFontSpecializationSettings(const FontSpecializationSettings& settings) noexcept
 {
     m_fontSpecializationSettings = settings;
 
-    auto lockedFont = m_font.lock();
+    auto lockedFont = m_font->lock();
 
     if(lockedFont)
     {
@@ -227,7 +220,7 @@ SGCore::Ref<SGCore::UI::FontSpecialization> SGCore::UI::Style::getFontSpecializa
 
 void SGCore::UI::Style::copy(Style& to) const noexcept
 {
-    to.m_display = m_display;
+    /*to.m_display = m_display;
     to.m_flexDirection = m_flexDirection;
     to.m_flexWrap = m_flexWrap;
 
@@ -252,10 +245,10 @@ void SGCore::UI::Style::copy(Style& to) const noexcept
     to.m_fontSpecializationSettings = m_fontSpecializationSettings;
     to.m_fontSpecialization = m_fontSpecialization;
 
-    to.m_selector = m_selector;
+    to.m_selector = m_selector;*/
 }
 
-void SGCore::UI::Style::doLoad(const InterpolatedPath& path)
+/*void SGCore::UI::Style::doLoad(const InterpolatedPath& path)
 {
     LOG_NOT_SUPPORTED_FUNC(SGCORE_TAG);
 }
@@ -269,4 +262,4 @@ void SGCore::UI::Style::doReloadFromDisk(AssetsLoadPolicy loadPolicy,
                                                Ref<Threading::Thread> lazyLoadInThread) noexcept
 {
     LOG_NOT_SUPPORTED_FUNC(SGCORE_TAG);
-}
+}*/

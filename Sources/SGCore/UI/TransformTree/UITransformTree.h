@@ -5,6 +5,7 @@
 #pragma once
 
 #include "UITransformTreeElement.h"
+#include "../Elements/UIRoot.h"
 
 namespace SGCore::UI
 {

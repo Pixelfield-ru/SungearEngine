@@ -39,7 +39,7 @@ UISourceTreeViewObject::UISourceTreeViewObjectProperty::getValue() {
 std::optional<SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue::UISourceTreeViewObject> SGCore::UI::
 XMLSourceTreeView::UISourceTreeViewValue::tryGetObject() const noexcept {
     if (const auto node = std::get_if<pugi::xml_node>(&m_node)) {
-        if (strcmp(node->name(), "object") != 0) {
+        if (m_isObject || strcmp(node->name(), "object") == 0) {
             return UISourceTreeViewObject(*node);
         }
     }
@@ -53,7 +53,7 @@ getName() const noexcept {
 
 SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue::
 UISourceTreeViewComponent::getValue() noexcept {
-    return {m_node};
+    return {m_node, true};
 }
 
 std::optional<SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue::UISourceTreeViewComponent> SGCore::UI::
@@ -93,7 +93,7 @@ SGCore::UI::XMLSourceTreeView::UISourceTreeViewHandler::UISourceTreeViewHandler(
 
 SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue SGCore::UI::XMLSourceTreeView::UISourceTreeViewHandler::
 getRoot() const noexcept {
-    return UISourceTreeViewValue(m_doc.root());
+    return {m_doc.root(), true};
 };
 
 SGCore::UI::XMLSourceTreeView::UISourceTreeViewHandler SGCore::UI::XMLSourceTreeView::create(std::string_view content) {

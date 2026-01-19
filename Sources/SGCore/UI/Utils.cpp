@@ -6,7 +6,7 @@
 
 #include <regex>
 
-std::optional<std::string> SGCore::UI::Utils::extractVariable(const std::string& text)
+std::optional<std::string> SGCore::UI::UITreeUtils::extractVariable(const std::string& text)
 {
     static std::regex pattern("\\{\\{\\s*(\\w+)\\s*\\}\\}");
     std::smatch matches;
