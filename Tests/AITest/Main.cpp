@@ -383,6 +383,11 @@ void onUpdate(const double& dt, const double& fixedDt)
     {
         pickCartPlan->execute(*currentScene->getECSRegistry(), npcEntity);
     }
+
+    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_4) && pickCartPlan->isExecuting())
+    {
+        pickCartPlan->pause();
+    }
 }
 
 void onFixedUpdate(const double& dt, const double& fixedDt)

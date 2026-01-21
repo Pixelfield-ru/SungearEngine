@@ -15,5 +15,7 @@ struct FindCart : SGCore::GOAP::IAction
     IAction* clone() const noexcept final;
 
 protected:
-    SGCore::Coro::Task<bool> executeImpl(SGCore::ECS::registry_t& registry, SGCore::ECS::entity_t forEntity) noexcept final;
+    SGCore::Coro::Task<SGCore::GOAP::ExecutionResult> executeImpl(SGCore::ECS::registry_t& registry,
+                                                                  SGCore::ECS::entity_t forEntity,
+                                                                  const SGCore::GOAP::Plan& plan) noexcept final;
 };

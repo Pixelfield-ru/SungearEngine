@@ -18,8 +18,21 @@ namespace SGCore::GOAP
 
     struct Solver
     {
+        /**
+         * Builds collection of plans (solution) that can be used to reach goal.
+         * @param registry Scene ECS registry
+         * @param forEntity Entity that will be used to execute solution. Also, entity is used to take its state.
+         * @param goal Custom goal.
+         * @return Solution to reach goal.
+         */
         GoalSolution resolveGoal(ECS::registry_t& registry, ECS::entity_t forEntity, const Goal& goal) const noexcept;
 
+        /**
+         * Registers new action that can be used to solve goals.
+         * @tparam ActionT Type of user-defined action.
+         * @tparam CtorArgs Types of constructor argument to construct action.
+         * @param args Action constructor arguments.
+         */
         template<typename ActionT, typename... CtorArgs>
         void registerActionType(CtorArgs&&... args) noexcept
         {
@@ -36,6 +49,10 @@ namespace SGCore::GOAP
             m_availableActions.push_back(MakeRef<ActionT>(std::forward<CtorArgs>(args)...));
         }
 
+        /**
+         * @tparam ActionT Type of user-defined action.
+         * @return Action with type ActionT or nullptr if not found.
+         */
         template<typename ActionT>
         Ref<IAction> getAction() const noexcept
         {
@@ -53,6 +70,9 @@ namespace SGCore::GOAP
         }
 
     private:
+        /**
+         * All registered actions.
+         */
         std::vector<Ref<IAction>> m_availableActions;
     };
 }

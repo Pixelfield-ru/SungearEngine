@@ -9,6 +9,7 @@
 
 #include "../States.h"
 #include "../Components/Cart.h"
+#include "SGCore/AI/GOAP/Plan.h"
 #include "SGCore/ECS/Registry.h"
 #include "SGCore/Transformations/Transform.h"
 
@@ -28,14 +29,15 @@ SGCore::GOAP::IAction* FindCart::clone() const noexcept
     return new FindCart(*this);
 }
 
-SGCore::Coro::Task<bool> FindCart::executeImpl(SGCore::ECS::registry_t& registry,
-                                               SGCore::ECS::entity_t forEntity) noexcept
+SGCore::Coro::Task<SGCore::GOAP::ExecutionResult> FindCart::executeImpl(SGCore::ECS::registry_t& registry,
+                                                                        SGCore::ECS::entity_t forEntity,
+                                                                        const SGCore::GOAP::Plan& plan) noexcept
 {
     auto* goapState = registry.tryGet<SGCore::GOAP::EntityState>(forEntity);
-    if(!goapState) co_return false;
+    if(!goapState) co_return SGCore::GOAP::ExecutionResult::EXEC_FAILED;
 
     auto* tmpTransform = registry.tryGet<SGCore::Transform>(forEntity);
-    if(!tmpTransform) co_return false;
+    if(!tmpTransform) co_return SGCore::GOAP::ExecutionResult::EXEC_FAILED;
 
     const auto& entityTransform = *tmpTransform;
     const auto& entityPosition = entityTransform->m_finalTransform.m_position;
@@ -46,20 +48,27 @@ SGCore::Coro::Task<bool> FindCart::executeImpl(SGCore::ECS::registry_t& registry
     };
 
     auto cartsView = registry.view<Cart, SGCore::Transform>();
-    cartsView.each([&](auto cartEntity, auto cart, const SGCore::Ref<SGCore::Transform>& transform) {
+
+    for(auto [cartEntity, cart, transform] : cartsView.each())
+    {
+        if(plan.isPaused())
+        {
+            co_return SGCore::GOAP::ExecutionResult::EXEC_PAUSED;
+        }
+
         const auto& cartPosition = transform->m_finalTransform.m_position;
 
         if(glm::distance2(cartPosition, entityPosition) > glm::distance2(nearestCart.first, entityPosition))
         {
-            return;
+            continue;
         }
 
         nearestCart.first = transform->m_finalTransform.m_position;
         nearestCart.second = cartEntity;
-    });
+    }
 
     goapState->getStateData(SGCore::GOAP::States::POSITION_FOUND).m_data = nearestCart.first;
     goapState->getStateData(CART_FOUND).m_data = nearestCart.second;
 
-    co_return true;
+    co_return SGCore::GOAP::ExecutionResult::EXEC_SUCCESS;
 }

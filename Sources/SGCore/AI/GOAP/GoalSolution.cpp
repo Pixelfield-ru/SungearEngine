@@ -26,6 +26,14 @@ void SGCore::GOAP::GoalSolution::insertPlans(const std::vector<Plan>& plans) noe
     std::ranges::sort(m_possiblePlans, std::less<>{}, &Plan::getCost);
 }
 
+void SGCore::GOAP::GoalSolution::pausePlans() noexcept
+{
+    for(auto& plan : m_possiblePlans)
+    {
+        plan.pause();
+    }
+}
+
 const std::vector<SGCore::GOAP::Plan>& SGCore::GOAP::GoalSolution::getPlans() const noexcept
 {
     return m_possiblePlans;

@@ -6,27 +6,27 @@
 
 #include "SGCore/ECS/Registry.h"
 
-SGCore::Coro::Task<bool> SGCore::GOAP::IAction::execute(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept
+SGCore::Coro::Task<SGCore::GOAP::ExecutionResult> SGCore::GOAP::IAction::execute(ECS::registry_t& registry, ECS::entity_t forEntity, const Plan& plan) noexcept
 {
     auto* goapState = registry.tryGet<EntityState>(forEntity);
-    if(!goapState) co_return false;
+    if(!goapState) co_return ExecutionResult::EXEC_FAILED;
 
     if(!preconditionsComplete(registry, forEntity))
     {
-        co_return false;
+        co_return ExecutionResult::EXEC_FAILED;
     }
 
     // const bool s = co_await Coro::returnToCaller();
-    const bool complete = co_await executeImpl(registry, forEntity);
+    const auto executionResult = co_await executeImpl(registry, forEntity, plan);
 
-    if(!complete) co_return false;
+    if(executionResult != ExecutionResult::EXEC_SUCCESS) co_return executionResult;
 
     for(const auto& [effectState, effectValue] : m_effects)
     {
         goapState->getStateData(*effectState).m_complete = effectValue;
     }
 
-    co_return true;
+    co_return ExecutionResult::EXEC_SUCCESS;
 }
 
 void SGCore::GOAP::IAction::addPrecondition(const State& preconditionState) noexcept

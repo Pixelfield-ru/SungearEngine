@@ -9,19 +9,37 @@
 
 SGCore::Coro::Task<> SGCore::GOAP::DecisionMaker::executeSolutions(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept
 {
-    bool isAnyPlanExecuted = false;
+    // todo: finalize
 
     while(!m_queue.empty())
     {
-        for(auto& plan : m_queue[0].second.getPlans())
+        bool isAnyPlanExecuted = false;
+        bool isAnyPlanStopped = false;
+
+        const auto& plans = m_queue[0].second.getPlans();
+
+        for(auto& plan : plans)
         {
-            const bool executed = co_await plan.execute(registry, forEntity);
+            const auto executionResult = co_await plan.execute(registry, forEntity);
+
             // if one of any plans has been executed then leaving
-            if(executed)
+            if(executionResult == ExecutionResult::EXEC_SUCCESS)
             {
                 isAnyPlanExecuted = true;
                 break;
             }
+
+            if(executionResult == ExecutionResult::EXEC_PAUSED)
+            {
+                isAnyPlanStopped = true;
+                break;
+            }
+        }
+
+        if(isAnyPlanStopped)
+        {
+            // skipping current iteration to process new plan with higher priority or continue plan in next iteration
+            continue;
         }
 
         if(isAnyPlanExecuted)
@@ -39,9 +57,9 @@ SGCore::Coro::Task<> SGCore::GOAP::DecisionMaker::executeSolutions(ECS::registry
     // fallback to default solution when other solutions are over
     for(auto& plan : m_fallback.getPlans())
     {
-        const bool executed = co_await plan.execute(registry, forEntity);
+        const auto executionResult = co_await plan.execute(registry, forEntity);
         // if one of any plans has been executed then leaving
-        if(executed)
+        if(executionResult == ExecutionResult::EXEC_SUCCESS)
         {
             co_return;
         }
@@ -51,10 +69,18 @@ SGCore::Coro::Task<> SGCore::GOAP::DecisionMaker::executeSolutions(ECS::registry
 void SGCore::GOAP::DecisionMaker::addGoal(const Goal& goal, const Solver& goapSolver, ECS::registry_t& registry,
                                           ECS::entity_t forEntity) noexcept
 {
+    const auto [lastPlanPriority, lastPlanSolution] = m_queue[0];
+
     auto goalSolution = goapSolver.resolveGoal(registry, forEntity, goal);
     m_queue.push_back({ goal.m_priority, std::move(goalSolution) });
 
     std::ranges::sort(m_queue, [](const auto& left, const auto& right) {
         return left.first < right.first;
     });
+
+    if(goal.m_priority > lastPlanPriority)
+    {
+        // pausing all plans in last solution (to start new plan with higher priority)
+        m_queue[1].second.pausePlans();
+    }
 }

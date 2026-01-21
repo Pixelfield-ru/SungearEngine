@@ -7,6 +7,7 @@
 
 #include "Goto.h"
 
+#include "SGCore/AI/GOAP/Plan.h"
 #include "SGCore/ECS/Registry.h"
 #include "SGCore/Transformations/Transform.h"
 
@@ -17,13 +18,13 @@ SGCore::GOAP::Goto::Goto() noexcept
     addEffect(States::IN_POSITION, true, true);
 }
 
-SGCore::Coro::Task<bool> SGCore::GOAP::Goto::executeImpl(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept
+SGCore::Coro::Task<SGCore::GOAP::ExecutionResult> SGCore::GOAP::Goto::executeImpl(ECS::registry_t& registry, ECS::entity_t forEntity, const Plan& plan) noexcept
 {
     auto* goapState = registry.tryGet<EntityState>(forEntity);
-    if(!goapState) co_return false;
+    if(!goapState) co_return ExecutionResult::EXEC_FAILED;
 
     auto* tmpTransform = registry.tryGet<Transform>(forEntity);
-    if(!tmpTransform) co_return false;
+    if(!tmpTransform) co_return ExecutionResult::EXEC_FAILED;
 
     const auto& positionData = goapState->getStateData(States::POSITION_FOUND).m_data;
 
@@ -31,7 +32,7 @@ SGCore::Coro::Task<bool> SGCore::GOAP::Goto::executeImpl(ECS::registry_t& regist
 
     if(positionData.type() != vec3TypeInfo)
     {
-        co_return false;
+        co_return ExecutionResult::EXEC_FAILED;
     }
 
     const auto targetPosition = std::any_cast<glm::vec3>(positionData);
@@ -41,13 +42,18 @@ SGCore::Coro::Task<bool> SGCore::GOAP::Goto::executeImpl(ECS::registry_t& regist
     auto currentThread = Threading::ThreadsManager::currentThread();
     while(glm::distance(transform->m_finalTransform.m_position, targetPosition) > m_distanceErrorRate)
     {
+        if(plan.isPaused())
+        {
+            co_return ExecutionResult::EXEC_PAUSED;
+        }
+
         const double dt = currentThread->getDeltaTime();
         transform->m_ownTransform.m_position += glm::normalize(targetPosition - transform->m_finalTransform.m_position) * m_speed * dt;
 
         co_await Coro::returnToCaller();
     }
 
-    co_return true;
+    co_return ExecutionResult::EXEC_SUCCESS;
 }
 
 void SGCore::GOAP::Goto::calculateCost(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept

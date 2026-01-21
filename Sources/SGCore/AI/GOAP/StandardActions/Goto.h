@@ -22,6 +22,6 @@ namespace SGCore::GOAP
         IAction* clone() const noexcept override;
 
     protected:
-        Coro::Task<bool> executeImpl(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept override;
+        Coro::Task<ExecutionResult> executeImpl(ECS::registry_t& registry, ECS::entity_t forEntity, const Plan& plan) noexcept override;
     };
 }
