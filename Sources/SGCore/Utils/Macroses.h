@@ -24,6 +24,7 @@
 
 #define SG_CURRENT_LOCATION_STR SGCore::Utils::sourceLocationToString(std::source_location::current())
 
+#define SG_STRINGIFY_MACRO(n) SG_STRINGIFY(n)
 #define SG_STRINGIFY(n) #n
 
 #ifdef _MSC_VER

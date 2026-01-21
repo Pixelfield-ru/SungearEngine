@@ -1,6 +1,1 @@
-add_subdirectory(Physics)
-add_subdirectory(UI)
-add_subdirectory(ModelDraw)
-add_subdirectory(Terrain)
-add_subdirectory(AITest)
 add_subdirectory(Coro)
