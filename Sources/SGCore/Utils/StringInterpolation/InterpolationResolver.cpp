@@ -4,14 +4,14 @@
 
 #include "InterpolationResolver.h"
 
-std::unordered_map<std::string, std::filesystem::path>& SGCore::Impl::getInterpolationMarkupGlobalData(std::filesystem::path*) noexcept
+SGCore::InterpolationMarkupData<std::filesystem::path>& SGCore::Impl::getInterpolationMarkupDataInstance(std::filesystem::path*) noexcept
 {
-    static std::unordered_map<std::string, std::filesystem::path> s_globalMarkup;
-    return s_globalMarkup;
+    static InterpolationMarkupData<std::filesystem::path> s_instance;
+    return s_instance;
 }
 
-std::unordered_map<std::string, std::string>& SGCore::Impl::getInterpolationMarkupGlobalData(std::string*) noexcept
+SGCore::InterpolationMarkupData<std::string>& SGCore::Impl::getInterpolationMarkupDataInstance(std::string*) noexcept
 {
-    static std::unordered_map<std::string, std::string> s_globalMarkup;
-    return s_globalMarkup;
+    static InterpolationMarkupData<std::string> s_instance;
+    return s_instance;
 }
