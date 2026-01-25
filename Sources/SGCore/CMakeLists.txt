@@ -101,6 +101,7 @@
          Boost::system
          Boost::asio
          spdlog::spdlog
+         range-v3::range-v3
 
          ${SG_BULLET_LIBS}
          ${FREETYPE_LIBRARIES}

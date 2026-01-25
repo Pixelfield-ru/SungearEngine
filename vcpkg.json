@@ -3,7 +3,10 @@
   "version-string" : "0.14.0.8",
   "homepage" : "https://github.com/Pixelfield-ru/SungearEngine/tree/main",
   "builtin-baseline" : "d5a87c6bcc5d3cb3f5627bfeff977280097c719c",
-  "dependencies" : [ {
+  "dependencies" : [
+  {
+    "name": "range-v3"
+  }, {
     "name" : "assimp",
     "version>=" : "5.3.1#4"
   }, {
