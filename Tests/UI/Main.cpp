@@ -1,207 +1,119 @@
-//
-// Created by stuka on 06.02.2025.
-//
-
 #include "Main.h"
 
-#include <stb_image_write.h>
 #include <SGCore/Memory/AssetManager.h>
-#include <SGCore/UI/Parser/XML/CSS/CSSFile.h>
 #include <SGCore/Main/CoreMain.h>
 #include <SGCore/Scene/Scene.h>
-#include <SGCore/Render/RenderPipelinesManager.h>
 #include <SGCore/Render/PBRRP/PBRRenderPipeline.h>
-#include <SGCore/Render/LayeredFrameReceiver.h>
-#include <SGCore/Render/RenderingBase.h>
 
-#include <SGCore/UI/UIDocument.h>
-#include <SGCore/UI/UIComponent.h>
+#include "SGCore/UI/Deserialization/DeserializeField.h"
+#include "SGCore/UI/Parser/UISourceTreeView.h"
+#include "SGCore/UI/Parser/XML/XMLSourceTreeView.h"
 
-#include "SGCore/Graphics/API/IFrameBuffer.h"
-#include "SGCore/Graphics/API/IFrameBufferAttachment.h"
-#include "SGCore/Graphics/API/ITexture2D.h"
-#include "SGCore/Input/PCInput.h"
-#include "SGCore/UI/FontsManager.h"
-#include "SGCore/UI/Elements/Text.h"
+#include <iostream>
+#include <expected>
 
-SGCore::AssetRef<SGCore::UI::CSSFile> cssFile;
-SGCore::AssetRef<SGCore::UI::UIDocument> uiDocument;
-SGCore::AssetRef<SGCore::IShader> screenShader;
-SGCore::Ref<SGCore::Scene> scene;
-SGCore::Ref<SGCore::IMeshData> quadMeshData;
-SGCore::MeshRenderState quadMeshRenderState;
+struct Test2
+{
+    #define deser_struct Test2
+    #define deser_properties(prop) \
+        prop(test) \
+        prop(test2)
 
-SGCore::Ref<SGCore::ITexture2D> attachmentToDisplay;
-SGCore::AssetRef<SGCore::ITexture2D> someTexture;
+    int m_test = -1;
+    int m_test2 = -1;
 
-SGCore::AssetRef<SGCore::ITexture2D> testTex;
+    template<typename UISourceTreeViewValue> requires SGCore::UI::ImplUISourceTreeViewValue<UISourceTreeViewValue>
+    static SGCore::UI::Deserialization::DeserializeIntoResultType deserializeInto(UISourceTreeViewValue value, deser_struct& field) {
 
-SGCore::Ref<SGCore::RenderingBase> cameraRenderingBase { };
+        std::optional<typename UISourceTreeViewValue::UISourceTreeViewObject> valueAsMaybeObject = value.tryGetObject();
+        if (!valueAsMaybeObject.has_value()) { return "wrong object type"; }
+        auto object = *valueAsMaybeObject;
 
-std::u32string myText;
+        {
+            auto iter = object.properties();
+            for (auto prop : iter) {
+                auto propName = prop.getName();
+
+                if (propName == "test") {
+                    if (auto error = SGCore::UI::Deserialization::Deserializer<UISourceTreeViewValue, decltype(m_test)>::deserializeInto(prop.getValue(), field.m_test)) {
+                        return std::format("Error when parsing field {}.{}, error: {}", typeid(deser_struct).name(), "test", *error);
+                    }
+
+                    continue;
+                }
+
+                if (propName == "test2") {
+                    if (auto error = SGCore::UI::Deserialization::Deserializer<UISourceTreeViewValue, decltype(m_test2)>::deserializeInto(prop.getValue(), field.m_test2)) {
+                        return std::format("Error when parsing field {}.{}, error: {}", typeid(deser_struct).name(), "test2", *error);
+                    }
+
+                    continue;
+                }
+
+                return std::format("Unknown property {}", propName);
+            }
+        }
+        /*if (!SGCore::UI::Deserializer<UISourceTreeViewValue, decltype(m_test)>::deserializeInto(object.getProperty("test"), field.m_test))
+        { return false; }
+        if (!SGCore::UI::Deserializer<UISourceTreeViewValue, decltype(m_test2)>::deserializeInto(object.getProperty("test2"), field.m_test2))
+        { return false; }*/
+        return std::nullopt;
+    }
+};
+
+struct Test
+{
+    #undef deser_struct
+    #define deser_struct Test
+    #define deser_child_prop_require(prop) prop(objTest)
+
+    Test2 m_objTest;
+
+    template<typename UISourceTreeViewValue> requires SGCore::UI::ImplUISourceTreeViewValue<UISourceTreeViewValue>
+    static SGCore::UI::Deserialization::DeserializeIntoResultType deserializeInto(UISourceTreeViewValue value, deser_struct& field) {
+        std::optional<typename UISourceTreeViewValue::UISourceTreeViewObject> valueAsMaybeObject = value.tryGetObject();
+        if (!valueAsMaybeObject.has_value()) { return "wrong object type"; }
+        auto object = *valueAsMaybeObject;
+
+        {
+            auto objectChild = SGCore::UI::UITreeUtils::getSingleChildOfObject<UISourceTreeViewValue>(object);
+            if (!objectChild.has_value()) {
+                return std::format("Error when parsing {}: {}", "objTest", objectChild.error());
+            }
+
+            if (auto childDeserResult = decltype(m_objTest)::deserializeInto(*objectChild, field.m_objTest)) {
+                return std::format("Error when parsing {}: {}", "objTest", *childDeserResult);
+            }
+        }
+
+
+        return std::nullopt;
+    }
+};
+
+std::string testString = "<object><property id='123' name='test'>5</property></object>";
 
 void coreInit()
 {
-    auto pbrrpPipeline = SGCore::RenderPipelinesManager::instance().createRenderPipeline<SGCore::PBRRenderPipeline>();
-    SGCore::RenderPipelinesManager::instance().registerRenderPipeline(pbrrpPipeline);
-    SGCore::RenderPipelinesManager::instance().setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();
+    Test test {};
 
-    scene = SGCore::MakeRef<SGCore::Scene>();
-    scene->createDefaultSystems();
-
-    SGCore::Scene::setCurrentScene(scene);
-
-    cssFile = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::CSSFile>("${enginePath}/Tests/UI/Resources/test.css");
-    uiDocument = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::UIDocument>("${enginePath}/Tests/UI/Resources/test.xml");
-    auto tmpDoc = uiDocument;
-    screenShader = SGCore::AssetManager::getInstance()->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
-    someTexture = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/no_material.png");
-
-    testTex = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>("${enginePath}/Resources/textures/test.png");
-
-    uiDocument->m_bindingsStorage.bind("myText", &myText);
-
-    auto ecsRegistry = scene->getECSRegistry();
-
-    // creating camera ===========================================
-    auto cameraEntity = ecsRegistry->create();
-
-    auto& cameraReceiver = ecsRegistry->emplace<SGCore::LayeredFrameReceiver>(cameraEntity);
-    cameraRenderingBase = ecsRegistry->emplace<SGCore::RenderingBase>(cameraEntity, SGCore::MakeRef<SGCore::RenderingBase>());
-    ecsRegistry->emplace<SGCore::Transform>(cameraEntity, SGCore::MakeRef<SGCore::Transform>());
-
-    attachmentToDisplay = cameraReceiver.m_layersFXFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7);
-
-    // creating ui ===============================================
-    auto uiEntity = ecsRegistry->create();
-
-    auto& uiComponent = ecsRegistry->emplace<SGCore::UI::UIComponent>(uiEntity);
-    uiComponent.m_document = uiDocument;
-    uiComponent.m_attachedToCamera = cameraEntity;
-
-    // creating quad model ======================================
-    quadMeshData = SGCore::Ref<SGCore::IMeshData>(SGCore::CoreMain::getRenderer()->createMeshData());
-
-    quadMeshData->m_vertices.resize(4);
-
-    quadMeshData->m_vertices[0] = {
-        .m_position = { -1, -1, 0.0f },
-        .m_uv = glm::vec3 { 0.0f, 0.0f, 0.0f }
-    };
-
-    quadMeshData->m_vertices[1] = {
-        .m_position = { -1, 1, 0.0f },
-        .m_uv = glm::vec3 { 0.0f, 1.0f, 0.0f }
-    };
-
-    quadMeshData->m_vertices[2] = {
-        .m_position = { 1, 1, 0.0f },
-        .m_uv = glm::vec3 { 1.0f, 1.0f, 0.0f }
-    };
-
-    quadMeshData->m_vertices[3] = {
-        .m_position = { 1, -1, 0.0f },
-        .m_uv = glm::vec3 { 1.0f, 0.0f, 0.0f }
-    };
-
-    quadMeshData->m_indices.resize(6);
-
-    quadMeshData->m_indices[0] = 0;
-    quadMeshData->m_indices[1] = 2;
-    quadMeshData->m_indices[2] = 1;
-    quadMeshData->m_indices[3] = 0;
-    quadMeshData->m_indices[4] = 3;
-    quadMeshData->m_indices[5] = 2;
-
-    quadMeshData->prepare();
-
-    glfwGetError(nullptr);
-
-    glfwInit();
-
-    glfwSetCharCallback(SGCore::CoreMain::getWindow().getNativeHandle(), [](GLFWwindow* window, unsigned int c) {
-        std::cout << "char: " << c << std::endl;
-
-        myText += c;
-    });
-
-    const char* error { };
-    glfwGetError(&error);
-
-    if(error)
-    {
-        std::cout << "glfw error after glfwSetCharCallback: " << error << std::endl;
+    const auto xmlTree = SGCore::UI::XMLSourceTreeView::create(testString);
+    auto deserResult = Test::deserializeInto(xmlTree.getRoot(), test);
+    std::cout << "DESER RESULT HAS ERROR: " << (deserResult.has_value() ? "true" : "false") << std::endl;
+    if (deserResult) {
+        std::cout << "Parsing error: " << *deserResult << std::endl;
     }
-
-    SGCore::Input::PC::onKeyboardKeyEvent += [](SGCore::Window& inWindow, SGCore::Input::KeyboardKey key, int scancode, SGCore::Input::KeyState state, int mods) {
-        if(key == SGCore::Input::KeyboardKey::KEY_BACKSPACE && (state == SGCore::Input::KeyState::REPEAT || state == SGCore::Input::KeyState::PRESS) && !myText.empty())
-        {
-            myText.erase(myText.length() - 1);
-        }
-        else if(key == SGCore::Input::KeyboardKey::KEY_ENTER && (state == SGCore::Input::KeyState::REPEAT || state == SGCore::Input::KeyState::PRESS))
-        {
-            myText += U'\n';
-        }
-    };
+    std::cout << "val " << test.m_objTest.m_test << std::endl;
 }
 
 void onUpdate(const double& dt, const double& fixedDt)
 {
-    SGCore::CoreMain::getWindow().setTitle("UI Test. FPS: " + std::to_string(SGCore::CoreMain::getFPS()));
 
-    if(SGCore::Scene::getCurrentScene())
-    {
-        SGCore::Scene::getCurrentScene()->update(dt, fixedDt);
-    }
-
-    int windowSizeX = 0;
-    int windowSizeY = 0;
-
-    SGCore::CoreMain::getWindow().getSize(windowSizeX, windowSizeY);
-
-    cameraRenderingBase->m_left = -windowSizeX / 2.0f;
-    cameraRenderingBase->m_right = windowSizeX / 2.0f;
-    cameraRenderingBase->m_top = windowSizeY / 2.0f;
-    cameraRenderingBase->m_bottom = -windowSizeY / 2.0f;
-    cameraRenderingBase->m_zNear = -100;
-    cameraRenderingBase->m_zFar = 100;
-
-    screenShader->bind();
-
-    attachmentToDisplay->bind(0);
-    screenShader->useTextureBlock("u_bufferToDisplay", 0);
-    
-    // use this to flip screen output
-    screenShader->useInteger("u_flipOutput", true);
-
-    SGCore::CoreMain::getRenderer()->renderArray(
-        quadMeshData->getVertexArray(),
-        quadMeshRenderState,
-        quadMeshData->m_vertices.size(),
-        quadMeshData->m_indices.size()
-    );
-
-    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_1))
-    {
-        uiDocument->reloadFromDisk();
-    }
-
-    if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_2))
-    {
-        auto shaders = SGCore::AssetManager::getInstance()->getAssetsWithType<SGCore::IShader>();
-        for(const auto& shader : shaders)
-        {
-            shader->reloadFromDisk();
-        }
-    }
 }
 
 void onFixedUpdate(const double& dt, const double& fixedDt)
 {
-    if(SGCore::Scene::getCurrentScene())
-    {
-        SGCore::Scene::getCurrentScene()->fixedUpdate(dt, fixedDt);
-    }
+
 }
 
 int main()
