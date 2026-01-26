@@ -8,7 +8,7 @@
 
 SGCore::UI::Text::Text() noexcept
 {
-    m_mainStyle = AssetManager::getInstance()->getOrAddAssetByAlias<Style>("sgui_default_text_style");
+    // m_style = AssetManager::getInstance()->getOrAddAssetByAlias<Style>("sgui_default_text_style");
 }
 
 bool SGCore::UI::Text::draw(const LayeredFrameReceiver::reg_t& cameraReceiver,
@@ -17,15 +17,13 @@ bool SGCore::UI::Text::draw(const LayeredFrameReceiver::reg_t& cameraReceiver,
 {
     if(elementCache.m_currentFrameStyles.empty()) return true;
 
-    auto* lastStyle = elementCache.m_currentFrameStyles.back();
+    const auto* lastStyle = elementCache.m_currentFrameStyles.back();
 
-    AssetRef<Font> font = lastStyle->m_font.lock();
-
-    if(font)
+    if(const AssetRef<Font> font = lastStyle->m_font->lock())
     {
-        Ref<FontSpecialization> fontSpec = font->getSpecialization(lastStyle->getFontSpecializationSettings());
+        const Ref<FontSpecialization> fontSpec = font->getSpecialization(lastStyle->getFontSpecializationSettings());
 
-        const std::u32string* usedText = m_text.get();
+        auto usedText = &m_text;
 
         if(fontSpec)
         {
@@ -72,11 +70,11 @@ void SGCore::UI::Text::clearGlyphs() noexcept
     m_lineBreaks.clear();
 }
 
-SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::Text::copy() const noexcept
+std::unique_ptr<SGCore::UI::UIElement> SGCore::UI::Text::copy() const noexcept
 {
-    auto element = MakeRef<Text>();
-    UIElement::doCopy(element);
-    doCopy(element);
+    auto element = MakeScope<Text>();
+    UIElement::doCopy(*element);
+    doCopy(*element); // TODO: ???
 
     return element;
 }
@@ -101,8 +99,8 @@ void SGCore::UI::Text::doGenerateMesh(const UIElementCache* parentElementCache,
 
 }
 
-void SGCore::UI::Text::doCopy(const Ref<UIElement>& to) const noexcept
+void SGCore::UI::Text::doCopy(UIElement& to) const noexcept
 {
-    auto* text = static_cast<Text*>(to.get());
+    auto* text = static_cast<Text*>(&to);
     text->m_text = m_text;
 }
