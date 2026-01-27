@@ -10,143 +10,96 @@
 
 namespace SGCore::UI
 {
-    struct UIElement;
-    template<typename Base, typename UISourceTreeViewValue>
-    concept ImplUISourceTreeViewObjectProperty = requires(Base base) {
-        { base.getName() } -> std::convertible_to<std::string_view>;
-        { base.getValue() } -> std::convertible_to<UISourceTreeViewValue>;
-    };
+    struct UISourceTreeViewValue;
 
-    template<typename Base>
-    concept ImplUISourceTreeViewReference = requires(Base base) {
-        { base.getPath() } -> std::convertible_to<std::string_view>;
-    };
-
-    template <typename UISourceTreeObjectView> // requires ImplUISourceTreeViewObject<UISourceTreeObjectView>
-    struct ImplUISourceTreeViewObjectTraits
+    struct UISourceTreeViewComponent
     {
-        using ChildrenIteratorContainer = decltype(std::declval<UISourceTreeObjectView>().children());
-        using PropertiesIteratorContainer = decltype(std::declval<UISourceTreeObjectView>().properties());
+        virtual ~UISourceTreeViewComponent() = default;
+
+        virtual std::string_view getName() = 0;
+        virtual UISourceTreeViewValue& getValue() = 0;
     };
 
-    template <typename Base, typename UISourceTreeViewValue>
-    concept ImplUISourceTreeViewObject = requires(Base base) {
-        // Check that first for better error
-        { base.children() } -> std::convertible_to<typename ImplUISourceTreeViewObjectTraits<Base>::ChildrenIteratorContainer>;
-
-        typename ImplUISourceTreeViewObjectTraits<Base>::ChildrenIteratorContainer;
-        requires SGCore::Utils::ForwardIteratorContainerOf<
-            typename ImplUISourceTreeViewObjectTraits<Base>::ChildrenIteratorContainer,
-            UISourceTreeViewValue
-        >;
-
-        typename Base::UISourceTreeViewObjectProperty;
-        requires ImplUISourceTreeViewObjectProperty<typename Base::UISourceTreeViewObjectProperty, UISourceTreeViewValue>;
-
-        // Get properties iterator
-        { base.properties() } -> std::convertible_to<typename ImplUISourceTreeViewObjectTraits<Base>::PropertiesIteratorContainer>;
-
-        typename ImplUISourceTreeViewObjectTraits<Base>::PropertiesIteratorContainer;
-        requires SGCore::Utils::ForwardIteratorContainerOf<
-            typename ImplUISourceTreeViewObjectTraits<Base>::PropertiesIteratorContainer,
-            typename Base::UISourceTreeViewObjectProperty
-        >;
-
-        // { base.getProperty(std::declval<std::string_view>()) } -> std::same_as<UISourceTreeViewValue>;
-    };
-
-    template <typename Base, typename UISourceTreeViewValue>
-    concept ImplUISourceTreeViewComponent = requires(Base base) {
-        { base.getName() } -> std::convertible_to<std::string_view>;
-        { base.getValue() } -> std::convertible_to<UISourceTreeViewValue>;
-    };
-
-    template <typename Base>
-    concept ImplUISourceTreeViewValue = requires(Base base) {
-        typename Base::UISourceTreeViewObject;
-        requires ImplUISourceTreeViewObject<typename Base::UISourceTreeViewObject, Base>;
-        { base.tryGetObject() } -> std::convertible_to<std::optional<typename Base::UISourceTreeViewObject>>;
-
-        typename Base::UISourceTreeViewComponent;
-        requires ImplUISourceTreeViewComponent<typename Base::UISourceTreeViewComponent, Base>;
-        { base.tryGetComponent() } -> std::convertible_to<std::optional<typename Base::UISourceTreeViewComponent>>;
-
-        { base.tryGetString() } -> std::convertible_to<std::optional<std::string_view>>;
-
-        { base.tryGetFloat() } -> std::convertible_to<std::optional<float>>;
-
-        { base.tryGetInt() } -> std::convertible_to<std::optional<int>>;
-
-        typename Base::UISourceTreeViewReference;
-        requires ImplUISourceTreeViewReference<typename Base::UISourceTreeViewReference>;
-        { base.tryGetRef() } -> std::convertible_to<std::optional<typename Base::UISourceTreeViewReference>>;
-    };
-
-    template <typename Base, typename UISourceTreeViewValue>
-    concept ImplUISourceTreeViewHandler = requires(Base base) {
-        { base.getRoot() } -> std::convertible_to<UISourceTreeViewValue>;
-    };
-
-    template <typename Base>
-    concept ImplUISourceTreeView = requires(std::string_view fileContent) {
-        typename Base::UISourceTreeViewValue;
-        requires ImplUISourceTreeViewValue<typename Base::UISourceTreeViewValue>;
-
-        typename Base::UISourceTreeViewHandler;
-        requires ImplUISourceTreeViewHandler<typename Base::UISourceTreeViewHandler, typename Base::UISourceTreeViewValue>;
-
-        { Base::create(fileContent) } -> std::convertible_to<typename Base::UISourceTreeViewHandler>;
-    };
-
-    namespace UITreeUtils
+    struct UISourceTreeViewObjectProperty
     {
-        template<typename UISourceTreeViewValue> requires ImplUISourceTreeViewValue<UISourceTreeViewValue>
-        static std::unordered_map<std::string, std::function<std::unique_ptr<UIElement>()>> getStaticComponentRegistry() {
-            static std::unordered_map<std::string, std::function<std::unique_ptr<UIElement>()>> staticComponentRegistry {
+        virtual ~UISourceTreeViewObjectProperty() = default;
 
+        virtual std::string_view getName() = 0;
+        virtual UISourceTreeViewValue& getValue() = 0;
+    };
+
+    struct UISourceTreeViewObject
+    {
+        virtual ~UISourceTreeViewObject() = default;
+
+        struct ChildrenCollection
+        {
+            struct Iterator final
+            {
+                size_t m_index;
+                ChildrenCollection& m_parentCollection;
+
+                Iterator& operator ++();
+                UISourceTreeViewValue& operator *();
+                bool operator ==(const Iterator&) const;
             };
 
-            return staticComponentRegistry;
-        }
+            virtual ~ChildrenCollection() = default;
 
-        template<typename UISourceTreeViewValue> requires ImplUISourceTreeViewValue<UISourceTreeViewValue>
-        static std::expected<UISourceTreeViewValue, std::string> getSingleChildOfObject(typename UISourceTreeViewValue::UISourceTreeViewObject obj, const bool ignoreOther = false) {
-            auto children = obj.children();
-            for (auto test : children) {
-                std::cout << "e";
-            }
-            auto iter = children.begin();
+            virtual Iterator begin() = 0;
+            virtual Iterator end() = 0;
 
-            if (iter == children.end()) {
-                return std::unexpected("Expected single child value, zero provided");
-            }
+            virtual UISourceTreeViewValue& operator[](int index) = 0;
+        };
 
-            auto child = *iter;
-            ++iter;
-            if (!ignoreOther && iter != children.end()) {
-                return std::unexpected("Expected single child value, many provided");
-            }
+        virtual ChildrenCollection& children() = 0;
 
-            return child;
-        }
+        struct PropertiesCollection
+        {
+            struct Iterator final
+            {
+                size_t m_index;
+                PropertiesCollection& m_parentCollection;
 
-        // It would be probably better to return an enum error, so you can use getSingleChildOfObject and parse error NoChildren or something like that, but whatever
-        template<typename UISourceTreeViewValue> requires ImplUISourceTreeViewValue<UISourceTreeViewValue>
-        static std::expected<std::optional<UISourceTreeViewValue>, std::string> tryGetSingleChildOfObject(typename UISourceTreeViewValue::UISourceTreeViewObject obj, const bool ignoreOther = false) {
-            auto children = obj.children();
-            auto iter = children.begin();
+                Iterator& operator ++();
+                UISourceTreeViewObjectProperty& operator *();
+                bool operator ==(const Iterator&) const;
+            };
 
-            if (iter == children.end()) {
-                return std::nullopt;
-            }
+            virtual ~PropertiesCollection() = default;
 
-            auto child = *iter;
-            ++iter;
-            if (!ignoreOther && iter != children.end()) {
-                return std::unexpected("Expected single child value, many provided");
-            }
+            virtual Iterator begin() = 0;
+            virtual Iterator end() = 0;
 
-            return child;
-        }
+            virtual UISourceTreeViewObjectProperty& operator[](int index) = 0;
+        };
+
+        virtual PropertiesCollection& properties() = 0;
+    };
+
+    struct UISourceTreeViewReference
+    {
+        virtual ~UISourceTreeViewReference() = default;
+
+        virtual std::string_view getPath() = 0;
+    };
+
+    struct UISourceTreeViewValue
+    {
+        virtual ~UISourceTreeViewValue() = default;
+
+        virtual UISourceTreeViewObject* tryGetObject() = 0;
+        virtual UISourceTreeViewComponent* tryGetComponent() = 0;
+        virtual std::optional<std::string_view> tryGetString() = 0;
+        virtual std::optional<int> tryGetInt() = 0;
+        virtual std::optional<float> tryGetFloat() = 0;
+        virtual UISourceTreeViewReference* tryGetReference() = 0;
+    };
+
+    struct UISourceTreeViewHandler
+    {
+        virtual ~UISourceTreeViewHandler() = default;
+
+        virtual UISourceTreeViewValue& getRoot() = 0;
     };
 }

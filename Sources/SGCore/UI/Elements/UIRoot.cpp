@@ -70,3 +70,7 @@ void SGCore::UI::UIRoot::doGenerateMesh(const UIElementCache* parentElementCache
 {
     NineSlice::generate9SlicedQuad<std::uint32_t>(thisElementCache.m_borderRadiusCache, 0, m_meshData->m_vertices, m_meshData->m_indices);
 }
+
+#define sg_deser_type SGCore::UI::UIRoot
+#define sg_deser_base UIElement
+#include <SGCore/UI/Deserialization/ImplDeserializableStruct.h>

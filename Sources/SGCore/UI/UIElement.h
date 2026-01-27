@@ -11,6 +11,8 @@
 #include "SGCore/Render/LayeredFrameReceiver.h"
 #include "Deserialization/ImplDeserializable.h"
 #include "Parser/XML/XMLSourceTreeView.h"
+#include <unordered_map>
+#include <string>
 
 #define SG_DECLARE_UI_ELEMENT_TYPE(name) \
     static consteval size_t getTypeHashStatic() noexcept \
@@ -27,9 +29,6 @@
 namespace SGCore::UI
 {
     struct UIElementMesh;
-    struct Div;
-    struct Text;
-
 
     struct UIElement
     {
@@ -46,12 +45,12 @@ namespace SGCore::UI
         Weak<UIElement> m_parent;
         std::unordered_set<std::string> m_places;
 
-        AssetRef<Style> m_style;
+        Scope<Style> m_style = MakeScope<Style>();
 
-        AssetRef<IShader> m_shader;
+        AssetRef<IShader> m_shader {};
 
         // not copyable when calling copy()
-        Ref<UIElementMesh> m_meshData;
+        Ref<UIElementMesh> m_meshData {};
 
         /**
          *
@@ -118,52 +117,48 @@ namespace SGCore::UI
         SG_IMPL_DESERIALIZABLE(UIElement);
 
     private:
-        // Helper function for SG_IMPL_DESERIALIZABLE_CONTAINER
-        template<typename UISourceTreeViewValue, typename Container, typename T> // sry i m too lazy to write requirements D:
-        static Deserialization::DeserializeIntoResultType (*containerDeserializer(void)) (
-            UISourceTreeViewValue& value,
-            Container& field,
-            Deserialization::DeserScope<UISourceTreeViewValue>& scope
-        ){
-            return [](UISourceTreeViewValue& value, Container& field, Deserialization::DeserScope<UISourceTreeViewValue>& scope) {
-                return Deserialization::Deserializer<UISourceTreeViewValue, T>::deserializeInto (
-                    value,
-                    Deserialization::IsValidContainer<Container>::template prepareWith<T>(field, T{}),
-                    scope
-                );
-            };
-        };
+
+        static std::unordered_map<
+            std::string_view,
+            // This method should create new Derived and place it into target, then try to deserialize value into target pointer
+            // (check implementation for example)
+            Deserialization::DeserializeIntoResultType(*)(UISourceTreeViewValue&, UIElement*& target, Deserialization::DeserScope& scope)
+        > m_registry;
+
+        static Deserialization::DeserializeIntoResultType(*m_createTextComponent)(std::string_view, UIElement*& target, Deserialization::DeserScope& scope);
+
     public:
 
-        template <typename UISourceTreeViewValue, typename Container, typename _Div = Div, typename _Text = Text> requires SGCore::UI::ImplUISourceTreeViewValue<
-            UISourceTreeViewValue> && SGCore::UI::Deserialization::IsValidContainer<Container>::value
-        static SGCore::UI::Deserialization::DeserializeIntoResultType deserializeIntoContainer(
-            UISourceTreeViewValue value, Container& field,
-            SGCore::UI::Deserialization::DeserScope<UISourceTreeViewValue>& scope) {
-            // using Container_t = Deserialization::IsValidContainer<Container>::Container_t;
+        SG_IMPL_DESERIALIZABLE_CONTAINER(UIElement) {
+            if (const auto component = value.tryGetComponent()) {
+                UIElement* pointer; // MANAGED IN "prepareWithPointer(field, POINTER)"
+                const auto& method = m_registry.find(component->getName());
+                if (method == m_registry.end()) {
+                    return std::format("Unknown component {}", component->getName());
+                }
+                auto result = method->second(component->getValue(), pointer, scope);
+                // Pointer initialized and contains deserialization value (if it was successful)
+                Deserialization::IsValidContainer<Container>::prepareWithPointer(field, pointer);
+                // DO MANAGE POINTER BEFORE RETURNING A ERROR
 
-            /*auto fn = []<typename T>(UISourceTreeViewValue& value, Container& field) {
-                return Deserialization::Deserializer<UISourceTreeViewValue, T>::deserializeInto (
-                    value,
-                    Deserialization::IsValidContainer<Container>::template prepareWith<T>(field, {})
-                );
-            };*/
+                if (result) { return result; } // if not return error;
 
-            static auto registry = std::unordered_map<std::string, Deserialization::DeserializeIntoResultType(UISourceTreeViewValue, Container& field, Deserialization::DeserScope<UISourceTreeViewValue>)> {
-                {"Text", containerDeserializer<UISourceTreeViewValue, Container, _Text>()},
-                {"Div", containerDeserializer<UISourceTreeViewValue, Container, _Div>()},
-            };
+                return std::nullopt;
+            }
 
             if (auto text = value.tryGetString()) {
-                // TODO
+                UIElement* pointer; // MANAGED IN "prepareWithPointer(field, POINTER)"
+                auto result = m_createTextComponent(*text, pointer, scope);
+                // Pointer initialized and contains deserialization value (if it was successful)
+                Deserialization::IsValidContainer<Container>::prepareWithPointer(field, pointer);
+                // DO MANAGE POINTER BEFORE RETURNING A ERROR
+
+                if (result) { return result; } // if not return error;
+
+                return std::nullopt;
             }
 
-
-            else if (auto component = value.tryGetComponent()) {
-                registry[component->getName()](component->getValue())(value, field, scope);
-            }
-
-            return "Error: component or text was expected; NOT component was received";
+            return "Error: Component or Text expected";
         }
 
     protected:
@@ -186,11 +181,8 @@ namespace SGCore::UI
         void checkForMeshGenerating(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept;
     };
 
-    static_assert(SGCore::UI::Deserialization::ImplDeserializable<SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue, UIElement>);
-    static_assert(SGCore::UI::Deserialization::ImplDeserializableContainer<SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue, Scope<UIElement>>);
+    static_assert(SGCore::UI::Deserialization::ImplDeserializable<UIElement>);
+    static_assert(SGCore::UI::Deserialization::ImplDeserializableContainer<Scope<UIElement>>);
 
-    #define sg_deser_type UIElement
-    #define sg_deser_children m_children
-    #define sg_deser_properties(prop) prop(style)
-    #include "Deserialization/ImplDeserializableStruct.h"
+
 }

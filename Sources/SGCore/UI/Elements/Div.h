@@ -1,5 +1,4 @@
-#ifndef DIV_H
-#define DIV_H
+#pragma once
 
 #include "SGCore/UI/UIElement.h"
 #include "SGCore/Utils/Macroses.h"
@@ -28,9 +27,4 @@ namespace SGCore::UI
 
         void doGenerateMesh(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept final;
     };
-
-#define sg_deser_type Div
-#define sg_deser_base UIElement
-#include <SGCore/UI/Deserialization/ImplDeserializableStruct.h>
 }
-#endif // DIV_H

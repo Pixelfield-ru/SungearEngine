@@ -2,108 +2,128 @@
 
 #include <pugixml.hpp>
 #include <ranges>
-#include <variant>
 
+#include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/UI/Parser/UISourceTreeView.h"
+#include "SGCore/Utils/Macroses.h"
 
-namespace SGCore::UI
+namespace SGCore::UI::XML
 {
-    struct XMLSourceTreeView
+    struct XMLSourceTreeViewObject;
+
+    struct XMLSourceTreeViewValue : UISourceTreeViewValue
     {
-        struct UISourceTreeViewValue
-        {
-            std::variant<pugi::xml_node, pugi::xml_attribute> m_node;
-            bool m_isObject = false;
+        ~XMLSourceTreeViewValue() override = default;
 
-            explicit(false) UISourceTreeViewValue(const decltype(m_node)& node, const bool isObject = false) : m_node(node), m_isObject(isObject) {}
+        static inline std::string propertyKW = "property";
+        static inline std::string propertyNameKW = "name";
+        static inline std::string objectKW = "object";
 
-            struct UISourceTreeViewObject
-            {
-                inline const static std::string propertyObjectKW = "property";
-                inline const static std::string objectKW = "object";
-                inline const static std::string varKW = "var";
+        static Scope<XMLSourceTreeViewValue> createValueFromNode(pugi::xml_node node, bool ignorePropertyKW = false);
+        // Ignores attr name
+        static Scope<XMLSourceTreeViewValue> createFromAttrValue(pugi::xml_attribute attr);
 
-                pugi::xml_node m_node;
-                explicit(false) UISourceTreeViewObject(const pugi::xml_node node) : m_node(node) {}
+        UISourceTreeViewObject* tryGetObject() override;
+        UISourceTreeViewComponent* tryGetComponent() override;
+        std::optional<std::string_view> tryGetString() override;
+        std::optional<int> tryGetInt() override;
+        std::optional<float> tryGetFloat() override;
+        UISourceTreeViewReference* tryGetReference() override;
+    };
 
-                struct UISourceTreeViewObjectProperty
-                {
-                    std::variant<pugi::xml_attribute, pugi::xml_node> m_attribute;
+    struct XMLPrimitive final : XMLSourceTreeViewValue
+    {
+        ~XMLPrimitive() override = default;
+        explicit XMLPrimitive(const std::string_view value) : m_value(value) {}
+        std::string_view m_value;
+    };
 
-                    explicit(false) UISourceTreeViewObjectProperty(const decltype(m_attribute)& attribute) : m_attribute(attribute) {};
+    struct XMLChildrenCollection final : UISourceTreeViewObject::ChildrenCollection
+    {
+        ~XMLChildrenCollection() override = default;
 
-                    [[nodiscard]] std::string_view getName() const;
-                    UISourceTreeViewValue getValue();
-                };
+        std::vector<Scope<UISourceTreeViewValue>> m_children;
 
-                [[nodiscard]] auto children() const noexcept  {
-                    return m_node.children()
-                    | std::ranges::views::filter([](auto val) {
-                        return val.name() != propertyObjectKW;
-                    })
-                    | std::ranges::views::transform([](auto val) {
-                        return UISourceTreeViewValue(val);
-                    });
-                }
+        Iterator begin() override;
+        Iterator end() override;
+        UISourceTreeViewValue& operator[](int index) override;
+    };
 
-                [[nodiscard]] auto properties() const noexcept {
-                    auto attrs =  m_node.attributes()
-                        | std::ranges::views::transform([](auto val) {
-                            return UISourceTreeViewObjectProperty(val);
-                    }) | std::ranges::to<std::vector>();
+    struct XMLSourceTreeViewObjectProperty final : XMLSourceTreeViewValue, UISourceTreeViewObjectProperty
+    {
+        ~XMLSourceTreeViewObjectProperty() override = default;
 
-                    auto children = m_node.children()
-                    | std::ranges::views::filter([](auto val) {
-                        return val.name() == propertyObjectKW;
-                    })
-                    | std::ranges::views::transform([](auto val) {
-                        return UISourceTreeViewObjectProperty(val);
-                    });
+        std::string_view m_name;
+        Scope<UISourceTreeViewValue> m_value;
 
-                    attrs.append_range(children);
+        XMLSourceTreeViewObjectProperty(const decltype(m_name) name, decltype(m_value) value) : m_name(name), m_value(std::move(value)) {}
+        move_constructor(XMLSourceTreeViewObjectProperty) = default; // for vector<property>
 
-                    return attrs;
-                }
-            };
+        std::string_view getName() override;
+        UISourceTreeViewValue& getValue() override;
+    };
 
-            [[nodiscard]] std::optional<UISourceTreeViewObject> tryGetObject() const noexcept;
+    struct XMLPropertiesCollection final : UISourceTreeViewObject::PropertiesCollection
+    {
+        ~XMLPropertiesCollection() override = default;
 
-            struct UISourceTreeViewComponent
-            {
-                pugi::xml_node m_node;
+        std::vector<XMLSourceTreeViewObjectProperty> m_properties;
 
-                [[nodiscard]] std::string_view getName() const noexcept;
-                UISourceTreeViewValue getValue() noexcept;
-            };
+        Iterator begin() override;
+        Iterator end() override;
+        UISourceTreeViewObjectProperty& operator[](int index) override;
+    };
 
-            [[nodiscard]] std::optional<UISourceTreeViewComponent> tryGetComponent() const noexcept;
+    struct XMLSourceTreeViewObject final : XMLSourceTreeViewValue, UISourceTreeViewObject
+    {
+        ~XMLSourceTreeViewObject() override = default;
 
-            // TODO: change to pugi::char_t* or something like that
-            [[nodiscard]] std::optional<std::string> tryGetString() const noexcept;
-            [[nodiscard]] std::optional<float> tryGetFloat() const noexcept;
-            [[nodiscard]] std::optional<int> tryGetInt() const noexcept;
+        /**
+         * @note Ignores node name
+         */
+        static Scope<XMLSourceTreeViewObject> createObjectFromNode(pugi::xml_node node, bool ignorePropertyKW = false);
 
-            struct UISourceTreeViewReference
-            {
-                // TODO: Change to char_t
-                std::string m_path;
+        XMLChildrenCollection m_children;
+        XMLPropertiesCollection m_properties;
 
-                [[nodiscard]] std::string_view getPath() const noexcept;
-            };
+        ChildrenCollection& children() override;
+        PropertiesCollection& properties() override;
+    };
 
-            [[nodiscard]] std::optional<UISourceTreeViewReference> tryGetRef() const noexcept;
-        };
+    struct XMLSourceTreeViewComponent final : XMLSourceTreeViewValue, UISourceTreeViewComponent
+    {
+        ~XMLSourceTreeViewComponent() override = default;
 
-        struct UISourceTreeViewHandler
-        {
-            pugi::xml_document m_doc;
+        static Scope<XMLSourceTreeViewComponent> createFromNode(pugi::xml_node node, bool ignorePropertiesKW = false);
 
-            explicit UISourceTreeViewHandler(std::string_view content);
+        std::string_view m_name;
+        Scope<UISourceTreeViewValue> m_value;
 
-            [[nodiscard]] UISourceTreeViewValue getRoot() const noexcept;
-        };
+        std::string_view getName() override;
+        UISourceTreeViewValue& getValue() override;
+    };
 
-        static UISourceTreeViewHandler create(std::string_view content);
-    }; static_assert(ImplUISourceTreeView<XMLSourceTreeView>);
+    struct XMLSourceTreeViewHandler final : UISourceTreeViewHandler
+    {
+        move_constructor(XMLSourceTreeViewHandler) = default;
 
+        Scope<XMLSourceTreeViewValue> m_value;
+
+        explicit XMLSourceTreeViewHandler(pugi::xml_node root);
+
+        ~XMLSourceTreeViewHandler() override = default;
+
+        UISourceTreeViewValue& getRoot() override;
+    };
+
+    struct XMLSourceTreeViewReference final : XMLSourceTreeViewValue, UISourceTreeViewReference
+    {
+        ~XMLSourceTreeViewReference() override = default;
+
+        explicit XMLSourceTreeViewReference(std::string_view path);
+
+        std::string_view m_path;
+
+        std::string_view getPath() override;
+    };
 }

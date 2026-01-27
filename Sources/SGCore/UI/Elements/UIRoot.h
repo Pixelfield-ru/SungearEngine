@@ -19,8 +19,6 @@ namespace SGCore::UI
         copy_operator(UIRoot) = default;
         move_operator(UIRoot) = default;
 
-        static UIRoot createFrom();
-
         SG_IMPL_DESERIALIZABLE(UIRoot);
 
     protected:
@@ -29,7 +27,5 @@ namespace SGCore::UI
 
         void doGenerateMesh(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept final;
     };
-    #define sg_deser_type UIRoot
-    #define sg_deser_base UIElement
-    #include <SGCore/UI/Deserialization/ImplDeserializableStruct.h>
+
 }

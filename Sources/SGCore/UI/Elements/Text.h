@@ -1,5 +1,4 @@
-#ifndef TEXT_H
-#define TEXT_H
+#pragma once
 
 #include "SGCore/Memory/Assets/FontSpecialization.h"
 #include "SGCore/UI/AttributeValue.h"
@@ -37,7 +36,7 @@ namespace SGCore::UI
         [[nodiscard]] Scope<UIElement> copy() const noexcept override;
 
         SG_IMPL_DESERIALIZABLE(Text) {
-            return Deserialization::Deserializer<UISourceTreeViewValue, std::string>::deserializeInto(value, field.m_text, scope);
+            return Deserialization::Deserializer<std::string>::deserializeInto(value, field.m_text, scope);
         }
 
     protected:
@@ -62,4 +61,3 @@ namespace SGCore::UI
 #define sg_deser_base UIElement
 #include <SGCore/UI/Deserialization/ImplDeserializableStruct.h>*/
 }
-#endif // TEXT_H

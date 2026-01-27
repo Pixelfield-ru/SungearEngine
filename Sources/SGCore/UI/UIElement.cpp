@@ -1,5 +1,7 @@
 #include "UIElement.h"
 
+#include "Elements/Div.h"
+#include "Elements/Text.h"
 #include "UIElementMesh/UIElementMesh.h"
 
 void SGCore::UI::UIElement::useUniforms(UIElementCache& thisElementCache) const noexcept
@@ -116,9 +118,32 @@ SGCore::UI::UIElement* const SGCore::UI::UIElement::findPlace(const std::string&
     return nullptr;
 }
 
+template<typename T>
+auto createRegistryEntry() {
+    return [](SGCore::UI::UISourceTreeViewValue& value, SGCore::UI::UIElement*& element, SGCore::UI::Deserialization::DeserScope& scope) -> SGCore::UI::Deserialization::DeserializeIntoResultType {
+        element = new T{};
+        auto divPointer = dynamic_cast<T*>(element); // TODO: static_cast?
+
+        return SGCore::UI::Deserialization::Deserializer<T>::deserializeInto(value, *divPointer, scope);
+    };
+}
+
+decltype(SGCore::UI::UIElement::m_registry) SGCore::UI::UIElement::m_registry = {
+    {"div", createRegistryEntry<Div>()}
+};
+
+decltype(SGCore::UI::UIElement::m_createTextComponent) SGCore::UI::UIElement::m_createTextComponent =
+    [](std::string_view text, UIElement*& element, Deserialization::DeserScope& scope) -> Deserialization::DeserializeIntoResultType {
+        element = new Text();
+        auto textPointer = dynamic_cast<Text*>(element);
+        textPointer->m_text = text;
+
+        return std::nullopt;
+};
+
 void SGCore::UI::UIElement::doCopy(UIElement& to) const noexcept
 {
-    to.m_style = m_style;
+    to.m_style = MakeScope<Style>(*m_style);
     // to->m_name = m_name;
 
     to.m_shader = m_shader;
@@ -151,3 +176,8 @@ void SGCore::UI::UIElement::checkForMeshGenerating(const UIElementCache* parentE
         }
     }
 }
+
+#define sg_deser_type SGCore::UI::UIElement
+#define sg_deser_children m_children
+#define sg_deser_properties(prop) prop(style)
+#include "Deserialization/ImplDeserializableStruct.h"

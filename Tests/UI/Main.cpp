@@ -5,24 +5,30 @@
 #include <SGCore/UI/Deserialization/DeserializeField.h>
 
 #include "SGCore/UI/Elements/Div.h"
+#include "SGCore/UI/Elements/Text.h"
 #include "SGCore/UI/Elements/UIRoot.h"
 
-std::string testString = "<root><div>Test text <div>Other text</div></div></root>";
+std::string testString = "<div>Test text <div>Other text</div></div>";
 
 void coreInit()
 {
-    // SGCore::Scope<SGCore::UI::UIElement> test = std::make_unique<SGCore::UI::Div>();
+    pugi::xml_document doc;
+    doc.load_string(testString.data());
 
-    auto source = SGCore::UI::XMLSourceTreeView::create(testString);
-    SGCore::Scope<SGCore::UI::UIRoot> uiRoot;
-    SGCore::UI::Deserialization::Deserializer<
-        SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue,
-        SGCore::Scope<SGCore::UI::UIRoot>
-    >::deserializeInto(
-        source.getRoot(),
-        uiRoot,
-        SGCore::UI::Deserialization::DeserScope<SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue>(nullptr)
-    );
+    SGCore::UI::XML::XMLSourceTreeViewHandler handler {doc.root()};
+
+    SGCore::UI::UIRoot root;
+    auto result = SGCore::UI::Deserialization::Deserializer<SGCore::UI::UIRoot>::deserializeInto(handler.getRoot(), root, SGCore::UI::Deserialization::DeserScope{nullptr});
+    if (result) {
+        std::cout << "Deserialize failed!" << std::endl;
+        std::cout << *result << std::endl;
+    } else {
+        bool tok = false;
+        root.iterate([](SGCore::UI::UIElement* parent, SGCore::UI::UIElement* elem) {
+            std::cout << typeid(*elem).name() << std::endl;
+        }, tok);
+        std::cout << root.m_children.size() << std::endl;
+    }
 
 
 }
