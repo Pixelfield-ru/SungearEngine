@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DIV_H
+#define DIV_H
 
 #include "SGCore/UI/UIElement.h"
 #include "SGCore/Utils/Macroses.h"
@@ -14,10 +15,12 @@ namespace SGCore::UI
         copy_constructor(Div) = default;
         move_constructor(Div) = default;
 
-        [[nodiscard]] Ref<UIElement> copy() const noexcept override;
+        [[nodiscard]] Scope<UIElement> copy() const noexcept override;
 
         copy_operator(Div) = default;
         move_operator(Div) = default;
+
+        SG_IMPL_DESERIALIZABLE(Div);
 
     protected:
         void doCalculateLayout(const UIElementCache* parentSelectorCache, UIElementCache& thisSelectorCache,
@@ -25,4 +28,9 @@ namespace SGCore::UI
 
         void doGenerateMesh(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept final;
     };
+
+#define sg_deser_type Div
+#define sg_deser_base UIElement
+#include <SGCore/UI/Deserialization/ImplDeserializableStruct.h>
 }
+#endif // DIV_H

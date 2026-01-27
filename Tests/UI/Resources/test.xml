@@ -3,7 +3,8 @@
     <include type="xml" path="templates.xml"/>
     <include type="xml" path="${enginePath}/Resources/ui/xml/templates.xml"/>
 
-    <div name="InputDiv">
+    <div id="InputDiv">
+
         <div class="text-box" name="InputDiv1">
             <text class="test-text-1" name="InputText">{{ myText }}</text>
         </div>

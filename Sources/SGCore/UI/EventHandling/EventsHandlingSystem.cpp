@@ -8,6 +8,7 @@
 #include "UIEventHandlersRegistry.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/UI/UIComponent.h"
+#include "SGCore/UI/UIElement.h"
 
 void SGCore::UI::EventsHandlingSystem::update(const double& dt, const double& fixedDt) noexcept
 {
@@ -34,9 +35,9 @@ void SGCore::UI::EventsHandlingSystem::update(const double& dt, const double& fi
 
                     if(eventHandler->isChangesStyle())
                     {
-                        if(!currentUIElement.m_mainStyle) continue;
+                        if(!currentUIElement.m_style) continue;
 
-                        auto pseudoClassStyle = currentUIElement.m_mainStyle->m_pseudoClassesStyles[eventHandler->getEventNameHash()];
+                        auto pseudoClassStyle = currentUIElement.m_style->m_pseudoClassesStyles[eventHandler->getEventNameHash()];
                         if(!pseudoClassStyle) continue;
 
                         currentElementCache.m_currentFrameStyles.push_back(pseudoClassStyle.get());
@@ -44,9 +45,9 @@ void SGCore::UI::EventsHandlingSystem::update(const double& dt, const double& fi
                 }
             }
 
-            if(currentElementCache.m_currentFrameStyles.empty() && currentUIElement.m_mainStyle)
+            if(currentElementCache.m_currentFrameStyles.empty() && currentUIElement.m_style)
             {
-                currentElementCache.m_currentFrameStyles.push_back(currentUIElement.m_mainStyle.get());
+                currentElementCache.m_currentFrameStyles.push_back(currentUIElement.m_style.get());
             }
         },
         *uiComponent.m_document.get(),

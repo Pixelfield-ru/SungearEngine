@@ -1,9 +1,4 @@
-//
-// Created by ilya on 23.02.24.
-//
-
-#ifndef SUNGEARENGINE_UIDOCUMENT_H
-#define SUNGEARENGINE_UIDOCUMENT_H
+#pragma once
 
 #include <pugixml.hpp>
 
@@ -79,5 +74,3 @@ namespace SGCore::UI
         std::vector<std::ptrdiff_t> m_debugOffsets;
     };
 }
-
-#endif //SUNGEARENGINE_UIDOCUMENT_H

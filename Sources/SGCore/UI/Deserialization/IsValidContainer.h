@@ -26,13 +26,13 @@ namespace SGCore::UI::Deserialization
         using Container_t = Scope<T>;
 
         static std::reference_wrapper<ValueType_t> prepare(Container_t<ValueType_t>& field) {
-            field = Container_t {};
+            field = MakeScope<ValueType_t>();
             return *field;
         }
 
-        template<typename T> requires requires(T val) {Container_t<ValueType_t> {val};}
+        template<typename T> // TODO: require that T is derived and so on
         static std::reference_wrapper<T> prepareWith(Container_t<ValueType_t>& field, T&& value) {
-            field = Container_t<ValueType_t> {std::forward<T>(value)};
+            field = MakeScope<T>(std::forward<T>(value));
             return static_cast<T>(*field);
         }
     };
@@ -46,13 +46,13 @@ namespace SGCore::UI::Deserialization
         using Container_t = Ref<T>;
 
         static std::reference_wrapper<ValueType_t> prepare(Container_t<ValueType_t>& field) {
-            field = Container_t {};
+            field = MakeRef<ValueType_t>();
             return *field;
         }
 
-        template<typename T> requires requires(T val) {Container_t<ValueType_t> {val};}
-        static std::reference_wrapper<ValueType_t> prepareWith(Container_t<ValueType_t>& field, T&& value) {
-            field = Container_t<ValueType_t> {std::forward<T>(value)};
+        template<typename T> // TODO: require that T is derived and so on
+        static std::reference_wrapper<T> prepareWith(Container_t<ValueType_t>& field, T&& value) {
+            field = MakeRef<T>(std::forward<T>(value));
             return static_cast<T>(*field);
         }
     };

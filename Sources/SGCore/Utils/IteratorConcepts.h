@@ -1,6 +1,7 @@
 #pragma once
 #include <iterator>
 #include <utility>
+
 namespace SGCore::Utils
 {
     template<typename Container, typename ValueType>
@@ -16,8 +17,8 @@ namespace SGCore::Utils
 
     template<typename Container>
     concept ForwardIteratorContainer = requires(Container c) {
-        typename Container::value_type;
-        typename Container::iterator;
+        // typename Container::value_type;
+        // typename Container::iterator;
         // typename Container::const_iterator;
 
         { c.begin() } -> std::forward_iterator;

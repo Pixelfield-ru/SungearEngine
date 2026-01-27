@@ -14,12 +14,14 @@ namespace SGCore::UI
         copy_constructor(UIRoot) = default;
         move_constructor(UIRoot) = default;
 
-        [[nodiscard]] Ref<UIElement> copy() const noexcept override;
+        [[nodiscard]] Scope<UIElement> copy() const noexcept override;
 
         copy_operator(UIRoot) = default;
         move_operator(UIRoot) = default;
 
         static UIRoot createFrom();
+
+        SG_IMPL_DESERIALIZABLE(UIRoot);
 
     protected:
         void doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,
@@ -27,4 +29,7 @@ namespace SGCore::UI
 
         void doGenerateMesh(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept final;
     };
+    #define sg_deser_type UIRoot
+    #define sg_deser_base UIElement
+    #include <SGCore/UI/Deserialization/ImplDeserializableStruct.h>
 }

@@ -7,7 +7,7 @@
 #include "SGCore/UI/Elements/Text.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Transformations/TransformUtils.h"
-#include "SGCore/UI/UINodesProcessors/UITextNodeProcessor.h"
+#include "SGCore/UI/UIDocument.h"
 
 
 void SGCore::UI::UILayoutCalculator::fixedUpdate(const double& dt, const double& fixedDt)
@@ -21,14 +21,14 @@ void SGCore::UI::UILayoutCalculator::fixedUpdate(const double& dt, const double&
         
         bool isTreeFormed = true;
         
-        processUIElement(-1, uiComponent, uiComponent.m_document->m_rootElement, nullptr, isTreeFormed);
+        processUIElement(-1, uiComponent, *uiComponent.m_document->m_rootElement, nullptr, isTreeFormed);
     });
 }
 
 std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t& parentUITreeNodeIdx,
                                                               UIComponent::reg_t& uiComponent,
-                                                              const Ref<UIElement>& currentUIElement,
-                                                              const Ref<UIElement>& parentUIElement,
+                                                              UIElement& currentUIElement,
+                                                              UIElement* const parentUIElement,
                                                               bool& isTreeFormed) noexcept
 {
     m_currentProceedUIElements++;
@@ -66,16 +66,16 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
 
     currentTransformNode.m_elementCurrentCache.m_layer = parentElementCache ? parentElementCache->m_layer + 1 : 0;
 
-    currentUIElement->calculateLayout(parentElementCache,
+    currentUIElement.calculateLayout(parentElementCache,
                                       currentTransformNode.m_elementLastCache,
                                       currentTransformNode.m_elementCurrentCache,
                                       parentTransform,
                                       currentTransformNode.m_transform);
 
-    for(const auto& child : currentUIElement->m_children)
+    for(const auto& child : currentUIElement.m_children)
     {
         const std::int64_t newChildNodeIdx = processUIElement(currentUITransformNodeIdx, uiComponent,
-                                                              child, currentUIElement, isTreeFormed);
+                                                              *child, &currentUIElement, isTreeFormed);
 
         // new child was created
         if(newChildNodeIdx != -1)
@@ -117,8 +117,8 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
 }
 
 void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildElement,
-                                                            const Ref<UIElement>& parentUIElement,
-                                                            const Ref<UIElement>& currentUIElement,
+                                                            UIElement* const parentUIElement,
+                                                            UIElement& currentUIElement,
                                                             UITransformTreeElement& parentElementTransform,
                                                             UITransformTreeElement& currentElementTransform) noexcept
 {
@@ -132,11 +132,11 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
 
     if(!parentStyle) return;
 
-    const size_t currentUIElementType = currentUIElement->getTypeHash();
+    const size_t currentUIElementType = currentUIElement.getTypeHash();
 
-    if(parentStyle->m_display == DisplayKeyword::KW_FLEX)
+    if(parentStyle->m_display == DisplayKeyword::SG_FLEX)
     {
-        if(parentStyle->m_flexDirection == FlexboxKeyword::KW_ROW)
+        if(parentStyle->m_flexDirection == FlexboxKeyword::SG_ROW)
         {
             // moving cursor to a new line if current element is bigger than (containerSize.x / 2 - rightPadding)
             if(parentElementCache.m_curLocalPositionForElements.x + elementCurrentCache.m_finalSize.x > parentElementCache.m_finalSize.x / 2.0f - parentElementCache.m_rightPadding &&
@@ -153,7 +153,7 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
             {
                 do
                 {
-                    auto* asTextElement = static_cast<Text*>(currentUIElement.get());
+                    auto* asTextElement = static_cast<Text*>(&currentUIElement);
 
                     if(elementCurrentCache.m_currentFrameStyles.empty()) break;
 
@@ -161,7 +161,7 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
 
                     if(!textStyle) break;
 
-                    const auto lockedFont = textStyle->m_font.lock();
+                    const auto lockedFont = textStyle->m_font.getValue().lock();
                     if(!lockedFont) break;
 
                     float curGlyphXPos = parentElementCache.m_curLocalPositionForElements.x;
@@ -169,7 +169,7 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
                     const auto fontSpec =
                         lockedFont->getSpecialization(textStyle->getFontSpecializationSettings());
 
-                    const std::u32string usedText = asTextElement->m_text.getOr();
+                    const auto usedText = asTextElement->m_text;
 
                     // iterating through all characters :(
                     for(size_t i = 0; i < usedText.size() && i < asTextElement->m_glyphs.size(); ++i)
@@ -216,7 +216,8 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
 
             parentElementCache.m_curLocalPositionForElements.x += elementCurrentCache.m_finalSize.x + parentElementCache.m_gap.x;
 
-            if(parentElementCache.m_contentSize.y + parentElementCache.m_lastRowSize.y > parentElementCache.m_finalSize.y && parentStyle->m_height.containsKeyword())
+            if(parentElementCache.m_contentSize.y + parentElementCache.m_lastRowSize.y > parentElementCache.m_finalSize.y &&
+                std::get_if<PositionAndSizeKeyword>(&parentStyle->m_height.getValue()))
             {
                 parentElementCache.m_finalSize.y = parentElementCache.m_contentSize.y + parentElementCache.m_lastRowSize.y;
 
@@ -224,12 +225,12 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
                 parentElementTransform.m_transform.m_ownTransform.m_position.y += (parentElementCache.m_finalSize.y - parentElementLastCache.m_finalSize.y) / 2.0f;
             }
         }
-        else if(parentStyle->m_flexDirection == FlexboxKeyword::KW_COLUMN)
+        else if(parentStyle->m_flexDirection == FlexboxKeyword::SG_COLUMN)
         {
 
         }
     }
-    else if(parentStyle->m_display == DisplayKeyword::KW_BLOCK)
+    else if(parentStyle->m_display == DisplayKeyword::SG_BLOCK)
     {
         glm::vec3 currentElementPos = parentElementCache.m_curLocalPositionForElements;
         if(currentUIElementType != Text::getTypeHashStatic())

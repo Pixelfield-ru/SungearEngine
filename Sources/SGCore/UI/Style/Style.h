@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vector>
 #include "SGCore/UI/TransformTree/UIElementCache.h"
 #include "SGCore/Memory/Assets/IAsset.h"
 #include "EnumProperties.h"
@@ -8,7 +7,6 @@
 #include "SGCore/Memory/Assets/Font.h"
 #include "SGCore/UI/DValue/DValueCowNode.h"
 #include "SGCore/Utils/Macroses.h"
-#include "SGCore/UI/DValue/DValueDestinationCacheNode.h"
 
 namespace SGCore::UI
 {
@@ -93,8 +91,11 @@ namespace SGCore::UI
 
         struct BorderRadius final
         {
-            DValue::DValueCacheNode<float> m_radiusX;
-            DValue::DValueCacheNode<float> m_radiusY;
+            // copy_constructor(BorderRadius) = default;
+            // move_constructor(BorderRadius) = default;
+
+            DValue::DValueCowNode<float> m_radiusX;
+            DValue::DValueCowNode<float> m_radiusY;
         };
 
         using BorderRadiusStyleProperty = DValue::DValueCowNode<std::variant<UniversalKeyword, BorderRadius>>;

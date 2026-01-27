@@ -1,109 +1,30 @@
 #include "Main.h"
 
-#include <SGCore/Memory/AssetManager.h>
-#include <SGCore/Main/CoreMain.h>
-#include <SGCore/Scene/Scene.h>
-#include <SGCore/Render/PBRRP/PBRRenderPipeline.h>
+#include "SGCore/Main/CoreMain.h"
+#include <SGCore/UI/UIElement.h>
+#include <SGCore/UI/Deserialization/DeserializeField.h>
 
-#include "SGCore/UI/Deserialization/DeserializeField.h"
-#include "SGCore/UI/Parser/UISourceTreeView.h"
-#include "SGCore/UI/Parser/XML/XMLSourceTreeView.h"
+#include "SGCore/UI/Elements/Div.h"
+#include "SGCore/UI/Elements/UIRoot.h"
 
-#include <iostream>
-#include <expected>
-
-struct Test2
-{
-    #define deser_struct Test2
-    #define deser_properties(prop) \
-        prop(test) \
-        prop(test2)
-
-    int m_test = -1;
-    int m_test2 = -1;
-
-    template<typename UISourceTreeViewValue> requires SGCore::UI::ImplUISourceTreeViewValue<UISourceTreeViewValue>
-    static SGCore::UI::Deserialization::DeserializeIntoResultType deserializeInto(UISourceTreeViewValue value, deser_struct& field) {
-
-        std::optional<typename UISourceTreeViewValue::UISourceTreeViewObject> valueAsMaybeObject = value.tryGetObject();
-        if (!valueAsMaybeObject.has_value()) { return "wrong object type"; }
-        auto object = *valueAsMaybeObject;
-
-        {
-            auto iter = object.properties();
-            for (auto prop : iter) {
-                auto propName = prop.getName();
-
-                if (propName == "test") {
-                    if (auto error = SGCore::UI::Deserialization::Deserializer<UISourceTreeViewValue, decltype(m_test)>::deserializeInto(prop.getValue(), field.m_test)) {
-                        return std::format("Error when parsing field {}.{}, error: {}", typeid(deser_struct).name(), "test", *error);
-                    }
-
-                    continue;
-                }
-
-                if (propName == "test2") {
-                    if (auto error = SGCore::UI::Deserialization::Deserializer<UISourceTreeViewValue, decltype(m_test2)>::deserializeInto(prop.getValue(), field.m_test2)) {
-                        return std::format("Error when parsing field {}.{}, error: {}", typeid(deser_struct).name(), "test2", *error);
-                    }
-
-                    continue;
-                }
-
-                return std::format("Unknown property {}", propName);
-            }
-        }
-        /*if (!SGCore::UI::Deserializer<UISourceTreeViewValue, decltype(m_test)>::deserializeInto(object.getProperty("test"), field.m_test))
-        { return false; }
-        if (!SGCore::UI::Deserializer<UISourceTreeViewValue, decltype(m_test2)>::deserializeInto(object.getProperty("test2"), field.m_test2))
-        { return false; }*/
-        return std::nullopt;
-    }
-};
-
-struct Test
-{
-    #undef deser_struct
-    #define deser_struct Test
-    #define deser_child_prop_require(prop) prop(objTest)
-
-    Test2 m_objTest;
-
-    template<typename UISourceTreeViewValue> requires SGCore::UI::ImplUISourceTreeViewValue<UISourceTreeViewValue>
-    static SGCore::UI::Deserialization::DeserializeIntoResultType deserializeInto(UISourceTreeViewValue value, deser_struct& field) {
-        std::optional<typename UISourceTreeViewValue::UISourceTreeViewObject> valueAsMaybeObject = value.tryGetObject();
-        if (!valueAsMaybeObject.has_value()) { return "wrong object type"; }
-        auto object = *valueAsMaybeObject;
-
-        {
-            auto objectChild = SGCore::UI::UITreeUtils::getSingleChildOfObject<UISourceTreeViewValue>(object);
-            if (!objectChild.has_value()) {
-                return std::format("Error when parsing {}: {}", "objTest", objectChild.error());
-            }
-
-            if (auto childDeserResult = decltype(m_objTest)::deserializeInto(*objectChild, field.m_objTest)) {
-                return std::format("Error when parsing {}: {}", "objTest", *childDeserResult);
-            }
-        }
-
-
-        return std::nullopt;
-    }
-};
-
-std::string testString = "<object><property id='123' name='test'>5</property></object>";
+std::string testString = "<root><div>Test text <div>Other text</div></div></root>";
 
 void coreInit()
 {
-    Test test {};
+    // SGCore::Scope<SGCore::UI::UIElement> test = std::make_unique<SGCore::UI::Div>();
 
-    const auto xmlTree = SGCore::UI::XMLSourceTreeView::create(testString);
-    auto deserResult = Test::deserializeInto(xmlTree.getRoot(), test);
-    std::cout << "DESER RESULT HAS ERROR: " << (deserResult.has_value() ? "true" : "false") << std::endl;
-    if (deserResult) {
-        std::cout << "Parsing error: " << *deserResult << std::endl;
-    }
-    std::cout << "val " << test.m_objTest.m_test << std::endl;
+    auto source = SGCore::UI::XMLSourceTreeView::create(testString);
+    SGCore::Scope<SGCore::UI::UIRoot> uiRoot;
+    SGCore::UI::Deserialization::Deserializer<
+        SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue,
+        SGCore::Scope<SGCore::UI::UIRoot>
+    >::deserializeInto(
+        source.getRoot(),
+        uiRoot,
+        SGCore::UI::Deserialization::DeserScope<SGCore::UI::XMLSourceTreeView::UISourceTreeViewValue>(nullptr)
+    );
+
+
 }
 
 void onUpdate(const double& dt, const double& fixedDt)

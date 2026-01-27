@@ -4,16 +4,25 @@
 #ifndef sg_deser_type
 #error "sg_deser_type not defined"
 #else
-
+;
 // TODO: wrap in a guard maybe?
 
+#include<SGCore/UI/Deserialization/Scope.h>
+
 template<typename UISourceTreeViewValue> requires SGCore::UI::ImplUISourceTreeViewValue<UISourceTreeViewValue>
-SGCore::UI::Deserialization::DeserializeIntoResultType sg_deser_type::deserializeInto(UISourceTreeViewValue value, sg_deser_type & self) {
+SGCore::UI::Deserialization::DeserializeIntoResultType sg_deser_type::deserializeInto(UISourceTreeViewValue value, sg_deser_type & self, SGCore::UI::Deserialization::DeserScope<UISourceTreeViewValue>& scope) {
     // Try to parse self as object
     // TODO: support "component singleValue;"
     std::optional<typename UISourceTreeViewValue::UISourceTreeViewObject> valueAsMaybeObject = value.tryGetObject();
     if (!valueAsMaybeObject.has_value()) { return "wrong object type"; }
     auto object = *valueAsMaybeObject;
+
+    #ifdef sg_deser_base
+    {
+        SGCore::UI::Deserialization::Deserializer<UISourceTreeViewValue, sg_deser_base>::deserializeInto(value, self, scope);
+    }
+    #undef sg_deser_base
+    #endif
 
     #ifdef sg_deser_properties
     {
@@ -75,4 +84,5 @@ SGCore::UI::Deserialization::DeserializeIntoResultType sg_deser_type::deserializ
 
     return std::nullopt;
 }
+#undef sg_deser_type
 #endif

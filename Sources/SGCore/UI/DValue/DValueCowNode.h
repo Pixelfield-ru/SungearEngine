@@ -13,8 +13,8 @@ namespace SGCore::UI::DValue
     {
         std::variant<T, DValueCacheNode<T>> m_value;
 
-        copy_constructor(DValueCowNode);
-        move_constructor(DValueCowNode);
+        copy_constructor(DValueCowNode) = default;
+        move_constructor(DValueCowNode) = default;
 
         explicit(false) DValueCowNode(T& initialValue) noexcept : m_value(initialValue) {}
         explicit(false) DValueCowNode(T&& initialValue) noexcept : m_value(std::move(initialValue)) {}
@@ -30,7 +30,7 @@ namespace SGCore::UI::DValue
 
         template<typename TV> requires std::convertible_to<TV, T>
         void setValue(TV&& value) noexcept {
-            m_value = std::forward<TV>(value);
+            m_value.template emplace<T>(std::forward<TV>(value));
         }
 
         T& operator*() const noexcept { return getValue(); }

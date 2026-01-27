@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TEXT_H
+#define TEXT_H
 
 #include "SGCore/Memory/Assets/FontSpecialization.h"
 #include "SGCore/UI/AttributeValue.h"
@@ -22,8 +23,7 @@ namespace SGCore::UI
         copy_operator(Text) = default;
         move_operator(Text) = default;
 
-        AttributeValue<std::u32string> m_text;
-        // std::u32string m_text;
+        std::string m_text;
 
         bool draw(const LayeredFrameReceiver::reg_t& cameraReceiver,
                   const Transform& elementTransform,
@@ -34,10 +34,14 @@ namespace SGCore::UI
 
         void clearGlyphs() noexcept;
 
-        [[nodiscard]] Ref<UIElement> copy() const noexcept override;
+        [[nodiscard]] Scope<UIElement> copy() const noexcept override;
+
+        SG_IMPL_DESERIALIZABLE(Text) {
+            return Deserialization::Deserializer<UISourceTreeViewValue, std::string>::deserializeInto(value, field.m_text, scope);
+        }
 
     protected:
-        /// todo: omg i have element size (m_basicSize) in selector but i cant use it because of order. i am calculating m_basicSize in draw function of struct Text and then i am calling m_mainStyle->calculateCache() in UILayoutCalculator so m_basicSize resets
+        /// todo: omg i have element size (m_basicSize) in selector but i cant use it because of order. i am calculating m_basicSize in draw function of struct Text and then i am calling m_style->calculateCache() in UILayoutCalculator so m_basicSize resets
         /// todo: so i need to hold this variable
         glm::vec2 m_textSize { };
         std::vector<const FontGlyph*> m_glyphs;
@@ -51,6 +55,11 @@ namespace SGCore::UI
 
         void doGenerateMesh(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept final;
 
-        void doCopy(const Ref<UIElement>& to) const noexcept override;
+        void doCopy(UIElement& to) const noexcept override;
     };
+
+/*#define sg_deser_type Text
+#define sg_deser_base UIElement
+#include <SGCore/UI/Deserialization/ImplDeserializableStruct.h>*/
 }
+#endif // TEXT_H

@@ -91,11 +91,12 @@ void SGCore::UI::UIElement::regenerateMesh(const UIElementCache* parentElementCa
     }
 }
 
-SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIElement::findElement(const std::string& name) noexcept
+SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIElement::findElement(const std::string& name) const noexcept
 {
     for(const auto& child : m_children)
     {
-        if(child->m_name == name) return child;
+        // TODO
+        // if(child->m_name == name) return child;
 
         if(auto found = child->findElement(name)) return found;
     }
@@ -103,11 +104,11 @@ SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIElement::findElement(const std:
     return nullptr;
 }
 
-SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIElement::findPlace(const std::string& placeName) const noexcept
+SGCore::UI::UIElement* const SGCore::UI::UIElement::findPlace(const std::string& placeName) const noexcept
 {
     for(const auto& child : m_children)
     {
-        if(child->m_places.contains(placeName)) return child;
+        if(child->m_places.contains(placeName)) return child.get();
 
         if(auto found = child->findPlace(placeName)) return found;
     }
@@ -115,23 +116,22 @@ SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIElement::findPlace(const std::s
     return nullptr;
 }
 
-void SGCore::UI::UIElement::doCopy(const Ref<UIElement>& to) const noexcept
+void SGCore::UI::UIElement::doCopy(UIElement& to) const noexcept
 {
-    to->m_mainStyle = m_mainStyle;
-    to->m_name = m_name;
+    to.m_style = m_style;
+    // to->m_name = m_name;
 
-    to->m_shader = m_shader;
+    to.m_shader = m_shader;
 
-    to->m_places = m_places;
+    to.m_places = m_places;
 
     for(const auto& child : m_children)
     {
-        to->m_children.push_back(child->copy());
+        to.m_children.push_back(child->copy());
     }
 }
 
-void SGCore::UI::UIElement::checkForMeshGenerating(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept
-{
+void SGCore::UI::UIElement::checkForMeshGenerating(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept {
     if(!m_meshData && !thisElementCache.m_currentFrameStyles.empty())
     {
         m_meshData = MakeRef<UIElementMesh>();
@@ -151,4 +151,3 @@ void SGCore::UI::UIElement::checkForMeshGenerating(const UIElementCache* parentE
         }
     }
 }
-

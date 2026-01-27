@@ -15,6 +15,8 @@ namespace SGCore::UI::DValue
         copy_constructor(DValueCacheNode) = default;
         move_constructor(DValueCacheNode) = default;
 
+        DValueCacheNode& operator =(const DValueCacheNode&) = default;
+
         DValueNodeInput<T> m_input {[this] (T val) {m_value = val;}};
     };
 }

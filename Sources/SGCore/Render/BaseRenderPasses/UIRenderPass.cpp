@@ -13,6 +13,7 @@
 #include "SGCore/Graphics/API/IVertexArray.h"
 #include "SGCore/UI/FontsManager.h"
 #include "SGCore/UI/FontSpecializationRenderer.h"
+#include "SGCore/UI/UIDocument.h"
 
 void SGCore::UIRenderPass::create(const Ref<IRenderPipeline>& parentRenderPipeline) noexcept
 {
@@ -42,7 +43,7 @@ void SGCore::UIRenderPass::render(const Scene* scene,
 
         cameraReceiver->m_layersFrameBuffer->bindAttachmentsToDrawIn(cameraReceiver->m_attachmentToRenderIn);
 
-        processUIElement(*cameraReceiver, uiComponent, uiComponent.m_document->m_rootElement, 0);
+        processUIElement(*cameraReceiver, uiComponent, *uiComponent.m_document->m_rootElement, 0);
 
         cameraReceiver->m_layersFrameBuffer->unbind();
     });
@@ -50,7 +51,7 @@ void SGCore::UIRenderPass::render(const Scene* scene,
 
 void SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::reg_t& cameraReceiver,
                                             UI::UIComponent& uiComponent,
-                                            const Ref<UI::UIElement>& currentUIElement,
+                                            UI::UIElement& currentUIElement,
                                             const size_t& currentTransformNodeIdx) noexcept
 {
     if(currentTransformNodeIdx >= uiComponent.m_transformTree.m_elements.size()) return;
@@ -60,11 +61,11 @@ void SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::reg_t& c
 
     // =================================================================== rendering uielement
 
-    const auto uiElementShader = currentUIElement->m_shader;
+    const auto uiElementShader = currentUIElement.m_shader;
 
-    const bool isElementCustomRendered = currentUIElement->draw(cameraReceiver, currentTransformNode.m_transform, currentElementCache);
+    const bool isElementCustomRendered = currentUIElement.draw(cameraReceiver, currentTransformNode.m_transform, currentElementCache);
 
-    if(!isElementCustomRendered && uiElementShader && currentUIElement->m_meshData)
+    if(!isElementCustomRendered && uiElementShader && currentUIElement.m_meshData)
     {
         const auto defaultPPLayer = cameraReceiver.getDefaultLayer();
 
@@ -83,31 +84,31 @@ void SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::reg_t& c
 
         uiElementShader->useVectorf("u_pickingColor", (glm::vec3) currentElementCache.m_uniqueColor.color());
 
-        currentUIElement->useUniforms(currentTransformNode.m_elementCurrentCache);
+        currentUIElement.useUniforms(currentTransformNode.m_elementCurrentCache);
 
         CoreMain::getRenderer()->renderArray(
-                currentUIElement->m_meshData->getVertexArray(),
+                currentUIElement.m_meshData->getVertexArray(),
                 m_meshRenderState,
-                currentUIElement->m_meshData->m_vertices.size(),
-                currentUIElement->m_meshData->m_indices.size()
+                currentUIElement.m_meshData->m_vertices.size(),
+                currentUIElement.m_meshData->m_indices.size()
         );
     }
 
     // ===================================================================
 
-    for(size_t i = 0; i < currentUIElement->m_children.size(); ++i)
+    for(size_t i = 0; i < currentUIElement.m_children.size(); ++i)
     {
         // if count of children in transform node != in ui element then clearing UIComponent transform tree
         // to fill it again in UILayoutCalculator.
         // it can be possible if uidocument was reloaded
-        if(currentUIElement->m_children.size() != currentTransformNode.m_children.size())
+        if(currentUIElement.m_children.size() != currentTransformNode.m_children.size())
         {
             uiComponent.m_transformTree = { };
             return;
         }
 
-        const auto& child = currentUIElement->m_children[i];
+        const auto& child = currentUIElement.m_children[i];
 
-        processUIElement(cameraReceiver, uiComponent, child, currentTransformNode.m_children[i]);
+        processUIElement(cameraReceiver, uiComponent, *child, currentTransformNode.m_children[i]);
     }
 }

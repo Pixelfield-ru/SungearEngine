@@ -9,21 +9,21 @@ SGCore::UI::Div::Div() noexcept
     m_shader = AssetManager::getInstance()->loadAsset<IShader>("${enginePath}/Resources/sg_shaders/features/ui/div.sgshader");
 }
 
-SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::Div::copy() const noexcept
+std::unique_ptr<SGCore::UI::UIElement> SGCore::UI::Div::copy() const noexcept
 {
-    auto element = MakeRef<Div>();
-    UIElement::doCopy(element);
+    auto element = MakeScope<Div>();
+    UIElement::doCopy(*element);
 
     return element;
 }
 
-void SGCore::UI::Div::doCalculateLayout(const UIElementCache* parentElementCache,
-                                        UIElementCache& thisElementCache,
+void SGCore::UI::Div::doCalculateLayout(const UIElementCache* parentSelectorCache,
+                                        UIElementCache& thisSelectorCache,
                                         const Transform* parentTransform, Transform& ownTransform) noexcept
 {
-    for(auto* style : thisElementCache.m_currentFrameStyles)
+    for(auto* style : thisSelectorCache.m_currentFrameStyles)
     {
-        style->calculateCache(parentElementCache, thisElementCache);
+        style->calculateCache(parentSelectorCache, thisSelectorCache);
     }
 }
 

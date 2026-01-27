@@ -11,32 +11,23 @@ SGCore::UI::UIRoot::UIRoot() noexcept
 {
     m_shader = AssetManager::getInstance()->loadAsset<IShader>("${enginePath}/Resources/sg_shaders/features/ui/div.sgshader");
     // default style for root
-    // m_mainStyle = AssetManager::getInstance()->getOrAddAssetByAlias<Style>("sgui_root_style");
+    // m_style = AssetManager::getInstance()->getOrAddAssetByAlias<Style>("sgui_root_style");
 
-    /*auto bottomRightRadius = MakeRef<CSSMathNumericNode>();
-    bottomRightRadius->m_value = 30.0f;
+    m_style->m_bottomRightBorderRadius.setValue(Style::BorderRadius {
+        .m_radiusX = 30.0f,
+        .m_radiusY = 30.0f
+    });
 
-    m_mainStyle->m_bottomRightBorderRadius.setWithAlternative({});
-    m_mainStyle->m_bottomRightBorderRadius.m_value = BorderRadiusAlternativeValue {
-        .m_radiusX = bottomRightRadius,
-        .m_radiusY = bottomRightRadius
-    };
-    */
-
-    /*auto topPadding = MakeRef<CSSMathNumericNode>();
-    topPadding->m_value = 250;
-
-    m_mainStyle->m_padding.setWithAlternative({});
-    m_mainStyle->m_padding.getFromAlternativeValue<0>() = topPadding;
-    m_mainStyle->m_padding.getFromAlternativeValue<3>() = topPadding;*/
+    m_style->m_paddingTop.setValue(250.0f);
+    m_style->m_paddingBottom.setValue(250.0f);
     
-    m_mainStyle->m_display = UI::DisplayKeyword::BLOCK;
+    m_style->m_display = DisplayKeyword::SG_BLOCK;
 }
 
-SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIRoot::copy() const noexcept
+std::unique_ptr<SGCore::UI::UIElement> SGCore::UI::UIRoot::copy() const noexcept
 {
-    auto element = MakeRef<UIRoot>();
-    UIElement::doCopy(element);
+    auto element = MakeScope<UIRoot>();
+    UIElement::doCopy(*element);
 
     return element;
 }
@@ -53,6 +44,8 @@ void SGCore::UI::UIRoot::doCalculateLayout(const UIElementCache* parentElementCa
 
     if(thisElementCache.m_currentFrameStyles.empty())
     {
+        // TODO: use m_MainStyle?
+
         thisElementCache.m_topPadding = { };
         thisElementCache.m_rightPadding = { };
         thisElementCache.m_bottomPadding = { };

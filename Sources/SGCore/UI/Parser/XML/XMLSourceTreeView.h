@@ -5,13 +5,9 @@
 #include <variant>
 
 #include "SGCore/UI/Parser/UISourceTreeView.h"
-#include <range/v3/view/concat.hpp>
-
-#include "SGCore/Logger/Logger.h"
 
 namespace SGCore::UI
 {
-
     struct XMLSourceTreeView
     {
         struct UISourceTreeViewValue
@@ -24,6 +20,8 @@ namespace SGCore::UI
             struct UISourceTreeViewObject
             {
                 inline const static std::string propertyObjectKW = "property";
+                inline const static std::string objectKW = "object";
+                inline const static std::string varKW = "var";
 
                 pugi::xml_node m_node;
                 explicit(false) UISourceTreeViewObject(const pugi::xml_node node) : m_node(node) {}
@@ -80,9 +78,20 @@ namespace SGCore::UI
 
             [[nodiscard]] std::optional<UISourceTreeViewComponent> tryGetComponent() const noexcept;
 
-            [[nodiscard]] std::optional<std::string_view> tryGetString() const noexcept;
+            // TODO: change to pugi::char_t* or something like that
+            [[nodiscard]] std::optional<std::string> tryGetString() const noexcept;
             [[nodiscard]] std::optional<float> tryGetFloat() const noexcept;
             [[nodiscard]] std::optional<int> tryGetInt() const noexcept;
+
+            struct UISourceTreeViewReference
+            {
+                // TODO: Change to char_t
+                std::string m_path;
+
+                [[nodiscard]] std::string_view getPath() const noexcept;
+            };
+
+            [[nodiscard]] std::optional<UISourceTreeViewReference> tryGetRef() const noexcept;
         };
 
         struct UISourceTreeViewHandler

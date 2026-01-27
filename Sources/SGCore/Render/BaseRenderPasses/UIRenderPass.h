@@ -26,7 +26,7 @@ namespace SGCore
          */
         void processUIElement(const LayeredFrameReceiver::reg_t& cameraReceiver,
                               UI::UIComponent::reg_t& uiComponent,
-                              const Ref<UI::UIElement>& currentUIElement,
+                              UI::UIElement& currentUIElement,
                               const size_t& currentTransformNodeIdx) noexcept;
     };
 }

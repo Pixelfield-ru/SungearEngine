@@ -26,13 +26,13 @@ namespace SGCore::UI
          */
         std::int64_t processUIElement(const std::int64_t& parentUITreeNodeIdx,
                                       UIComponent::reg_t& uiComponent,
-                                      const Ref<UIElement>& currentUIElement,
-                                      const Ref<UIElement>& parentUIElement,
+                                      UIElement& currentUIElement,
+                                      UIElement* parentUIElement,
                                       bool& isTreeFormed) noexcept;
 
         static void calculateElementLayout(bool isFirstChildElement,
-                                           const Ref<UIElement>& parentUIElement,
-                                           const Ref<UIElement>& currentUIElement,
+                                           UIElement* parentUIElement,
+                                           UIElement& currentUIElement,
                                            UITransformTreeElement& parentElementTransform,
                                            UITransformTreeElement& currentElementTransform) noexcept;
 

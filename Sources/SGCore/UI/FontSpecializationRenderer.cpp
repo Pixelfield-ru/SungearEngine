@@ -152,7 +152,7 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
     
     if(!lockedSpec) return;
 
-    const std::u32string* usedText = text->m_text.get();
+    const auto usedText = &text->m_text;
 
     if(!usedText || usedText->empty())
     {
