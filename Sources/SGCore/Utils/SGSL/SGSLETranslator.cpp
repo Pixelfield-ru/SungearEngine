@@ -160,13 +160,14 @@ std::string SGCore::SGSLETranslator::preprocessorPass(const std::filesystem::pat
                 if(!m_includedPaths.contains(includedFilePath))
                 {
                     const auto includedFile = AssetManager::getInstance()->loadAsset<TextFileAsset>(includedFilePath.u16string());
-                    if(std::filesystem::exists(includedFile->getPath().resolved()))
-                    {
-                        includedFile->reloadFromDisk();
-                    }
 
                     if(includedFile)
                     {
+                        if(std::filesystem::exists(includedFile->getPath().resolved()))
+                        {
+                            includedFile->reloadFromDisk();
+                        }
+
                         LOG_I(SGCORE_TAG, "Including path: '{}'", Utils::toUTF8(includedFilePath.u16string()));
 
                         outputCode += preprocessorPass(includedFilePath, includedFile->getData());

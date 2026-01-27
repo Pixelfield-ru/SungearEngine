@@ -20,6 +20,7 @@
 #include "SGCore/Render/SpacePartitioning/OctreeCullable.h"
 
 #include "SGCore/Memory/AssetManager.h"
+#include "SGCore/Render/RenderAbilities/EnableMeshPass.h"
 
 /*SGCore::Mesh::Mesh() noexcept
 {
@@ -221,6 +222,7 @@ SGCore::ECS::entity_t SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, con
     registry->emplace<Pickable>(meshEntity);
     Ref<Transform>& meshTransform = registry->emplace<Transform>(meshEntity, MakeRef<Transform>());
     Mesh& meshEntityMesh = registry->emplace<Mesh>(meshEntity);
+    registry->emplace<EnableMeshPass>(meshEntity);
     // NOT STANDARD
     // auto cullableMesh = registry->emplace<Ref<OctreeCullable>>(meshEntity, MakeRef<OctreeCullable>());
     // maybe can load the ram

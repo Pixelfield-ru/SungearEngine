@@ -6,13 +6,12 @@
 
 #include "SGCore/ECS/Registry.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
-#include "SGCore/Render/DisableMeshGeometryPass.h"
 #include "SGCore/Render/IRenderPipeline.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
 #include "SGCore/Render/RenderingBase.h"
-#include "SGCore/Render/Decals/Decal.h"
 #include "SGCore/Render/Instancing/Instancing.h"
 #include "SGCore/Render/Picking/Pickable.h"
+#include "SGCore/Render/RenderAbilities/EnableInstancingPass.h"
 #include "SGCore/Render/ShadowMapping/CSM/CSMTarget.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Utils/Assert.h"
@@ -33,12 +32,12 @@ void SGCore::PBRRPInstancingPass::render(const Scene* scene, const Ref<IRenderPi
 {
     const auto registry = scene->getECSRegistry();
 
-    auto instancingView = registry->view<EntityBaseInfo, Instancing>(ECS::ExcludeTypes<DisableMeshGeometryPass, Decal>{});
+    auto instancingView = registry->view<EntityBaseInfo, Instancing, EnableInstancingPass>();
 
     iterateCameras(scene, [&](const CameraRenderingInfo& cameraRenderingInfo) {
         instancingView.each([&](const ECS::entity_t& instancingEntity,
                                 EntityBaseInfo::reg_t& instancingEntityBaseInfo,
-                                Instancing::reg_t& instancing) {
+                                Instancing::reg_t& instancing, auto) {
             // todo: make layer choose
             Ref<PostProcessLayer> meshPPLayer = cameraRenderingInfo.m_cameraFrameReceiver->getDefaultLayer();
 

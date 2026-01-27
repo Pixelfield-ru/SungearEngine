@@ -4,11 +4,11 @@
 
 #include "PBRRPBatchingPass.h"
 
-#include "SGCore/Render/DisableMeshGeometryPass.h"
 #include "SGCore/Render/IRenderPipeline.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/Batching/Batch.h"
+#include "SGCore/Render/RenderAbilities/EnableBatchingPass.h"
 #include "SGCore/Render/ShadowMapping/CSM/CSMTarget.h"
 #include "SGCore/Scene/Scene.h"
 
@@ -26,10 +26,10 @@ void SGCore::PBRRPBatchingPass::render(const Scene* scene, const Ref<IRenderPipe
 {
     const auto registry = scene->getECSRegistry();
 
-    auto batchesView = registry->view<Batch>(ECS::ExcludeTypes<DisableMeshGeometryPass>{});
+    auto batchesView = registry->view<Batch, EnableBatchingPass>();
 
     iterateCameras(scene, [&](const CameraRenderingInfo& cameraRenderingInfo) {
-        batchesView.each([&](Batch& batch) {
+        batchesView.each([&](Batch& batch, auto) {
             // todo: add getting batch layer
             const Ref<PostProcessLayer> meshPPLayer = cameraRenderingInfo.m_cameraFrameReceiver->getDefaultLayer();
 

@@ -7,7 +7,6 @@
 #include "SGCore/ECS/Registry.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
-#include "SGCore/Render/DisableMeshGeometryPass.h"
 #include "SGCore/Render/IRenderPipeline.h"
 #include "SGCore/Render/Decals/Decal.h"
 #include "SGCore/Render/Mesh.h"
@@ -15,6 +14,7 @@
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/Instancing/Instancing.h"
 #include "SGCore/Render/Picking/Pickable.h"
+#include "SGCore/Render/RenderAbilities/EnableDecalPass.h"
 #include "SGCore/Render/ShadowMapping/CSM/CSMTarget.h"
 #include "SGCore/Utils/Assert.h"
 
@@ -35,8 +35,8 @@ void SGCore::PBRRPDecalsPass::render(const Scene* scene, const Ref<IRenderPipeli
     auto registry = scene->getECSRegistry();
 
     auto camerasView = registry->view<EntityBaseInfo, LayeredFrameReceiver, RenderingBase, Transform>();
-    auto decalsView = registry->view<EntityBaseInfo, Transform, Decal, Mesh>(ECS::ExcludeTypes<DisableMeshGeometryPass>{});
-    auto instancedDecalsView = registry->view<EntityBaseInfo, Decal, Instancing>(ECS::ExcludeTypes<DisableMeshGeometryPass>{});
+    auto decalsView = registry->view<EntityBaseInfo, Transform, Decal, Mesh, EnableDecalPass>();
+    auto instancedDecalsView = registry->view<EntityBaseInfo, Decal, Instancing, EnableDecalPass>();
 
     m_meshRenderState.use();
     m_renderState.use();
@@ -72,7 +72,7 @@ void SGCore::PBRRPDecalsPass::render(const Scene* scene, const Ref<IRenderPipeli
         const EntityBaseInfo::reg_t& decalInfo,
         const Transform::reg_t& decalTransform,
         const Decal::reg_t& decal,
-        Mesh::reg_t& decalMesh) {
+        Mesh::reg_t& decalMesh, auto) {
 
             Ref<PostProcessLayer> meshPPLayer =
                 decalMesh.m_base.m_layeredFrameReceiversMarkup[&cameraLayeredFrameReceiver].lock();
@@ -171,7 +171,7 @@ void SGCore::PBRRPDecalsPass::render(const Scene* scene, const Ref<IRenderPipeli
         const ECS::entity_t& decalEntity,
         const EntityBaseInfo::reg_t& decalInfo,
         const Decal::reg_t& decal,
-        Instancing::reg_t& instancing) {
+        Instancing::reg_t& instancing, auto) {
 
             Ref<PostProcessLayer> meshPPLayer = cameraLayeredFrameReceiver.getDefaultLayer();
 

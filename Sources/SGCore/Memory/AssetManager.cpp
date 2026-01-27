@@ -12,35 +12,21 @@
 
 #include <assimp/version.h>
 
-void SGCore::AssetManager::init() noexcept
-{
-    m_instance = getAssetManager("MainAssetManager");
-    m_instance->addStandardAssets();
-}
-
 void SGCore::AssetManager::addStandardAssets() noexcept
 {
-    /*if(!isAssetExists<IMeshData>("quad_mesh"))
     {
-        auto quad = getOrAddAssetByAlias<IMeshData>("quad_mesh");
-
-        quad->m_indices.push_back(0);
-        quad->m_indices.push_back(2);
-        quad->m_indices.push_back(1);
-
-        quad->m_indices.push_back(0);
-        quad->m_indices.push_back(3);
-        quad->m_indices.push_back(2);
-
-        quad->prepare();
-    }*/
-
-    {
-
-        // Serde::Serializer::fromFormat(FileUtils::readFile(InterpolatedPath("${enginePath}/Resources/materials/no_material.sgmat").resolved()), );
         auto standardMaterial = loadAsset<IMaterial>("${enginePath}/Resources/materials/no_material.sgmat");
         std::cout << "standard material: " << standardMaterial.get() << std::endl;
-        // standardMaterial->addTexture2D(SGTextureSlot::SGTT_DIFFUSE, loadAsset<ITexture2D>("${enginePath}/Resources/textures/no_material.png"));
+    }
+
+    {
+        auto standardVolumetricCloudsMaterial = getOrAddAssetByAlias<IMaterial>("standard_volumetric_clouds_material");
+
+        standardVolumetricCloudsMaterial->m_meshRenderState.m_useFacesCulling = true;
+        standardVolumetricCloudsMaterial->m_meshRenderState.m_facesCullingFaceType = SGFaceType::SGG_BACK_FACE;
+
+        standardVolumetricCloudsMaterial->m_shaders["VolumetricPass"] = loadAsset<IShader>("${enginePath}/Resources/sg_shaders/features/volumetric_fog.sgshader");
+        standardVolumetricCloudsMaterial->addTexture2D(SGTextureSlot::SGTT_NOISE, loadAsset<ITexture2D>("${enginePath}/Resources/textures/noise/voronoi_0.png"));
     }
 }
 
@@ -181,7 +167,7 @@ const std::string& SGCore::AssetManager::getName() const noexcept
 
 SGCore::Ref<SGCore::AssetManager> SGCore::AssetManager::getInstance() noexcept
 {
-    return m_instance;
+    return m_instance ? m_instance : (m_instance = getAssetManager("MainAssetManager"));
 }
 
 void SGCore::AssetManager::reloadAssetFromDisk(SGCore::IAsset* asset, SGCore::AssetsLoadPolicy loadPolicy,

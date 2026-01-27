@@ -37,8 +37,6 @@ namespace SGCore
 
         using assets_refs_container_t = std::unordered_map<size_t, std::unordered_map<size_t, AssetRef<IAsset>>>;
 
-        static void init() noexcept;
-
         void addStandardAssets() noexcept;
 
         AssetsLoadPolicy m_defaultAssetsLoadPolicy = AssetsLoadPolicy::SINGLE_THREADED;

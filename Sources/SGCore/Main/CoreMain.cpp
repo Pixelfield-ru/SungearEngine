@@ -123,9 +123,9 @@ void SGCore::CoreMain::init()
     AudioDevice::init();
     AudioDevice::getDefaultDevice()->makeCurrent();
 
-    AssetManager::init();
-
     m_renderer->init();
+
+    AssetManager::getInstance()->addStandardAssets();
 
     Paths::init();
     UI::FontsManager::getInstance().init();

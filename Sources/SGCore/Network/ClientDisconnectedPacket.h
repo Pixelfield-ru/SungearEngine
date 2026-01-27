@@ -2,8 +2,9 @@
 // Created by stuka on 19.08.2025.
 //
 
-#ifndef SUNGEARENGINE_NETWORK_CLIENTDISCONNECTEDPACKET_H
-#define SUNGEARENGINE_NETWORK_CLIENTDISCONNECTEDPACKET_H
+#pragma once
+
+#include <string>
 
 namespace SGCore::Net
 {
@@ -12,5 +13,3 @@ namespace SGCore::Net
         static inline std::string type_name = "SGCore::Net::ClientDisconnectedPacket";
     };
 }
-
-#endif // SUNGEARENGINE_NETWORK_CLIENTDISCONNECTEDPACKET_H

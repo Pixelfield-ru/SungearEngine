@@ -15,6 +15,7 @@
 #include "PBRRPOpaqueMeshesPass.h"
 #include "PBRRPTerrainsPass.h"
 #include "PBRRPTransparentMeshesPass.h"
+#include "PBRRPVolumetricPass.h"
 #include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/TextRenderPass.h"
 #include "SGCore/Render/BaseRenderPasses/ReceiverPickingPass.h"
@@ -90,6 +91,11 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
             "ShadowsGen/ObjectShader",
             "${enginePath}/Resources/sg_shaders/features/shadows_generator/object.sgshader"
     );
+
+    m_shadersPaths.addPath(
+            "VolumetricShader",
+            "${enginePath}/Resources/sg_shaders/features/volumetric_fog.sgshader"
+    );
     
     // configure render passes --------
 
@@ -143,6 +149,12 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
         auto terrainsPass = MakeRef<PBRRPTerrainsPass>();
 
         m_renderPasses.push_back(terrainsPass);
+    }
+
+    {
+        auto volumetricPass = MakeRef<PBRRPVolumetricPass>();
+
+        m_renderPasses.push_back(volumetricPass);
     }
 
     // ALWAYS AFTER GEOMETRY PASS

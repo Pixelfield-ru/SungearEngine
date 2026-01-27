@@ -5,11 +5,11 @@
 #include "PBRRPTerrainsPass.h"
 
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
-#include "SGCore/Render/DisableMeshGeometryPass.h"
 #include "SGCore/Render/IRenderPipeline.h"
 #include "SGCore/Render/Terrain/Terrain.h"
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/Picking/Pickable.h"
+#include "SGCore/Render/RenderAbilities/EnableTerrainPass.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Utils/Assert.h"
 
@@ -31,7 +31,7 @@ void SGCore::PBRRPTerrainsPass::render(const Scene* scene, const Ref<IRenderPipe
 {
     const auto registry = scene->getECSRegistry();
 
-    auto terrainsView = registry->view<EntityBaseInfo, Mesh, Transform, Terrain>(ECS::ExcludeTypes<DisableMeshGeometryPass>{});
+    auto terrainsView = registry->view<EntityBaseInfo, Mesh, Transform, Terrain, EnableTerrainPass>();
 
     m_meshRenderState.use();
 
@@ -40,7 +40,7 @@ void SGCore::PBRRPTerrainsPass::render(const Scene* scene, const Ref<IRenderPipe
                               EntityBaseInfo::reg_t& terrainEntityBaseInfo,
                               Mesh::reg_t& mesh,
                               Transform::reg_t& terrainTransform,
-                              const Terrain::reg_t& terrain) {
+                              const Terrain::reg_t& terrain, auto) {
             Ref<PostProcessLayer> meshPPLayer = mesh.m_base.m_layeredFrameReceiversMarkup[cameraRenderingInfo.m_cameraFrameReceiver].lock();
 
             if(!meshPPLayer)

@@ -14,6 +14,8 @@ namespace SGCore
 {
     struct ICommandsInvoker
     {
+        virtual ~ICommandsInvoker() = default;
+
         virtual void pushCommand(const std::shared_ptr<ICommand>& command)
         {
             m_notExecutedCommands.push(command);

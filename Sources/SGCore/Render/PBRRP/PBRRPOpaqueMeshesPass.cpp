@@ -8,16 +8,14 @@
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Render/Camera3D.h"
-#include "SGCore/Render/DisableMeshGeometryPass.h"
 #include "SGCore/Render/IRenderPipeline.h"
 #include "SGCore/Render/Alpha/OpaqueEntityTag.h"
-#include "SGCore/Render/Decals/Decal.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/Picking/Pickable.h"
+#include "SGCore/Render/RenderAbilities/EnableMeshPass.h"
 #include "SGCore/Render/ShadowMapping/CSM/CSMTarget.h"
-#include "SGCore/Render/Terrain/Terrain.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Utils/Assert.h"
 
@@ -37,7 +35,7 @@ void SGCore::PBRRPOpaqueMeshesPass::render(const Scene* scene, const Ref<IRender
 {
     auto registry = scene->getECSRegistry();
 
-    auto opaqueMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, OpaqueEntityTag>(ECS::ExcludeTypes<DisableMeshGeometryPass, Decal, Terrain>{});
+    auto opaqueMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, OpaqueEntityTag, EnableMeshPass>();
 
     // m_renderState.use();
 
@@ -45,7 +43,7 @@ void SGCore::PBRRPOpaqueMeshesPass::render(const Scene* scene, const Ref<IRender
         opaqueMeshesView.each([&](const ECS::entity_t& meshEntity,
                                        EntityBaseInfo::reg_t& meshedEntityBaseInfo,
                                        Mesh::reg_t& mesh, Transform::reg_t& meshTransform,
-                                       const auto&) {
+                                       auto, auto) {
             const bool willRender = cameraRenderingInfo.m_camera3D->isEntityVisibleForCamera(registry, cameraRenderingInfo.m_cameraEntity, meshEntity);
 
             if(!willRender) return;
@@ -134,7 +132,7 @@ void SGCore::PBRRPOpaqueMeshesPass::renderShadows(const Scene* scene, const Ref<
 {
     auto registry = scene->getECSRegistry();
 
-    auto opaqueMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, OpaqueEntityTag>(ECS::ExcludeTypes<DisableMeshGeometryPass, Decal, Terrain>{});
+    auto opaqueMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, OpaqueEntityTag, EnableMeshPass>();
 
     const auto& shadowGenShader = m_shadowsGenerationShader;
 
@@ -146,7 +144,7 @@ void SGCore::PBRRPOpaqueMeshesPass::renderShadows(const Scene* scene, const Ref<
     opaqueMeshesView.each([&](const ECS::entity_t& meshEntity,
                               EntityBaseInfo::reg_t& meshedEntityBaseInfo,
                               Mesh::reg_t& mesh, Transform::reg_t& meshTransform,
-                              const auto&) {
+                              const auto&, auto) {
         // todo:
         // const bool willRender = cameraRenderingInfo.m_camera3D->isEntityVisibleForCamera(registry, cameraRenderingInfo.m_cameraEntity, meshEntity);
 

@@ -15,6 +15,7 @@
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Render/Alpha/TransparentEntityTag.h"
 #include "SGCore/Render/Alpha/OpaqueEntityTag.h"
+#include "SGCore/Render/RenderAbilities/EnableMeshPass.h"
 #include "SGCore/Transformations/TransformUtils.h"
 
 SGCore::ECS::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
@@ -76,6 +77,8 @@ SGCore::ECS::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
         {
             registry->emplace<OpaqueEntityTag>(meshEntity);
         }
+
+        registry->emplace<EnableMeshPass>(meshEntity);
         // meshEntityMesh.m_base.m_meshData->setData(mesh);
 
         // meshComponent->addRequiredShaderPath("GeometryShader");

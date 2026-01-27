@@ -8,16 +8,14 @@
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Render/Camera3D.h"
-#include "SGCore/Render/DisableMeshGeometryPass.h"
 #include "SGCore/Render/IRenderPipeline.h"
 #include "SGCore/Render/Alpha/TransparentEntityTag.h"
-#include "SGCore/Render/Decals/Decal.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/Picking/Pickable.h"
+#include "SGCore/Render/RenderAbilities/EnableMeshPass.h"
 #include "SGCore/Render/ShadowMapping/CSM/CSMTarget.h"
-#include "SGCore/Render/Terrain/Terrain.h"
 #include "SGCore/Utils/Assert.h"
 
 void SGCore::PBRRPTransparentMeshesPass::create(const Ref<IRenderPipeline>& parentRenderPipeline)
@@ -36,7 +34,7 @@ void SGCore::PBRRPTransparentMeshesPass::render(const Scene* scene, const Ref<IR
 {
     auto registry = scene->getECSRegistry();
 
-    auto transparentMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, TransparentEntityTag>(ECS::ExcludeTypes<DisableMeshGeometryPass, Decal, Terrain>{});
+    auto transparentMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, TransparentEntityTag, EnableMeshPass>();
 
     // m_renderState.use();
 
@@ -44,7 +42,7 @@ void SGCore::PBRRPTransparentMeshesPass::render(const Scene* scene, const Ref<IR
         transparentMeshesView.each([&](const ECS::entity_t& meshEntity,
                                        EntityBaseInfo::reg_t& meshedEntityBaseInfo,
                                        Mesh::reg_t& mesh, Transform::reg_t& meshTransform,
-                                       const auto&) {
+                                       const auto&, auto) {
             const bool willRender = cameraRenderingInfo.m_camera3D->isEntityVisibleForCamera(registry, cameraRenderingInfo.m_cameraEntity, meshEntity);
 
             if(!willRender) return;
