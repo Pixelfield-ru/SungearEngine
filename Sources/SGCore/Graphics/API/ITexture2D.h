@@ -39,7 +39,7 @@ namespace SGCore
 
         sg_implement_type_id(ITexture2D, 1)
 
-        virtual ~ITexture2D() = default;
+        ~ITexture2D() override = default;
 
         SGTextureType m_type = SGTextureType::SG_TEXTURE2D;
         
@@ -52,6 +52,8 @@ namespace SGCore
 
         int m_mipLevel = 0;
         int m_layer = 0;
+        /// Used of count of layers. Can be used only for 3D texture.
+        int m_layersCount = 1;
         
         bool m_isCompressedFormat = false;
 
@@ -85,7 +87,7 @@ namespace SGCore
                     SGGColorInternalFormat internalFormat,
                     SGGColorFormat format)
         {
-            const size_t byteSize = width * height * getSGGInternalFormatChannelsSizeInBytes(internalFormat);
+            const size_t byteSize = width * height * m_layersCount * getSGGInternalFormatChannelsSizeInBytes(internalFormat);
 
             m_width = width;
             m_height = height;
@@ -94,7 +96,10 @@ namespace SGCore
             m_format = format;
 
             m_textureData = data_ptr(new std::uint8_t[byteSize]);
-            std::memcpy(m_textureData.get(), reinterpret_cast<const std::uint8_t*>(data), byteSize);
+            if(data)
+            {
+                std::memcpy(m_textureData.get(), reinterpret_cast<const std::uint8_t*>(data), byteSize);
+            }
 
             create();
         }
@@ -125,8 +130,11 @@ namespace SGCore
             m_internalFormat = internalFormat;
             m_format = format;
 
-            // TODO: IS IT NOT MEMORY LEAK OR UB???
-            m_textureData = data_ptr(reinterpret_cast<std::uint8_t*>(data));
+            if(data)
+            {
+                // TODO: IS IT NOT MEMORY LEAK OR UB???
+                m_textureData = data_ptr(reinterpret_cast<std::uint8_t*>(data));
+            }
 
             create();
         }
@@ -179,6 +187,7 @@ namespace SGCore
          * @param areaOffsetX X offset of area to subdata. In pixels!
          * @param areaOffsetY Y offset of area to subdata. In pixels!
          */
+        // todo: make for 3D texture
         void subTextureData(const std::uint8_t* data, std::size_t areaWidth, std::size_t areaHeight, std::size_t areaOffsetX, std::size_t areaOffsetY)
         {
             const int dataChannelsSize = getSGGInternalFormatChannelsSizeInBytes(m_internalFormat);

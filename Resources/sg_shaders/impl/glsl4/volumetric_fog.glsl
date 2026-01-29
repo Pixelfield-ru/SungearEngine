@@ -91,35 +91,147 @@ uniform vec3 u_pickingColor;
 
 uniform int SGPP_CurrentLayerIndex;
 
-uniform sampler2D mat_diffuseSamplers[1];
-uniform int mat_diffuseSamplers_CURRENT_COUNT;
+uniform sampler3D mat_noiseSamplers[1];
+uniform int mat_noiseSamplers_CURRENT_COUNT;
 
-uniform sampler2D mat_metalnessSamplers[1];
-uniform int mat_metalnessSamplers_CURRENT_COUNT;
+float u_sgVolumetricCoverage = 100.0;
+float u_sgVolumetricDensity = 0.1;
 
-uniform sampler2D mat_specularSamplers[1];
-uniform int mat_specularSamplers_CURRENT_COUNT;
-
-uniform sampler2D mat_normalsSamplers[1];
-uniform int mat_normalsSamplers_CURRENT_COUNT;
-
-uniform sampler2D mat_lightmapSamplers[1];
-uniform int mat_lightmapSamplers_CURRENT_COUNT;
-
-uniform sampler2D mat_diffuseRoughnessSamplers[1];
-uniform int mat_diffuseRoughnessSamplers_CURRENT_COUNT;
-
-uniform sampler2D mat_heightSamplers[1];
-uniform int mat_heightSamplers_CURRENT_COUNT;
-
-uniform float u_sgVolumetricCoverage;
-uniform float u_sgVolumetricDensity;
+// uniform float u_sgVolumetricCoverage;
+// uniform float u_sgVolumetricDensity;
 uniform vec3 u_sgMeshAABBMin;
 uniform vec3 u_sgMeshAABBMax;
 
+float detailScale = 10.0;
+float detailStrength = 10.0;
+
+float remap(float value, float originalMin, float originalMax, float newMin, float newMax)
+{
+    return newMin + (value - originalMin) / (originalMax - originalMin) * (newMax - newMin);
+}
+
+float sdfBox(vec3 p, vec3 boxCenter, vec3 halfSize)
+{
+    vec3 d = abs(p - boxCenter) - vec3(halfSize.x, halfSize.y, halfSize.z);
+    return length(max(d, 0.0)) + min(max(d.x, max(d.y, d.z)), 0.0);
+}
+
+float henyeyGreenstein(float cosAngle, float g)
+{
+    float g2 = g * g;
+    return ((1.0f - g2) / pow(1.0f + g2 - 2.0f * g * cosAngle, 1.5f)) / (4.0f * 3.1415f);
+}
+
+float combinedPhaseFunction(float cosAngle, float gHG, float ratio)
+{
+    float hg = henyeyGreenstein(cosAngle, gHG);
+    float rayleigh = (3.0f / (16.0f * 3.1415f)) * (1.0f + cosAngle * cosAngle);
+    return mix(rayleigh, hg, ratio); // ratio determines the mixing between Rayleigh and HG
+}
+
+vec3 ambientColor = vec3(0.05);
+
+vec3 cloudScrolling = vec3(1.0);
+float textureScale = 0.0001;
+
+float scatteringRatio = 1.0;
+float scatteringCoefficient = 2.0;
+
+float anisotropy = 0.1;
+
+float absorptionCoefficient = 0.0001;
+
+vec3 cloudColor = vec3(1.0);
+
+vec3 calculateLighting(vec3 currentPos, vec3 lightPosition, vec3 lightColor, vec3 rayDir, float stepDensity, float noise)
+{
+    vec3 lightDir = normalize(lightPosition);
+
+    // float cosTheta = max(dot(lightDir, -rayDir) / length(lightDir), 0);
+    float cosTheta = dot(lightDir, -rayDir);
+    float phase = combinedPhaseFunction(cosTheta, anisotropy, scatteringRatio);
+
+    return lightColor * phase * stepDensity * noise;
+}
+
+vec4 renderClouds()
+{
+    vec3 rayDir = normalize(vsIn.fragPos - camera.position);
+
+    //====
+    float distance = distance(vsIn.fragPos, camera.position);
+    //====
+    // float distance = 0;
+    float maxDistance = 10000;
+    float stepSize = 0.5;
+    float density = 0;
+
+    vec3 accumulatedLight = vec3(0.0);
+
+    float depthBufferValue = gl_FragCoord.z;
+
+    int error = 0;
+
+    // todo: fix incorrect rendering inside the cloud
+    while (distance < maxDistance)
+    {
+        vec3 currentPos = camera.position + rayDir * distance;
+        vec3 halfCubeSize = (u_sgMeshAABBMax - u_sgMeshAABBMin) / 2.0;
+        vec3 cubeCenter = objectTransform.position;
+
+        float distanceToCube = sdfBox(currentPos, cubeCenter, halfCubeSize);
+
+        float normalizeDepth = distance / maxDistance;
+
+        if (normalizeDepth > depthBufferValue)
+        {
+            break;
+        }
+
+        if (distanceToCube < stepSize)
+        {
+            vec3 relativePos = (currentPos - cubeCenter);
+            vec3 texCoords = (relativePos + 1.0) * 0.5; // Map to [0,1] range
+
+            // vec3 shiftedCoords = texCoords.xyz + vec3(cloudScrolling.x * programData.currentTime, cloudScrolling.y * programData.currentTime, cloudScrolling.z * programData.currentTime);
+            vec3 shiftedCoords = texCoords.xyz + cloudScrolling;
+            float noise = texture(mat_noiseSamplers[0], shiftedCoords * textureScale).r;
+
+            float stepDensity = (1.0 - distanceToCube / stepSize) * stepSize * noise;
+            density += stepDensity;
+
+            accumulatedLight += calculateLighting(currentPos, atmosphere.sunPosition, atmosphere.sunColor.rgb, rayDir, stepDensity, noise);
+        }
+        // else
+
+        //====
+        if(distanceToCube > 1000.0)
+        {
+            ++error;
+        }
+
+        if(error >= 5)
+        {
+            break;
+        }
+        //====
+
+        distance += stepSize;
+    }
+
+    float fogFactor = exp(-absorptionCoefficient * 0.1 * density);
+    fogFactor = clamp(fogFactor, 0.0, 1.0);
+
+    vec3 finalLight = accumulatedLight * exp(-absorptionCoefficient * scatteringCoefficient * density);
+
+    return vec4(cloudColor * finalLight, fogFactor);
+}
+
 void main()
 {
-    layerColor = vec4(1.0);
+    vec4 cloudResult = renderClouds();
+
+    layerColor = vec4(cloudResult.rgb, 1.0 - cloudResult.a);
 }
 
 #end

@@ -42,12 +42,17 @@ void SGCore::GL4Texture2D::create() noexcept
     }
     else
     {
+        const auto glTextureType = (m_type == SGTextureType::SG_TEXTURE2D) ? GL_TEXTURE_2D : GL_TEXTURE_3D;
+
         glGenTextures(1, &m_textureHandler);
-        glBindTexture(GL_TEXTURE_2D, m_textureHandler);
+        glBindTexture(glTextureType, m_textureHandler);
 
-        glPixelStorei(GL_UNPACK_ALIGNMENT, getSGGInternalFormatChannelsSizeInBytes(m_internalFormat) / m_channelsCount);
+        if(m_type == SGTextureType::SG_TEXTURE2D)
+        {
+            glPixelStorei(GL_UNPACK_ALIGNMENT, getSGGInternalFormatChannelsSizeInBytes(m_internalFormat) / m_channelsCount);
+        }
 
-        if(m_isCompressedFormat)
+        if(m_isCompressedFormat && m_type == SGTextureType::SG_TEXTURE2D)
         {
             // dds or ktx
             if(!m_gliTexture.empty())
@@ -96,19 +101,39 @@ void SGCore::GL4Texture2D::create() noexcept
         }
         else
         {
-            glTexImage2D(GL_TEXTURE_2D,
-                         0,
-                         GLGraphicsTypesCaster::sggInternalFormatToGL(m_internalFormat),
-                         m_width,
-                         m_height,
-                         0,
-                         GLGraphicsTypesCaster::sggFormatToGL(m_format),
-                         GLGraphicsTypesCaster::sggDataTypeToGL(m_dataType),
-                         m_textureData.get());
+            if(m_type == SGTextureType::SG_TEXTURE2D)
+            {
+                glTexImage2D(GL_TEXTURE_2D,
+                             0,
+                             GLGraphicsTypesCaster::sggInternalFormatToGL(m_internalFormat),
+                             m_width,
+                             m_height,
+                             0,
+                             GLGraphicsTypesCaster::sggFormatToGL(m_format),
+                             GLGraphicsTypesCaster::sggDataTypeToGL(m_dataType),
+                             m_textureData.get());
+            }
+            else if(m_type == SGTextureType::SG_TEXTURE3D)
+            {
+                glTexImage3D(GL_TEXTURE_3D,
+                             0,
+                             GLGraphicsTypesCaster::sggInternalFormatToGL(m_internalFormat),
+                             m_width,
+                             m_height,
+                             m_layersCount,
+                             0,
+                             GLGraphicsTypesCaster::sggFormatToGL(m_format),
+                             GLGraphicsTypesCaster::sggDataTypeToGL(m_dataType),
+                             m_textureData.get());
+            }
         }
         
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(glTextureType, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(glTextureType, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        if(m_type == SGTextureType::SG_TEXTURE3D)
+        {
+            glTexParameteri(glTextureType, GL_TEXTURE_WRAP_R, GL_REPEAT);
+        }
 
         /*glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);*/
@@ -117,11 +142,11 @@ void SGCore::GL4Texture2D::create() noexcept
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);*/
         // glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 
-        glGenerateMipmap(GL_TEXTURE_2D);
+        glGenerateMipmap(glTextureType);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(glTextureType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 #ifdef GL_VERSION_1_0
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0);
+        glTexParameteri(glTextureType, GL_TEXTURE_LOD_BIAS, 0);
 #else
 #warning "TODO: MAKE CHECK IF CURRENT GPU IS Qualcomm"
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS_QCOM, 0);
@@ -131,7 +156,7 @@ void SGCore::GL4Texture2D::create() noexcept
         {
             float amount = std::min(4.0f, DeviceGLInfo::getMaxTextureMaxAnisotropy());
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
+            glTexParameteri(glTextureType, GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
         }
     }
     
@@ -304,8 +329,9 @@ void SGCore::GL4Texture2D::bind(const std::uint8_t& textureUnit) const noexcept
 {
     if(m_type != SGTextureType::SG_TEXTURE_BUFFER)
     {
+        const auto glTextureType = (m_type == SGTextureType::SG_TEXTURE2D) ? GL_TEXTURE_2D : GL_TEXTURE_3D;
         glActiveTexture(GL_TEXTURE0 + textureUnit);
-        glBindTexture(GL_TEXTURE_2D, m_textureHandler);
+        glBindTexture(glTextureType, m_textureHandler);
     }
     else
     {

@@ -22,11 +22,9 @@ void SGCore::AssetManager::addStandardAssets() noexcept
     {
         auto standardVolumetricCloudsMaterial = getOrAddAssetByAlias<IMaterial>("standard_volumetric_clouds_material");
 
-        standardVolumetricCloudsMaterial->m_meshRenderState.m_useFacesCulling = true;
-        standardVolumetricCloudsMaterial->m_meshRenderState.m_facesCullingFaceType = SGFaceType::SGG_BACK_FACE;
+        standardVolumetricCloudsMaterial->m_meshRenderState.m_useFacesCulling = false;
 
         standardVolumetricCloudsMaterial->m_shaders["VolumetricPass"] = loadAsset<IShader>("${enginePath}/Resources/sg_shaders/features/volumetric_fog.sgshader");
-        standardVolumetricCloudsMaterial->addTexture2D(SGTextureSlot::SGTT_NOISE, loadAsset<ITexture2D>("${enginePath}/Resources/textures/noise/voronoi_0.png"));
     }
 }
 

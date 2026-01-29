@@ -167,6 +167,7 @@ enum class SGFrameBufferAttachmentType
 enum class SGTextureType
 {
     SG_TEXTURE2D,
+    SG_TEXTURE3D,
     SG_TEXTURE_BUFFER,
     SG_TEXTURE_CUBEMAP
 };
