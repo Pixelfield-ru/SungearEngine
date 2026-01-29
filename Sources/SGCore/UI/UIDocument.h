@@ -12,7 +12,7 @@ namespace SGCore::UI
     struct CSSFile;
     struct TemplateElement;
     
-    struct UIDocument : public IAsset
+    struct UIDocument : IAsset
     {
         friend struct UIElementNodeProcessor;
 
@@ -21,9 +21,7 @@ namespace SGCore::UI
         pugi::xml_document m_document;
 
         Ref<UIRoot> m_rootElement;
-        std::vector<Ref<TemplateElement>> m_templates;
 
-        std::vector<AssetRef<CSSFile>> m_includedCSSFiles;
         std::vector<AssetRef<UIDocument>> m_includedUIDocuments;
 
         BindingsStorage m_bindingsStorage;

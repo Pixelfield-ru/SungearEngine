@@ -42,10 +42,12 @@ namespace SGCore::UI
         Signal<void(UIElement* self)> onPointerHover;
 
         std::vector<Scope<UIElement>> m_children;
-        Weak<UIElement> m_parent;
-        std::unordered_set<std::string> m_places;
 
-        Scope<Style> m_style = MakeScope<Style>();
+        Weak<UIElement> m_parent;
+        // std::unordered_set<std::string> m_places; // TODO: Зачем это
+
+        Scope<Style> m_style = MakeScope<Style>(); // TODO: Support reference
+        std::unordered_map<std::string, DValue::DValueCowNode<float>> m_properties; // TODO: float -> any value and parsing support
 
         AssetRef<IShader> m_shader {};
 

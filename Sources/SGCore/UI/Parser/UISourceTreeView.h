@@ -88,12 +88,44 @@ namespace SGCore::UI
     {
         virtual ~UISourceTreeViewValue() = default;
 
-        virtual UISourceTreeViewObject* tryGetObject() = 0;
-        virtual UISourceTreeViewComponent* tryGetComponent() = 0;
-        virtual std::optional<std::string_view> tryGetString() = 0;
-        virtual std::optional<int> tryGetInt() = 0;
-        virtual std::optional<float> tryGetFloat() = 0;
-        virtual UISourceTreeViewReference* tryGetReference() = 0;
+        virtual UISourceTreeViewObject* tryGetObject() noexcept = 0;
+        virtual UISourceTreeViewComponent* tryGetComponent() noexcept = 0;
+        virtual std::optional<std::string_view> tryGetString() noexcept = 0;
+        virtual std::optional<int> tryGetInt() noexcept = 0;
+        virtual std::optional<float> tryGetFloat() noexcept = 0;
+        virtual UISourceTreeViewReference* tryGetReference() noexcept = 0;
+
+
+        /**
+         * Iterate over children values of node or over node itself if it doesn't have any children
+         *
+         * <b>For example: </b>
+         * @code {15; 10; 5;}@endcode would invoke callable with 15, 10 and 5;
+         *
+         * At the same time @code {20;}@endcode or @code 20;@endcode would invoke callable with value 20 once;
+         */
+        template<typename Callable> requires std::is_invocable_v<Callable, UISourceTreeViewValue&>
+        void procForAnyChildren(Callable callable) {
+            if (const auto object = tryGetObject()) {
+                for (auto& child : object->children()) {
+                    callable(child);
+                }
+            } else {
+                callable(*this);
+            }
+        }
+
+        /**
+         * Iterate over properties if value is object, nothing otherwise (should be used with @ref procForAnyChildren)
+         */
+        template<typename Callable> requires std::is_invocable_v<Callable, std::string_view&, UISourceTreeViewValue&>
+        void procForAnyProperties(Callable callable) {
+            if (const auto object = tryGetObject()) {
+                for (auto& property : object->properties()) {
+                    callable(property.getName(), property.getValue());
+                }
+            }
+        }
     };
 
     struct UISourceTreeViewHandler

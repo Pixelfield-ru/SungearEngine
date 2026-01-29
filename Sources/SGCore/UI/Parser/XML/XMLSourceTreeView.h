@@ -23,12 +23,12 @@ namespace SGCore::UI::XML
         // Ignores attr name
         static Scope<XMLSourceTreeViewValue> createFromAttrValue(pugi::xml_attribute attr);
 
-        UISourceTreeViewObject* tryGetObject() override;
-        UISourceTreeViewComponent* tryGetComponent() override;
-        std::optional<std::string_view> tryGetString() override;
-        std::optional<int> tryGetInt() override;
-        std::optional<float> tryGetFloat() override;
-        UISourceTreeViewReference* tryGetReference() override;
+        UISourceTreeViewObject* tryGetObject() noexcept override;
+        UISourceTreeViewComponent* tryGetComponent() noexcept override;
+        std::optional<std::string_view> tryGetString() noexcept override;
+        std::optional<int> tryGetInt() noexcept override;
+        std::optional<float> tryGetFloat() noexcept override;
+        UISourceTreeViewReference* tryGetReference() noexcept override;
     };
 
     struct XMLPrimitive final : XMLSourceTreeViewValue

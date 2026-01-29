@@ -30,11 +30,11 @@ SGCore::Scope<SGCore::UI::XML::XMLSourceTreeViewValue> SGCore::UI::XML::XMLSourc
     return std::move(MakeScope<XMLPrimitive>(attr.value()));
 }
 
-SGCore::UI::UISourceTreeViewObject* SGCore::UI::XML::XMLSourceTreeViewValue::tryGetObject() {
+SGCore::UI::UISourceTreeViewObject* SGCore::UI::XML::XMLSourceTreeViewValue::tryGetObject() noexcept {
     return dynamic_cast<XMLSourceTreeViewObject*>(this);
 }
 
-SGCore::UI::UISourceTreeViewComponent* SGCore::UI::XML::XMLSourceTreeViewValue::tryGetComponent() {
+SGCore::UI::UISourceTreeViewComponent* SGCore::UI::XML::XMLSourceTreeViewValue::tryGetComponent() noexcept {
     return dynamic_cast<XMLSourceTreeViewComponent*>(this);
 }
 
@@ -50,28 +50,28 @@ std::optional<T> tryParseFromStream(const char* str) {
     return std::nullopt;
 }
 
-std::optional<std::string_view> SGCore::UI::XML::XMLSourceTreeViewValue::tryGetString() {
+std::optional<std::string_view> SGCore::UI::XML::XMLSourceTreeViewValue::tryGetString() noexcept {
     if (const auto primitive = dynamic_cast<XMLPrimitive*>(this)) {
         return primitive->m_value;
     }
     return std::nullopt;
 }
 
-std::optional<int> SGCore::UI::XML::XMLSourceTreeViewValue::tryGetInt() {
+std::optional<int> SGCore::UI::XML::XMLSourceTreeViewValue::tryGetInt() noexcept {
     if (const auto primitive = dynamic_cast<XMLPrimitive*>(this)) {
         return tryParseFromStream<int>(primitive->m_value.data());
     }
     return std::nullopt;
 }
 
-std::optional<float> SGCore::UI::XML::XMLSourceTreeViewValue::tryGetFloat() {
+std::optional<float> SGCore::UI::XML::XMLSourceTreeViewValue::tryGetFloat() noexcept {
     if (const auto primitive = dynamic_cast<XMLPrimitive*>(this)) {
         return tryParseFromStream<float>(primitive->m_value.data());
     }
     return std::nullopt;
 }
 
-SGCore::UI::UISourceTreeViewReference* SGCore::UI::XML::XMLSourceTreeViewValue::tryGetReference() {
+SGCore::UI::UISourceTreeViewReference* SGCore::UI::XML::XMLSourceTreeViewValue::tryGetReference() noexcept {
     return dynamic_cast<XMLSourceTreeViewReference*>(this);
 }
 
