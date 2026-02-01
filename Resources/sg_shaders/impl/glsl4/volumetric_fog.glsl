@@ -116,6 +116,22 @@ float sdfBox(vec3 p, vec3 boxCenter, vec3 halfSize)
     return length(max(d, 0.0)) + min(max(d.x, max(d.y, d.z)), 0.0);
 }
 
+vec3 ambientColor = vec3(0.0);
+
+vec3 cloudScrolling = vec3(50.0);
+float perlinScale = 0.001;
+float worleyScale = 0.0001;
+
+float scatteringRatio = 0.8;
+// float scatteringCoefficient = 0.1;
+float scatteringCoefficient = 0.0;
+
+float anisotropy = 0.85;
+
+float absorptionCoefficient = 0.002;
+
+vec3 cloudColor = vec3(1.0, 0.95, 0.9);
+
 float henyeyGreenstein(float cosAngle, float g)
 {
     float g2 = g * g;
@@ -126,44 +142,54 @@ float combinedPhaseFunction(float cosAngle, float gHG, float ratio)
 {
     float hg = henyeyGreenstein(cosAngle, gHG);
     float rayleigh = (3.0f / (16.0f * 3.1415f)) * (1.0f + cosAngle * cosAngle);
-    return mix(rayleigh, hg, ratio); // ratio determines the mixing between Rayleigh and HG
+    return mix(rayleigh, hg, ratio);
 }
-
-vec3 ambientColor = vec3(0.05);
-
-vec3 cloudScrolling = vec3(1.0);
-float textureScale = 0.0001;
-
-float scatteringRatio = 1.0;
-float scatteringCoefficient = 2.0;
-
-float anisotropy = 0.1;
-
-float absorptionCoefficient = 0.0001;
-
-vec3 cloudColor = vec3(1.0);
 
 vec3 calculateLighting(vec3 currentPos, vec3 lightPosition, vec3 lightColor, vec3 rayDir, float stepDensity, float noise)
 {
     vec3 lightDir = normalize(lightPosition);
 
-    // float cosTheta = max(dot(lightDir, -rayDir) / length(lightDir), 0);
     float cosTheta = dot(lightDir, -rayDir);
     float phase = combinedPhaseFunction(cosTheta, anisotropy, scatteringRatio);
 
     return lightColor * phase * stepDensity * noise;
 }
 
+float increaseContrast(float value, float contrast)
+{
+    float midpoint = 0.5;
+    return (value - midpoint) * contrast + midpoint;
+}
+
+bool intersectRayAABB(vec3 ro, vec3 rd, vec3 boxMin, vec3 boxMax, out float t1, out float t2)
+{
+    vec3 invDir = 1.0 / rd;
+    vec3 t0 = (boxMin - ro) * invDir;
+    vec3 t1Temp = (boxMax - ro) * invDir;
+
+    vec3 tmin = min(t0, t1Temp);
+    vec3 tmax = max(t0, t1Temp);
+
+    float tminFinal = max(tmin.x, max(tmin.y, tmin.z));
+    float tmaxFinal = min(tmax.x, min(tmax.y, tmax.z));
+
+    if(tmaxFinal < 0.0 || tminFinal > tmaxFinal)
+    {
+        return false;
+    }
+
+    t1 = max(0.0, tminFinal);
+    t2 = tmaxFinal;
+    return true;
+}
+
 vec4 renderClouds()
 {
     vec3 rayDir = normalize(vsIn.fragPos - camera.position);
 
-    //====
-    float distance = distance(vsIn.fragPos, camera.position);
-    //====
     // float distance = 0;
-    float maxDistance = 10000;
-    float stepSize = 0.5;
+    float maxDistance = 100000.0;
+    float stepSize = 100.0;
     float density = 0;
 
     vec3 accumulatedLight = vec3(0.0);
@@ -171,6 +197,17 @@ vec4 renderClouds()
     float depthBufferValue = gl_FragCoord.z;
 
     int error = 0;
+
+    float rayStart;
+    float rayEnd;
+    if(!intersectRayAABB(camera.position, rayDir, u_sgMeshAABBMin, u_sgMeshAABBMax, rayStart, rayEnd))
+    {
+        return vec4(0.0);
+    }
+
+    //====
+    float distance = rayStart;
+    //====
 
     // todo: fix incorrect rendering inside the cloud
     while (distance < maxDistance)
@@ -193,34 +230,37 @@ vec4 renderClouds()
             vec3 relativePos = (currentPos - cubeCenter);
             vec3 texCoords = (relativePos + 1.0) * 0.5; // Map to [0,1] range
 
-            // vec3 shiftedCoords = texCoords.xyz + vec3(cloudScrolling.x * programData.currentTime, cloudScrolling.y * programData.currentTime, cloudScrolling.z * programData.currentTime);
-            vec3 shiftedCoords = texCoords.xyz + cloudScrolling;
-            float noise = texture(mat_noiseSamplers[0], shiftedCoords * textureScale).r;
+            vec3 shiftedCoords = texCoords.xyz + vec3(cloudScrolling.x * programData.currentTime, cloudScrolling.y * programData.currentTime, cloudScrolling.z * programData.currentTime);
+            // vec3 shiftedCoords = texCoords.xyz + cloudScrolling;
+            // float noise = clamp(increaseContrast(texture(mat_noiseSamplers[0], shiftedCoords * textureScale).r, 5.0), 0.0, 1.0);
+            float perlinNoise = texture(mat_noiseSamplers[0], shiftedCoords * perlinScale).r;
+            vec3 worleyNoise = texture(mat_noiseSamplers[0], shiftedCoords * worleyScale).gba;
+
+            float cloudBase = 1.0 - saturate(increaseContrast(worleyNoise.g, 10.0));
+
+            float cloudDetails = cloudBase * (1.0 + saturate(increaseContrast(perlinNoise, 10.0)) * 0.5);
+
+            float noise = saturate(cloudDetails * 1.5 - 0.3);
+            // noise = saturate(increaseContrast(perlinNoise, 10.0));
+            // noise = saturate(increaseContrast(worleyNoise.g, 10.0));
 
             float stepDensity = (1.0 - distanceToCube / stepSize) * stepSize * noise;
             density += stepDensity;
 
             accumulatedLight += calculateLighting(currentPos, atmosphere.sunPosition, atmosphere.sunColor.rgb, rayDir, stepDensity, noise);
         }
-        // else
 
-        //====
-        if(distanceToCube > 1000.0)
-        {
-            ++error;
-        }
-
-        if(error >= 5)
+        if(distance > rayEnd)
         {
             break;
         }
-        //====
 
         distance += stepSize;
     }
 
-    float fogFactor = exp(-absorptionCoefficient * 0.1 * density);
-    fogFactor = clamp(fogFactor, 0.0, 1.0);
+    float normalizeDepth = distance / maxDistance;
+
+    float fogFactor = saturate(exp(-absorptionCoefficient * 0.1 * density));
 
     vec3 finalLight = accumulatedLight * exp(-absorptionCoefficient * scatteringCoefficient * density);
 
