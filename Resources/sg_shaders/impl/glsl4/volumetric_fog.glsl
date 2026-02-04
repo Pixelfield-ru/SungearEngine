@@ -120,15 +120,15 @@ vec3 ambientColor = vec3(0.0);
 
 vec3 cloudScrolling = vec3(50.0);
 float perlinScale = 0.001;
-float worleyScale = 0.0001;
+float worleyScale = 0.00005;
 
-float scatteringRatio = 0.8;
+float scatteringRatio = 0.01;
 // float scatteringCoefficient = 0.1;
-float scatteringCoefficient = 0.0;
+float scatteringCoefficient = 0.4;
 
 float anisotropy = 0.85;
 
-float absorptionCoefficient = 0.002;
+float absorptionCoefficient = 0.0002;
 
 vec3 cloudColor = vec3(1.0, 0.95, 0.9);
 
@@ -149,7 +149,7 @@ vec3 calculateLighting(vec3 currentPos, vec3 lightPosition, vec3 lightColor, vec
 {
     vec3 lightDir = normalize(lightPosition);
 
-    float cosTheta = dot(lightDir, -rayDir);
+    float cosTheta = saturate(dot(lightDir, normalize(-rayDir)));
     float phase = combinedPhaseFunction(cosTheta, anisotropy, scatteringRatio);
 
     return lightColor * phase * stepDensity * noise;
@@ -185,10 +185,10 @@ bool intersectRayAABB(vec3 ro, vec3 rd, vec3 boxMin, vec3 boxMax, out float t1, 
 
 vec4 renderClouds()
 {
-    vec3 rayDir = normalize(vsIn.fragPos - camera.position);
+    return textureLod(mat_noiseSamplers[0], vec3(0.0), 0.0);
+    // return vec4(0.0);
+    /*vec3 rayDir = normalize(vsIn.fragPos - camera.position);
 
-    // float distance = 0;
-    float maxDistance = 100000.0;
     float stepSize = 100.0;
     float density = 0;
 
@@ -205,12 +205,9 @@ vec4 renderClouds()
         return vec4(0.0);
     }
 
-    //====
     float distance = rayStart;
-    //====
 
-    // todo: fix incorrect rendering inside the cloud
-    while (distance < maxDistance)
+    while (distance < rayEnd)
     {
         vec3 currentPos = camera.position + rayDir * distance;
         vec3 halfCubeSize = (u_sgMeshAABBMax - u_sgMeshAABBMin) / 2.0;
@@ -218,7 +215,7 @@ vec4 renderClouds()
 
         float distanceToCube = sdfBox(currentPos, cubeCenter, halfCubeSize);
 
-        float normalizeDepth = distance / maxDistance;
+        float normalizeDepth = distance / rayEnd;
 
         if (normalizeDepth > depthBufferValue)
         {
@@ -228,11 +225,9 @@ vec4 renderClouds()
         if (distanceToCube < stepSize)
         {
             vec3 relativePos = (currentPos - cubeCenter);
-            vec3 texCoords = (relativePos + 1.0) * 0.5; // Map to [0,1] range
+            vec3 texCoords = (relativePos + 1.0) * 0.5;
 
             vec3 shiftedCoords = texCoords.xyz + vec3(cloudScrolling.x * programData.currentTime, cloudScrolling.y * programData.currentTime, cloudScrolling.z * programData.currentTime);
-            // vec3 shiftedCoords = texCoords.xyz + cloudScrolling;
-            // float noise = clamp(increaseContrast(texture(mat_noiseSamplers[0], shiftedCoords * textureScale).r, 5.0), 0.0, 1.0);
             float perlinNoise = texture(mat_noiseSamplers[0], shiftedCoords * perlinScale).r;
             vec3 worleyNoise = texture(mat_noiseSamplers[0], shiftedCoords * worleyScale).gba;
 
@@ -241,8 +236,6 @@ vec4 renderClouds()
             float cloudDetails = cloudBase * (1.0 + saturate(increaseContrast(perlinNoise, 10.0)) * 0.5);
 
             float noise = saturate(cloudDetails * 1.5 - 0.3);
-            // noise = saturate(increaseContrast(perlinNoise, 10.0));
-            // noise = saturate(increaseContrast(worleyNoise.g, 10.0));
 
             float stepDensity = (1.0 - distanceToCube / stepSize) * stepSize * noise;
             density += stepDensity;
@@ -250,21 +243,16 @@ vec4 renderClouds()
             accumulatedLight += calculateLighting(currentPos, atmosphere.sunPosition, atmosphere.sunColor.rgb, rayDir, stepDensity, noise);
         }
 
-        if(distance > rayEnd)
-        {
-            break;
-        }
-
         distance += stepSize;
     }
 
-    float normalizeDepth = distance / maxDistance;
+    float normalizeDepth = distance / rayEnd;
 
     float fogFactor = saturate(exp(-absorptionCoefficient * 0.1 * density));
 
     vec3 finalLight = accumulatedLight * exp(-absorptionCoefficient * scatteringCoefficient * density);
 
-    return vec4(cloudColor * finalLight, fogFactor);
+    return vec4(cloudColor * finalLight, fogFactor);*/
 }
 
 void main()
