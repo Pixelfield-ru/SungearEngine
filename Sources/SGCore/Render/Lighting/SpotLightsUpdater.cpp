@@ -106,7 +106,7 @@ void SGCore::SpotLightsUpdater::updateLights() noexcept
 
             const glm::vec3 lightDirection = transform->m_finalTransform.m_rotation * spotLight.m_basicDirection;
 
-            std::cout << "lightDirection: " << lightDirection.x << ", " << lightDirection.y << ", " << lightDirection.z << std::endl;
+            // std::cout << "lightDirection: " << lightDirection.x << ", " << lightDirection.y << ", " << lightDirection.z << std::endl;
 
             m_uniformBuffer->subData(currentSpotLight + ".projectionSpaceMatrix", glm::value_ptr(renderingBase->m_projectionSpaceMatrix), 16);
             m_uniformBuffer->subData(currentSpotLight + ".modelMatrix", glm::value_ptr(transform->m_finalTransform.m_animatedModelMatrix), 16);

@@ -190,20 +190,14 @@ size_t SGCore::IShader::bindMaterialTextures(const SGCore::AssetRef<SGCore::IMat
 
         const std::string& textureUniform = sgStandardTextureTypeNameToStandardUniformName((SGTextureSlot) i);
         const std::string& texturesCountUniform = sgStandardTextureTypeNameToStandardUniformName((SGTextureSlot) i) + "_CURRENT_COUNT";
-
-        preallocUniformName = textureUniform;
-        size_t firstSize = preallocUniformName.size();
-        preallocUniformName += "[0]";
-        
-        if(!isUniformExists(preallocUniformName)) continue;
-        
-        preallocUniformName.erase(preallocUniformName.size() - 3, 3);
         
         size_t arrayIdx = 0;
         
         for(const auto& tex : texturesOfType)
         {
             if(!tex) continue;
+
+            preallocUniformName = textureUniform;
             
             preallocUniformName += '[';
             preallocUniformName += std::to_string(arrayIdx);
@@ -218,6 +212,8 @@ size_t SGCore::IShader::bindMaterialTextures(const SGCore::AssetRef<SGCore::IMat
             ++arrayIdx;
             ++offset;
         }
+
+        if(arrayIdx == 0) continue;
         
         useInteger(texturesCountUniform, arrayIdx);
     }
