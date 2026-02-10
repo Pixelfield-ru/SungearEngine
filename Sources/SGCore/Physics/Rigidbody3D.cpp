@@ -4,9 +4,9 @@
 #include "Rigidbody3D.h"
 
 #include <BulletCollision/CollisionShapes/btCompoundShape.h>
+#include <BulletDynamics/ConstraintSolver/btConeTwistConstraint.h>
 
 #include "PhysicsWorld3D.h"
-#include "BulletCollision/CollisionShapes/btEmptyShape.h"
 
 SGCore::Rigidbody3D::Rigidbody3D(const SGCore::Ref<PhysicsWorld3D>& parentWorld)
 {
@@ -62,6 +62,8 @@ SGCore::Rigidbody3D::~Rigidbody3D()
             m_body = nullptr;*/
         }
     }
+
+    btConeTwistConstraint;
 }
 
 /*void SGCore::Rigidbody3D::setShape(const SGCore::Ref<btCollisionShape>& shape) noexcept
@@ -142,6 +144,9 @@ void SGCore::Rigidbody3D::updateShapeTransform(size_t index, bool recalculateLoc
 void SGCore::Rigidbody3D::setParentWorld(const SGCore::Ref<SGCore::PhysicsWorld3D>& world) noexcept
 {
     auto lockedWorld = m_parentPhysicsWorld.lock();
+
+    if(lockedWorld == world) return;
+
     if(lockedWorld)
     {
         lockedWorld->removeBody(m_body);

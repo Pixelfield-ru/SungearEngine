@@ -92,7 +92,6 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
 
         std::int32_t updatedBonesCount = 0;
 
-        // if(!nodesToInterpolate.empty())
         {
             // std::cout << "playing nodes: " << nodesToInterpolate.size() << std::endl;
 

@@ -14,6 +14,10 @@ namespace SGCore
 {
     struct DebugDraw;
 
+    /**
+     * MotionPlannersResolver is required component to resolve animations nodes and 3D ragdolls.\n
+     * Must be added on the root model entity.
+     */
     struct MotionPlannersResolver : ISystem
     {
         sg_implement_type_id(MotionPlannersResolver, 52)

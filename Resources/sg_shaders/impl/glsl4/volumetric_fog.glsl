@@ -366,15 +366,6 @@ vec4 renderClouds()
 
             float noise = saturate(cloudDetails * 1.5 - 0.3);
 
-            /*float perlinNoise = texture(mat_noiseSamplers[0], shiftedCoords * perlinScale).r;
-            vec3 worleyNoise = texture(mat_noiseSamplers[0], shiftedCoords * worleyScale).gba;
-
-            float cloudBase = 1.0 - saturate(increaseContrast(worleyNoise.g, 10.0));
-
-            float cloudDetails = cloudBase * (1.0 + saturate(increaseContrast(perlinNoise, 10.0)) * 0.5);
-
-            float noise = saturate(cloudDetails * 1.5 - 0.3);*/
-
             float stepDensity = (1.0 - distanceToCube / stepSize) * stepSize * noise;
             density += stepDensity;
 
