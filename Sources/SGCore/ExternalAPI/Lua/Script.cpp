@@ -67,10 +67,6 @@ void SGCore::Lua::Script::initializeLuaState() noexcept
     m_luaState = {};
     m_luaState.open_libraries(sol::lib::base, sol::lib::table, sol::lib::string, sol::lib::math, sol::lib::package);
 
-    // loading packages...
-    // todo: maybe optimize and use only necessary packages?
-    PackagesRepository::loadAllPackagesInLua(m_luaState);
-
     // substituting 'require' function by my function...
     // used to load scripts even if they are in binary assets bundle
     sol::function originalRequire = m_luaState["require"];
@@ -149,6 +145,11 @@ void SGCore::Lua::Script::initializeLuaState() noexcept
     });
 
     m_luaState["require"] = m_luaState["__sg_require"];
+
+    // loading packages...
+    // loading only after '__sg_require' function substitution
+    // todo: maybe optimize and use only necessary packages?
+    PackagesRepository::loadAllPackagesInLua(m_luaState);
 
     // loading script...
     m_loadResult = m_luaState.load(lockedFile->getData());
