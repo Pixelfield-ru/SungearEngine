@@ -189,4 +189,11 @@ if(SG_TARGET_OS_LINUX OR SG_TARGET_OS_DARWIN)
     list(APPEND SungearEngine_LIBS "${CMAKE_DL_LIBS} ${Backtrace_LIBRARY} tbb")
 endif()
 
+find_path(SOL2_INCLUDE_DIRS "sol/abort.hpp")
+list(APPEND SungearEngine_INCLUDE_DIRS "${SOL2_INCLUDE_DIRS}")
+
+find_package(Lua REQUIRED)
+list(APPEND SungearEngine_INCLUDE_DIRS "${LUA_INCLUDE_DIR}")
+list(APPEND SungearEngine_LIBS "${LUA_LIBRARIES}")
+
 list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}")

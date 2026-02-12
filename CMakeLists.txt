@@ -124,6 +124,8 @@ find_package(gli CONFIG REQUIRED)
 find_package(meshoptimizer CONFIG REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system asio)
 find_package(JNI REQUIRED)
+find_path(SOL2_INCLUDE_DIRS "sol/abort.hpp")
+find_package(Lua REQUIRED)
 
 message(STATUS "JNI_INCLUDE_DIRS: ${JNI_INCLUDE_DIRS}")
 message(STATUS "JNI_LIBRARIES: ${JNI_LIBRARIES}")

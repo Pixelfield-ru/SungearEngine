@@ -8,7 +8,7 @@
 #include "SGCore/Utils/Slot.h"
 #include "SGCore/Memory/AssetManager.h"
 
-#define sg_assets_refs_resolver_as_friend template<typename> friend struct IAssetsRefsResolver;
+#define sg_assets_refs_resolver_as_friend template<typename> friend struct SGCore::IAssetsRefsResolver;
 
 namespace SGCore
 {

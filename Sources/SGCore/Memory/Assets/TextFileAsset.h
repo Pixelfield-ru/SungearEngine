@@ -4,9 +4,6 @@
 
 #pragma once
 
-#ifndef NATIVECORE_SHADERASSET_H
-#define NATIVECORE_SHADERASSET_H
-
 #include "IAsset.h"
 #include "SGCore/Utils/FileUtils.h"
 
@@ -34,5 +31,3 @@ namespace SGCore
         std::string m_data;
     };
 }
-
-#endif //NATIVECORE_SHADERASSET_H

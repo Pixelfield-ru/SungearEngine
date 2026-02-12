@@ -74,6 +74,8 @@
          $<BUILD_INTERFACE:${Stb_INCLUDE_DIR}>
          ${ANTLR4_INCLUDE_DIR}
          ${JNI_INCLUDE_DIRS}
+         ${SOL2_INCLUDE_DIRS}
+         ${LUA_INCLUDE_DIR}
          )
 
  message(STATUS "CMAKE_BUILD_TYPE: " ${CMAKE_BUILD_TYPE})
@@ -105,6 +107,7 @@
          ${SG_BULLET_LIBS}
          ${FREETYPE_LIBRARIES}
          ${JNI_LIBRARIES}
+         ${LUA_LIBRARIES}
  )
 
  if(SG_TARGET_PLATFORM_PC)
