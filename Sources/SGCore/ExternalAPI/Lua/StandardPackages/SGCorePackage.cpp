@@ -6,11 +6,16 @@
 
 #include "SGCore/Main/CoreMain.h"
 
-void SGCore::Lua::SGCorePackage::doLoadInState(sol::state& luaState) noexcept
+/*struct Player
 {
-    luaState.script("package.path = '" + Utils::toUTF8(CoreMain::getSungearEngineRootPath().u16string()) + "/Resources/lua/?.lua;' .. package.path");
+    std::string m_name = "alesha shveev";
+};*/
 
-    luaState.set_function("SGCore_log_impl", [](const std::string& tag, int logLevel, const std::string& message) {
+void SGCore::Lua::SGCorePackage::doLoadInState(sol::state& luaState, sol::unsafe_function_result& packageResult) noexcept
+{
+    sol::table packageTable = packageResult;
+
+    packageTable.set_function("log", [](const std::string& tag, int logLevel, const std::string& message) {
         switch (static_cast<Logger::Level>(logLevel))
         {
             case Logger::Level::LVL_INFO:
@@ -34,4 +39,13 @@ void SGCore::Lua::SGCorePackage::doLoadInState(sol::state& luaState) noexcept
                 break;
         }
     });
+
+    /*static auto makePlayer = [](const std::string& name) {
+        return Player { name };
+    };
+
+    auto playerType = packageTable.new_usertype<Player>("Player", sol::no_constructor);
+    playerType["name"] = &Player::m_name;
+    playerType["new"] = makePlayer;*/
 }
+

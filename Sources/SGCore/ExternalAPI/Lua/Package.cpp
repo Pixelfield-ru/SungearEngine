@@ -6,7 +6,7 @@
 
 #include "SGCore/Memory/AssetManager.h"
 
-void SGCore::Lua::Package::loadInState(sol::state& luaState) noexcept
+void SGCore::Lua::Package::loadInState(sol::state& luaState, sol::unsafe_function_result& packageResult) noexcept
 {
     auto lockedFile = m_packageFile.lock();
     if(!lockedFile)
@@ -18,10 +18,11 @@ void SGCore::Lua::Package::loadInState(sol::state& luaState) noexcept
         return;
     }
 
-    doLoadInState(luaState);
+    // auto result = luaState.script(lockedFile->getData());
 
-    auto result = luaState.load(lockedFile->getData());
-    if(!result.valid())
+    doLoadInState(luaState, packageResult);
+
+    /*if(!result.valid())
     {
         const sol::error err = result;
 
@@ -29,7 +30,7 @@ void SGCore::Lua::Package::loadInState(sol::state& luaState) noexcept
               "Lua package script compilation error:\n{}\nIn file: '{}'",
               err.what(),
               Utils::toUTF8(getPath().resolved().u16string()));
-    }
+    }*/
 }
 
 SGCore::AssetRef<SGCore::TextFileAsset> SGCore::Lua::Package::getFile() noexcept

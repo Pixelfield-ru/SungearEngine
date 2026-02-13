@@ -20,7 +20,7 @@ namespace SGCore::Lua
     {
         sg_assets_refs_resolver_as_friend
 
-        void loadInState(sol::state& luaState) noexcept;
+        void loadInState(sol::state& luaState, sol::unsafe_function_result& packageResult) noexcept;
 
         AssetRef<TextFileAsset> getFile() noexcept;
 
@@ -37,6 +37,6 @@ namespace SGCore::Lua
 
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept;
 
-        virtual void doLoadInState(sol::state& luaState) noexcept = 0;
+        virtual void doLoadInState(sol::state& luaState, sol::unsafe_function_result& packageResult) noexcept = 0;
     };
 }

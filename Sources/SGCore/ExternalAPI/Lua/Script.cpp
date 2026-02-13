@@ -72,6 +72,15 @@ void SGCore::Lua::Script::initializeLuaState() noexcept
     sol::function originalRequire = m_luaState["require"];
 
     m_luaState.set_function("__sg_require", [this, originalRequire](const std::string& moduleName) {
+        // if it is native package
+        if(auto package = PackagesRepository::getPackage(moduleName))
+        {
+            auto moduleResult = m_luaState.script(package->getFile()->getData());
+            PackagesRepository::getPackage(moduleName)->loadInState(m_luaState, moduleResult);
+
+            return moduleResult;
+        }
+
         const std::string fileName = moduleName + ".lua";
 
         auto assetManager = getParentAssetManager();
@@ -149,7 +158,7 @@ void SGCore::Lua::Script::initializeLuaState() noexcept
     // loading packages...
     // loading only after '__sg_require' function substitution
     // todo: maybe optimize and use only necessary packages?
-    PackagesRepository::loadAllPackagesInLua(m_luaState);
+    // PackagesRepository::loadAllPackagesInLua(m_luaState);
 
     // loading script...
     m_loadResult = m_luaState.load(lockedFile->getData());

@@ -11,6 +11,12 @@ void SGCore::Lua::PackagesRepository::addPackage(const AssetRef<Package>& packag
     storage()[package->getPackageName()] = package;
 }
 
+SGCore::AssetRef<SGCore::Lua::Package> SGCore::Lua::PackagesRepository::getPackage(const std::string& packageName) noexcept
+{
+    auto it = storage().find(packageName);
+    return it != storage().end() ? it->second : nullptr;
+}
+
 void SGCore::Lua::PackagesRepository::removePackage(const std::string& packageName) noexcept
 {
     storage().erase(packageName);
@@ -19,14 +25,6 @@ void SGCore::Lua::PackagesRepository::removePackage(const std::string& packageNa
 bool SGCore::Lua::PackagesRepository::hasPackage(const std::string& packageName) noexcept
 {
     return storage().contains(packageName);
-}
-
-void SGCore::Lua::PackagesRepository::loadAllPackagesInLua(sol::state& luaState) noexcept
-{
-    for(const auto& package : storage() | std::views::values)
-    {
-        package->loadInState(luaState);
-    }
 }
 
 std::unordered_map<std::string, SGCore::AssetRef<SGCore::Lua::Package>>& SGCore::Lua::PackagesRepository::storage() noexcept
