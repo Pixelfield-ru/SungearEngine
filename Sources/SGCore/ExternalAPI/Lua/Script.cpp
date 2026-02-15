@@ -22,9 +22,19 @@ void SGCore::Lua::Script::execute() noexcept
     }
 }
 
-SGCore::AssetRef<SGCore::TextFileAsset> SGCore::Lua::Script::getFile() noexcept
+SGCore::AssetRef<SGCore::TextFileAsset> SGCore::Lua::Script::getFile() const noexcept
 {
     return m_scriptFile.lock();
+}
+
+sol::state& SGCore::Lua::Script::getState() noexcept
+{
+    return m_luaState;
+}
+
+const sol::state& SGCore::Lua::Script::getState() const noexcept
+{
+    return m_luaState;
 }
 
 void SGCore::Lua::Script::doLoad(const InterpolatedPath& path)

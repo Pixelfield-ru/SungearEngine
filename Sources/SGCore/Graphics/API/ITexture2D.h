@@ -25,7 +25,10 @@ namespace SGCore
     {
         void operator()(const std::uint8_t* data);
     };
-    
+
+    /// Note: there is unique_ptr to texture data and unique_ptr uses STBITextureDataDeleter (uses stbi_image_free()) to delete data.\n
+    /// It is because stbi uses malloc() to allocate data (not new[]).\n
+    /// So i need to use malloc() everywhere to be consistent with stbi_image_free() (uses simple free()).
     class ITexture2D : public IAsset, public std::enable_shared_from_this<ITexture2D>
     {
         friend class IFrameBuffer;
@@ -95,7 +98,7 @@ namespace SGCore
             m_internalFormat = internalFormat;
             m_format = format;
 
-            m_textureData = data_ptr(new std::uint8_t[byteSize]);
+            m_textureData = data_ptr(static_cast<std::uint8_t*>(malloc(byteSize)));
             if(data)
             {
                 std::memcpy(m_textureData.get(), reinterpret_cast<const std::uint8_t*>(data), byteSize);
@@ -115,6 +118,7 @@ namespace SGCore
          * @param format
          */
         template<typename DataType = std::uint8_t>
+        requires(sizeof(DataType) == sizeof(std::uint8_t))
         void moveAndCreate(DataType* data,
                            const size_t& width,
                            const size_t& height,

@@ -22,7 +22,10 @@ namespace SGCore::Lua
 
         void execute() noexcept;
 
-        AssetRef<TextFileAsset> getFile() noexcept;
+        AssetRef<TextFileAsset> getFile() const noexcept;
+
+        sol::state& getState() noexcept;
+        const sol::state& getState() const noexcept;
 
     protected:
         void doLoad(const InterpolatedPath& path) override;

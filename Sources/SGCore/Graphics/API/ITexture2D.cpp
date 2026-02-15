@@ -18,8 +18,8 @@ void SGCore::STBITextureDataDeleter::operator()(const std::uint8_t* data)
 #ifdef SUNGEAR_DEBUG
     std::printf("deleted texture by address: %ul\n", data);
 #endif
-    delete[] data;
-    // stbi_image_free((void*) data);
+
+    stbi_image_free((void*) data);
 }
 
 // ----------------------------------
@@ -154,7 +154,7 @@ void SGCore::ITexture2D::resize(std::int32_t newWidth, std::int32_t newHeight, b
     if(!noDataResize)
     {
         const size_t newSize = size_t(newWidth * newHeight) * getSGGInternalFormatChannelsSizeInBytes(m_internalFormat);
-        data_ptr newData = data_ptr(new std::uint8_t[newSize]);
+        data_ptr newData = data_ptr(static_cast<std::uint8_t*>(malloc(newSize)));
 
         // stbir_resize()
         
@@ -189,7 +189,7 @@ void SGCore::ITexture2D::resizeDataBuffer(std::int32_t newWidth, std::int32_t ne
     const std::uint8_t dataChannelsSize = getSGGInternalFormatChannelsSizeInBytes(m_internalFormat);
 
     const size_t newSize = size_t(newWidth * newHeight) * dataChannelsSize;
-    data_ptr newData = data_ptr(new std::uint8_t[newSize]);
+    data_ptr newData = data_ptr(static_cast<std::uint8_t*>(malloc(newSize)));
 
     // std::memset(newData.get(), 0, newSize);
 
