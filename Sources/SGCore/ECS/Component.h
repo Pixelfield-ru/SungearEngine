@@ -18,6 +18,8 @@ namespace SGCore::ECS
          * Cons type of component is registry.
          */
         using const_reg_t = ConstComponentRegT;
+
+        bool m_isActive = true;
     };
 }
 

@@ -6,7 +6,7 @@
 
 #include "IAsset.h"
 #include "SGCore/Memory/IAssetsRefsResolver.h"
-#include "Frame.h"
+#include "FramesSequence.h"
 
 namespace SGCore
 {
@@ -17,7 +17,7 @@ namespace SGCore
     {
         sg_assets_refs_resolver_as_friend
 
-        std::vector<Frame> m_frames;
+        FramesSequence m_sequence;
 
         AssetRef<ByteFileAsset> getFile() const noexcept;
 

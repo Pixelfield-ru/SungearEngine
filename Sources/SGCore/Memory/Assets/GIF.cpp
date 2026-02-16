@@ -88,21 +88,28 @@ void SGCore::GIF::doLoad(const InterpolatedPath& path)
 
     const size_t frameSize = m_width * m_height * m_channelsCount;
 
-    m_frames.clear();
+    m_sequence.m_frames.clear();
+
+    float currentTime = 0.0f;
 
     for(size_t i = 0; i < framesCount; ++i)
     {
         auto* currentDataPtr = gifData + i * frameSize;
 
-        auto texture = assetManager->getOrAddAssetByPath<ITexture2D>(path / "frame_0");
+        auto texture = assetManager->getOrAddAssetByPath<ITexture2D>(path / ("frame_" + std::to_string(i)));
         // NOT MOVING BECAUSE currentDataPtr IS PART OF BIG BUFFER. delete[] WONT KNOW COUNT OF ELEMENTS IN ARRAY
         texture->create(currentDataPtr, m_width, m_height, m_channelsCount, internalFormat, format);
 
+        auto nextFrameDelay = delays ? (float(delays[i]) / 1000.0f) : 0.1f;
+
         Frame frame;
         frame.m_texture = std::move(texture);
-        frame.m_nextFrameDelay = delays ? delays[i] : 100;
+        frame.m_timeStamp = currentTime;
+        frame.m_nextFrameDelay = nextFrameDelay;
 
-        m_frames.push_back(std::move(frame));
+        m_sequence.m_frames.push_back(std::move(frame));
+
+        currentTime += nextFrameDelay;
     }
 }
 
@@ -118,7 +125,7 @@ void SGCore::GIF::doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcep
 
 void SGCore::GIF::onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept
 {
-    for(auto& frame : m_frames)
+    for(auto& frame : m_sequence.m_frames)
     {
         AssetManager::resolveAssetReference(updatedAssetManager, frame.m_texture);
     }

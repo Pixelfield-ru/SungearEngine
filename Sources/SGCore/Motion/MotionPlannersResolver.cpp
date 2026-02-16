@@ -113,7 +113,7 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
 
             const auto duration_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
 
-            std::cout << "processMotionNodes time: " << duration_ns.count() << std::endl;
+            // std::cout << "processMotionNodes time: " << duration_ns.count() << std::endl;
         }
 
         // updating count of bones in data vector

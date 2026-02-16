@@ -43,14 +43,43 @@ namespace SGCore
         std::vector<KeyRotation> m_rotationKeys;
         std::vector<KeyScale> m_scaleKeys;
 
-        void sortPositionKeys() noexcept;
-        void sortRotationKeys() noexcept;
-        void sortScaleKeys() noexcept;
+        template<typename KeysT>
+        void sortKeys(KeysT SkeletalBoneAnimation::* keysMemberPtr)
+        {
+            std::ranges::sort(this->*keysMemberPtr, [](const auto& k0, const auto& k1) {
+                return k0.m_timeStamp < k1.m_timeStamp;
+            });
+        }
+
+        template<typename KeysT>
+        std::int64_t findKeyByTime(KeysT SkeletalBoneAnimation::* keysMemberPtr, float time) const noexcept
+        {
+            const auto& keysVec = this->*keysMemberPtr;
+
+            const std::int64_t keysCount = std::ssize(keysVec);
+
+            if(keysCount == 1)
+            {
+                return 0;
+            }
+
+            for(std::int64_t i = 0; i < keysCount; ++i)
+            {
+                const auto& key = keysVec[i];
+                if(time < key.m_timeStamp)
+                {
+                    return i;
+                }
+            }
+
+            return keysCount - 1;
+        }
+
         void sortAllKeys() noexcept;
 
-        [[nodiscard]] std::int64_t findPositionKeyByTime(const float& time) const noexcept;
-        [[nodiscard]] std::int64_t findRotationKeyByTime(const float& time) const noexcept;
-        [[nodiscard]] std::int64_t findScaleKeyByTime(const float& time) const noexcept;
+        [[nodiscard]] std::int64_t findPositionKeyByTime(float time) const noexcept;
+        [[nodiscard]] std::int64_t findRotationKeyByTime(float time) const noexcept;
+        [[nodiscard]] std::int64_t findScaleKeyByTime(float time) const noexcept;
 
         [[nodiscard]] const std::string& getBoneName() const noexcept;
 

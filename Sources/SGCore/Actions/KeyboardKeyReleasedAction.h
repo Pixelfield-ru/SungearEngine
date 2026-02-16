@@ -21,7 +21,7 @@ namespace SGCore
 
         Ref<IAction> copy() noexcept final
         {
-            auto newAction = MakeRef<KeyboardKeyDownAction>();
+            auto newAction = MakeRef<KeyboardKeyReleasedAction>();
             newAction->m_key = m_key;
 
             return newAction;

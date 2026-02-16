@@ -13,6 +13,7 @@ namespace SGCore
     struct Frame
     {
         AssetRef<ITexture2D> m_texture;
-        int m_nextFrameDelay {};
+        float m_timeStamp {};
+        float m_nextFrameDelay {};
     };
 }

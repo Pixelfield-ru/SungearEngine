@@ -6,17 +6,17 @@
 #define SUNGEARENGINE_MOUSEBUTTONDOWNACTION_H
 
 #include "IAction.h"
-#include "SGCore/Input/InputManager.h"
+#include "SGCore/Input/PCInput.h"
 
 namespace SGCore
 {
     struct MouseButtonDownAction : IAction<bool()>
     {
-        MouseButton m_button = MouseButton::MOUSE_BUTTON_1;
+        Input::MouseButton m_button = Input::MouseButton::MOUSE_BUTTON_1;
 
         bool execute() noexcept final
         {
-            return InputManager::getMainInputListener()->mouseButtonDown(m_button);
+            return Input::PC::mouseButtonDown(m_button);
         }
 
         Ref<IAction> copy() noexcept final

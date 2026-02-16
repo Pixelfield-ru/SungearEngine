@@ -213,8 +213,6 @@ size_t SGCore::IShader::bindMaterialTextures(const SGCore::AssetRef<SGCore::IMat
             ++offset;
         }
 
-        if(arrayIdx == 0) continue;
-        
         useInteger(texturesCountUniform, arrayIdx);
     }
     

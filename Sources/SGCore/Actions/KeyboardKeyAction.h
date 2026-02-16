@@ -28,11 +28,11 @@ namespace SGCore
             {
                 return KeyboardKeyActionType::KA_DOWN;
             }
-            else if(Input::PC::keyboardKeyReleased(m_key))
+            if(Input::PC::keyboardKeyReleased(m_key))
             {
                 return KeyboardKeyActionType::KA_RELEASED;
             }
-            else if(Input::PC::keyboardKeyPressed(m_key))
+            if(Input::PC::keyboardKeyPressed(m_key))
             {
                 return KeyboardKeyActionType::KA_PRESSED;
             }
