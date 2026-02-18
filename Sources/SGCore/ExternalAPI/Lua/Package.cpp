@@ -6,7 +6,7 @@
 
 #include "SGCore/Memory/AssetManager.h"
 
-void SGCore::Lua::Package::loadInState(sol::state& luaState, sol::unsafe_function_result& packageResult) noexcept
+void SGCore::Lua::Package::loadInState(sol::state& luaState, function_result& packageResult) noexcept
 {
     auto lockedFile = m_packageFile.lock();
     if(!lockedFile)

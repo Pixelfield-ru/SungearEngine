@@ -26,16 +26,18 @@
 #include "SGCore/Serde/StandardSerdeSpecs/STD.h"
 #include "SGCore/Serde/StandardSerdeSpecs/Utils.h"
 
+std::filesystem::path SGCore::CoreMain::s_sungearEngineRootPath;
+SGCore::Window SGCore::CoreMain::m_window;
+SGCore::Ref<SGCore::IRenderer> SGCore::CoreMain::m_renderer;
+std::atomic<bool> SGCore::CoreMain::m_shouldRestoreState { false };
+SGCore::Timer SGCore::CoreMain::m_renderTimer { true, 1200 };
+SGCore::Timer SGCore::CoreMain::m_fixedTimer { true, 100 };
+
 void SGCore::CoreMain::init()
 {
-    const std::string finalLogFileName = FileUtils::getAppPublicResourcesPath().string() + "/logs/sg_log_" + Utils::getTimeAsString("%Y_%m_%d_%H_%M_%S") + ".log";
-    
     HwExceptionHandler::setApplicationName("Sungear Engine");
-    HwExceptionHandler::setOutputLogFilePath(finalLogFileName);
+    HwExceptionHandler::setOutputLogFilePath(Logger::getDefaultLogger()->getLogFilePath().string());
     HwExceptionHandler::setupHandler();
-    
-    auto defaultLogger = Logger::createLogger("current_session", finalLogFileName);
-    Logger::setDefaultLogger(defaultLogger);
     
     // ================================================================================
     // ================================================================================
@@ -165,6 +167,12 @@ void SGCore::CoreMain::startCycle() noexcept
 
 SGCore::Config SGCore::CoreMain::loadConfig(const std::filesystem::path& configPath)
 {
+    if(!std::filesystem::exists(configPath))
+    {
+        LOG_E(SGCORE_TAG, "Config file does not exist. Path: '{}'", Utils::toUTF8(configPath.u16string()))
+        return{};
+    }
+
     Config loadedConfig;
     std::string configLoadLog;
     Serde::Serializer::fromFormat(

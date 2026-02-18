@@ -2,8 +2,7 @@
 // Created by stuka on 05.01.2025.
 //
 
-#ifndef SUNGEARENGINE_SKELETALANIMATIONASSET_H
-#define SUNGEARENGINE_SKELETALANIMATIONASSET_H
+#pragma once
 
 #include <glm/gtc/quaternion.hpp>
 #include <glm/vec3.hpp>
@@ -126,5 +125,3 @@ namespace SGCore
         void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
     };
 }
-
-#endif //SUNGEARENGINE_SKELETALANIMATIONASSET_H

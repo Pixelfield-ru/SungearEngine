@@ -112,6 +112,7 @@ namespace SGCore::Serde
     void SerdeSpec<Config, TFormatType>::serialize(SerializableValueView<const Config, TFormatType>& valueView) noexcept
     {
         valueView.container().addMember("m_loadablePlugins", valueView.m_data->m_loadablePlugins);
+        valueView.container().addMember("m_enginePath", valueView.m_data->m_enginePath);
     }
 
     template<FormatType TFormatType>
@@ -121,6 +122,16 @@ namespace SGCore::Serde
         if(m_loadablePlugins)
         {
             valueView.m_data->m_loadablePlugins = std::move(*m_loadablePlugins);
+        }
+
+        auto m_enginePath = valueView.container().template getMember<InterpolatedPath>("m_enginePath");
+        if(m_enginePath)
+        {
+            valueView.m_data->m_enginePath = std::move(*m_enginePath);
+        }
+        else
+        {
+            valueView.m_data->m_enginePath = "${enginePath}";
         }
     }
 

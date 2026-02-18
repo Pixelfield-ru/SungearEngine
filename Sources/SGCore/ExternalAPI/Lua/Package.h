@@ -18,9 +18,15 @@ namespace SGCore::Lua
 {
     struct Package : IAsset, public IAssetsRefsResolver<Package>
     {
+#if SOL_IS_ON(SOL_SAFE_FUNCTION_OBJECTS)
+        using function_result = sol::protected_function_result;
+#else
+        using function_result = sol::unsafe_function_result;
+#endif
+
         sg_assets_refs_resolver_as_friend
 
-        void loadInState(sol::state& luaState, sol::unsafe_function_result& packageResult) noexcept;
+        void loadInState(sol::state& luaState, function_result& packageResult) noexcept;
 
         AssetRef<TextFileAsset> getFile() noexcept;
 
@@ -37,6 +43,6 @@ namespace SGCore::Lua
 
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept;
 
-        virtual void doLoadInState(sol::state& luaState, sol::unsafe_function_result& packageResult) noexcept = 0;
+        virtual void doLoadInState(sol::state& luaState, function_result& packageResult) noexcept = 0;
     };
 }

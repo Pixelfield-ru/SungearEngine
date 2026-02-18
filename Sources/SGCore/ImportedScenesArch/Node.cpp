@@ -18,17 +18,11 @@
 #include "SGCore/Render/RenderAbilities/EnableMeshPass.h"
 #include "SGCore/Transformations/TransformUtils.h"
 
-SGCore::ECS::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
-                                               const std::string& layerName,
-                                               const SGCore::Node::EachEntityFunc& eachEntityFunc,
-                                               const SGCore::Node::MeshFunc& meshFunc,
-                                               const bool& rootAdd) noexcept
+SGCore::ECS::entity_t SGCore::Node::addOnScene(const Ref<Scene>& scene,
+                                               const entity_func& eachEntityFunc,
+                                               const mesh_func& meshFunc,
+                                               const bool& rootAdd) const noexcept
 {
-    // todo: make layers
-    // auto layer = scene->getLayers().find(layerName)->second;
-
-    // if(!layer) return entt::null;
-
     auto registry = scene->getECSRegistry();
 
     ECS::entity_t parentEntity = registry->create();
@@ -94,7 +88,7 @@ SGCore::ECS::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
 
     for(auto& childNode : m_children)
     {
-        auto childNodeEntity = childNode->addOnScene(scene, layerName, eachEntityFunc, meshFunc, false);
+        auto childNodeEntity = childNode->addOnScene(scene, eachEntityFunc, meshFunc, false);
         auto& childEntityBaseInfo = registry->get<EntityBaseInfo>(childNodeEntity);
         childEntityBaseInfo.setParent(parentEntity, *registry);
         // parentEntity->addChild(childNodeEntity);
@@ -104,40 +98,39 @@ SGCore::ECS::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
 }
 
 void SGCore::Node::addOnScene(const Ref<Scene>& scene,
-                              const std::string& layerName,
-                              const Node::EachEntityFunc& eachEntityFunc,
-                              const Node::MeshFunc& meshFunc) noexcept
+                              const entity_func& eachEntityFunc,
+                              const mesh_func& meshFunc) const noexcept
 {
-    addOnScene(scene, layerName, eachEntityFunc, meshFunc, true);
+    addOnScene(scene, eachEntityFunc, meshFunc, true);
 }
 
 void SGCore::Node::addOnScene
-(const Ref<Scene>& scene, const std::string& layerName, const Node::EachEntityFunc& eachEntityFunc) noexcept
+(const Ref<Scene>& scene, const entity_func& eachEntityFunc) const noexcept
 {
-    addOnScene(scene, layerName, eachEntityFunc, [](const ECS::entity_t&, const ECS::entity_t&)
+    addOnScene(scene, eachEntityFunc, [](ECS::entity_t, ECS::entity_t)
                {}
     );
 }
 
 void SGCore::Node::addOnScene
-(const Ref<Scene>& scene, const std::string& layerName, const Node::MeshFunc& meshFunc) noexcept
+(const Ref<Scene>& scene, const mesh_func& meshFunc) const noexcept
 {
-    addOnScene(scene, layerName, [](const ECS::entity_t&)
+    addOnScene(scene, [](ECS::entity_t)
                {}, meshFunc
     );
 }
 
-void SGCore::Node::addOnScene(const Ref<Scene>& scene, const std::string& layerName) noexcept
+std::vector<SGCore::ECS::entity_t> SGCore::Node::addOnScene(const Ref<Scene>& scene) const noexcept
 {
-    addOnScene(scene, layerName,
-               [](const ECS::entity_t&)
-               {},
-               [](const ECS::entity_t&, const ECS::entity_t&)
-               {}
-    );
+    std::vector<ECS::entity_t> allEntities;
+    addOnScene(scene, [&allEntities](ECS::entity_t e) {
+        allEntities.push_back(e);
+    });
+
+    return allEntities;
 }
 
-void SGCore::Node::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
+void SGCore::Node::doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept
 {
     for(auto& meshData : m_meshesData)
     {

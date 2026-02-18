@@ -39,6 +39,8 @@ SGCore::Logger::createLogger(const std::string& loggerName, const std::filesyste
 
 SGCore::Logger::Logger(const std::string& loggerName, const std::filesystem::path& filePath, bool saveMessages) noexcept
 {
+    m_logFilePath = filePath;
+
     const std::string u8Path = Utils::toUTF8(filePath.u16string());
 
     LOGCAT_I(SGCORE_TAG, "SGCORE: log path: {}, loggerName: {}", u8Path.c_str(), loggerName);
@@ -60,6 +62,12 @@ void SGCore::Logger::setDefaultLogger(const SGCore::Ref<SGCore::Logger>& logger)
 
 SGCore::Ref<SGCore::Logger> SGCore::Logger::getDefaultLogger() noexcept
 {
+    if(!m_defaultLogger)
+    {
+        const std::string finalLogFileName = FileUtils::getAppPublicResourcesPath().string() + "/logs/sg_log_" + Utils::getTimeAsString("%Y_%m_%d_%H_%M_%S") + ".log";
+        setDefaultLogger(createLogger("current_session", finalLogFileName));
+    }
+
     return m_defaultLogger;
 }
 
@@ -173,4 +181,9 @@ void SGCore::Logger::clearMessagesWithLevelAndTag(SGCore::Logger::Level lvl, con
     std::erase_if(m_sortedMessages, [&lvl, &tag](const std::pair<messages_key, std::vector<LogMessage>>& p) {
         return p.first.first == lvl && p.first.second == tag;
     });
+}
+
+const std::filesystem::path& SGCore::Logger::getLogFilePath() const noexcept
+{
+    return m_logFilePath;
 }

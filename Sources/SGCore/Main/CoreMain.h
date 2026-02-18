@@ -22,6 +22,8 @@ namespace SGCore
 
     class SGCORE_EXPORT CoreMain
     {
+        friend struct BasicApp;
+
     public:
         static inline Signal<void()> onInit;
         
@@ -57,15 +59,15 @@ namespace SGCore
         static void restoreState() noexcept;
     
     private:
-        static inline std::filesystem::path s_sungearEngineRootPath;
+        static std::filesystem::path s_sungearEngineRootPath;
 
-        static inline Window m_window {};
-        static inline Ref<IRenderer> m_renderer;
+        static Window m_window;
+        static Ref<IRenderer> m_renderer;
 
-        static inline std::atomic<bool> m_shouldRestoreState { false };
+        static std::atomic<bool> m_shouldRestoreState;
         
-        static inline Timer m_renderTimer { true, 1200};
-        static inline Timer m_fixedTimer { true, 100.0 };
+        static Timer m_renderTimer;
+        static Timer m_fixedTimer;
         
         static void fixedUpdateStart(const double& dt, const double& fixedDt);
         static void fixedUpdateEnd(const double& dt, const double& fixedDt);

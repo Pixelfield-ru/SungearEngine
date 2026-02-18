@@ -3,6 +3,8 @@
 #ifndef SUNGEARENGINE_LOGGER_H
 #define SUNGEARENGINE_LOGGER_H
 
+#include <iostream>
+
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/Time.h"
 #include "SGCore/Utils/Utils.h"
@@ -107,7 +109,7 @@ namespace SGCore
         template<bool UseStaticFormatting, typename... Args>
         void log(Level level, const std::string& tag, msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
         {
-            std::lock_guard lock(m_mutex);
+            const auto levelStr = levelToString(level);
 
             std::string formattedMsg;
             if constexpr(UseStaticFormatting)
@@ -118,7 +120,20 @@ namespace SGCore
             {
                 formattedMsg = msg;
             }
-            std::string levelStr = levelToString(level);
+
+            std::lock_guard lock(m_mutex);
+
+            const auto finalMessage = fmt::format("[{}] [logger: {}] [{}] [tag: {}] {}",
+                                                  Utils::getTimeAsString("%Y-%m-%d %H:%M:%S"),
+                                                  m_name,
+                                                  levelStr,
+                                                  tag,
+                                                  formattedMsg);
+
+            std::cout << finalMessage << std::endl;
+
+            if(!m_spdlogLogger) return;
+
             switch (level)
             {
                 case Level::LVL_INFO:
@@ -153,12 +168,7 @@ namespace SGCore
                 LogMessage logMessage {
                     .m_level = level,
                     .m_tag = tag,
-                    .m_message = fmt::format("[{}] [logger: {}] [{}] [tag: {}] {}",
-                                             Utils::getTimeAsString("%Y-%m-%d %H:%M:%S"),
-                                             m_name,
-                                             levelStr,
-                                             tag,
-                                             formattedMsg)
+                    .m_message = finalMessage
                 };
 
                 m_sortedMessages[make_messages_key(level, tag)].push_back(logMessage);
@@ -173,10 +183,12 @@ namespace SGCore
         [[nodiscard]] std::vector<LogMessage> getMessagesWithTag(const std::string& tag) noexcept;
         [[nodiscard]] std::vector<LogMessage> getMessagesWithLevelAndTag(Level lvl, const std::string& tag) noexcept;
 
-        [[nodiscard]] void clearAllMessages() noexcept;
-        [[nodiscard]] void clearMessagesWithLevel(Level lvl) noexcept;
-        [[nodiscard]] void clearMessagesWithTag(const std::string& tag) noexcept;
-        [[nodiscard]] void clearMessagesWithLevelAndTag(Level lvl, const std::string& tag) noexcept;
+        void clearAllMessages() noexcept;
+        void clearMessagesWithLevel(Level lvl) noexcept;
+        void clearMessagesWithTag(const std::string& tag) noexcept;
+        void clearMessagesWithLevelAndTag(Level lvl, const std::string& tag) noexcept;
+
+        const std::filesystem::path& getLogFilePath() const noexcept;
 
         static void setDefaultLogger(const Ref<Logger>& logger) noexcept;
         static Ref<Logger> getDefaultLogger() noexcept;
@@ -191,6 +203,7 @@ namespace SGCore
 
         bool m_saveMessages = true;
         std::string m_name;
+        std::filesystem::path m_logFilePath;
 
         std::unordered_map<messages_key, std::vector<LogMessage>, MessageKeyHash> m_sortedMessages;
         std::vector<LogMessage> m_allMessages;

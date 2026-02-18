@@ -11,15 +11,13 @@ namespace SGCore
         friend class ModelAsset;
         sg_assets_refs_resolver_as_friend
 
-    private:
-        using MeshFunc = std::function<void(const ECS::entity_t& parentEntity, const ECS::entity_t& meshEntity)>;
-        using EachEntityFunc = std::function<void(const ECS::entity_t& parentEntity)>;
+        using mesh_func = std::function<void(ECS::entity_t parentEntity, ECS::entity_t meshEntity)>;
+        using entity_func = std::function<void(ECS::entity_t parentEntity)>;
 
         ECS::entity_t addOnScene(const Ref<Scene>& scene,
-                                 const std::string& layerName,
-                                 const EachEntityFunc& eachEntityFunc,
-                                 const MeshFunc& meshFunc,
-                                 const bool& rootAdd) noexcept;
+                                 const entity_func& eachEntityFunc,
+                                 const mesh_func& meshFunc,
+                                 const bool& rootAdd) const noexcept;
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept;
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept;
@@ -35,12 +33,11 @@ namespace SGCore
         glm::vec3 m_scale { 1.0 };
 
         void addOnScene(const Ref<Scene>& scene,
-                        const std::string& layerName,
-                        const EachEntityFunc& eachEntityFunc,
-                        const MeshFunc& meshFunc) noexcept;
-        void addOnScene(const Ref<Scene>& scene, const std::string& layerName, const EachEntityFunc& eachEntityFunc) noexcept;
-        void addOnScene(const Ref<Scene>& scene, const std::string& layerName, const MeshFunc& meshFunc) noexcept;
-        void addOnScene(const Ref<Scene>& scene, const std::string& layerName) noexcept;
+                        const entity_func& eachEntityFunc,
+                        const mesh_func& meshFunc) const noexcept;
+        void addOnScene(const Ref<Scene>& scene, const entity_func& eachEntityFunc) const noexcept;
+        void addOnScene(const Ref<Scene>& scene, const mesh_func& meshFunc) const noexcept;
+        std::vector<ECS::entity_t> addOnScene(const Ref<Scene>& scene) const noexcept;
 
         /**
          * Trying to find mesh with name \p name , begging at this node.

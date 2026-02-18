@@ -11,7 +11,7 @@
     std::string m_name = "alesha shveev";
 };*/
 
-void SGCore::Lua::SGCorePackage::doLoadInState(sol::state& luaState, sol::unsafe_function_result& packageResult) noexcept
+void SGCore::Lua::SGCorePackage::doLoadInState(sol::state& luaState, function_result& packageResult) noexcept
 {
     sol::table packageTable = packageResult;
 

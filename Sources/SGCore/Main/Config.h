@@ -25,6 +25,8 @@ namespace SGCore
     {
         /// Plugins that will be loaded at start of SungearEngine executable.
         std::vector<LoadablePluginConfig> m_loadablePlugins;
+        /// Contains path to engine. If not present then equals to ${enginePath}.
+        InterpolatedPath m_enginePath = "${enginePath}";
     };
 }
 

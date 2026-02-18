@@ -17,6 +17,6 @@ namespace SGCore::Lua
         sg_implement_type_id(SGCorePackage, 54)
 
     private:
-        void doLoadInState(sol::state& luaState, sol::unsafe_function_result& packageResult) noexcept override;
+        void doLoadInState(sol::state& luaState, function_result& packageResult) noexcept override;
     };
 }
