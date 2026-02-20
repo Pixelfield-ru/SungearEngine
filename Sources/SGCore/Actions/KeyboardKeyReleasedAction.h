@@ -10,15 +10,27 @@
 
 namespace SGCore
 {
+    /**
+    * Action to check whether keyboard key is released.
+    */
     struct KeyboardKeyReleasedAction : IAction<bool()>
     {
+        /**
+         * Keyboard key to check state.
+         */
         Input::KeyboardKey m_key = Input::KeyboardKey::KEY_FIRST;
 
+        /**
+         * @return If keyboard key is released.
+         */
         bool execute() noexcept final
         {
             return Input::PC::keyboardKeyReleased(m_key);
         }
 
+        /**
+         * @return New KeyboardKeyReleasedAction instance.
+         */
         Ref<IAction> copy() noexcept final
         {
             auto newAction = MakeRef<KeyboardKeyReleasedAction>();

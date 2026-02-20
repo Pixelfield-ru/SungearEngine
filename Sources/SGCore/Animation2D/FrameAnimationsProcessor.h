@@ -9,6 +9,9 @@
 
 namespace SGCore
 {
+    /**
+     * Updates all \link FrameAnimation components of all entities.
+     */
     struct FrameAnimationsProcessor : ISystem
     {
         void update(const double& dt, const double& fixedDt) noexcept override;

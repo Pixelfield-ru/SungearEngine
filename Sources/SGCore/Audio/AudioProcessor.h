@@ -9,6 +9,12 @@
 
 namespace SGCore
 {
+    /**
+     * System to update all AudioSource components of all entities on scene.\n
+     * Updates position, direction and state of audio sources.\n
+     * Uses SGCore::Transform to update position and direction.\n
+     * Invokes SGCore::AudioSource::onStateChanged signal if audio source state has changed.
+     */
     struct AudioProcessor : public ISystem
     {
         sg_implement_type_id(AudioProcessor, 27)

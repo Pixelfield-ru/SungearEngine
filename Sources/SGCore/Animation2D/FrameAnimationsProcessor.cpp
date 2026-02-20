@@ -9,6 +9,7 @@
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Memory/Assets/GIF.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
+#include "SGCore/Utils/Defer.h"
 
 void SGCore::FrameAnimationsProcessor::update(const double& dt, const double& fixedDt) noexcept
 {
@@ -21,7 +22,11 @@ void SGCore::FrameAnimationsProcessor::update(const double& dt, const double& fi
     auto framedEntities = ecsRegistry->view<FrameAnimation, Mesh>();
 
     framedEntities.each([&](auto entity, FrameAnimation& animation, Mesh& mesh) {
-        if(!mesh.m_base.getMaterial()) return;
+        sg_defer [&animation]() {
+            animation.checkIsStateChanged();
+        };
+
+        if(!mesh.m_base.getMaterial() || animation.getState() != PlayableState::SG_PLAYING) return;
 
         FramesSequence* sequence {};
         if(auto* gif = std::get_if<AssetRef<GIF>>(&animation.m_source))
@@ -41,9 +46,11 @@ void SGCore::FrameAnimationsProcessor::update(const double& dt, const double& fi
 
         if(animation.m_currentTime > (lastFrame.m_timeStamp + lastFrame.m_nextFrameDelay) || animation.m_currentTime < 0.0f)
         {
-            if(!animation.m_isRepeated) return;
-
             animation.m_currentTime = !animation.m_isReversed ? 0.0f : (lastFrame.m_timeStamp + lastFrame.m_nextFrameDelay);
+            if(!animation.m_isRepeated)
+            {
+                animation.setState(PlayableState::SG_STOPPED);
+            }
             return;
         }
 

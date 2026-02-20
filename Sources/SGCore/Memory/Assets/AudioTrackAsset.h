@@ -26,7 +26,7 @@ namespace SGCore
 
         static constexpr inline size_t asset_type_id = 2;
 
-        ~AudioTrackAsset();
+        ~AudioTrackAsset() override;
 
         void createALBuffer() noexcept;
         void destroyALBuffer() noexcept;

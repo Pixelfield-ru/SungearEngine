@@ -75,7 +75,7 @@ namespace SGCore::Serde
 
     template<FormatType TFormatType>
     struct SerdeSpec<KeyboardKeyAction, TFormatType> :
-            BaseTypes<IAction<KeyboardKeyActionType()>>,
+            BaseTypes<IAction<Input::KeyState()>>,
             DerivedTypes<>
     {
         sg_serde_define_type_name("SGCore::KeyboardKeyAction")

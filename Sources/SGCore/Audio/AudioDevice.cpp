@@ -11,6 +11,10 @@
 
 #include "AudioUtils.h"
 
+SGCore::Ref<SGCore::AudioDevice> SGCore::AudioDevice::m_defaultDevice;
+std::vector<SGCore::Ref<SGCore::AudioDevice>> SGCore::AudioDevice::m_devices;
+ALCcontext* SGCore::AudioDevice::m_currentContext {};
+
 SGCore::AudioDevice::AudioDevice(const char* deviceName)
 {
     if(!deviceName)
@@ -22,10 +26,10 @@ SGCore::AudioDevice::AudioDevice(const char* deviceName)
         m_name = deviceName;
     }
     
-    m_handler = alcOpenDevice(deviceName);
-    if(m_handler)
+    m_handle = alcOpenDevice(deviceName);
+    if(m_handle)
     {
-        m_context = alcCreateContext(m_handler, nullptr);
+        m_context = alcCreateContext(m_handle, nullptr);
     }
     else
     {
@@ -50,9 +54,9 @@ SGCore::AudioDevice::~AudioDevice()
         AL_CALL(alcDestroyContext, m_context);
     }
     
-    if(m_handler)
+    if(m_handle)
     {
-        AL_CALL(alcCloseDevice, m_handler);
+        AL_CALL(alcCloseDevice, m_handle);
     }
 }
 
@@ -66,7 +70,7 @@ SGCore::Ref<SGCore::AudioDevice> SGCore::AudioDevice::createAudioDevice(const ch
 
 void SGCore::AudioDevice::makeCurrent() const noexcept
 {
-    if(m_handler && m_context)
+    if(m_handle && m_context)
     {
         ALCboolean contextMadeAsCurrent = alcMakeContextCurrent(m_context);
         if(contextMadeAsCurrent)
@@ -76,7 +80,7 @@ void SGCore::AudioDevice::makeCurrent() const noexcept
         else
         {
             LOG_E(SGCORE_TAG, "OpenAL error: could not make device`s '{}' context as current. Device: {}, context: {}.",
-                  m_name, (void*) m_handler, (void*) m_context)
+                  m_name, (void*) m_handle, (void*) m_context)
         }
         
         std::cout << "current context: " << alcGetCurrentContext() << std::endl;
@@ -90,5 +94,5 @@ SGCore::Ref<SGCore::AudioDevice> SGCore::AudioDevice::getDefaultDevice() noexcep
 
 bool SGCore::AudioDevice::isLoaded() const noexcept
 {
-    return m_handler && m_context;
+    return m_handle && m_context;
 }

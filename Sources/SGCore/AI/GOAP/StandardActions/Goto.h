@@ -14,7 +14,9 @@ namespace SGCore::GOAP
     {
         Goto() noexcept;
 
+        /// Speed of entity.
         float m_speed = 10.0f;
+        /// Distance to goal error rate.
         float m_distanceErrorRate = 1.0f;
 
         void calculateCost(ECS::registry_t& registry, ECS::entity_t forEntity) noexcept override;

@@ -9,8 +9,10 @@
 
 namespace SGCore
 {
+    /// Action that always returns 'true' from execute() function.
     struct AlwaysTrueAction : IAction<bool()>
     {
+        /// Always returns true.
         bool execute() noexcept final
         {
             return true;

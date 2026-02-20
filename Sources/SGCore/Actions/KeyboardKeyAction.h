@@ -10,39 +10,46 @@
 
 namespace SGCore
 {
-    enum class KeyboardKeyActionType
+    /**
+     * Action to check keyboard key state.
+     */
+    struct KeyboardKeyAction : IAction<Input::KeyState()>
     {
-        KA_DOWN,
-        KA_RELEASED,
-        KA_PRESSED,
-        KA_NONE
-    };
-
-    struct KeyboardKeyAction : IAction<KeyboardKeyActionType()>
-    {
+        /**
+         * Keyboard key to check state.
+         */
         Input::KeyboardKey m_key = Input::KeyboardKey::KEY_FIRST;
 
-        KeyboardKeyActionType execute() noexcept final
+        /**
+         * @return State of key (SGCore::Input::KeyState::KS_DOWN, KS_RELEASE, KS_PRESSED or KS_NONE if no action was performed with key).
+         */
+        Input::KeyState execute() noexcept final
         {
             if(Input::PC::keyboardKeyDown(m_key))
             {
-                return KeyboardKeyActionType::KA_DOWN;
+                return Input::KeyState::KS_DOWN;
             }
             if(Input::PC::keyboardKeyReleased(m_key))
             {
-                return KeyboardKeyActionType::KA_RELEASED;
+                return Input::KeyState::KS_RELEASE;
             }
             if(Input::PC::keyboardKeyPressed(m_key))
             {
-                return KeyboardKeyActionType::KA_PRESSED;
+                return Input::KeyState::KS_PRESSED;
             }
 
-            return KeyboardKeyActionType::KA_NONE;
+            return Input::KeyState::KS_NONE;
         }
 
+        /**
+         * @return New KeyboardKeyAction instance.
+         */
         Ref<IAction> copy() noexcept final
         {
-            return MakeRef<KeyboardKeyAction>();
+            auto instance = MakeRef<KeyboardKeyAction>();
+            instance->m_key = m_key;
+
+            return instance;
         }
     };
 }

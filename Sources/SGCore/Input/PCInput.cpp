@@ -33,7 +33,7 @@ void SGCore::Input::PC::startFrame() noexcept
 
 bool SGCore::Input::PC::keyboardKeyDown(KeyboardKey key) noexcept
 {
-    return getKeyboardKeyState(key) == KeyState::PRESS;
+    return getKeyboardKeyNativeState(key) == KeyState::KS_DOWN;
 }
 
 bool SGCore::Input::PC::keyboardKeyPressed(KeyboardKey key) noexcept
@@ -41,10 +41,10 @@ bool SGCore::Input::PC::keyboardKeyPressed(KeyboardKey key) noexcept
     const auto underlyingKey = std::to_underlying(key);
 
     const KeyState lastAction = m_keyboardKeysStates[underlyingKey];
-    m_keyboardKeysStates[underlyingKey] = keyboardKeyDown(key) ? KeyState::PRESS : KeyState::RELEASE;
+    m_keyboardKeysStates[underlyingKey] = keyboardKeyDown(key) ? KeyState::KS_DOWN : KeyState::KS_RELEASE;
 
-    return lastAction == KeyState::RELEASE &&
-           m_keyboardKeysStates[underlyingKey] == KeyState::PRESS;
+    return lastAction == KeyState::KS_RELEASE &&
+           m_keyboardKeysStates[underlyingKey] == KeyState::KS_DOWN;
 }
 
 bool SGCore::Input::PC::keyboardKeyReleased(KeyboardKey key) noexcept
@@ -52,37 +52,37 @@ bool SGCore::Input::PC::keyboardKeyReleased(KeyboardKey key) noexcept
     const auto underlyingKey = std::to_underlying(key);
 
     const KeyState lastAction = m_keyboardKeysStates[underlyingKey];
-    m_keyboardKeysStates[underlyingKey] = keyboardKeyDown(key) ? KeyState::PRESS : KeyState::RELEASE;
+    m_keyboardKeysStates[underlyingKey] = keyboardKeyDown(key) ? KeyState::KS_DOWN : KeyState::KS_RELEASE;
 
-    return lastAction == KeyState::PRESS &&
-           m_keyboardKeysStates[underlyingKey] == KeyState::RELEASE;
+    return lastAction == KeyState::KS_DOWN &&
+           m_keyboardKeysStates[underlyingKey] == KeyState::KS_RELEASE;
 }
 
 bool SGCore::Input::PC::mouseButtonDown(MouseButton button) noexcept
 {
-    return getMouseButtonState(button) == KeyState::PRESS;
+    return getMouseButtonNativeState(button) == KeyState::KS_DOWN;
 }
 
 bool SGCore::Input::PC::mouseButtonPressed(MouseButton button) noexcept
 {
     const auto underlyingButton = std::to_underlying(button);
 
-    const int lastAction = m_mouseButtonsStates[underlyingButton];
-    m_mouseButtonsStates[underlyingButton] = mouseButtonDown(button) ? KeyState::PRESS : KeyState::RELEASE;
+    const auto lastAction = m_mouseButtonsStates[underlyingButton];
+    m_mouseButtonsStates[underlyingButton] = mouseButtonDown(button) ? KeyState::KS_DOWN : KeyState::KS_RELEASE;
 
-    return lastAction == KeyState::RELEASE &&
-           m_mouseButtonsStates[underlyingButton] == KeyState::PRESS;
+    return lastAction == KeyState::KS_RELEASE &&
+           m_mouseButtonsStates[underlyingButton] == KeyState::KS_DOWN;
 }
 
 bool SGCore::Input::PC::mouseButtonReleased(MouseButton button) noexcept
 {
     const auto underlyingButton = std::to_underlying(button);
 
-    const int lastAction = m_mouseButtonsStates[underlyingButton];
-    m_mouseButtonsStates[underlyingButton] = mouseButtonDown(button) ? KeyState::PRESS : KeyState::RELEASE;
+    const auto lastAction = m_mouseButtonsStates[underlyingButton];
+    m_mouseButtonsStates[underlyingButton] = mouseButtonDown(button) ? KeyState::KS_DOWN : KeyState::KS_RELEASE;
 
-    return lastAction == KeyState::PRESS &&
-           m_mouseButtonsStates[underlyingButton] == KeyState::RELEASE;
+    return lastAction == KeyState::KS_DOWN &&
+           m_mouseButtonsStates[underlyingButton] == KeyState::KS_RELEASE;
 }
 
 void SGCore::Input::PC::updateCursorPosition() noexcept
@@ -140,8 +140,8 @@ void SGCore::Input::PC::setupInput(Window& window) noexcept
 {
     m_windowHandle = window.getNativeHandle();
 
-    std::memset(m_keyboardKeysStates, KeyState::RELEASE, sizeof(m_keyboardKeysStates));
-    std::memset(m_mouseButtonsStates, KeyState::RELEASE, sizeof(m_mouseButtonsStates));
+    std::memset(m_keyboardKeysStates, std::to_underlying(KeyState::KS_RELEASE), sizeof(m_keyboardKeysStates));
+    std::memset(m_mouseButtonsStates, std::to_underlying(KeyState::KS_RELEASE), sizeof(m_mouseButtonsStates));
 
 #if SG_HAS_PC_INPUT
     glfwSetKeyCallback(m_windowHandle, nativeKeyboardKeyCallback);
@@ -171,7 +171,7 @@ void SGCore::Input::PC::nativeMousePositionCallback(window_handle window, double
 #endif
 }
 
-SGCore::Input::KeyState SGCore::Input::PC::getMouseButtonState(MouseButton button)
+SGCore::Input::KeyState SGCore::Input::PC::getMouseButtonNativeState(MouseButton button)
 {
 #if SG_HAS_PC_INPUT
     return (KeyState) glfwGetMouseButton(m_windowHandle, std::to_underlying(button));
@@ -180,7 +180,7 @@ SGCore::Input::KeyState SGCore::Input::PC::getMouseButtonState(MouseButton butto
 #endif
 }
 
-SGCore::Input::KeyState SGCore::Input::PC::getKeyboardKeyState(KeyboardKey key) noexcept
+SGCore::Input::KeyState SGCore::Input::PC::getKeyboardKeyNativeState(KeyboardKey key) noexcept
 {
 #if SG_HAS_PC_INPUT
     return (KeyState) glfwGetKey(m_windowHandle, std::to_underlying(key));

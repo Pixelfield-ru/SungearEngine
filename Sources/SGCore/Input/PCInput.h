@@ -26,17 +26,19 @@ namespace SGCore
 
 namespace SGCore::Input
 {
-    enum KeyState : std::uint8_t
+    enum class KeyState : std::uint8_t
     {
 #if SG_HAS_PC_INPUT
-        PRESS = GLFW_PRESS,
-        RELEASE = GLFW_RELEASE,
-        REPEAT = GLFW_REPEAT
+        KS_RELEASE = GLFW_RELEASE,
+        KS_DOWN = GLFW_PRESS,
+        KS_REPEAT = GLFW_REPEAT,
 #else
-        PRESS,
-        RELEASE,
-        REPEAT
+        KS_PRESS,
+        KS_RELEASE,
+        KS_REPEAT,
 #endif
+        KS_PRESSED = KS_REPEAT + 1,
+        KS_NONE = KS_PRESSED + 1
     };
 
     enum class KeyboardKey
@@ -342,9 +344,6 @@ namespace SGCore::Input
         static bool mouseButtonPressed(MouseButton) noexcept;
         static bool mouseButtonReleased(MouseButton) noexcept;
 
-        static KeyState getKeyboardKeyState(KeyboardKey key) noexcept;
-        static KeyState getMouseButtonState(MouseButton button);
-
         static void updateCursorPosition() noexcept;
 
         static void getCursorPosition(double& x, double& y) noexcept;
@@ -362,8 +361,8 @@ namespace SGCore::Input
     private:
         static inline window_handle m_windowHandle = nullptr;
 
-        static inline KeyState m_keyboardKeysStates[std::to_underlying(KeyboardKey::KEY_LAST) + 1]{KeyState::RELEASE};
-        static inline KeyState m_mouseButtonsStates[std::to_underlying(MouseButton::MOUSE_BUTTON_LAST) + 1]{KeyState::RELEASE};
+        static inline KeyState m_keyboardKeysStates[std::to_underlying(KeyboardKey::KEY_LAST) + 1]{KeyState::KS_RELEASE};
+        static inline KeyState m_mouseButtonsStates[std::to_underlying(MouseButton::MOUSE_BUTTON_LAST) + 1]{KeyState::KS_RELEASE};
 
         static inline double m_cursorPositionLastX = 0;
         static inline double m_cursorPositionLastY = 0;
@@ -379,5 +378,19 @@ namespace SGCore::Input
         static void nativeKeyboardKeyCallback(window_handle window, int key, int scancode, int action, int mods) noexcept;
         static void nativeMouseButtonCallback(window_handle window, int button, int action, int mods) noexcept;
         static void nativeMousePositionCallback(window_handle window, double xpos, double ypos) noexcept;
+
+        /**
+         * Function to get GLFW keyboard key state.
+         * @param key Key to check state.
+         * @return GLFW state of key (only KeyState::KS_RELEASE, KeyState::KS_DOWN or KeyState::KS_REPEAT)
+         */
+        static KeyState getKeyboardKeyNativeState(KeyboardKey key) noexcept;
+
+        /**
+         * Function to get GLFW mouse button state.
+         * @param button Button to check state.
+         * @return GLFW state of button (only KeyState::KS_RELEASE, KeyState::KS_DOWN or KeyState::KS_REPEAT)
+         */
+        static KeyState getMouseButtonNativeState(MouseButton button);
     };
 }

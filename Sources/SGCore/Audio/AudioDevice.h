@@ -12,24 +12,49 @@
 
 namespace SGCore
 {
+    /**
+     * Wrapper of OpenAL audio device.
+     */
     struct AudioDevice
     {
+        /**
+         * Resets current context if context of device is current.\n
+         * Destroys context.\n
+         * Destroys handle of device.
+         */
         ~AudioDevice();
-        
+
+        /**
+         * Creates default device. Does not set default device as current.
+         */
         static void init() noexcept;
-        
+
+        /**
+         * Creates new audio device.
+         * @param deviceName Name of device.
+         * @return New device.
+         */
         static Ref<AudioDevice> createAudioDevice(const char* deviceName) noexcept;
-        
+
+        /**
+         * Makes device as current to play audio.
+         */
         void makeCurrent() const noexcept;
-        
+
+        /**
+         * @return Default device that was created
+         */
         SG_NOINLINE static Ref<AudioDevice> getDefaultDevice() noexcept;
-        
+
+        /**
+         * @return Whether context and handle of device are valid.
+         */
         bool isLoaded() const noexcept;
         
     private:
         explicit AudioDevice(const char* deviceName);
         
-        ALCdevice* m_handler = nullptr;
+        ALCdevice* m_handle = nullptr;
         ALCcontext* m_context = nullptr;
         
         std::string m_name;
@@ -38,10 +63,10 @@ namespace SGCore
         Ref<AudioDevice> m_fallbackDevice;
         
         // preferred device
-        static inline Ref<AudioDevice> m_defaultDevice;
-        static inline std::vector<Ref<AudioDevice>> m_devices;
+        static Ref<AudioDevice> m_defaultDevice;
+        static std::vector<Ref<AudioDevice>> m_devices;
         
-        static inline ALCcontext* m_currentContext = nullptr;
+        static ALCcontext* m_currentContext;
     };
 }
 

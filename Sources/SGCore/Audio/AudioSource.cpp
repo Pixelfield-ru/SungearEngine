@@ -13,7 +13,7 @@ void SGCore::AudioSource::create() noexcept
 {
     destroy();
     
-    AL_CALL_E(m_isValid, alGenSources, 1, &m_handler);
+    AL_CALL_E(m_isValid, alGenSources, 1, &m_handle);
     
     // auto attaching to buffer if it is not nullptr
     attachAudioTrack(m_attachedAudioTrack);
@@ -27,7 +27,7 @@ void SGCore::AudioSource::destroy() noexcept
     if(m_isValid)
     {
         detachAudioTrack();
-        AL_CALL(alDeleteSources, 1, &m_handler);
+        AL_CALL(alDeleteSources, 1, &m_handle);
         m_isValid = false;
     }
 }
@@ -38,8 +38,8 @@ void SGCore::AudioSource::attachAudioTrack(const AssetRef<AudioTrackAsset>& audi
     
     if(m_isValid && audioTrackAsset)
     {
-        std::cout << "m_handler: " << m_handler << ", audio track handler: " << audioTrackAsset->getALHandler() << std::endl;
-        AL_CALL(alSourcei, m_handler, AL_BUFFER, audioTrackAsset->getALHandler());
+        std::cout << "m_handler: " << m_handle << ", audio track handler: " << audioTrackAsset->getALHandler() << std::endl;
+        AL_CALL(alSourcei, m_handle, AL_BUFFER, audioTrackAsset->getALHandler());
     }
 }
 
@@ -47,45 +47,50 @@ void SGCore::AudioSource::detachAudioTrack() const noexcept
 {
     if(m_isValid)
     {
-        AL_CALL(alSourcei, m_handler, AL_BUFFER, 0);
+        AL_CALL(alSourcei, m_handle, AL_BUFFER, 0);
     }
 }
 
-void SGCore::AudioSource::setState(const SGCore::AudioSourceState& state) noexcept
+void SGCore::AudioSource::doSetState(PlayableState state) noexcept
 {
     if(m_isValid)
     {
         switch(state)
         {
-            case AudioSourceState::PLAYING:
-                AL_CALL(alSourcePlay, m_handler);
+            case PlayableState::SG_PLAYING:
+                AL_CALL(alSourcePlay, m_handle);
                 break;
-            case AudioSourceState::PAUSED:
-                AL_CALL(alSourcePause, m_handler);
+            case PlayableState::SG_PAUSED:
+                AL_CALL(alSourcePause, m_handle);
                 break;
-            case AudioSourceState::STOPPED:
-                AL_CALL(alSourceStop, m_handler);
+            case PlayableState::SG_STOPPED:
+                AL_CALL(alSourceStop, m_handle);
                 break;
         }
     }
 }
 
-SGCore::AudioSourceState SGCore::AudioSource::getState() const noexcept
+void SGCore::AudioSource::resetTimelineTime() noexcept
+{
+    setCurrentTime(0.0f);
+}
+
+SGCore::PlayableState SGCore::AudioSource::getState() const noexcept
 {
     ALint alState;
-    AL_CALL(alGetSourcei, m_handler, AL_SOURCE_STATE, &alState);
+    AL_CALL(alGetSourcei, m_handle, AL_SOURCE_STATE, &alState);
     
     switch(alState)
     {
         case AL_PLAYING:
-            return AudioSourceState::PLAYING;
+            return PlayableState::SG_PLAYING;
         case AL_PAUSED:
-            return AudioSourceState::PAUSED;
+            return PlayableState::SG_PAUSED;
         case AL_STOPPED:
-            return AudioSourceState::STOPPED;
+            return PlayableState::SG_STOPPED;
     }
     
-    return AudioSourceState::STOPPED;
+    return PlayableState::SG_STOPPED;
 }
 
 void SGCore::AudioSource::setType(const SGCore::AudioSourceType& type) noexcept
@@ -96,14 +101,14 @@ void SGCore::AudioSource::setType(const SGCore::AudioSourceType& type) noexcept
     {
         switch(type)
         {
-            case AudioSourceType::POSITIONAL:
+            case AudioSourceType::SG_WORLD:
             {
-                AL_CALL(alSourcei, m_handler, AL_SOURCE_RELATIVE, AL_FALSE);
+                AL_CALL(alSourcei, m_handle, AL_SOURCE_RELATIVE, AL_FALSE);
                 break;
             }
-            case AudioSourceType::AMBIENT:
+            case AudioSourceType::SG_AMBIENT:
             {
-                AL_CALL(alSourcei, m_handler, AL_SOURCE_RELATIVE, AL_TRUE);
+                AL_CALL(alSourcei, m_handle, AL_SOURCE_RELATIVE, AL_TRUE);
                 setPosition({ 0, 0, 0 });
                 break;
             }
@@ -145,7 +150,7 @@ SGCore::AudioSource& SGCore::AudioSource::operator=(SGCore::AudioSource&& other)
         destroy();
 
         m_attachedAudioTrack = other.m_attachedAudioTrack;
-        m_handler = other.m_handler;
+        m_handle = other.m_handle;
         m_isValid = other.m_isValid;
         m_type = other.m_type;
 
@@ -158,7 +163,7 @@ SGCore::AudioSource& SGCore::AudioSource::operator=(SGCore::AudioSource&& other)
 
 void SGCore::AudioSource::setPosition(const glm::vec3& position) noexcept
 {
-    AL_CALL(alSource3f, m_handler, AL_POSITION, position.x, position.y, position.z);
+    AL_CALL(alSource3f, m_handle, AL_POSITION, position.x, position.y, position.z);
 }
 
 glm::vec3 SGCore::AudioSource::getPosition() const noexcept
@@ -167,14 +172,14 @@ glm::vec3 SGCore::AudioSource::getPosition() const noexcept
     float y;
     float z;
     
-    AL_CALL(alGetSource3f, m_handler, AL_POSITION, &x, &y, &z);
+    AL_CALL(alGetSource3f, m_handle, AL_POSITION, &x, &y, &z);
     
     return { x, y, z };
 }
 
 void SGCore::AudioSource::setVelocity(const glm::vec3& velocity) noexcept
 {
-    AL_CALL(alSource3f, m_handler, AL_VELOCITY, velocity.x, velocity.y, velocity.z);
+    AL_CALL(alSource3f, m_handle, AL_VELOCITY, velocity.x, velocity.y, velocity.z);
 }
 
 glm::vec3 SGCore::AudioSource::getVelocity() const noexcept
@@ -183,14 +188,14 @@ glm::vec3 SGCore::AudioSource::getVelocity() const noexcept
     float y;
     float z;
     
-    AL_CALL(alGetSource3f, m_handler, AL_VELOCITY, &x, &y, &z);
+    AL_CALL(alGetSource3f, m_handle, AL_VELOCITY, &x, &y, &z);
 
     return { x, y, z };
 }
 
 void SGCore::AudioSource::setDirection(const glm::vec3& direction) noexcept
 {
-    AL_CALL(alSource3f, m_handler, AL_DIRECTION, direction.x, direction.y, direction.z);
+    AL_CALL(alSource3f, m_handle, AL_DIRECTION, direction.x, direction.y, direction.z);
 }
 
 glm::vec3 SGCore::AudioSource::getDirection() const noexcept
@@ -199,7 +204,7 @@ glm::vec3 SGCore::AudioSource::getDirection() const noexcept
     float y;
     float z;
     
-    AL_CALL(alGetSource3f, m_handler, AL_DIRECTION, &x, &y, &z);
+    AL_CALL(alGetSource3f, m_handle, AL_DIRECTION, &x, &y, &z);
     
     return { x, y, z };
 }
@@ -208,7 +213,7 @@ void SGCore::AudioSource::setGain(const float& gain) noexcept
 {
     if(m_isValid)
     {
-        AL_CALL(alSourcef, m_handler, AL_GAIN, gain);
+        AL_CALL(alSourcef, m_handle, AL_GAIN, gain);
     }
 }
 
@@ -217,7 +222,7 @@ float SGCore::AudioSource::getGain() const noexcept
     float val = 0;
     if(m_isValid)
     {
-        AL_CALL(alGetSourcef, m_handler, AL_GAIN, &val);
+        AL_CALL(alGetSourcef, m_handle, AL_GAIN, &val);
     }
     
     return val;
@@ -227,7 +232,7 @@ void SGCore::AudioSource::setPitch(const float& pitch) noexcept
 {
     if(m_isValid)
     {
-        AL_CALL(alSourcef, m_handler, AL_PITCH, pitch);
+        AL_CALL(alSourcef, m_handle, AL_PITCH, pitch);
     }
 }
 
@@ -236,7 +241,7 @@ float SGCore::AudioSource::getPitch() const noexcept
     float val = 0;
     if(m_isValid)
     {
-        AL_CALL(alGetSourcef, m_handler, AL_PITCH, &val);
+        AL_CALL(alGetSourcef, m_handle, AL_PITCH, &val);
     }
     
     return val;
@@ -248,7 +253,7 @@ void SGCore::AudioSource::setIsLooping(bool isLooping) noexcept
     
     if(m_isValid)
     {
-        AL_CALL(alSourcei, m_handler, AL_LOOPING, isLooping ? AL_TRUE : AL_FALSE);
+        AL_CALL(alSourcei, m_handle, AL_LOOPING, isLooping ? AL_TRUE : AL_FALSE);
     }
 }
 
@@ -261,7 +266,7 @@ void SGCore::AudioSource::setRolloffFactor(const float& rolloffFactor) noexcept
 {
     if(m_isValid)
     {
-        AL_CALL(alSourcef, m_handler, AL_ROLLOFF_FACTOR, rolloffFactor);
+        AL_CALL(alSourcef, m_handle, AL_ROLLOFF_FACTOR, rolloffFactor);
     }
 }
 
@@ -270,9 +275,26 @@ float SGCore::AudioSource::getRolloffFactor() const noexcept
     float val = 0;
     if(m_isValid)
     {
-        AL_CALL(alGetSourcef, m_handler, AL_ROLLOFF_FACTOR, &val);
+        AL_CALL(alGetSourcef, m_handle, AL_ROLLOFF_FACTOR, &val);
     }
     
     return 0;
+}
+
+void SGCore::AudioSource::setCurrentTime(float time) const noexcept
+{
+    if(!m_isValid) return;
+
+    AL_CALL(alSourcef, m_handle, AL_SEC_OFFSET, time);
+}
+
+float SGCore::AudioSource::getCurrentTime() const noexcept
+{
+    if(!m_isValid) return 0.0f;
+
+    float time {};
+    AL_CALL(alGetSourcef, m_handle, AL_SEC_OFFSET, &time);
+
+    return time;
 }
 

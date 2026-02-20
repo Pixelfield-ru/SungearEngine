@@ -17,7 +17,7 @@ namespace SGCore
         sg_implement_type_id(ByteFileAsset, 7)
         sg_serde_as_friend()
 
-        ~ByteFileAsset();
+        ~ByteFileAsset() override;
         
         [[nodiscard]] char* getDataBuffer() const noexcept;
         [[nodiscard]] size_t getDataBufferSize() const noexcept;
