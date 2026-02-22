@@ -19,7 +19,7 @@ namespace SGCore::UI
         copy_operator(UIRoot) = default;
         move_operator(UIRoot) = default;
 
-        SG_IMPL_DESERIALIZABLE(UIRoot);
+        static inline auto properties_fields = std::tuple {};
 
     protected:
         void doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,

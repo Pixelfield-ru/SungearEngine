@@ -12,7 +12,7 @@ namespace SGCore::UI::Deserialization
      */
     template<typename Base>
     concept ImplDeserializable = requires(Base& base, UISourceTreeViewValue& value, SGCore::UI::Deserialization::DeserScope scope) {
-        { Base::deserializeInto(value, base, scope) } -> std::convertible_to<DeserializeIntoResultType>;
+        Base::properties_fields;
     };
 
     #define SG_IMPL_DESERIALIZABLE(type) \

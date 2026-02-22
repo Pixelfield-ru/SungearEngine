@@ -177,7 +177,7 @@ void SGCore::UI::UIElement::checkForMeshGenerating(const UIElementCache* parentE
     }
 }
 
-#define sg_deser_type SGCore::UI::UIElement
+/*#define sg_deser_type SGCore::UI::UIElement
 #define sg_deser_children m_children
 #define sg_deser_properties(prop) prop(style)
-#include "Deserialization/ImplDeserializableStruct.h"
+#include "Deserialization/ImplDeserializableStruct.h"*/

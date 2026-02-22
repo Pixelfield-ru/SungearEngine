@@ -114,7 +114,14 @@ namespace SGCore::UI
 
         [[nodiscard]] virtual Scope<UIElement> copy() const noexcept = 0;
 
-        SG_IMPL_DESERIALIZABLE(UIElement);
+        static inline auto properties_fields = std::tuple {
+            std::pair {
+                &UIElement::m_style,
+                "style"
+            }
+        };
+
+        static inline auto children_field = &UIElement::m_children;
 
     private:
 
@@ -181,8 +188,5 @@ namespace SGCore::UI
         void checkForMeshGenerating(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept;
     };
 
-    static_assert(SGCore::UI::Deserialization::ImplDeserializable<UIElement>);
     static_assert(SGCore::UI::Deserialization::ImplDeserializableContainer<Scope<UIElement>>);
-
-
 }

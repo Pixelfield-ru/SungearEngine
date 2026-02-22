@@ -1,7 +1,10 @@
 #pragma once
 #include <expected>
 
+#include "SGCore/Utils/TypeTraits.h"
+
 #include "ImplDeserializable.h"
+// #include "ImplDeserializableStruct.h"
 #include "IsValidContainer.h"
 #include "Scope.h"
 #include "SGCore/UI/Parser/UISourceTreeView.h"
@@ -53,7 +56,86 @@ namespace SGCore::UI::Deserialization
     struct Deserializer<Deserializable>
     {
         static DeserializeIntoResultType deserializeInto(UISourceTreeViewValue& value, Deserializable& field, DeserScope scope) {
-            return Deserializable::deserializeInto(value, field, scope);
+            // Try to parse self as object
+            // TODO: support "component singleValue;"
+            auto valueAsMaybeObject = value.tryGetObject();
+            if (!valueAsMaybeObject) { return "wrong object type"; }
+
+            auto& object = *valueAsMaybeObject;
+
+            if constexpr(requires { Deserializable::base_types; })
+            {
+                for_types([&](auto wrapper) {
+                    using type = decltype(wrapper)::type;
+                    Deserializer<type>::deserializeInto(value, field, scope);
+                }, Deserializable::base_types);
+            }
+
+            if constexpr(requires { Deserializable::properties_fields; })
+            {
+                auto& iter = object.properties();
+
+                for (auto& prop : iter)
+                {
+                    auto propName = prop.getName();
+
+                    auto deserializeFunc = [&](auto&& memberDesc) {
+                        if (propName == memberDesc.second)
+                        {
+                            using prop_t = decltype(field.*memberDesc.first);
+
+                            if (auto error = Deserializer<prop_t>::deserializeInto(prop.getValue(), field.*memberDesc.first , scope ))
+                            {
+                                return std::format("Error when parsing field {}.{}, error: {}", typeid(Deserializable).name(), memberDesc.second, *error);
+                            }
+                        }
+                    };
+
+                    std::apply([&](auto&&... memberDesc) {
+                        (serializeFunc(std::forward<decltype(memberDesc)>(memberDesc)), ...);
+                    }, Deserializable::properties_fields);
+
+                    return std::format("Unknown property {}", propName);
+                }
+            }
+
+            if constexpr(requires { Deserializable::children_field; } )
+            {
+                using children_field_type = decltype(field.*Deserializable::children_field);
+
+                if constexpr(!is_collection_v<children_field_type>)
+                {
+                    auto& objectChildren = object.children();
+
+                    Deserializer<children_field_type>::deserializeInto(objectChildren[0], field.*Deserializable::children_field, scope);
+                }
+                else
+                {
+                    auto& children = object.children();
+
+                    using ValueType = children_field_type::value_type;
+
+                    if constexpr(requires(ValueType val) {
+                        std::declval<children_field_type>().push_back(val);
+                    })
+                    {
+                        for (auto& child : children)
+                        {
+                            (field.*Deserializable::children_field).push_back({});
+
+                            Deserializer<ValueType>::deserializeInto(child, *(field.*Deserializable::children_field).rbegin(), scope);
+                        }
+                    }
+                    else
+                    { // TODO: add support for range constructor
+                        // static_assert(false, "Unsupported children collection");
+                    }
+                }
+            }
+
+            return std::nullopt;
+
+            // return Deserialization::deserializeInto(value, field, scope);
         }
     };
 

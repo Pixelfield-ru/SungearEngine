@@ -35,9 +35,7 @@ namespace SGCore::UI
 
         [[nodiscard]] Scope<UIElement> copy() const noexcept override;
 
-        SG_IMPL_DESERIALIZABLE(Text) {
-            return Deserialization::Deserializer<std::string>::deserializeInto(value, field.m_text, scope);
-        }
+        static inline auto properties_fields = std::tuple {};
 
     protected:
         /// todo: omg i have element size (m_basicSize) in selector but i cant use it because of order. i am calculating m_basicSize in draw function of struct Text and then i am calling m_style->calculateCache() in UILayoutCalculator so m_basicSize resets

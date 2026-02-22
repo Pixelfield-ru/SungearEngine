@@ -9,5 +9,7 @@ namespace SGCore::UI
         SG_DECLARE_UI_ELEMENT_TYPE(button)
 
         [[nodiscard]] Scope<UIElement> copy() const noexcept override;
+
+        static inline auto properties_fields = std::tuple {};
     };
 }
