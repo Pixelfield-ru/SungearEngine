@@ -7,6 +7,30 @@
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Main/Window.h"
 
+SGCore::Signal<void(SGCore::Window&, SGCore::Input::KeyboardKey, int, SGCore::Input::KeyState, int)>& SGCore::Input::PC::onKeyboardKeyEvent() noexcept
+{
+    static Signal<void(Window&, KeyboardKey, int, KeyState, int)> signal;
+    return signal;
+}
+
+SGCore::Signal<void(SGCore::Window&, SGCore::Input::MouseButton, SGCore::Input::KeyState, int)>& SGCore::Input::PC::onMouseButtonEvent() noexcept
+{
+    static Signal<void(Window&, MouseButton, KeyState, int)> signal;
+    return signal;
+}
+
+SGCore::Signal<void(SGCore::Window&, double, double)>& SGCore::Input::PC::onCursorPositionChanged() noexcept
+{
+    static Signal<void(Window&, double, double)> signal;
+    return signal;
+}
+
+SGCore::Signal<void(SGCore::Window&, double, double)>& SGCore::Input::PC::onMouseScroll() noexcept
+{
+    static Signal<void(Window&, double, double)> signal;
+    return signal;
+}
+
 void SGCore::Input::PC::startFrame() noexcept
 {
     if(!m_windowHandle) return;
@@ -147,27 +171,35 @@ void SGCore::Input::PC::setupInput(Window& window) noexcept
     glfwSetKeyCallback(m_windowHandle, nativeKeyboardKeyCallback);
     glfwSetMouseButtonCallback(m_windowHandle, nativeMouseButtonCallback);
     glfwSetCursorPosCallback(m_windowHandle, nativeMousePositionCallback);
+    glfwSetScrollCallback(m_windowHandle, nativeMouseScrollCallback);
 #endif
 }
 
 void SGCore::Input::PC::nativeKeyboardKeyCallback(window_handle window, int key, int scancode, int action, int mods) noexcept
 {
 #if SG_HAS_PC_INPUT
-    onKeyboardKeyEvent(*((Window*) glfwGetWindowUserPointer(window)), (KeyboardKey) key, scancode, (KeyState) action, mods);
+    onKeyboardKeyEvent()(*((Window*) glfwGetWindowUserPointer(window)), (KeyboardKey) key, scancode, (KeyState) action, mods);
 #endif
 }
 
 void SGCore::Input::PC::nativeMouseButtonCallback(window_handle window, int button, int action, int mods) noexcept
 {
 #if SG_HAS_PC_INPUT
-    onMouseButtonEvent(*((Window*) glfwGetWindowUserPointer(window)), (MouseButton) button, (KeyState) action, mods);
+    onMouseButtonEvent()(*((Window*) glfwGetWindowUserPointer(window)), (MouseButton) button, (KeyState) action, mods);
 #endif
 }
 
 void SGCore::Input::PC::nativeMousePositionCallback(window_handle window, double xpos, double ypos) noexcept
 {
 #if SG_HAS_PC_INPUT
-    onCursorPositionChanged(*((Window*) glfwGetWindowUserPointer(window)), xpos, ypos);
+    onCursorPositionChanged()(*((Window*) glfwGetWindowUserPointer(window)), xpos, ypos);
+#endif
+}
+
+void SGCore::Input::PC::nativeMouseScrollCallback(window_handle window, double xScroll, double yScroll) noexcept
+{
+#if SG_HAS_PC_INPUT
+    onMouseScroll()(*((Window*) glfwGetWindowUserPointer(window)), xScroll, yScroll);
 #endif
 }
 

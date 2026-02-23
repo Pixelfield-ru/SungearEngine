@@ -40,6 +40,11 @@ SGCore::ECS::entity_t SGCore::BasicApp::getCameraEntity() const noexcept
     return m_cameraEntity;
 }
 
+SGCore::ECS::entity_t SGCore::BasicApp::getAtmosphereEntity() const noexcept
+{
+    return m_atmosphereEntity;
+}
+
 void SGCore::BasicApp::initImpl() noexcept
 {
     m_config = CoreMain::loadConfig(m_configPath.resolved());
@@ -111,13 +116,13 @@ void SGCore::BasicApp::initImpl() noexcept
 
             const auto skyboxEntities = cubeModel->m_rootNode->addOnScene(scene);
 
-            const auto atmosphereEntity = skyboxEntities[2];
+            m_atmosphereEntity = skyboxEntities[2];
 
-            auto& skyboxMesh = ecsRegistry->get<Mesh>(atmosphereEntity);
-            auto& atmosphereScattering = ecsRegistry->emplace<Atmosphere>(atmosphereEntity);
+            auto& skyboxMesh = ecsRegistry->get<Mesh>(m_atmosphereEntity);
+            auto& atmosphereScattering = ecsRegistry->emplace<Atmosphere>(m_atmosphereEntity);
             skyboxMesh.m_base.setMaterial(standardSkyMaterial);
 
-            auto& skyboxTransform = ecsRegistry->get<Transform>(atmosphereEntity);
+            auto& skyboxTransform = ecsRegistry->get<Transform>(m_atmosphereEntity);
 
             skyboxTransform->m_ownTransform.m_scale = { 1150, 1150, 1150 };
         }

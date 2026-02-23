@@ -34,6 +34,9 @@ namespace SGCore
         /// Can be used only if basic scene was created
         ECS::entity_t getCameraEntity() const noexcept;
 
+        /// Can be used only if basic scene was created
+        ECS::entity_t getAtmosphereEntity() const noexcept;
+
     private:
         Slot<void()> m_initSlot = [this] {
             initImpl();
@@ -50,6 +53,7 @@ namespace SGCore
         bool m_isBasicSceneMustBeCreated = false;
 
         ECS::entity_t m_cameraEntity = entt::null;
+        ECS::entity_t m_atmosphereEntity = entt::null;
 
         void initImpl() noexcept;
         void updateImpl(double dt, double fixedDt) noexcept;

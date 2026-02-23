@@ -330,9 +330,10 @@ namespace SGCore::Input
 
         friend struct SGCore::Window;
 
-        static inline Signal<void(Window&, KeyboardKey, int scancode, KeyState, int mods)> onKeyboardKeyEvent;
-        static inline Signal<void(Window&, MouseButton, KeyState, int mods)> onMouseButtonEvent;
-        static inline Signal<void(Window&, double x, double y)> onCursorPositionChanged;
+        static Signal<void(Window&, KeyboardKey, int scancode, KeyState, int mods)>& onKeyboardKeyEvent() noexcept;
+        static Signal<void(Window&, MouseButton, KeyState, int mods)>& onMouseButtonEvent() noexcept;
+        static Signal<void(Window&, double x, double y)>& onCursorPositionChanged() noexcept;
+        static Signal<void(Window&, double x, double y)>& onMouseScroll() noexcept;
 
         static void startFrame() noexcept;
 
@@ -378,6 +379,7 @@ namespace SGCore::Input
         static void nativeKeyboardKeyCallback(window_handle window, int key, int scancode, int action, int mods) noexcept;
         static void nativeMouseButtonCallback(window_handle window, int button, int action, int mods) noexcept;
         static void nativeMousePositionCallback(window_handle window, double xpos, double ypos) noexcept;
+        static void nativeMouseScrollCallback(window_handle window, double xScroll, double yScroll) noexcept;
 
         /**
          * Function to get GLFW keyboard key state.

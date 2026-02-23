@@ -84,10 +84,10 @@ void SGCore::Navigation::VoxelizationStep::process(NavMesh& navMesh, const NavMe
 
                     // marking voxel as non-walkable because of too steep slope (if too steep) or true if normal
                     // todo: how to check steep slopes??
-                    /*if(slopeCos >= maxSlopeCos && triangleHeight > config.m_agentMaxClimb)
+                    if(slopeCos < maxSlopeCos && triangleHeight > config.m_agentMaxClimb)
                     {
                         v.m_isWalkable = false;
-                    }*/
+                    }
 
                     m_voxels.push_back(v);
 
