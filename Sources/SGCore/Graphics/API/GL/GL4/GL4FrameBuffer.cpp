@@ -361,6 +361,42 @@ void SGCore::GL4FrameBuffer::attachAttachment(const SGCore::Ref<SGCore::ITexture
     }
 }
 
+void SGCore::GL4FrameBuffer::removeAttachment(SGFrameBufferAttachmentType attachmentType) noexcept
+{
+    auto attachmentIt = m_attachments.find(attachmentType);
+    if(attachmentIt == m_attachments.end()) return;
+
+    if(isDepthAttachment(attachmentType))
+    {
+        glFramebufferTexture2D(GL_FRAMEBUFFER,
+                               GL_DEPTH_ATTACHMENT,
+                               GL_TEXTURE_2D, 0, 0);
+    }
+    else if(isDepthStencilAttachment(attachmentType))
+    {
+        glFramebufferTexture2D(GL_FRAMEBUFFER,
+                               GL_DEPTH_STENCIL_ATTACHMENT,
+                               GL_TEXTURE_2D, 0, 0);
+    }
+    else if(isColorAttachment(attachmentType))
+    {
+        const GLenum glType = !attachmentIt->second->m_useMultisampling ? GL_TEXTURE_2D : GL_TEXTURE_2D_MULTISAMPLE;
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER,
+                                       GL_COLOR_ATTACHMENT0 + (std::to_underlying(attachmentType) -
+                                       std::to_underlying(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)),
+                                       glType,
+                                       0,
+                                       0);
+    }
+    else if(isRenderAttachment(attachmentType))
+    {
+        // todo: make
+    }
+
+    m_attachments.erase(attachmentIt);
+}
+
 glm::vec3 SGCore::GL4FrameBuffer::readPixelsFromAttachment(const glm::vec2& mousePos,
                                                            SGFrameBufferAttachmentType attachmentType) const noexcept
 {

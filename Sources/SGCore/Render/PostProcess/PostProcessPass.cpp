@@ -60,42 +60,55 @@ void SGCore::PostProcessPass::layersFX(LayeredFrameReceiver& receiver) noexcept
 
     for(const auto& layer : receiver.getLayers())
     {
-        auto layerShader = layer->getFXSubPassShader();
-        if(!layerShader) continue;
-
-        layerShader->bind();
-
-        bindCommonUniforms(receiver, layerShader);
-
-        layerShader->useInteger("SGPP_CurrentLayerIndex", layer->getIndex());
-
-        for(size_t i = 0; i < layer->m_subPasses.size(); ++i)
+        for(const auto& effect : layer->getEffects())
         {
-            const auto& fxSubPass = layer->m_subPasses[i];
+            auto layerShader = effect->getShader();
+            if(!layerShader) continue;
 
-            layerShader->useInteger("SGPP_CurrentFXSubPassSeqIndex", i);
+            layerShader->bind();
 
-            receiver.m_layersFXFrameBuffer->bindAttachmentToDrawIn(fxSubPass.m_attachmentRenderTo);
-            // receiver.m_layersFrameBuffer->clearAttachment(fxSubPass.m_attachmentRenderTo);
+            auto texturesBlockOffset = bindCommonUniforms(receiver, layerShader);
 
-            CoreMain::getRenderer()->renderMeshData(
-                    m_postProcessQuad.get(),
-                    m_meshRenderState
-            );
+            for(const auto& usedAttachment : effect->m_usedAttachments)
+            {
+                receiver.m_layersFXFrameBuffer->bindAttachment(usedAttachment.second, texturesBlockOffset);
+                layerShader->useInteger(usedAttachment.first, texturesBlockOffset);
 
-            // receiver.m_layersFXFrameBuffer->unbindAttachmentToDrawIn();
+                ++texturesBlockOffset;
+            }
+
+            layerShader->useInteger("SGPP_CurrentLayerIndex", layer->getIndex());
+
+            for(size_t i = 0; i < effect->m_subPasses.size(); ++i)
+            {
+                const auto& fxSubPass = effect->m_subPasses[i];
+
+                layerShader->useInteger("SGPP_CurrentFXSubPassSeqIndex", i);
+
+                receiver.m_layersFXFrameBuffer->bindAttachmentToDrawIn(fxSubPass.m_attachmentRenderTo);
+                // receiver.m_layersFrameBuffer->clearAttachment(fxSubPass.m_attachmentRenderTo);
+
+                CoreMain::getRenderer()->renderMeshData(
+                        m_postProcessQuad.get(),
+                        m_meshRenderState
+                );
+                // receiver.m_layersFXFrameBuffer->unbindAttachmentToDrawIn();
+            }
         }
     }
 
     receiver.m_layersFXFrameBuffer->unbind();
 }
 
-void SGCore::PostProcessPass::bindCommonUniforms(LayeredFrameReceiver& receiver,
+size_t SGCore::PostProcessPass::bindCommonUniforms(LayeredFrameReceiver& receiver,
                                                  const AssetRef<IShader>& subPassShader) const noexcept
 {
     Scene::getCurrentScene()->getSystem<AtmosphereUpdater>()->m_uniformBuffer->bind();
+    CoreMain::getRenderer()->m_viewMatricesBuffer->bind();
+    CoreMain::getRenderer()->m_programDataBuffer->bind();
 
     subPassShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+    subPassShader->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
     subPassShader->useUniformBuffer(Scene::getCurrentScene()->getSystem<AtmosphereUpdater>()->m_uniformBuffer);
 
     for(std::uint8_t i = 0; i < receiver.getLayers().size(); ++i)
@@ -110,9 +123,16 @@ void SGCore::PostProcessPass::bindCommonUniforms(LayeredFrameReceiver& receiver,
     subPassShader->useTextureBlock("SGPP_LayersColors", 1);
     subPassShader->useTextureBlock("SGPP_LayersSTColor", 2);
     subPassShader->useTextureBlock("u_GBufferWorldPos", 3);
+    subPassShader->useTextureBlock("u_GBufferFragmentNormal", 4);
+    subPassShader->useTextureBlock("SGPP_LayersColorsFX", 5);
 
     receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)->bind(0);
     receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1)->bind(1);
     receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3)->bind(2);
     receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4)->bind(3);
+    receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT5)->bind(4);
+    receiver.m_layersFXFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7)->bind(5);
+
+    // returning texture samplers offset
+    return subPassShader->bindTextureBindings(6);
 }

@@ -19,15 +19,14 @@
 // !! - TO GET INDICES OF ALL LAYERS USE UNIFORM ARRAY 'SGPP_LayersIndices' (UNIFORM INT)
 // !! - TO GET LAYERS COUNT USE UNIFORM INT 'SGPP_LayersCount'
 // !! - TO GET CURRENT LAYER INDEX USE UNIFORM INT 'SGPP_CurrentLayerIndex'. !! WARNING - THE INDEXES OF THE LAYERS ARE NOT NECESSARILY SEQUENTIAL
-// !! - TO GET CURRENT LAYER SEQUENTIAL INDEX USE UNIFORM INT 'SGPP_CurrentLayerSeqIndex'
-// !! - TO GET CURRENT LAYER CURRENT SUB PASS INDEX USE UNIFORM INT 'SGPP_CurrentSubPassIndex'
-// !! - TO GET CURRENT FX SUBPASS SEQUENTIAL INDEX USE UNIFORM INT 'SGPP_CurrentFXSubPassSeqIndex'
+// !! - TO GET CURRENT LAYER CURRENT SUB PASS INDEX USE UNIFORM INT 'SGPP_CurrentFXSubPassSeqIndex'
 // ===================================================
 
 // =========== HOW TO WRITE/READ COLORS ==============
 // !! USE LOCATION 7 TO WRITE IN DEFAULT ATTACHMENT THAT CONTAINS EFFECTS
 // !! USE UNIFORM SAMPLER2D 'SGPP_LayersVolumes' TO GET LAYERS VOLUMES
 // !! USE UNIFORM SAMPLER2D 'SGPP_LayersColors' TO GET LAYERS COLORS WITHOUT POSTPROCESS EFFECTS
+// !! USE UNIFORM SAMPLER2D 'SGPP_LayersColorFX' TO GET LAYERS COLORS WITH POSTPROCESS EFFECTS
 // !! YOU CAN ADD YOUR CUSTOM INTERMEDIATE ATTACHMENTS TO STORE EFFECTS
 // ===================================================
 
@@ -35,6 +34,7 @@ in vec2 vs_UVAttribute;
 
 uniform sampler2D SGPP_LayersVolumes;
 uniform sampler2D SGPP_LayersColors;
+uniform sampler2D SGPP_LayersColorsFX;
 // ST - stochastic transparency
 uniform sampler2D SGPP_LayersSTColor;
 uniform int SGPP_CurrentLayerIndex;
@@ -115,20 +115,11 @@ void main()
     // just do nothing
     if(texture(SGPP_LayersVolumes, finalUV).rgb == calculatePPLayerVolume(SGPP_CurrentLayerIndex).rgb)
     {
-        // vec4 layerColor = texture(SGPP_LayersColors, finalUV);
-
-        // col.rgb = lottes(col.rgb);
-        // col.rgb = reinhard2(col.rgb);
-        // col.rgb = reinhard(col.rgb);
-        // col.rgb = neutral(col.rgb);
-        // col.rgb = filmic(col.rgb);
-
         // todo: make
         // if(u_WBOITEnabled == 1)
         {
             ivec2 texelCoord = ivec2(gl_FragCoord.xy);
 
-            // vec4 layerColor = texelFetch(SGPP_LayersColors, texelCoord, 0);
             vec4 layerColor = texture(SGPP_LayersColors, finalUV);
 
             vec4 STColor = texture(SGPP_LayersSTColor, finalUV);
@@ -139,25 +130,6 @@ void main()
                 ivec2 tmpSize = textureSize(SGPP_LayersSTColor, 0);
                 STColorTexSize = vec2(float(tmpSize.x), float(tmpSize.y));
             }
-
-            /*vec3 accumulated = vec3(0.0);
-            int samples = 16;
-            float sampledSamples = 0.0;
-
-            for (int i = 0; i < samples; ++i)
-            {
-                vec2 jitteredUV = finalUV + sampleOffset(i) * 0.001;
-                float alpha = texture(SGPP_LayersSTColor, jitteredUV).a;
-                float randVal = random(gl_FragCoord.xy + vec2(i));
-
-                if (randVal <= alpha)
-                {
-                    accumulated += texture(SGPP_LayersSTColor, jitteredUV).rgb;
-                    sampledSamples += 1.0;
-                }
-            }
-
-            if(sampledSamples > 0.0) accumulated /= sampledSamples;*/
 
             STColor.a = 0.0;
 
@@ -179,42 +151,9 @@ void main()
 
             STColor.a /= sampledSamples;
 
-            // STColor.rgba = gaussianBlur(SGPP_LayersSTColor, gl_FragCoord.xy / STColorTexSize).rgba;
-
-            // STColor.rgba = texture(SGPP_LayersWBOITColorAccum, (gl_FragCoord.xy) / wboitAccumulationTexSize).rgba;
-            // STColor.rgba = texelFetch(SGPP_LayersSTColor, texelCoord, 0).rgba;
-
-            // STColor.rgb = ACESTonemap(STColor.rgb, exposure);
-
-            // layerColor.rgb = ACESTonemap(layerColor.rgb, 1.2);
-            // layerColor.rgb = reinhard2(layerColor.rgb);
-            // layerColor.rgb = filmic(layerColor.rgb);
-
-            // fragColor = vec4(layerColor.rgb * (1.0 - STColor.a) + STColor.rgb * (STColor.a), 1.0);
             fragColor = vec4(layerColor.rgb, 1.0);
 
             vec3 fragPos = texture(u_GBufferWorldPos, finalUV).xyz;
-
-            /*float f_distance = length(fragPos - camera.position);
-            float f_height = fragPos.y;
-
-            float fogFactorDist = smoothstep(uFogStart, uFogEnd, f_distance);
-
-            float fogFactorHeight = exp(f_height * uFogHeightFalloff);
-            fogFactorHeight = clamp(1.0 - fogFactorHeight, 0.0, 1.0);
-
-            float fogFactor = fogFactorDist;*/
-
-            // float exposure = 0.7;
-            // fragColor.rgb = ACESTonemap(fragColor.rgb, exposure);
-
-            // fragColor.rgb = ToneMap_Uncharted2(fragColor.rgb);
-
-            /*vec3 viewDir = normalize(fragPos - camera.position);
-            fragColor.rgb = applyFog(fragColor.rgb, distance(fragPos, camera.position), viewDir, atmosphere.sunPosition);*/
-            // fragColor.rgb = fragPos;
-
-            // fragColor.rgb = fragPos;
         }
     }
 }

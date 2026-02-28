@@ -8,12 +8,29 @@
 
 void SGCore::PostProcessEffect::onAttachToLayer(const SGCore::Ref<SGCore::PostProcessLayer>& toLayer)
 {
-    passValuesToSubPassShader(toLayer->getFXSubPassShader());
+    passValuesToSubPassShader();
+    setEnabled(isEnabled());
 }
 
-void SGCore::PostProcessEffect::onLayerShaderChanged(const SGCore::Ref<SGCore::PostProcessLayer>& layer)
+SGCore::AssetRef<SGCore::IShader> SGCore::PostProcessEffect::getShader() const noexcept
 {
-    passValuesToSubPassShader(layer->getFXSubPassShader());
+    return m_effectShader;
+}
+
+void SGCore::PostProcessEffect::setShader(const AssetRef<IShader>& shader) noexcept
+{
+    m_effectShader = shader;
+
+    onLayerShaderChangedSlot.disconnectFromAll();
+    onLayerShaderChangedSlot = [this, effectShader = m_effectShader](IAsset* shader) {
+        passValuesToSubPassShader();
+        setEnabled(isEnabled());
+    };
+
+    m_effectShader->onLazyLoadDone += onLayerShaderChangedSlot;
+
+    passValuesToSubPassShader();
+    setEnabled(isEnabled());
 }
 
 bool SGCore::PostProcessEffect::isEnabled() const noexcept
@@ -25,13 +42,9 @@ void SGCore::PostProcessEffect::setEnabled(bool isEnabled) noexcept
 {
     m_isEnabled = isEnabled;
 
-    for(const auto& layer : m_parentPostProcessLayers)
-    {
-        if(auto lockedLayer = layer.lock())
-        {
-            lockedLayer->getFXSubPassShader()->bind();
+    if(!m_effectShader) return;
 
-            lockedLayer->getFXSubPassShader()->useInteger(m_name + "_ENABLED", m_isEnabled);
-        }
-    }
+    m_effectShader->bind();
+
+    m_effectShader->useInteger(m_name + "_ENABLED", m_isEnabled);
 }

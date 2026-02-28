@@ -5,6 +5,7 @@
 #ifndef SUNGEARENGINE_POSTPROCESSEFFECT_H
 #define SUNGEARENGINE_POSTPROCESSEFFECT_H
 
+#include "PostProcessFXSubPass.h"
 #include "SGCore/Main/CoreGlobals.h"
 
 #include "SGCore/Graphics/API/IShader.h"
@@ -15,22 +16,37 @@ namespace SGCore
 
     struct PostProcessEffect
     {
+        virtual ~PostProcessEffect() = default;
+
         friend struct PostProcessLayer;
+
+        std::vector<PostProcessFXSubPass> m_subPasses;
+
+        std::vector<std::pair<std::string, SGFrameBufferAttachmentType>> m_usedAttachments;
 
         std::string m_name;
 
         virtual void onAttachToLayer(const Ref<PostProcessLayer>& toLayer);
-        virtual void onLayerShaderChanged(const Ref<PostProcessLayer>& layer);
         virtual void onFXPass(const Ref<PostProcessLayer>& currentLayer) { }
         virtual void onDetachFromLayer(const Ref<PostProcessLayer>& fromLayer) { }
 
-        virtual void passValuesToSubPassShader(const AssetRef<IShader>& subPassShader) noexcept { }
+        virtual void onSetupAttachments(const Ref<IFrameBuffer>& targetFrameBuffer) noexcept { }
+        virtual void onRemoveAttachments(const Ref<IFrameBuffer>& targetFrameBuffer) noexcept { }
+
+        virtual void passValuesToSubPassShader() noexcept { }
+
+        AssetRef<IShader> getShader() const noexcept;
+        void setShader(const AssetRef<IShader>& shader) noexcept;
 
         [[nodiscard]] bool isEnabled() const noexcept;
         void setEnabled(bool isEnabled) noexcept;
 
     protected:
         bool m_isEnabled = true;
+
+        Slot<void(IAsset*)> onLayerShaderChangedSlot;
+
+        AssetRef<IShader> m_effectShader;
 
         std::vector<Weak<PostProcessLayer>> m_parentPostProcessLayers;
     };

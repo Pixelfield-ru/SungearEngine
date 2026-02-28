@@ -45,3 +45,8 @@ void SGCore::VkFrameBuffer::attachAttachment(const SGCore::Ref<SGCore::ITexture2
 {
 
 }
+
+void SGCore::VkFrameBuffer::removeAttachment(SGFrameBufferAttachmentType attachmentType) noexcept
+{
+
+}

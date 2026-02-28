@@ -38,10 +38,10 @@ void SGCore::Navigation::FilterErosionStep::process(NavMesh& navMesh, const NavM
             {
                 for(std::int32_t z = -agentRadiusInVoxels; z <= agentRadiusInVoxels; ++z)
                 {
-                    if(glm::length2(glm::vec2 { (float) x, (float) z} * config.m_cellSize) > config.m_agentRadius * config.m_agentRadius - config.m_cellSize * config.m_cellSize)
+                    /*if(glm::length2(glm::vec2 { (float) x, (float) z} * config.m_cellSize) > config.m_agentRadius * config.m_agentRadius - config.m_cellSize * config.m_cellSize)
                     {
                         continue;
-                    }
+                    }*/
 
                     const auto it = voxelizationStep->m_voxelsMap.find(voxel.m_position + glm::i32vec3 { x, y, z });
                     if(it == voxelizationStep->m_voxelsMap.end()) continue;

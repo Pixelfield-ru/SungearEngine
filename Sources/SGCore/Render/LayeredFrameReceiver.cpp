@@ -13,6 +13,7 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Scene/Layer.h"
 #include "RenderPipelinesManager.h"
+#include "PostProcess/StandardFX/NoPPEffect.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 
 SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
@@ -30,8 +31,6 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     m_postProcessQuad->m_indices.push_back(2);
     
     m_postProcessQuad->prepare();
-    
-    m_defaultLayer = addLayer("___DEFAULT_LAYER___");
 
     // ==================================================================
 
@@ -171,6 +170,8 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     // m_layersFXFrameBuffer->attachAttachment(m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0));
 
     m_layersFXFrameBuffer->unbind();
+
+    m_defaultLayer = addLayer("___DEFAULT_LAYER___");
 }
 
 SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addOrGetLayer(const std::string& name,
@@ -188,15 +189,13 @@ SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addOrGetLaye
     }
 
     auto newPPLayer = MakeRef<PostProcessLayer>();
+    newPPLayer->m_targetFrameBuffer = m_layersFXFrameBuffer;
     
     // without - 1 because 0 is always default FB
     newPPLayer->m_index = m_layers.empty() ? 0 : getLayersMaximumIndex() + 1;
 
-    newPPLayer->m_FXSubPassShader = AssetManager::getInstance()->loadAsset<IShader>(*Paths::getDefaultPaths()["Shaders/LayeredPP/LayerFXShader"]);
-
-    // adding one sub pass
-    PostProcessFXSubPass subPass;
-    newPPLayer->m_subPasses.push_back(subPass);
+    auto noEffect = MakeRef<NoPPEffect>();
+    newPPLayer->addEffect(noEffect);
     
     m_layers.push_back(newPPLayer);
 

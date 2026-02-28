@@ -1,5 +1,10 @@
 #include "IFrameBuffer.h"
 
+bool SGCore::IFrameBuffer::hasAttachment(SGFrameBufferAttachmentType attachmentType) const noexcept
+{
+    return m_attachments.contains(attachmentType);
+}
+
 void SGCore::IFrameBuffer::setWidth(const int& width) noexcept
 {
     m_width = width;

@@ -80,6 +80,10 @@ namespace SGCore
 
         virtual void attachAttachment(const Ref<ITexture2D>& otherAttachment) noexcept = 0;
 
+        virtual void removeAttachment(SGFrameBufferAttachmentType attachmentType) noexcept = 0;
+
+        bool hasAttachment(SGFrameBufferAttachmentType attachmentType) const noexcept;
+
         void setWidth(const int& width) noexcept;
         void setHeight(const int& height) noexcept;
 

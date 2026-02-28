@@ -8,6 +8,7 @@
 #include "SGCore/Audio/AudioListener.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
 #include "SGCore/Render/PBRRP/PBRRenderPipeline.h"
+#include "SGCore/Render/PostProcess/StandardFX/SSAO.h"
 
 #include "SGCore/Serde/Serde.h"
 #include "SGCore/Serde/StandardSerdeSpecs/SerdeSpecs.h"
@@ -133,12 +134,19 @@ void SGCore::BasicApp::initImpl() noexcept
         m_cameraEntity = ecsRegistry->create();
 
         // creating components for entity
-        auto cameraTransform = ecsRegistry->emplace<Transform>(m_cameraEntity, SGCore::MakeRef<Transform>());
+        auto cameraTransform = ecsRegistry->emplace<Transform>(m_cameraEntity, MakeRef<Transform>());
         ecsRegistry->emplace<NonSavable>(m_cameraEntity);
-        ecsRegistry->emplace<Camera3D>(m_cameraEntity, SGCore::MakeRef<Camera3D>());
-        ecsRegistry->emplace<RenderingBase>(m_cameraEntity, SGCore::MakeRef<RenderingBase>());
+        ecsRegistry->emplace<Camera3D>(m_cameraEntity, MakeRef<Camera3D>());
+        ecsRegistry->emplace<RenderingBase>(m_cameraEntity, MakeRef<RenderingBase>());
         ecsRegistry->emplace<Controllable3D>(m_cameraEntity);
         auto& cameraReceiver = ecsRegistry->emplace<LayeredFrameReceiver>(m_cameraEntity);
+
+        // ================================================== adding default postprocessing effects
+
+        auto ssaoEffect = MakeRef<SSAO>();
+        ssaoEffect->setSamplesCount(256);
+
+        cameraReceiver.getDefaultLayer()->addEffect(ssaoEffect);
     }
 
     onInit();

@@ -18,6 +18,8 @@ namespace SGCore
     {
         SGFrameBufferAttachmentType m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7;
 
+        std::vector<std::pair<std::string, SGFrameBufferAttachmentType>> m_usedAttachments;
+
         std::function<void(const Ref<IShader>& ppLayerShader)> m_prepassFunction;
         std::function<void(const Ref<IShader>& ppLayerShader)> m_postpassFunction;
     };

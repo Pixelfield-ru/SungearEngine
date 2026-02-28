@@ -11,13 +11,82 @@
 
 #include <random>
 
+#include "SGCore/Graphics/API/IFrameBuffer.h"
+
 SGCore::SSAO::SSAO()
 {
     m_name = "SG_SSAO";
 
+    auto assetManager = AssetManager::getInstance();
+
     m_noise = AssetManager::getInstance()->createAndAddAsset<ITexture2D>();
-    // m_noise = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
+
     generateKernel();
+
+    // ======================== creating default passes
+    PostProcessFXSubPass subPass;
+
+    // calculate SSAO occlusion
+    subPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2;
+    m_subPasses.push_back(subPass);
+
+    // calculate final SSAO result
+    subPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3;
+    m_subPasses.push_back(subPass);
+
+    // write final SSAO result in final FX attachment
+    subPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7;
+    m_subPasses.push_back(subPass);
+
+    m_usedAttachments = {
+        { m_name + "_occlusion", SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2 },
+        { m_name + "_final", SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3 },
+    };
+
+    // ======================== set default shader
+    auto defaultShader = assetManager->loadAsset<IShader>("${enginePath}/Resources/sg_shaders/features/postprocessing/layered/ssao.sgshader");
+
+    setShader(defaultShader);
+}
+
+void SGCore::SSAO::onSetupAttachments(const Ref<IFrameBuffer>& targetFrameBuffer) noexcept
+{
+    targetFrameBuffer->bind();
+
+    if(!targetFrameBuffer->hasAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2))
+    {
+        targetFrameBuffer->addAttachment(
+                SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2, // SSAO OCCLUSION ATTACHMENT
+                SGGColorFormat::SGG_RGBA,
+                SGGColorInternalFormat::SGG_RGBA16_FLOAT,
+                SGGDataType::SGG_FLOAT,
+                0,
+                0
+        );
+    }
+
+    if(!targetFrameBuffer->hasAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3))
+    {
+        targetFrameBuffer->addAttachment(
+                SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3, // SSAO FINAL COLOR ATTACHMENT
+                SGGColorFormat::SGG_RGBA,
+                SGGColorInternalFormat::SGG_RGBA16_FLOAT,
+                SGGDataType::SGG_FLOAT,
+                0,
+                0
+        );
+    }
+
+    targetFrameBuffer->unbind();
+}
+
+void SGCore::SSAO::onRemoveAttachments(const Ref<IFrameBuffer>& targetFrameBuffer) noexcept
+{
+    targetFrameBuffer->bind();
+
+    targetFrameBuffer->removeAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2);
+
+    targetFrameBuffer->unbind();
 }
 
 void SGCore::SSAO::generateKernel() noexcept
@@ -51,40 +120,39 @@ void SGCore::SSAO::generateKernel() noexcept
         m_kernel.push_back(sample);
     }
 
+    const glm::i32vec2 noiseTexSize { 4, 4 };
+
     std::vector<float> noiseBuf;
-    for(std::uint32_t i = 0; i < 16; ++i)
+    for(std::uint32_t i = 0; i < noiseTexSize.x * noiseTexSize.y; ++i)
     {
         noiseBuf.push_back(randomFloats(generator) * 2.0 - 1.0);
         noiseBuf.push_back(randomFloats(generator) * 2.0 - 1.0);
         noiseBuf.push_back(0);
     }
 
-    m_noise->create(noiseBuf.data(), 4, 4, 3, SGGColorInternalFormat::SGG_RGB16_FLOAT, SGGColorFormat::SGG_RGB);
+    m_noise->create(noiseBuf.data(), noiseTexSize.x, noiseTexSize.y, 3, SGGColorInternalFormat::SGG_RGB16_FLOAT, SGGColorFormat::SGG_RGB);
 
-    for(const auto& parentLayer : m_parentPostProcessLayers)
-    {
-        auto lockedParentLayer = parentLayer.lock();
-        passValuesToSubPassShader(lockedParentLayer->getFXSubPassShader());
-    }
+    passValuesToSubPassShader();
 }
 
-void SGCore::SSAO::passValuesToSubPassShader(const AssetRef<IShader>& subPassShader) noexcept
+void SGCore::SSAO::passValuesToSubPassShader() noexcept
 {
-    if(subPassShader)
+    auto shader = getShader();
+
+    if(!shader) return;
+
+    shader->bind();
+
+    shader->useInteger(m_name + "_samplesCount", m_samplesCount);
+
+    shader->removeTextureBinding(m_name + "_noise");
+    shader->addTextureBinding(m_name + "_noise", m_noise);
+
+    std::uint16_t currentValIdx = 0;
+    for(const auto& val : m_kernel)
     {
-        subPassShader->bind();
-
-        subPassShader->useInteger(m_name + "_samplesCount", m_samplesCount);
-
-        subPassShader->removeTextureBinding(m_name + "_noise");
-        subPassShader->addTextureBinding(m_name + "_noise", m_noise);
-
-        std::uint16_t currentValIdx = 0;
-        for(const auto& val : m_kernel)
-        {
-            subPassShader->useVectorf(m_name + "_samples[" + std::to_string(currentValIdx) + "]", val);
-            ++currentValIdx;
-        }
+        shader->useVectorf(m_name + "_samples[" + std::to_string(currentValIdx) + "]", val);
+        ++currentValIdx;
     }
 }
 

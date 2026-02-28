@@ -1,0 +1,5 @@
+#if defined(SG_GLSL4) || defined(SG_GLES32)
+    #include "sg_shaders/impl/glsl4/postprocessing/layered/film_grain.glsl"
+#elif defined(SG_HLSL)
+    #error PostProcessing layer Film Grain FX shader is not implemented for HLSL!
+#endif

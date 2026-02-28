@@ -3,7 +3,6 @@
 
 #include "SGCore/Render/PostProcess/PostProcessEffect.h"
 #include "SGCore/Graphics/API/IShader.h"
-#include "SGCore/Render/PostProcess/PostProcessFXSubPass.h"
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/ImportedScenesArch/IMeshData.h"
 #include "SGCore/Graphics/API/RenderState.h"
@@ -23,8 +22,6 @@ namespace SGCore
     {
         friend class LayeredFrameReceiver;
 
-        std::vector<PostProcessFXSubPass> m_subPasses;
-
         std::string m_name;
         
         template<typename EffectT>
@@ -38,6 +35,11 @@ namespace SGCore
             auto thisShared = shared_from_this();
             
             effect->m_parentPostProcessLayers.push_back(thisShared);
+
+            if(const auto lockedFrameBuffer = m_targetFrameBuffer.lock())
+            {
+                effect->onSetupAttachments(lockedFrameBuffer);
+            }
             effect->onAttachToLayer(thisShared);
         }
         
@@ -45,17 +47,21 @@ namespace SGCore
         requires(std::is_base_of_v<PostProcessEffect, EffectT>)
         void removeEffect() noexcept
         {
-            std::erase_if(m_effects, [this](const Ref<PostProcessEffect>& otherEffect) {
-                if(SG_INSTANCEOF(otherEffect.get(), EffectT))
+            std::erase_if(m_effects, [this](const Ref<PostProcessEffect>& effect) {
+                if(SG_INSTANCEOF(effect.get(), EffectT))
                 {
                     auto thisShared = shared_from_this();
                     
-                    std::erase_if(otherEffect->m_parentPostProcessLayers, [this](const Weak<PostProcessLayer>& parentLayer) {
+                    std::erase_if(effect->m_parentPostProcessLayers, [this](const Weak<PostProcessLayer>& parentLayer) {
                         auto lockedLayer = parentLayer.lock();
                         return lockedLayer && lockedLayer.get() == this;
                     });
-                    
-                    otherEffect->onDetachFromLayer(thisShared);
+
+                    if(const auto lockedFrameBuffer = m_targetFrameBuffer.lock())
+                    {
+                        effect->onRemoveAttachments(lockedFrameBuffer);
+                    }
+                    effect->onDetachFromLayer(thisShared);
                     
                     return true;
                 }
@@ -83,21 +89,6 @@ namespace SGCore
         {
             return m_effects;
         }
-        
-        auto getFXSubPassShader() const noexcept
-        {
-            return m_FXSubPassShader;
-        }
-        
-        void setFXSubPassShader(const AssetRef<IShader>& FXSubPassShader) noexcept
-        {
-            m_FXSubPassShader = FXSubPassShader;
-            
-            for(const auto& effect : m_effects)
-            {
-                effect->onLayerShaderChanged(shared_from_this());
-            }
-        }
 
         const std::uint16_t& getIndex() const noexcept
         {
@@ -106,10 +97,9 @@ namespace SGCore
         
     private:
         std::uint16_t m_index = 0;
-
-        AssetRef<IShader> m_FXSubPassShader;
         
         std::vector<Ref<PostProcessEffect>> m_effects;
+        Weak<IFrameBuffer> m_targetFrameBuffer;
     };
 
     // todo: make change for default PP shader

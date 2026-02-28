@@ -27,6 +27,8 @@ namespace SGCore
 
         void attachAttachment(const Ref<ITexture2D>& otherAttachment) noexcept final;
 
+        void removeAttachment(SGFrameBufferAttachmentType attachmentType) noexcept;
+
         [[nodiscard]] glm::vec3 readPixelsFromAttachment(const glm::vec2& mousePos, SGFrameBufferAttachmentType attachmentType) const noexcept final;
     };
 }
