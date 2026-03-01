@@ -15,7 +15,6 @@ namespace SGCore
         void passValuesToSubPassShader() noexcept override;
 
         void onSetupAttachments(const Ref<IFrameBuffer>& targetFrameBuffer) noexcept override;
-        void onRemoveAttachments(const Ref<IFrameBuffer>& targetFrameBuffer) noexcept override;
 
         float getSmoothness() const noexcept;
         void setSmoothness(float smoothness) noexcept;

@@ -31,7 +31,6 @@ namespace SGCore
         virtual void onDetachFromLayer(const Ref<PostProcessLayer>& fromLayer) { }
 
         virtual void onSetupAttachments(const Ref<IFrameBuffer>& targetFrameBuffer) noexcept { }
-        virtual void onRemoveAttachments(const Ref<IFrameBuffer>& targetFrameBuffer) noexcept { }
 
         virtual void passValuesToSubPassShader() noexcept { }
 

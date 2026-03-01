@@ -57,10 +57,6 @@ namespace SGCore
                         return lockedLayer && lockedLayer.get() == this;
                     });
 
-                    if(const auto lockedFrameBuffer = m_targetFrameBuffer.lock())
-                    {
-                        effect->onRemoveAttachments(lockedFrameBuffer);
-                    }
                     effect->onDetachFromLayer(thisShared);
                     
                     return true;

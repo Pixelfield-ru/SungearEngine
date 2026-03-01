@@ -1,5 +1,5 @@
 //
-// Created by stuka on 28.02.2026.
+// Created by stuka on 01.03.2026.
 //
 
 #pragma once
@@ -8,18 +8,12 @@
 
 namespace SGCore
 {
-    struct FilmGrain : PostProcessEffect
+    struct SSR : PostProcessEffect
     {
-        FilmGrain();
+        SSR();
 
         void passValuesToSubPassShader() noexcept override;
 
         void onSetupAttachments(const Ref<IFrameBuffer>& targetFrameBuffer) noexcept override;
-
-        float getIntensity() const noexcept;
-        void setIntensity(float intensity) noexcept;
-
-    private:
-        float m_intensity = 1.0f;
     };
 }

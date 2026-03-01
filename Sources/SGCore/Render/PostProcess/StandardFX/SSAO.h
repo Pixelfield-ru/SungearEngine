@@ -16,7 +16,6 @@ namespace SGCore
         SSAO(SSAO&&) = default;
 
         void onSetupAttachments(const Ref<IFrameBuffer>& targetFrameBuffer) noexcept override;
-        void onRemoveAttachments(const Ref<IFrameBuffer>& targetFrameBuffer) noexcept override;
 
         void generateKernel() noexcept;
 

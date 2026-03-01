@@ -1,14 +1,14 @@
 //
-// Created by stuka on 28.02.2026.
+// Created by stuka on 01.03.2026.
 //
 
-#include "Vignette.h"
+#include "SSR.h"
 
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 
-SGCore::Vignette::Vignette()
+SGCore::SSR::SSR()
 {
-    m_name = "SG_VIGNETTE";
+    m_name = "SG_SSR";
 
     auto assetManager = AssetManager::getInstance();
 
@@ -25,18 +25,17 @@ SGCore::Vignette::Vignette()
     };
 
     // ======================== set default shader
-    auto defaultShader = assetManager->loadAsset<IShader>("${enginePath}/Resources/sg_shaders/features/postprocessing/layered/vignette.sgshader");
+    auto defaultShader = assetManager->loadAsset<IShader>("${enginePath}/Resources/sg_shaders/features/postprocessing/layered/ssr.sgshader");
 
     setShader(defaultShader);
 }
 
-void SGCore::Vignette::passValuesToSubPassShader() noexcept
+void SGCore::SSR::passValuesToSubPassShader() noexcept
 {
-    setSmoothness(getSmoothness());
-    setRadius(getRadius());
+
 }
 
-void SGCore::Vignette::onSetupAttachments(const Ref<IFrameBuffer>& targetFrameBuffer) noexcept
+void SGCore::SSR::onSetupAttachments(const Ref<IFrameBuffer>& targetFrameBuffer) noexcept
 {
     if(targetFrameBuffer->hasAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2)) return;
 
@@ -52,36 +51,4 @@ void SGCore::Vignette::onSetupAttachments(const Ref<IFrameBuffer>& targetFrameBu
     );
 
     targetFrameBuffer->unbind();
-}
-
-float SGCore::Vignette::getRadius() const noexcept
-{
-    return m_radius;
-}
-
-void SGCore::Vignette::setRadius(float radius) noexcept
-{
-    m_radius = radius;
-
-    auto shader = getShader();
-    if(!shader) return;
-
-    shader->bind();
-    shader->useFloat(m_name + "_radius", m_radius);
-}
-
-float SGCore::Vignette::getSmoothness() const noexcept
-{
-    return m_smoothness;
-}
-
-void SGCore::Vignette::setSmoothness(float smoothness) noexcept
-{
-    m_smoothness = smoothness;
-
-    auto shader = getShader();
-    if(!shader) return;
-
-    shader->bind();
-    shader->useFloat(m_name + "_smoothness", m_smoothness);
 }

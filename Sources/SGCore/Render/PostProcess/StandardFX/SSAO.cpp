@@ -80,15 +80,6 @@ void SGCore::SSAO::onSetupAttachments(const Ref<IFrameBuffer>& targetFrameBuffer
     targetFrameBuffer->unbind();
 }
 
-void SGCore::SSAO::onRemoveAttachments(const Ref<IFrameBuffer>& targetFrameBuffer) noexcept
-{
-    targetFrameBuffer->bind();
-
-    targetFrameBuffer->removeAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2);
-
-    targetFrameBuffer->unbind();
-}
-
 void SGCore::SSAO::generateKernel() noexcept
 {
     m_kernel.clear();

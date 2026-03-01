@@ -53,15 +53,6 @@ void SGCore::FilmGrain::onSetupAttachments(const Ref<IFrameBuffer>& targetFrameB
     targetFrameBuffer->unbind();
 }
 
-void SGCore::FilmGrain::onRemoveAttachments(const Ref<IFrameBuffer>& targetFrameBuffer) noexcept
-{
-    targetFrameBuffer->bind();
-
-    targetFrameBuffer->removeAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2);
-
-    targetFrameBuffer->unbind();
-}
-
 float SGCore::FilmGrain::getIntensity() const noexcept
 {
     return m_intensity;
