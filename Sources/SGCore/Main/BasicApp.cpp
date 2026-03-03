@@ -144,7 +144,7 @@ void SGCore::BasicApp::initImpl() noexcept
         // ================================================== adding default postprocessing effects
 
         auto ssaoEffect = MakeRef<SSAO>();
-        ssaoEffect->setSamplesCount(256);
+        ssaoEffect->setSamplesCount(128);
 
         cameraReceiver.getDefaultLayer()->addEffect(ssaoEffect);
     }

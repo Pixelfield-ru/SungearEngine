@@ -48,8 +48,6 @@ uniform sampler2D SG_VIGNETTE_final;
 uniform float SG_VIGNETTE_smoothness;
 uniform float SG_VIGNETTE_radius;
 
-uniform int SG_VIGNETTE_ENABLED;
-
 out vec4 fragColor;
 
 float vignette(vec2 uv, float radius, float smoothness)
@@ -65,8 +63,6 @@ void main()
     #ifdef FLIP_TEXTURES_Y
     finalUV.y = 1.0 - vs_UVAttribute.y;
     #endif
-
-    if(SG_VIGNETTE_ENABLED == 0) return;
 
     // vignette calculate pass.
     // writes in SG_VIGNETTE_final

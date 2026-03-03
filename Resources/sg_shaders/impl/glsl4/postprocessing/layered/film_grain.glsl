@@ -47,8 +47,6 @@ uniform sampler2D SG_FILM_GRAIN_final;
 
 uniform float SG_FILM_GRAIN_intensity;
 
-uniform int SG_FILM_GRAIN_ENABLED;
-
 out vec4 fragColor;
 
 void main()
@@ -58,8 +56,6 @@ void main()
     #ifdef FLIP_TEXTURES_Y
     finalUV.y = 1.0 - vs_UVAttribute.y;
     #endif
-
-    if(SG_FILM_GRAIN_ENABLED == 0) return;
 
     // film grain calculate pass.
     // writes in SG_FILM_GRAIN_final

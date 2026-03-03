@@ -43,12 +43,11 @@ uniform int SGPP_CurrentFXSubPassSeqIndex;
 uniform sampler2D u_GBufferWorldPos;
 uniform sampler2D u_GBufferFragmentNormal;
 
+uniform sampler2D SG_SSR_raw;
 uniform sampler2D SG_SSR_final;
 
 float SG_SSR_smoothness = 1.0;
 float SG_SSR_radius = 1000.0;
-
-uniform int SG_SSR_ENABLED;
 
 out vec4 fragColor;
 
@@ -75,10 +74,8 @@ void main()
     finalUV.y = 1.0 - vs_UVAttribute.y;
     #endif
 
-    if(SG_SSR_ENABLED == 0) return;
-
     // ssr calculate pass.
-    // writes in SG_SSR_final
+    // writes in SG_SSR_raw
     // reads SGPP_LayersColorsFX
     if(SGPP_CurrentFXSubPassSeqIndex == 0)
     {
@@ -86,85 +83,85 @@ void main()
         vec3 texelNormal = normalize(texture(u_GBufferFragmentNormal, finalUV).xyz);
         vec4 albedo = texture(SGPP_LayersColorsFX, finalUV);
 
-        vec3 viewPos = (camera.viewMatrix * vec4(texelPos, 1.0)).xyz;
-        vec3 viewNormal = normalize(mat3(camera.viewMatrix) * texelNormal);
+        vec3 viewDir = normalize(texelPos - camera.position);
 
-        vec3 viewDir = normalize(viewPos); // camera -> surface in view space
-        vec3 reflectDir = normalize(reflect(viewDir, viewNormal));
+        vec3 reflectedDir = normalize(reflect(viewDir, texelNormal));
 
-        const int maxSteps = 30;
-        const int binarySteps = 4;
-        float maxRayDist = max(SG_SSR_radius, 0.1);
-        float stepSize = maxRayDist / float(maxSteps);
-        float thickness = stepSize * 2.0;
+        vec3 currentRayPos = vec3(0.0);
+        vec3 currentSamplePos = vec3(0.0);
 
-        vec3 rayPos = viewPos;
-        vec3 prevRayPos = rayPos;
-        float prevDepthDiff = 0.0;
+        const int MAX_STEPS = 10;
+        float stepSize = 5.0; // initial step size
 
-        vec3 result = vec3(0.0);
-        float hit = 0.0;
+        vec3 ssrColor = vec3(0.0);
+        float ssrCoeff = 0.0;
 
-        for(int i = 0; i < maxSteps; ++i)
+        for(int i = 0; i < MAX_STEPS; ++i)
         {
-            rayPos += reflectDir * stepSize;
+            currentRayPos = texelPos + reflectedDir * stepSize;
 
-            vec4 clipPos = camera.projectionMatrix * vec4(rayPos, 1.0);
-            if(clipPos.w <= 0.0) break;
+            vec2 rayUV = getUV(currentRayPos);
 
-            vec2 nuv = clipPos.xy / clipPos.w;
-            nuv = nuv * 0.5 + 0.5;
-
-            if(nuv.x <= 0.001 || nuv.x >= 0.999 || nuv.y <= 0.001 || nuv.y >= 0.999) break;
-
-            vec3 sampleWorldPos = texture(u_GBufferWorldPos, nuv).xyz;
-            vec3 sampleViewPos = (camera.viewMatrix * vec4(sampleWorldPos, 1.0)).xyz;
-
-            float rayDepth = -rayPos.z;
-            float sceneDepth = -sampleViewPos.z;
-            float depthDiff = rayDepth - sceneDepth;
-
-            if(depthDiff > 0.0)
+            if(rayUV.x < 0.0 || rayUV.x > 1.0 || rayUV.y < 0.0 || rayUV.y > 1.0)
             {
-                vec3 a = prevRayPos;
-                vec3 b = rayPos;
-
-                for(int j = 0; j < binarySteps; ++j)
-                {
-                    vec3 mid = (a + b) * 0.5;
-                    vec4 midClip = camera.projectionMatrix * vec4(mid, 1.0);
-                    vec2 midUV = (midClip.xy / midClip.w) * 0.5 + 0.5;
-
-                    vec3 midWorldPos = texture(u_GBufferWorldPos, midUV).xyz;
-                    vec3 midViewPos = (camera.viewMatrix * vec4(midWorldPos, 1.0)).xyz;
-
-                    float midDepthDiff = (-mid.z) - (-midViewPos.z);
-                    if(midDepthDiff > 0.0) b = mid; else a = mid;
-                }
-
-                vec4 hitClip = camera.projectionMatrix * vec4(b, 1.0);
-                vec2 hitUV = (hitClip.xy / hitClip.w) * 0.5 + 0.5;
-
-                result = texture(SGPP_LayersColorsFX, hitUV).rgb;
-                hit = step(0.0, thickness - abs(depthDiff));
+                ssrColor = albedo.rgb;
                 break;
             }
 
-            prevRayPos = rayPos;
-            prevDepthDiff = depthDiff;
+            currentSamplePos = texture(u_GBufferWorldPos, rayUV).xyz;
+
+            float distToSample = length(currentRayPos - currentSamplePos);
+            float rayLength = length(currentRayPos - texelPos);
+
+            if(distToSample < 0.3)
+            {
+                ssrColor = texture(SGPP_LayersColorsFX, rayUV).rgb;
+
+                float rayLength = length(currentRayPos - texelPos);
+
+                ssrCoeff = clamp((1.0 / (rayLength * rayLength)) * 25000.0, 0.0, 1.0);
+
+                break;
+            }
+
+            stepSize = length(texelPos - currentSamplePos);
         }
 
-        vec3 viewToCamera = normalize(-viewPos); // surface -> camera
-        float fresnel = pow(1.0 - clamp(dot(viewNormal, viewToCamera), 0.0, 1.0), 5.0);
-        float reflectivity = clamp(SG_SSR_smoothness, 0.0, 1.0);
-        float ssrWeight = fresnel * reflectivity * hit;
+        fragColor = vec4(albedo.rgb + ssrColor * ssrCoeff, albedo.a);
+    }
+    // SSR blur pass.
+    // writes in SG_SSR_final.
+    // reads SG_SSR_raw.
+    else if(SGPP_CurrentFXSubPassSeqIndex == 1)
+    {
+        // vec4 albedo = texture(SG_SSR_final, finalUV);
 
-        fragColor = vec4(mix(albedo.rgb, result, ssrWeight), albedo.a);
+        vec2 texelSize = 1.0 / vec2(textureSize(SG_SSR_raw, 0));
+
+        vec4 result = vec4(0.0);
+
+        float iterationsCount = 0.0;
+
+        for (float x = -2.0; x < 2.0; x += 1.0)
+        {
+            for (float y = -2.0; y < 2.0; y += 1.0)
+            {
+                vec2 offset = vec2(x, y) * texelSize;
+
+                result += texture(SG_SSR_raw, finalUV + offset);
+
+                iterationsCount += 1.0;
+            }
+        }
+
+        result /= iterationsCount;
+
+        fragColor = result;
     }
     // SSR write pass.
-    // writes in SGPP_LayersColorsFX
-    // reads SG_SSR_final
-    else if(SGPP_CurrentFXSubPassSeqIndex == 1)
+    // writes in SGPP_LayersColorsFX.
+    // reads SG_SSR_final.
+    else if(SGPP_CurrentFXSubPassSeqIndex == 2)
     {
         vec4 albedo = texture(SG_SSR_final, finalUV);
         fragColor = albedo;

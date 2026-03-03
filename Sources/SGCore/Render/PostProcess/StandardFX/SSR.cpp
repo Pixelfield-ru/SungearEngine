@@ -17,11 +17,15 @@ SGCore::SSR::SSR()
     subPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2;
     m_subPasses.push_back(subPass);
 
+    subPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3;
+    m_subPasses.push_back(subPass);
+
     subPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7;
     m_subPasses.push_back(subPass);
 
     m_usedAttachments = {
-        { m_name + "_final", SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2 }
+        { m_name + "_raw", SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2 },
+        { m_name + "_final", SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3 }
     };
 
     // ======================== set default shader
@@ -37,18 +41,31 @@ void SGCore::SSR::passValuesToSubPassShader() noexcept
 
 void SGCore::SSR::onSetupAttachments(const Ref<IFrameBuffer>& targetFrameBuffer) noexcept
 {
-    if(targetFrameBuffer->hasAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2)) return;
-
     targetFrameBuffer->bind();
 
-    targetFrameBuffer->addAttachment(
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2, // VIGNETTE ATTACHMENT
-            SGGColorFormat::SGG_RGBA,
-            SGGColorInternalFormat::SGG_RGBA16_FLOAT,
-            SGGDataType::SGG_FLOAT,
-            0,
-            0
-    );
+    if(!targetFrameBuffer->hasAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2))
+    {
+        targetFrameBuffer->addAttachment(
+                SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2, // VIGNETTE ATTACHMENT
+                SGGColorFormat::SGG_RGBA,
+                SGGColorInternalFormat::SGG_RGBA16_FLOAT,
+                SGGDataType::SGG_FLOAT,
+                0,
+                0
+        );
+    }
+
+    if(!targetFrameBuffer->hasAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3))
+    {
+        targetFrameBuffer->addAttachment(
+                SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3, // VIGNETTE ATTACHMENT
+                SGGColorFormat::SGG_RGBA,
+                SGGColorInternalFormat::SGG_RGBA16_FLOAT,
+                SGGDataType::SGG_FLOAT,
+                0,
+                0
+        );
+    }
 
     targetFrameBuffer->unbind();
 }
