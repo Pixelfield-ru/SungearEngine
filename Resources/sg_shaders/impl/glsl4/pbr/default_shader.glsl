@@ -118,6 +118,7 @@ layout(location = 3) out vec4 layerSTColor;
 layout(location = 4) out vec3 layerWorldPosColor;
 layout(location = 5) out vec3 layerFragmentNormalColor;
 layout(location = 6) out vec3 layerVertexNormalColor;
+layout(location = 7) out vec4 layerMaterialInfo;
 // REQUIRED COLORS!!! ===========
 
 #include "sg_shaders/impl/glsl4/pbr_base.glsl"
@@ -369,6 +370,9 @@ void main()
     layerWorldPosColor = vsIn.fragPos;
     layerFragmentNormalColor = finalNormal;
     layerVertexNormalColor = vsIn.worldNormal;
+    layerMaterialInfo = vec4(roughness, metalness, specularCoeff, ao);
+
+    // layerColor = vec4(u_materialMetallicFactor);
 
     vec4 bonesColor = vec4(0.0);
     /*for(int i = 0; i < 4; ++i)

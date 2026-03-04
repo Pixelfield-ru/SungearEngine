@@ -215,6 +215,7 @@ layout(location = 2) out vec3 pickingColor;
 layout(location = 4) out vec3 layerWorldPosColor;
 layout(location = 5) out vec3 layerFragmentNormalColor;
 layout(location = 6) out vec3 layerVertexNormalColor;
+layout(location = 7) out vec4 layerMaterialInfo;
 // REQUIRED COLORS!!! ===========
 
 #include "sg_shaders/impl/glsl4/math.glsl"
@@ -556,6 +557,7 @@ void main()
     layerWorldPosColor = tessEvalIn.fragPos + offsetWorld;
     layerFragmentNormalColor = finalNormal;
     layerVertexNormalColor = tessEvalIn.worldNormal;
+    layerMaterialInfo = vec4(roughness, metalness, specularCoeff, ao);
 }
 
 #end

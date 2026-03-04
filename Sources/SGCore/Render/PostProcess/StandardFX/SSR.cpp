@@ -32,11 +32,17 @@ SGCore::SSR::SSR()
     auto defaultShader = assetManager->loadAsset<IShader>("${enginePath}/Resources/sg_shaders/features/postprocessing/layered/ssr.sgshader");
 
     setShader(defaultShader);
+
+    SSR::passValuesToSubPassShader();
 }
 
 void SGCore::SSR::passValuesToSubPassShader() noexcept
 {
-
+    setBlurRadius(m_blurRadius);
+    setMaxSteps(m_maxSteps);
+    setInitialStepSize(m_initialStepSize);
+    setMinStepSize(m_minStepSize);
+    setIntensity(m_intensity);
 }
 
 void SGCore::SSR::onSetupAttachments(const Ref<IFrameBuffer>& targetFrameBuffer) noexcept
@@ -68,4 +74,84 @@ void SGCore::SSR::onSetupAttachments(const Ref<IFrameBuffer>& targetFrameBuffer)
     }
 
     targetFrameBuffer->unbind();
+}
+
+void SGCore::SSR::setBlurRadius(float blurRadius) noexcept
+{
+    m_blurRadius = blurRadius;
+
+    auto shader = getShader();
+    if(!shader) return;
+
+    shader->bind();
+    shader->useFloat(m_name + "_blur_radius", m_blurRadius);
+}
+
+float SGCore::SSR::getBlurRadius() const noexcept
+{
+    return m_blurRadius;
+}
+
+void SGCore::SSR::setMaxSteps(std::int32_t maxSteps) noexcept
+{
+    m_maxSteps = maxSteps;
+
+    auto shader = getShader();
+    if(!shader) return;
+
+    shader->bind();
+    shader->useInteger(m_name + "_max_steps", m_maxSteps);
+}
+
+std::int32_t SGCore::SSR::getMaxSteps() const noexcept
+{
+    return m_maxSteps;
+}
+
+void SGCore::SSR::setInitialStepSize(float initialStepSize) noexcept
+{
+    m_initialStepSize = initialStepSize;
+
+    auto shader = getShader();
+    if(!shader) return;
+
+    shader->bind();
+    shader->useFloat(m_name + "_initial_step_size", m_initialStepSize);
+}
+
+float SGCore::SSR::getInitialStepSize() const noexcept
+{
+    return m_initialStepSize;
+}
+
+void SGCore::SSR::setMinStepSize(float minStepSize) noexcept
+{
+    m_minStepSize = minStepSize;
+
+    auto shader = getShader();
+    if(!shader) return;
+
+    shader->bind();
+    shader->useFloat(m_name + "_min_step_size", m_minStepSize);
+}
+
+float SGCore::SSR::getMinStepSize() const noexcept
+{
+    return m_minStepSize;
+}
+
+void SGCore::SSR::setIntensity(float intensity) noexcept
+{
+    m_intensity = intensity;
+
+    auto shader = getShader();
+    if(!shader) return;
+
+    shader->bind();
+    shader->useFloat(m_name + "_intensity", m_intensity);
+}
+
+float SGCore::SSR::getIntensity() const noexcept
+{
+    return m_intensity;
 }

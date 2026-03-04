@@ -120,7 +120,8 @@ namespace SGCore
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3, // BY DEFAULT COLOR FOR STOCHASTIC TRANSPARENCY
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4, // BY DEFAULT GBUFFER WORLD POS
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT5, // BY DEFAULT GBUFFER FRAGMENT NORMAL
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT6 // BY DEFAULT GBUFFER VERTEX NORMAL
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT6, // BY DEFAULT GBUFFER VERTEX NORMAL
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7 // BY DEFAULT GBUFFER ROUGHNESS, METALNESS, SPECULAR, AO
         };
 
         glm::vec3 m_pickingColorUnderMouse { };

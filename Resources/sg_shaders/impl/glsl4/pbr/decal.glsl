@@ -66,6 +66,7 @@ layout(location = 1) out vec4 layerColor;
 layout(location = 2) out vec3 pickingColor;
 // COLOR FOR STOCHASTIC TRANSPARNCY
 layout(location = 3) out vec4 layerSTColor;
+layout(location = 7) out vec4 layerMaterialInfo;
 // REQUIRED COLORS!!! ===========
 
 #include "sg_shaders/impl/glsl4/math.glsl"
@@ -288,6 +289,7 @@ void main()
     // layerColor = vec4(1.0, 1.0, 0.0, 1.0);
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
     pickingColor = vec3(u_pickingColor);
+    layerMaterialInfo = vec4(roughness, metalness, specularCoeff, ao);
 }
 
 #end

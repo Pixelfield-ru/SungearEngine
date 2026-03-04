@@ -260,6 +260,7 @@ layout(location = 3) out vec4 layerSTColor;
 layout(location = 4) out vec3 layerWorldPosColor;
 layout(location = 5) out vec3 layerFragmentNormalColor;
 layout(location = 6) out vec3 layerVertexNormalColor;
+layout(location = 7) out vec4 layerMaterialInfo;
 // REQUIRED COLORS!!! ===========
 
 in GSOut
@@ -441,6 +442,7 @@ void main()
     layerWorldPosColor = gsIn.fragPos;
     layerFragmentNormalColor = finalNormal;
     layerVertexNormalColor = gsIn.worldNormal;
+    layerMaterialInfo = vec4(roughness, metalness, specularCoeff, ao);
     // layerColor = diffuseColor;
     // layerColor = vec4(diffuseTexUVOffset, 1.0, 1.0);
     // layerColor = vec4(gsIn.worldNormal, 1.0);

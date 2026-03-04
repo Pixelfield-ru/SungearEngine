@@ -127,17 +127,19 @@ size_t SGCore::PostProcessPass::bindCommonUniforms(LayeredFrameReceiver& receive
     subPassShader->useTextureBlock("SGPP_LayersSTColor", 2);
     subPassShader->useTextureBlock("u_GBufferWorldPos", 3);
     subPassShader->useTextureBlock("u_GBufferFragmentNormal", 4);
-    subPassShader->useTextureBlock("u_DepthBuffer", 5);
-    subPassShader->useTextureBlock("SGPP_LayersColorsFX", 6);
+    subPassShader->useTextureBlock("u_GBufferMaterialsInfo", 5);
+    subPassShader->useTextureBlock("u_DepthBuffer", 6);
+    subPassShader->useTextureBlock("SGPP_LayersColorsFX", 7);
 
     receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)->bind(0);
     receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1)->bind(1);
     receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3)->bind(2);
     receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4)->bind(3);
     receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT5)->bind(4);
-    receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0)->bind(5);
-    receiver.m_layersFXFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7)->bind(6);
+    receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7)->bind(5);
+    receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0)->bind(6);
+    receiver.m_layersFXFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7)->bind(7);
 
     // returning texture samplers offset
-    return subPassShader->bindTextureBindings(7);
+    return subPassShader->bindTextureBindings(8);
 }
