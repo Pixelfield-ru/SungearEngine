@@ -198,6 +198,7 @@ SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addOrGetLaye
 
     auto newPPLayer = MakeRef<PostProcessLayer>();
     newPPLayer->m_targetFrameBuffer = m_layersFXFrameBuffer;
+    newPPLayer->m_name = name;
     
     // without - 1 because 0 is always default FB
     newPPLayer->m_index = m_layers.empty() ? 0 : getLayersMaximumIndex() + 1;

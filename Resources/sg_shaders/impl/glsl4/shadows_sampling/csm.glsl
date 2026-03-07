@@ -13,7 +13,7 @@ float getCSMShadow(vec3 lightDir, vec3 fragPos)
 
     // select cascade layer
     vec4 fragPosViewSpace = camera.viewMatrix * vec4(fragPos, 1.0);
-    float depthValue = abs(fragPosViewSpace.z);
+    float depthValue = -fragPosViewSpace.z;
 
     int layer = -1;
     for(int i = 0; i < CSMCascadesCount; ++i)
@@ -25,7 +25,7 @@ float getCSMShadow(vec3 lightDir, vec3 fragPos)
         }
     }
 
-    if(layer == -1)
+    if(layer < 0)
     {
         layer = CSMCascadesCount - 1;
     }
@@ -49,7 +49,7 @@ float getCSMShadow(vec3 lightDir, vec3 fragPos)
     // const float biases[6] = float[6] ( 0.0012, 0.0012, 0.0012, 0.0012, 0.0012, 0.0012 );
     float bias = CSMCascadesBiases[layer];
     // float bias = biases[layer];
-    if (layer == CSMCascadesCount)
+    if (layer == CSMCascadesCount - 1)
     {
         bias *= 1.0 / (camera.zFar * 0.5);
     }

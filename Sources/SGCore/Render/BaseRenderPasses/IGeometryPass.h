@@ -14,6 +14,8 @@ namespace SGCore
     
     struct IGeometryPass : IRenderPass
     {
+        AssetRef<IShader> m_shadowsGenerationShader;
+
         virtual void renderShadows(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline) noexcept {}
 
     private:

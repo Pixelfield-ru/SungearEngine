@@ -15,6 +15,7 @@
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/Picking/Pickable.h"
 #include "SGCore/Render/RenderAbilities/EnableMeshPass.h"
+#include "SGCore/Render/ShadowMapping/ShadowCaster.h"
 #include "SGCore/Render/ShadowMapping/CSM/CSMTarget.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Utils/Assert.h"
@@ -132,7 +133,7 @@ void SGCore::PBRRPOpaqueMeshesPass::renderShadows(const Scene* scene, const Ref<
 {
     auto registry = scene->getECSRegistry();
 
-    auto opaqueMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, OpaqueEntityTag, EnableMeshPass>();
+    auto opaqueMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, OpaqueEntityTag, EnableMeshPass, ShadowCaster>();
 
     const auto& shadowGenShader = m_shadowsGenerationShader;
 
@@ -144,7 +145,7 @@ void SGCore::PBRRPOpaqueMeshesPass::renderShadows(const Scene* scene, const Ref<
     opaqueMeshesView.each([&](const ECS::entity_t& meshEntity,
                               EntityBaseInfo::reg_t& meshedEntityBaseInfo,
                               Mesh::reg_t& mesh, Transform::reg_t& meshTransform,
-                              const auto&, auto) {
+                              auto, auto, auto) {
         // todo:
         // const bool willRender = cameraRenderingInfo.m_camera3D->isEntityVisibleForCamera(registry, cameraRenderingInfo.m_cameraEntity, meshEntity);
 
@@ -156,7 +157,7 @@ void SGCore::PBRRPOpaqueMeshesPass::renderShadows(const Scene* scene, const Ref<
 
         size_t texUnitOffset = 0;
         texUnitOffset = shadowGenShader->bindTextures(mesh.m_base.getMaterial()->getTextures(SGTextureSlot::SGTT_DIFFUSE), SGTextureSlot::SGTT_DIFFUSE, texUnitOffset);
-        shadowGenShader->bindTextureBindings(texUnitOffset);
+        texUnitOffset = shadowGenShader->bindTextureBindings(texUnitOffset);
 
         bindUniformBuffers(shadowGenShader.get());
 

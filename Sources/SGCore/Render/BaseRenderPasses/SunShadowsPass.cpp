@@ -4,6 +4,9 @@
 
 #include "SunShadowsPass.h"
 
+#include <glm/gtx/string_cast.hpp>
+
+#include "IGeometryPass.h"
 #include "SGCore/Render/Batching/Batch.h"
 #include "SGCore/Render/Atmosphere/Atmosphere.h"
 #include "SGCore/Render/ShadowMapping/ShadowCaster.h"
@@ -29,8 +32,8 @@ void SGCore::SunShadowsPass::create(const Ref<IRenderPipeline>& parentRenderPipe
 
     if(!m_renderTimer.onUpdate.contains(m_renderSlot))
     {
-        m_renderSlot = [this](double dt, double fixedDt) {
-            renderShadows(Scene::getCurrentScene().get());
+        m_renderSlot = [this, parentRenderPipeline](double dt, double fixedDt) {
+            renderShadows(Scene::getCurrentScene().get(), parentRenderPipeline);
         };
 
         m_renderTimer.onUpdate += m_renderSlot;
@@ -40,10 +43,10 @@ void SGCore::SunShadowsPass::create(const Ref<IRenderPipeline>& parentRenderPipe
 void SGCore::SunShadowsPass::render(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline)
 {
     // m_renderTimer.startFrame();
-    renderShadows(scene);
+    renderShadows(scene, renderPipeline);
 }
 
-void SGCore::SunShadowsPass::renderShadows(const Scene* scene)
+void SGCore::SunShadowsPass::renderShadows(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline)
 {
     const auto registry = scene->getECSRegistry();
 
@@ -55,8 +58,8 @@ void SGCore::SunShadowsPass::renderShadows(const Scene* scene)
 
     // glGetError();
 
-    atmospheresView.each([&camerasView, &batchesView, &registry, this](const Atmosphere::reg_t& atmosphere) {
-        camerasView.each([&atmosphere, &batchesView, &registry, this](CSMTarget::reg_t& csm, const RenderingBase::reg_t& renderingBase) {
+    atmospheresView.each([&](const Atmosphere::reg_t& atmosphere) {
+        camerasView.each([&](CSMTarget::reg_t& csm, const RenderingBase::reg_t& renderingBase) {
             const std::vector<glm::mat4> lightSpaceMatrices = getLightSpaceMatrices(csm, renderingBase, atmosphere.m_sunPosition);
 
             // rendering to levels
@@ -85,6 +88,21 @@ void SGCore::SunShadowsPass::renderShadows(const Scene* scene)
                         0
                     );
                 });
+
+                auto geomPasses = renderPipeline->getRenderPasses<IGeometryPass>();
+
+                for(const auto geomPass : geomPasses)
+                {
+                    const auto& geomPassType = typeid(*geomPass);
+
+                    if(const auto shadowsGenShader = geomPass->m_shadowsGenerationShader)
+                    {
+                        shadowsGenShader->bind();
+                        shadowsGenShader->useMatrix("CSMLightSpaceMatrix", cascadeMatrix);
+                    }
+
+                    geomPass->renderShadows(scene, renderPipeline);
+                }
 
                 cascade.m_frameBuffer->unbind();
             }

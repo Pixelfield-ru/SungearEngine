@@ -192,8 +192,8 @@ void main()
     // reads SG_SSR_final.
     else if(SGPP_CurrentFXSubPassSeqIndex == 2)
     {
-        vec4 albedo = texture(SG_SSR_final, finalUV);
-        fragColor = albedo;
+        vec4 finalSSRColor = texture(SG_SSR_final, finalUV);
+        fragColor = finalSSRColor;
     }
 }
 

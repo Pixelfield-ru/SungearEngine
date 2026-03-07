@@ -40,6 +40,8 @@ out VSOut
     vec4 vertexColor1;
 } vsOut;
 
+uniform mat4 CSMLightSpaceMatrix;
+
 void main()
 {
     vec4 totalPosition = vec4(0.0);
@@ -65,7 +67,8 @@ void main()
     vsOut.vertexColor0 = getVertexColor0();
     vsOut.vertexColor1 = getVertexColor1();
 
-    gl_Position = camera.projectionSpaceMatrix * vec4(fragPos, 1.0);
+    // gl_Position = camera.projectionSpaceMatrix * vec4(fragPos, 1.0);
+    gl_Position = CSMLightSpaceMatrix * vec4(fragPos, 1.0);
     // gl_Position = camera.projectionSpaceMatrix * objectTransform.modelMatrix * vec4(positionsAttribute, 1.0);
 }
 
