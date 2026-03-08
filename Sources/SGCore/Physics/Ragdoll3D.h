@@ -16,7 +16,7 @@
 
 namespace SGCore
 {
-    class PhysicsWorld3D;
+    struct PhysicsWorld3D;
     struct Rigidbody3D;
 
     struct ConstraintInfo
@@ -33,7 +33,7 @@ namespace SGCore
         copy_constructor(Ragdoll3D) = default;
         move_constructor(Ragdoll3D) = default;
 
-        ConstraintInfo addBone(ECS::entity_t boneEntityA, ECS::entity_t boneEntityB, ECS::registry_t& inRegistry) noexcept;
+        ConstraintInfo addConstraint(ECS::entity_t boneEntityA, ECS::entity_t boneEntityB, ECS::registry_t& inRegistry) noexcept;
 
         [[nodiscard]] const std::vector<ConstraintInfo>& getConstraints() const noexcept;
 

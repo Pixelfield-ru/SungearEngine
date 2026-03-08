@@ -13,7 +13,7 @@ SGCore::Ragdoll3D::Ragdoll3D(const Ref<PhysicsWorld3D>& physicsWorld) noexcept
     m_parentPhysicsWorld = physicsWorld;
 }
 
-SGCore::ConstraintInfo SGCore::Ragdoll3D::addBone(ECS::entity_t boneEntityA, ECS::entity_t boneEntityB, ECS::registry_t& inRegistry) noexcept
+SGCore::ConstraintInfo SGCore::Ragdoll3D::addConstraint(ECS::entity_t boneEntityA, ECS::entity_t boneEntityB, ECS::registry_t& inRegistry) noexcept
 {
     auto lockedWorld = m_parentPhysicsWorld.lock();
 

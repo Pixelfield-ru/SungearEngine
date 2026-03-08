@@ -34,7 +34,7 @@ namespace SGCore
 
         [[nodiscard]] Bone* findBone(const std::string& boneName) const noexcept;
 
-        // const std::vector<AssetRef<Bone>>& getAllBones() const noexcept;
+        const std::vector<AssetRef<Bone>>& getAllBones() const noexcept;
         std::int64_t bonesCount() const noexcept;
 
     protected:

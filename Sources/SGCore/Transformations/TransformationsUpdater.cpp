@@ -133,19 +133,17 @@ void SGCore::TransformationsUpdater::updateTransform(const EntityBaseInfo::reg_t
             auto& bodyTransform = rigidbody3D->m_body->getWorldTransform();
 
             const auto transformPosDif = finalTransform.m_position - rigidbody3D->m_lastPosition;
-            auto transformRotDif = finalTransform.m_rotation * glm::inverse(glm::normalize(rigidbody3D->m_lastRotation));
+            const auto transformRotDif = finalTransform.m_rotation * glm::inverse(glm::normalize(rigidbody3D->m_lastRotation));
 
-            glm::vec3 localBodyPos = glm::vec3(bodyTransform.getOrigin().x(), bodyTransform.getOrigin().y(), bodyTransform.getOrigin().z());
+            auto localBodyPos = glm::vec3(bodyTransform.getOrigin().x(), bodyTransform.getOrigin().y(), bodyTransform.getOrigin().z());
             if(parentTransform)
             {
-                // localBodyPos = glm::inverse(parentTransform->m_finalTransform.m_animatedModelMatrix) * glm::vec4(localBodyPos, 1.0f);
                 localBodyPos = glm::inverse(parentTransform->m_finalTransform.m_rotation) * glm::vec4(localBodyPos, 1.0f);
             }
 
-            glm::vec3 localLastBodyPos = rigidbody3D->m_lastPosition;
+            auto localLastBodyPos = rigidbody3D->m_lastPosition;
             if(parentTransform)
             {
-                // localLastBodyPos = glm::inverse(parentTransform->m_finalTransform.m_animatedModelMatrix) * glm::vec4(localLastBodyPos, 1.0f);
                 localLastBodyPos = glm::inverse(parentTransform->m_finalTransform.m_rotation) * glm::vec4(localLastBodyPos, 1.0f);
             }
 

@@ -140,7 +140,7 @@ std::int64_t SGCore::Skeleton::bonesCount() const noexcept
     return std::ssize(m_allBones);
 }
 
-/*const std::vector<SGCore::AssetRef<SGCore::Bone>>& SGCore::Skeleton::getAllBones() const noexcept
+const std::vector<SGCore::AssetRef<SGCore::Bone>>& SGCore::Skeleton::getAllBones() const noexcept
 {
     return m_allBones;
-}*/
+}
