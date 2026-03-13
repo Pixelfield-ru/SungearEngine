@@ -103,5 +103,7 @@ void SGCore::PhysicsWorld3D::updateWorld(double dt, double fixedDt) noexcept
     if(m_simulate)
     {
         m_dynamicsWorld->stepSimulation(dt, 12, dt);
+
+        // устанавливаю физ. координаты
     }
 }

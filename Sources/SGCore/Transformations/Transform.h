@@ -34,6 +34,9 @@ namespace SGCore
         // z - follow scale
         glm::vec<3, bool, glm::highp> m_followParentTRS { true, true, true };
         // glm::bvec3 m_lastFollowParentTRS = glm::vec3 { false };
+
+        glm::vec3 m_physicalDeltaTranslation {};
+        glm::quat m_physicalDeltaRotation = glm::identity<glm::quat>();
         
         bool m_transformChanged = false;
 

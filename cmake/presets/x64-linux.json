@@ -11,8 +11,8 @@
       "cacheVariables": {
         "SG_BUILD_PRESET": "release-x64-linux",
         "VCPKG_TARGET_TRIPLET": "x64-linux",
-        "CMAKE_SYSTEM_NAME": "Windows",
-        "VCPKG_CMAKE_SYSTEM_NAME": "Windows"
+        "CMAKE_SYSTEM_NAME": "Linux",
+        "VCPKG_CMAKE_SYSTEM_NAME": "Linux"
       },
       "condition": {
         "type": "equals",
@@ -27,8 +27,8 @@
       "cacheVariables": {
         "SG_BUILD_PRESET": "debug-x64-linux",
         "VCPKG_TARGET_TRIPLET": "x64-linux",
-        "CMAKE_SYSTEM_NAME": "Windows",
-        "VCPKG_CMAKE_SYSTEM_NAME": "Windows"
+        "CMAKE_SYSTEM_NAME": "Linux",
+        "VCPKG_CMAKE_SYSTEM_NAME": "Linux"
       },
       "condition": {
         "type": "equals",

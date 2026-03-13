@@ -21,7 +21,7 @@ namespace SGCore
     {
         sg_implement_type_id(TransformationsUpdater, 20)
 
-        friend class PhysicsWorld3D;
+        friend struct PhysicsWorld3D;
 
         TransformationsUpdater();
 
