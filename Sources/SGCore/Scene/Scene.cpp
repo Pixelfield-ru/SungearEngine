@@ -48,10 +48,6 @@ void SGCore::Scene::createDefaultSystems()
 {
     // physics ===================
 
-    // ALWAYS BEFORE TRANSFORMATIONS UPDATER
-    auto physicsWorld = MakeRef<PhysicsWorld3D>();
-    addSystem(physicsWorld);
-
     //std::cout << "dfdfdf" << std::endl;
     
     // ===================
@@ -74,6 +70,10 @@ void SGCore::Scene::createDefaultSystems()
 
     auto transformationsUpdater = MakeRef<TransformationsUpdater>();
     addSystem(transformationsUpdater);
+
+    // ALWAYS BEFORE TRANSFORMATIONS UPDATER
+    auto physicsWorld = MakeRef<PhysicsWorld3D>();
+    addSystem(physicsWorld);
 
     auto controllables3DUpdater = MakeRef<Controllables3DUpdater>();
     addSystem(controllables3DUpdater);

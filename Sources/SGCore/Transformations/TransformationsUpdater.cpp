@@ -141,18 +141,20 @@ void SGCore::TransformationsUpdater::updateTransform(const EntityBaseInfo::reg_t
             }*/
 
             auto transformPosDif = localTransformPos - localLastTransformPos;
-            const auto transformRotDif = finalTransform.m_rotation * glm::inverse(glm::normalize(rigidbody3D->m_lastRotation));
+            auto transformRotDif = finalTransform.m_rotation * glm::inverse(rigidbody3D->m_lastRotation);
 
             auto localBodyPos = glm::vec3(bodyTransform.getOrigin().x(), bodyTransform.getOrigin().y(), bodyTransform.getOrigin().z());
             if(parentTransform)
             {
                 localBodyPos = glm::inverse(parentTransform->m_finalTransform.m_rotation) * glm::vec4(localBodyPos, 1.0f);
+                // localBodyPos = glm::inverse(parentTransform->m_finalTransform.m_animatedModelMatrix) * glm::vec4(localBodyPos, 1.0f);
             }
 
             auto localLastBodyPos = rigidbody3D->m_lastPosition;
             if(parentTransform)
             {
                 localLastBodyPos = glm::inverse(parentTransform->m_finalTransform.m_rotation) * glm::vec4(localLastBodyPos, 1.0f);
+                // localLastBodyPos = glm::inverse(parentTransform->m_finalTransform.m_animatedModelMatrix) * glm::vec4(localLastBodyPos, 1.0f);
                 // localLastBodyPos += parentTransform->m_physicalDeltaTranslation;
             }
 
@@ -184,7 +186,7 @@ void SGCore::TransformationsUpdater::updateTransform(const EntityBaseInfo::reg_t
             }
 
             // calculating rotation delta of rigidbody (physical transform delta)
-            auto rotDif = localBodyRot * glm::inverse(glm::normalize(localLastBodyRot));
+            auto rotDif = localBodyRot * glm::inverse(localLastBodyRot);
             /*if(parentTransform)
             {
                 rotDif = glm::inverse(parentTransform->m_finalTransform.m_rotation) * rotDif;
@@ -208,24 +210,36 @@ void SGCore::TransformationsUpdater::updateTransform(const EntityBaseInfo::reg_t
 
             if(parentTransform)
             {
+                const auto m = parentTransform->m_finalTransform.m_rotationMatrix * parentTransform->m_finalTransform.m_translationMatrix;
                 const glm::vec3 finalGlobalPos = parentTransform->m_finalTransform.m_animatedModelMatrix * glm::vec4(ownTransform.m_position, 1.0f);
+                // const glm::vec3 finalGlobalPos = parentTransform->m_finalTransform.m_modelMatrix * glm::vec4(ownTransform.m_position, 1.0f);
+                // const glm::vec3 finalGlobalPos = m * glm::vec4(ownTransform.m_position, 1.0f);
 
                 // ищем локальную позицию относительно парента. используем глобальные позиции для этого, так как они уже включают все повороты
                 const auto finalLocalPos = (finalGlobalPos - parentTransform->m_finalTransform.m_position);
                 // теперь найденной локальной позиции вычитаем локальную позицию, но повёрнутую в противоположную сторону от физического поворота парента
                 // т.е. возвращаем локальную позицию в исходное положение (получаем оффсет для этого)
-                const auto rotationCancellation = glm::inverse(parentTransform->m_finalTransform.m_rotation) * (finalLocalPos - glm::inverse(parentTransform->m_physicalDeltaRotation) * finalLocalPos);
+                const auto rotatedTranslationCancellation = glm::inverse(parentTransform->m_finalTransform.m_rotation) * (finalLocalPos - glm::inverse(parentTransform->m_physicalDeltaRotation) * finalLocalPos) / parentTransform->m_finalTransform.m_scale;
+                const glm::vec3 translationCancellation = (glm::inverse(parentTransform->m_finalTransform.m_rotation) * parentTransform->m_physicalDeltaTranslation) / parentTransform->m_finalTransform.m_scale;
+                const auto rotationCancellation = glm::inverse(parentTransform->m_physicalDeltaRotation);
+
                 std::println(std::cout, "name: {}, rotationCancellation: {}, finalLocalPos: {}, own pos: {}",
                              currentEntityBaseInfo.getName(), glm::to_string(rotationCancellation),
                              glm::to_string(finalLocalPos), glm::to_string(ownTransform.m_position));
 
                 // вычитаем оффсет
-                // ЭТО РАБОТАЕТ ИДЕАЛЬНО
-                ownTransform.m_position -= rotationCancellation;
-                // А ВОТ ЭТО НАДО ЧИНИТЬ (ХЗ КАК)
-                ownTransform.m_rotation = glm::inverse(parentTransform->m_physicalDeltaRotation) * ownTransform.m_rotation;
-                // А ВОТ ЭТО НАДО ЧИНИТЬ (ХЗ КАК)
-                // ownTransform.m_position -= parentTransform->m_physicalDeltaTranslation;
+                ownTransform.m_position -= rotatedTranslationCancellation;
+                ownTransform.m_position -= translationCancellation;
+                ownTransform.m_rotation = rotationCancellation * ownTransform.m_rotation;
+
+                // posDif -= rotatedTranslationCancellation;
+                // posDif -= translationCancellation;
+                // rotDif = rotationCancellation * rotDif;
+
+                /*transformPosDif -= rotatedTranslationCancellation;
+                transformPosDif -= translationCancellation;
+                transformRotDif = rotationCancellation * transformRotDif;*/
+                // transformRotDif = rotationCancellation * transformRotDif;
             }
 
             currentEntityTransform->m_physicalDeltaTranslation = posDif;
