@@ -101,7 +101,7 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
         currentElementCache.m_contentSize.x = currentElementCache.m_leftPadding + currentElementCache.m_rightPadding;
         currentElementCache.m_contentSize.y = currentElementCache.m_topPadding + currentElementCache.m_bottomPadding;
         
-        TransformUtils::calculateTransform(currentTransformNode.m_transform, parentTransform);
+        TransformUtils::calculateTransform(currentTransformNode.m_transform, parentTransform, nullptr);
         
         currentTransformNode.m_elementLastCache = currentElementCache;
     }

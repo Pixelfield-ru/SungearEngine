@@ -89,89 +89,27 @@ void SGCore::TransformationsUpdater::updateTransform(const EntityBaseInfo::reg_t
 
         // updating rigidbody3d =================================================
 
-        if(rigidbody3D)
+        /*if(rigidbody3D)
         {
-            /*auto inversedParentTranslationMatrix = glm::mat4(1.0);
-            auto inversedParentRotationMatrix = glm::mat4(1.0);
-            auto inversedParentScaleMatrix = glm::mat4(1.0);
-
-            // TransformUtils::calculateTransform(*transform, parentTransform.get());
-
-            if(parentTransform)
-            {
-                inversedParentTranslationMatrix = glm::inverse(
-                    parentTransform->m_finalTransform.m_translationMatrix);
-                inversedParentRotationMatrix = glm::inverse(
-                    parentTransform->m_finalTransform.m_rotationMatrix);
-                inversedParentScaleMatrix = glm::inverse(
-                    parentTransform->m_finalTransform.m_scaleMatrix);
-            }
-
-            glm::mat4 rigidbody3DMatrix = glm::mat4(1.0);
-
-            rigidbody3D->m_body->getWorldTransform().getOpenGLMatrix(&rigidbody3DMatrix[0][0]);
-
-            // getting entity`s only own transform from rigidbody3d
-            rigidbody3DMatrix =
-                            inversedParentScaleMatrix * inversedParentRotationMatrix *
-                            inversedParentTranslationMatrix *
-                            rigidbody3DMatrix;
-
-            glm::vec3 scale;
-            glm::quat rotation;
-            glm::vec3 translation;
-            glm::vec3 skew;
-            glm::vec4 perspective;
-
-            glm::decompose(rigidbody3DMatrix, scale, rotation, translation, skew,
-                           perspective);*/
-
             auto& bodyTransform = rigidbody3D->m_body->getWorldTransform();
 
-            auto localTransformPos = finalTransform.m_position;
-            /*if(parentTransform)
-            {
-                localTransformPos = glm::inverse(parentTransform->m_finalTransform.m_rotation) * glm::vec4(localTransformPos, 1.0f);
-            }*/
-
-            auto localLastTransformPos = rigidbody3D->m_lastPosition;
-            /*if(parentTransform)
-            {
-                localLastTransformPos = glm::inverse(parentTransform->m_finalTransform.m_rotation) * glm::vec4(localLastTransformPos, 1.0f);
-            }*/
-
-            auto transformPosDif = localTransformPos - localLastTransformPos;
+            auto transformPosDif = finalTransform.m_position - rigidbody3D->m_lastPosition;
             auto transformRotDif = finalTransform.m_rotation * glm::inverse(rigidbody3D->m_lastRotation);
 
             auto localBodyPos = glm::vec3(bodyTransform.getOrigin().x(), bodyTransform.getOrigin().y(), bodyTransform.getOrigin().z());
             if(parentTransform)
             {
                 localBodyPos = glm::inverse(parentTransform->m_finalTransform.m_rotation) * glm::vec4(localBodyPos, 1.0f);
-                // localBodyPos = glm::inverse(parentTransform->m_finalTransform.m_animatedModelMatrix) * glm::vec4(localBodyPos, 1.0f);
             }
 
             auto localLastBodyPos = rigidbody3D->m_lastPosition;
             if(parentTransform)
             {
                 localLastBodyPos = glm::inverse(parentTransform->m_finalTransform.m_rotation) * glm::vec4(localLastBodyPos, 1.0f);
-                // localLastBodyPos = glm::inverse(parentTransform->m_finalTransform.m_animatedModelMatrix) * glm::vec4(localLastBodyPos, 1.0f);
-                // localLastBodyPos += parentTransform->m_physicalDeltaTranslation;
             }
 
             // calculating position delta of rigidbody (physical transform delta)
             auto posDif = localBodyPos - localLastBodyPos;
-            /*if(parentTransform)
-            {
-                posDif = glm::inverse(parentTransform->m_finalTransform.m_rotation) * posDif;
-            }*/
-
-            /*if(parentTransform)
-            {
-                const auto finalLocalPos = finalTransform.m_position - parentTransform->m_finalTransform.m_position;
-                const auto rotationCancellation = finalLocalPos - glm::inverse(parentTransform->m_physicalDeltaRotation) * finalLocalPos;
-
-                posDif += rotationCancellation;
-            }*/
 
             auto localBodyRot = glm::quat(bodyTransform.getRotation().w(), bodyTransform.getRotation().x(), bodyTransform.getRotation().y(), bodyTransform.getRotation().z());
             if(parentTransform)
@@ -187,18 +125,6 @@ void SGCore::TransformationsUpdater::updateTransform(const EntityBaseInfo::reg_t
 
             // calculating rotation delta of rigidbody (physical transform delta)
             auto rotDif = localBodyRot * glm::inverse(localLastBodyRot);
-            /*if(parentTransform)
-            {
-                rotDif = glm::inverse(parentTransform->m_finalTransform.m_rotation) * rotDif;
-            }*/
-
-            /*// applying transform component delta to rigidbody transform
-            bodyTransform.setOrigin(bodyTransform.getOrigin() + btVector3(transformPosDif.x, transformPosDif.y, transformPosDif.z));
-            bodyTransform.setRotation(btQuaternion(transformRotDif.x, transformRotDif.y, transformRotDif.z, transformRotDif.w) * bodyTransform.getRotation());
-
-            // applying rigidbody transform delta to transform component (applying physics)
-            ownTransform.m_position += posDif;
-            ownTransform.m_rotation = rotDif * ownTransform.m_rotation;*/
 
             // applying transform component delta to rigidbody transform
             bodyTransform.setOrigin(bodyTransform.getOrigin() + btVector3(transformPosDif.x, transformPosDif.y, transformPosDif.z));
@@ -210,10 +136,7 @@ void SGCore::TransformationsUpdater::updateTransform(const EntityBaseInfo::reg_t
 
             if(parentTransform)
             {
-                const auto m = parentTransform->m_finalTransform.m_rotationMatrix * parentTransform->m_finalTransform.m_translationMatrix;
                 const glm::vec3 finalGlobalPos = parentTransform->m_finalTransform.m_animatedModelMatrix * glm::vec4(ownTransform.m_position, 1.0f);
-                // const glm::vec3 finalGlobalPos = parentTransform->m_finalTransform.m_modelMatrix * glm::vec4(ownTransform.m_position, 1.0f);
-                // const glm::vec3 finalGlobalPos = m * glm::vec4(ownTransform.m_position, 1.0f);
 
                 // ищем локальную позицию относительно парента. используем глобальные позиции для этого, так как они уже включают все повороты
                 const auto finalLocalPos = (finalGlobalPos - parentTransform->m_finalTransform.m_position);
@@ -231,15 +154,6 @@ void SGCore::TransformationsUpdater::updateTransform(const EntityBaseInfo::reg_t
                 ownTransform.m_position -= rotatedTranslationCancellation;
                 ownTransform.m_position -= translationCancellation;
                 ownTransform.m_rotation = rotationCancellation * ownTransform.m_rotation;
-
-                // posDif -= rotatedTranslationCancellation;
-                // posDif -= translationCancellation;
-                // rotDif = rotationCancellation * rotDif;
-
-                /*transformPosDif -= rotatedTranslationCancellation;
-                transformPosDif -= translationCancellation;
-                transformRotDif = rotationCancellation * transformRotDif;*/
-                // transformRotDif = rotationCancellation * transformRotDif;
             }
 
             currentEntityTransform->m_physicalDeltaTranslation = posDif;
@@ -258,13 +172,13 @@ void SGCore::TransformationsUpdater::updateTransform(const EntityBaseInfo::reg_t
         {
             currentEntityTransform->m_physicalDeltaTranslation = parentTransform->m_physicalDeltaTranslation;
             currentEntityTransform->m_physicalDeltaRotation = parentTransform->m_physicalDeltaRotation;
-        }
+        }*/
 
         // =====================================================================
 
         // if(!rigidbody3D)
         {
-            isTransformChanged |= TransformUtils::calculateTransform(*currentEntityTransform, parentTransform.get());
+            isTransformChanged |= TransformUtils::calculateTransform(*currentEntityTransform, parentTransform.get(), rigidbody3D.get());
         }
 
         if(isTransformChanged)

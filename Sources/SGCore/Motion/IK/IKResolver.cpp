@@ -106,7 +106,7 @@ void SGCore::IKResolver::fixedUpdate(const double& dt, const double& fixedDt)
             // effectorTransform->m_finalTransform.m_position = targetGlobalPos;
             {
                 const auto& parentTransform = registry->tryGet<Transform>(registry->get<EntityBaseInfo>(chain[jointsCount - 1]).getParent());
-                TransformUtils::calculateTransform(*effectorTransform, parentTransform ? parentTransform->get() : nullptr);
+                TransformUtils::calculateTransform(*effectorTransform, parentTransform ? parentTransform->get() : nullptr, nullptr);
             }
 
             // backward
@@ -125,7 +125,7 @@ void SGCore::IKResolver::fixedUpdate(const double& dt, const double& fixedDt)
 
                 {
                     const auto& parentTransform = registry->tryGet<Transform>(registry->get<EntityBaseInfo>(chain[j]).getParent());
-                    TransformUtils::calculateTransform(*jointsTransforms[j], parentTransform ? parentTransform->get() : nullptr);
+                    TransformUtils::calculateTransform(*jointsTransforms[j], parentTransform ? parentTransform->get() : nullptr, nullptr);
                 }
 
                 // jointsTransforms[j]->m_finalTransform.m_position = globalPos;
@@ -145,7 +145,7 @@ void SGCore::IKResolver::fixedUpdate(const double& dt, const double& fixedDt)
 
             {
                 const auto& parentTransform = registry->tryGet<Transform>(registry->get<EntityBaseInfo>(chain[0]).getParent());
-                TransformUtils::calculateTransform(*jointsTransforms[0], parentTransform ? parentTransform->get() : nullptr);
+                TransformUtils::calculateTransform(*jointsTransforms[0], parentTransform ? parentTransform->get() : nullptr, nullptr);
             }
             // jointsTransforms[0]->m_finalTransform.m_position = rootGlobalPos;
 
@@ -164,7 +164,7 @@ void SGCore::IKResolver::fixedUpdate(const double& dt, const double& fixedDt)
 
                 {
                     const auto& parentTransform = registry->tryGet<Transform>(registry->get<EntityBaseInfo>(chain[j]).getParent());
-                    TransformUtils::calculateTransform(*jointsTransforms[j], parentTransform ? parentTransform->get() : nullptr);
+                    TransformUtils::calculateTransform(*jointsTransforms[j], parentTransform ? parentTransform->get() : nullptr, nullptr);
                 }
 
                 // jointsTransforms[j]->m_finalTransform.m_position = globalPos;

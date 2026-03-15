@@ -69,11 +69,28 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
 
 void SGCore::PhysicsWorld3D::update(const double& dt, const double& fixedDt) noexcept
 {
-    updateWorld(dt, fixedDt);
-
     auto lockedScene = getScene();
 
     if(!lockedScene) return;
+
+    auto ecsRegistry = lockedScene->getECSRegistry();
+
+    // ============================= set rigidbodies world position
+
+    auto rigidbodiesView = ecsRegistry->view<Rigidbody3D, Transform>();
+    rigidbodiesView.each([](const Ref<Rigidbody3D>& rigidbody, const Ref<Transform>& transform) {
+        const auto worldPosition = transform->m_finalTransform.m_position;
+        const auto worldRotation = transform->m_finalTransform.m_rotation;
+
+        auto& bodyTransform = rigidbody->m_body->getWorldTransform();
+
+        bodyTransform.setOrigin({ worldPosition.x, worldPosition.y, worldPosition.z });
+        bodyTransform.setRotation({ worldRotation.x, worldRotation.y, worldRotation.z, worldRotation.w });
+    });
+
+    // =============================
+
+    updateWorld(dt, fixedDt);
 
     m_dynamicsWorld->debugDrawWorld();
 }
@@ -103,7 +120,5 @@ void SGCore::PhysicsWorld3D::updateWorld(double dt, double fixedDt) noexcept
     if(m_simulate)
     {
         m_dynamicsWorld->stepSimulation(dt, 12, dt);
-
-        // устанавливаю физ. координаты
     }
 }
