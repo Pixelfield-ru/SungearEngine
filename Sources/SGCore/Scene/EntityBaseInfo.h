@@ -19,14 +19,11 @@ namespace SGCore
     struct Layer;
 
     // sizeof
-    struct EntityBaseInfo final : public UniqueNameWrapper, public ECS::Component<EntityBaseInfo, const EntityBaseInfo>
+    struct EntityBaseInfo final : UniqueNameWrapper, ECS::Component<EntityBaseInfo, const EntityBaseInfo>
     {
         sg_serde_as_friend()
 
-        explicit EntityBaseInfo(const ECS::entity_t& thisEntity) noexcept
-        {
-            setThisEntity(thisEntity);
-        }
+        explicit EntityBaseInfo(ECS::entity_t thisEntity, ECS::registry_t& inRegistry) noexcept;
         EntityBaseInfo(const EntityBaseInfo&) = default;
         EntityBaseInfo(EntityBaseInfo&&) = default;
 
@@ -69,7 +66,7 @@ namespace SGCore
          * @param inRegistry In which register the collecting will be performed.
          * @param outputEntities The entities of the entire tree, starting from this entity.
          */
-        [[nodiscard]] void getAllChildren(ECS::registry_t& inRegistry, std::vector<ECS::entity_t>& outputEntities) const noexcept;
+        void getAllChildren(ECS::registry_t& inRegistry, std::vector<ECS::entity_t>& outputEntities) const noexcept;
 
         /**
          * Searches for an entity by name starting with this entity.
@@ -81,7 +78,7 @@ namespace SGCore
 
         [[nodiscard]] glm::vec3 getUniqueColor() const noexcept;
 
-        [[nodiscard]] const ECS::entity_t& getThisEntity() const noexcept;
+        [[nodiscard]] ECS::entity_t getThisEntity() const noexcept;
 
         void resolveAllEntitiesRefs(const Ref<ECS::registry_t>& registry) noexcept;
 
@@ -91,7 +88,7 @@ namespace SGCore
     private:
         EntityBaseInfo() = default;
 
-        void setThisEntity(const ECS::entity_t& entity) noexcept;
+        void setThisEntity(ECS::entity_t entity) noexcept;
 
         ECS::entity_t m_parent = entt::null;
         // used to resolve all references to this entity

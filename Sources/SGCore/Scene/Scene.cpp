@@ -71,7 +71,7 @@ void SGCore::Scene::createDefaultSystems()
     auto transformationsUpdater = MakeRef<TransformationsUpdater>();
     addSystem(transformationsUpdater);
 
-    // ALWAYS BEFORE TRANSFORMATIONS UPDATER
+    // ALWAYS AFTER TRANSFORMATIONS UPDATER
     auto physicsWorld = MakeRef<PhysicsWorld3D>();
     addSystem(physicsWorld);
 

@@ -43,7 +43,7 @@ namespace SGCore::ECS
         [[nodiscard]] EntityT create()
         {
             auto entity = m_registry.create();
-            emplace<EntityBaseInfo>(entity, entity);
+            emplace<EntityBaseInfo>(entity, entity, *this);
 
             return entity;
         }

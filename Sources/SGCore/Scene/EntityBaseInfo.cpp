@@ -3,9 +3,19 @@
 //
 
 #include "EntityBaseInfo.h"
+
+#include "RootEntityTag.h"
 #include "SGCore/Logger/Logger.h"
 #include "SGCore/ECS/Registry.h"
 #include "SGCore/Utils/Assert.h"
+#include "SGCore/Utils/Defer.h"
+
+SGCore::EntityBaseInfo::EntityBaseInfo(ECS::entity_t thisEntity, ECS::registry_t& inRegistry) noexcept
+{
+    setThisEntity(thisEntity);
+
+    inRegistry.emplace<RootEntityTag>(thisEntity);
+}
 
 void SGCore::EntityBaseInfo::setActiveRecursive(bool active, ECS::registry_t& inRegistry) noexcept
 {
@@ -19,8 +29,8 @@ void SGCore::EntityBaseInfo::setActiveRecursive(bool active, ECS::registry_t& in
     }
 }
 
-void SGCore::EntityBaseInfo::setParent(const SGCore::ECS::entity_t& parent,
-                                       SGCore::ECS::registry_t& inRegistry) noexcept
+void SGCore::EntityBaseInfo::setParent(const ECS::entity_t& parent,
+                                       ECS::registry_t& inRegistry) noexcept
 {
     if(!inRegistry.valid(m_thisEntity))
     {
@@ -60,6 +70,10 @@ void SGCore::EntityBaseInfo::setParent(const SGCore::ECS::entity_t& parent,
 
         m_parent = entt::null;
 
+        if(inRegistry.allOf<RootEntityTag>(m_thisEntity)) return;
+
+        inRegistry.emplace<RootEntityTag>(m_thisEntity);
+
         parentBaseInfo->removeChild(m_thisEntity, inRegistry);
 
         return;
@@ -91,16 +105,18 @@ void SGCore::EntityBaseInfo::setParent(const SGCore::ECS::entity_t& parent,
 
     m_parent = parent;
 
+    inRegistry.remove<RootEntityTag>(m_thisEntity);
+
     parentBaseInfo->m_children.push_back(m_thisEntity);
 }
 
-void SGCore::EntityBaseInfo::detachFromParent(SGCore::ECS::registry_t& inRegistry) noexcept
+void SGCore::EntityBaseInfo::detachFromParent(ECS::registry_t& inRegistry) noexcept
 {
     setParent(entt::null, inRegistry);
 }
 
-void SGCore::EntityBaseInfo::addChild(const SGCore::ECS::entity_t& child,
-                                      SGCore::ECS::registry_t& inRegistry) noexcept
+void SGCore::EntityBaseInfo::addChild(const ECS::entity_t& child,
+                                      ECS::registry_t& inRegistry) noexcept
 {
     if(hasChild(child))
     {
@@ -139,8 +155,8 @@ void SGCore::EntityBaseInfo::addChild(const SGCore::ECS::entity_t& child,
     childBaseInfo->m_parent = m_thisEntity;
 }
 
-void SGCore::EntityBaseInfo::removeChild(const SGCore::ECS::entity_t& child,
-                                         SGCore::ECS::registry_t& inRegistry) noexcept
+void SGCore::EntityBaseInfo::removeChild(const ECS::entity_t& child,
+                                         ECS::registry_t& inRegistry) noexcept
 {
     if(!hasChild(child))
     {
@@ -179,7 +195,7 @@ void SGCore::EntityBaseInfo::removeChild(const SGCore::ECS::entity_t& child,
     childBaseInfo->m_parent = entt::null;
 }
 
-bool SGCore::EntityBaseInfo::hasChild(const SGCore::ECS::entity_t& child) const noexcept
+bool SGCore::EntityBaseInfo::hasChild(const ECS::entity_t& child) const noexcept
 {
     return std::find(m_children.begin(), m_children.end(), child) != m_children.end();
 }
@@ -203,8 +219,8 @@ void SGCore::EntityBaseInfo::destroy(ECS::registry_t& inRegistry) const noexcept
 #else
         auto* childEntityBaseInfo = inRegistry.tryGet<EntityBaseInfo>(child);
         SG_ASSERT(childEntityBaseInfo != nullptr, fmt::format("Can not destroy child entity '{}' of parent entity '{}': child entity does not have component EntityBaseInfo.",
-            std::to_underlying(m_thisEntity),
-            std::to_underlying(child)).c_str());
+                                                              std::to_underlying(m_thisEntity),
+                                                              std::to_underlying(child)).c_str());
 
         childEntityBaseInfo->destroy(inRegistry);
 #endif
@@ -212,50 +228,6 @@ void SGCore::EntityBaseInfo::destroy(ECS::registry_t& inRegistry) const noexcept
 
     SG_ASSERT(inRegistry.valid(m_thisEntity), fmt::format("Can not destroy entity '{}': invalid entity.", std::to_underlying(m_thisEntity)).c_str());
     inRegistry.destroy(m_thisEntity);
-}
-
-glm::vec3 SGCore::EntityBaseInfo::getUniqueColor() const noexcept
-{
-    return { m_uniqueColor.color().x, m_uniqueColor.color().y, m_uniqueColor.color().z };
-}
-
-const SGCore::ECS::entity_t& SGCore::EntityBaseInfo::getThisEntity() const noexcept
-{
-    return m_thisEntity;
-}
-
-void SGCore::EntityBaseInfo::resolveAllEntitiesRefs(const SGCore::Ref<SGCore::ECS::registry_t>& registry) noexcept
-{
-    auto entityBaseInfoView = registry->template view<EntityBaseInfo::reg_t>();
-
-    auto it = m_entitiesRefsToResolve.begin();
-    while(it != m_entitiesRefsToResolve.end())
-    {
-        bool isRefResolved = false;
-        entityBaseInfoView.each([&it, &isRefResolved, this](const EntityBaseInfo::reg_t& otherEntityBaseInfo) {
-            // if deserialized value of EntityRef is equals to deserialized entity of other EntityBaseInfo
-            // then we are resolving current EntityRef to entity of otherEntityBaseInfo
-            if(!isRefResolved && **it == otherEntityBaseInfo.m_deserializedThisEntity)
-            {
-                std::cout << "resolved entity ref. deserialized: " << std::to_underlying(otherEntityBaseInfo.m_deserializedThisEntity) <<
-                ", new: " << std::to_underlying(otherEntityBaseInfo.getThisEntity()) << std::endl;
-
-                **it = otherEntityBaseInfo.getThisEntity();
-                it = m_entitiesRefsToResolve.erase(it);
-                isRefResolved = true;
-            }
-        });
-
-        if(!isRefResolved)
-        {
-            ++it;
-        }
-    }
-}
-
-void SGCore::EntityBaseInfo::setThisEntity(const SGCore::ECS::entity_t& entity) noexcept
-{
-    m_thisEntity = entity;
 }
 
 SGCore::ECS::entity_t SGCore::EntityBaseInfo::getRootParent(ECS::registry_t& inRegistry) const noexcept
@@ -270,7 +242,7 @@ SGCore::ECS::entity_t SGCore::EntityBaseInfo::getRootParent(ECS::registry_t& inR
     return parentBaseInfo->getRootParent(inRegistry);
 }
 
-void SGCore::EntityBaseInfo::getAllChildren(SGCore::ECS::registry_t& inRegistry,
+void SGCore::EntityBaseInfo::getAllChildren(ECS::registry_t& inRegistry,
                                             std::vector<ECS::entity_t>& outputEntities) const noexcept
 {
     for(const auto& e : m_children)
@@ -281,7 +253,7 @@ void SGCore::EntityBaseInfo::getAllChildren(SGCore::ECS::registry_t& inRegistry,
     }
 }
 
-SGCore::ECS::entity_t SGCore::EntityBaseInfo::findEntity(SGCore::ECS::registry_t& inRegistry,
+SGCore::ECS::entity_t SGCore::EntityBaseInfo::findEntity(ECS::registry_t& inRegistry,
                                                          const std::string& name) const noexcept
 {
     if(getName() == name) return m_thisEntity;
@@ -300,4 +272,48 @@ SGCore::ECS::entity_t SGCore::EntityBaseInfo::findEntity(SGCore::ECS::registry_t
     }
 
     return entt::null;
+}
+
+glm::vec3 SGCore::EntityBaseInfo::getUniqueColor() const noexcept
+{
+    return { m_uniqueColor.color().x, m_uniqueColor.color().y, m_uniqueColor.color().z };
+}
+
+SGCore::ECS::entity_t SGCore::EntityBaseInfo::getThisEntity() const noexcept
+{
+    return m_thisEntity;
+}
+
+void SGCore::EntityBaseInfo::resolveAllEntitiesRefs(const Ref<ECS::registry_t>& registry) noexcept
+{
+    auto entityBaseInfoView = registry->template view<EntityBaseInfo::reg_t>();
+
+    auto it = m_entitiesRefsToResolve.begin();
+    while(it != m_entitiesRefsToResolve.end())
+    {
+        bool isRefResolved = false;
+        entityBaseInfoView.each([&it, &isRefResolved, this](const EntityBaseInfo::reg_t& otherEntityBaseInfo) {
+            // if deserialized value of EntityRef is equals to deserialized entity of other EntityBaseInfo
+            // then we are resolving current EntityRef to entity of otherEntityBaseInfo
+            if(!isRefResolved && **it == otherEntityBaseInfo.m_deserializedThisEntity)
+            {
+                std::cout << "resolved entity ref. deserialized: " << std::to_underlying(otherEntityBaseInfo.m_deserializedThisEntity) <<
+                        ", new: " << std::to_underlying(otherEntityBaseInfo.getThisEntity()) << std::endl;
+
+                **it = otherEntityBaseInfo.getThisEntity();
+                it = m_entitiesRefsToResolve.erase(it);
+                isRefResolved = true;
+            }
+        });
+
+        if(!isRefResolved)
+        {
+            ++it;
+        }
+    }
+}
+
+void SGCore::EntityBaseInfo::setThisEntity(ECS::entity_t entity) noexcept
+{
+    m_thisEntity = entity;
 }

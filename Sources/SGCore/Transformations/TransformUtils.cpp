@@ -23,7 +23,7 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
     bool rotationChanged = false;
     bool scaleChanged = false;
 
-    if(childRigidbody)
+    /*if(childRigidbody)
     {
         const auto bodyTransform = childRigidbody->m_body->getWorldTransform();
 
@@ -51,7 +51,7 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
         {
             childOwnTransform.m_position = bodyWorldPosition;
         }
-    }
+    }*/
 
     // ============================================== translation calc
 

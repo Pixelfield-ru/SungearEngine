@@ -23,6 +23,7 @@
 #include "SGCore/ECS/Registry.h"
 
 #include "TransformUtils.h"
+#include "SGCore/Scene/RootEntityTag.h"
 
 SGCore::TransformationsUpdater::TransformationsUpdater()
 {
@@ -39,7 +40,7 @@ void SGCore::TransformationsUpdater::update(const double& dt, const double& fixe
 
     auto registry = lockedScene->getECSRegistry();
 
-    auto transformsView = registry->view<EntityBaseInfo, Transform>();
+    auto transformsView = registry->view<EntityBaseInfo, Transform, RootEntityTag>();
 
     auto start = std::chrono::system_clock::now();
 
@@ -47,13 +48,9 @@ void SGCore::TransformationsUpdater::update(const double& dt, const double& fixe
 
     // =======================================================================
 
-    transformsView.each([&registry, this](
-    ECS::entity_t entity,
-    EntityBaseInfo& entityBaseInfo,
-    const Transform::reg_t& transform) {
-        // starting only on root entities
-        if(entityBaseInfo.getParent() != entt::null) return;
-
+    transformsView.each([&registry, this](ECS::entity_t entity,
+                                          EntityBaseInfo& entityBaseInfo,
+                                          const Transform::reg_t& transform, auto) {
         updateTransform(entityBaseInfo, entity, transform, nullptr, registry);
     });
 
