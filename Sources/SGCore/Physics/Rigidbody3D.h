@@ -60,6 +60,8 @@ namespace SGCore
         void setType(PhysicalObjectType type) noexcept;
         PhysicalObjectType getType() const noexcept;
 
+        Ref<Rigidbody3D> getParentBody() const noexcept;
+
         void reAddToWorld() const noexcept;
         void removeFromWorld() const noexcept;
 
@@ -73,6 +75,7 @@ namespace SGCore
         std::vector<Ref<btCollisionShape>> m_shapes;
         Ref<btCompoundShape> m_finalShape;
         Weak<PhysicsWorld3D> m_parentPhysicsWorld;
+        Weak<Rigidbody3D> m_parent;
 
         // last rigidbody position
         glm::vec3 m_lastPosition { };

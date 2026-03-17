@@ -216,6 +216,11 @@ SGCore::PhysicalObjectType SGCore::Rigidbody3D::getType() const noexcept
     return m_type;
 }
 
+SGCore::Ref<SGCore::Rigidbody3D> SGCore::Rigidbody3D::getParentBody() const noexcept
+{
+    return m_parent.lock();
+}
+
 void SGCore::Rigidbody3D::reAddToWorld() const noexcept
 {
     if(auto lockedWorld = m_parentPhysicsWorld.lock())

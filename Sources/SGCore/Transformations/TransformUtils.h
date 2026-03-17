@@ -2,8 +2,7 @@
 // Created by stuka on 06.02.2025.
 //
 
-#ifndef TRANSFORMUTILS_H
-#define TRANSFORMUTILS_H
+#pragma once
 
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -21,11 +20,8 @@ namespace SGCore
          * @param parentTransform Parent transform of childTransform. Can be nullptr (child does not have parent)
          * @return Is m_ownTransform of childTransform has been changed.
          */
-        static bool calculateTransform(Transform& childTransform, const Transform* parentTransform, Rigidbody3D* childRigidbody) noexcept;
+        static bool calculateTransform(Transform& childTransform, const Transform* parentTransform) noexcept;
 
         static glm::mat4 calculateModelMatrix(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale) noexcept;
     };
 }
-
-
-#endif //TRANSFORMUTILS_H

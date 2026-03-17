@@ -14,6 +14,7 @@
 #include "SGCore/Main/CoreGlobals.h"
 #include "PhysicsDebugDraw.h"
 #include "SGCore/Scene/IParallelSystem.h"
+#include "SGCore/Transformations/Transform.h"
 
 namespace SGCore
 {
@@ -70,6 +71,12 @@ namespace SGCore
     
     private:
         void updateWorld(double dt, double fixedDt) noexcept;
+
+        void calculatePostPhysicsEntityTransform(const EntityBaseInfo::reg_t& currentEntityBaseInfo,
+                                                 const ECS::entity_t& currentEntity,
+                                                 const Transform::reg_t& currentEntityTransform,
+                                                 const Transform::reg_t& parentTransform,
+                                                 const Ref<ECS::registry_t>& inRegistry) noexcept;
 
         Scope<btCollisionConfiguration> m_collisionConfig;
         Scope<btCollisionDispatcher> m_collisionDispatcher;

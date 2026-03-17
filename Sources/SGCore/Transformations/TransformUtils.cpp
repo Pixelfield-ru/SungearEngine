@@ -13,8 +13,7 @@
 #include "SGCore/Physics/Rigidbody3D.h"
 
 bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
-                                                const Transform* parentTransform,
-                                                Rigidbody3D* childRigidbody) noexcept
+                                                const Transform* parentTransform) noexcept
 {
     auto& childOwnTransform = childTransform.m_ownTransform;
     auto& childFinalTransform = childTransform.m_finalTransform;
@@ -22,36 +21,6 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
     bool translationChanged = false;
     bool rotationChanged = false;
     bool scaleChanged = false;
-
-    /*if(childRigidbody)
-    {
-        const auto bodyTransform = childRigidbody->m_body->getWorldTransform();
-
-        const auto btBodyPos = bodyTransform.getOrigin();
-        const auto btBodyRotation = bodyTransform.getRotation();
-
-        const glm::vec3 bodyWorldPosition {
-            btBodyPos.x(),
-            btBodyPos.y(),
-            btBodyPos.z()
-        };
-
-        const glm::quat bodyWorldRotation {
-            btBodyRotation.w(),
-            btBodyRotation.x(),
-            btBodyRotation.y(),
-            btBodyRotation.z()
-        };
-
-        if(parentTransform)
-        {
-            childOwnTransform.m_position = glm::inverse(parentTransform->m_finalTransform.m_rotation) * (bodyWorldPosition - parentTransform->m_finalTransform.m_position);
-        }
-        else
-        {
-            childOwnTransform.m_position = bodyWorldPosition;
-        }
-    }*/
 
     // ============================================== translation calc
 

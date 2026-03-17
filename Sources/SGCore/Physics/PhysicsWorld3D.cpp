@@ -6,6 +6,7 @@
 // for glm/gtx/matrix_decompose.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include <BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
 
@@ -17,6 +18,7 @@
 #include "SGCore/Transformations/TransformationsUpdater.h"
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
+#include "SGCore/Scene/RootEntityTag.h"
 #include "SGCore/Transformations/TransformUtils.h"
 
 SGCore::PhysicsWorld3D::PhysicsWorld3D()
@@ -69,13 +71,15 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
 
 void SGCore::PhysicsWorld3D::update(const double& dt, const double& fixedDt) noexcept
 {
+    m_dynamicsWorld->debugDrawWorld();
+
     auto lockedScene = getScene();
 
     if(!lockedScene) return;
 
     auto ecsRegistry = lockedScene->getECSRegistry();
 
-    // ============================= set rigidbodies world position
+    // ============================= set rigidbodies world position (even if the world is not simulated (to synchronize))
 
     auto rigidbodiesView = ecsRegistry->view<EntityBaseInfo, Rigidbody3D, Transform>();
 
@@ -91,75 +95,52 @@ void SGCore::PhysicsWorld3D::update(const double& dt, const double& fixedDt) noe
 
     // =============================
 
-    updateWorld(dt, fixedDt);
+    // skipping iteration now
+    if(!m_simulate) return;
+
+    // ============================= updating world
+    {
+        std::lock_guard guard(m_bodiesCountChangeMutex);
+
+        m_dynamicsWorld->stepSimulation(dt, 12, dt);
+    }
+
+    // ============================= calculating post-physics transform to have actual positions and rotations
+    auto transformsView = ecsRegistry->view<EntityBaseInfo, Transform, RootEntityTag>();
+
+    transformsView.each([&](ECS::entity_t entity,
+                            EntityBaseInfo& entityBaseInfo,
+                            const Transform::reg_t& transform, auto) {
+        calculatePostPhysicsEntityTransform(entityBaseInfo, entity, transform, nullptr, ecsRegistry);
+    });
 
     // ============================= set transform world position
+    // rigidbodies are ignoring parent rigidbodies. rigidbodies are independent of parent rigidbodies in physics world
     rigidbodiesView.each([&ecsRegistry](const EntityBaseInfo& baseInfo, const Ref<Rigidbody3D>& rigidbody, const Ref<Transform>& transform) {
         Transform* parentTransform {};
+
         if(baseInfo.getParent() != entt::null)
         {
             auto tmpTransform = ecsRegistry->tryGet<Transform>(baseInfo.getParent());
             parentTransform = tmpTransform ? tmpTransform->get() : nullptr;
         }
 
-        Rigidbody3D* parentRigidbody {};
-        if(baseInfo.getParent() != entt::null)
-        {
-            auto tmpRigidbody = ecsRegistry->tryGet<Rigidbody3D>(baseInfo.getParent());
-            parentRigidbody = tmpRigidbody ? tmpRigidbody->get() : nullptr;
-        }
-
-        const auto& bodyWorldTransform = rigidbody->m_body->getWorldTransform();
-
-        const auto btBodyPosition = bodyWorldTransform.getOrigin();
-        const auto btBodyRotation = bodyWorldTransform.getRotation();
-
-        const glm::vec3 bodyPos {
-            btBodyPosition.x(),
-            btBodyPosition.y(),
-            btBodyPosition.z()
-        };
-
-        /*const glm::quat bodyRot {
-            btBodyRotation.w(),
-            btBodyRotation.x(),
-            btBodyRotation.y(),
-            btBodyRotation.z()
-        };*/
-
         auto& ownTransform = transform->m_ownTransform;
+        auto& finalTransform = transform->m_finalTransform;
 
-        if(parentRigidbody && parentTransform)
+        if(parentTransform)
         {
-            const auto& parentBodyWorldTransform = parentRigidbody->m_body->getWorldTransform();
-
-            const auto btParentBodyPosition = parentBodyWorldTransform.getOrigin();
-            const auto btParentBodyRotation = parentBodyWorldTransform.getRotation();
-
-            const glm::vec3 parentBodyPos {
-                btParentBodyPosition.x(),
-                btParentBodyPosition.y(),
-                btParentBodyPosition.z()
-            };
-
-            // ownTransform.m_position = glm::inverse(parentTransform->m_finalTransform.m_rotation) * (bodyPos - parentTransform->m_finalTransform.m_position);
-            // todo: учесть поворот
-            ownTransform.m_position = (bodyPos - parentBodyPos) / parentTransform->m_finalTransform.m_scale;
-            // todo: сделать отмену поворота
-        }
-        else if(parentTransform)
-        {
-            // todo: учесть поворот
-            ownTransform.m_position = (bodyPos - parentTransform->m_finalTransform.m_position) / parentTransform->m_finalTransform.m_scale;
-            // todo: сделать отмену поворота
+            // calculating local position & rotation to ignore parent rigidbody transform
+            ownTransform.m_position = glm::inverse(parentTransform->m_finalTransform.m_rotation) * ((finalTransform.m_position - parentTransform->m_finalTransform.m_position) / parentTransform->m_finalTransform.m_scale);
+            ownTransform.m_rotation = glm::inverse(parentTransform->m_finalTransform.m_rotation) * finalTransform.m_rotation;
         }
         else
         {
-            ownTransform.m_position = bodyPos;
+            // no parent then using transform from rigidbody (finalTransform)
+            ownTransform.m_position = finalTransform.m_position;
+            ownTransform.m_rotation = finalTransform.m_rotation;
         }
     });
-
-    m_dynamicsWorld->debugDrawWorld();
 }
 
 void SGCore::PhysicsWorld3D::onAddToScene(const Scene* scene)
@@ -180,12 +161,65 @@ void SGCore::PhysicsWorld3D::onRemoveFromScene(const Ref<Scene>& scene)
 
 void SGCore::PhysicsWorld3D::updateWorld(double dt, double fixedDt) noexcept
 {
-    // if(!m_simulate) return;
-
     std::lock_guard guard(m_bodiesCountChangeMutex);
 
-    if(m_simulate)
+    m_dynamicsWorld->stepSimulation(dt, 12, dt);
+}
+
+void SGCore::PhysicsWorld3D::calculatePostPhysicsEntityTransform(const EntityBaseInfo::reg_t& currentEntityBaseInfo,
+                                                                 const ECS::entity_t& currentEntity,
+                                                                 const Transform::reg_t& currentEntityTransform,
+                                                                 const Transform::reg_t& parentTransform,
+                                                                 const Ref<ECS::registry_t>& inRegistry) noexcept
+{
+    Rigidbody3D* childRigidbody {};
+
     {
-        m_dynamicsWorld->stepSimulation(dt, 12, dt);
+        auto tmpRigidbody = inRegistry->tryGet<Rigidbody3D>(currentEntity);
+        childRigidbody = tmpRigidbody ? tmpRigidbody->get() : nullptr;
+    }
+
+    auto& childFinalTransform = currentEntityTransform->m_finalTransform;
+
+    if(parentTransform && !childRigidbody) // calculating child position and rotation relating to parent
+    {
+        const auto& parentFinalTransform = parentTransform->m_finalTransform;
+        const auto& childOwnTransform = currentEntityTransform->m_ownTransform;
+
+        childFinalTransform.m_position = parentFinalTransform.m_position + parentFinalTransform.m_rotation * (childOwnTransform.m_position * parentFinalTransform.m_scale);
+        childFinalTransform.m_rotation = parentFinalTransform.m_rotation * childOwnTransform.m_rotation;
+    }
+    else if(childRigidbody) // using rigidbody`s position and rotation as final position and rotation
+    {
+        const auto& bodyTransform = childRigidbody->m_body->getWorldTransform();
+
+        const auto btPosition = bodyTransform.getOrigin();
+        const auto btRotation = bodyTransform.getRotation();
+
+        const glm::vec3 bodyPos {
+            btPosition.x(),
+            btPosition.y(),
+            btPosition.z()
+        };
+
+        const glm::quat bodyRot {
+            btRotation.w(),
+            btRotation.x(),
+            btRotation.y(),
+            btRotation.z()
+        };
+
+        childFinalTransform.m_position = bodyPos;
+        childFinalTransform.m_rotation = bodyRot;
+    }
+    // else skipping child because it does not have parent and rigidbody. transform was not changed by parent
+
+    // iterating through all children
+    for(const auto& childEntity : currentEntityBaseInfo.getChildren())
+    {
+        const auto& childBaseInfo = inRegistry->get<EntityBaseInfo>(childEntity);
+        const auto* childTransform = inRegistry->tryGet<Transform>(childEntity);
+        calculatePostPhysicsEntityTransform(childBaseInfo, childEntity, childTransform ? *childTransform : nullptr,
+                                            currentEntityTransform, inRegistry);
     }
 }
