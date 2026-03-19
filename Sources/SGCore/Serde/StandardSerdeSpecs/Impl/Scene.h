@@ -577,8 +577,8 @@ namespace SGCore::Serde
                 deserializableScene
         );
 
-        // creating EntityBaseInfo component with 'entity' as identifier in arguments
-        entityBaseInfo.setThisEntity(entity);
+        // set entity identifier (because we moved other EntityBaseInfo in entityBaseInfo)
+        entityBaseInfo.m_thisEntity = entity;
 
         // loading children
         const auto children = valueView.container().template getMember<decltype(EntityBaseInfo::m_children)>("children", deserializableScene);

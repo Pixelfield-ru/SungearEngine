@@ -56,7 +56,7 @@ namespace SGCore
         /// Audio source relative direction type.
         AudioSourceDirectionType m_directionType = AudioSourceDirectionType::SG_NOT_DIRECTIONAL;
 
-        AudioSource() = default;
+        AudioSource() noexcept = default;
         AudioSource(const AudioSource&) = default;
         AudioSource(AudioSource&&) noexcept = default;
 

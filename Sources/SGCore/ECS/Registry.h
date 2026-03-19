@@ -85,7 +85,13 @@ namespace SGCore::ECS
         template<typename Type, typename... Args>
         decltype(auto) emplace(const EntityT& entt, Args&&...args) noexcept
         {
-            return m_registry.template emplace<typename Type::reg_t>(entt, std::forward<Args>(args)...);
+            // msvc workaround
+            using accessor_t = Type::accessor_t;
+
+            auto&& component = m_registry.template emplace<typename Type::reg_t>(entt, std::forward<Args>(args)...);
+            accessor_t{}(component).m_thisEntity = entt;
+
+            return component;
         }
 
         template<typename Type, typename It>
@@ -103,7 +109,13 @@ namespace SGCore::ECS
         template<typename Type, typename... Args>
         decltype(auto) emplaceOrReplace(const EntityT& entt, Args&&...args) noexcept
         {
-            return m_registry.template emplace_or_replace<typename Type::reg_t>(entt, std::forward<Args>(args)...);
+            // msvc workaround
+            using accessor_t = Type::accessor_t;
+
+            auto&& component = m_registry.template emplace_or_replace<typename Type::reg_t>(entt, std::forward<Args>(args)...);
+            accessor_t{}(component).m_thisEntity = entt;
+
+            return component;
         }
 
         template<typename Type, typename... Func>
@@ -115,7 +127,13 @@ namespace SGCore::ECS
         template<typename Type, typename... Args>
         decltype(auto) replace(const EntityT& entt, Args&&...args) noexcept
         {
-            return m_registry.template replace<typename Type::reg_t>(entt, std::forward<Args>(args)...);
+            // msvc workaround
+            using accessor_t = Type::accessor_t;
+
+            auto&& component = m_registry.template replace<typename Type::reg_t>(entt, std::forward<Args>(args)...);
+            accessor_t{}(component).m_thisEntity = entt;
+
+            return component;
         }
 
         template<typename Type, typename... Other>
@@ -181,7 +199,13 @@ namespace SGCore::ECS
         template<typename Type, typename... Args>
         [[nodiscard]] decltype(auto) getOrEmplace(const EntityT& entt, Args&&...args) noexcept
         {
-            return m_registry.template get_or_emplace<typename Type::reg_t>(entt, std::forward<Args>(args)...);
+            // msvc workaround
+            using accessor_t = Type::accessor_t;
+
+            auto&& component = m_registry.template get_or_emplace<typename Type::reg_t>(entt, std::forward<Args>(args)...);
+            accessor_t{}(component).m_thisEntity = entt;
+
+            return component;
         }
 
         template<typename... Type>

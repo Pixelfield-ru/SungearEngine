@@ -34,8 +34,8 @@ namespace SGCore
         virtual ~AABB() = default;
         
         AABB(const vec3_t& min, const vec3_t& max) noexcept : m_min(min), m_max(max) { }
-        
-        AABB() = default;
+
+        AABB() noexcept = default;
         AABB(const AABB&) = default;
         AABB(AABB&) = default;
 

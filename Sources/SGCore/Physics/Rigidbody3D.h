@@ -11,11 +11,13 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <vector>
+#include <functional>
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/ECS/Component.h"
 #include "Common.h"
 #include "SGCore/Serde/Defines.h"
+#include "Constraint.h"
 
 sg_predeclare_serde()
 
@@ -40,6 +42,14 @@ namespace SGCore
         ~Rigidbody3D();
         
         Ref<btMotionState> m_state;
+
+        void stop() const noexcept;
+
+        void reAddToWorld() const noexcept;
+        void removeFromWorld() const noexcept;
+
+        ConstraintInfo addPointToPointConstraint(Rigidbody3D& otherRigidbody, const glm::vec3& pointA, const glm::vec3& pointB, ECS::registry_t& inRegistry) noexcept;
+        ConstraintInfo addConeTwistConstraint(Rigidbody3D& otherRigidbody, ECS::registry_t& inRegistry) noexcept;
         
         [[nodiscard]] Ref<const btCompoundShape> getFinalShape() const noexcept;
 
@@ -59,13 +69,6 @@ namespace SGCore
 
         void setType(PhysicalObjectType type) noexcept;
         PhysicalObjectType getType() const noexcept;
-
-        Ref<Rigidbody3D> getParentBody() const noexcept;
-
-        void reAddToWorld() const noexcept;
-        void removeFromWorld() const noexcept;
-
-        void stop() const noexcept;
         
         Rigidbody3D& operator=(const Rigidbody3D& other) noexcept = default;
         Rigidbody3D& operator=(Rigidbody3D&& other) noexcept = default;
@@ -75,7 +78,8 @@ namespace SGCore
         std::vector<Ref<btCollisionShape>> m_shapes;
         Ref<btCompoundShape> m_finalShape;
         Weak<PhysicsWorld3D> m_parentPhysicsWorld;
-        Weak<Rigidbody3D> m_parent;
+
+        std::vector<ConstraintInfo> m_constraints;
 
         // last rigidbody position
         glm::vec3 m_lastPosition { };
@@ -83,6 +87,11 @@ namespace SGCore
         glm::quat m_lastRotation = glm::identity<glm::quat>();
 
         PhysicalObjectType m_type = PhysicalObjectType::OT_STATIC;
+
+        ConstraintInfo addBodyToBodyConstraintImpl(Rigidbody3D& otherRigidbody,
+                                                   const std::function<Ref<btTypedConstraint>()>&
+                                                   constraintCreationFunc,
+                                                   ECS::registry_t& inRegistry) noexcept;
     };
 }
 

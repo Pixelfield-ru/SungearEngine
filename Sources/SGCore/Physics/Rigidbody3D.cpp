@@ -5,6 +5,7 @@
 
 #include <BulletCollision/CollisionShapes/btCompoundShape.h>
 #include <BulletDynamics/ConstraintSolver/btConeTwistConstraint.h>
+#include <BulletDynamics/ConstraintSolver/btPoint2PointConstraint.h>
 
 #include "PhysicsWorld3D.h"
 
@@ -216,9 +217,28 @@ SGCore::PhysicalObjectType SGCore::Rigidbody3D::getType() const noexcept
     return m_type;
 }
 
-SGCore::Ref<SGCore::Rigidbody3D> SGCore::Rigidbody3D::getParentBody() const noexcept
+SGCore::ConstraintInfo SGCore::Rigidbody3D::addBodyToBodyConstraintImpl(Rigidbody3D& otherRigidbody,
+                                                                        const std::function<Ref<btTypedConstraint>()>&
+                                                                        constraintCreationFunc,
+                                                                        ECS::registry_t& inRegistry) noexcept
 {
-    return m_parent.lock();
+    auto lockedWorld = m_parentPhysicsWorld.lock();
+
+    if(!lockedWorld) return {};
+
+    auto constraint = constraintCreationFunc();
+
+    lockedWorld->getDynamicsWorld()->addConstraint(constraint.get());
+
+    auto constraintInfo = ConstraintInfo {
+        .m_constraint = constraint,
+        .m_entityA = getThisEntity(),
+        .m_entityB = otherRigidbody.getThisEntity()
+    };
+
+    m_constraints.push_back(constraintInfo);
+
+    return constraintInfo;
 }
 
 void SGCore::Rigidbody3D::reAddToWorld() const noexcept
@@ -237,6 +257,38 @@ void SGCore::Rigidbody3D::removeFromWorld() const noexcept
     {
         lockedWorld->removeBody(m_body);
     }
+}
+
+SGCore::ConstraintInfo SGCore::Rigidbody3D::addPointToPointConstraint(Rigidbody3D& otherRigidbody,
+                                                                      const glm::vec3& pointA,
+                                                                      const glm::vec3& pointB,
+                                                                      ECS::registry_t& inRegistry) noexcept
+{
+    const auto construction = [&]() {
+        return MakeRef<btPoint2PointConstraint>(
+            *m_body,
+            *otherRigidbody.m_body,
+            btVector3(pointA.x, pointA.y, pointA.z),
+            btVector3(pointB.x, pointB.y, pointB.z)
+        );
+    };
+
+    return addBodyToBodyConstraintImpl(otherRigidbody, construction, inRegistry);
+}
+
+SGCore::ConstraintInfo SGCore::Rigidbody3D::addConeTwistConstraint(Rigidbody3D& otherRigidbody,
+                                                                   ECS::registry_t& inRegistry) noexcept
+{
+    const auto construction = [&]() {
+        return MakeRef<btConeTwistConstraint>(
+            *m_body,
+            *otherRigidbody.m_body,
+            getShapeTransform(0),
+            otherRigidbody.getShapeTransform(0)
+        );
+    };
+
+    return addBodyToBodyConstraintImpl(otherRigidbody, construction, inRegistry);
 }
 
 void SGCore::Rigidbody3D::stop() const noexcept

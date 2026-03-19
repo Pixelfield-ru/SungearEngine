@@ -78,7 +78,7 @@ namespace SGCore
 
         [[nodiscard]] glm::vec3 getUniqueColor() const noexcept;
 
-        [[nodiscard]] ECS::entity_t getThisEntity() const noexcept;
+        [[nodiscard]] ECS::entity_t getThisEntity() const noexcept override;
 
         void resolveAllEntitiesRefs(const Ref<ECS::registry_t>& registry) noexcept;
 
@@ -88,13 +88,11 @@ namespace SGCore
     private:
         EntityBaseInfo() = default;
 
-        void setThisEntity(ECS::entity_t entity) noexcept;
+        // void setThisEntity(ECS::entity_t entity) noexcept;
 
         ECS::entity_t m_parent = entt::null;
         // used to resolve all references to this entity
         ECS::entity_t m_deserializedThisEntity = entt::null;
-        // DO NOT WRITE AND READ THIS MEMBER DIRECTLY IF YOU ARE FRIEND OF THIS STRUCT
-        ECS::entity_t m_thisEntity = entt::null;
 
         // IS EDITING ONLY IN StandardSerdeSpecs.h! CONTAINS ALL EntityRef`s OF THIS ENTITY THAT ARE NEED TO BE RESOLVED AFTER DESERIALIZATION
         std::vector<Ref<ECS::entity_t>> m_entitiesRefsToResolve;

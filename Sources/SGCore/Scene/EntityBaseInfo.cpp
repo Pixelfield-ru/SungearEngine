@@ -12,8 +12,6 @@
 
 SGCore::EntityBaseInfo::EntityBaseInfo(ECS::entity_t thisEntity, ECS::registry_t& inRegistry) noexcept
 {
-    setThisEntity(thisEntity);
-
     inRegistry.emplace<RootEntityTag>(thisEntity);
 }
 
@@ -313,7 +311,7 @@ void SGCore::EntityBaseInfo::resolveAllEntitiesRefs(const Ref<ECS::registry_t>& 
     }
 }
 
-void SGCore::EntityBaseInfo::setThisEntity(ECS::entity_t entity) noexcept
+/*void SGCore::EntityBaseInfo::setThisEntity(ECS::entity_t entity) noexcept
 {
     m_thisEntity = entity;
-}
+}*/
