@@ -2,8 +2,7 @@
 // Created by stuka on 13.01.2025.
 //
 
-#ifndef SUNGEARENGINE_ICOMMANDSINVOKER_H
-#define SUNGEARENGINE_ICOMMANDSINVOKER_H
+#pragma once
 
 #include <stack>
 #include <memory>
@@ -14,14 +13,14 @@ namespace SGCore
 {
     struct ICommandsInvoker
     {
-        virtual ~ICommandsInvoker() = default;
+        SGCORE_EXPORT virtual ~ICommandsInvoker() = default;
 
-        virtual void pushCommand(const std::shared_ptr<ICommand>& command)
+        SGCORE_EXPORT virtual void pushCommand(const std::shared_ptr<ICommand>& command)
         {
             m_notExecutedCommands.push(command);
         }
 
-        virtual void popCommand()
+        SGCORE_EXPORT virtual void popCommand()
         {
             m_notExecutedCommands.pop();
         }
@@ -39,5 +38,3 @@ namespace SGCore
         std::stack<std::shared_ptr<ICommand>> m_executedCommands;
     };
 }
-
-#endif //SUNGEARENGINE_ICOMMANDSINVOKER_H

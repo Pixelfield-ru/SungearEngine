@@ -2,8 +2,7 @@
 // Created by stuka on 19.11.2023.
 //
 
-#ifndef SUNGEARENGINE_PATHS_H
-#define SUNGEARENGINE_PATHS_H
+#pragma once
 
 #include <optional>
 #include <unordered_map>
@@ -37,5 +36,3 @@ namespace SGCore
         static inline Ref<Paths> m_defaultPaths { };
     };
 }
-
-#endif // SUNGEARENGINE_PATHS_H

@@ -8,7 +8,7 @@
 
 namespace SGCore
 {
-    struct ReceiverPickingPass : IRenderPass
+    struct SGCORE_EXPORT ReceiverPickingPass : IRenderPass
     {
         void render(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline) final;
     };

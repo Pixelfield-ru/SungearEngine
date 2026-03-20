@@ -2,8 +2,7 @@
 // Created by stuka on 07.05.2023.
 //
 
-#ifndef NATIVECORE_IASSET_H
-#define NATIVECORE_IASSET_H
+#pragma once
 
 #include <SGCore/Utils/StringInterpolation/InterpolatedPath.h>
 #include "SGCore/Utils/Unique/UUID.h"
@@ -44,7 +43,7 @@ namespace SGCore
     class AssetManager;
 
     /// You must use \p sg_implement_type_id macro in your assets types to implement static type ID.
-    class IAsset
+    class SGCORE_EXPORT IAsset
     {
     public:
         sg_serde_as_friend()
@@ -177,5 +176,3 @@ namespace SGCore
     template <class T>
     concept DerivedFromIAsset = std::is_base_of_v<IAsset, T>;
 }
-
-#endif //NATIVECORE_IASSET_H

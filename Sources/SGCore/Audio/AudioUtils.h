@@ -2,8 +2,7 @@
 // Created by ilya on 13.04.24.
 //
 
-#ifndef SUNGEARENGINE_AUDIOUTILS_H
-#define SUNGEARENGINE_AUDIOUTILS_H
+#pragma once
 
 #include <string>
 #include <source_location>
@@ -119,5 +118,3 @@ namespace SGCore::AudioUtils
         return ret;
     }
 }
-
-#endif //SUNGEARENGINE_AUDIOUTILS_H

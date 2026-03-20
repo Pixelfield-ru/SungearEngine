@@ -2,8 +2,7 @@
 // Created by ilya on 13.04.24.
 //
 
-#ifndef SUNGEARENGINE_AUDIOTRACKASSET_H
-#define SUNGEARENGINE_AUDIOTRACKASSET_H
+#pragma once
 
 #include "ByteFileAsset.h"
 #include "al.h"
@@ -20,7 +19,7 @@ namespace SGCore
         UNKNOWN
     };
 
-    struct AudioTrackAsset : public ByteFileAsset
+    struct SGCORE_EXPORT AudioTrackAsset : public ByteFileAsset
     {
         sg_serde_as_friend()
 
@@ -95,5 +94,3 @@ namespace SGCore
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
     };
 }
-
-#endif //SUNGEARENGINE_AUDIOTRACKASSET_H

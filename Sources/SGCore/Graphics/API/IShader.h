@@ -1,8 +1,7 @@
 //
 // Created by stuka on 13.05.2023.
 //
-#ifndef NATIVECORE_ISHADER_H
-#define NATIVECORE_ISHADER_H
+#pragma once
 
 #include "SGCore/Main/CoreMain.h"
 #include "IRenderer.h"
@@ -33,7 +32,7 @@ namespace SGCore
     struct SGSLESubShader;
 
     // todo: add various types of defines like material textures block define e.t.c.
-    class IShader : public AssetRefFromThis<IShader>, public IAsset, public IAssetsRefsResolver<IShader>
+    class SGCORE_EXPORT IShader : public AssetRefFromThis<IShader>, public IAsset, public IAssetsRefsResolver<IShader>
     {
     public:
         friend class AssetManager;
@@ -162,5 +161,3 @@ namespace SGCore
         }
     };
 }
-
-#endif //NATIVECORE_ISHADER_H

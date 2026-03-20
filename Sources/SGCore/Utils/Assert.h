@@ -2,8 +2,7 @@
 // Created by stuka on 30.10.2024.
 //
 
-#ifndef SUNGEARENGINE_ASSERT_H
-#define SUNGEARENGINE_ASSERT_H
+#pragma once
 
 #include <iostream>
 
@@ -34,5 +33,3 @@ static void sgAssert(const char* exprStr, bool expr, const char* file, int line,
         abort();
     }
 }
-
-#endif //SUNGEARENGINE_ASSERT_H

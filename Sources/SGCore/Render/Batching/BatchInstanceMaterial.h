@@ -2,18 +2,18 @@
 // Created by stuka on 15.06.2025.
 //
 
-#ifndef SUNGEARENGINE_BATCHINSTANCEMATERIAL_H
-#define SUNGEARENGINE_BATCHINSTANCEMATERIAL_H
+#pragma once
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+#include <sgcore_export.h>
 
 #include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
 {
 #pragma pack(push, 1)
-    struct BatchInstanceMaterial
+    struct SGCORE_EXPORT BatchInstanceMaterial
     {
         // 7 is rgba elements count in BatchInstanceTransform
         static constexpr std::uint32_t components_count = 6;
@@ -28,5 +28,3 @@ namespace SGCore
     };
 #pragma pack(pop)
 }
-
-#endif // SUNGEARENGINE_BATCHINSTANCEMATERIAL_H

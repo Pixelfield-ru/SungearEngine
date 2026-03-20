@@ -8,7 +8,7 @@
 
 namespace SGCore
 {
-    struct Vignette : PostProcessEffect
+    struct SGCORE_EXPORT Vignette : PostProcessEffect
     {
         Vignette();
 

@@ -16,7 +16,7 @@ namespace SGCore::GOAP
     /**
      * Wrapper that can be used as queue of goal solutions.
      */
-    struct DecisionMaker
+    struct SGCORE_EXPORT DecisionMaker
     {
         /// Used as fallback collection of plans if there is no more plans to execute.
         GoalSolution m_fallback;

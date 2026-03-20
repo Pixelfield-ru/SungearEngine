@@ -2,8 +2,7 @@
 // Created by stuka on 18.05.2025.
 //
 
-#ifndef SUNGEARENGINE_CORO_COROSCHEDULER_H
-#define SUNGEARENGINE_CORO_COROSCHEDULER_H
+#pragma once
 
 #include <sgcore_export.h>
 #include <vector>
@@ -29,5 +28,3 @@ namespace SGCore::Coro
         std::vector<TaskAwaitableBase> m_taskAwaitableCoros { };
     };
 }
-
-#endif // SUNGEARENGINE_CORO_COROSCHEDULER_H

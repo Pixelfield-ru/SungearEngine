@@ -2,8 +2,7 @@
 // Created by stuka on 03.02.2024.
 //
 
-#ifndef SUNGEARENGINE_TRANSFORM_H
-#define SUNGEARENGINE_TRANSFORM_H
+#pragma once
 
 #include <glm/mat4x4.hpp>
 
@@ -16,7 +15,7 @@ namespace SGCore
     /**
      *
      */
-    struct Transform : ECS::Component<Ref<Transform>, Ref<const Transform>>
+    struct SGCORE_EXPORT Transform : ECS::Component<Ref<Transform>, Ref<const Transform>>
     {
         friend class Node;
 
@@ -52,5 +51,3 @@ namespace SGCore
         glm::mat4 m_initialModelMatrix = glm::identity<glm::mat4>();
     };
 }
-
-#endif //SUNGEARENGINE_TRANSFORM_H

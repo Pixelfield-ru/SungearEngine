@@ -2,8 +2,7 @@
 // Created by stuka on 02.05.2023.
 //
 
-#ifndef NATIVECORE_ISYSTEM_H
-#define NATIVECORE_ISYSTEM_H
+#pragma once
 
 #include "SGCore/Threading/ThreadsManager.h"
 #include "SGCore/Threading/Thread.h"
@@ -18,7 +17,7 @@ namespace SGCore
     /**
      * You must implement \p sg_implement_type_id macro in your custom system type.
      */
-    class ISystem
+    class SGCORE_EXPORT ISystem
     {
         friend class Scene;
     public:
@@ -52,5 +51,3 @@ namespace SGCore
         Scene* m_scene {};
     };
 }
-
-#endif //NATIVECORE_ISYSTEM_H

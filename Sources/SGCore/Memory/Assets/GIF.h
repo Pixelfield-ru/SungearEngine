@@ -13,7 +13,7 @@ namespace SGCore
     class ITexture2D;
     struct ByteFileAsset;
 
-    struct GIF : IAsset, public IAssetsRefsResolver<GIF>
+    struct SGCORE_EXPORT GIF : IAsset, public IAssetsRefsResolver<GIF>
     {
         sg_assets_refs_resolver_as_friend
 

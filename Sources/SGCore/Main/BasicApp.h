@@ -14,7 +14,7 @@
 
 namespace SGCore
 {
-    struct BasicApp
+    struct SGCORE_EXPORT BasicApp
     {
         InterpolatedPath m_configPath = "SungearEngineConfig.json";
         Config m_config;

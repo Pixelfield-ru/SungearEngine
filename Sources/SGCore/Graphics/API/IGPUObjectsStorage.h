@@ -4,9 +4,11 @@
 
 #pragma once
 
+#include <sgcore_export.h>
+
 namespace SGCore
 {
-    struct IGPUObjectsStorage
+    struct SGCORE_EXPORT IGPUObjectsStorage
     {
         virtual ~IGPUObjectsStorage() noexcept;
 

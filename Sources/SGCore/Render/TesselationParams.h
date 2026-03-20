@@ -2,8 +2,7 @@
 // Created by stuka on 19.04.2025.
 //
 
-#ifndef SUNGEARENGINE_TESSELATIONPARAMS_H
-#define SUNGEARENGINE_TESSELATIONPARAMS_H
+#pragma once
 
 namespace SGCore
 {
@@ -12,5 +11,3 @@ namespace SGCore
 
     };
 }
-
-#endif // SUNGEARENGINE_TESSELATIONPARAMS_H

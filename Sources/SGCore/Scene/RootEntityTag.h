@@ -8,7 +8,7 @@
 
 namespace SGCore
 {
-    struct RootEntityTag : ECS::Component<RootEntityTag, const RootEntityTag>
+    struct SGCORE_EXPORT RootEntityTag : ECS::Component<RootEntityTag, const RootEntityTag>
     {
 
     };

@@ -2,17 +2,14 @@
 // Created by Ilya on 27.02.2024.
 //
 
-#ifndef SUNGEARENGINE_LWRENDERPIPELINE_H
-#define SUNGEARENGINE_LWRENDERPIPELINE_H
+#pragma once
 
 #include "SGCore/Render/IRenderPipeline.h"
 
 namespace SGCore
 {
-    struct LWRenderPipeline : public IRenderPipeline
+    struct SGCORE_EXPORT LWRenderPipeline : public IRenderPipeline
     {
 
     };
 }
-
-#endif //SUNGEARENGINE_LWRENDERPIPELINE_H

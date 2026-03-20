@@ -2,8 +2,7 @@
 // Created by stuka on 27.07.2023.
 //
 
-#ifndef SUNGEARENGINE_RENDERINGBASE_H
-#define SUNGEARENGINE_RENDERINGBASE_H
+#pragma once
 
 #include <glm/ext/matrix_clip_space.hpp>
 
@@ -15,7 +14,7 @@
 
 namespace SGCore
 {
-    struct RenderingBase : ECS::Component<Ref<RenderingBase>, Ref<const RenderingBase>>
+    struct SGCORE_EXPORT RenderingBase : ECS::Component<Ref<RenderingBase>, Ref<const RenderingBase>>
     {
         float m_fov = 75.0f;
         float m_aspect = 16.0f / 9.0f;
@@ -51,5 +50,3 @@ namespace SGCore
         // void updateRatio
     };
 }
-
-#endif //SUNGEARENGINE_RENDERINGBASE_H

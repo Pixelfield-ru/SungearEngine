@@ -10,8 +10,10 @@
 
 namespace SGCore::Threading
 {
-    struct ThreadsPoolSelectionPolicy
+    struct SGCORE_EXPORT ThreadsPoolSelectionPolicy
     {
+        virtual ~ThreadsPoolSelectionPolicy() = default;
+
         /**
          * Operator to check whether a thread is eligible for thread sampling as free or busy.\n Should return true if the thread is free and false if the thread is busy.
          * @param[in] thread Thread to check.
@@ -21,7 +23,7 @@ namespace SGCore::Threading
         virtual bool operator()(std::weak_ptr<Thread> thread, std::weak_ptr<Thread> currentPreferableThread) noexcept = 0;
     };
 
-    struct TimeSmallerThan final : ThreadsPoolSelectionPolicy
+    struct SGCORE_EXPORT TimeSmallerThan final : ThreadsPoolSelectionPolicy
     {
         bool operator()(std::weak_ptr<Thread> thread, std::weak_ptr<Thread> currentPreferableThread) noexcept final
         {

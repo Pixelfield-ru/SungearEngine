@@ -2,8 +2,7 @@
 // Created by stuka on 10.07.2025.
 //
 
-#ifndef SUNGEARENGINE_CSMLEVEL_H
-#define SUNGEARENGINE_CSMLEVEL_H
+#pragma once
 
 #include <glm/mat4x4.hpp>
 
@@ -13,7 +12,7 @@ namespace SGCore
 {
     class IFrameBuffer;
 
-    struct CSMCascade
+    struct SGCORE_EXPORT CSMCascade
     {
         float m_level = 0.0f;
         glm::ivec2 m_frameBufferSize { 2048, 2048 };
@@ -24,5 +23,3 @@ namespace SGCore
         void createFrameBuffer() noexcept;
     };
 }
-
-#endif // SUNGEARENGINE_CSMLEVEL_H

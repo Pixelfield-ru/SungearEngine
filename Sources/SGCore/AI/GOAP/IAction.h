@@ -15,7 +15,7 @@ namespace SGCore::GOAP
     /**
      * GOAP atomic action. Used in plan.
      */
-    struct IAction
+    struct SGCORE_EXPORT IAction
     {
         virtual ~IAction() = default;
 

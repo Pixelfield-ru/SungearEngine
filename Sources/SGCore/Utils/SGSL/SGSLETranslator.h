@@ -2,12 +2,12 @@
 // Created by stuka on 13.12.2024.
 //
 
-#ifndef SUNGEARENGINE_SGSLETRANSLATOR_H
-#define SUNGEARENGINE_SGSLETRANSLATOR_H
+#pragma once
 
 #include <unordered_set>
 #include <filesystem>
 #include <vector>
+#include <sgcore_export.h>
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/SGSL/SGSLETranslatorConfiguration.h"
@@ -16,7 +16,7 @@ namespace SGCore
 {
     struct ShaderAnalyzedFile;
 
-    struct SGSLETranslator
+    struct SGCORE_EXPORT SGSLETranslator
     {
         /**
          * SHADERS LANGUAGE LANGUAGE EXTENSION.\n
@@ -77,5 +77,3 @@ namespace SGCore
         [[nodiscard]] static std::filesystem::path findRealIncludePath(const std::filesystem::path& originalIncludePath) noexcept;
     };
 }
-
-#endif //SUNGEARENGINE_SGSLETRANSLATOR_H

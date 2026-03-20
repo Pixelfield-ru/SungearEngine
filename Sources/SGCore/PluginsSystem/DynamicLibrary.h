@@ -2,8 +2,7 @@
 // Created by ilya on 20.03.24.
 //
 
-#ifndef SUNGEARENGINE_DYNAMICLIBRARY_H
-#define SUNGEARENGINE_DYNAMICLIBRARY_H
+#pragma once
 
 #include "../Utils/Platform.h"
 #include "SGCore/Utils/Utils.h"
@@ -28,7 +27,7 @@ namespace SGCore
      * Allows you to load a dynamic library from a local path, load library functions and call them in the future.\n
      * Note that the functions you want to load must be marked with SG_DLEXPORT and (in most cases) SG_NOMANGLING to disable function name mangling.
      */
-    struct DynamicLibrary
+    struct SGCORE_EXPORT DynamicLibrary
     {
         #if SG_PLATFORM_OS_LINUX || SG_PLATFORM_OS_ANDROID
         /**
@@ -218,5 +217,3 @@ namespace SGCore
         native_handler_t m_nativeHandler = nullptr;
     };
 }
-
-#endif //SUNGEARENGINE_DYNAMICLIBRARY_H

@@ -2,14 +2,13 @@
 // Created by stuka on 17.12.2024.
 //
 
-#ifndef SUNGEARENGINE_ENTITYREF_H
-#define SUNGEARENGINE_ENTITYREF_H
+#pragma once
 
 #include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
 {
-    struct EntityRef
+    struct SGCORE_EXPORT EntityRef
     {
         Ref<ECS::entity_t> m_referencedEntity;
 
@@ -98,5 +97,3 @@ namespace SGCore
         }
     };
 }
-
-#endif //SUNGEARENGINE_ENTITYREF_H

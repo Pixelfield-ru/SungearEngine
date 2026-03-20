@@ -2,8 +2,7 @@
 // Created by stuka on 27.03.2025.
 //
 
-#ifndef EVENTLISTENER_H
-#define EVENTLISTENER_H
+#pragma once
 
 #include <functional>
 #include <list>
@@ -170,5 +169,3 @@ void SGCore::Slot<ReturnT(Args...)>::disconnectFromAll() noexcept
     m_listenedSignals.clear();
     m_listenedSignalsCount = 0;
 }
-
-#endif //EVENTLISTENER_H

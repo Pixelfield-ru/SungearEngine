@@ -2,15 +2,14 @@
 // Created by stuka on 15.06.2025.
 //
 
-#ifndef SUNGEARENGINE_BATCHINSTANCETRANSFORM_H
-#define SUNGEARENGINE_BATCHINSTANCETRANSFORM_H
+#pragma once
 
 #include <glm/mat4x4.hpp>
 
 namespace SGCore
 {
 #pragma pack(push, 1)
-    struct BatchInstanceTransform
+    struct SGCORE_EXPORT BatchInstanceTransform
     {
         // 7 is rgba elements count in BatchInstanceTransform
         static constexpr std::uint32_t components_count = 7;
@@ -25,5 +24,3 @@ namespace SGCore
     };
 #pragma pack(pop)
 }
-
-#endif // SUNGEARENGINE_BATCHINSTANCETRANSFORM_H

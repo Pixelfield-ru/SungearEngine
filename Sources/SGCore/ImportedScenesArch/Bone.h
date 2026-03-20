@@ -2,8 +2,7 @@
 // Created by stuka on 05.01.2025.
 //
 
-#ifndef SUNGEARENGINE_BONE_H
-#define SUNGEARENGINE_BONE_H
+#pragma once
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Memory/AssetRef.h"
@@ -20,14 +19,14 @@ namespace SGCore
     class IMeshData;
     struct Skeleton;
 
-    struct BoneVertexWeight
+    struct SGCORE_EXPORT BoneVertexWeight
     {
         std::int64_t m_vertexIdx = -1;
         float m_weight = 0;
     };
 
     // data of copy of bone for each mesh
-    struct MeshBoneData
+    struct SGCORE_EXPORT MeshBoneData
     {
         sg_serde_as_friend()
 
@@ -45,7 +44,7 @@ namespace SGCore
     // i think it must be asset because we can store this bone
     // in custom user code and this bone must to be resolved automatically. assets can do it!
     // BONE MUST BE ATTACHED ONLY TO ONE SKELETON. DO NOT SHARE ONE INSTANCE OF BONE BETWEEN MULTIPLE SKELETONS!!!!
-    struct Bone : public IAsset, public IAssetsRefsResolver<Bone>
+    struct SGCORE_EXPORT Bone : public IAsset, public IAssetsRefsResolver<Bone>
     {
         sg_serde_as_friend()
 
@@ -87,5 +86,3 @@ namespace SGCore
         AssetWeakRef<Skeleton> m_parentSkeleton;
     };
 }
-
-#endif //SUNGEARENGINE_BONE_H

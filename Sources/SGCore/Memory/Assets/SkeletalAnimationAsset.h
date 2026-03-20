@@ -13,25 +13,25 @@
 
 namespace SGCore
 {
-    struct KeyPosition
+    struct SGCORE_EXPORT KeyPosition
     {
         glm::vec3 m_position { };
         float m_timeStamp = 0.0f;
     };
 
-    struct KeyRotation
+    struct SGCORE_EXPORT KeyRotation
     {
         glm::quat m_rotation = glm::identity<glm::quat>();
         float m_timeStamp = 0.0f;
     };
 
-    struct KeyScale
+    struct SGCORE_EXPORT KeyScale
     {
         glm::vec3 m_scale = { 1.0, 1.0, 1.0 };
         float m_timeStamp = 0.0f;
     };
 
-    struct SkeletalBoneAnimation
+    struct SGCORE_EXPORT SkeletalBoneAnimation
     {
         sg_serde_as_friend()
 

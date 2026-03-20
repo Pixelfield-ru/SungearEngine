@@ -2,15 +2,14 @@
 // Created by stuka on 03.02.2024.
 //
 
-#ifndef SUNGEARENGINE_DIRECTIONALLIGHT_H
-#define SUNGEARENGINE_DIRECTIONALLIGHT_H
+#pragma once
 
 #include "LightBase.h"
 #include "SGCore/ECS/Component.h"
 
 namespace SGCore
 {
-    struct SpotLight : ECS::Component<SpotLight, const SpotLight>
+    struct SGCORE_EXPORT SpotLight : ECS::Component<SpotLight, const SpotLight>
     {
         SpotLight() noexcept;
 
@@ -35,5 +34,3 @@ namespace SGCore
         float m_outerCutoff {};
     };
 }
-
-#endif //SUNGEARENGINE_DIRECTIONALLIGHT_H

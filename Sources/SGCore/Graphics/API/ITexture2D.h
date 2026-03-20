@@ -2,8 +2,7 @@
 // Created by stuka on 24.04.2023.
 //
 
-#ifndef NATIVECORE_ITEXTURE2D_H
-#define NATIVECORE_ITEXTURE2D_H
+#pragma once
 
 #include "GraphicsDataTypes.h"
 #include "SGCore/Main/CoreGlobals.h"
@@ -29,7 +28,7 @@ namespace SGCore
     /// Note: there is unique_ptr to texture data and unique_ptr uses STBITextureDataDeleter (uses stbi_image_free()) to delete data.\n
     /// It is because stbi uses malloc() to allocate data (not new[]).\n
     /// So i need to use malloc() everywhere to be consistent with stbi_image_free() (uses simple free()).
-    class ITexture2D : public IAsset, public std::enable_shared_from_this<ITexture2D>
+    class SGCORE_EXPORT ITexture2D : public IAsset, public std::enable_shared_from_this<ITexture2D>
     {
         friend class IFrameBuffer;
 
@@ -338,5 +337,3 @@ namespace SGCore
         }
     };
 }
-
-#endif //NATIVECORE_ITEXTURE2D_H

@@ -2,13 +2,13 @@
 // Created by ilya on 19.03.24.
 //
 
-#ifndef SUNGEARENGINE_IPLUGIN_H
-#define SUNGEARENGINE_IPLUGIN_H
+#pragma once
 
 #include <vector>
 #include <string>
 #include <functional>
 #include <filesystem>
+#include <sgcore_export.h>
 
 #include "SGCore/Main/CoreGlobals.h"
 
@@ -23,7 +23,7 @@ namespace SGCore
         PBT_RELEASE /// Release build.
     };
     
-    struct IPlugin
+    struct SGCORE_EXPORT IPlugin
     {
         friend struct PluginsManager;
 
@@ -89,5 +89,3 @@ namespace SGCore
         std::filesystem::path m_path;
     };
 }
-
-#endif // SUNGEARENGINE_IPLUGIN_H

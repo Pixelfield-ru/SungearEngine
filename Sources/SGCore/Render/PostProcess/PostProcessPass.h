@@ -2,8 +2,7 @@
 // Created by stuka on 26.11.2024.
 //
 
-#ifndef SUNGEARENGINE_POSTPROCESSPASS_H
-#define SUNGEARENGINE_POSTPROCESSPASS_H
+#pragma once
 
 #include "PostProcessFXSubPass.h"
 #include "SGCore/Graphics/API/RenderState.h"
@@ -18,7 +17,7 @@ struct Transform;
 
 namespace SGCore
 {
-    struct PostProcessPass : public IRenderPass
+    struct SGCORE_EXPORT PostProcessPass : public IRenderPass
     {
         Ref<IMeshData> m_postProcessQuad;
 
@@ -31,5 +30,3 @@ namespace SGCore
         size_t bindCommonUniforms(LayeredFrameReceiver& receiver, const AssetRef<IShader>& subPassShader) const noexcept;
     };
 }
-
-#endif //SUNGEARENGINE_POSTPROCESSPASS_H

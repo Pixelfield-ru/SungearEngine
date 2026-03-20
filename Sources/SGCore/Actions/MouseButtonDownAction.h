@@ -2,8 +2,7 @@
 // Created by stuka on 29.05.2025.
 //
 
-#ifndef SUNGEARENGINE_MOUSEBUTTONDOWNACTION_H
-#define SUNGEARENGINE_MOUSEBUTTONDOWNACTION_H
+#pragma once
 
 #include "IAction.h"
 #include "SGCore/Input/PCInput.h"
@@ -13,7 +12,7 @@ namespace SGCore
     /**
     * Action to check whether mouse button is down at the moment.
     */
-    struct MouseButtonDownAction : IAction<bool()>
+    struct SGCORE_EXPORT MouseButtonDownAction : IAction<bool()>
     {
         /**
          * Mouse button to check state.
@@ -40,5 +39,3 @@ namespace SGCore
         }
     };
 }
-
-#endif // SUNGEARENGINE_MOUSEBUTTONDOWNACTION_H

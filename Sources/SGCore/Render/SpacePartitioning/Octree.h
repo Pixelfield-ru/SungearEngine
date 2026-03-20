@@ -2,8 +2,7 @@
 // Created by ilya on 10.03.24.
 //
 
-#ifndef SUNGEARENGINE_OCTREE_H
-#define SUNGEARENGINE_OCTREE_H
+#pragma once
 
 #include "SGCore/ECS/Component.h"
 #include "SGCore/Main/CoreGlobals.h"
@@ -13,7 +12,7 @@ namespace SGCore
 {
     class DebugDraw;
     
-    struct OctreeNode
+    struct SGCORE_EXPORT OctreeNode
     {
         friend class OctreesSolver;
         friend struct Octree;
@@ -33,7 +32,7 @@ namespace SGCore
         // std::atomic<bool> m_isSubdivided = false;
     };
     
-    struct Octree : ECS::Component<Ref<Octree>, Ref<const Octree>>
+    struct SGCORE_EXPORT Octree : ECS::Component<Ref<Octree>, Ref<const Octree>>
     {
         glm::vec3 m_nodeMinSize { 10 };
         
@@ -48,5 +47,3 @@ namespace SGCore
         Ref<OctreeNode> m_root = MakeRef<OctreeNode>();
     };
 }
-
-#endif //SUNGEARENGINE_OCTREE_H

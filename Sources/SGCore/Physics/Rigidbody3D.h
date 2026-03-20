@@ -2,8 +2,7 @@
 // Created by ilya on 19.02.24.
 //
 
-#ifndef SUNGEARENGINE_RIGIDBODY3D_H
-#define SUNGEARENGINE_RIGIDBODY3D_H
+#pragma once
 
 #include <BulletCollision/btBulletCollisionCommon.h>
 #include <BulletCollision/CollisionShapes/btCompoundShape.h>
@@ -12,6 +11,7 @@
 #include <glm/gtc/quaternion.hpp>
 #include <vector>
 #include <functional>
+#include <sgcore_export.h>
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/ECS/Component.h"
@@ -25,7 +25,7 @@ namespace SGCore
 {
     struct PhysicsWorld3D;
 
-    struct Rigidbody3D : ECS::Component<Ref<Rigidbody3D>, Ref<const Rigidbody3D>>
+    struct SGCORE_EXPORT Rigidbody3D : ECS::Component<Ref<Rigidbody3D>, Ref<const Rigidbody3D>>
     {
         sg_serde_as_friend()
 
@@ -94,5 +94,3 @@ namespace SGCore
                                                    ECS::registry_t& inRegistry) noexcept;
     };
 }
-
-#endif //SUNGEARENGINE_RIGIDBODY3D_H

@@ -2,15 +2,14 @@
 // Created by Ilya on 10.07.2024.
 //
 
-#ifndef SUNGEARENGINE_PLUGINPROJECT_H
-#define SUNGEARENGINE_PLUGINPROJECT_H
+#pragma once
 
 #include <filesystem>
-#include "DynamicLibrary.h"
+#include <sgcore_export.h>
 
 namespace SGCore
 {
-    struct PluginProject
+    struct SGCORE_EXPORT PluginProject
     {
         std::filesystem::path m_parentPath;
         std::filesystem::path m_pluginPath;
@@ -18,5 +17,3 @@ namespace SGCore
         std::string m_cxxStandard;
     };
 }
-
-#endif //SUNGEARENGINE_PLUGINPROJECT_H

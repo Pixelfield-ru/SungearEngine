@@ -11,7 +11,7 @@
 
 namespace SGCore::Threading
 {
-    struct ThreadsManager
+    struct SGCORE_EXPORT ThreadsManager
     {
         friend struct Thread;
         

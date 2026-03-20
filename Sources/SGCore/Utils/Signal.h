@@ -2,8 +2,7 @@
 // Created by stuka on 27.03.2025.
 //
 
-#ifndef EVENT_H
-#define EVENT_H
+#pragma once
 
 #include <list>
 #include <shared_mutex>
@@ -352,5 +351,3 @@ SGCore::Signal<ReturnT(Args...)>& SGCore::Signal<ReturnT(Args...)>::operator=(Si
 
     return *this;
 }
-
-#endif //EVENT_H

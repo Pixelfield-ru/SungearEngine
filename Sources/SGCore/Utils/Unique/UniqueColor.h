@@ -5,12 +5,13 @@
 #pragma once
 
 #include <glm/vec4.hpp>
+#include <sgcore_export.h>
 
 #include "UniqueID.h"
 
 namespace SGCore
 {
-    struct UniqueColor
+    struct SGCORE_EXPORT UniqueColor
     {
         UniqueColor() noexcept;
         UniqueColor(const UniqueColor& color) noexcept;

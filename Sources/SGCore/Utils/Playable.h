@@ -3,6 +3,7 @@
 //
 
 #pragma once
+
 #include "Signal.h"
 
 namespace SGCore
@@ -20,7 +21,7 @@ namespace SGCore
         SG_STOPPED
     };
 
-    struct Playable
+    struct SGCORE_EXPORT Playable
     {
         virtual ~Playable() noexcept = default;
 

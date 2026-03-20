@@ -2,8 +2,7 @@
 // Created by stuka on 24.04.2023.
 //
 
-#ifndef NATIVECORE_IRENDERER_H
-#define NATIVECORE_IRENDERER_H
+#pragma once
 
 #include "GAPIType.h"
 #include "IUniformBuffer.h"
@@ -34,7 +33,7 @@ namespace SGCore
     struct IGPUObjectsStorage;
 
     // todo: make description of funcs
-    class IRenderer
+    class SGCORE_EXPORT IRenderer
     {
     public:
         virtual ~IRenderer() = default;
@@ -148,5 +147,3 @@ namespace SGCore
         MeshRenderState m_screenQuadMeshRenderState;
     };
 }
-
-#endif //NATIVECORE_IRENDERER_H

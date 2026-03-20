@@ -2,15 +2,14 @@
 // Created by stuka on 14.01.2025.
 //
 
-#ifndef SUNGEARENGINE_ALWAYSTRUEACTION_H
-#define SUNGEARENGINE_ALWAYSTRUEACTION_H
+#pragma once
 
 #include "IAction.h"
 
 namespace SGCore
 {
     /// Action that always returns 'true' from execute() function.
-    struct AlwaysTrueAction : IAction<bool()>
+    struct SGCORE_EXPORT AlwaysTrueAction : IAction<bool()>
     {
         /// Always returns true.
         bool execute() noexcept final
@@ -24,5 +23,3 @@ namespace SGCore
         }
     };
 }
-
-#endif //SUNGEARENGINE_ALWAYSTRUEACTION_H

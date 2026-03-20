@@ -2,8 +2,7 @@
 // Created by stuka on 14.01.2025.
 //
 
-#ifndef SUNGEARENGINE_IACTION_H
-#define SUNGEARENGINE_IACTION_H
+#pragma once
 
 #include "SGCore/Main/CoreGlobals.h"
 
@@ -36,5 +35,3 @@ namespace SGCore
         virtual Ref<IAction> copy() = 0;
     };
 }
-
-#endif //SUNGEARENGINE_IACTION_H

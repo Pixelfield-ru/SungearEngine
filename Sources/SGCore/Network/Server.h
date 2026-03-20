@@ -2,8 +2,7 @@
 // Created by stuka on 02.08.2025.
 //
 
-#ifndef SUNGEARENGINE_NETWORK_SERVER_H
-#define SUNGEARENGINE_NETWORK_SERVER_H
+#pragma once
 
 #include "Packet.h"
 
@@ -28,7 +27,7 @@
 
 namespace SGCore::Net
 {
-    struct Server
+    struct SGCORE_EXPORT Server
     {
         using socket_t = boost::asio::ip::udp::socket;
         using endpoint_t = boost::asio::ip::udp::endpoint;
@@ -180,5 +179,3 @@ namespace SGCore::Net
         // std::unordered_map<endpoint_t, std::vector<Ref<Packet>>> m_sentPackets;
     };
 }
-
-#endif // SUNGEARENGINE_NETWORK_SERVER_H

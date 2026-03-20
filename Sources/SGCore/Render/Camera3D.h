@@ -2,8 +2,7 @@
 // Created by ilya on 25.02.24.
 //
 
-#ifndef SUNGEARENGINE_CAMERA3D_H
-#define SUNGEARENGINE_CAMERA3D_H
+#pragma once
 
 #include <unordered_set>
 
@@ -13,7 +12,7 @@
 
 namespace SGCore
 {
-    struct Camera3D : ECS::Component<Ref<Camera3D>, Ref<const Camera3D>>
+    struct SGCORE_EXPORT Camera3D : ECS::Component<Ref<Camera3D>, Ref<const Camera3D>>
     {
         std::unordered_set<ECS::entity_t> m_pickedEntities;
         // todo: make saving
@@ -25,5 +24,3 @@ namespace SGCore
         volatile int m_dummy = 0;
     };
 }
-
-#endif //SUNGEARENGINE_CAMERA3D_H

@@ -2,8 +2,7 @@
 // Created by stuka on 28.07.2025.
 //
 
-#ifndef SUNGEARENGINE_PARTICLESEMITTER_H
-#define SUNGEARENGINE_PARTICLESEMITTER_H
+#pragma once
 
 #include <unordered_map>
 #include <vector>
@@ -15,7 +14,7 @@
 
 namespace SGCore
 {
-    struct ParticlesEmitter : ECS::Component<ParticlesEmitter, const ParticlesEmitter>
+    struct SGCORE_EXPORT ParticlesEmitter : ECS::Component<ParticlesEmitter, const ParticlesEmitter>
     {
         struct ParticleCreateResult
         {
@@ -40,5 +39,3 @@ namespace SGCore
         std::vector<Ref<IParticlesController>> m_particleControllers;
     };
 }
-
-#endif // SUNGEARENGINE_PARTICLESCONTROLLER_H

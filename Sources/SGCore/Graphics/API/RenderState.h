@@ -2,8 +2,9 @@
 // Created by stuka on 21.12.2024.
 //
 
-#ifndef SUNGEARENGINE_RENDERSTATE_H
-#define SUNGEARENGINE_RENDERSTATE_H
+#pragma once
+
+#include <sgcore_export.h>
 
 #include "GraphicsDataTypes.h"
 #include "SGCore/Main/CoreGlobals.h"
@@ -12,7 +13,7 @@ namespace SGCore
 {
     class IFrameBuffer;
 
-    struct MeshRenderState
+    struct SGCORE_EXPORT MeshRenderState
     {
         bool m_useIndices = true;
 
@@ -33,7 +34,7 @@ namespace SGCore
         bool operator==(const MeshRenderState&) const noexcept = default;
     };
 
-    struct BlendingState
+    struct SGCORE_EXPORT BlendingState
     {
         bool m_useBlending = true;
 
@@ -49,7 +50,7 @@ namespace SGCore
         bool operator==(const BlendingState&) const noexcept = default;
     };
 
-    struct RenderState
+    struct SGCORE_EXPORT RenderState
     {
         BlendingState m_globalBlendingState;
 
@@ -71,5 +72,3 @@ namespace SGCore
         bool operator==(const RenderState&) const noexcept = default;
     };
 }
-
-#endif //SUNGEARENGINE_RENDERSTATE_H

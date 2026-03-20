@@ -2,15 +2,14 @@
 // Created by stuka on 02.02.2024.
 //
 
-#ifndef SUNGEARENGINE_LINEGIZMO_H
-#define SUNGEARENGINE_LINEGIZMO_H
+#pragma once
 
 #include "GizmoBase.h"
 #include "SGCore/ECS/Component.h"
 
 namespace SGCore
 {
-    struct LineGizmo : ECS::Component<LineGizmo, const LineGizmo>
+    struct SGCORE_EXPORT LineGizmo : ECS::Component<LineGizmo, const LineGizmo>
     {
         LineGizmo() noexcept;
 
@@ -23,5 +22,3 @@ namespace SGCore
         glm::vec3 m_lastEnd { 0.0, 0.0, 0.0 };
     };
 }
-
-#endif //SUNGEARENGINE_LINEGIZMO_H

@@ -23,7 +23,7 @@ namespace SGCore
      * Must be placed in same entity mesh texture of which must be animated.\n
      * Uses material from SGCore::Mesh component to replace textures.
      */
-    struct FrameAnimation : ECS::Component<FrameAnimation, const FrameAnimation>, Playable
+    struct SGCORE_EXPORT FrameAnimation : ECS::Component<FrameAnimation, const FrameAnimation>, Playable
     {
         /// Texture slot to animate.
         SGTextureSlot m_textureSlot = SGTextureSlot::SGTT_DIFFUSE;

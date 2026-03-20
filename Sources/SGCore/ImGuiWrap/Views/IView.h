@@ -2,8 +2,7 @@
 // Created by stuka on 28.11.2023.
 //
 
-#ifndef SUNGEARENGINE_IVIEW_H
-#define SUNGEARENGINE_IVIEW_H
+#pragma once
 
 #include "SGCore/Utils/Unique/UUID.h"
 #include "SGCore/Utils/Signal.h"
@@ -13,8 +12,10 @@
 
 namespace SGCore::ImGuiWrap
 {
-    struct IView : public std::enable_shared_from_this<IView>
+    struct SGCORE_EXPORT IView : public std::enable_shared_from_this<IView>
     {
+        virtual ~IView() = default;
+
         friend struct ViewsInjector;
 
         Signal<void()> onRenderBody;
@@ -67,5 +68,3 @@ namespace SGCore::ImGuiWrap
         Ref<UniqueNamesManager> m_namesManager = MakeRef<UniqueNamesManager>();
     };
 }
-
-#endif //SUNGEARENGINE_IVIEW_H

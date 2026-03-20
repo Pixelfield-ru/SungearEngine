@@ -2,8 +2,7 @@
 // Created by stuka on 19.01.2024.
 //
 
-#ifndef SUNGEARENGINE_MESHBASE_H
-#define SUNGEARENGINE_MESHBASE_H
+#pragma once
 
 #include "SGCore/ImportedScenesArch/IMeshData.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
@@ -11,7 +10,7 @@
 
 namespace SGCore
 {
-    struct MeshBase : public IAssetsRefsResolver<MeshBase>
+    struct SGCORE_EXPORT MeshBase : public IAssetsRefsResolver<MeshBase>
     {
         sg_assets_refs_resolver_as_friend
 
@@ -43,5 +42,3 @@ namespace SGCore
         AssetRef<IMaterial> m_material;
     };
 }
-
-#endif //SUNGEARENGINE_MESHBASE_H

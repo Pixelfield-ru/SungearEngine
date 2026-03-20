@@ -2,8 +2,7 @@
 // Created by stuka on 15.06.2025.
 //
 
-#ifndef SUNGEARENGINE_BATCH_H
-#define SUNGEARENGINE_BATCH_H
+#pragma once
 
 #include "BatchInstanceMaterial.h"
 #include "BatchInstanceTransform.h"
@@ -25,7 +24,7 @@ namespace SGCore
 
     // DO NOT COMPRESS SIZE OF ATLASES OF BATCH
     // todo: add aabb for batch. add camera frame receiver target layer
-    struct Batch : ECS::Component<Batch, const Batch>
+    struct SGCORE_EXPORT Batch : ECS::Component<Batch, const Batch>
     {
         MeshRenderState m_batchRenderState;
         BatchInstanceMaterial m_defaultMaterial { };
@@ -180,5 +179,3 @@ namespace SGCore
         static std::uint32_t pack2UInt16ToUInt32(uint16_t x, uint16_t y) noexcept;
     };
 }
-
-#endif // SUNGEARENGINE_BATCH_H

@@ -2,14 +2,14 @@
 // Created by Ilya on 21.12.2023.
 //
 
-#ifndef SUNGEARENGINE_UNIQUENAME_H
-#define SUNGEARENGINE_UNIQUENAME_H
+#pragma once
 
 #include "SGCore/Serde/Defines.h"
 
 #include <string>
 #include <memory>
 #include <cstdint>
+#include <sgcore_export.h>
 
 sg_predeclare_serde()
 
@@ -17,7 +17,7 @@ namespace SGCore
 {
     class UniqueNamesManager;
 
-    struct UniqueName
+    struct SGCORE_EXPORT UniqueName
     {
         sg_serde_as_friend()
 
@@ -106,5 +106,3 @@ namespace SGCore
         virtual void dummy() const noexcept { }
     };
 }
-
-#endif //SUNGEARENGINE_UNIQUENAME_H

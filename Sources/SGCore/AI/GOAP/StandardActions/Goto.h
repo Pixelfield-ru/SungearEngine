@@ -10,7 +10,7 @@
 
 namespace SGCore::GOAP
 {
-    struct Goto : IAction
+    struct SGCORE_EXPORT Goto : IAction
     {
         Goto() noexcept;
 

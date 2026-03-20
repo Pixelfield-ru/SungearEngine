@@ -2,8 +2,7 @@
 // Created by stuka on 08.07.2025.
 //
 
-#ifndef SUNGEARENGINE_SUNSHADOWSPASS_H
-#define SUNGEARENGINE_SUNSHADOWSPASS_H
+#pragma once
 
 #include "SGCore/Render/IRenderPass.h"
 #include "SGCore/Render/RenderingBase.h"
@@ -11,7 +10,7 @@
 
 namespace SGCore
 {
-    struct SunShadowsPass : IRenderPass
+    struct SGCORE_EXPORT SunShadowsPass : IRenderPass
     {
         void create(const Ref<IRenderPipeline>& parentRenderPipeline) final;
 
@@ -31,5 +30,3 @@ namespace SGCore
         static std::vector<glm::mat4> getLightSpaceMatrices(const CSMTarget::reg_t& csm, const RenderingBase::reg_t& cameraRenderingBase, const glm::vec3& sunDir) noexcept;
     };
 }
-
-#endif // SUNGEARENGINE_SUNSHADOWSPASS_H

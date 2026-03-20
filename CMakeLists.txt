@@ -59,8 +59,12 @@ if(MSVC)
 
     set(MSVC_RUNTIME "static")
 
-    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+    # todo: idk if it is necessary now
+    # set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
     # set(BUILD_SHARED_LIBS OFF)
+elseif()
+    # multiple definition because of bullet library
+    set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-export-dynamic -Wl,-Bsymbolic")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -88,9 +92,6 @@ set(VCPKG_CXX_FLAGS "${VCPKG_CXX_FLAGS} ${CMAKE_CXX_FLAGS}")
 set(VCPKG_C_FLAGS "${VCPKG_C_FLAGS} ${CMAKE_C_FLAGS}")
 
 message(STATUS "CMAKE_SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
-
-# multiple definition because of bullet library
-set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-export-dynamic -Wl,-Bsymbolic")
 
 message("CMAKE_SIZEOF_VOID_P: ${CMAKE_SIZEOF_VOID_P}")
 

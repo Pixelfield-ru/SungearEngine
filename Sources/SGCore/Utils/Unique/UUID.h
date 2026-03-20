@@ -2,18 +2,20 @@
 // Created by Ilya on 16.10.2023.
 //
 
-#ifndef SUNGEARENGINE_UUID_H
-#define SUNGEARENGINE_UUID_H
+#pragma once
 
 #include <string>
 #include <random>
 #include <sstream>
 
+#include <sgcore_export.h>
+
 namespace SGCore
 {
 // UUID STRUCT: 8-4-4-4-12
 // xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
-    struct UUID
+    // todo: use boost uuid
+    struct SGCORE_EXPORT UUID
     {
     private:
         std::string m_uuid;
@@ -85,5 +87,3 @@ namespace SGCore
         }
     };
 }
-
-#endif //SUNGEARENGINE_UUID_H

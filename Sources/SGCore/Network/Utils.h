@@ -2,8 +2,7 @@
 // Created by stuka on 14.08.2025.
 //
 
-#ifndef SUNGEARENGINE_NETWORK_UTILS_H
-#define SUNGEARENGINE_NETWORK_UTILS_H
+#pragma once
 
 #include <boost/asio.hpp>
 #include <boost/container_hash/hash_fwd.hpp>
@@ -11,7 +10,7 @@
 
 namespace SGCore::Net
 {
-    struct Utils
+    struct SGCORE_EXPORT Utils
     {
         static auto readEndpoint(const Packet& fromPacket, size_t inPacketOffset, size_t& endpointSize, bool& isSuccessful) noexcept
         {
@@ -131,5 +130,3 @@ namespace SGCore::Net
         }
     };
 }
-
-#endif // SUNGEARENGINE_NETWORK_UTILS_H

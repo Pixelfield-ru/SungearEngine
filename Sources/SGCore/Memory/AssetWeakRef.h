@@ -2,8 +2,7 @@
 // Created by stuka on 02.11.2024.
 //
 
-#ifndef SUNGEARENGINE_ASSETWEAKREF_H
-#define SUNGEARENGINE_ASSETWEAKREF_H
+#pragma once
 
 #include "AssetRef.h"
 
@@ -79,5 +78,3 @@ namespace SGCore
         Weak<AssetManager> m_deserializedParentAssetManager;
     };
 }
-
-#endif //SUNGEARENGINE_ASSETWEAKREF_H

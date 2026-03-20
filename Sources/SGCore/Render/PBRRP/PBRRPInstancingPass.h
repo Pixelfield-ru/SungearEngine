@@ -8,7 +8,7 @@
 
 namespace SGCore
 {
-    struct PBRRPInstancingPass : IGeometryPass
+    struct SGCORE_EXPORT PBRRPInstancingPass : IGeometryPass
     {
         void create(const Ref<IRenderPipeline>& parentRenderPipeline) final;
 

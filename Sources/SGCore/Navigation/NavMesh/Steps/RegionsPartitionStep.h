@@ -15,13 +15,13 @@ namespace SGCore::Navigation
     struct NavVoxel;
     struct VoxelizationStep;
 
-    struct Region
+    struct SGCORE_EXPORT Region
     {
         std::vector<size_t> m_voxelsIndices;
         std::vector<size_t> m_contourVoxelsIndices;
     };
 
-    struct RegionsPartitionStep : INavMeshBuildStep
+    struct SGCORE_EXPORT RegionsPartitionStep : INavMeshBuildStep
     {
         std::vector<Region> m_regions;
 

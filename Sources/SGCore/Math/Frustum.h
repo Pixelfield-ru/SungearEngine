@@ -2,16 +2,15 @@
 // Created by ilya on 10.03.24.
 //
 
-#ifndef SUNGEARENGINE_FRUSTUM_H
-#define SUNGEARENGINE_FRUSTUM_H
+#pragma once
 
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
+#include <sgcore_export.h>
 
-class Frustum
+struct SGCORE_EXPORT Frustum
 {
-public:
     Frustum() = default;
     
     // m = ProjectionMatrix * ViewMatrix
@@ -48,5 +47,3 @@ private:
 
     glm::vec3 m_center { };
 };
-
-#endif //SUNGEARENGINE_FRUSTUM_H

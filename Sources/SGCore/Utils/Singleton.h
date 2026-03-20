@@ -2,8 +2,7 @@
 // Created by stuka on 21.07.2023.
 //
 
-#ifndef SUNGEARENGINE_SINGLETON_H
-#define SUNGEARENGINE_SINGLETON_H
+#pragma once
 
 #include <memory>
 
@@ -66,5 +65,3 @@ namespace SGUtils
         }
     };
 }
-
-#endif //SUNGEARENGINE_SINGLETON_H

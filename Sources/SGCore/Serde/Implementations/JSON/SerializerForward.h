@@ -2,8 +2,7 @@
 // Created by stuka on 20.10.2024.
 //
 
-#ifndef SUNGEARENGINE_JSON_SERIALIZERFORWARD_H
-#define SUNGEARENGINE_JSON_SERIALIZERFORWARD_H
+#pragma once
 
 #include "SGCore/Serde/Common.h"
 #include <string>
@@ -37,5 +36,3 @@ struct SerializerImpl<FormatType::JSON>
                      T& outValue,
                      SharedDataT&& ... sharedData) noexcept;
 };
-
-#endif // SUNGEARENGINE_JSON_SERIALIZERFORWARD_H

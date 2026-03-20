@@ -2,19 +2,19 @@
 // Created by stuka on 24.04.2023.
 //
 
-#ifndef NATIVECORE_IVERTEXARRAY_H
-#define NATIVECORE_IVERTEXARRAY_H
+#pragma once
 
 #include <cstdint>
 #include <memory>
 #include <unordered_set>
+#include <sgcore_export.h>
 
 namespace SGCore
 {
     class IVertexBuffer;
     class IIndexBuffer;
 
-    class IVertexArray
+    class SGCORE_EXPORT IVertexArray
     {
         friend class IVertexBuffer;
         friend class IIndexBuffer;
@@ -40,5 +40,3 @@ namespace SGCore
         IIndexBuffer* m_indexBuffer {};
     };
 }
-
-#endif //NATIVECORE_IVERTEXARRAY_H

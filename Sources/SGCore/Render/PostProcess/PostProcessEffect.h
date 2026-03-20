@@ -2,8 +2,7 @@
 // Created by stuka on 26.11.2024.
 //
 
-#ifndef SUNGEARENGINE_POSTPROCESSEFFECT_H
-#define SUNGEARENGINE_POSTPROCESSEFFECT_H
+#pragma once
 
 #include "PostProcessFXSubPass.h"
 #include "SGCore/Main/CoreGlobals.h"
@@ -14,7 +13,7 @@ namespace SGCore
 {
     struct PostProcessLayer;
 
-    struct PostProcessEffect
+    struct SGCORE_EXPORT PostProcessEffect
     {
         virtual ~PostProcessEffect() = default;
 
@@ -50,5 +49,3 @@ namespace SGCore
         std::vector<Weak<PostProcessLayer>> m_parentPostProcessLayers;
     };
 }
-
-#endif //SUNGEARENGINE_POSTPROCESSEFFECT_H

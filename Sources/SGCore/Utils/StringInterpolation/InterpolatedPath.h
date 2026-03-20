@@ -2,14 +2,13 @@
 // Created by stuka on 28.11.2024.
 //
 
-#ifndef SUNGEARENGINE_INTERPOLATEDPATH_H
-#define SUNGEARENGINE_INTERPOLATEDPATH_H
+#pragma once
 
 #include "SGCore/Utils/Utils.h"
 
 namespace SGCore
 {
-    struct InterpolatedPath final
+    struct SGCORE_EXPORT InterpolatedPath final
     {
         InterpolatedPath() noexcept = default;
         InterpolatedPath(const InterpolatedPath&) noexcept = default;
@@ -102,12 +101,10 @@ namespace SGCore
     }
 }
 
-[[nodiscard]] SGCore::InterpolatedPath operator/(const SGCore::InterpolatedPath& p0, const SGCore::InterpolatedPath& p1) noexcept;
+[[nodiscard]] SGCORE_EXPORT SGCore::InterpolatedPath operator/(const SGCore::InterpolatedPath& p0, const SGCore::InterpolatedPath& p1) noexcept;
 template<typename CharT, size_t Count>
 [[nodiscard]] SGCore::InterpolatedPath operator/(const CharT (&p0)[Count], const SGCore::InterpolatedPath& p1) noexcept
 {
     const std::filesystem::path tmpPath = p0;
     return tmpPath / p1.raw();
 }
-
-#endif //SUNGEARENGINE_INTERPOLATEDPATH_H

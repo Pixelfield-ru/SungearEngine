@@ -13,7 +13,7 @@ namespace SGCore::GOAP
     /**
      * Sequence of actions to reach plan.
      */
-    struct Plan
+    struct SGCORE_EXPORT Plan
     {
         /**
          * Sequence of actions that must be executed to reach goal.

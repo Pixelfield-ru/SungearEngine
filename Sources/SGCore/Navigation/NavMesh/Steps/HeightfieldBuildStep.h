@@ -7,19 +7,20 @@
 #include <limits>
 #include <vector>
 #include <glm/vec3.hpp>
+#include <sgcore_export.h>
 
 #include "INavMeshBuildStep.h"
 
 namespace SGCore::Navigation
 {
-    struct HeightfieldCell
+    struct SGCORE_EXPORT HeightfieldCell
     {
         float m_floorHeight = -std::numeric_limits<float>::max();
         float m_ceilingHeight = std::numeric_limits<float>::max();
         bool m_isWalkable {};
     };
 
-    struct HeightfieldBuildStep : INavMeshBuildStep
+    struct SGCORE_EXPORT HeightfieldBuildStep : INavMeshBuildStep
     {
         std::int32_t m_heightfieldWidth {};
         std::int32_t m_heightfieldHeight {};

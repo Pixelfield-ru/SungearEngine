@@ -2,13 +2,13 @@
 // Created by stuka on 09.10.2024.
 //
 
-#ifndef SUNGEARENGINE_CMAKEUTILS_H
-#define SUNGEARENGINE_CMAKEUTILS_H
+#pragma once
 
 #include <filesystem>
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <sgcore_export.h>
 
 #include "SGCore/Serde/Defines.h"
 
@@ -16,14 +16,14 @@ sg_predeclare_serde()
 
 namespace SGCore::CMake
 {
-    struct Preset
+    struct SGCORE_EXPORT Preset
     {
         std::string m_name;
         std::string m_binaryDir;
         std::unordered_map<std::string, std::string> m_cachedVariables;
     };
 
-    struct PresetsFileInfo
+    struct SGCORE_EXPORT PresetsFileInfo
     {
         sg_serde_as_friend()
 
@@ -45,5 +45,3 @@ namespace SGCore::CMake
         std::vector<PresetsFileInfo> m_includedFiles;
     };
 }
-
-#endif //SUNGEARENGINE_CMAKEUTILS_H

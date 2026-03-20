@@ -1,5 +1,4 @@
-#ifndef SUNGEARENGINE_IMATERIAL_H
-#define SUNGEARENGINE_IMATERIAL_H
+#pragma once
 
 #include "SGCore/Graphics/API/RenderState.h"
 #include "SGCore/Memory/IAssetsRefsResolver.h"
@@ -18,7 +17,7 @@ namespace SGCore
 
     // TODO: make remove texture
     // TODO: make function addBlockDeclaration
-    class IMaterial : public IAsset, public IAssetsRefsResolver<IMaterial>
+    class SGCORE_EXPORT IMaterial : public IAsset, public IAssetsRefsResolver<IMaterial>
     {
     public:
         sg_serde_as_friend()
@@ -151,5 +150,3 @@ namespace SGCore
         // std::shared_ptr<Graphics::IShader> m_currentShader;
     };
 }
-
-#endif //SUNGEARENGINE_IMATERIAL_H

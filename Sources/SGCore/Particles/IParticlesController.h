@@ -2,8 +2,9 @@
 // Created by stuka on 28.07.2025.
 //
 
-#ifndef SUNGEARENGINE_IPARTICLECONTROLLER_H
-#define SUNGEARENGINE_IPARTICLECONTROLLER_H
+#pragma once
+
+#include <sgcore_export.h>
 
 #include "SGCore/Main/CoreGlobals.h"
 
@@ -11,7 +12,7 @@ namespace SGCore
 {
     struct ParticlesEmitter;
 
-    struct IParticlesController
+    struct SGCORE_EXPORT IParticlesController
     {
         bool m_isActive = true;
 
@@ -26,5 +27,3 @@ namespace SGCore
         virtual void processParticle(ParticlesEmitter& particlesEmitter, ECS::entity_t particleEntity, const ECS::registry_t& inRegistry) noexcept = 0;
     };
 }
-
-#endif // SUNGEARENGINE_IPARTICLECONTROLLER_H

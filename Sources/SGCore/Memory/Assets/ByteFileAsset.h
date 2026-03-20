@@ -2,8 +2,7 @@
 // Created by ilya on 13.04.24.
 //
 
-#ifndef SUNGEARENGINE_BYTEFILEASSET_H
-#define SUNGEARENGINE_BYTEFILEASSET_H
+#pragma once
 
 #include "IAsset.h"
 #include "SGCore/Memory/AssetsPackage.h"
@@ -12,7 +11,7 @@ sg_predeclare_serde()
 
 namespace SGCore
 {
-    struct ByteFileAsset : public IAsset
+    struct SGCORE_EXPORT ByteFileAsset : public IAsset
     {
         sg_implement_type_id(ByteFileAsset, 7)
         sg_serde_as_friend()
@@ -34,5 +33,3 @@ namespace SGCore
         AssetsPackage::DataMarkup m_dataMarkupInPackage;
     };
 }
-
-#endif //SUNGEARENGINE_BYTEFILEASSET_H

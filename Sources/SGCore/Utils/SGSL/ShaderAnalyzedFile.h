@@ -2,8 +2,7 @@
 // Created by ilya on 10.02.24.
 //
 
-#ifndef SGSLETRANSLATOR_SHADERANALYZEDFILE_H
-#define SGSLETRANSLATOR_SHADERANALYZEDFILE_H
+#pragma once
 
 #include "SGCore/Utils/SGSL/SGSLESubShader.h"
 
@@ -11,7 +10,7 @@
 
 namespace SGCore
 {
-    struct ShaderAnalyzedFile : public IAsset, public std::enable_shared_from_this<ShaderAnalyzedFile>
+    struct SGCORE_EXPORT ShaderAnalyzedFile : public IAsset, public std::enable_shared_from_this<ShaderAnalyzedFile>
     {
         sg_serde_as_friend();
 
@@ -59,5 +58,3 @@ namespace SGCore
         std::vector<SGSLESubShader> m_subShaders;
     };
 }
-
-#endif //SGSLETRANSLATOR_SHADERANALYZEDFILE_H

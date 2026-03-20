@@ -8,11 +8,13 @@
 #include <atomic>
 #include <mutex>
 
+#include <sgcore_export.h>
+
 namespace SGCore
 {
     struct UniqueID;
 
-    struct UniqueIDGenerator
+    struct SGCORE_EXPORT UniqueIDGenerator
     {
         friend struct UniqueID;
 

@@ -8,7 +8,7 @@
 
 namespace SGCore
 {
-    struct EnableTerrainPass : ECS::Component<EnableTerrainPass, const EnableTerrainPass>
+    struct SGCORE_EXPORT EnableTerrainPass : ECS::Component<EnableTerrainPass, const EnableTerrainPass>
     {
     private:
         bool m_dummy = false;

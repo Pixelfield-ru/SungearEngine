@@ -2,8 +2,7 @@
 // Created by stuka on 20.06.2025.
 //
 
-#ifndef SUNGEARENGINE_ATLAS_H
-#define SUNGEARENGINE_ATLAS_H
+#pragma once
 
 #include "SGCore/Graphics/API/GPUDeviceInfo.h"
 #include "SGCore/Graphics/API/GraphicsDataTypes.h"
@@ -17,7 +16,7 @@ namespace SGCore
 {
     class ITexture2D;
 
-    struct Atlas
+    struct SGCORE_EXPORT Atlas
     {
         std::uint32_t m_maxSideSize = GPUDeviceInfo::getMaxTextureSize().x;
 
@@ -56,5 +55,3 @@ namespace SGCore
         void resizeAtlasForTexture(glm::ivec2 textureSize) noexcept;
     };
 }
-
-#endif // SUNGEARENGINE_ATLAS_H

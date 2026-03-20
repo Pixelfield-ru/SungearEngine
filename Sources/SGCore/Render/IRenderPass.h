@@ -19,7 +19,7 @@ namespace SGCore
     struct Transform;
     struct CSMTarget;
 
-    struct IRenderPass
+    struct SGCORE_EXPORT IRenderPass
     {
         virtual ~IRenderPass() = default;
 

@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <glm/fwd.hpp>
+#include <sgcore_export.h>
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Math/AABB.h"
@@ -18,7 +19,7 @@ namespace SGCore
 
 namespace SGCore::Navigation
 {
-    struct NavGrid3D : ECS::Component<NavGrid3D, const NavGrid3D>
+    struct SGCORE_EXPORT NavGrid3D : ECS::Component<NavGrid3D, const NavGrid3D>
     {
         struct Node
         {

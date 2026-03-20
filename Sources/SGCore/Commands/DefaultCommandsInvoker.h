@@ -2,14 +2,13 @@
 // Created by stuka on 13.01.2025.
 //
 
-#ifndef SUNGEARENGINE_DEFAULTCOMMANDSINVOKER_H
-#define SUNGEARENGINE_DEFAULTCOMMANDSINVOKER_H
+#pragma once
 
 #include "ICommandsInvoker.h"
 
 namespace SGCore
 {
-    struct DefaultCommandsInvoker : ICommandsInvoker
+    struct SGCORE_EXPORT DefaultCommandsInvoker : ICommandsInvoker
     {
         void executeCommand() override
         {
@@ -51,5 +50,3 @@ namespace SGCore
         }
     };
 }
-
-#endif //SUNGEARENGINE_DEFAULTCOMMANDSINVOKER_H

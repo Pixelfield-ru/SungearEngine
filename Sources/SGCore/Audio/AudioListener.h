@@ -2,17 +2,17 @@
 // Created by ilya on 14.04.24.
 //
 
-#ifndef SUNGEARENGINE_AUDIOLISTENER_H
-#define SUNGEARENGINE_AUDIOLISTENER_H
+#pragma once
 
 #include <glm/vec3.hpp>
+#include <sgcore_export.h>
 
 namespace SGCore
 {
     /**
      * Struct to manage parameters of audio listener. Listener can be only one.
      */
-    struct AudioListener
+    struct SGCORE_EXPORT AudioListener
     {
         /**
          * Sets 3D world position of audio listener.
@@ -62,5 +62,3 @@ namespace SGCore
         static float getGain() noexcept;
     };
 }
-
-#endif //SUNGEARENGINE_AUDIOLISTENER_H

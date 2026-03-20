@@ -10,7 +10,7 @@ namespace SGCore
 {
     class ITexture2D;
 
-    struct Frame
+    struct SGCORE_EXPORT Frame
     {
         AssetRef<ITexture2D> m_texture;
         float m_timeStamp {};

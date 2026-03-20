@@ -2,8 +2,7 @@
 // Created by stuka on 07.01.2025.
 //
 
-#ifndef SUNGEARENGINE_MOTIONPLANNER_H
-#define SUNGEARENGINE_MOTIONPLANNER_H
+#pragma once
 
 #include "MotionPlannerNode.h"
 #include "SGCore/ECS/Component.h"
@@ -13,7 +12,7 @@
 
 namespace SGCore
 {
-    struct MotionPlanner : ECS::Component<MotionPlanner, const MotionPlanner>, IAssetsRefsResolver<MotionPlanner>
+    struct SGCORE_EXPORT MotionPlanner : ECS::Component<MotionPlanner, const MotionPlanner>, IAssetsRefsResolver<MotionPlanner>
     {
         sg_assets_refs_resolver_as_friend
 
@@ -50,9 +49,6 @@ namespace SGCore
         [[nodiscard]] MotionPlanner& operator=(MotionPlanner&&) noexcept = default;
 
     private:
-
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept;
     };
 }
-
-#endif //SUNGEARENGINE_MOTIONPLANNER_H

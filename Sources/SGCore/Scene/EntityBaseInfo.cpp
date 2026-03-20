@@ -17,7 +17,7 @@ SGCore::EntityBaseInfo::EntityBaseInfo(ECS::entity_t thisEntity, ECS::registry_t
 
 void SGCore::EntityBaseInfo::setActiveRecursive(bool active, ECS::registry_t& inRegistry) noexcept
 {
-    m_isActive = active;
+    m_isEntityActive = active;
 
     for(auto&& child : m_children)
     {

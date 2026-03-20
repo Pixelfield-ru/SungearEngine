@@ -2,8 +2,7 @@
 // Created by stuka on 20.12.2024.
 //
 
-#ifndef SUNGEARENGINE_SCENEUTILS_H
-#define SUNGEARENGINE_SCENEUTILS_H
+#pragma once
 
 #include <glm/vec2.hpp>
 #include <sgcore_export.h>
@@ -15,7 +14,7 @@ namespace SGCore
 {
     class IFrameBuffer;
 
-    struct SceneUtils
+    struct SGCORE_EXPORT SceneUtils
     {
         [[nodiscard]] static ECS::entity_t pickEntity(const glm::vec2& cursorPos,
                                                       const ECS::registry_t& fromRegistry,
@@ -23,5 +22,3 @@ namespace SGCore
                                                       SGFrameBufferAttachmentType fromAttachment) noexcept;
     };
 }
-
-#endif //SUNGEARENGINE_SCENEUTILS_H

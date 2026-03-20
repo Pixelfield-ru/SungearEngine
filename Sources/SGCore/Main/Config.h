@@ -2,8 +2,7 @@
 // Created by ilya on 05.05.24.
 //
 
-#ifndef SUNGEARENGINE_CONFIG_H
-#define SUNGEARENGINE_CONFIG_H
+#pragma once
 
 #include <string>
 
@@ -11,7 +10,7 @@
 
 namespace SGCore
 {
-    struct LoadablePluginConfig
+    struct SGCORE_EXPORT LoadablePluginConfig
     {
         std::string m_pluginName;
         InterpolatedPath m_pluginPath;
@@ -21,7 +20,7 @@ namespace SGCore
         bool m_enabled = true;
     };
 
-    struct Config
+    struct SGCORE_EXPORT Config
     {
         /// Plugins that will be loaded at start of SungearEngine executable.
         std::vector<LoadablePluginConfig> m_loadablePlugins;
@@ -29,5 +28,3 @@ namespace SGCore
         InterpolatedPath m_enginePath = "${enginePath}";
     };
 }
-
-#endif // SUNGEARENGINE_CONFIG_H

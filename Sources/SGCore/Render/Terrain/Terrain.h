@@ -2,8 +2,7 @@
 // Created by stuka on 19.04.2025.
 //
 
-#ifndef SUNGEARENGINE_TERRAIN_H
-#define SUNGEARENGINE_TERRAIN_H
+#pragma once
 
 #include <vector>
 #include <glm/vec2.hpp>
@@ -19,7 +18,7 @@ namespace SGCore
     class IMeshData;
     struct Mesh;
 
-    struct Terrain : ECS::Component<Terrain, const Terrain>
+    struct SGCORE_EXPORT Terrain : ECS::Component<Terrain, const Terrain>
     {
         TesselationParams m_tesselationParams;
 
@@ -61,5 +60,3 @@ namespace SGCore
         std::int64_t m_patchSize = 0;
     };
 }
-
-#endif // SUNGEARENGINE_TERRAIN_H

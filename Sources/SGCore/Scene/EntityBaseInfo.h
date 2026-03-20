@@ -2,8 +2,7 @@
 // Created by stuka on 25.01.2024.
 //
 
-#ifndef SUNGEARENGINE_ENTITYBASEINFO_H
-#define SUNGEARENGINE_ENTITYBASEINFO_H
+#pragma once
 
 #include <entt/entity/entity.hpp>
 #include <glm/vec3.hpp>
@@ -19,7 +18,7 @@ namespace SGCore
     struct Layer;
 
     // sizeof
-    struct EntityBaseInfo final : UniqueNameWrapper, ECS::Component<EntityBaseInfo, const EntityBaseInfo>
+    struct SGCORE_EXPORT EntityBaseInfo final : UniqueNameWrapper, ECS::Component<EntityBaseInfo, const EntityBaseInfo>
     {
         sg_serde_as_friend()
 
@@ -35,7 +34,7 @@ namespace SGCore
         // sg_member()
         Weak<Layer> m_layer;
 
-        bool m_isActive = true;
+        bool m_isEntityActive = true;
 
         void setActiveRecursive(bool active, ECS::registry_t& inRegistry) noexcept;
 
@@ -103,5 +102,3 @@ namespace SGCore
         std::vector<ECS::entity_t> m_children;
     };
 }
-
-#endif //SUNGEARENGINE_ENTITYBASEINFO_H

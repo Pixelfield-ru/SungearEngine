@@ -8,7 +8,7 @@
 
 namespace SGCore
 {
-    struct EnableDecalPass : ECS::Component<EnableDecalPass, const EnableDecalPass>
+    struct SGCORE_EXPORT EnableDecalPass : ECS::Component<EnableDecalPass, const EnableDecalPass>
     {
     private:
         bool m_dummy = false;

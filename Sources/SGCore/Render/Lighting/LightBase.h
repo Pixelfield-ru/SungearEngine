@@ -2,8 +2,7 @@
 // Created by stuka on 03.02.2024.
 //
 
-#ifndef SUNGEARENGINE_LIGHTBASE_H
-#define SUNGEARENGINE_LIGHTBASE_H
+#pragma once
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Render/RenderingBase.h"
@@ -12,7 +11,7 @@ namespace SGCore
 {
     class IFrameBuffer;
 
-    struct LightBase
+    struct SGCORE_EXPORT LightBase
     {
         Ref<IFrameBuffer> m_shadowMap;
 
@@ -25,5 +24,3 @@ namespace SGCore
         std::uint8_t m_samplesCount = 16;
     };
 }
-
-#endif //SUNGEARENGINE_LIGHTBASE_H

@@ -9,6 +9,8 @@
 #include "AndroidLogcat.h"
 #include "SGCore/Utils/FileUtils.h"
 
+SGCore::Ref<SGCore::Logger> SGCore::Logger::m_defaultLogger {};
+
 std::string SGCore::Logger::levelToString(SGCore::Logger::Level level) noexcept
 {
     switch (level)

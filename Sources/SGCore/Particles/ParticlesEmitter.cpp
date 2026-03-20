@@ -12,7 +12,7 @@ void SGCore::ParticlesEmitter::processParticles(const ECS::registry_t& inRegistr
     {
         const auto& particleBaseInfo = inRegistry.get<EntityBaseInfo>(particle);
 
-        if(!particleBaseInfo.m_isActive) continue;
+        if(!particleBaseInfo.m_isEntityActive) continue;
 
         for(auto&& particleController : m_particleControllers)
         {

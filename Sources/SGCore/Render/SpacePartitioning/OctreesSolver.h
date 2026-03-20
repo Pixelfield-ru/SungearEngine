@@ -2,8 +2,7 @@
 // Created by ilya on 10.03.24.
 //
 
-#ifndef SUNGEARENGINE_OCTREESSOLVER_H
-#define SUNGEARENGINE_OCTREESSOLVER_H
+#pragma once
 
 #include "SGCore/Scene/ISystem.h"
 #include "SGCore/Utils/Slot.h"
@@ -15,7 +14,7 @@ namespace SGCore
 {
     struct OctreeNode;
     
-    class OctreesSolver : public IParallelSystem<OctreesSolver>
+    class SGCORE_EXPORT OctreesSolver : public IParallelSystem<OctreesSolver>
     {
     public:
         sg_implement_type_id(OctreesSolver, 26)
@@ -38,5 +37,3 @@ namespace SGCore
         std::vector<std::pair<ECS::entity_t, Transform::const_reg_t>> m_changedTransforms;
     };
 }
-
-#endif //SUNGEARENGINE_OCTREESSOLVER_H

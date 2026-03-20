@@ -2,8 +2,7 @@
 // Created by stuka on 04.01.2025.
 //
 
-#ifndef SUNGEARENGINE_VERTEX_H
-#define SUNGEARENGINE_VERTEX_H
+#pragma once
 
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
@@ -13,7 +12,7 @@
 namespace SGCore
 {
     // 92
-    struct Vertex
+    struct SGCORE_EXPORT Vertex
     {
         static constexpr std::int32_t max_bones_count = 8;
 
@@ -35,5 +34,3 @@ namespace SGCore
         }*/
     };
 }
-
-#endif //SUNGEARENGINE_VERTEX_H

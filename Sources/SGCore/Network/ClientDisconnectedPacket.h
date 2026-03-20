@@ -8,7 +8,7 @@
 
 namespace SGCore::Net
 {
-    struct ClientDisconnectedPacket
+    struct SGCORE_EXPORT ClientDisconnectedPacket
     {
         static inline std::string type_name = "SGCore::Net::ClientDisconnectedPacket";
     };

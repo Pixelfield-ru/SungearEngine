@@ -2,8 +2,7 @@
 // Created by ilya on 14.02.24.
 //
 
-#ifndef SUNGEARENGINE_ATMOSPHEREUPDATER_H
-#define SUNGEARENGINE_ATMOSPHEREUPDATER_H
+#pragma once
 
 #include "SGCore/Utils/Timer.h"
 #include "SGCore/Scene/ISystem.h"
@@ -12,7 +11,7 @@ namespace SGCore
 {
     class IUniformBuffer;
     
-    struct AtmosphereUpdater : public ISystem
+    struct SGCORE_EXPORT AtmosphereUpdater : public ISystem
     {
         sg_implement_type_id(AtmosphereUpdater, 18)
 
@@ -32,5 +31,3 @@ namespace SGCore
         };
     };
 }
-
-#endif //SUNGEARENGINE_ATMOSPHEREUPDATER_H

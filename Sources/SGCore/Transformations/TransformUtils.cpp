@@ -133,31 +133,32 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
 
         // ================================================= getting final TRS
 
-        glm::vec3 finalScale;
+        /*glm::vec3 finalScale;
         glm::quat finalRotation;
         glm::vec3 finalTranslation;
         glm::vec3 finalSkew;
         glm::vec4 finalPerspective;
 
+        // DECOMPOSE IS VERY HEAVY
         glm::decompose(childFinalTransform.m_animatedModelMatrix, finalScale, finalRotation, finalTranslation, finalSkew,
-                       finalPerspective);
+                       finalPerspective);*/
 
         childFinalTransform.m_lastPosition = childFinalTransform.m_position;
         childFinalTransform.m_lastRotation = childFinalTransform.m_rotation;
         childFinalTransform.m_lastScale = childFinalTransform.m_scale;
 
-        /*glm::vec3 finalTranslation = childOwnTransform.m_position;
-        glm::quat finalRotation = childOwnTransform.m_rotation;
-        glm::vec3 finalScale = childOwnTransform.m_scale;
+        auto finalTranslation = childOwnTransform.m_position;
+        auto finalRotation = childOwnTransform.m_rotation;
+        auto finalScale = childOwnTransform.m_scale;
 
         if(parentTransform)
         {
-            const auto m = parentTransform->m_finalTransform.m_animatedModelMatrix * childTransform.m_boneMatrix;
+            const auto childAnimatedMatrix = parentTransform->m_finalTransform.m_animatedModelMatrix * childTransform.m_boneMatrix;
 
-            finalTranslation = m * glm::vec4(finalTranslation, 1.0f);
+            finalTranslation = childAnimatedMatrix * glm::vec4(finalTranslation, 1.0f);
             finalRotation = parentTransform->m_finalTransform.m_rotation * finalRotation;
             finalScale = parentTransform->m_finalTransform.m_scale * finalScale;
-        }*/
+        }
 
         childFinalTransform.m_position = finalTranslation;
         childFinalTransform.m_rotation = finalRotation;

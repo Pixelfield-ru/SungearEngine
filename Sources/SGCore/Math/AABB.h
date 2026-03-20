@@ -2,8 +2,7 @@
 // Created by ilya on 10.03.24.
 //
 
-#ifndef SUNGEARENGINE_AABB_H
-#define SUNGEARENGINE_AABB_H
+#pragma once
 
 // for glm/gtx/matrix_decompose.hpp
 #define GLM_ENABLE_EXPERIMENTAL
@@ -306,5 +305,3 @@ struct std::hash<SGCore::AABB<ScalarT>>
         return SGCore::MathUtils::hashVector(k.m_min) ^ SGCore::MathUtils::hashVector(k.m_max);
     }
 };
-
-#endif //SUNGEARENGINE_AABB_H

@@ -4,14 +4,12 @@
 
 #pragma once
 
-#pragma once
-
 #include "SGCore/Math/MathUtils.h"
 #include "SGCore/Math/AABB.h"
 
 namespace SGCore
 {
-    struct TransformBase
+    struct SGCORE_EXPORT TransformBase
     {
         friend struct TransformationsUpdater;
 

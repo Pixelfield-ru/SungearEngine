@@ -2,8 +2,7 @@
 // Created by stuka on 17.12.2024.
 //
 
-#ifndef SUNGEARENGINE_OUTLINEPASS_H
-#define SUNGEARENGINE_OUTLINEPASS_H
+#pragma once
 
 #include "SGCore/Render/IRenderPass.h"
 
@@ -11,7 +10,7 @@ namespace SGCore
 {
     class IMeshData;
 
-    struct OutlinePass : public IRenderPass
+    struct SGCORE_EXPORT OutlinePass : public IRenderPass
     {
         float m_outlineThickness = 3.0;
         glm::vec4 m_outlineColor { 0.5, 0.5, 0.0, 1.0 };
@@ -23,5 +22,3 @@ namespace SGCore
         void render(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline) noexcept final;
     };
 }
-
-#endif //SUNGEARENGINE_OUTLINEPASS_H

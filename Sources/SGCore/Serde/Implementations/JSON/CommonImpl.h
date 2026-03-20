@@ -2,8 +2,7 @@
 // Created by stuka on 20.10.2024.
 //
 
-#ifndef SUNGEARENGINE_JSON_COMMONIMPL_H
-#define SUNGEARENGINE_JSON_COMMONIMPL_H
+#pragma once
 
 #include "SGCore/Utils/TypeTraits.h"
 #include "SGCore/Serde/Common.h"
@@ -540,5 +539,3 @@ namespace SGCore::Serde
         rapidjson::Value* m_typeNameValue { };
     };
 }
-
-#endif // SUNGEARENGINE_JSON_COMMONIMPL_H

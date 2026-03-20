@@ -13,7 +13,7 @@
 
 namespace SGCore::Navigation
 {
-    struct NavMesh : ECS::Component<NavMesh, const NavMesh>
+    struct SGCORE_EXPORT NavMesh : ECS::Component<NavMesh, const NavMesh>
     {
         NavMeshConfig m_config{};
         std::vector<MathPrimitivesUtils::Triangle<>> m_inputSceneTriangles{};

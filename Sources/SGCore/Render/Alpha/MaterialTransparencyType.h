@@ -2,8 +2,7 @@
 // Created by stuka on 31.12.2024.
 //
 
-#ifndef SUNGEARENGINE_MATERIALTRANSPARENCYTYPE_H
-#define SUNGEARENGINE_MATERIALTRANSPARENCYTYPE_H
+#pragma once
 
 namespace SGCore
 {
@@ -14,5 +13,3 @@ namespace SGCore
         MAT_MASK
     };
 }
-
-#endif //SUNGEARENGINE_MATERIALTRANSPARENCYTYPE_H

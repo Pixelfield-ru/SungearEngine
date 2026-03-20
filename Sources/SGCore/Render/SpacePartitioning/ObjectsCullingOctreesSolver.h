@@ -2,8 +2,7 @@
 // Created by ilya on 10.03.24.
 //
 
-#ifndef SUNGEARENGINE_OBJECTSCULLINGOCTREESSOLVER_H
-#define SUNGEARENGINE_OBJECTSCULLINGOCTREESSOLVER_H
+#pragma once
 
 #include "SGCore/Scene/ISystem.h"
 #include "SGCore/Scene/IParallelSystemSubprocess.h"
@@ -12,7 +11,7 @@
 
 namespace SGCore
 {
-    struct ObjectsCullingOctreesSolver : public IParallelSystemSubprocess<OctreesSolver>
+    struct SGCORE_EXPORT ObjectsCullingOctreesSolver : public IParallelSystemSubprocess<OctreesSolver>
     {
         void fixedUpdate(const double& dt, const double& fixedDt, OctreesSolver* parent) noexcept final;
         
@@ -21,5 +20,3 @@ namespace SGCore
                       bool isParentNodeVisible) noexcept;
     };
 }
-
-#endif //SUNGEARENGINE_OBJECTSCULLINGOCTREESSOLVER_H

@@ -2,10 +2,10 @@
 // Created by ilya on 18.02.24.
 //
 
-#ifndef SUNGEARENGINE_PHYSICSDEBUGDRAW_H
-#define SUNGEARENGINE_PHYSICSDEBUGDRAW_H
+#pragma once
 
 #include <LinearMath/btIDebugDraw.h>
+#include <sgcore_export.h>
 
 namespace SGCore
 {
@@ -15,7 +15,7 @@ namespace SGCore
     class IIndexBuffer;
     class Scene;
     
-    struct PhysicsDebugDraw : btIDebugDraw
+    struct SGCORE_EXPORT PhysicsDebugDraw : btIDebugDraw
     {
         void drawLine(const btVector3& from, const btVector3& to, const btVector3& color) override;
         
@@ -33,5 +33,3 @@ namespace SGCore
         int m_debugMode = 0;
     };
 }
-
-#endif //SUNGEARENGINE_PHYSICSDEBUGDRAW_H

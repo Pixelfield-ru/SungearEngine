@@ -2,8 +2,7 @@
 // Created by stuka on 20.10.2024.
 //
 
-#ifndef SUNGEARENGINE_SERDE_COMMON_H
-#define SUNGEARENGINE_SERDE_COMMON_H
+#pragma once
 
 #include "SGCore/Utils/TypeTraits.h"
 
@@ -57,5 +56,3 @@ namespace SGCore::Serde
         }
     }
 }
-
-#endif // SUNGEARENGINE_SERDE_COMMON_H

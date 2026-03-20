@@ -2,8 +2,9 @@
 // Created by stuka on 07.01.2025.
 //
 
-#ifndef SUNGEARENGINE_MOTIONPLANNERCONNECTION_H
-#define SUNGEARENGINE_MOTIONPLANNERCONNECTION_H
+#pragma once
+
+#include <sgcore_export.h>
 
 #include "SGCore/Actions/AlwaysTrueAction.h"
 #include "SGCore/Main/CoreGlobals.h"
@@ -12,7 +13,7 @@ namespace SGCore
 {
     struct MotionPlannerNode;
 
-    struct MotionPlannerConnection
+    struct SGCORE_EXPORT MotionPlannerConnection
     {
         float m_currentBlendTime = 0.0f;
         float m_blendTime = 1.0f;
@@ -37,5 +38,3 @@ namespace SGCore
         [[nodiscard]] MotionPlannerConnection copyStructure(const Ref<MotionPlannerNode>& baseNode) const noexcept;
     };
 }
-
-#endif //SUNGEARENGINE_MOTIONPLANNERCONNECTION_H

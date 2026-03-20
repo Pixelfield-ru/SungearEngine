@@ -2,8 +2,7 @@
 // Created by stuka on 07.01.2025.
 //
 
-#ifndef SUNGEARENGINE_MOTIONPLANNERNODE_H
-#define SUNGEARENGINE_MOTIONPLANNERNODE_H
+#pragma once
 
 #include "MotionAnyState.h"
 #include "SGCore/Main/CoreGlobals.h"
@@ -18,7 +17,7 @@ namespace SGCore
     /**
      * YOU CAN SERIALIZE ONLY Ref<MotionPlannerNode> (Ref is alias for std::shared_ptr).
      */
-    struct MotionPlannerNode : IAssetsRefsResolver<MotionPlannerNode>, public std::enable_shared_from_this<MotionPlannerNode>
+    struct SGCORE_EXPORT MotionPlannerNode : IAssetsRefsResolver<MotionPlannerNode>, public std::enable_shared_from_this<MotionPlannerNode>
     {
         sg_serde_as_friend()
         sg_assets_refs_resolver_as_friend
@@ -53,7 +52,7 @@ namespace SGCore
 
         [[nodiscard]] Ref<MotionPlannerNode> copyStructure() const noexcept;
 
-        [[nodiscard]] SGCORE_EXPORT static Ref<MotionPlannerNode> createNode() noexcept;
+        [[nodiscard]] static Ref<MotionPlannerNode> createNode() noexcept;
 
     private:
         // uses to interpolate between two animations when connection is activated
@@ -69,5 +68,3 @@ namespace SGCore
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept;
     };
 }
-
-#endif //SUNGEARENGINE_MOTIONPLANNERNODE_H

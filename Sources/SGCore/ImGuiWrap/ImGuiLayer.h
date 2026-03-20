@@ -2,8 +2,7 @@
 // Created by Ilya on 18.11.2023.
 //
 
-#ifndef SUNGEARENGINE_IMGUILAYER_H
-#define SUNGEARENGINE_IMGUILAYER_H
+#pragma once
 
 #include <sgcore_export.h>
 
@@ -33,5 +32,3 @@ namespace SGCore::ImGuiWrap
         static inline ImGuiContext* m_currentContext = nullptr;
     };
 }
-
-#endif // SUNGEARENGINE_IMGUILAYER_H

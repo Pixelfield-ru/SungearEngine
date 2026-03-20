@@ -2,8 +2,7 @@
 // Created by ilya on 24.02.24.
 //
 
-#ifndef SUNGEARENGINE_FONTSPECIALIZATION_H
-#define SUNGEARENGINE_FONTSPECIALIZATION_H
+#pragma once
 
 #include <msdf-atlas-gen/msdf-atlas-gen/BitmapAtlasStorage.h>
 #include <msdf-atlas-gen/msdf-atlas-gen/DynamicAtlas.h>
@@ -23,7 +22,7 @@ namespace SGCore
 
 namespace SGCore::UI
 {
-    struct FontSpecializationSettings
+    struct SGCORE_EXPORT FontSpecializationSettings
     {
         /// PLEASE, CHANGE THIS ONLY IF YOU WANT TO RESIZE MSDF ATLAS. GENERATION OF MSDF ATLAS IS SLOW OPERATION.
         size_t m_height = 16;
@@ -33,7 +32,7 @@ namespace SGCore::UI
         bool operator!=(const FontSpecializationSettings& other) const noexcept;
     };
 
-    struct FontGlyph
+    struct SGCORE_EXPORT FontGlyph
     {
         friend struct FontSpecialization;
 
@@ -71,7 +70,7 @@ namespace SGCore::UI
     struct FontSpecializationRenderer;
     struct Font;
     
-    struct FontSpecialization : public std::enable_shared_from_this<FontSpecialization>
+    struct SGCORE_EXPORT FontSpecialization : public std::enable_shared_from_this<FontSpecialization>
     {
         friend struct Font;
 
@@ -140,5 +139,3 @@ struct std::hash<SGCore::UI::FontSpecializationSettings>
         return std::hash<size_t>()(k.m_height);
     }
 };
-
-#endif //SUNGEARENGINE_FONTSPECIALIZATION_H

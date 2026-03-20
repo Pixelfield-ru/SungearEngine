@@ -16,7 +16,7 @@ namespace SGCore::Threading
 {
     struct Task;
 
-    struct Thread : public std::enable_shared_from_this<Thread>
+    struct SGCORE_EXPORT Thread : public std::enable_shared_from_this<Thread>
     {
         friend struct Task;
         friend struct ThreadsManager;
@@ -93,7 +93,7 @@ namespace SGCore::Threading
         std::chrono::milliseconds m_sleepTime;
     };
     
-    struct MainThread : public Thread
+    struct SGCORE_EXPORT MainThread : public Thread
     {
         friend struct ThreadsManager;
         

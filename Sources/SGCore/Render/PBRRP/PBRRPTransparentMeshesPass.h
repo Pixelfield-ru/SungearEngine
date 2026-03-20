@@ -8,7 +8,7 @@
 
 namespace SGCore
 {
-    struct PBRRPTransparentMeshesPass : IGeometryPass
+    struct SGCORE_EXPORT PBRRPTransparentMeshesPass : IGeometryPass
     {
         void create(const Ref<IRenderPipeline>& parentRenderPipeline) final;
 

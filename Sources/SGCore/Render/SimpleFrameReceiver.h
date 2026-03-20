@@ -2,17 +2,14 @@
 // Created by ilya on 25.02.24.
 //
 
-#ifndef SUNGEARENGINE_DEFAULTFRAMERECEIVER_H
-#define SUNGEARENGINE_DEFAULTFRAMERECEIVER_H
+#pragma once
 
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 
 namespace SGCore
 {
-    struct SimpleFrameReceiver
+    struct SGCORE_EXPORT SimpleFrameReceiver
     {
         Ref<IFrameBuffer> m_receiver;
     };
 }
-
-#endif //SUNGEARENGINE_DEFAULTFRAMERECEIVER_H

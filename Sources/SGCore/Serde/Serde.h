@@ -2,8 +2,7 @@
 // Created by Ilya on 14.08.2024.
 //
 
-#ifndef SUNGEARENGINE_SERDE_H
-#define SUNGEARENGINE_SERDE_H
+#pragma once
 
 // for json implementation
 #include <rapidjson/rapidjson.h>
@@ -95,10 +94,10 @@ namespace SGCore::Serde
     {
         /// Be careful with reference that this function returns. It can be invalidated if new serializer will be added.\n
         /// DO NOT STORE REFERENCE.
-        std::vector<std::byte*>& getExternalSerializers(size_t serializerTypeHash) noexcept;
+        SGCORE_EXPORT std::vector<std::byte*>& getExternalSerializers(size_t serializerTypeHash) noexcept;
         /// Be careful with reference that this function returns. It can be invalidated if new deserializer will be added.\n
         /// DO NOT STORE REFERENCE.
-        std::vector<std::byte*>& getExternalDeserializers(size_t serializerTypeHash) noexcept;
+        SGCORE_EXPORT std::vector<std::byte*>& getExternalDeserializers(size_t serializerTypeHash) noexcept;
 
         template<typename T, FormatType TFormatType, typename... SharedDataT>
         size_t getStorageTypeHash() noexcept
@@ -1612,5 +1611,3 @@ namespace SGCore::Serde
 
 // including implementations
 #include "Implementations/JSON/CommonImpl.h"
-
-#endif //SUNGEARENGINE_SERDE_H

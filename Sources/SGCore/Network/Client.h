@@ -2,8 +2,7 @@
 // Created by stuka on 03.08.2025.
 //
 
-#ifndef SUNGEARENGINE_NETWORK_CLIENT_H
-#define SUNGEARENGINE_NETWORK_CLIENT_H
+#pragma once
 
 #include "SGCore/Utils/Platform.h"
 
@@ -36,7 +35,7 @@ namespace SGCore::Net
         std::uint64_t m_dataSize = 0;
     };
 
-    struct Client
+    struct SGCORE_EXPORT Client
     {
         using socket_t = boost::asio::ip::udp::socket;
         using endpoint_t = boost::asio::ip::udp::endpoint;
@@ -113,5 +112,3 @@ namespace SGCore::Net
         std::atomic<bool> m_isConnected = false;
     };
 }
-
-#endif // SUNGEARENGINE_NETWORK_CLIENT_H

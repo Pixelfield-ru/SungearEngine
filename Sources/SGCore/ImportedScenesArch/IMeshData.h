@@ -1,5 +1,4 @@
-#ifndef SUNGEARENGINE_IMESH_H
-#define SUNGEARENGINE_IMESH_H
+#pragma once
 
 #include <BulletCollision/CollisionShapes/btTriangleMesh.h>
 
@@ -28,7 +27,7 @@ namespace SGCore
 
     class AssetManager;
 
-    struct VertexColorsSet
+    struct SGCORE_EXPORT VertexColorsSet
     {
         sg_serde_as_friend()
 
@@ -41,7 +40,7 @@ namespace SGCore
         std::streamsize m_sizeInPackage = 0;
     };
 
-    class IMeshData : public IAsset, public AssetRefFromThis<IMeshData>, public IAssetsRefsResolver<IMeshData>
+    class SGCORE_EXPORT IMeshData : public IAsset, public AssetRefFromThis<IMeshData>, public IAssetsRefsResolver<IMeshData>
     {
     public:
         sg_serde_as_friend()
@@ -189,5 +188,3 @@ namespace SGCore
         }
     };
 }
-
-#endif //SUNGEARENGINE_IMESH_H

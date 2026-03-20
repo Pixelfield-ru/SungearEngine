@@ -2,8 +2,7 @@
 // Created by Ilya on 09.10.2023.
 //
 
-#ifndef SUNGEARENGINE_ASSIMPUTILS_H
-#define SUNGEARENGINE_ASSIMPUTILS_H
+#pragma once
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
@@ -47,5 +46,3 @@ namespace SGCore::AssimpUtils
         return glm::quat { quaternion.w, quaternion.x, quaternion.y, quaternion.z };
     }
 }
-
-#endif //SUNGEARENGINE_ASSIMPUTILS_H

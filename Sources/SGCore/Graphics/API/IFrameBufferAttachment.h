@@ -2,14 +2,15 @@
 // Created by stuka on 23.07.2023.
 //
 
-#ifndef SUNGEARENGINE_IFRAMEBUFFERATTACHMENT_H
-#define SUNGEARENGINE_IFRAMEBUFFERATTACHMENT_H
+#pragma once
+
+#include <sgcore_export.h>
 
 #include "GraphicsDataTypes.h"
 
 namespace SGCore
 {
-    struct IFrameBufferAttachment
+    struct SGCORE_EXPORT IFrameBufferAttachment
     {
         // USE ONLY FOR OPENGL
         std::uint32_t m_handler = 0;
@@ -24,5 +25,3 @@ namespace SGCore
         std::uint8_t m_multisamplingSamplesCount = 8;
     };
 }
-
-#endif //SUNGEARENGINE_IFRAMEBUFFERATTACHMENT_H

@@ -1,16 +1,12 @@
-#ifndef SUNGEARENGINE_BOXCOMPONENT_H
-#define SUNGEARENGINE_BOXCOMPONENT_H
+#pragma once
 
-#include <glm/integer.hpp>
-
-#include "SGCore/Transformations/TransformBase.h"
 #include "SGCore/Render/MeshBase.h"
 #include "GizmoBase.h"
 #include "SGCore/ECS/Component.h"
 
 namespace SGCore
 {
-    struct BoxGizmo : ECS::Component<BoxGizmo, const BoxGizmo>
+    struct SGCORE_EXPORT BoxGizmo : ECS::Component<BoxGizmo, const BoxGizmo>
     {
         GizmoBase m_base;
 
@@ -19,5 +15,3 @@ namespace SGCore
         glm::vec3 m_lastSize { 0.0, 0.0, 0.0 };
     };
 }
-
-#endif //SUNGEARENGINE_BOXCOMPONENT_H

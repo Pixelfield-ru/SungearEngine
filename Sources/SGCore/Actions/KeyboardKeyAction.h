@@ -2,8 +2,7 @@
 // Created by stuka on 14.01.2025.
 //
 
-#ifndef SUNGEARENGINE_KEYBOARDKEYACTION_H
-#define SUNGEARENGINE_KEYBOARDKEYACTION_H
+#pragma once
 
 #include "IAction.h"
 #include "SGCore/Input/PCInput.h"
@@ -13,7 +12,7 @@ namespace SGCore
     /**
      * Action to check keyboard key state.
      */
-    struct KeyboardKeyAction : IAction<Input::KeyState()>
+    struct SGCORE_EXPORT KeyboardKeyAction : IAction<Input::KeyState()>
     {
         /**
          * Keyboard key to check state.
@@ -53,5 +52,3 @@ namespace SGCore
         }
     };
 }
-
-#endif //SUNGEARENGINE_KEYBOARDKEYACTION_H

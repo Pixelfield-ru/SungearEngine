@@ -5,10 +5,11 @@
 #pragma once
 
 #include <cstdint>
+#include <sgcore_export.h>
 
 namespace SGCore::Navigation
 {
-    struct NavMeshConfig
+    struct SGCORE_EXPORT NavMeshConfig
     {
         float m_agentRadius = 0.5f;
         float m_agentHeight = 2.0f;

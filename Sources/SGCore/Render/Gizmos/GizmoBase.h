@@ -2,15 +2,14 @@
 // Created by stuka on 02.02.2024.
 //
 
-#ifndef SUNGEARENGINE_GIZMOBASE_H
-#define SUNGEARENGINE_GIZMOBASE_H
+#pragma once
 
 #include "SGCore/Render/MeshBase.h"
 #include "SGCore/Graphics/API/RenderState.h"
 
 namespace SGCore
 {
-    struct GizmoBase
+    struct SGCORE_EXPORT GizmoBase
     {
         GizmoBase() noexcept;
         GizmoBase(const GizmoBase&) = default;
@@ -29,5 +28,3 @@ namespace SGCore
         GizmoBase& operator=(GizmoBase&&) noexcept = default;
     };
 }
-
-#endif //SUNGEARENGINE_GIZMOBASE_H

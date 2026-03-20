@@ -2,8 +2,7 @@
 // Created by ilya on 20.03.24.
 //
 
-#ifndef SUNGEARENGINE_PLUGINWRAP_H
-#define SUNGEARENGINE_PLUGINWRAP_H
+#pragma once
 
 #include "DynamicLibrary.h"
 #include "IPlugin.h"
@@ -13,7 +12,7 @@ namespace SGCore
     /**
      * A wrapper structure containing an SGCore::IPlugin structure object and the dynamic library (SGCore::DynamicLibrary) from which the plugin was loaded.
      */
-    struct PluginWrap
+    struct SGCORE_EXPORT PluginWrap
     {
         friend struct PluginsManager;
         
@@ -38,5 +37,3 @@ namespace SGCore
         Ref<IPlugin> m_plugin;
     };
 }
-
-#endif //SUNGEARENGINE_PLUGINWRAP_H

@@ -2,8 +2,7 @@
 // Created by stuka on 03.08.2025.
 //
 
-#ifndef SUNGEARENGINE_NETWORK_PACKET_H
-#define SUNGEARENGINE_NETWORK_PACKET_H
+#pragma once
 
 #include <cstdint>
 #include <vector>
@@ -48,5 +47,3 @@ namespace SGCore::Net
         std::int64_t m_dataRemaining = m_size;
     };*/
 }
-
-#endif // SUNGEARENGINE_NETWORK_PACKET_H

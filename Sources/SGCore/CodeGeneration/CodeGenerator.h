@@ -2,8 +2,7 @@
 // Created by stuka on 10.09.2024.
 //
 
-#ifndef SUNGEARENGINE_CODEGENERATOR_H
-#define SUNGEARENGINE_CODEGENERATOR_H
+#pragma once
 
 #include <any>
 #include <optional>
@@ -52,7 +51,7 @@ namespace SGCore::CodeGen
         struct Variable;
         struct Function;
         
-        struct Type
+        struct SGCORE_EXPORT Type
         {
             std::string m_name;
             std::vector<Type> m_extends;
@@ -67,7 +66,7 @@ namespace SGCore::CodeGen
             [[nodiscard]] bool instanceof(const std::string& typeName) const noexcept;
         };
 
-        struct Variable
+        struct SGCORE_EXPORT Variable
         {
             // friend struct Generator;
 
@@ -109,7 +108,7 @@ namespace SGCore::CodeGen
             std::unordered_map<std::string, std::shared_ptr<Variable>> m_members;
         };
 
-        struct FunctionArgument
+        struct SGCORE_EXPORT FunctionArgument
         {
             std::string m_name;
             bool m_isNecessary = true;
@@ -117,7 +116,7 @@ namespace SGCore::CodeGen
             std::any m_data;
         };
 
-        struct Function
+        struct SGCORE_EXPORT Function
         {
             std::string m_name;
             Type m_returnType;
@@ -131,7 +130,7 @@ namespace SGCore::CodeGen
                                    const std::vector<FunctionArgument>& args)> m_functor;
         };
 
-        struct ASTToken
+        struct SGCORE_EXPORT ASTToken
         {
             Tokens m_type = Tokens::K_EOF;
             // optional
@@ -147,7 +146,7 @@ namespace SGCore::CodeGen
         };
     }
 
-    struct Generator
+    struct SGCORE_EXPORT Generator
     {
         Generator();
         Generator(const Generator&) = default;
@@ -255,5 +254,3 @@ namespace SGCore::CodeGen
         // =================================
     };
 }
-
-#endif //SUNGEARENGINE_CODEGENERATOR_H

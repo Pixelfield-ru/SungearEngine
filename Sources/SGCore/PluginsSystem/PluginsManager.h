@@ -2,10 +2,8 @@
 // Created by ilya on 19.03.24.
 //
 
-#ifndef SUNGEARENGINE_PLUGINSMANAGER_H
-#define SUNGEARENGINE_PLUGINSMANAGER_H
+#pragma once
 
-#include <unordered_map>
 #include <vector>
 
 #include "sgcore_export.h"
@@ -89,5 +87,3 @@ namespace SGCore
         static inline std::vector<Ref<PluginWrap>> m_plugins;
     };
 }
-
-#endif //SUNGEARENGINE_PLUGINSMANAGER_H

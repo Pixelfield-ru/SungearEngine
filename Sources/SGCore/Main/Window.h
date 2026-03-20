@@ -1,5 +1,4 @@
-#ifndef SUNGEARENGINE_PROGRAMWINDOW_H
-#define SUNGEARENGINE_PROGRAMWINDOW_H
+#pragma once
 
 #include <sgcore_export.h>
 #include "SGCore/Utils/Platform.h"
@@ -27,7 +26,7 @@ namespace SGCore
      * Note that the config changes dynamically.
      */
      // TODO: make config save
-    class WindowConfig
+    class SGCORE_EXPORT WindowConfig
     {
         friend struct Window;
         
@@ -206,6 +205,3 @@ namespace SGCore
 #endif
     };
 }
-
-
-#endif // SUNGEARENGINE_PROGRAMWINDOW_H

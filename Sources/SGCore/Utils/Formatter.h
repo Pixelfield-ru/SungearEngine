@@ -2,16 +2,16 @@
 // Created by ilya on 27.06.24.
 //
 
-#ifndef SUNGEARENGINE_FORMATTER_H
-#define SUNGEARENGINE_FORMATTER_H
+#pragma once
 
 #include <string>
 #include <any>
 #include <unordered_map>
+#include <sgcore_export.h>
 
 namespace SGCore
 {
-    struct Formatter
+    struct SGCORE_EXPORT Formatter
     {
         std::string m_keyOpenExpr = "${";
         std::string m_keyCloseExpr = "}$";
@@ -26,5 +26,3 @@ namespace SGCore
         std::unordered_map<std::string, std::any> m_markup;
     };
 }
-
-#endif //SUNGEARENGINE_FORMATTER_H

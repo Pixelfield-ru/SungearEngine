@@ -2,15 +2,14 @@
 // Created by stuka on 19.03.2025.
 //
 
-#ifndef SGCORESDFTEXTURE_H
-#define SGCORESDFTEXTURE_H
+#pragma once
 
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
 {
-    struct SDFTexture
+    struct SGCORE_EXPORT SDFTexture
     {
     private:
         static constexpr glm::ivec2 pointInside = { 0, 0 };
@@ -119,5 +118,3 @@ namespace SGCore
         }
     };
 }
-
-#endif // SGCORESDFTEXTURE_H

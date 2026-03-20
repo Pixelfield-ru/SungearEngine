@@ -2,14 +2,15 @@
 // Created by stuka on 28.07.2025.
 //
 
-#ifndef SUNGEARENGINE_AUTOINSTANCING_H
-#define SUNGEARENGINE_AUTOINSTANCING_H
+#pragma once
+
+#include <sgcore_export.h>
 
 #include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
 {
-    struct AutoInstancing
+    struct SGCORE_EXPORT AutoInstancing
     {
         /**
          * Automatically distributes an entity to an instancing object.
@@ -20,5 +21,3 @@ namespace SGCore
         static ECS::entity_t addEntity(const ECS::entity_t& entity, ECS::registry_t& inRegistry) noexcept;
     };
 }
-
-#endif // SUNGEARENGINE_AUTOINSTANCING_H

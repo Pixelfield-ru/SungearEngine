@@ -2,8 +2,7 @@
 // Created by stuka on 30.06.2023.
 //
 
-#ifndef SUNGEARENGINE_CORESETTINGS_H
-#define SUNGEARENGINE_CORESETTINGS_H
+#pragma once
 
 #define SG_CORE_MAJOR_VERSION 0
 #define SG_CORE_MINOR_VERSION 6
@@ -25,5 +24,3 @@ namespace SGCore
                 aiProcess_CalcTangentSpace;
     }
 }
-
-#endif //SUNGEARENGINE_CORESETTINGS_H

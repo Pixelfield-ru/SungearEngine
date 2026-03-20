@@ -2,8 +2,7 @@
 // Created by ilya on 10.03.24.
 //
 
-#ifndef SUNGEARENGINE_IPARALLELSYSTEM_H
-#define SUNGEARENGINE_IPARALLELSYSTEM_H
+#pragma once
 
 #include <SGCore/Threading/Thread.h>
 
@@ -108,5 +107,3 @@ namespace SGCore
         std::mutex m_subprocessesVectorEditMutex;
     };
 }
-
-#endif //SUNGEARENGINE_IPARALLELSYSTEM_H

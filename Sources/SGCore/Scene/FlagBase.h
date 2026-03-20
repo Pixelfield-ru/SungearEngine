@@ -2,8 +2,7 @@
 // Created by stuka on 04.02.2024.
 //
 
-#ifndef SUNGEARENGINE_FLAGBASE_H
-#define SUNGEARENGINE_FLAGBASE_H
+#pragma once
 
 namespace SGCore
 {
@@ -12,5 +11,3 @@ namespace SGCore
         using flag_type = void;
     };
 }
-
-#endif //SUNGEARENGINE_FLAGBASE_H

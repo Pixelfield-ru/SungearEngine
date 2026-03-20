@@ -10,9 +10,9 @@
 
 namespace SGCore::TerrainUtils
 {
-    void calculateVerticesUsingDisplacementMap(const Terrain::reg_t& terrain,
-                                               const ITexture2D* map,
-                                               float stepSize,
-                                               std::vector<Vertex>& outVertices,
-                                               std::vector<std::uint32_t>& outIndices) noexcept;
+    SGCORE_EXPORT void calculateVerticesUsingDisplacementMap(const Terrain::reg_t& terrain,
+                                                             const ITexture2D* map,
+                                                             float stepSize,
+                                                             std::vector<Vertex>& outVertices,
+                                                             std::vector<std::uint32_t>& outIndices) noexcept;
 }

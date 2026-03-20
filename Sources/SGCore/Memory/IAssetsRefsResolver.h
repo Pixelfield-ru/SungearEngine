@@ -2,8 +2,7 @@
 // Created by stuka on 17.11.2024.
 //
 
-#ifndef SUNGEARENGINE_IASSETSREFSRESOLVER_H
-#define SUNGEARENGINE_IASSETSREFSRESOLVER_H
+#pragma once
 
 #include "SGCore/Utils/Slot.h"
 #include "SGCore/Memory/AssetManager.h"
@@ -77,5 +76,3 @@ namespace SGCore
         };
     };
 }
-
-#endif //SUNGEARENGINE_IASSETSREFSRESOLVER_H

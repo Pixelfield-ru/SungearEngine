@@ -8,7 +8,7 @@
 
 namespace SGCore
 {
-    struct PBRRPVolumetricPass : public IGeometryPass
+    struct SGCORE_EXPORT PBRRPVolumetricPass : public IGeometryPass
     {
         void create(const Ref<IRenderPipeline>& parentRenderPipeline) final;
 

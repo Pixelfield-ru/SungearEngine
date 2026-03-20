@@ -2,15 +2,15 @@
 // Created by stuka on 16.06.2025.
 //
 
-#ifndef SUNGEARENGINE_BATCHVERTEX_H
-#define SUNGEARENGINE_BATCHVERTEX_H
+#pragma once
 
 #include <glm/vec3.hpp>
+#include <sgcore_export.h>
 
 namespace SGCore
 {
 #pragma pack(push, 1)
-    struct BatchVertex
+    struct SGCORE_EXPORT BatchVertex
     {
         // 5 rgb elements in struct BatchVertex
         static constexpr std::uint32_t components_count = 5;
@@ -23,5 +23,3 @@ namespace SGCore
     };
 #pragma pack(pop)
 }
-
-#endif // SUNGEARENGINE_BATCHVERTEX_H

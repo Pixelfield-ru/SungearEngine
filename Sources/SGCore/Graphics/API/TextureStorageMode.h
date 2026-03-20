@@ -2,8 +2,7 @@
 // Created by stuka on 03.07.2025.
 //
 
-#ifndef SUNGEARENGINE_TEXTURESTORAGEMODE_H
-#define SUNGEARENGINE_TEXTURESTORAGEMODE_H
+#pragma once
 
 #include <cstdint>
 
@@ -15,5 +14,3 @@ namespace SGCore
         TSM_RAM_AND_GPU
     };
 }
-
-#endif // SUNGEARENGINE_TEXTURESTORAGEMODE_H

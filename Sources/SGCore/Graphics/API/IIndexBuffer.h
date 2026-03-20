@@ -2,8 +2,9 @@
 // Created by stuka on 24.04.2023.
 //
 
-#ifndef NATIVECORE_IINDEXBUFFER_H
-#define NATIVECORE_IINDEXBUFFER_H
+#pragma once
+
+#include <sgcore_export.h>
 
 #include "GraphicsDataTypes.h"
 
@@ -11,7 +12,7 @@ namespace SGCore
 {
     class IVertexArray;
 
-    class IIndexBuffer
+    class SGCORE_EXPORT IIndexBuffer
     {
         friend class IVertexArray;
 
@@ -41,5 +42,3 @@ namespace SGCore
         IVertexArray* m_parentVertexArray { };
     };
 }
-
-#endif //NATIVECORE_IINDEXBUFFER_H

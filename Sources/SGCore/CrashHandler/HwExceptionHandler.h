@@ -2,8 +2,7 @@
 // Created by Ilya on 15.03.2024.
 //
 
-#ifndef SUNGEARENGINE_HWEXCEPTIONHANDLER_H
-#define SUNGEARENGINE_HWEXCEPTIONHANDLER_H
+#pragma once
 
 #include "sgcore_export.h"
 
@@ -301,5 +300,3 @@ namespace SGCore
         }
     };
 }
-
-#endif //SUNGEARENGINE_HWEXCEPTIONHANDLER_H

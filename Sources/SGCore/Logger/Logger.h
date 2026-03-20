@@ -33,7 +33,7 @@
 
 namespace SGCore
 {
-    struct Logger
+    struct SGCORE_EXPORT Logger
     {
     private:
         template<bool UseStaticFormatting, typename... Args>
@@ -65,9 +65,9 @@ namespace SGCore
             return std::make_pair(lvl, tag);
         }
 
-        struct MessageKeyHash
+        struct SGCORE_EXPORT MessageKeyHash
         {
-            inline std::size_t operator()(const messages_key& messagesKey) const noexcept
+            std::size_t operator()(const messages_key& messagesKey) const noexcept
             {
                 size_t h = std::hash<Level>()(messagesKey.first) ^ std::hash<std::string>()(messagesKey.second);
                 return h;
@@ -196,7 +196,7 @@ namespace SGCore
     private:
         Logger(const std::string& loggerName, const std::filesystem::path& filePath, bool saveMessages = true) noexcept;
 
-        static inline Ref<Logger> m_defaultLogger;
+        static Ref<Logger> m_defaultLogger;
         Ref<spdlog::logger> m_spdlogLogger;
 
         std::mutex m_mutex;

@@ -1,5 +1,4 @@
-#ifndef SUNGEARENGINE_SCENE_H
-#define SUNGEARENGINE_SCENE_H
+#pragma once
 
 #include <sgcore_export.h>
 #include <optional>
@@ -18,14 +17,14 @@ namespace SGCore
 {
     struct UIDocument;
 
-    struct SceneEntitySaveInfo
+    struct SGCORE_EXPORT SceneEntitySaveInfo
     {
         const Scene* m_serializableScene { };
         ECS::entity_t m_serializableEntity { };
     };
 
     // todo: make on path changed event
-    struct SceneMetaInfo
+    struct SGCORE_EXPORT SceneMetaInfo
     {
         std::string m_sceneName;
         std::filesystem::path m_sceneLocalPath;
@@ -38,7 +37,7 @@ namespace SGCore
 
     private:
         template<Serde::FormatType TFormatType>
-        struct SGCORE_EXPORT SceneSerdeEvents
+        struct SceneSerdeEvents
         {
             static inline Signal<void(Serde::SerializableValueView<const ECS::entity_t, TFormatType>& entityView,
                                       const Scene& serializableScene)> onEntitySerialize;
@@ -195,5 +194,3 @@ namespace SGCore
         static inline std::vector<SceneMetaInfo> m_scenesMeta;
     };
 }
-
-#endif //SUNGEARENGINE_SCENE_H

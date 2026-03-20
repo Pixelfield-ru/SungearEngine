@@ -14,7 +14,7 @@ namespace SGCore::GOAP
     /**
      * Goal that must be reached by entity.
      */
-    struct Goal
+    struct SGCORE_EXPORT Goal
     {
         /// Priority of plan in queue.
         std::int32_t m_priority {};

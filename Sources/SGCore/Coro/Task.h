@@ -2,8 +2,7 @@
 // Created by stuka on 18.05.2025.
 //
 
-#ifndef SUNGEARENGINE_CORO_TASK_H
-#define SUNGEARENGINE_CORO_TASK_H
+#pragma once
 
 #include <coroutine>
 #include <exception>
@@ -236,5 +235,3 @@ namespace SGCore::Coro
         bool m_isRunning = true;
     };
 }
-
-#endif // SUNGEARENGINE_CORO_TASK_H

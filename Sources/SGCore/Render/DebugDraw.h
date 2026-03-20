@@ -2,8 +2,7 @@
 // Created by ilya on 08.03.24.
 //
 
-#ifndef SUNGEARENGINE_DEBUGDRAW_H
-#define SUNGEARENGINE_DEBUGDRAW_H
+#pragma once
 
 #include "IRenderPass.h"
 #include "SGCore/Graphics/API/RenderState.h"
@@ -27,7 +26,7 @@ namespace SGCore
     
     // TODO: add drawMesh function
     // TODO: add flag updateArrays to draw*** functions
-    class DebugDraw : public IRenderPass
+    class SGCORE_EXPORT DebugDraw : public IRenderPass
     {
     public:
         // sg_implement_type_id(DebugDraw, 25)
@@ -58,7 +57,7 @@ namespace SGCore
         int m_debugMode = 0;
 
         // TODO: MAKE SAVING
-        std::uint32_t m_maxLines = 5'000'000;
+        std::uint32_t m_maxLines = 1'000'000;
         std::uint32_t m_currentDrawingLine = 0;
         
         std::vector<float> m_linesPositions;
@@ -72,5 +71,3 @@ namespace SGCore
         };
     };
 }
-
-#endif //SUNGEARENGINE_DEBUGDRAW_H

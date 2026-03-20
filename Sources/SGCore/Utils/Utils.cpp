@@ -121,3 +121,18 @@ std::chrono::high_resolution_clock::time_point SGCore::now() noexcept
 {
     return std::chrono::high_resolution_clock::now();
 }
+
+std::uint32_t SGCore::hashString(const char* str, unsigned salt)
+{
+    std::uint32_t h = 0x811C9DC5 ^ salt;
+    while (*str)
+    {
+        h = (h ^ static_cast<std::uint8_t>(*str++)) * 0x01000193;
+    }
+    return h;
+}
+
+size_t SGCore::hashString(const std::string& str, unsigned salt)
+{
+    return hashString(str.data());
+}

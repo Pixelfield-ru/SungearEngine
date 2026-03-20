@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <stack>
+
 #include "SGCore/Scene/ISystem.h"
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/Utils/Signal.h"
@@ -17,7 +19,7 @@ namespace SGCore
 
     struct TransformBase;
 
-    struct TransformationsUpdater : public IParallelSystem<TransformationsUpdater>
+    struct SGCORE_EXPORT TransformationsUpdater : public IParallelSystem<TransformationsUpdater>
     {
         sg_implement_type_id(TransformationsUpdater, 20)
 
@@ -33,10 +35,14 @@ namespace SGCore
         Signal<void(const Ref<ECS::registry_t>& registry, const ECS::entity_t&, const Transform::const_reg_t)> onTransformChanged;
         
     private:
-        void updateTransform(const EntityBaseInfo::reg_t& currentEntityBaseInfo,
-                             const ECS::entity_t& currentEntity,
-                             const Transform::reg_t& currentEntityTransform,
-                             const Transform::reg_t& parentTransform,
-                             const Ref<ECS::registry_t>& inRegistry);
+        struct EntityDesc
+        {
+            ECS::entity_t m_entity = entt::null;
+            const EntityBaseInfo* m_baseInfo {};
+            const Ref<Transform>* m_transform {};
+            Transform* m_parentTransform {};
+        };
+
+        std::stack<EntityDesc> m_entitiesDesc;
     };
 }

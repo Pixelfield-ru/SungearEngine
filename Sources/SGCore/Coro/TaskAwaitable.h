@@ -2,8 +2,7 @@
 // Created by stuka on 18.05.2025.
 //
 
-#ifndef SUNGEARENGINE_CORO_TASKAWAITABLE_H
-#define SUNGEARENGINE_CORO_TASKAWAITABLE_H
+#pragma once
 
 #include "IAwaitable.h"
 
@@ -12,7 +11,7 @@ namespace SGCore::Coro
     template<typename>
     struct Task;
 
-    struct TaskAwaitableBase : IAwaitable
+    struct SGCORE_EXPORT TaskAwaitableBase : IAwaitable
     {
         explicit TaskAwaitableBase(std::coroutine_handle<> calledCoro)
         {
@@ -58,7 +57,5 @@ auto operator co_await(const SGCore::Coro::Task<T>& otherTask)
 namespace SGCore::Coro
 {
     /// Dummy function to return to caller
-    Task<bool> returnToCaller() noexcept;
+    SGCORE_EXPORT Task<bool> returnToCaller() noexcept;
 }
-
-#endif // SUNGEARENGINE_CORO_TASKAWAITABLE_H

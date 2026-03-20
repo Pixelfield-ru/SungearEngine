@@ -2,12 +2,12 @@
 // Created by stuka on 23.10.2024.
 //
 
-#ifndef SUNGEARENGINE_STATICTYPEID_H
-#define SUNGEARENGINE_STATICTYPEID_H
+#pragma once
 
 #include <set>
 #include <iostream>
 #include <fmt/format.h>
+#include <sgcore_export.h>
 
 #include "SGCore/Utils/Macroses.h"
 
@@ -16,42 +16,37 @@
 /// \p getTypeID() is needed to get real static type ID of object.\n
 /// Implementation of this macro must has public access.
 #define sg_implement_type_id(current_class, class_type_id)                          \
-static inline size_t type_id = SGCore::StaticTypeID<current_class>::setID(class_type_id);   \
-const size_t& getTypeID() const noexcept final { return type_id; }
+static size_t getTypeIDStatic() { static size_t typeID = SGCore::StaticTypeID<current_class>::setID(class_type_id); return typeID; }   \
+size_t getTypeID() const noexcept final { return current_class::getTypeIDStatic(); }
 
 /// Pass current class type as first argument and its type ID as second argument.\n
 /// Use this macro in base types to implement virtual function \p getTypeID() .\n
 /// \p getTypeID() is needed to get real static type ID of object.\n
 /// Implementation of this macro must has public access.
 #define sg_implement_type_id_base(current_class, class_type_id)                          \
-static inline size_t type_id = SGCore::StaticTypeID<current_class>::setID(class_type_id);        \
-virtual const size_t& getTypeID() const noexcept { return type_id; }
+static size_t getTypeIDStatic() { static size_t typeID = SGCore::StaticTypeID<current_class>::setID(class_type_id); return typeID; }        \
+virtual size_t getTypeID() const noexcept { return current_class::getTypeIDStatic(); }
 
 /// Pass current class type as first argument and its type ID as second argument.\n
 /// Creates only static inline \p typeID without virtual function to get type ID of object
 /// Implementation of this macro must has public access.
 #define sg_implement_nonvirtual_type_id(current_class, class_type_id)                    \
-static inline size_t type_id = SGCore::StaticTypeID<current_class>::setID(class_type_id);
+static size_t getTypeIDStatic() { static size_t typeID = SGCore::StaticTypeID<current_class>::setID(class_type_id); return typeID; }
 
 namespace SGCore
 {
-    struct StaticTypeIDsContainer
+    // todo: use constexpr hash instead of set custom id
+    struct SGCORE_EXPORT StaticTypeIDsContainer
     {
         template<typename>
         friend struct StaticTypeID;
 
-        SG_NOINLINE static bool isTypeIDExists(const size_t& typeID) noexcept
-        {
-            return m_existingTypeIDs.contains(typeID);
-        }
+        static bool isTypeIDExists(const size_t& typeID) noexcept;
 
     private:
-        SG_NOINLINE static void addTypeID(size_t typeID) noexcept
-        {
-            m_existingTypeIDs.insert(typeID);
-        }
+        static void addTypeID(size_t typeID) noexcept;
 
-        static inline std::set<size_t> m_existingTypeIDs;
+        static std::set<size_t>& getExistingTypeIDs() noexcept;
     };
 
     template<typename T>
@@ -72,7 +67,6 @@ namespace SGCore
             {
                 const std::string message = fmt::format("Can not set type ID '{}' for type '{}': some other type with this ID is already exists.", typeID, typeid(T).name());
                 std::cerr << message;
-                //LOG_C(SGCORE_TAG, "Can not set type ID '{}' for type '{}': some other type with this ID is already exists.", typeID, typeid(T).name());
                 std::exit(0);
             }
 
@@ -84,5 +78,3 @@ namespace SGCore
         static inline size_t m_typeID = 0;
     };
 }
-
-#endif //SUNGEARENGINE_STATICTYPEID_H

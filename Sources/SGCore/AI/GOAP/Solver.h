@@ -16,7 +16,7 @@ namespace SGCore::GOAP
     struct Goal;
     struct IAction;
 
-    struct Solver
+    struct SGCORE_EXPORT Solver
     {
         /**
          * Builds collection of plans (solution) that can be used to reach goal.

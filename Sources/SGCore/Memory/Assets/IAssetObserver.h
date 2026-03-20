@@ -2,8 +2,7 @@
 // Created by stuka on 28.05.2023.
 //
 
-#ifndef SUNGEARENGINE_IASSETOBSERVER_H
-#define SUNGEARENGINE_IASSETOBSERVER_H
+#pragma once
 
 #include "IAsset.h"
 
@@ -11,6 +10,7 @@ namespace SGCore
 {
     class IAsset;
 
+    // todo: del
     class IAssetObserver
     {
     protected:
@@ -21,6 +21,8 @@ namespace SGCore
         bool m_assetRestoredChecking = true;
 
     public:
+        virtual ~IAssetObserver() = default;
+
         virtual void onAssetModified() { };
         virtual void onAssetPathChanged() { };
         virtual void onAssetDeleted() { };
@@ -39,5 +41,3 @@ namespace SGCore
         void setAssetRestoredChecking(const bool&) noexcept;
     };
 }
-
-#endif //SUNGEARENGINE_IASSETOBSERVER_H

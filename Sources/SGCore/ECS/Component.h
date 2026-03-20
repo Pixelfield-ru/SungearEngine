@@ -5,6 +5,7 @@
 #pragma once
 
 #include <entt/entity/entity.hpp>
+#include <sgcore_export.h>
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Serde/Defines.h"
@@ -18,8 +19,36 @@ namespace SGCore
 
 namespace SGCore::ECS
 {
+    // used to workaround linker errors of symbols exporting
+    struct SGCORE_EXPORT ComponentBase
+    {
+        virtual ~ComponentBase() = default;
+
+        ComponentBase() noexcept = default;
+
+        ComponentBase(const ComponentBase& other) noexcept;
+
+        ComponentBase(ComponentBase&& other) noexcept = default;
+
+        virtual entity_t getThisEntity() const noexcept;
+
+        virtual void setActive(bool active) noexcept;
+
+        bool isActive() const noexcept;
+
+        ComponentBase& operator=(const ComponentBase& other);
+
+        // moving entity
+        ComponentBase& operator=(ComponentBase&& other) noexcept = default;
+
+    protected:
+        bool m_isActive = true;
+
+        entity_t m_thisEntity = entt::null;
+    };
+
     template<typename ComponentRegT, typename ConstComponentRegT, typename ComponentAccessor = decltype([](auto& component) -> decltype(auto) { return *component; })>
-    struct Component
+    struct Component : ComponentBase
     {
         friend struct SGCore::EntityBaseInfo;
 
@@ -39,48 +68,6 @@ namespace SGCore::ECS
 
         using accessor_t = ComponentAccessor;
 
-        virtual ~Component() = default;
-
-        Component() noexcept = default;
-
-        Component(const Component& other) noexcept
-        {
-            // do not copy m_entity field!!
-            // ======================
-
-            m_isActive = other.m_isActive;
-        }
-
-        Component(Component&& other) noexcept = default;
-
-        virtual entity_t getThisEntity() const noexcept
-        {
-            return m_thisEntity;
-        }
-
-        virtual void setActive(bool active) noexcept
-        {
-            m_isActive = active;
-        }
-
-        bool isActive() const noexcept
-        {
-            return m_isActive;
-        }
-
-        Component& operator=(const Component& other)
-        {
-            // do not copy m_entity field!!
-            // ======================
-
-            m_isActive = other.m_isActive;
-
-            return *this;
-        }
-
-        // moving entity
-        Component& operator=(Component&& other) noexcept = default;
-
         template<typename NestedComponentT = ComponentRegT>
         requires(std::is_base_of_v<Component, NestedComponentT>)
         NestedComponentT& operator*() noexcept
@@ -94,10 +81,5 @@ namespace SGCore::ECS
         {
             return static_cast<const NestedComponentT&>(*this);
         }
-
-    private:
-        bool m_isActive = true;
-
-        entity_t m_thisEntity = entt::null;
     };
 }

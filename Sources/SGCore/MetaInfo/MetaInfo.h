@@ -2,8 +2,7 @@
 // Created by ilya on 24.06.24.
 //
 
-#ifndef SUNGEARENGINE_METAINFO_H
-#define SUNGEARENGINE_METAINFO_H
+#pragma once
 
 #ifdef _MSC_VER
 #define MI_NOINLINE __declspec(noinline)
@@ -16,12 +15,13 @@
 #include <string>
 #include <memory>
 #include <cstdlib>
+#include <sgcore_export.h>
 
 namespace SGCore
 {
-    struct MetaInfo
+    struct SGCORE_EXPORT MetaInfo
     {
-        struct Meta
+        struct SGCORE_EXPORT Meta
         {
             Meta() = default;
             Meta(const Meta&) noexcept = default;
@@ -768,5 +768,3 @@ namespace SGCore
 }
 
 #undef MI_NOINLINE
-
-#endif //SUNGEARENGINE_METAINFO_H

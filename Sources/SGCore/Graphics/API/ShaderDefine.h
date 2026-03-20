@@ -4,14 +4,12 @@
 
 #pragma once
 
-#ifndef NATIVECORE_SHADERDEFINE_H
-#define NATIVECORE_SHADERDEFINE_H
-
 #include <string>
+#include <sgcore_export.h>
 
 namespace SGCore
 {
-    struct ShaderDefine
+    struct SGCORE_EXPORT ShaderDefine
     {
         std::string m_name;
         std::string m_expression;
@@ -24,5 +22,3 @@ namespace SGCore
         bool operator ==(const ShaderDefine& other) const noexcept;
     };
 }
-
-#endif //NATIVECORE_SHADERDEFINE_H

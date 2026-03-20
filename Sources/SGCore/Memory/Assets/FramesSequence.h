@@ -10,7 +10,7 @@
 
 namespace SGCore
 {
-    struct FramesSequence
+    struct SGCORE_EXPORT FramesSequence
     {
         std::vector<Frame> m_frames;
 

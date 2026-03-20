@@ -8,7 +8,7 @@
 
 namespace SGCore
 {
-    struct PBRRPSpotLightsPass : public IRenderPass
+    struct SGCORE_EXPORT PBRRPSpotLightsPass : public IRenderPass
     {
         // todo: сделать рендер пассы с настройкой времени выполнения. то же самое сделать с системами
         

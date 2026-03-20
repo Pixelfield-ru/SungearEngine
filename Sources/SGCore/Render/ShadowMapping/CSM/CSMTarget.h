@@ -2,8 +2,7 @@
 // Created by stuka on 08.07.2025.
 //
 
-#ifndef SUNGEARENGINE_CSMTARGET_H
-#define SUNGEARENGINE_CSMTARGET_H
+#pragma once
 
 #include "CSMCascade.h"
 #include "SGCore/ECS/Component.h"
@@ -12,7 +11,7 @@ namespace SGCore
 {
     class IShader;
 
-    struct CSMTarget : ECS::Component<CSMTarget, const CSMTarget>
+    struct SGCORE_EXPORT CSMTarget : ECS::Component<CSMTarget, const CSMTarget>
     {
         CSMTarget();
 
@@ -31,8 +30,6 @@ namespace SGCore
                                                int texUnitOffset) const noexcept;
 
     private:
-        std::vector<CSMCascade> m_levels; //{ 50.0f, 25.0f, 10.0f, 2.0f };
+        std::vector<CSMCascade> m_levels;
     };
 }
-
-#endif // SUNGEARENGINE_CSMTARGET_H

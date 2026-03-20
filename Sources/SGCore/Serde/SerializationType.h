@@ -2,8 +2,7 @@
 // Created by Ilya on 09.07.2024.
 //
 
-#ifndef SUNGEARENGINE_SERIALIZATIONTYPE_H
-#define SUNGEARENGINE_SERIALIZATIONTYPE_H
+#pragma once
 
 namespace SGCore
 {
@@ -13,5 +12,3 @@ namespace SGCore
         SERIALIZE_DATA
     };
 }
-
-#endif //SUNGEARENGINE_SERIALIZATIONTYPE_H

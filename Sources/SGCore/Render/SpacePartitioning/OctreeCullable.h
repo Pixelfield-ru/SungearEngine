@@ -2,8 +2,7 @@
 // Created by ilya on 10.03.24.
 //
 
-#ifndef SUNGEARENGINE_CULLABLEMESH_H
-#define SUNGEARENGINE_CULLABLEMESH_H
+#pragma once
 
 #include <unordered_map>
 
@@ -14,7 +13,7 @@ namespace SGCore
 {
     struct OctreeNode;
     
-    struct OctreeCullable : ECS::Component<Ref<OctreeCullable>, Ref<const OctreeCullable>>
+    struct SGCORE_EXPORT OctreeCullable : ECS::Component<Ref<OctreeCullable>, Ref<const OctreeCullable>>
     {
         std::unordered_map<ECS::entity_t, Weak<OctreeNode>> m_parentNodes;
         
@@ -22,5 +21,3 @@ namespace SGCore
         bool m_dummy = true;
     };
 }
-
-#endif //SUNGEARENGINE_CULLABLEMESH_H

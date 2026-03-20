@@ -2,8 +2,7 @@
 // Created by stuka on 20.10.2024.
 //
 
-#ifndef SUNGEARENGINE_JSON_SERIALIZERIMPL_H
-#define SUNGEARENGINE_JSON_SERIALIZERIMPL_H
+#pragma once
 
 #include "SGCore/Serde/Common.h"
 
@@ -135,5 +134,3 @@ void SerializerImpl<FormatType::JSON>::from(const std::string& formattedText,
                                                                   )...
     );
 }
-
-#endif // SUNGEARENGINE_JSON_SERIALIZERIMPL_H

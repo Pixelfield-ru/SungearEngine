@@ -2,8 +2,9 @@
 // Created by stuka on 29.05.2025.
 //
 
-#ifndef SUNGEARENGINE_WHENANIMATIONENDACTION_H
-#define SUNGEARENGINE_WHENANIMATIONENDACTION_H
+#pragma once
+
+#include <sgcore_export.h>
 
 #include "SGCore/Actions/IAction.h"
 
@@ -11,7 +12,7 @@ namespace SGCore
 {
     struct MotionPlannerNode;
 
-    struct WhenAnimationEndAction : IAction<bool()>
+    struct SGCORE_EXPORT WhenAnimationEndAction : IAction<bool()>
     {
         Ref<MotionPlannerNode> m_animationNode;
 
@@ -20,5 +21,3 @@ namespace SGCore
         Ref<IAction> copy() noexcept final;
     };
 }
-
-#endif // SUNGEARENGINE_WHENANIMATIONENDACTION_H

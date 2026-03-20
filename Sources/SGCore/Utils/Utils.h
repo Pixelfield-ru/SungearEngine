@@ -1,5 +1,4 @@
-#ifndef SUNGEARENGINE_UTILS_H
-#define SUNGEARENGINE_UTILS_H
+#pragma once
 
 #include <algorithm>
 #include <codecvt>
@@ -16,6 +15,7 @@
 
 #include "TypeTraits.h"
 #include "Platform.h"
+#include "sgcore_export.h"
 
 namespace SGCore
 {
@@ -27,7 +27,7 @@ namespace SGCore
         return arr;
     }
 
-    std::chrono::high_resolution_clock::time_point now() noexcept;
+    SGCORE_EXPORT std::chrono::high_resolution_clock::time_point now() noexcept;
 
     template<typename ScalarT, typename TimeValT>
     static ScalarT timeDiff(const std::chrono::high_resolution_clock::time_point& begin,
@@ -66,15 +66,7 @@ namespace SGCore
      * @param salt
      * @return
      */
-    static std::uint32_t hashString(const char* str, unsigned salt = 0)
-    {
-        std::uint32_t h = 0x811C9DC5 ^ salt;
-        while (*str)
-        {
-            h = (h ^ static_cast<std::uint8_t>(*str++)) * 0x01000193;
-        }
-        return h;
-    }
+    SGCORE_EXPORT std::uint32_t hashString(const char* str, unsigned salt = 0);
 
     template<typename T>
     static T fromString(const std::string& str) noexcept
@@ -111,10 +103,7 @@ namespace SGCore
      * @param salt
      * @return
      */
-    static size_t hashString(const std::string& str, unsigned salt = 0)
-    {
-        return hashString(str.data());
-    }
+    SGCORE_EXPORT size_t hashString(const std::string& str, unsigned salt = 0);
 
     template<typename T>
     void exclude(std::vector<T>& vec, std::vector<T>& from)
@@ -304,7 +293,7 @@ namespace SGCore
             return str;
         }
 
-        std::string sourceLocationToString(const std::source_location& location) noexcept;
+        SGCORE_EXPORT std::string sourceLocationToString(const std::source_location& location) noexcept;
 
         template<typename T>
         static std::string toUTF8(const std::basic_string<T>& source)
@@ -351,16 +340,16 @@ namespace SGCore
             }
         }
 
-        void swapEndian(unsigned char* sourceBuffer, const size_t& bufferSize) noexcept;
+        SGCORE_EXPORT void swapEndian(unsigned char* sourceBuffer, const size_t& bufferSize) noexcept;
 
-        void swapEndian(char* sourceBuffer, const size_t& bufferSize) noexcept;
+        SGCORE_EXPORT void swapEndian(char* sourceBuffer, const size_t& bufferSize) noexcept;
 
-        std::string getRealPath(const std::string& path) noexcept;
+        SGCORE_EXPORT std::string getRealPath(const std::string& path) noexcept;
 
-        bool isSubpath(const std::filesystem::path& path,
-                       const std::filesystem::path& base) noexcept;
+        SGCORE_EXPORT bool isSubpath(const std::filesystem::path& path,
+                                     const std::filesystem::path& base) noexcept;
 
-        std::filesystem::path normalizePath(const std::filesystem::path& path) noexcept;
+        SGCORE_EXPORT std::filesystem::path normalizePath(const std::filesystem::path& path) noexcept;
 
         template<typename CharT>
         static std::string::size_type findInString(const std::basic_string<CharT>& str,
@@ -396,9 +385,6 @@ namespace SGCore
             return std::string::npos;
         }
 
-        std::string consoleExecute(const std::string& cmd, std::filesystem::path* outputFile = nullptr);
+        SGCORE_EXPORT std::string consoleExecute(const std::string& cmd, std::filesystem::path* outputFile = nullptr);
     };
 }
-
-
-#endif //SUNGEARENGINE_UTILS_H

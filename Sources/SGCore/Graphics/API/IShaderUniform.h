@@ -1,5 +1,4 @@
-#ifndef SUNGEARENGINE_ISHADERUNIFORM_H
-#define SUNGEARENGINE_ISHADERUNIFORM_H
+#pragma once
 
 #include <any>
 
@@ -7,7 +6,7 @@
 
 namespace SGCore
 {
-    struct IShaderUniform
+    struct SGCORE_EXPORT IShaderUniform
     {
         friend class IUniformBuffer;
 
@@ -64,5 +63,3 @@ namespace SGCore
         std::int64_t m_dataSizeInUniformBuffer = 0;
     };
 }
-
-#endif //SUNGEARENGINE_ISHADERUNIFORM_H

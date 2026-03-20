@@ -2,8 +2,7 @@
 // Created by stuka on 24.10.2023.
 //
 
-#ifndef SUNGEARENGINE_LAYER_H
-#define SUNGEARENGINE_LAYER_H
+#pragma once
 
 #include <string>
 
@@ -18,6 +17,7 @@ sg_predeclare_serde()
 
 namespace SGCore
 {
+    // todo: del
     struct Layer
     {
         sg_serde_as_friend()
@@ -33,5 +33,3 @@ namespace SGCore
         size_t m_index = 0;
     };
 }
-
-#endif //SUNGEARENGINE_LAYER_H

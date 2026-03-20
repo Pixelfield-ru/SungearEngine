@@ -8,18 +8,20 @@
 #include <iomanip>
 #include <string>
 
+#include "sgcore_export.h"
+
 // todo: impl time
 namespace SGCore::Utils
 {
-    long long getTimeMilliseconds() noexcept;
+    SGCORE_EXPORT long long getTimeMilliseconds() noexcept;
 
-    long long getTimeMicros() noexcept;
+    SGCORE_EXPORT long long getTimeMicros() noexcept;
 
-    long long getTimeNanos() noexcept;
+    SGCORE_EXPORT long long getTimeNanos() noexcept;
 
-    double getTimeSecondsAsDouble() noexcept;
+    SGCORE_EXPORT double getTimeSecondsAsDouble() noexcept;
 
-    std::string getTimeAsString(const std::string& format = "%Y-%m-%d") noexcept;
+    SGCORE_EXPORT std::string getTimeAsString(const std::string& format = "%Y-%m-%d") noexcept;
 
     template<typename T>
     static std::string getTimeAsString(const std::string& format, const T& timePoint) noexcept
@@ -32,10 +34,10 @@ namespace SGCore::Utils
         return timeStringStream.str();
     }
 
-    [[nodiscard]] static std::chrono::sys_time<std::chrono::seconds> getStringAsTime(const std::string& dateTime, const std::string& format = "%Y-%m-%d") noexcept;
+    [[nodiscard]] SGCORE_EXPORT std::chrono::sys_time<std::chrono::seconds> getStringAsTime(const std::string& dateTime, const std::string& format = "%Y-%m-%d") noexcept;
 
     template<typename T>
-        [[nodiscard]] static std::chrono::year getYearFromTimePoint(const T& timePoint) noexcept
+    [[nodiscard]] static std::chrono::year getYearFromTimePoint(const T& timePoint) noexcept
     {
         const auto d0 = std::chrono::floor<std::chrono::days>(timePoint);
         const std::chrono::year_month_day ymd = d0;
@@ -66,6 +68,6 @@ namespace SGCore::Utils
                 std::chrono::last).day();
     }
 
-    [[nodiscard]] static std::chrono::day getLastDayOfTimePoint(const std::chrono::year& year,
-                                                                const std::chrono::month& month) noexcept;
+    [[nodiscard]] SGCORE_EXPORT std::chrono::day getLastDayOfTimePoint(const std::chrono::year& year,
+                                                                       const std::chrono::month& month) noexcept;
 }

@@ -12,7 +12,7 @@
 
 namespace SGCore::Navigation
 {
-    struct InputFilteringStep : INavMeshBuildStep
+    struct SGCORE_EXPORT InputFilteringStep : INavMeshBuildStep
     {
         std::vector<MathPrimitivesUtils::Triangle<>> m_walkableTriangles;
         AABB<> m_sceneAABB{};

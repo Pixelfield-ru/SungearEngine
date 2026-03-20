@@ -11,7 +11,7 @@ namespace SGCore::GOAP
     /**
      * A set of plans that are suitable for the goal.
      */
-    struct GoalSolution
+    struct SGCORE_EXPORT GoalSolution
     {
         /**
          * @return Plan with the lowest cost

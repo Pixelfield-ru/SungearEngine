@@ -8,7 +8,7 @@
 
 namespace SGCore
 {
-    struct Bloom : PostProcessEffect
+    struct SGCORE_EXPORT Bloom : PostProcessEffect
     {
         Bloom();
 

@@ -1,5 +1,4 @@
-#ifndef SUNGEARENGINE_RENDERPIPELINESMANAGER_H
-#define SUNGEARENGINE_RENDERPIPELINESMANAGER_H
+#pragma once
 
 #include <sgcore_export.h>
 
@@ -89,5 +88,3 @@ namespace SGCore
         Signal<void()> onRenderPipelineSet;
     };
 }
-
-#endif //SUNGEARENGINE_RENDERPIPELINESMANAGER_H

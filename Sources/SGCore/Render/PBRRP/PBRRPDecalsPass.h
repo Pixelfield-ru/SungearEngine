@@ -2,14 +2,13 @@
 // Created by stuka on 01.05.2025.
 //
 
-#ifndef SUNGEARENGINE_PBRRPDECALSPASS_H
-#define SUNGEARENGINE_PBRRPDECALSPASS_H
+#pragma once
 
 #include "SGCore/Render/BaseRenderPasses/IGeometryPass.h"
 
 namespace SGCore
 {
-    struct PBRRPDecalsPass : public IGeometryPass
+    struct SGCORE_EXPORT PBRRPDecalsPass : public IGeometryPass
     {
         void create(const Ref<IRenderPipeline>& parentRenderPipeline) final;
 
@@ -19,5 +18,3 @@ namespace SGCore
         AssetRef<IShader> m_instancingShader;
     };
 }
-
-#endif // SUNGEARENGINE_PBRRPDECALSPASS_H

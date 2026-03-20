@@ -16,7 +16,7 @@
  * @param stateName
  */
 #define SG_DECLARE_GOAP_STATE(stateName)                                                    \
-    struct SG_CONCAT(STATE_, SG_CONCAT(stateName, _IMPL)) : SGCore::GOAP::State             \
+    struct SGCORE_EXPORT SG_CONCAT(STATE_, SG_CONCAT(stateName, _IMPL)) : SGCore::GOAP::State             \
     {                                                                                       \
         static const SG_CONCAT(STATE_, SG_CONCAT(stateName, _IMPL))& instance() noexcept;   \
     };                                                                                      \
@@ -36,7 +36,7 @@
 
 namespace SGCore::GOAP
 {
-    struct State {};
+    struct SGCORE_EXPORT State {};
 
     /**
      * Builtin states.
@@ -64,7 +64,7 @@ namespace SGCore::GOAP
     /**
      * Holds completion of state and user data.
      */
-    struct StateData
+    struct SGCORE_EXPORT StateData
     {
         bool m_complete = false;
         std::any m_data;
@@ -73,7 +73,7 @@ namespace SGCore::GOAP
     /**
      * All state of entity.
      */
-    struct EntityState : ECS::Component<EntityState, const EntityState>
+    struct SGCORE_EXPORT EntityState : ECS::Component<EntityState, const EntityState>
     {
         /**
          * @param state State.

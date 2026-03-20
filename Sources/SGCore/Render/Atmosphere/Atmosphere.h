@@ -2,8 +2,7 @@
 // Created by stuka on 02.02.2024.
 //
 
-#ifndef SUNGEARENGINE_ATMOSPHERE_H
-#define SUNGEARENGINE_ATMOSPHERE_H
+#pragma once
 
 #include <map>
 
@@ -12,7 +11,7 @@
 
 namespace SGCore
 {
-    struct Atmosphere : ECS::Component<Atmosphere, const Atmosphere>
+    struct SGCORE_EXPORT Atmosphere : ECS::Component<Atmosphere, const Atmosphere>
     {
         Atmosphere() noexcept;
         Atmosphere(const Atmosphere&) noexcept = default;
@@ -70,5 +69,3 @@ namespace SGCore
         static inline glm::vec3 s_sunOrigin = { 0.0, 1.0, 0.0 };
     };
 }
-
-#endif //SUNGEARENGINE_ATMOSPHERE_H

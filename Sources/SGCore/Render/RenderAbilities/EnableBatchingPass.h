@@ -8,7 +8,7 @@
 
 namespace SGCore
 {
-    struct EnableBatchingPass : ECS::Component<EnableBatchingPass, const EnableBatchingPass>
+    struct SGCORE_EXPORT EnableBatchingPass : ECS::Component<EnableBatchingPass, const EnableBatchingPass>
     {
     private:
         bool m_dummy = false;

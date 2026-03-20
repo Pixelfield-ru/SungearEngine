@@ -2,8 +2,7 @@
 // Created by stuka on 28.01.2025.
 //
 
-#ifndef SUNGEARENGINE_UIRENDERPASS_H
-#define SUNGEARENGINE_UIRENDERPASS_H
+#pragma once
 
 #include "SGCore/Render/IRenderPass.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
@@ -11,7 +10,7 @@
 
 namespace SGCore
 {
-    struct UIRenderPass : public IRenderPass
+    struct SGCORE_EXPORT UIRenderPass : public IRenderPass
     {
         void create(const Ref<IRenderPipeline>& parentRenderPipeline) noexcept final;
 
@@ -30,5 +29,3 @@ namespace SGCore
                               const size_t& currentTransformNodeIdx) noexcept;
     };
 }
-
-#endif //SUNGEARENGINE_UIRENDERPASS_H

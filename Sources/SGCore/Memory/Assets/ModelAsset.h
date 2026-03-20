@@ -2,8 +2,7 @@
 // Created by stuka on 07.05.2023.
 //
 
-#ifndef NATIVECORE_MODELASSET_H
-#define NATIVECORE_MODELASSET_H
+#pragma once
 
 #include <assimp/mesh.h>
 #include <assimp/scene.h>
@@ -16,7 +15,7 @@
 
 namespace SGCore
 {
-    class ModelAsset : public IAsset, public IAssetsRefsResolver<ModelAsset>
+    class SGCORE_EXPORT ModelAsset : public IAsset, public IAssetsRefsResolver<ModelAsset>
     {
     public:
         sg_serde_as_friend()
@@ -89,5 +88,3 @@ namespace SGCore
         static std::int32_t findParentNodeWithBone(const aiNode* currentParentNode, const std::vector<BoneHierarchyNode>& fromBones) noexcept;
     };
 }
-
-#endif //NATIVECORE_MODELASSET_H

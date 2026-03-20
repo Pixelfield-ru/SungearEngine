@@ -1,13 +1,13 @@
-#ifndef SUNGEARENGINE_TIMER_H
-#define SUNGEARENGINE_TIMER_H
+#pragma once
 
-// #include "TimerCallback.h"
+#include <sgcore_export.h>
+
 #include "Signal.h"
 
 namespace SGCore
 {
     // TODO: documentation
-    class Timer
+    class SGCORE_EXPORT Timer
     {
     public:
         Signal<void(double, double)> onUpdate;
@@ -73,6 +73,3 @@ namespace SGCore
         uint16_t m_framesPerSecondAccum = 0;
     };
 }
-
-
-#endif // SUNGEARENGINE_TIMER_H

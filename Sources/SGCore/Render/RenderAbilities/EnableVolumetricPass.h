@@ -8,7 +8,7 @@
 
 namespace SGCore
 {
-    struct EnableVolumetricPass : ECS::Component<EnableVolumetricPass, const EnableVolumetricPass>
+    struct SGCORE_EXPORT EnableVolumetricPass : ECS::Component<EnableVolumetricPass, const EnableVolumetricPass>
     {
     private:
         bool m_dummy = false;

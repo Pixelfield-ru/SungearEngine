@@ -8,7 +8,7 @@
 
 namespace SGCore
 {
-    struct FilmGrain : PostProcessEffect
+    struct SGCORE_EXPORT FilmGrain : PostProcessEffect
     {
         FilmGrain();
 

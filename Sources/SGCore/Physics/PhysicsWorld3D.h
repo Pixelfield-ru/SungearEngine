@@ -2,11 +2,12 @@
 // Created by ilya on 18.02.24.
 //
 
-#ifndef SUNGEARENGINE_PHYSICSWORLD3D_H
-#define SUNGEARENGINE_PHYSICSWORLD3D_H
+#pragma once
 
+#include <stack>
 #include <BulletCollision/BroadphaseCollision/btBroadphaseInterface.h>
 #include <BulletCollision/CollisionDispatch/btCollisionDispatcher.h>
+#include <BulletCollision/CollisionDispatch/btCollisionConfiguration.h>
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolver.h>
 #include <BulletDynamics/Dynamics/btDynamicsWorld.h>
 
@@ -20,7 +21,7 @@ namespace SGCore
 {
     struct Transform;
     
-    struct PhysicsWorld3D : public IParallelSystem<PhysicsWorld3D>
+    struct SGCORE_EXPORT PhysicsWorld3D : public IParallelSystem<PhysicsWorld3D>
     {
         sg_implement_type_id(PhysicsWorld3D, 17)
 
@@ -70,13 +71,15 @@ namespace SGCore
         }
     
     private:
-        void updateWorld(double dt, double fixedDt) noexcept;
+        struct EntityDesc
+        {
+            ECS::entity_t m_entity = entt::null;
+            const EntityBaseInfo* m_baseInfo {};
+            const Ref<Transform>* m_transform {};
+            Transform* m_parentTransform {};
+        };
 
-        void calculatePostPhysicsEntityTransform(const EntityBaseInfo::reg_t& currentEntityBaseInfo,
-                                                 const ECS::entity_t& currentEntity,
-                                                 const Transform::reg_t& currentEntityTransform,
-                                                 const Transform::reg_t& parentTransform,
-                                                 const Ref<ECS::registry_t>& inRegistry) noexcept;
+        std::stack<EntityDesc> m_postPhysicsEntitiesDesc;
 
         Scope<btCollisionConfiguration> m_collisionConfig;
         Scope<btCollisionDispatcher> m_collisionDispatcher;
@@ -84,9 +87,11 @@ namespace SGCore
         Scope<btSequentialImpulseConstraintSolver> m_sequentialImpulseConstraintSolver;
         Scope<btDynamicsWorld> m_dynamicsWorld;
         Scope<PhysicsDebugDraw> m_debugDraw;
-        
+
         std::mutex m_bodiesCountChangeMutex;
+
+        void updateWorld(double dt, double fixedDt) noexcept;
+
+        void calculatePostPhysicsEntitiesTransforms(const Ref<ECS::registry_t>& inRegistry) noexcept;
     };
 }
-
-#endif // SUNGEARENGINE_PHYSICSWORLD3D_H

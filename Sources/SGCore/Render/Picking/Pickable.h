@@ -2,8 +2,7 @@
 // Created by stuka on 19.12.2024.
 //
 
-#ifndef SUNGEARENGINE_PICKABLE_H
-#define SUNGEARENGINE_PICKABLE_H
+#pragma once
 
 #include <sgcore_export.h>
 #include <vector>
@@ -20,5 +19,3 @@ namespace SGCore
         [[nodiscard]] bool isPickableForCamera(const ECS::entity_t& cameraEntity) const noexcept;
     };
 }
-
-#endif //SUNGEARENGINE_PICKABLE_H

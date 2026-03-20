@@ -2,8 +2,7 @@
 // Created by ilya on 21.05.24.
 //
 
-#ifndef SUNGEARENGINE_SVGIMAGESPECIALIZATION_H
-#define SUNGEARENGINE_SVGIMAGESPECIALIZATION_H
+#pragma once
 
 #include <lunasvg/lunasvg.h>
 
@@ -13,7 +12,7 @@
 
 namespace SGCore
 {
-    struct SVGImageSpecialization : public IAsset, public IAssetsRefsResolver<SVGImageSpecialization>
+    struct SGCORE_EXPORT SVGImageSpecialization : public IAsset, public IAssetsRefsResolver<SVGImageSpecialization>
     {
         friend struct SVGImage;
 
@@ -47,5 +46,3 @@ namespace SGCore
         uivec2_32 m_size { 0, 0 };
     };
 }
-
-#endif // SUNGEARENGINE_SVGIMAGESPECIALIZATION_H

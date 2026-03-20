@@ -2,8 +2,7 @@
 // Created by stuka on 14.01.2025.
 //
 
-#ifndef SUNGEARENGINE_KEYBOARDKEYPRESSEDACTION_H
-#define SUNGEARENGINE_KEYBOARDKEYPRESSEDACTION_H
+#pragma once
 
 #include "IAction.h"
 #include "SGCore/Input/PCInput.h"
@@ -13,7 +12,7 @@ namespace SGCore
     /**
     * Action to check whether keyboard key is pressed once.
     */
-    struct KeyboardKeyPressedAction : IAction<bool()>
+    struct SGCORE_EXPORT KeyboardKeyPressedAction : IAction<bool()>
     {
         /**
          * Keyboard key to check state.
@@ -40,5 +39,3 @@ namespace SGCore
         }
     };
 }
-
-#endif //SUNGEARENGINE_KEYBOARDKEYPRESSEDACTION_H

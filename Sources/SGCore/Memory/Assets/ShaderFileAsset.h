@@ -2,8 +2,7 @@
 // Created by Ilya on 18.09.2023.
 //
 
-#ifndef SUNGEARENGINE_SHADERFILEASSET_H
-#define SUNGEARENGINE_SHADERFILEASSET_H
+#pragma once
 
 #include "IAsset.h"
 
@@ -12,7 +11,7 @@
 namespace SGCore
 {
     // todo: del
-    struct ShaderFileAsset : public IAsset
+    struct SGCORE_EXPORT ShaderFileAsset : public IAsset
     {
         sg_implement_type_id(ShaderFileAsset, 9)
 
@@ -23,5 +22,3 @@ namespace SGCore
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept final;
     };
 }
-
-#endif //SUNGEARENGINE_SHADERFILEASSET_H

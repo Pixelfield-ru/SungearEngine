@@ -2,14 +2,14 @@
 // Created by stuka on 18.05.2025.
 //
 
-#ifndef SUNGEARENGINE_CORO_IAWAITABLE_H
-#define SUNGEARENGINE_CORO_IAWAITABLE_H
+#pragma once
 
 #include <coroutine>
+#include <sgcore_export.h>
 
 namespace SGCore::Coro
 {
-    struct IAwaitable
+    struct SGCORE_EXPORT IAwaitable
     {
         auto getOwnerCoro() const noexcept
         {
@@ -26,5 +26,3 @@ namespace SGCore::Coro
         std::coroutine_handle<> m_calledCoro;
     };
 }
-
-#endif // SUNGEARENGINE_CORO_IAWAITABLE_H

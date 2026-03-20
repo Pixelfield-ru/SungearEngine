@@ -2,8 +2,7 @@
 // Created by stuka on 23.10.2024.
 //
 
-#ifndef SUNGEARENGINE_ASSETSPACKAGE_H
-#define SUNGEARENGINE_ASSETSPACKAGE_H
+#pragma once
 
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/Utils/FileUtils.h"
@@ -16,9 +15,9 @@ namespace SGCore
     /**
      * DO NOT STORE ANYWHERE.
      */
-    struct AssetsPackage
+    struct SGCORE_EXPORT AssetsPackage
     {
-        struct DataMarkup
+        struct SGCORE_EXPORT DataMarkup
         {
             /// Data offset in binary file.
             std::streamsize m_offset = 0;
@@ -128,5 +127,3 @@ namespace SGCore
         std::vector<char> m_buffer;
     };
 }
-
-#endif //SUNGEARENGINE_ASSETSPACKAGE_H

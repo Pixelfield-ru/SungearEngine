@@ -8,7 +8,7 @@
 
 namespace SGCore
 {
-    struct NoPPEffect : PostProcessEffect
+    struct SGCORE_EXPORT NoPPEffect : PostProcessEffect
     {
         NoPPEffect() noexcept;
     };

@@ -8,7 +8,7 @@
 
 namespace SGCore
 {
-    struct EnableMeshPass : ECS::Component<EnableMeshPass, const EnableMeshPass>
+    struct SGCORE_EXPORT EnableMeshPass : ECS::Component<EnableMeshPass, const EnableMeshPass>
     {
     private:
         bool m_dummy = false;

@@ -2,8 +2,7 @@
 // Created by stuka on 05.01.2025.
 //
 
-#ifndef SUNGEARENGINE_SKELETON_H
-#define SUNGEARENGINE_SKELETON_H
+#pragma once
 
 #include "IAsset.h"
 #include "SGCore/Memory/AssetRefFromThis.h"
@@ -13,7 +12,7 @@ namespace SGCore
 {
     struct Bone;
 
-    struct Skeleton : public IAsset, public IAssetsRefsResolver<Skeleton>, public AssetRefFromThis<Skeleton>
+    struct SGCORE_EXPORT Skeleton : public IAsset, public IAssetsRefsResolver<Skeleton>, public AssetRefFromThis<Skeleton>
     {
         sg_serde_as_friend()
 
@@ -55,5 +54,3 @@ namespace SGCore
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept;
     };
 }
-
-#endif //SUNGEARENGINE_SKELETON_H

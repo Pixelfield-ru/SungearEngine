@@ -4,13 +4,15 @@
 
 #pragma once
 
+#include <sgcore_export.h>
+
 #include "SGCore/Navigation/NavMesh/NavMeshConfig.h"
 
 namespace SGCore::Navigation
 {
     struct NavMesh;
 
-    struct INavMeshBuildStep
+    struct SGCORE_EXPORT INavMeshBuildStep
     {
         std::uint8_t m_stepPriority = 0;
 

@@ -12,7 +12,7 @@ namespace SGCore
 {
     class IUniformBuffer;
     
-    struct IGeometryPass : IRenderPass
+    struct SGCORE_EXPORT IGeometryPass : IRenderPass
     {
         AssetRef<IShader> m_shadowsGenerationShader;
 

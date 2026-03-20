@@ -2,8 +2,7 @@
 // Created by stuka on 29.08.2023.
 //
 
-#ifndef SUNGEARENGINE_ICUBEMAPTEXTURE_H
-#define SUNGEARENGINE_ICUBEMAPTEXTURE_H
+#pragma once
 
 #include "SGCore/Memory/IAssetsRefsResolver.h"
 #include "ITexture2D.h"
@@ -14,7 +13,7 @@
 
 namespace SGCore
 {
-    struct ICubemapTexture : public ITexture2D, public IAssetsRefsResolver<ICubemapTexture>
+    struct SGCORE_EXPORT ICubemapTexture : public ITexture2D, public IAssetsRefsResolver<ICubemapTexture>
     {
         friend class AssetManager;
         sg_assets_refs_resolver_as_friend
@@ -36,5 +35,3 @@ namespace SGCore
         }
     };
 }
-
-#endif //SUNGEARENGINE_ICUBEMAPTEXTURE_H

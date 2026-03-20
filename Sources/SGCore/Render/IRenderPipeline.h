@@ -2,8 +2,7 @@
 // Created by Ilya on 03.11.2023.
 //
 
-#ifndef SUNGEARENGINE_IPIPELINESYSTEM_H
-#define SUNGEARENGINE_IPIPELINESYSTEM_H
+#pragma once
 
 #include "IRenderPass.h"
 #include "SGCore/Utils/Paths.h"
@@ -62,5 +61,3 @@ namespace SGCore
         double m_renderPassesExecutionTime = 0.0;
     };
 }
-
-#endif // SUNGEARENGINE_IPIPELINESYSTEM_H

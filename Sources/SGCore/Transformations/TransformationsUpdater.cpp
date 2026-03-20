@@ -12,6 +12,9 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include "TransformationsUpdater.h"
+
+#include <stack>
+
 #include "TransformBase.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
@@ -47,11 +50,54 @@ void SGCore::TransformationsUpdater::update(const double& dt, const double& fixe
     // std::cout << "Elapsed: " << std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - start) << " for clearing notTransformUpdatedEntities and copying updatedByPhysicsEntities: " << updatedByPhysicsEntities.size() << std::endl;
 
     // =======================================================================
+    transformsView.each([&](ECS::entity_t entity,
+                                 EntityBaseInfo& entityBaseInfo,
+                                 const Transform::reg_t& transform, auto) {
+        m_entitiesDesc.emplace(entity, &entityBaseInfo, &transform, nullptr);
 
-    transformsView.each([&registry, this](ECS::entity_t entity,
-                                          EntityBaseInfo& entityBaseInfo,
-                                          const Transform::reg_t& transform, auto) {
-        updateTransform(entityBaseInfo, entity, transform, nullptr, registry);
+        while(!m_entitiesDesc.empty())
+        {
+            auto [currentEntity, currentEntityBaseInfo, currentTransform, parentTransform] = m_entitiesDesc.top();
+            m_entitiesDesc.pop();
+
+            // ======================= updating transform
+
+            if(currentTransform && (*currentTransform)->isActive())
+            {
+                auto& finalTransform = (*currentTransform)->m_finalTransform;
+                auto& ownTransform = (*currentTransform)->m_ownTransform;
+
+                bool isTransformChanged = false;
+
+                // if(!rigidbody3D)
+                {
+                    isTransformChanged |= TransformUtils::calculateTransform(*currentTransform->get(), parentTransform);
+                }
+
+                if(isTransformChanged)
+                {
+                    onTransformChanged(registry, currentEntity, *currentTransform);
+                }
+
+                // calculating aabb
+                const auto* mesh = registry->tryGet<Mesh>(currentEntity);
+                if(mesh && mesh->m_base.getMeshData())
+                {
+                    finalTransform.m_aabb.applyTransformations(finalTransform.m_position, finalTransform.m_rotation, finalTransform.m_scale, mesh->m_base.getMeshData()->m_aabb);
+                    ownTransform.m_aabb.applyTransformations(ownTransform.m_position, ownTransform.m_rotation, ownTransform.m_scale, mesh->m_base.getMeshData()->m_aabb);
+                }
+            }
+
+            // =======================
+
+            for(auto childEntity : currentEntityBaseInfo->getChildren())
+            {
+                const auto& childBaseInfo = registry->get<EntityBaseInfo>(childEntity);
+                const auto* childTransform = registry->tryGet<Transform>(childEntity);
+
+                m_entitiesDesc.emplace(childEntity, &childBaseInfo, childTransform, currentTransform ? currentTransform->get() : parentTransform);
+            }
+        }
     });
 
     // ==========================================================================================
@@ -62,45 +108,4 @@ void SGCore::TransformationsUpdater::update(const double& dt, const double& fixe
 void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double& fixedDt) noexcept
 {
 
-}
-
-void SGCore::TransformationsUpdater::updateTransform(const EntityBaseInfo::reg_t& currentEntityBaseInfo,
-                                                     const ECS::entity_t& currentEntity,
-                                                     const Transform::reg_t& currentEntityTransform,
-                                                     const Transform::reg_t& parentTransform,
-                                                     const Ref<ECS::registry_t>& inRegistry)
-{
-    if(currentEntityTransform && currentEntityBaseInfo.m_isActive)
-    {
-        TransformBase& finalTransform = currentEntityTransform->m_finalTransform;
-        TransformBase& ownTransform = currentEntityTransform->m_ownTransform;
-
-        bool isTransformChanged = false;
-
-        // if(!rigidbody3D)
-        {
-            isTransformChanged |= TransformUtils::calculateTransform(*currentEntityTransform, parentTransform.get());
-        }
-
-        if(isTransformChanged)
-        {
-            onTransformChanged(inRegistry, currentEntity, currentEntityTransform);
-        }
-
-        // calculating aabb
-        const auto* mesh = inRegistry->tryGet<Mesh>(currentEntity);
-        if(mesh && mesh->m_base.getMeshData())
-        {
-            finalTransform.m_aabb.applyTransformations(finalTransform.m_position, finalTransform.m_rotation, finalTransform.m_scale, mesh->m_base.getMeshData()->m_aabb);
-            ownTransform.m_aabb.applyTransformations(ownTransform.m_position, ownTransform.m_rotation, ownTransform.m_scale, mesh->m_base.getMeshData()->m_aabb);
-        }
-    }
-
-    for(const auto& childEntity : currentEntityBaseInfo.getChildren())
-    {
-        const auto& childBaseInfo = inRegistry->get<EntityBaseInfo>(childEntity);
-        const auto* childTransform = inRegistry->tryGet<Transform>(childEntity);
-        updateTransform(childBaseInfo, childEntity, childTransform ? *childTransform : nullptr,
-                        currentEntityTransform, inRegistry);
-    }
 }

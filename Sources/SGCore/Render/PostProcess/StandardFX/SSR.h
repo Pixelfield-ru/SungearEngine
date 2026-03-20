@@ -8,7 +8,7 @@
 
 namespace SGCore
 {
-    struct SSR : PostProcessEffect
+    struct SGCORE_EXPORT SSR : PostProcessEffect
     {
         SSR();
 

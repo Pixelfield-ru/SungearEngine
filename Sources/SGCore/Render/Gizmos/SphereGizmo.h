@@ -2,15 +2,14 @@
 // Created by stuka on 02.02.2024.
 //
 
-#ifndef SUNGEARENGINE_SPHEREGIZMO_H
-#define SUNGEARENGINE_SPHEREGIZMO_H
+#pragma once
 
 #include "GizmoBase.h"
 #include "SGCore/ECS/Component.h"
 
 namespace SGCore
 {
-    struct SphereGizmo : ECS::Component<SphereGizmo, const SphereGizmo>
+    struct SGCORE_EXPORT SphereGizmo : ECS::Component<SphereGizmo, const SphereGizmo>
     {
         GizmoBase m_base;
 
@@ -21,5 +20,3 @@ namespace SGCore
         float m_lastAngleIncrement = 0.0;
     };
 }
-
-#endif //SUNGEARENGINE_SPHEREGIZMO_H

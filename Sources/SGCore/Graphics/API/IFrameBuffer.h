@@ -20,7 +20,7 @@ namespace SGCore
     class ITexture2D;
 
     // todo: make read and draw bindings
-    class IFrameBuffer : public UniqueNameWrapper, public std::enable_shared_from_this<IFrameBuffer>
+    class SGCORE_EXPORT IFrameBuffer : public UniqueNameWrapper, public std::enable_shared_from_this<IFrameBuffer>
     {
     public:
         virtual ~IFrameBuffer() = default;

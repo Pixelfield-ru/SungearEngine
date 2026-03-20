@@ -2,8 +2,7 @@
 // Created by stuka on 05.01.2025.
 //
 
-#ifndef SUNGEARENGINE_ANIMATIONSFILE_H
-#define SUNGEARENGINE_ANIMATIONSFILE_H
+#pragma once
 
 #include "IAsset.h"
 #include "SGCore/Memory/IAssetsRefsResolver.h"
@@ -13,7 +12,7 @@
 
 namespace SGCore
 {
-    struct AnimationsFile : public IAsset, public IAssetsRefsResolver<AnimationsFile>
+    struct SGCORE_EXPORT AnimationsFile : public IAsset, public IAssetsRefsResolver<AnimationsFile>
     {
         sg_serde_as_friend()
 
@@ -40,5 +39,3 @@ namespace SGCore
         void readFromExistingAssimpScene(const aiScene& scene) noexcept;
     };
 }
-
-#endif //SUNGEARENGINE_ANIMATIONSFILE_H

@@ -9,7 +9,7 @@
 
 namespace SGCore
 {
-    struct TextFileAsset : public IAsset
+    struct SGCORE_EXPORT TextFileAsset : public IAsset
     {
         sg_serde_as_friend()
 

@@ -2,8 +2,7 @@
 // Created by ilya on 13.04.24.
 //
 
-#ifndef SUNGEARENGINE_AUDIODEVICE_H
-#define SUNGEARENGINE_AUDIODEVICE_H
+#pragma once
 
 #include <alc.h>
 
@@ -15,7 +14,7 @@ namespace SGCore
     /**
      * Wrapper of OpenAL audio device.
      */
-    struct AudioDevice
+    struct SGCORE_EXPORT AudioDevice
     {
         /**
          * Resets current context if context of device is current.\n
@@ -69,5 +68,3 @@ namespace SGCore
         static ALCcontext* m_currentContext;
     };
 }
-
-#endif //SUNGEARENGINE_AUDIODEVICE_H

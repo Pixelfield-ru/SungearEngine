@@ -2,8 +2,7 @@
 // Created by stuka on 28.12.2023.
 //
 
-#ifndef SGSLINTERPRETER_SGSLSUBSHADERTYPE_H
-#define SGSLINTERPRETER_SGSLSUBSHADERTYPE_H
+#pragma once
 
 #include <string>
 
@@ -20,7 +19,7 @@ namespace SGCore
         SST_TESS_EVALUATION
     };
     
-    static inline std::string sgsleSubShaderTypeToString(SGSLESubShaderType sgsleSubShaderType) noexcept
+    static std::string sgsleSubShaderTypeToString(SGSLESubShaderType sgsleSubShaderType) noexcept
     {
         switch(sgsleSubShaderType)
         {
@@ -41,7 +40,7 @@ namespace SGCore
         }
     }
     
-    static inline SGSLESubShaderType stringToSGSLESubShaderType(const std::string& str)
+    static SGSLESubShaderType stringToSGSLESubShaderType(const std::string& str)
     {
         if(str == "Vertex")
         {
@@ -71,5 +70,3 @@ namespace SGCore
         return SGSLESubShaderType::SST_NONE;
     }
 }
-
-#endif //SGSLINTERPRETER_SGSLSUBSHADERTYPE_H

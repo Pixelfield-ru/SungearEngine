@@ -2,8 +2,7 @@
 // Created by stuka on 18.05.2025.
 //
 
-#ifndef SUNGEARENGINE_CORO_TIMERAWAITABLE_H
-#define SUNGEARENGINE_CORO_TIMERAWAITABLE_H
+#pragma once
 
 #include "IAwaitable.h"
 
@@ -11,7 +10,7 @@
 
 namespace SGCore::Coro
 {
-    struct TimerAwaitable : IAwaitable
+    struct SGCORE_EXPORT TimerAwaitable : IAwaitable
     {
         explicit TimerAwaitable(std::chrono::system_clock::duration duration) : m_duration(duration)
         {
@@ -36,5 +35,3 @@ auto operator co_await(std::chrono::duration<Rep, Period> duration) noexcept
 {
     return SGCore::Coro::TimerAwaitable(duration);
 }
-
-#endif // SUNGEARENGINE_CORO_TIMERAWAITABLE_H

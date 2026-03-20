@@ -1,5 +1,4 @@
-#ifndef SUNGEARENGINE_MARKER_H
-#define SUNGEARENGINE_MARKER_H
+#pragma once
 
 #include <type_traits>
 
@@ -59,5 +58,3 @@ namespace SGCore
         IntT m_flags = 0;
     };
 }
-
-#endif //SUNGEARENGINE_MARKER_H

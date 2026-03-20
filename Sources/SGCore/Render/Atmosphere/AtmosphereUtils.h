@@ -2,15 +2,14 @@
 // Created by ilya on 15.02.24.
 //
 
-#ifndef SUNGEARENGINE_ATMOSPHEREUTILS_H
-#define SUNGEARENGINE_ATMOSPHEREUTILS_H
+#pragma once
 
 #include "SGCore/Math/MathUtils.h"
 #include "Atmosphere.h"
 
 namespace SGCore
 {
-    struct AtmosphereUtils
+    struct SGCORE_EXPORT AtmosphereUtils
     {
         static glm::vec3 rayleighMieAtmosphere(glm::vec3 r, const glm::vec3& ro,
                                                 glm::vec3 pSun, float iSun,
@@ -21,5 +20,3 @@ namespace SGCore
         static glm::vec3 calculateSunColor(const Atmosphere& atmosphere) noexcept;
     };
 }
-
-#endif //SUNGEARENGINE_ATMOSPHEREUTILS_H

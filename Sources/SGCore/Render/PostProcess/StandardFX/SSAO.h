@@ -9,7 +9,7 @@
 
 namespace SGCore
 {
-    struct SSAO : PostProcessEffect
+    struct SGCORE_EXPORT SSAO : PostProcessEffect
     {
         SSAO();
         SSAO(const SSAO&) = default;

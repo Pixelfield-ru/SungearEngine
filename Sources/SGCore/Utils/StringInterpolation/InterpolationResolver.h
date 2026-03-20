@@ -2,8 +2,7 @@
 // Created by stuka on 28.11.2024.
 //
 
-#ifndef SUNGEARENGINE_INTERPOLATIONRESOLVER_H
-#define SUNGEARENGINE_INTERPOLATIONRESOLVER_H
+#pragma once
 
 #include "SGCore/Logger/Logger.h"
 #include "SGCore/Utils/Macroses.h"
@@ -212,5 +211,3 @@ namespace SGCore
     using PathInterpolationResolver = InterpolationResolver<std::filesystem::path>;
     using StringInterpolationResolver = InterpolationResolver<std::string>;
 }
-
-#endif //SUNGEARENGINE_INTERPOLATIONRESOLVER_H

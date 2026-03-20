@@ -2,8 +2,7 @@
 // Created by stuka on 21.07.2025.
 //
 
-#ifndef SUNGEARENGINE_INSTANCING_H
-#define SUNGEARENGINE_INSTANCING_H
+#pragma once
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Memory/AssetRef.h"
@@ -18,7 +17,7 @@ namespace SGCore
     class IMeshData;
     class IMaterial;
 
-    struct Instancing : ECS::Component<Instancing, const Instancing>
+    struct SGCORE_EXPORT Instancing : ECS::Component<Instancing, const Instancing>
     {
         std::vector<ECS::entity_t> m_entities;
 
@@ -48,5 +47,3 @@ namespace SGCore
         std::vector<ECS::entity_t> m_entitiesToRemove;
     };
 }
-
-#endif // SUNGEARENGINE_INSTANCING_H

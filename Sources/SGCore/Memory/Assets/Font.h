@@ -2,8 +2,7 @@
 // Created by ilya on 23.02.24.
 //
 
-#ifndef SUNGEARENGINE_FONT_H
-#define SUNGEARENGINE_FONT_H
+#pragma once
 
 #include "IAsset.h"
 #include "FontSpecialization.h"
@@ -11,7 +10,7 @@
 
 namespace SGCore::UI
 {
-    struct Font : public IAsset
+    struct SGCORE_EXPORT Font : public IAsset
     {
         sg_implement_type_id(Font, 5)
 
@@ -43,5 +42,3 @@ namespace SGCore::UI
         std::unordered_map<FontSpecializationSettings, Ref<FontSpecialization>> m_specializations;
     };
 }
-
-#endif //SUNGEARENGINE_FONT_H

@@ -2,11 +2,11 @@
 // Created by ilya on 15.02.24.
 //
 
-#ifndef SUNGEARENGINE_MATHUTILS_H
-#define SUNGEARENGINE_MATHUTILS_H
+#pragma once
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
+#include <bitset>
 
 #define PI 3.141592
 
@@ -77,5 +77,3 @@ namespace SGCore
         }
     };
 }
-
-#endif //SUNGEARENGINE_MATHUTILS_H

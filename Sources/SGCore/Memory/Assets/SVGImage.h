@@ -2,8 +2,7 @@
 // Created by ilya on 21.05.24.
 //
 
-#ifndef SUNGEARENGINE_SVGIMAGE_H
-#define SUNGEARENGINE_SVGIMAGE_H
+#pragma once
 
 #include "IAsset.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
@@ -11,7 +10,7 @@
 
 namespace SGCore
 {
-    struct SVGImage : public IAsset, public IAssetsRefsResolver<SVGImage>
+    struct SGCORE_EXPORT SVGImage : public IAsset, public IAssetsRefsResolver<SVGImage>
     {
         sg_implement_type_id(SVGImage, 6)
 
@@ -36,5 +35,3 @@ namespace SGCore
         std::unique_ptr<lunasvg::Document> m_document;
     };
 }
-
-#endif //SUNGEARENGINE_SVGIMAGE_H

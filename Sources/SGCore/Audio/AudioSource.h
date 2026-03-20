@@ -2,8 +2,7 @@
 // Created by ilya on 14.04.24.
 //
 
-#ifndef SUNGEARENGINE_AUDIOSOURCE_H
-#define SUNGEARENGINE_AUDIOSOURCE_H
+#pragma once
 
 #include <glm/vec3.hpp>
 #include "AudioUtils.h"
@@ -47,7 +46,7 @@ namespace SGCore
      * ECS component to play 3D or ambient audio.\n
      * Uses SGCore::Transform of entity to update OpenAL audio source position and direction.
      */
-    struct AudioSource : ECS::Component<AudioSource, const AudioSource>, Playable
+    struct SGCORE_EXPORT AudioSource : ECS::Component<AudioSource, const AudioSource>, Playable
     {
         sg_serde_as_friend()
 
@@ -198,5 +197,3 @@ namespace SGCore
         void resetTimelineTime() noexcept final;
     };
 }
-
-#endif //SUNGEARENGINE_AUDIOSOURCE_H

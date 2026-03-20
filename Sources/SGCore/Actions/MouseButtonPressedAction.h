@@ -2,8 +2,7 @@
 // Created by stuka on 29.05.2025.
 //
 
-#ifndef SUNGEARENGINE_MOUSEBUTTONPRESSEDACTION_H
-#define SUNGEARENGINE_MOUSEBUTTONPRESSEDACTION_H
+#pragma once
 
 #include "IAction.h"
 #include "SGCore/Input/PCInput.h"
@@ -40,5 +39,3 @@ namespace SGCore
         }
     };
 }
-
-#endif // SUNGEARENGINE_MOUSEBUTTONPRESSEDACTION_H

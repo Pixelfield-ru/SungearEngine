@@ -14,7 +14,7 @@
 
 namespace SGCore::Navigation
 {
-    struct NavVoxel
+    struct SGCORE_EXPORT NavVoxel
     {
         bool m_isWalkable {};
         float m_distanceToEdge = std::numeric_limits<float>::max();
@@ -25,7 +25,7 @@ namespace SGCore::Navigation
         // float m_heightOffsetToGeometry {};
     };
 
-    struct VoxelizationStep : INavMeshBuildStep
+    struct SGCORE_EXPORT VoxelizationStep : INavMeshBuildStep
     {
         std::vector<NavVoxel> m_voxels;
         std::unordered_map<glm::i32vec3, size_t, MathUtils::GLMVectorHash<glm::i32vec3>> m_voxelsMap;

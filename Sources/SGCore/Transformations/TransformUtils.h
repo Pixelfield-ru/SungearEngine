@@ -6,13 +6,14 @@
 
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <sgcore_export.h>
 
 namespace SGCore
 {
     struct Transform;
     struct Rigidbody3D;
 
-    struct TransformUtils
+    struct SGCORE_EXPORT TransformUtils
     {
         /**
          * Calculates TRS matrices in childTransform for m_ownTransform and for m_finalTransform

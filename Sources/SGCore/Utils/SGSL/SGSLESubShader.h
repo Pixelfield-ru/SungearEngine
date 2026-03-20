@@ -2,8 +2,9 @@
 // Created by stuka on 13.12.2024.
 //
 
-#ifndef SUNGEARENGINE_SGSLESUBSHADER_H
-#define SUNGEARENGINE_SGSLESUBSHADER_H
+#pragma once
+
+#include <sgcore_export.h>
 
 #include "SGCore/Utils/SGSL/SGSLESubShaderType.h"
 #include "SGCore/Serde/Defines.h"
@@ -12,7 +13,7 @@ sg_predeclare_serde()
 
 namespace SGCore
 {
-    struct SGSLESubShader
+    struct SGCORE_EXPORT SGSLESubShader
     {
         sg_serde_as_friend();
 
@@ -37,5 +38,3 @@ namespace SGCore
         size_t m_codeSizeInPackage = 0;
     };
 }
-
-#endif //SUNGEARENGINE_SGSLESUBSHADER_H

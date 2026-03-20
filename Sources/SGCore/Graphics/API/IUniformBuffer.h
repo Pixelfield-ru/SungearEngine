@@ -1,14 +1,14 @@
-#ifndef SUNGEARENGINE_IUNIFORMBUFFER_H
-#define SUNGEARENGINE_IUNIFORMBUFFER_H
+#pragma once
 
 #include <iostream>
 #include <unordered_map>
+#include <sgcore_export.h>
 
 #include "IShaderUniform.h"
 
 namespace SGCore
 {
-    class IUniformBuffer
+    class SGCORE_EXPORT IUniformBuffer
     {
     protected:
         // buffer of scalar values
@@ -187,5 +187,3 @@ namespace SGCore
         virtual void destroy() = 0;
     };
 }
-
-#endif //SUNGEARENGINE_IUNIFORMBUFFER_H

@@ -8,7 +8,7 @@
 
 namespace SGCore
 {
-    struct PBRRPOpaqueMeshesPass : IGeometryPass
+    struct SGCORE_EXPORT PBRRPOpaqueMeshesPass : IGeometryPass
     {
         void create(const Ref<IRenderPipeline>& parentRenderPipeline) final;
 

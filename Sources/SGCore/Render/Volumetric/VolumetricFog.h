@@ -8,7 +8,7 @@
 
 namespace SGCore
 {
-    struct VolumetricFog : ECS::Component<VolumetricFog, const VolumetricFog>
+    struct SGCORE_EXPORT VolumetricFog : ECS::Component<VolumetricFog, const VolumetricFog>
     {
         float m_density = 1.0f;
         float m_coverage = 1.0f;

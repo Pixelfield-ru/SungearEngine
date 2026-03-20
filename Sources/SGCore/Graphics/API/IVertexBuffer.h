@@ -4,13 +4,15 @@
 
 #pragma once
 
+#include <sgcore_export.h>
+
 #include "GraphicsDataTypes.h"
 
 namespace SGCore
 {
     class IVertexArray;
 
-    class IVertexBuffer
+    class SGCORE_EXPORT IVertexBuffer
     {
         friend class IVertexArray;
 

@@ -2,8 +2,7 @@
 // Created by stuka on 03.07.2025.
 //
 
-#ifndef SUNGEARENGINE_GPUDEVICEINFO_H
-#define SUNGEARENGINE_GPUDEVICEINFO_H
+#pragma once
 
 #include <glm/vec2.hpp>
 
@@ -12,12 +11,10 @@
 
 namespace SGCore
 {
-    struct GPUDeviceInfo
+    struct SGCORE_EXPORT GPUDeviceInfo
     {
         static glm::ivec2 getMaxTextureSize() noexcept;
         static std::int32_t getMaxTextureBufferSize() noexcept;
         static std::int32_t getMaxVertexAttribsCount() noexcept;
     };
 }
-
-#endif // SUNGEARENGINE_GPUDEVICEINFO_H

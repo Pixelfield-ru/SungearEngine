@@ -10,6 +10,8 @@
 #include <memory>
 #include <functional>
 
+#include "sgcore_export.h"
+
 namespace SGCore::Threading
 {
     struct Thread;
@@ -19,12 +21,9 @@ namespace SGCore::Threading
      * It is used to wait for the completion of the task.
      */
     using TaskSingletonGuard = TaskSingletonGuardImpl*;
-    static TaskSingletonGuard MakeTaskSingletonGuard()
-    {
-        return new TaskSingletonGuardImpl;
-    }
+    SGCORE_EXPORT TaskSingletonGuard MakeTaskSingletonGuard();
     
-    struct Task : public std::enable_shared_from_this<Task>
+    struct SGCORE_EXPORT Task : public std::enable_shared_from_this<Task>
     {
         friend struct Thread;
 

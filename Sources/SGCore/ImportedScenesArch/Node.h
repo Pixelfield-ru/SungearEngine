@@ -1,12 +1,11 @@
-#ifndef SUNGEARENGINE_NODE_H
-#define SUNGEARENGINE_NODE_H
+#pragma once
 
 #include "IMeshData.h"
 #include "SGCore/Scene/Scene.h"
 
 namespace SGCore
 {
-    class Node : public IAssetsRefsResolver<Node>
+    class SGCORE_EXPORT Node : public IAssetsRefsResolver<Node>
     {
         friend class ModelAsset;
         sg_assets_refs_resolver_as_friend
@@ -47,5 +46,3 @@ namespace SGCore
         [[nodiscard]] AssetRef<IMeshData> findMesh(const std::string& name) const noexcept;
     };
 }
-
-#endif //SUNGEARENGINE_NODE_H

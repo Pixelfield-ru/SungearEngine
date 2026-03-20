@@ -2,8 +2,7 @@
 // Created by stuka on 06.11.2024.
 //
 
-#ifndef SUNGEARENGINE_ASSETREFFROMTHIS_H
-#define SUNGEARENGINE_ASSETREFFROMTHIS_H
+#pragma once
 
 #include "AssetRef.h"
 #include "Assets/IAsset.h"
@@ -20,5 +19,3 @@ namespace SGCore
         }
     };
 }
-
-#endif //SUNGEARENGINE_ASSETREFFROMTHIS_H

@@ -2,15 +2,14 @@
 // Created by stuka on 21.08.2025.
 //
 
-#ifndef SUNGEARENGINE_IKRESOLVER_H
-#define SUNGEARENGINE_IKRESOLVER_H
+#pragma once
 
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Scene/ISystem.h"
 
 namespace SGCore
 {
-    struct IKResolver : ISystem
+    struct SGCORE_EXPORT IKResolver : ISystem
     {
         sg_implement_type_id(IKResolver, 51)
 
@@ -23,5 +22,3 @@ namespace SGCore
                                   std::vector<ECS::entity_t>& currentJointsChain) noexcept;
     };
 }
-
-#endif // SUNGEARENGINE_IKRESOLVER_H

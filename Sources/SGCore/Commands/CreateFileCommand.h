@@ -2,8 +2,7 @@
 // Created by stuka on 13.01.2025.
 //
 
-#ifndef SUNGEARENGINE_CREATEFILECOMMAND_H
-#define SUNGEARENGINE_CREATEFILECOMMAND_H
+#pragma once
 
 #include "ICommand.h"
 
@@ -12,7 +11,7 @@
 
 namespace SGCore
 {
-    struct CreateFileCommand : ICommand
+    struct SGCORE_EXPORT CreateFileCommand : ICommand
     {
         std::filesystem::path m_filePath;
         std::string m_fileContent;
@@ -34,5 +33,3 @@ namespace SGCore
         }
     };
 }
-
-#endif //SUNGEARENGINE_CREATEFILECOMMAND_H

@@ -8,7 +8,7 @@
 
 namespace SGCore
 {
-    struct EnableInstancingPass : ECS::Component<EnableInstancingPass, const EnableInstancingPass>
+    struct SGCORE_EXPORT EnableInstancingPass : ECS::Component<EnableInstancingPass, const EnableInstancingPass>
     {
     private:
         bool m_dummy = false;

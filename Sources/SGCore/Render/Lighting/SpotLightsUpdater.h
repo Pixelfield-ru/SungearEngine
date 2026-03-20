@@ -11,7 +11,7 @@ namespace SGCore
 {
     class IUniformBuffer;
     
-    struct SpotLightsUpdater : public ISystem
+    struct SGCORE_EXPORT SpotLightsUpdater : public ISystem
     {
         sg_implement_type_id(SpotLightsUpdater, 19)
 

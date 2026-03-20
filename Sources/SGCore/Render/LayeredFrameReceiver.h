@@ -1,5 +1,4 @@
-#ifndef SUNGEARENGINE_CAMERACOMPONENT_H
-#define SUNGEARENGINE_CAMERACOMPONENT_H
+#pragma once
 
 #include "SGCore/Render/PostProcess/PostProcessEffect.h"
 #include "SGCore/Graphics/API/IShader.h"
@@ -13,12 +12,12 @@ namespace SGCore
 {
     class IFrameBuffer;
 
-    struct FrameBufferAttachmentWithBlock
+    struct SGCORE_EXPORT FrameBufferAttachmentWithBlock
     {
         SGFrameBufferAttachmentType m_frameBufferAttachmentType = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0;
     };
 
-    struct PostProcessLayer : public std::enable_shared_from_this<PostProcessLayer>
+    struct SGCORE_EXPORT PostProcessLayer : public std::enable_shared_from_this<PostProcessLayer>
     {
         friend class LayeredFrameReceiver;
 
@@ -99,7 +98,7 @@ namespace SGCore
     };
 
     // todo: make change for default PP shader
-    class LayeredFrameReceiver : public ECS::Component<LayeredFrameReceiver, const LayeredFrameReceiver>
+    class SGCORE_EXPORT LayeredFrameReceiver : public ECS::Component<LayeredFrameReceiver, const LayeredFrameReceiver>
     {
         friend struct Controllables3DUpdater;
 
@@ -155,5 +154,3 @@ namespace SGCore
         std::vector<Ref<PostProcessLayer>> m_layers;
     };
 }
-
-#endif //SUNGEARENGINE_CAMERACOMPONENT_H

@@ -17,6 +17,11 @@
     m_parentThread = thread;
 }*/
 
+SGCore::Threading::TaskSingletonGuard SGCore::Threading::MakeTaskSingletonGuard()
+{
+    return new TaskSingletonGuardImpl;
+}
+
 void SGCore::Threading::Task::execute() noexcept
 {
     std::lock_guard guard(m_listenerMutex);

@@ -2,8 +2,7 @@
 // Created by stuka on 07.01.2025.
 //
 
-#ifndef SUNGEARENGINE_ANIMATORSSYSTEM_H
-#define SUNGEARENGINE_ANIMATORSSYSTEM_H
+#pragma once
 
 #include "SGCore/Scene/ISystem.h"
 #include "MotionPlanner.h"
@@ -18,7 +17,7 @@ namespace SGCore
      * MotionPlannersResolver is required component to resolve animations nodes and 3D ragdolls.\n
      * Must be added on the root model entity.
      */
-    struct MotionPlannersResolver : ISystem
+    struct SGCORE_EXPORT MotionPlannersResolver : ISystem
     {
         sg_implement_type_id(MotionPlannersResolver, 52)
 
@@ -45,5 +44,3 @@ namespace SGCore
         Weak<DebugDraw> m_debugDrawPassRef;
     };
 }
-
-#endif //SUNGEARENGINE_ANIMATORSSYSTEM_H

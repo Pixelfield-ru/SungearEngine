@@ -2,16 +2,16 @@
 // Created by stuka on 03.04.2025.
 //
 
-#ifndef MOTIONANYSTATE_H
-#define MOTIONANYSTATE_H
+#pragma once
 
 #include <vector>
+#include <sgcore_export.h>
 
 #include "MotionPlannerConnection.h"
 
 namespace SGCore
 {
-    struct MotionAnyState
+    struct SGCORE_EXPORT MotionAnyState
     {
         Ref<MotionPlannerConnection> m_toRootConnection;
         std::vector<Weak<MotionPlannerNode>> m_lastActiveNodes;
@@ -19,5 +19,3 @@ namespace SGCore
         bool m_isSomeNodeInTreeExceptRootActive = false;
     };
 }
-
-#endif //MOTIONANYSTATE_H

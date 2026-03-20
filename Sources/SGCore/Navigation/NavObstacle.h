@@ -5,10 +5,11 @@
 #pragma once
 
 #include "SGCore/ECS/Component.h"
+#include <sgcore_export.h>
 
 namespace SGCore::Navigation
 {
-    struct NavObstacle : ECS::Component<NavObstacle, const NavObstacle>
+    struct SGCORE_EXPORT NavObstacle : ECS::Component<NavObstacle, const NavObstacle>
     {
     private:
         bool m_dummy = true;
