@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <sgcore_export.h>
+
 #include "IAction.h"
 
 namespace SGCore
