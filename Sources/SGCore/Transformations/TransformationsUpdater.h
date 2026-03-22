@@ -21,16 +21,16 @@ namespace SGCore
 
     struct SGCORE_EXPORT TransformationsUpdater : public IParallelSystem<TransformationsUpdater>
     {
-        sg_implement_type_id(TransformationsUpdater, 20)
+        sg_implement_type_id(SGCore::TransformationsUpdater)
 
         friend struct PhysicsWorld3D;
 
         TransformationsUpdater();
 
-        void update(const double& dt, const double& fixedDt) noexcept final;
+        void update(double dt, double fixedDt) noexcept final;
 
         // main thread
-        void fixedUpdate(const double& dt, const double& fixedDt) noexcept final;
+        void fixedUpdate(double dt, double fixedDt) noexcept final;
         
         Signal<void(const Ref<ECS::registry_t>& registry, const ECS::entity_t&, const Transform::const_reg_t)> onTransformChanged;
         

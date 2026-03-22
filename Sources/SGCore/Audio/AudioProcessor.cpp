@@ -9,7 +9,7 @@
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Utils/Defer.h"
 
-void SGCore::AudioProcessor::update(const double& dt, const double& fixedDt)
+void SGCore::AudioProcessor::update(double dt, double fixedDt)
 {
     auto lockedScene = getScene();
 

@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include "MotionPlannerNode.h"
 #include "SGCore/ECS/Component.h"
 #include "SGCore/Memory/Assets/Skeleton.h"
 #include "SGCore/Graphics/API/IUniformBuffer.h"
@@ -12,6 +11,10 @@
 
 namespace SGCore
 {
+    /**
+     * MotionPlannersResolver is required system to resolve skeletal animations nodes, 3D ragdolls and IK.\n
+     * If you want animations, then MotionPlanner must be added on the root model entity.
+     */
     struct SGCORE_EXPORT MotionPlanner : ECS::Component<MotionPlanner, const MotionPlanner>, IAssetsRefsResolver<MotionPlanner>
     {
         sg_assets_refs_resolver_as_friend
@@ -20,10 +23,7 @@ namespace SGCore
         MotionPlanner(const MotionPlanner&) noexcept = default;
         MotionPlanner(MotionPlanner&&) noexcept = default;
 
-        std::vector<Ref<MotionPlannerNode>> m_rootNodes;
         AssetRef<Skeleton> m_skeleton;
-
-        std::vector<Ref<MotionPlannerConnection>> m_notInterruptedConnections;
 
         std::int32_t m_maxBonesPerMesh = 300;
 

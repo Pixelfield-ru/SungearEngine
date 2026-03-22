@@ -12,7 +12,7 @@ namespace SGCore
 {
     struct IAnimationNode;
 
-    struct AnimationNodeConnection
+    struct SGCORE_EXPORT AnimationNodeConnection
     {
         float m_currentBlendTime = 0.0f;
         float m_blendTime = 1.0f;

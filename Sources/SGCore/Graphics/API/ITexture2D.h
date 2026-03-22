@@ -39,7 +39,7 @@ namespace SGCore
 
         sg_serde_as_friend()
 
-        sg_implement_type_id(ITexture2D, 1)
+        sg_implement_type_id(SGCore::ITexture2D)
 
         ~ITexture2D() override = default;
 

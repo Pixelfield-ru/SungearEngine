@@ -23,7 +23,7 @@ namespace SGCore
     
     struct SGCORE_EXPORT PhysicsWorld3D : public IParallelSystem<PhysicsWorld3D>
     {
-        sg_implement_type_id(PhysicsWorld3D, 17)
+        sg_implement_type_id(SGCore::PhysicsWorld3D)
 
         friend struct TransformationsUpdater;
 
@@ -36,7 +36,7 @@ namespace SGCore
         void addBody(const Ref<btRigidBody>& rigidBody) noexcept;
         void removeBody(const Ref<btRigidBody>& rigidBody) noexcept;
         
-        void update(const double& dt, const double& fixedDt) noexcept override;
+        void update(double dt, double fixedDt) noexcept override;
         void onAddToScene(const Scene* scene) override;
         void onRemoveFromScene(const Ref<Scene>& scene) override;
         

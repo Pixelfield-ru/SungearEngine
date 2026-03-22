@@ -13,7 +13,7 @@ namespace SGCore
     {
         sg_serde_as_friend()
 
-        sg_implement_type_id(TextFileAsset, 3)
+        sg_implement_type_id(SGCore::TextFileAsset)
 
         [[nodiscard]] std::string getData() const noexcept;
     

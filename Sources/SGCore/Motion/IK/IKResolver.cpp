@@ -12,7 +12,7 @@
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Transformations/TransformUtils.h"
 
-void SGCore::IKResolver::fixedUpdate(const double& dt, const double& fixedDt)
+void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
 {
     auto scene = getScene();
 

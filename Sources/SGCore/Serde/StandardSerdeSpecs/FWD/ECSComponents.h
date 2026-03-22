@@ -17,8 +17,6 @@ namespace SGCore
     struct Transform;
     struct RenderingBase;
     struct Rigidbody3D;
-    struct MotionPlannerConnection;
-    struct MotionPlannerNode;
     struct MotionPlanner;
     struct OpaqueEntityTag;
     struct TransparentEntityTag;
@@ -374,34 +372,6 @@ namespace SGCore::Serde
         static void serialize(SerializableValueView<const MotionPlanner, TFormatType>& valueView) noexcept;
 
         static void deserialize(DeserializableValueView<MotionPlanner, TFormatType>& valueView) noexcept;
-    };
-
-    template<FormatType TFormatType>
-    struct SerdeSpec<MotionPlannerNode, TFormatType> :
-            BaseTypes<>,
-            DerivedTypes<>
-    {
-        sg_serde_define_type_name("SGCore::MotionPlannerNode")
-        static inline constexpr bool is_pointer_type = false;
-
-        static void serialize(SerializableValueView<const MotionPlannerNode, TFormatType>& valueView) noexcept;
-
-        static void deserialize(DeserializableValueView<MotionPlannerNode, TFormatType>& valueView) noexcept;
-    };
-
-    // ======================================================== MotionPlannerConnection FWD
-
-    template<FormatType TFormatType>
-    struct SerdeSpec<MotionPlannerConnection, TFormatType> :
-            BaseTypes<>,
-            DerivedTypes<>
-    {
-        sg_serde_define_type_name("SGCore::MotionPlannerConnection")
-        static inline constexpr bool is_pointer_type = false;
-
-        static void serialize(SerializableValueView<const MotionPlannerConnection, TFormatType>& valueView) noexcept;
-
-        static void deserialize(DeserializableValueView<MotionPlannerConnection, TFormatType>& valueView) noexcept;
     };
 
     // ======================================================== Rigidbody3D FWD

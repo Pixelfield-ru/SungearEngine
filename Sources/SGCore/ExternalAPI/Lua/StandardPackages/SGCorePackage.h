@@ -14,7 +14,7 @@ namespace SGCore::Lua
 
         sg_serde_as_friend()
 
-        sg_implement_type_id(SGCorePackage, 54)
+        sg_implement_type_id(SGCore::Lua::SGCorePackage)
 
     private:
         void doLoadInState(sol::state& luaState, function_result& packageResult) noexcept override;

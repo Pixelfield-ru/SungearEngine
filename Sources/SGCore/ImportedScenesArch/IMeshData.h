@@ -45,7 +45,7 @@ namespace SGCore
     public:
         sg_serde_as_friend()
 
-        sg_implement_type_id(IMeshData, 13)
+        sg_implement_type_id(SGCore::IMeshData)
 
         sg_assets_refs_resolver_as_friend
 

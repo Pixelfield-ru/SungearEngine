@@ -21,7 +21,7 @@ namespace SGCore::UI
     {
         friend struct UIElementNodeProcessor;
 
-        sg_implement_type_id(UIDocument, 10)
+        sg_implement_type_id(SGCore::UI::UIDocument)
 
         pugi::xml_document m_document;
 

@@ -9,33 +9,32 @@
 #include <fmt/format.h>
 #include <sgcore_export.h>
 
-#include "SGCore/Utils/Macroses.h"
+#include "SGCore/Utils/TypeTraits.h"
 
-/// Pass current class type as first argument and its type ID as second argument.\n
+/// Pass current class type as first argument. PLEASE, QUALIFY YOUR TYPE BY NAMESPACE IN WHICH THE TYPE IS LOCATED.\n
 /// Use this macro in derived types to implement function \p getTypeID() that overrides virtual function in base type\n
 /// \p getTypeID() is needed to get real static type ID of object.\n
 /// Implementation of this macro must has public access.
-#define sg_implement_type_id(current_class, class_type_id)                          \
-static size_t getTypeIDStatic() { static size_t typeID = SGCore::StaticTypeID<current_class>::setID(class_type_id); return typeID; }   \
+#define sg_implement_type_id(current_class)                          \
+static size_t getTypeIDStatic() { static size_t typeID = SGCore::StaticTypeID<current_class>::setID(constexprHash(#current_class)); return typeID; }   \
 size_t getTypeID() const noexcept final { return current_class::getTypeIDStatic(); }
 
-/// Pass current class type as first argument and its type ID as second argument.\n
+/// Pass current class type as first argument. PLEASE, QUALIFY YOUR TYPE BY NAMESPACE IN WHICH THE TYPE IS LOCATED. \n
 /// Use this macro in base types to implement virtual function \p getTypeID() .\n
 /// \p getTypeID() is needed to get real static type ID of object.\n
 /// Implementation of this macro must has public access.
-#define sg_implement_type_id_base(current_class, class_type_id)                          \
-static size_t getTypeIDStatic() { static size_t typeID = SGCore::StaticTypeID<current_class>::setID(class_type_id); return typeID; }        \
+#define sg_implement_type_id_base(current_class)                          \
+static size_t getTypeIDStatic() { static size_t typeID = SGCore::StaticTypeID<current_class>::setID(constexprHash(#current_class)); return typeID; }        \
 virtual size_t getTypeID() const noexcept { return current_class::getTypeIDStatic(); }
 
-/// Pass current class type as first argument and its type ID as second argument.\n
-/// Creates only static inline \p typeID without virtual function to get type ID of object
+/// Pass current class type as first argument. PLEASE, QUALIFY YOUR TYPE BY NAMESPACE IN WHICH THE TYPE IS LOCATED.\n
+/// Creates only static function to get type ID without virtual function to get type ID of object.
 /// Implementation of this macro must has public access.
-#define sg_implement_nonvirtual_type_id(current_class, class_type_id)                    \
-static size_t getTypeIDStatic() { static size_t typeID = SGCore::StaticTypeID<current_class>::setID(class_type_id); return typeID; }
+#define sg_implement_nonvirtual_type_id(current_class)                    \
+static size_t getTypeIDStatic() { static size_t typeID = SGCore::StaticTypeID<current_class>::setID(constexprHash(#current_class)); return typeID; }
 
 namespace SGCore
 {
-    // todo: use constexpr hash instead of set custom id
     struct SGCORE_EXPORT StaticTypeIDsContainer
     {
         template<typename>

@@ -22,7 +22,7 @@ namespace SGCore
     public:
         sg_serde_as_friend()
 
-        sg_implement_type_id(IMaterial, 11)
+        sg_implement_type_id(SGCore::IMaterial)
 
         sg_assets_refs_resolver_as_friend
 

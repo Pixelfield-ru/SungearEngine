@@ -25,7 +25,7 @@ namespace SGCore::UI
     {
         sg_serde_as_friend();
 
-        sg_implement_type_id(CSSStyle, 34)
+        sg_implement_type_id(SGCore::UI::CSSStyle)
 
         friend struct ANTLRCSSListener;
         friend struct CSSFile;

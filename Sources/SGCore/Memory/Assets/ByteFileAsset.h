@@ -13,7 +13,7 @@ namespace SGCore
 {
     struct SGCORE_EXPORT ByteFileAsset : public IAsset
     {
-        sg_implement_type_id(ByteFileAsset, 7)
+        sg_implement_type_id(SGCore::ByteFileAsset)
         sg_serde_as_friend()
 
         ~ByteFileAsset() override;

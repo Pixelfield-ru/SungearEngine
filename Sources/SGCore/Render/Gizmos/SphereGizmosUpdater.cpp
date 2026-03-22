@@ -7,7 +7,7 @@
 #include "SGCore/Render/MeshBuilder.h"
 #include "SphereGizmo.h"
 
-void SGCore::SphereGizmosUpdater::fixedUpdate(const double& dt, const double& fixedDt)
+void SGCore::SphereGizmosUpdater::fixedUpdate(double dt, double fixedDt)
 {
     auto lockedScene = getScene();
 

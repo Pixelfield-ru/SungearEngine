@@ -38,7 +38,7 @@ namespace SGCore
             m_timer.onUpdate -= m_internalUpdateListener;
         }
         
-        void fixedUpdate(const double& dt, const double& fixedDt) noexcept override
+        void fixedUpdate(double dt, double fixedDt) noexcept override
         {
             for(const auto& subprocess : m_subprocesses)
             {

@@ -8,13 +8,6 @@
 #include "SGCore/Graphics/API/RenderState.h"
 #include "SGCore/Render/IRenderPass.h"
 
-class IMeshData;
-class LayeredFrameReceiver;
-struct IRenderPipeline;
-class Scene;
-struct RenderingBase;
-struct Transform;
-
 namespace SGCore
 {
     struct SGCORE_EXPORT PostProcessPass : public IRenderPass

@@ -24,11 +24,6 @@ SGCore::MotionPlanner SGCore::MotionPlanner::copyStructure() const noexcept
     newMotionPlanner.m_skeleton = m_skeleton;
     newMotionPlanner.m_maxBonesPerMesh = m_maxBonesPerMesh;
 
-    for(const auto& rootNode : m_rootNodes)
-    {
-        newMotionPlanner.m_rootNodes.push_back(rootNode->copyStructure());
-    }
-
     return newMotionPlanner;
 }
 

@@ -14,7 +14,7 @@ namespace SGCore
     {
         sg_serde_as_friend();
 
-        sg_implement_type_id(ShaderAnalyzedFile, 4)
+        sg_implement_type_id(SGCore::ShaderAnalyzedFile)
 
         friend struct SGSLETranslator;
         friend class AssetManager;

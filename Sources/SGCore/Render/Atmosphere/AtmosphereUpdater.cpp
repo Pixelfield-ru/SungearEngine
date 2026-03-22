@@ -66,7 +66,7 @@ SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
     m_atmosphereUpdateTimer.m_cyclic = true;
 }
 
-void SGCore::AtmosphereUpdater::update(const double& dt, const double& fixedDt)
+void SGCore::AtmosphereUpdater::update(double dt, double fixedDt)
 {
     m_atmosphereUpdateTimer.startFrame();
 }

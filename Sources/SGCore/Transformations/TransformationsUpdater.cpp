@@ -35,7 +35,7 @@ SGCore::TransformationsUpdater::TransformationsUpdater()
     m_thread->start();
 }
 
-void SGCore::TransformationsUpdater::update(const double& dt, const double& fixedDt) noexcept
+void SGCore::TransformationsUpdater::update(double dt, double fixedDt) noexcept
 {
     auto lockedScene = getScene();
 
@@ -105,7 +105,7 @@ void SGCore::TransformationsUpdater::update(const double& dt, const double& fixe
     // std::cout << "Elapsed: " << std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - start) << " for updating transforms of entities" << std::endl;
 }
 
-void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double& fixedDt) noexcept
+void SGCore::TransformationsUpdater::fixedUpdate(double dt, double fixedDt) noexcept
 {
 
 }

@@ -48,7 +48,7 @@ namespace SGCore
     {
         sg_serde_as_friend()
 
-        sg_implement_type_id(Bone, 32)
+        sg_implement_type_id(SGCore::Bone)
 
         sg_assets_refs_resolver_as_friend
 

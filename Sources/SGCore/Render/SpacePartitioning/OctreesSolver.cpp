@@ -30,7 +30,7 @@ void SGCore::OctreesSolver::onAddToScene(const Scene* scene)
     }
 }
 
-void SGCore::OctreesSolver::fixedUpdate(const double& dt, const double& fixedDt) noexcept
+void SGCore::OctreesSolver::fixedUpdate(double dt, double fixedDt) noexcept
 {
     auto lockedScene = getScene();
     

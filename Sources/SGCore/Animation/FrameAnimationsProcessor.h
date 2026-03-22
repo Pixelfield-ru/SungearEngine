@@ -14,6 +14,6 @@ namespace SGCore
      */
     struct SGCORE_EXPORT FrameAnimationsProcessor : ISystem
     {
-        void update(const double& dt, const double& fixedDt) noexcept override;
+        void update(double dt, double fixedDt) noexcept override;
     };
 }

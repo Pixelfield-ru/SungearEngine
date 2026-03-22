@@ -13,11 +13,11 @@ namespace SGCore
     
     struct SGCORE_EXPORT SpotLightsUpdater : public ISystem
     {
-        sg_implement_type_id(SpotLightsUpdater, 19)
+        sg_implement_type_id(SGCore::SpotLightsUpdater)
 
         SpotLightsUpdater() noexcept;
         
-        void update(const double& dt, const double& fixedDt) final;
+        void update(double dt, double fixedDt) final;
         
         // uniform buffer for directional lights
         Ref<IUniformBuffer> m_uniformBuffer;

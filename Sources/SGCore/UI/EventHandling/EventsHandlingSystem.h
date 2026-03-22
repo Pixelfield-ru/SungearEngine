@@ -10,6 +10,6 @@ namespace SGCore::UI
 {
     struct EventsHandlingSystem : ISystem
     {
-        void update(const double& dt, const double& fixedDt) noexcept final;
+        void update(double dt, double fixedDt) noexcept final;
     };
 }

@@ -12,9 +12,9 @@ namespace SGCore::UI
 {
     struct UILayoutCalculator : ISystem
     {
-        sg_implement_type_id(UILayoutCalculator, 50)
+        sg_implement_type_id(SGCore::UI::UILayoutCalculator)
 
-        void fixedUpdate(const double& dt, const double& fixedDt) final;
+        void fixedUpdate(double dt, double fixedDt) final;
 
     private:
         /**

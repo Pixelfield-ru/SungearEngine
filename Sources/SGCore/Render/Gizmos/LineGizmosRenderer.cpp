@@ -10,7 +10,7 @@
 #include "LineGizmo.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
 
-void SGCore::LineGizmosRenderer::fixedUpdate(const double& dt, const double& fixedDt)
+void SGCore::LineGizmosRenderer::fixedUpdate(double dt, double fixedDt)
 {
     auto lockedScene = getScene();
 

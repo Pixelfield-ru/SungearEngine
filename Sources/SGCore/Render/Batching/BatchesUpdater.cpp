@@ -7,7 +7,7 @@
 #include "Batch.h"
 #include "SGCore/Scene/Scene.h"
 
-void SGCore::BatchesUpdater::update(const double& dt, const double& fixedDt) noexcept
+void SGCore::BatchesUpdater::update(double dt, double fixedDt) noexcept
 {
     const auto scene = getScene();
 

@@ -21,15 +21,15 @@ namespace SGCore
     {
         friend class Scene;
     public:
-        sg_implement_type_id_base(ISystem, 15)
+        sg_implement_type_id_base(SGCore::ISystem)
 
         virtual ~ISystem() = default;
 
         bool m_active = true;
         std::unordered_map<std::string, double> m_executionTimes;
 
-        virtual void fixedUpdate(const double& dt, const double& fixedDt) { }
-        virtual void update(const double& dt, const double& fixedDt) { }
+        virtual void fixedUpdate(double dt, double fixedDt) { }
+        virtual void update(double dt, double fixedDt) { }
         // scene - this (m_scene) locked scene
         virtual void onAddToScene(const Scene* scene) { }
         // scene - this (m_scene) locked scene

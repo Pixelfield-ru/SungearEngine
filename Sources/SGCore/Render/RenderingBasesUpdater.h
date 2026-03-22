@@ -10,8 +10,8 @@ namespace SGCore
 {
     struct SGCORE_EXPORT RenderingBasesUpdater : public ISystem
     {
-        sg_implement_type_id(RenderingBasesUpdater, 28)
+        sg_implement_type_id(SGCore::RenderingBasesUpdater)
 
-        void fixedUpdate(const double& dt, const double& fixedDt) final;
+        void fixedUpdate(double dt, double fixedDt) final;
     };
 }

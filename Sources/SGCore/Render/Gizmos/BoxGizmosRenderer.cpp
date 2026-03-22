@@ -11,7 +11,7 @@
 #include "SGCore/Render/MeshBuilder.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
 
-void SGCore::BoxGizmosRenderer::fixedUpdate(const double& dt, const double& fixedDt)
+void SGCore::BoxGizmosRenderer::fixedUpdate(double dt, double fixedDt)
 {
     auto lockedScene = getScene();
 

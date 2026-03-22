@@ -19,7 +19,6 @@
 #include "SGCore/Render/Picking/Pickable.h"
 #include "SGCore/Physics/Rigidbody3D.h"
 #include "SGCore/Motion/MotionPlanner.h"
-#include "SGCore/Motion/MotionPlannerConnection.h"
 #include "SGCore/Render/Atmosphere/Atmosphere.h"
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/Alpha/TransparentEntityTag.h"
@@ -784,7 +783,6 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<MotionPlanner, TFormatType>::serialize(SerializableValueView<const MotionPlanner, TFormatType>& valueView) noexcept
     {
-        valueView.container().addMember("m_rootNodes", valueView.m_data->m_rootNodes);
         valueView.container().addMember("m_skeleton", valueView.m_data->m_skeleton);
         valueView.container().addMember("m_maxBonesPerMesh", valueView.m_data->m_maxBonesPerMesh);
     }
@@ -792,12 +790,6 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<MotionPlanner, TFormatType>::deserialize(DeserializableValueView<MotionPlanner, TFormatType>& valueView) noexcept
     {
-        auto rootNodes = valueView.container().template getMember<decltype(MotionPlanner::m_rootNodes)>("m_rootNodes");
-        if(rootNodes)
-        {
-            valueView.m_data->m_rootNodes = std::move(*rootNodes);
-        }
-
         auto skeleton = valueView.container().template getMember<decltype(MotionPlanner::m_skeleton)>("m_skeleton");
         if(skeleton)
         {
@@ -808,101 +800,6 @@ namespace SGCore::Serde
         if(maxBonesPerMesh)
         {
             valueView.m_data->m_maxBonesPerMesh = std::move(*maxBonesPerMesh);
-        }
-    }
-
-    // ======================================================== impl MotionPlannerNode
-
-    template<FormatType TFormatType>
-    void SerdeSpec<MotionPlannerNode, TFormatType>::serialize(SerializableValueView<const MotionPlannerNode, TFormatType>& valueView) noexcept
-    {
-        valueView.container().addMember("m_connections", valueView.m_data->m_connections);
-        valueView.container().addMember("m_skeletalAnimation", valueView.m_data->m_skeletalAnimation);
-        valueView.container().addMember("m_isActive", valueView.m_data->m_isActive);
-        // valueView.container().addMember("m_isPaused", valueView.m_data->m_isPaused);
-        // valueView.container().addMember("m_isPlaying", valueView.m_data->m_isPlaying);
-        valueView.container().addMember("m_isRepeated", valueView.m_data->m_isRepeated);
-        valueView.container().addMember("m_animationSpeed", valueView.m_data->m_animationSpeed);
-    }
-
-    template<FormatType TFormatType>
-    void SerdeSpec<MotionPlannerNode, TFormatType>::deserialize(DeserializableValueView<MotionPlannerNode, TFormatType>& valueView) noexcept
-    {
-        auto connections = valueView.container().template getMember<decltype(MotionPlannerNode::m_connections)>("m_connections");
-        if(connections)
-        {
-            valueView.m_data->m_connections = std::move(*connections);
-        }
-
-        // setup connections
-        for(const auto& connection : valueView.m_data->m_connections)
-        {
-            // USE ONLY weak_from_this(). DO NOT USE shared_from_this()
-            connection->m_previousNode = valueView.m_data->weak_from_this();
-        }
-
-        auto skeletalAnimation = valueView.container().template getMember<decltype(MotionPlannerNode::m_skeletalAnimation)>("m_skeletalAnimation");
-        if(skeletalAnimation)
-        {
-            valueView.m_data->m_skeletalAnimation = std::move(*skeletalAnimation);
-        }
-
-        auto isActive = valueView.container().template getMember<bool>("m_isActive");
-        if(isActive)
-        {
-            valueView.m_data->m_isActive = std::move(*isActive);
-        }
-
-        auto isRepeated = valueView.container().template getMember<bool>("m_isRepeated");
-        if(isRepeated)
-        {
-            valueView.m_data->m_isRepeated = std::move(*isRepeated);
-        }
-
-        auto animationSpeed = valueView.container().template getMember<float>("m_animationSpeed");
-        if(animationSpeed)
-        {
-            valueView.m_data->m_animationSpeed = std::move(*animationSpeed);
-        }
-    }
-
-    // ======================================================== impl MotionPlannerConnection
-
-    template<FormatType TFormatType>
-    void SerdeSpec<MotionPlannerConnection, TFormatType>::serialize(SerializableValueView<const MotionPlannerConnection, TFormatType>& valueView) noexcept
-    {
-        valueView.container().addMember("m_blendTime", valueView.m_data->m_blendTime);
-        valueView.container().addMember("m_blendSpeed", valueView.m_data->m_blendSpeed);
-        valueView.container().addMember("m_activationAction", valueView.m_data->m_activationAction);
-        // serializing only next node because m_previousNode owns this connection
-        valueView.container().addMember("m_nextNode", valueView.m_data->m_nextNode);
-    }
-
-    template<FormatType TFormatType>
-    void SerdeSpec<MotionPlannerConnection, TFormatType>::deserialize(DeserializableValueView<MotionPlannerConnection, TFormatType>& valueView) noexcept
-    {
-        auto blendTime = valueView.container().template getMember<float>("m_blendTime");
-        if(blendTime)
-        {
-            valueView.m_data->m_blendTime = std::move(*blendTime);
-        }
-
-        auto blendSpeed = valueView.container().template getMember<float>("m_blendSpeed");
-        if(blendSpeed)
-        {
-            valueView.m_data->m_blendSpeed = std::move(*blendSpeed);
-        }
-
-        auto activationAction = valueView.container().template getMember<decltype(MotionPlannerConnection::m_activationAction)>("m_activationAction");
-        if(activationAction)
-        {
-            valueView.m_data->m_activationAction = std::move(*activationAction);
-        }
-
-        auto nextNode = valueView.container().template getMember<decltype(MotionPlannerConnection::m_nextNode)>("m_nextNode");
-        if(nextNode)
-        {
-            valueView.m_data->m_nextNode = std::move(*nextNode);
         }
     }
 

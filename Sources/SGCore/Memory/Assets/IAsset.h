@@ -47,7 +47,7 @@ namespace SGCore
     {
     public:
         sg_serde_as_friend()
-        sg_implement_type_id_base(IAsset, 0)
+        sg_implement_type_id_base(SGCore::IAsset)
 
         friend class AssetManager;
 

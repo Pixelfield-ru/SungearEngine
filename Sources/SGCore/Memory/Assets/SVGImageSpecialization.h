@@ -16,7 +16,7 @@ namespace SGCore
     {
         friend struct SVGImage;
 
-        sg_implement_type_id(SVGImageSpecialization, 12)
+        sg_implement_type_id(SGCore::SVGImageSpecialization)
 
         sg_assets_refs_resolver_as_friend
         

@@ -10,7 +10,7 @@
 #include "SGCore/UI/UINodesProcessors/UITextNodeProcessor.h"
 
 
-void SGCore::UI::UILayoutCalculator::fixedUpdate(const double& dt, const double& fixedDt)
+void SGCore::UI::UILayoutCalculator::fixedUpdate(double dt, double fixedDt)
 {
     auto scene = getScene();
 

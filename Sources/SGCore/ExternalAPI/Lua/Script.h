@@ -16,7 +16,7 @@ namespace SGCore::Lua
     {
         sg_serde_as_friend()
 
-        sg_implement_type_id(Script, 53)
+        sg_implement_type_id(SGCore::Lua::Script)
 
         sg_assets_refs_resolver_as_friend
 

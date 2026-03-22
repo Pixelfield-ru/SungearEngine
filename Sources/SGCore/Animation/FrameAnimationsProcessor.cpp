@@ -4,14 +4,15 @@
 
 #include "FrameAnimationsProcessor.h"
 
-#include "FrameAnimation.h"
+#include "AnimationsTree.h"
+#include "FrameAnimationNode.h"
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Memory/Assets/GIF.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Utils/Defer.h"
 
-void SGCore::FrameAnimationsProcessor::update(const double& dt, const double& fixedDt) noexcept
+void SGCore::FrameAnimationsProcessor::update(double dt, double fixedDt) noexcept
 {
     auto scene = getScene();
 
@@ -19,47 +20,38 @@ void SGCore::FrameAnimationsProcessor::update(const double& dt, const double& fi
 
     auto ecsRegistry = scene->getECSRegistry();
 
-    auto framedEntities = ecsRegistry->view<FrameAnimation, Mesh>();
+    auto framedEntities = ecsRegistry->view<AnimationsTree, Mesh>();
 
-    framedEntities.each([&](auto entity, FrameAnimation& animation, Mesh& mesh) {
-        sg_defer [&animation]() {
-            animation.checkIsStateChanged();
-        };
+    framedEntities.each([&](AnimationsTree& animationsTree, Mesh& mesh) {
+        const auto animationNodes = animationsTree.collectActiveNodesOfType<FrameAnimationNode>();
 
-        if(!mesh.m_base.getMaterial() || animation.getState() != PlayableState::SG_PLAYING) return;
-
-        FramesSequence* sequence {};
-        if(auto* gif = std::get_if<AssetRef<GIF>>(&animation.m_source))
+        for(const auto& animationNode : animationNodes)
         {
-            if(!*gif) return;
+            sg_defer [&animationNode]() {
+                animationNode->checkIsStateChanged();
+            };
 
-            sequence = &(*gif)->m_sequence;
-        }
-        else if(auto* seq = std::get_if<FramesSequence>(&animation.m_source))
-        {
-            sequence = seq;
-        }
+            if(!mesh.m_base.getMaterial() || animationNode->getState() != PlayableState::SG_PLAYING) return;
 
-        if(!sequence || sequence->m_frames.empty()) return;
-
-        auto& lastFrame = *sequence->m_frames.rbegin();
-
-        if(animation.m_currentTime > (lastFrame.m_timeStamp + lastFrame.m_nextFrameDelay) || animation.m_currentTime < 0.0f)
-        {
-            animation.m_currentTime = !animation.m_isReversed ? 0.0f : (lastFrame.m_timeStamp + lastFrame.m_nextFrameDelay);
-            if(!animation.m_isRepeated)
+            FramesSequence* sequence {};
+            if(auto* gif = std::get_if<AssetRef<GIF>>(&animationNode->m_source))
             {
-                animation.setState(PlayableState::SG_STOPPED);
+                if(!*gif) return;
+
+                sequence = &(*gif)->m_sequence;
             }
-            return;
+            else if(auto* seq = std::get_if<FramesSequence>(&animationNode->m_source))
+            {
+                sequence = seq;
+            }
+
+            if(!sequence || sequence->m_frames.empty()) return;
+
+            const auto frameIndex = sequence->findFrameByTime(animationNode->m_currentAnimationTime);
+
+            auto& frame = sequence->m_frames[frameIndex];
+
+            mesh.m_base.getMaterial()->replaceTexture(animationNode->m_textureSlot, 0, frame.m_texture);
         }
-
-        const auto frameIndex = sequence->findFrameByTime(animation.m_currentTime);
-
-        auto& frame = sequence->m_frames[frameIndex];
-
-        mesh.m_base.getMaterial()->replaceTexture(animation.m_textureSlot, 0, frame.m_texture);
-
-        animation.m_currentTime += dt * animation.m_speed * (animation.m_isReversed ? -1.0f : 1.0f);
     });
 }

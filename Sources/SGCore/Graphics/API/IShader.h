@@ -39,7 +39,7 @@ namespace SGCore
 
         sg_serde_as_friend()
 
-        sg_implement_type_id(IShader, 14)
+        sg_implement_type_id(SGCore::IShader)
 
         sg_assets_refs_resolver_as_friend
 

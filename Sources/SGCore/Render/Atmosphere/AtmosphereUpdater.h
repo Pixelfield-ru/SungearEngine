@@ -13,11 +13,11 @@ namespace SGCore
     
     struct SGCORE_EXPORT AtmosphereUpdater : public ISystem
     {
-        sg_implement_type_id(AtmosphereUpdater, 18)
+        sg_implement_type_id(SGCore::AtmosphereUpdater)
 
         AtmosphereUpdater() noexcept;
         
-        void update(const double& dt, const double& fixedDt) final;
+        void update(double dt, double fixedDt) final;
         
         Timer m_atmosphereUpdateTimer;
         

@@ -20,7 +20,7 @@ namespace SGCore
     public:
         sg_serde_as_friend()
 
-        sg_implement_type_id(ModelAsset, 8)
+        sg_implement_type_id(SGCore::ModelAsset)
 
         sg_assets_refs_resolver_as_friend
 

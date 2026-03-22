@@ -11,9 +11,9 @@ namespace SGCore
 {
     struct SGCORE_EXPORT IKResolver : ISystem
     {
-        sg_implement_type_id(IKResolver, 51)
+        sg_implement_type_id(SGCore::IKResolver)
 
-        void fixedUpdate(const double& dt, const double& fixedDt) final;
+        void fixedUpdate(double dt, double fixedDt) final;
 
     private:
         static void collectJoints(const ECS::registry_t& inRegistry,

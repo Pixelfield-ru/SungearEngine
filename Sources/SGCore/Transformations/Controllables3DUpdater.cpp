@@ -13,7 +13,7 @@
 #include "SGCore/Render/RenderingBase.h"
 #include "Controllable3D.h"
 
-void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double& fixedDt)
+void SGCore::Controllables3DUpdater::fixedUpdate(double dt, double fixedDt)
 {
     auto lockedScene = getScene();
 

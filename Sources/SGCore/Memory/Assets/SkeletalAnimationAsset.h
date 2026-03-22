@@ -94,7 +94,7 @@ namespace SGCore
     {
         sg_serde_as_friend()
 
-        sg_implement_type_id(SkeletalAnimationAsset, 29)
+        sg_implement_type_id(SGCore::SkeletalAnimationAsset)
 
         sg_assets_refs_resolver_as_friend
 

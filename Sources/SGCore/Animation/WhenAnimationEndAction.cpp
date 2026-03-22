@@ -3,13 +3,17 @@
 //
 
 #include "WhenAnimationEndAction.h"
-#include "MotionPlannerNode.h"
+
+#include "IAnimationNode.h"
+#include "SGCore/ECS/Registry.h"
 
 bool SGCore::WhenAnimationEndAction::execute() noexcept
 {
-    if(!m_animationNode || !m_animationNode->m_skeletalAnimation) return false;
+    if(!m_inRegistry) return false;
 
-    return m_animationNode->m_currentAnimationTime >= m_animationNode->m_skeletalAnimation->m_duration - 2;
+    if(!m_inRegistry->valid(m_entity)) return false;
+
+    return m_animationNode->isAnimationEnded(m_entity, *m_inRegistry);
 }
 
 SGCore::Ref<SGCore::IAction<bool()>> SGCore::WhenAnimationEndAction::copy() noexcept

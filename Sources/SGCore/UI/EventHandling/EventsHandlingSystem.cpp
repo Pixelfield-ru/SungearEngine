@@ -9,7 +9,7 @@
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/UI/UIComponent.h"
 
-void SGCore::UI::EventsHandlingSystem::update(const double& dt, const double& fixedDt) noexcept
+void SGCore::UI::EventsHandlingSystem::update(double dt, double fixedDt) noexcept
 {
     auto registry = getScene()->getECSRegistry();
 

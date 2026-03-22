@@ -61,7 +61,7 @@ SGCore::SpotLightsUpdater::SpotLightsUpdater() noexcept
     m_lightsUpdateTimer.m_cyclic = true;
 }
 
-void SGCore::SpotLightsUpdater::update(const double& dt, const double& fixedDt)
+void SGCore::SpotLightsUpdater::update(double dt, double fixedDt)
 {
     // m_lightsUpdateTimer.startFrame();
     updateLights();

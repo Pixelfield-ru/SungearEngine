@@ -17,11 +17,11 @@ namespace SGCore
     class SGCORE_EXPORT OctreesSolver : public IParallelSystem<OctreesSolver>
     {
     public:
-        sg_implement_type_id(OctreesSolver, 26)
+        sg_implement_type_id(SGCore::OctreesSolver)
 
         OctreesSolver();
 
-        void fixedUpdate(const double& dt, const double& fixedDt) noexcept final;
+        void fixedUpdate(double dt, double fixedDt) noexcept final;
         
         void onAddToScene(const Scene* scene) final;
         

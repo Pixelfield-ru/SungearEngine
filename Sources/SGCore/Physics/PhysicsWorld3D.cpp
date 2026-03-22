@@ -69,7 +69,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
     // updateWorld(dt, fixedDt);
 }
 
-void SGCore::PhysicsWorld3D::update(const double& dt, const double& fixedDt) noexcept
+void SGCore::PhysicsWorld3D::update(double dt, double fixedDt) noexcept
 {
     m_dynamicsWorld->debugDrawWorld();
 

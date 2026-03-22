@@ -10,14 +10,15 @@
 #include "MotionPlannersResolver.h"
 
 #include "SGCore/Scene/Scene.h"
-#include "MotionPlannerConnection.h"
+#include "SGCore/Animation/AnimationsTree.h"
+#include "SGCore/Animation/SkeletalAnimationNode.h"
 #include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
 
 // omg
 
-void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double& fixedDt)
+void SGCore::MotionPlannersResolver::fixedUpdate(double dt, double fixedDt)
 {
     auto lockedScene = getScene();
 
@@ -30,20 +31,21 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
 
     auto registry = lockedScene->getECSRegistry();
 
-    auto motionPlannersView = registry->view<EntityBaseInfo, Transform, MotionPlanner>();
+    auto motionPlannersView = registry->view<EntityBaseInfo, Transform, AnimationsTree, MotionPlanner>();
 
     motionPlannersView.each([dt, &registry, this](const ECS::entity_t& entity,
                                                   const EntityBaseInfo::reg_t& entityBaseInfo,
                                                   const Transform::reg_t& transform,
+                                                  AnimationsTree& animationsTree,
                                                   MotionPlanner::reg_t& motionPlanner) {
         auto skeleton = motionPlanner.m_skeleton;
 
-        std::vector<Ref<MotionPlannerNode>> nodesToInterpolate;
+        auto nodesToInterpolate = animationsTree.collectActiveNodesOfType<SkeletalAnimationNode>();
 
         // collecting all nodes to interpolate bones animations
-        for(const auto& rootNode : motionPlanner.m_rootNodes)
+        /*for(const auto& rootNode : motionPlanner.m_rootNodes)
         {
-            if(rootNode->m_isActive /*&& rootNode->m_activationAction->execute()*/)
+            if(rootNode->m_isActive /*&& rootNode->m_activationAction->execute()#1#)
             {
                 rootNode->m_anyState.m_isSomeNodeInTreeExceptRootActive = false;
 
@@ -55,10 +57,10 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
 
                 collectAndUpdateNodesToInterpolate(dt, motionPlanner, rootNode, rootNode, nodesToInterpolate);
             }
-        }
+        }*/
 
         // then updating all collected nodes
-        for(const auto& node : nodesToInterpolate)
+        /*for(const auto& node : nodesToInterpolate)
         {
             if(node->m_isPlaying)
             {
@@ -88,7 +90,7 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
             }
 
             node->m_isPlaying = !node->m_isPaused;
-        }
+        }*/
 
         std::int32_t updatedBonesCount = 0;
 
@@ -130,7 +132,7 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
 void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
                                                         Ref<ECS::registry_t>& inRegistry,
                                                         MotionPlanner& motionPlanner,
-                                                        const std::vector<Ref<MotionPlannerNode>>& nodesToInterpolate,
+                                                        const std::vector<Ref<SkeletalAnimationNode>>& nodesToInterpolate,
                                                         const AssetRef<Skeleton>& skeleton,
                                                         const ECS::entity_t& currentEntity,
                                                         const EntityBaseInfo& currentEntityBaseInfo,
@@ -432,86 +434,4 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     // после всего этого проделываем пункты выше.
 
     //if(node->m_currentAnimationTime >= node->m_skeletalAnimation->)
-}
-
-void SGCore::MotionPlannersResolver::collectAndUpdateNodesToInterpolate(const double& dt,
-                                                                        MotionPlanner& motionPlanner,
-                                                                        const Ref<MotionPlannerNode>& fromRootNode,
-                                                                        const Ref<MotionPlannerNode>& currentNode,
-                                                                        std::vector<Ref<MotionPlannerNode>>& nodesToInterpolate) noexcept
-{
-    currentNode->m_currentBlendFactor = std::max(currentNode->m_currentBlendFactor, currentNode->m_staticBlendFactor);
-
-    bool isNoConnectionsActivated = true;
-
-    for(const auto& connection : currentNode->m_connections)
-    {
-        if(!connection->m_nextNode || !connection->m_nextNode->m_skeletalAnimation) continue;
-
-        bool isConnectionActivated = connection->m_activationAction->execute();
-
-        auto previousNode = connection->m_previousNode.lock();
-
-        // calling activation function to understand if this connection of currentNode is must be active
-        if(previousNode &&
-           previousNode->m_isActive &&
-           // previousNode->m_isPlaying &&
-           connection->m_nextNode->m_isActive &&
-           isConnectionActivated)
-        {
-            connection->m_nextNode->m_isPlaying = true;
-
-            if(connection->m_currentBlendTime < connection->m_blendTime)
-            {
-                connection->m_currentBlendTime += dt * connection->m_blendSpeed;
-                connection->m_currentBlendTime = std::min(connection->m_currentBlendTime, connection->m_blendTime);
-
-                const float blendFactor = connection->m_currentBlendTime / connection->m_blendTime;
-
-                connection->m_nextNode->m_currentBlendFactor = blendFactor;
-                previousNode->m_currentBlendFactor = 1.0 - blendFactor;
-            }
-
-            if(previousNode->m_currentBlendFactor > 0.0f)
-            {
-                nodesToInterpolate.push_back(previousNode);
-            }
-
-            fromRootNode->m_anyState.m_isSomeNodeInTreeExceptRootActive = true;
-
-            isNoConnectionsActivated = false;
-
-            collectAndUpdateNodesToInterpolate(dt, motionPlanner, fromRootNode, connection->m_nextNode, nodesToInterpolate);
-        }
-        else if(!isConnectionActivated)
-        {
-            // go backwards from nextNode to previousNode using interpolation
-            if(connection->m_currentBlendTime > 0)
-            {
-                // next node is still playing but not its children
-                connection->m_nextNode->m_isPlaying = true;
-
-                connection->m_currentBlendTime -= dt * connection->m_blendSpeed;
-                connection->m_currentBlendTime = std::max(connection->m_currentBlendTime, 0.0f);
-
-                const float blendFactor = connection->m_currentBlendTime / connection->m_blendTime;
-
-                connection->m_nextNode->m_currentBlendFactor = blendFactor;
-                previousNode->m_currentBlendFactor = 1.0f - blendFactor;
-
-                // we must add next node to nodesToInterpolate because the next node still
-                // needs to be taken into account when interpolating.
-                //
-                // but we don't need to call collectAndUpdateNodesToInterpolate for nextNode because
-                // we are performing reverse interpolation, i.e. it is assumed that nextNode is already inactive.
-                nodesToInterpolate.push_back(connection->m_nextNode);
-            }
-        }
-    }
-
-    // interpolating only last activated node
-    if(isNoConnectionsActivated)
-    {
-        nodesToInterpolate.push_back(currentNode);
-    }
 }

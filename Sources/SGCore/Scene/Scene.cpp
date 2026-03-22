@@ -25,6 +25,7 @@
 #include "SGCore/Serde/Serde.h"
 #include "SGCore/Serde/StandardSerdeSpecs/SerdeSpecs.h"
 #include "../UI/Systems/UILayoutCalculator.h"
+#include "SGCore/Animation/AnimationsTreesProcessor.h"
 #include "SGCore/Animation/FrameAnimationsProcessor.h"
 #include "SGCore/UI/EventHandling/EventsHandlingSystem.h"
 
@@ -108,6 +109,11 @@ void SGCore::Scene::createDefaultSystems()
 
     auto motionPlannersResolver = MakeRef<MotionPlannersResolver>();
     addSystem(motionPlannersResolver);
+
+    // motion planners resolver =================================
+
+    auto animationsTreeProcessor = MakeRef<AnimationsTreesProcessor>();
+    addSystem(animationsTreeProcessor);
 
     // frame animations processor =================================
 
