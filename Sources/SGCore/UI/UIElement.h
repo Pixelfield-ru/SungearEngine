@@ -2,8 +2,7 @@
 // Created by ilya on 23.02.24.
 //
 
-#ifndef SUNGEARENGINE_UIELEMENT_H
-#define SUNGEARENGINE_UIELEMENT_H
+#pragma once
 
 #include "AttributeValue.h"
 #include "SGCore/Main/CoreMain.h"
@@ -30,7 +29,7 @@ namespace SGCore::UI
     struct UIElementMesh;
     struct UIDocument;
 
-    struct UIElement
+    struct SGCORE_EXPORT UIElement
     {
         virtual ~UIElement() = default;
 
@@ -137,5 +136,3 @@ namespace SGCore::UI
         void checkForMeshGenerating(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept;
     };
 }
-
-#endif //SUNGEARENGINE_UIELEMENT_H

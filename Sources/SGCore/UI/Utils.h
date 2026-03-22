@@ -7,8 +7,10 @@
 #include <optional>
 #include <string>
 
+#include <sgcore_export.h>
+
 namespace SGCore::UI::Utils
 {
-    std::optional<std::string> extractVariable(const std::string& text);
-    std::optional<std::string> extractTemplateVariable(const std::string& text);
+    SGCORE_EXPORT std::optional<std::string> extractVariable(const std::string& text);
+    SGCORE_EXPORT std::optional<std::string> extractTemplateVariable(const std::string& text);
 }

@@ -2,8 +2,7 @@
 // Created by stuka on 25.01.2025.
 //
 
-#ifndef SUNGEARENGINE_UIELEMENTATTRIBUTETYPE_H
-#define SUNGEARENGINE_UIELEMENTATTRIBUTETYPE_H
+#pragma once
 
 #include <string>
 
@@ -40,5 +39,3 @@ namespace SGCore::UI
         return UIElementAttributeType::AT_UNKNOWN;
     }
 }
-
-#endif //SUNGEARENGINE_UIELEMENTATTRIBUTETYPE_H

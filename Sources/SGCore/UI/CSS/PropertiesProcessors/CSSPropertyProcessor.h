@@ -2,8 +2,7 @@
 // Created by stuka on 24.01.2025.
 //
 
-#ifndef SUNGEARENGINE_CSSPROPERTYPROCESSOR_H
-#define SUNGEARENGINE_CSSPROPERTYPROCESSOR_H
+#pragma once
 
 #include "SGCore/UI/CSS/CSSPropertyType.h"
 
@@ -33,5 +32,3 @@ namespace SGCore::UI
         }
     };
 }
-
-#endif //SUNGEARENGINE_CSSPROPERTYPROCESSOR_H

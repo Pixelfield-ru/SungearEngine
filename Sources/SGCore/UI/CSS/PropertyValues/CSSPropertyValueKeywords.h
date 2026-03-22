@@ -2,8 +2,7 @@
 // Created by stuka on 22.01.2025.
 //
 
-#ifndef SUNGEARENGINE_CSSPROPERTYVALUEKEYWORDS_H
-#define SUNGEARENGINE_CSSPROPERTYVALUEKEYWORDS_H
+#pragma once
 
 #include <cstdint>
 
@@ -378,5 +377,3 @@ namespace SGCore::UI
         }
     }
 }
-
-#endif //SUNGEARENGINE_CSSPROPERTYVALUEKEYWORDS_H

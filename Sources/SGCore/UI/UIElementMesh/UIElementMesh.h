@@ -2,8 +2,7 @@
 // Created by stuka on 15.02.2025.
 //
 
-#ifndef UIMESH_H
-#define UIMESH_H
+#pragma once
 
 #include "SGCore/Math/AABB.h"
 #include "UIVertex.h"
@@ -21,7 +20,7 @@ namespace SGCore::UI
     /**
      * We are using this struct, not IMeshData, because IMeshData is too complex and big for UI elements.
      */
-    struct UIElementMesh
+    struct SGCORE_EXPORT UIElementMesh
     {
         virtual ~UIElementMesh() noexcept = default;
 
@@ -44,5 +43,3 @@ namespace SGCore::UI
         Ref<IIndexBuffer> m_indicesBuffer;
     };
 }
-
-#endif //UIMESH_H

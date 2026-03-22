@@ -11,7 +11,7 @@ namespace SGCore::UI
     struct UIDocument;
     struct UIRoot;
 
-    struct UITransformTree
+    struct SGCORE_EXPORT UITransformTree
     {
         UITransformTreeElement& getRoot() noexcept
         {

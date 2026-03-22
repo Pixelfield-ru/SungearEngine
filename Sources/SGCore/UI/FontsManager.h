@@ -2,8 +2,7 @@
 // Created by ilya on 23.02.24.
 //
 
-#ifndef SUNGEARENGINE_FONTSMANAGER_H
-#define SUNGEARENGINE_FONTSMANAGER_H
+#pragma once
 
 #include <sgcore_export.h>
 
@@ -43,5 +42,3 @@ namespace SGCore::UI
         msdfgen::FreetypeHandle* m_FTLib = nullptr;
     };
 }
-
-#endif //SUNGEARENGINE_FONTSMANAGER_H

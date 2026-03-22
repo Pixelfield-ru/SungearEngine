@@ -2,8 +2,7 @@
 // Created by stuka on 17.01.2025.
 //
 
-#ifndef SUNGEARENGINE_CSSFILE_H
-#define SUNGEARENGINE_CSSFILE_H
+#pragma once
 
 #include "SGCore/Memory/Assets/IAsset.h"
 #include "SGCore/Memory/AssetRef.h"
@@ -14,7 +13,7 @@
 
 namespace SGCore::UI
 {
-    struct CSSFile : IAsset
+    struct SGCORE_EXPORT CSSFile : IAsset
     {
         sg_serde_as_friend();
 
@@ -38,5 +37,3 @@ namespace SGCore::UI
         std::vector<AssetRef<CSSStyle>> m_styles;
     };
 }
-
-#endif //SUNGEARENGINE_CSSFILE_H

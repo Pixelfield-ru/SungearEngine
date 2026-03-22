@@ -7,12 +7,13 @@
 #include <unordered_map>
 #include <string>
 #include <any>
+#include <sgcore_export.h>
 
 #include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore::UI
 {
-    struct Binding
+    struct SGCORE_EXPORT Binding
     {
         friend struct BindingsStorage;
 
@@ -42,7 +43,7 @@ namespace SGCore::UI
         Ref<std::any> m_binding;
     };
 
-    struct BindingsStorage
+    struct SGCORE_EXPORT BindingsStorage
     {
         template<typename T>
         void bind(const std::string& key, T* object) noexcept

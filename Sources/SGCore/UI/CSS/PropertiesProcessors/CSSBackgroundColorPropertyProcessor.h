@@ -2,8 +2,7 @@
 // Created by stuka on 24.01.2025.
 //
 
-#ifndef SUNGEARENGINE_CSSBACKGROUNDCOLORPROPERTYPROCESSOR_H
-#define SUNGEARENGINE_CSSBACKGROUNDCOLORPROPERTYPROCESSOR_H
+#pragma once
 
 #include "CSSPropertyProcessor.h"
 
@@ -178,5 +177,3 @@ namespace SGCore::UI
         }
     };
 }
-
-#endif //SUNGEARENGINE_CSSBACKGROUNDCOLORPROPERTYPROCESSOR_H

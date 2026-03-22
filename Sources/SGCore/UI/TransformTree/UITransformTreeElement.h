@@ -15,7 +15,7 @@ namespace SGCore::UI
     struct UITransformTree;
     struct CSSStyle;
 
-    struct UITransformTreeElement
+    struct SGCORE_EXPORT UITransformTreeElement
     {
         friend struct UITransformTree;
 

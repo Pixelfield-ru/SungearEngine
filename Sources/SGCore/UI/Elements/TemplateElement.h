@@ -9,7 +9,7 @@
 
 namespace SGCore::UI
 {
-    struct TemplateElement : UIElement
+    struct SGCORE_EXPORT TemplateElement : UIElement
     {
         SG_DECLARE_UI_ELEMENT_TYPE(template)
 

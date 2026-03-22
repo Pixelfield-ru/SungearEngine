@@ -14,7 +14,7 @@ namespace SGCore::UI
     {
         sg_implement_type_id(SGCore::UI::Font)
 
-        ~Font() noexcept;
+        ~Font() noexcept override;
 
         Ref<FontSpecialization> addOrGetSpecialization(const FontSpecializationSettings& fontSpecializationSettings);
         Ref<FontSpecialization> getSpecialization(const FontSpecializationSettings& fontSpecializationSettings);

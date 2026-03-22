@@ -8,7 +8,7 @@
 
 namespace SGCore::UI
 {
-    struct EventsHandlingSystem : ISystem
+    struct SGCORE_EXPORT EventsHandlingSystem : ISystem
     {
         void update(double dt, double fixedDt) noexcept final;
     };

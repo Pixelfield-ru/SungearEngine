@@ -2,8 +2,7 @@
 // Created by stuka on 17.01.2025.
 //
 
-#ifndef SUNGEARENGINE_CSSPROPERTYVALUETYPE_H
-#define SUNGEARENGINE_CSSPROPERTYVALUETYPE_H
+#pragma once
 
 namespace SGCore::UI
 {
@@ -22,5 +21,3 @@ namespace SGCore::UI
         PVT_UNKNOWN
     };
 }
-
-#endif //SUNGEARENGINE_CSSPROPERTYVALUETYPE_H

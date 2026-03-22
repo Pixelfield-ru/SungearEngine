@@ -8,7 +8,7 @@
 
 namespace SGCore::UI
 {
-    struct Button : Div
+    struct SGCORE_EXPORT Button : Div
     {
         SG_DECLARE_UI_ELEMENT_TYPE(button)
 

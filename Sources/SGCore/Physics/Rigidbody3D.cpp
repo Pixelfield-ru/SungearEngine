@@ -220,7 +220,8 @@ SGCore::PhysicalObjectType SGCore::Rigidbody3D::getType() const noexcept
 SGCore::ConstraintInfo SGCore::Rigidbody3D::addBodyToBodyConstraintImpl(Rigidbody3D& otherRigidbody,
                                                                         const std::function<Ref<btTypedConstraint>()>&
                                                                         constraintCreationFunc,
-                                                                        ECS::registry_t& inRegistry) noexcept
+                                                                        ECS::registry_t& inRegistry,
+                                                                        bool disableCollisionBetweenBodies) noexcept
 {
     auto lockedWorld = m_parentPhysicsWorld.lock();
 
@@ -228,7 +229,7 @@ SGCore::ConstraintInfo SGCore::Rigidbody3D::addBodyToBodyConstraintImpl(Rigidbod
 
     auto constraint = constraintCreationFunc();
 
-    lockedWorld->getDynamicsWorld()->addConstraint(constraint.get());
+    lockedWorld->getDynamicsWorld()->addConstraint(constraint.get(), disableCollisionBetweenBodies);
 
     auto constraintInfo = ConstraintInfo {
         .m_constraint = constraint,
@@ -262,7 +263,8 @@ void SGCore::Rigidbody3D::removeFromWorld() const noexcept
 SGCore::ConstraintInfo SGCore::Rigidbody3D::addPointToPointConstraint(Rigidbody3D& otherRigidbody,
                                                                       const glm::vec3& pointA,
                                                                       const glm::vec3& pointB,
-                                                                      ECS::registry_t& inRegistry) noexcept
+                                                                      ECS::registry_t& inRegistry,
+                                                                      bool disableCollisionBetweenBodies) noexcept
 {
     const auto construction = [&]() {
         return MakeRef<btPoint2PointConstraint>(
@@ -273,11 +275,12 @@ SGCore::ConstraintInfo SGCore::Rigidbody3D::addPointToPointConstraint(Rigidbody3
         );
     };
 
-    return addBodyToBodyConstraintImpl(otherRigidbody, construction, inRegistry);
+    return addBodyToBodyConstraintImpl(otherRigidbody, construction, inRegistry, disableCollisionBetweenBodies);
 }
 
 SGCore::ConstraintInfo SGCore::Rigidbody3D::addConeTwistConstraint(Rigidbody3D& otherRigidbody,
-                                                                   ECS::registry_t& inRegistry) noexcept
+                                                                   ECS::registry_t& inRegistry,
+                                                                   bool disableCollisionBetweenBodies) noexcept
 {
     const auto construction = [&]() {
         return MakeRef<btConeTwistConstraint>(
@@ -288,7 +291,7 @@ SGCore::ConstraintInfo SGCore::Rigidbody3D::addConeTwistConstraint(Rigidbody3D& 
         );
     };
 
-    return addBodyToBodyConstraintImpl(otherRigidbody, construction, inRegistry);
+    return addBodyToBodyConstraintImpl(otherRigidbody, construction, inRegistry, disableCollisionBetweenBodies);
 }
 
 void SGCore::Rigidbody3D::stop() const noexcept

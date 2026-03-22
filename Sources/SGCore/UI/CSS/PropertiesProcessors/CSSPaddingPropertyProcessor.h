@@ -2,8 +2,7 @@
 // Created by stuka on 03.03.2025.
 //
 
-#ifndef CSSPADDINGPROPERTYPROCESSOR_H
-#define CSSPADDINGPROPERTYPROCESSOR_H
+#pragma once
 
 #include "CSSPropertyProcessorCommon.h"
 #include "SGCore/UI/CSS/ANTLRCSSListener.h"
@@ -132,5 +131,3 @@ namespace SGCore::UI
         }
     };
 }
-
-#endif //CSSPADDINGPROPERTYPROCESSOR_H

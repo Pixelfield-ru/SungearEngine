@@ -2,8 +2,7 @@
 // Created by stuka on 22.02.2025.
 //
 
-#ifndef CSSROUNDINGPROPERTYPROCESSOR_H
-#define CSSROUNDINGPROPERTYPROCESSOR_H
+#pragma once
 
 #include "CSSPropertyProcessorCommon.h"
 #include "SGCore/UI/CSS/CSSPropertyType.h"
@@ -271,5 +270,3 @@ namespace SGCore::UI
         }
     };
 }
-
-#endif //CSSROUNDINGPROPERTYPROCESSOR_H

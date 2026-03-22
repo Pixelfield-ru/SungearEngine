@@ -8,10 +8,10 @@
 
 namespace SGCore::UI::UINodesProcessorsUtils
 {
-    void printUnknownAttributeError(const UIDocument* inDocument,
-                                    const pugi::xml_attribute& attribute,
-                                    const pugi::xml_node& xmlNode) noexcept;
+    SGCORE_EXPORT void printUnknownAttributeError(const UIDocument* inDocument,
+                                                  const pugi::xml_attribute& attribute,
+                                                  const pugi::xml_node& xmlNode) noexcept;
 
-    InterpolatedPath resolveIncludePath(const UIDocument* inDocument,
-                                        const std::string& originalPath) noexcept;
+    SGCORE_EXPORT InterpolatedPath resolveIncludePath(const UIDocument* inDocument,
+                                                      const std::string& originalPath) noexcept;
 }

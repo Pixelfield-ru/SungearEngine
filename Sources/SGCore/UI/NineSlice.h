@@ -2,8 +2,7 @@
 // Created by stuka on 09.02.2025.
 //
 
-#ifndef NINESLICE_H
-#define NINESLICE_H
+#pragma once
 
 #include <glm/gtc/quaternion.hpp> 
 
@@ -12,7 +11,7 @@
 
 namespace SGCore::UI
 {
-    struct NineSlice
+    struct SGCORE_EXPORT NineSlice
     {
         template<typename IndexT>
         requires(std::is_integral_v<IndexT>)
@@ -527,5 +526,3 @@ namespace SGCore::UI
         }
     };
 }
-
-#endif //NINESLICE_H

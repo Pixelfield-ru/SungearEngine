@@ -8,7 +8,7 @@
 
 namespace SGCore::UI
 {
-    struct UIPlaceNodeProcessor : UIElementNodeProcessor
+    struct SGCORE_EXPORT UIPlaceNodeProcessor : UIElementNodeProcessor
     {
         Ref<UIElement> allocateElement() noexcept override;
 

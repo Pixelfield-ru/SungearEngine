@@ -2,8 +2,7 @@
 // Created by stuka on 24.01.2025.
 //
 
-#ifndef SUNGEARENGINE_CSSFLEXDIRECTIONPROPERTYPROCESSOR_H
-#define SUNGEARENGINE_CSSFLEXDIRECTIONPROPERTYPROCESSOR_H
+#pragma once
 
 #include "CSSPropertyProcessor.h"
 
@@ -32,5 +31,3 @@ namespace SGCore::UI
         }
     };
 }
-
-#endif //SUNGEARENGINE_CSSFLEXDIRECTIONPROPERTYPROCESSOR_H

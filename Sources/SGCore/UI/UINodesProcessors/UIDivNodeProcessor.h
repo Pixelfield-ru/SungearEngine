@@ -8,7 +8,7 @@
 
 namespace SGCore::UI
 {
-    struct UIDivNodeProcessor : UIElementNodeProcessor
+    struct SGCORE_EXPORT UIDivNodeProcessor : UIElementNodeProcessor
     {
         Ref<UIElement> allocateElement() noexcept final;
 

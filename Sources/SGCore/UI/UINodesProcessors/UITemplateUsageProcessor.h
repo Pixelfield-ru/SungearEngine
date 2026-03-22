@@ -10,7 +10,7 @@ namespace SGCore::UI
 {
     struct TemplateElement;
 
-    struct UITemplateUsageProcessor
+    struct SGCORE_EXPORT UITemplateUsageProcessor
     {
         static void processElement(const Ref<TemplateElement>& templateElement,
                                    UIDocument* inDocument,

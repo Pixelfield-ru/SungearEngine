@@ -2,8 +2,7 @@
 // Created by ilya on 24.02.24.
 //
 
-#ifndef SUNGEARENGINE_FONTSPECIALIZATIONRENDERER_H
-#define SUNGEARENGINE_FONTSPECIALIZATIONRENDERER_H
+#pragma once
 
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Graphics/API/RenderState.h"
@@ -24,7 +23,7 @@ namespace SGCore::UI
     struct FontSpecialization;
     struct Text;
 
-    struct FontSpecializationRenderer
+    struct SGCORE_EXPORT FontSpecializationRenderer
     {
         FontSpecializationRenderer();
         
@@ -69,5 +68,3 @@ namespace SGCore::UI
         };
     };
 }
-
-#endif //SUNGEARENGINE_FONTSPECIALIZATIONRENDERER_H

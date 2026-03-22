@@ -8,7 +8,7 @@
 
 namespace SGCore::UI
 {
-    struct UIActiveEventHandler : UIEventHandler
+    struct SGCORE_EXPORT UIActiveEventHandler : UIEventHandler
     {
         SG_DECLARE_UI_EVENT_HANDLER_NAME(active)
 

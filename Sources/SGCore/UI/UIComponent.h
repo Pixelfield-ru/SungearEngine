@@ -2,8 +2,7 @@
 // Created by stuka on 26.01.2025.
 //
 
-#ifndef SUNGEARENGINE_UICOMPONENT_H
-#define SUNGEARENGINE_UICOMPONENT_H
+#pragma once
 
 #include "SGCore/ECS/Component.h"
 #include "UIDocument.h"
@@ -12,7 +11,7 @@
 
 namespace SGCore::UI
 {
-    struct UIComponent : ECS::Component<UIComponent, const UIComponent>
+    struct SGCORE_EXPORT UIComponent : ECS::Component<UIComponent, const UIComponent>
     {
         EntityRef m_attachedToCamera;
 
@@ -24,5 +23,3 @@ namespace SGCore::UI
         std::int64_t m_currentProceedUIElements = 0;
     };
 }
-
-#endif //SUNGEARENGINE_UICOMPONENT_H

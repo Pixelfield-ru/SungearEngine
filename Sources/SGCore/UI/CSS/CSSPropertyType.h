@@ -2,10 +2,11 @@
 // Created by stuka on 17.01.2025.
 //
 
-#ifndef SUNGEARENGINE_CSSPROPERTYTYPE_H
-#define SUNGEARENGINE_CSSPROPERTYTYPE_H
+#pragma once
 
 #include <string>
+
+#include <sgcore_export.h>
 
 namespace SGCore::UI
 {
@@ -32,7 +33,7 @@ namespace SGCore::UI
         PT_UNKNOWN,
     };
 
-    [[nodiscard]] CSSPropertyType getPropertyTypeFromName(const std::string& propertyName) noexcept;
+    SGCORE_EXPORT [[nodiscard]] CSSPropertyType getPropertyTypeFromName(const std::string& propertyName) noexcept;
 
     /*static std::string getDefaultPropertyValueString(CSSPropertyType propertyType) noexcept
     {
@@ -57,5 +58,3 @@ namespace SGCore::UI
         return "inherit";
     }*/
 }
-
-#endif //SUNGEARENGINE_CSSPROPERTYTYPE_H

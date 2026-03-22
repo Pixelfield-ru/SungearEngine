@@ -48,8 +48,8 @@ namespace SGCore
         void reAddToWorld() const noexcept;
         void removeFromWorld() const noexcept;
 
-        ConstraintInfo addPointToPointConstraint(Rigidbody3D& otherRigidbody, const glm::vec3& pointA, const glm::vec3& pointB, ECS::registry_t& inRegistry) noexcept;
-        ConstraintInfo addConeTwistConstraint(Rigidbody3D& otherRigidbody, ECS::registry_t& inRegistry) noexcept;
+        ConstraintInfo addPointToPointConstraint(Rigidbody3D& otherRigidbody, const glm::vec3& pointA, const glm::vec3& pointB, ECS::registry_t& inRegistry, bool disableCollisionBetweenBodies) noexcept;
+        ConstraintInfo addConeTwistConstraint(Rigidbody3D& otherRigidbody, ECS::registry_t& inRegistry, bool disableCollisionBetweenBodies) noexcept;
         
         [[nodiscard]] Ref<const btCompoundShape> getFinalShape() const noexcept;
 
@@ -91,6 +91,7 @@ namespace SGCore
         ConstraintInfo addBodyToBodyConstraintImpl(Rigidbody3D& otherRigidbody,
                                                    const std::function<Ref<btTypedConstraint>()>&
                                                    constraintCreationFunc,
-                                                   ECS::registry_t& inRegistry) noexcept;
+                                                   ECS::registry_t& inRegistry,
+                                                   bool disableCollisionBetweenBodies) noexcept;
     };
 }

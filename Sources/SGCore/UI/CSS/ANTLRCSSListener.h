@@ -2,8 +2,7 @@
 // Created by stuka on 18.01.2025.
 //
 
-#ifndef SUNGEARENGINE_ANTLRCSSLISTENER_H
-#define SUNGEARENGINE_ANTLRCSSLISTENER_H
+#pragma once
 
 #include <antlr4-runtime.h>
 #include "SGCore/UI/ANTLR4CSS3Generated/css3Lexer.h"
@@ -20,7 +19,7 @@ namespace SGCore::UI
 {
     struct CSSMathNode;
 
-    struct ANTLRCSSListener : public css3ParserBaseListener
+    struct SGCORE_EXPORT ANTLRCSSListener : public css3ParserBaseListener
     {
         template<CSSPropertyType>
         friend struct CSSPropertyProcessor;
@@ -89,5 +88,3 @@ namespace SGCore::UI
         std::unordered_set<size_t> m_importedFilesHashes;
     };
 }
-
-#endif //SUNGEARENGINE_ANTLRCSSLISTENER_H

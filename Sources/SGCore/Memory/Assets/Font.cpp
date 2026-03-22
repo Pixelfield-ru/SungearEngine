@@ -60,10 +60,8 @@ SGCore::Ref<SGCore::UI::FontSpecialization> SGCore::UI::Font::getSpecialization
     {
         return nullptr;
     }
-    else
-    {
-        return foundSpecIter->second;
-    }
+
+    return foundSpecIter->second;
 }
 
 bool SGCore::UI::Font::isSpecializationExists(const FontSpecializationSettings& fontSpecializationSettings) const noexcept

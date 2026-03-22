@@ -2,8 +2,7 @@
 // Created by stuka on 21.01.2025.
 //
 
-#ifndef SUNGEARENGINE_CSSDIMENSIONQUALIFIER_H
-#define SUNGEARENGINE_CSSDIMENSIONQUALIFIER_H
+#pragma once
 
 #include <string>
 
@@ -209,5 +208,3 @@ namespace SGCore::UI
         return "";
     }
 }
-
-#endif //SUNGEARENGINE_CSSDIMENSIONQUALIFIER_H

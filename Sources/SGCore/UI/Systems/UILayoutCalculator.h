@@ -2,15 +2,14 @@
 // Created by stuka on 03.03.2025.
 //
 
-#ifndef UILAYOUTCALCULATOR_H
-#define UILAYOUTCALCULATOR_H
+#pragma once
 
 #include "SGCore/Scene/ISystem.h"
 #include "SGCore/UI/UIComponent.h"
 
 namespace SGCore::UI
 {
-    struct UILayoutCalculator : ISystem
+    struct SGCORE_EXPORT UILayoutCalculator : ISystem
     {
         sg_implement_type_id(SGCore::UI::UILayoutCalculator)
 
@@ -39,6 +38,3 @@ namespace SGCore::UI
         std::int64_t m_currentProceedUIElements = 0;
     };
 }
-
-
-#endif //UILAYOUTCALCULATOR_H

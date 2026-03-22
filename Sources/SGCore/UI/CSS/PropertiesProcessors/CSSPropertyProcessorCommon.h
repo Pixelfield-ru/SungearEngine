@@ -2,8 +2,7 @@
 // Created by stuka on 02.03.2025.
 //
 
-#ifndef CSSPROPERTYPROCESSORCOMMON_H
-#define CSSPROPERTYPROCESSORCOMMON_H
+#pragma once
 
 #include "SGCore/UI/CSS/ANTLRCSSListener.h"
 
@@ -65,5 +64,3 @@ namespace SGCore::UI
         }
     };
 }
-
-#endif //CSSPROPERTYPROCESSORCOMMON_H

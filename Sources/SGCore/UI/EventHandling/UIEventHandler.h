@@ -32,7 +32,7 @@ namespace SGCore::UI
     struct UIDocument;
     struct UITransformTree;
 
-    struct UIEventHandler
+    struct SGCORE_EXPORT UIEventHandler
     {
         virtual ~UIEventHandler() = default;
 

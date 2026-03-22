@@ -2,8 +2,7 @@
 // Created by stuka on 12.05.2025.
 //
 
-#ifndef SUNGEARENGINE_CSSFONTSIZEPROPERTYPROCESSOR_H
-#define SUNGEARENGINE_CSSFONTSIZEPROPERTYPROCESSOR_H
+#pragma once
 
 #include "CSSPropertyProcessorCommon.h"
 #include "SGCore/UI/ANTLR4CSS3Generated/css3Parser.h"
@@ -42,5 +41,3 @@ namespace SGCore::UI
         }
     };
 }
-
-#endif // SUNGEARENGINE_CSSFONTSIZEPROPERTYPROCESSOR_H

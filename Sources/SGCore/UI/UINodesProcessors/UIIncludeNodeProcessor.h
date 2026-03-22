@@ -8,7 +8,7 @@
 
 namespace SGCore::UI
 {
-    struct UIIncludeNodeProcessor : UIElementNodeProcessor
+    struct SGCORE_EXPORT UIIncludeNodeProcessor : UIElementNodeProcessor
     {
         Ref<UIElement> allocateElement() noexcept final;
 

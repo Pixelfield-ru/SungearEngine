@@ -15,7 +15,7 @@ namespace SGCore::UI
      * You must implement all following functions and variables in your implementation of UIElementNodeProcessor.
      * @tparam ElementType Type of element.
      */
-    struct UIElementNodeProcessor
+    struct SGCORE_EXPORT UIElementNodeProcessor
     {
         virtual ~UIElementNodeProcessor() = default;
 

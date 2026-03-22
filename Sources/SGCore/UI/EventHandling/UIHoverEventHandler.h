@@ -8,7 +8,7 @@
 
 namespace SGCore::UI
 {
-    struct UIHoverEventHandler : UIEventHandler
+    struct SGCORE_EXPORT UIHoverEventHandler : UIEventHandler
     {
         SG_DECLARE_UI_EVENT_HANDLER_NAME(hover)
 

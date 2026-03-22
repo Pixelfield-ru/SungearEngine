@@ -2,8 +2,7 @@
 // Created by stuka on 02.03.2025.
 //
 
-#ifndef CSSGAPPROPERTYPROCESSOR_H
-#define CSSGAPPROPERTYPROCESSOR_H
+#pragma once
 
 #include "CSSPropertyProcessorCommon.h"
 #include "SGCore/UI/CSS/CSSPropertyType.h"
@@ -108,5 +107,3 @@ namespace SGCore::UI
         }
     };
 }
-
-#endif //CSSGAPPROPERTYPROCESSOR_H

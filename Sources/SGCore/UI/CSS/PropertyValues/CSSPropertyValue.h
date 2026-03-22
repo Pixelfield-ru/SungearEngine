@@ -2,8 +2,7 @@
 // Created by stuka on 23.01.2025.
 //
 
-#ifndef SUNGEARENGINE_CSSPROPERTYVALUE_H
-#define SUNGEARENGINE_CSSPROPERTYVALUE_H
+#pragma once
 
 #include <variant>
 #include "CSSPropertyValueKeywords.h"
@@ -87,5 +86,3 @@ namespace SGCore::UI
         }
     };
 }
-
-#endif //SUNGEARENGINE_CSSPROPERTYVALUE_H

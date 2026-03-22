@@ -2,8 +2,9 @@
 // Created by stuka on 20.01.2025.
 //
 
-#ifndef SUNGEARENGINE_CSSMATHNUMERICNODE_H
-#define SUNGEARENGINE_CSSMATHNUMERICNODE_H
+#pragma once
+
+#include <sgcore_export.h>
 
 #include "CSSMathNode.h"
 
@@ -13,8 +14,6 @@ namespace SGCore::UI
     {
         float m_value = 0.0f;
 
-        [[nodiscard]] float calculate(const float* parentSelectorValue) const noexcept final;
+        [[nodiscard]] SGCORE_EXPORT float calculate(const float* parentSelectorValue) const noexcept final;
     };
 }
-
-#endif //SUNGEARENGINE_CSSMATHNUMERICNODE_H

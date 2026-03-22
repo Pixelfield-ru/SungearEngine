@@ -11,7 +11,7 @@
 namespace SGCore::UI
 {
     template<typename T>
-    struct AttributeValue
+    struct SGCORE_EXPORT AttributeValue
     {
         AttributeValue() = default;
         AttributeValue(const AttributeValue&) noexcept = default;

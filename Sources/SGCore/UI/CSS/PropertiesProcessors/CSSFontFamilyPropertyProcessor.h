@@ -2,8 +2,7 @@
 // Created by stuka on 11.05.2025.
 //
 
-#ifndef SUNGEARENGINE_CSSFONTFAMILYPROPERTYPROCESSOR_H
-#define SUNGEARENGINE_CSSFONTFAMILYPROPERTYPROCESSOR_H
+#pragma once
 
 #include "SGCore/UI/FontsManager.h"
 #include "SGCore/UI/ANTLR4CSS3Generated/css3Parser.h"
@@ -57,5 +56,3 @@ namespace SGCore::UI
         }
     };
 }
-
-#endif // SUNGEARENGINE_CSSFONTFAMILYPROPERTYPROCESSOR_H

@@ -2,8 +2,7 @@
 // Created by stuka on 20.01.2025.
 //
 
-#ifndef SUNGEARENGINE_CSSMATHNODE_H
-#define SUNGEARENGINE_CSSMATHNODE_H
+#pragma once
 
 #include <vector>
 
@@ -35,5 +34,3 @@ namespace SGCore::UI
         void resolvePriorities(bool recursed = true) noexcept;
     };
 }
-
-#endif //SUNGEARENGINE_CSSMATHNODE_H

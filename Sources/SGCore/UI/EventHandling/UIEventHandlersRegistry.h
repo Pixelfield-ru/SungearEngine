@@ -5,6 +5,7 @@
 #pragma once
 
 #include <vector>
+#include <sgcore_export.h>
 
 #include "SGCore/Main/CoreGlobals.h"
 
@@ -12,7 +13,7 @@ namespace SGCore::UI
 {
     struct UIEventHandler;
 
-    struct UIEventHandlersRegistry
+    struct SGCORE_EXPORT UIEventHandlersRegistry
     {
         static const std::vector<Ref<UIEventHandler>>& getHandlers() noexcept;
 

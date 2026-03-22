@@ -10,7 +10,7 @@
 
 namespace SGCore::UI
 {
-    struct UIElementsProcessorsRegistry
+    struct SGCORE_EXPORT UIElementsProcessorsRegistry
     {
         /**
          * Returns XML processor for node with type name \p nodeType .

@@ -3,16 +3,17 @@
 // Created by stuka on 15.02.2025.
 //
 
-#ifndef UIVERTEX_H
-#define UIVERTEX_H
+#pragma once
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
+#include <sgcore_export.h>
+
 namespace SGCore::UI
 {
 #pragma pack(push, 1)
-    struct UIVertex
+    struct SGCORE_EXPORT UIVertex
     {
         glm::vec3 m_position;
         glm::vec2 m_uv;
@@ -22,5 +23,3 @@ namespace SGCore::UI
     };
 #pragma pack(pop)
 }
-
-#endif //UIVERTEX_H

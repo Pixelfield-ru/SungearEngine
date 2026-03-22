@@ -2,15 +2,14 @@
 // Created by stuka on 23.01.2025.
 //
 
-#ifndef SUNGEARENGINE_UIDIV_H
-#define SUNGEARENGINE_UIDIV_H
+#pragma once
 
 #include "SGCore/UI/UIElement.h"
 #include "SGCore/Utils/Macroses.h"
 
 namespace SGCore::UI
 {
-    struct Div : UIElement
+    struct SGCORE_EXPORT Div : UIElement
     {
         SG_DECLARE_UI_ELEMENT_TYPE(div)
 
@@ -31,5 +30,3 @@ namespace SGCore::UI
         void doGenerateMesh(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept final;
     };
 }
-
-#endif //SUNGEARENGINE_UIDIV_H

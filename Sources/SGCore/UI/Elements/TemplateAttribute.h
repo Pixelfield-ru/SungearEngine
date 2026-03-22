@@ -10,7 +10,7 @@
 
 namespace SGCore::UI
 {
-    struct TemplateAttribute
+    struct SGCORE_EXPORT TemplateAttribute
     {
         AttributeValue<std::u32string> m_value;
         std::u32string m_defaultValue;

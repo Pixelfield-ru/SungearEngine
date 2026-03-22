@@ -2,8 +2,7 @@
 // Created by stuka on 08.02.2025.
 //
 
-#ifndef UIEELEMENTCACHE_H
-#define UIEELEMENTCACHE_H
+#pragma once
 
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
@@ -21,7 +20,7 @@ namespace SGCore::UI
     /**
      * Used to store calculated properties of UI element.
      */
-    struct UIElementCache
+    struct SGCORE_EXPORT UIElementCache
     {
         /// basic size of element
         glm::vec2 m_basicSize { };
@@ -76,5 +75,3 @@ namespace SGCore::UI
         move_operator(UIElementCache);
     };
 }
-
-#endif // UIEELEMENTCACHE_H

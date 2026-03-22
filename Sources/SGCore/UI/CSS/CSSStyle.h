@@ -2,8 +2,7 @@
 // Created by stuka on 18.01.2025.
 //
 
-#ifndef SUNGEARENGINE_CSSSELECTOR_H
-#define SUNGEARENGINE_CSSSELECTOR_H
+#pragma once
 
 #include <vector>
 
@@ -21,7 +20,7 @@
 
 namespace SGCore::UI
 {
-    struct CSSStyle : IAsset
+    struct SGCORE_EXPORT CSSStyle : IAsset
     {
         sg_serde_as_friend();
 
@@ -116,5 +115,3 @@ namespace SGCore::UI
         mutable size_t m_pseudoClassHash = 0;
     };
 }
-
-#endif //SUNGEARENGINE_CSSSELECTOR_H
