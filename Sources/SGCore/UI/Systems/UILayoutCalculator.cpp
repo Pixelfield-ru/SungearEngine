@@ -4,6 +4,9 @@
 
 #include "UILayoutCalculator.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
+
 #include "SGCore/UI/Elements/Text.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Transformations/TransformUtils.h"
@@ -72,6 +75,30 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
                                       parentTransform,
                                       currentTransformNode.m_transform);
 
+    if(isTreeFormed)
+    {
+        if(parentTransformNode)
+        {
+            const bool isFirstChildElement = !parentTransformNode->m_children.empty() ?
+                parentTransformNode->m_children[0] == currentUITransformNodeIdx : 0;
+            calculateElementLayout(isFirstChildElement, parentUIElement, currentUIElement, *parentTransformNode, currentTransformNode);
+        }
+
+        currentElementCache.m_curLocalPositionForElements =
+                glm::vec3 { currentTransformNode.m_elementCurrentCache.m_finalSize, 0.0f } / -2.0f;
+        currentElementCache.m_curLocalPositionForElements.x += currentElementCache.m_leftPadding;
+        currentElementCache.m_curLocalPositionForElements.y += currentElementCache.m_topPadding;
+        currentElementCache.m_lastRowSize = {};
+        currentElementCache.m_contentSize.x = currentElementCache.m_leftPadding + currentElementCache.m_rightPadding;
+        currentElementCache.m_contentSize.y = currentElementCache.m_topPadding + currentElementCache.m_bottomPadding;
+
+        std::println(std::cout, "calculating transform for element: {}", currentUIElement->m_name);
+
+        TransformUtils::calculateTransform(currentTransformNode.m_transform, parentTransform);
+
+        currentTransformNode.m_elementLastCache = currentElementCache;
+    }
+
     for(const auto& child : currentUIElement->m_children)
     {
         const std::int64_t newChildNodeIdx = processUIElement(currentUITransformNodeIdx, uiComponent,
@@ -82,28 +109,6 @@ std::int64_t SGCore::UI::UILayoutCalculator::processUIElement(const std::int64_t
         {
             uiComponent.m_transformTree.m_elements[currentUITransformNodeIdx].m_children.push_back(newChildNodeIdx);
         }
-    }
-    
-    if(isTreeFormed)
-    {
-        if(parentTransformNode)
-        {
-            const bool isFirstChildElement = (parentTransformNode && !parentTransformNode->m_children.empty()) ?
-                parentTransformNode->m_children[0] == currentUITransformNodeIdx : 0;
-            calculateElementLayout(isFirstChildElement, parentUIElement, currentUIElement, *parentTransformNode, currentTransformNode);
-        }
-        
-        currentElementCache.m_curLocalPositionForElements =
-                glm::vec3 { currentTransformNode.m_elementCurrentCache.m_finalSize, 0.0f } / -2.0f;
-        currentElementCache.m_curLocalPositionForElements.x += currentElementCache.m_leftPadding;
-        currentElementCache.m_curLocalPositionForElements.y += currentElementCache.m_topPadding;
-        currentElementCache.m_lastRowSize = {};
-        currentElementCache.m_contentSize.x = currentElementCache.m_leftPadding + currentElementCache.m_rightPadding;
-        currentElementCache.m_contentSize.y = currentElementCache.m_topPadding + currentElementCache.m_bottomPadding;
-        
-        TransformUtils::calculateTransform(currentTransformNode.m_transform, parentTransform);
-        
-        currentTransformNode.m_elementLastCache = currentElementCache;
     }
 
     // =================================================================== reset some cache data
@@ -126,11 +131,17 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
     auto& parentElementLastCache = parentElementTransform.m_elementLastCache;
     auto& elementCurrentCache = currentElementTransform.m_elementCurrentCache;
 
+    std::println(std::cout, "1 trying to update: {}", currentUIElement->m_name);
+
     if(parentElementCache.m_currentFrameStyles.empty()) return;
+
+    std::println(std::cout, "2 trying to update: {}", currentUIElement->m_name);
 
     auto* parentStyle = parentElementCache.m_currentFrameStyles.back();
 
     if(!parentStyle) return;
+
+    std::println(std::cout, "3 trying to update: {}", currentUIElement->m_name);
 
     const size_t currentUIElementType = currentUIElement->getTypeHash();
 
@@ -214,6 +225,8 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
 
             currentElementTransform.m_transform.m_ownTransform.m_position = currentElementPos;
 
+            std::println(std::cout, "KW_ROW: currentElementPos: {}, name: {}", glm::to_string(currentElementPos), currentUIElement->m_name);
+
             parentElementCache.m_curLocalPositionForElements.x += elementCurrentCache.m_finalSize.x + parentElementCache.m_gap.x;
 
             if(parentElementCache.m_contentSize.y + parentElementCache.m_lastRowSize.y > parentElementCache.m_finalSize.y && parentStyle->m_height.containsKeyword())
@@ -238,6 +251,8 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
         }
 
         currentElementTransform.m_transform.m_ownTransform.m_position = currentElementPos;
+
+        std::println(std::cout, "KW_BLOCK: currentElementPos: {}, name: {}", glm::to_string(currentElementPos), currentUIElement->m_name);
 
         elementCurrentCache.m_contentSize.y += elementCurrentCache.m_finalSize.y + parentElementCache.m_gap.y;
 

@@ -4,6 +4,9 @@
 
 #include "UIRenderPass.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
+
 #include "SGCore/Scene/Scene.h"
 
 #include "SGCore/Render/RenderingBase.h"
@@ -57,6 +60,8 @@ void SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::reg_t& c
 
     auto& currentTransformNode = uiComponent.m_transformTree.m_elements[currentTransformNodeIdx];
     auto& currentElementCache = currentTransformNode.m_elementCurrentCache;
+
+    std::println(std::cout, "pos: {}, name: {}", glm::to_string(currentTransformNode.m_transform.m_finalTransform.m_position), currentUIElement->m_name);
 
     // =================================================================== rendering uielement
 
