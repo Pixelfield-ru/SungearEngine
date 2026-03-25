@@ -79,7 +79,7 @@ namespace SGCore
             Transform* m_parentTransform {};
         };
 
-        std::stack<EntityDesc> m_postPhysicsEntitiesDesc;
+        std::stack<EntityDesc> m_transformableEntitiesDesc;
 
         Scope<btCollisionConfiguration> m_collisionConfig;
         Scope<btCollisionDispatcher> m_collisionDispatcher;
@@ -93,5 +93,6 @@ namespace SGCore
         void updateWorld(double dt, double fixedDt) noexcept;
 
         void calculatePostPhysicsEntitiesTransforms(const Ref<ECS::registry_t>& inRegistry) noexcept;
+        void calculatePrePhysicsEntitiesTransforms(const Ref<ECS::registry_t>& inRegistry) noexcept;
     };
 }

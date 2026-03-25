@@ -9,6 +9,7 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include <BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
+#include <glm/gtx/quaternion.hpp>
 
 #include "PhysicsDebugDraw.h"
 #include "Rigidbody3D.h"
@@ -20,6 +21,7 @@
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Scene/RootEntityTag.h"
 #include "SGCore/Transformations/TransformUtils.h"
+#include "SGCore/Utils/Defer.h"
 
 SGCore::PhysicsWorld3D::PhysicsWorld3D()
 {
@@ -71,13 +73,17 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
 
 void SGCore::PhysicsWorld3D::update(double dt, double fixedDt) noexcept
 {
-    m_dynamicsWorld->debugDrawWorld();
+    sg_defer [this] { m_dynamicsWorld->debugDrawWorld(); };
 
     auto lockedScene = getScene();
 
     if(!lockedScene) return;
 
     auto ecsRegistry = lockedScene->getECSRegistry();
+
+    // ============================= calculating pre-physics transform to have actual positions and rotations
+
+    calculatePrePhysicsEntitiesTransforms(ecsRegistry);
 
     // ============================= set rigidbodies world position (even if the world is not simulated (to synchronize))
 
@@ -161,6 +167,56 @@ void SGCore::PhysicsWorld3D::updateWorld(double dt, double fixedDt) noexcept
     m_dynamicsWorld->stepSimulation(dt, 12, dt);
 }
 
+void SGCore::PhysicsWorld3D::calculatePrePhysicsEntitiesTransforms(const Ref<ECS::registry_t>& inRegistry) noexcept
+{
+    auto transformsView = inRegistry->view<EntityBaseInfo, Transform, RootEntityTag>();
+
+    transformsView.each([&](ECS::entity_t entity,
+                            EntityBaseInfo& entityBaseInfo,
+                            const Transform::reg_t& transform, auto) {
+        m_transformableEntitiesDesc.emplace(entity, &entityBaseInfo, &transform, nullptr);
+
+        while(!m_transformableEntitiesDesc.empty())
+        {
+            auto [currentEntity, currentEntityBaseInfo, currentTransform, parentTransform] = m_transformableEntitiesDesc.top();
+            m_transformableEntitiesDesc.pop();
+
+            // ======================= updating transform
+
+            if(currentTransform && (*currentTransform)->isActive())
+            {
+                auto& childFinalTransform = (*currentTransform)->m_finalTransform;
+                const auto& childOwnTransform = (*currentTransform)->m_ownTransform;
+
+                if(parentTransform) // calculating child position and rotation relating to parent
+                {
+                    const auto& parentFinalTransform = parentTransform->m_finalTransform;
+
+                    childFinalTransform.m_position = parentFinalTransform.m_position + parentFinalTransform.m_rotation * (childOwnTransform.m_position * parentFinalTransform.m_scale);
+                    childFinalTransform.m_rotation = parentFinalTransform.m_rotation * childOwnTransform.m_rotation;
+                }
+                else // else using local transform as world transform
+                {
+                    childFinalTransform.m_position = childOwnTransform.m_position;
+                    childFinalTransform.m_rotation = childOwnTransform.m_rotation;
+                }
+                // else skipping child because it does not have parent
+            }
+
+            // =======================
+
+            // iterating through all children
+            for(auto childEntity : currentEntityBaseInfo->getChildren())
+            {
+                const auto& childBaseInfo = inRegistry->get<EntityBaseInfo>(childEntity);
+                const auto* childTransform = inRegistry->tryGet<Transform>(childEntity);
+
+                m_transformableEntitiesDesc.emplace(childEntity, &childBaseInfo, childTransform, currentTransform ? currentTransform->get() : parentTransform);
+            }
+        }
+    });
+}
+
 void SGCore::PhysicsWorld3D::calculatePostPhysicsEntitiesTransforms(const Ref<ECS::registry_t>& inRegistry) noexcept
 {
     auto transformsView = inRegistry->view<EntityBaseInfo, Transform, RootEntityTag>();
@@ -168,12 +224,12 @@ void SGCore::PhysicsWorld3D::calculatePostPhysicsEntitiesTransforms(const Ref<EC
     transformsView.each([&](ECS::entity_t entity,
                             EntityBaseInfo& entityBaseInfo,
                             const Transform::reg_t& transform, auto) {
-        m_postPhysicsEntitiesDesc.emplace(entity, &entityBaseInfo, &transform, nullptr);
+        m_transformableEntitiesDesc.emplace(entity, &entityBaseInfo, &transform, nullptr);
 
-        while(!m_postPhysicsEntitiesDesc.empty())
+        while(!m_transformableEntitiesDesc.empty())
         {
-            auto [currentEntity, currentEntityBaseInfo, currentTransform, parentTransform] = m_postPhysicsEntitiesDesc.top();
-            m_postPhysicsEntitiesDesc.pop();
+            auto [currentEntity, currentEntityBaseInfo, currentTransform, parentTransform] = m_transformableEntitiesDesc.top();
+            m_transformableEntitiesDesc.pop();
 
             // ======================= updating transform
 
@@ -230,7 +286,7 @@ void SGCore::PhysicsWorld3D::calculatePostPhysicsEntitiesTransforms(const Ref<EC
                 const auto& childBaseInfo = inRegistry->get<EntityBaseInfo>(childEntity);
                 const auto* childTransform = inRegistry->tryGet<Transform>(childEntity);
 
-                m_postPhysicsEntitiesDesc.emplace(childEntity, &childBaseInfo, childTransform, currentTransform ? currentTransform->get() : parentTransform);
+                m_transformableEntitiesDesc.emplace(childEntity, &childBaseInfo, childTransform, currentTransform ? currentTransform->get() : parentTransform);
             }
         }
     });

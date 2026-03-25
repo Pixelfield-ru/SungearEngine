@@ -88,7 +88,6 @@ namespace SGCore::Serde
         valueView.container().addMember("m_rotation", valueView.m_data->m_rotation);
         valueView.container().addMember("m_aabb", valueView.m_data->m_aabb);
         valueView.container().addMember("m_position", valueView.m_data->m_position);
-        valueView.container().addMember("m_yawPitchRoll", valueView.m_data->m_yawPitchRoll);
         valueView.container().addMember("m_scale", valueView.m_data->m_scale);
         valueView.container().addMember("m_right", valueView.m_data->m_right);
         valueView.container().addMember("m_forward", valueView.m_data->m_forward);
@@ -132,12 +131,6 @@ namespace SGCore::Serde
         if(m_position)
         {
             valueView.m_data->m_position = *m_position;
-        }
-
-        const auto m_yawPitchRoll = valueView.container().template getMember<decltype(valueView.m_data->m_yawPitchRoll)>("m_yawPitchRoll");
-        if(m_yawPitchRoll)
-        {
-            valueView.m_data->m_yawPitchRoll = *m_yawPitchRoll;
         }
 
         const auto m_scale = valueView.container().template getMember<decltype(valueView.m_data->m_scale)>("m_scale");

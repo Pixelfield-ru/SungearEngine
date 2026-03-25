@@ -40,8 +40,6 @@ namespace SGCore
         glm::mat4 m_boneAnimatedMatrix = glm::identity<glm::mat4>();
 
         glm::vec3 m_lastPosition { 0.0 };
-        // from Controllables3DUpdater, where x - yaw, y - pitch, z - roll
-        glm::vec3 m_yawPitchRoll { 0 };
         glm::vec3 m_lastScale = glm::vec3(0);
 
         glm::quat m_rotation = glm::identity<glm::quat>();

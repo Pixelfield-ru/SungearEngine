@@ -156,6 +156,8 @@ void SGCore::BasicApp::updateImpl(double dt, double fixedDt) noexcept
 {
     const auto currentScene = Scene::getCurrentScene();
 
+    onUpdate(dt, fixedDt);
+
     if(currentScene)
     {
         auto cameraTransform = currentScene->getECSRegistry()->tryGet<Transform>(m_cameraEntity);
@@ -169,8 +171,6 @@ void SGCore::BasicApp::updateImpl(double dt, double fixedDt) noexcept
         currentScene->update(dt, fixedDt);
     }
 
-    onUpdate(dt, fixedDt);
-
     if(!currentScene) return;
 
     auto frameReceiver = currentScene->getECSRegistry()->tryGet<LayeredFrameReceiver>(m_cameraEntity);
@@ -183,10 +183,10 @@ void SGCore::BasicApp::updateImpl(double dt, double fixedDt) noexcept
 
 void SGCore::BasicApp::fixedUpdateImpl(double dt, double fixedDt) noexcept
 {
+    onFixedUpdate(dt, fixedDt);
+
     if(const auto currentScene = Scene::getCurrentScene())
     {
         currentScene->fixedUpdate(dt, fixedDt);
     }
-
-    onFixedUpdate(dt, fixedDt);
 }

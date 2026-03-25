@@ -27,15 +27,15 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(double dt, double fixedDt)
             ownTransform.m_positionChanged ||
             ownTransform.m_scaleChanged;
 
-        ownTransform.m_rotation = glm::quat(glm::vec3(glm::radians(ownTransform.m_yawPitchRoll.x),
+        /*ownTransform.m_rotation = glm::quat(glm::vec3(glm::radians(ownTransform.m_yawPitchRoll.x),
                                                       glm::radians(ownTransform.m_yawPitchRoll.y),
-                                                      glm::radians(ownTransform.m_yawPitchRoll.z)));
+                                                      glm::radians(ownTransform.m_yawPitchRoll.z)));*/
 
         renderingBase->m_projectionSpaceMatrixChanged = false;
 
         bool projectionMatrixChanged = false;
 
-        renderingBase->m_viewMatrix = glm::inverse(finalTransform.m_modelMatrix);
+        renderingBase->m_viewMatrix = glm::inverse(finalTransform.m_animatedModelMatrix);
 
         // if some part of projection matrix of camera is changed
         if(renderingBase->m_lastFov != renderingBase->m_fov ||

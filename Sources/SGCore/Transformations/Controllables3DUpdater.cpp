@@ -32,18 +32,22 @@ void SGCore::Controllables3DUpdater::fixedUpdate(double dt, double fixedDt)
 
         if(!ownTransform.m_blockRotation)
         {
-            ownTransform.m_yawPitchRoll.x -=
-                    (float) Input::PC::getCursorPositionDeltaY() *
-                    controllable3D.m_rotationSensitive * inverseFactor;
-            ownTransform.m_yawPitchRoll.y -=
-                    (float) Input::PC::getCursorPositionDeltaX() *
-                    controllable3D.m_rotationSensitive * inverseFactor;
+            controllable3D.m_pitchYawRoll.x -= (float) Input::PC::getCursorPositionDeltaY() * controllable3D.m_rotationSensitive * inverseFactor;
+            controllable3D.m_pitchYawRoll.y -= (float) Input::PC::getCursorPositionDeltaX() * controllable3D.m_rotationSensitive * inverseFactor;
+
+            const glm::vec3 rotation = {
+                glm::radians(controllable3D.m_pitchYawRoll.x),
+                glm::radians(controllable3D.m_pitchYawRoll.y),
+                glm::radians(controllable3D.m_pitchYawRoll.z)
+            };
+
+            ownTransform.m_rotation = glm::quat(rotation);
         }
 
         if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_R))
         {
-            ownTransform.m_yawPitchRoll.x = ownTransform.m_yawPitchRoll.y = ownTransform.m_yawPitchRoll.z =
             ownTransform.m_position.x = ownTransform.m_position.y = ownTransform.m_position.z = 0.0f;
+            ownTransform.m_rotation = glm::identity<glm::quat>();
         }
 
         float finalCameraSpeed = controllable3D.m_movementSpeed;

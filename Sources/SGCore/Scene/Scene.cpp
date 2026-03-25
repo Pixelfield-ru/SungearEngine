@@ -54,31 +54,33 @@ void SGCore::Scene::createDefaultSystems()
     // ===================
     
     // ===================
-    // rendering
     
+    // transformations ===================
+
+    auto controllables3DUpdater = MakeRef<Controllables3DUpdater>();
+    addSystem(controllables3DUpdater);
+
+    // ALWAYS BEFORE TRANSFORMATIONS UPDATER
+    auto physicsWorld = MakeRef<PhysicsWorld3D>();
+    addSystem(physicsWorld);
+
+    // UPDATING TRANSFORMS ONLY AFTER PHYSICS
+    auto transformationsUpdater = MakeRef<TransformationsUpdater>();
+    addSystem(transformationsUpdater);
+
+    // UPDATING RENDERING BASES ONLY AFTER TRANSFORMATIONS UPDATE
     auto renderingBasesUpdater = MakeRef<RenderingBasesUpdater>();
     addSystem(renderingBasesUpdater);
-    
+
+    // ===================
+    // rendering
+
     auto atmosphereScatteringUpdater = MakeRef<AtmosphereUpdater>();
     addSystem(atmosphereScatteringUpdater);
 
     auto spotLightsUpdater = MakeRef<SpotLightsUpdater>();
     addSystem(spotLightsUpdater);
-    
-    // ===================
-    
-    // transformations ===================
 
-    auto transformationsUpdater = MakeRef<TransformationsUpdater>();
-    addSystem(transformationsUpdater);
-
-    // ALWAYS AFTER TRANSFORMATIONS UPDATER
-    auto physicsWorld = MakeRef<PhysicsWorld3D>();
-    addSystem(physicsWorld);
-
-    auto controllables3DUpdater = MakeRef<Controllables3DUpdater>();
-    addSystem(controllables3DUpdater);
-    
     // gizmos ===================
 
     auto boxGizmosUpdater = MakeRef<BoxGizmosRenderer>();
