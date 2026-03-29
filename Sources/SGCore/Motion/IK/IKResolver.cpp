@@ -51,7 +51,7 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
 
             const float tolerance = 0.001;
 
-            const auto jointsCount = chain.size();
+            const auto jointsCount = std::ssize(chain);
 
             // collecting transforms
             for(auto jointEntity : chain)
@@ -77,14 +77,16 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
 
             auto& endJoint = registry->get<IKJoint>(chain[jointsCount - 1]);
 
-            if(!endJoint.m_targetPosition) continue;
+            // if(!endJoint.m_targetPosition) continue;
 
-            jointsTransforms[jointsCount - 1]->m_finalTransform.m_position = *endJoint.m_targetPosition;
+            // jointsTransforms[jointsCount - 1]->m_finalTransform.m_position = *endJoint.m_targetPosition;
 
             const auto rootJointOriginalPos = jointsTransforms[0]->m_finalTransform.m_position;
 
+            // std::println(std::cout, "end pos: {}", glm::to_string(jointsTransforms[jointsCount - 1]->m_finalTransform.m_position));
+
             // === forward
-            for(std::int32_t j = jointsCount - 2; j >= 0; --j)
+            for(std::ptrdiff_t j = jointsCount - 2; j >= 0; --j)
             {
                 auto& finalTransform = jointsTransforms[j]->m_finalTransform;
                 auto& ownTransform = jointsTransforms[j]->m_ownTransform;
@@ -92,8 +94,13 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
 
                 auto& jointBaseInfo = registry->get<EntityBaseInfo>(jointsTransforms[j]->getThisEntity());
 
-                const auto dir = finalTransform.m_position - nextFinalTransform.m_position;
-                finalTransform.m_position = nextFinalTransform.m_position + glm::normalize(dir) * bonesLengths[j];
+                const auto dir = glm::normalize(finalTransform.m_position - nextFinalTransform.m_position);
+                if(glm::any(glm::isnan(dir)))
+                {
+                    continue;
+                }
+
+                finalTransform.m_position = nextFinalTransform.m_position + dir * bonesLengths[j];
 
                 Transform* parentTransform {};
 
@@ -110,6 +117,10 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
                 {
                     ownTransform.m_position = finalTransform.m_position;
                 }
+
+                /*std::println(std::cout, "1111 normalized dir: {}, final pos: {}, local pos: {}, j: {}, j + 1: {}",
+                             glm::to_string(dir), glm::to_string(finalTransform.m_position),
+                             glm::to_string(ownTransform.m_position), j, j + 1);*/
             }
 
             // ==========
@@ -117,7 +128,7 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
             jointsTransforms[0]->m_finalTransform.m_position = rootJointOriginalPos;
 
             // === backwards
-            for(std::int32_t j = 0; j < jointsCount - 1; ++j)
+            for(std::ptrdiff_t j = 0; j < jointsCount - 1; ++j)
             {
                 auto& finalTransform = jointsTransforms[j]->m_finalTransform;
                 auto& nextFinalTransform = jointsTransforms[j + 1]->m_finalTransform;
@@ -125,8 +136,13 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
 
                 auto& jointBaseInfo = registry->get<EntityBaseInfo>(jointsTransforms[j + 1]->getThisEntity());
 
-                const auto dir = nextFinalTransform.m_position - finalTransform.m_position;
-                nextFinalTransform.m_position = finalTransform.m_position + glm::normalize(dir) * bonesLengths[j];
+                const auto dir = glm::normalize(nextFinalTransform.m_position - finalTransform.m_position);
+                if(glm::any(glm::isnan(dir)))
+                {
+                    continue;
+                }
+
+                nextFinalTransform.m_position = finalTransform.m_position + dir * bonesLengths[j];
 
                 Transform* parentTransform {};
 
@@ -143,9 +159,14 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
                 {
                     nextOwnTransform.m_position = nextFinalTransform.m_position;
                 }
+
+                /*std::println(std::cout, "2222 normalized dir: {}, final pos: {}, local pos: {}, j: {}, j + 1: {}",
+                             glm::to_string(dir), glm::to_string(nextFinalTransform.m_position),
+                             glm::to_string(nextOwnTransform.m_position), j, j + 1);*/
             }
 
             // === calculating rotations
+            continue;
 
             for(size_t j = 0; j < jointsCount - 1; ++j)
             {
@@ -155,8 +176,11 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
 
                 auto& jointBaseInfo = registry->get<EntityBaseInfo>(jointsTransforms[j]->getThisEntity());
 
-                auto dir = nextFinalTransform.m_position - finalTransform.m_position;
-                dir = glm::normalize(dir);
+                const auto dir = glm::normalize(nextFinalTransform.m_position - finalTransform.m_position);
+                if(glm::any(glm::isnan(dir)))
+                {
+                    continue;
+                }
 
                 Transform* parentTransform {};
 
@@ -165,12 +189,17 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
                     parentTransform = tmpTransform ? tmpTransform->get() : nullptr;
                 }
 
-                // i think
-                // glm::vec3 rotationDir(1, 0, 0);
-                glm::vec3 rotationDir = finalTransform.m_forward;
+                auto rotationDir = finalTransform.m_forward;
 
-                finalTransform.m_rotation = glm::rotation(rotationDir, dir) * finalTransform.m_rotation;
-                // ownTransform.m_rotation = glm::rotation(rotationDir, forward);
+                const auto delta = glm::rotation(rotationDir, dir);
+
+                if(glm::any(glm::isnan(delta)))
+                {
+                    continue;
+                }
+
+                finalTransform.m_rotation = delta * finalTransform.m_rotation;
+                // ownTransform.m_rotation = delta * ownTransform.m_rotation;
 
                 if(parentTransform)
                 {
@@ -183,7 +212,7 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
 
                 ownTransform.m_rotation = glm::normalize(ownTransform.m_rotation);
 
-                std::println(std::cout, "rotation: {}", glm::to_string(ownTransform.m_rotation));
+                // std::println(std::cout, "rotation: {}, delta: {}", glm::to_string(ownTransform.m_rotation), glm::to_string(delta));
             }
          }
 
