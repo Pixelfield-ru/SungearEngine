@@ -20,12 +20,22 @@ namespace SGCore
         /// Texture slot to animate.
         SGTextureSlot m_textureSlot = SGTextureSlot::SGTT_DIFFUSE;
 
+        void setSource(AssetRef<GIF> gif) noexcept;
+        void setSource(FramesSequence sequence) noexcept;
+
+        FramesSequence* getUsedFramesSequence() const noexcept;
+
+        void tick(double dt, ECS::entity_t entity, ECS::registry_t& inRegistry) noexcept final;
+        bool isAnimationEnded(ECS::entity_t entity, ECS::registry_t& inRegistry) noexcept final;
+
+        void resetTimelineTime() noexcept final;
+
+    private:
         /**
          * Animation source. Can contain GIF or custom sequence of frames
          */
         std::variant<AssetRef<GIF>, FramesSequence> m_source;
 
-        void tick(double dt, ECS::entity_t entity, ECS::registry_t& inRegistry) noexcept final;
-        bool isAnimationEnded(ECS::entity_t entity, ECS::registry_t& inRegistry) noexcept final;
+        FramesSequence* m_usedFramesSequence {};
     };
 }

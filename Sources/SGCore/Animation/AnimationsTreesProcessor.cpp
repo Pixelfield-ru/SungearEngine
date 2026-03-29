@@ -44,7 +44,8 @@ void SGCore::AnimationsTreesProcessor::update(double dt, double fixedDt) noexcep
                 if(node->m_isLooping)
                 {
                     // node->m_currentAnimationTime = 1.0f;
-                    node->m_currentAnimationTime = 0.0f;
+                    // node->m_currentAnimationTime = 0.0f;
+                    node->resetTimelineTime();
                 }
                 else
                 {

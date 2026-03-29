@@ -38,7 +38,6 @@ namespace SGCore
         virtual void tick(double dt, ECS::entity_t entity, ECS::registry_t& inRegistry) noexcept = 0;
         virtual bool isAnimationEnded(ECS::entity_t entity, ECS::registry_t& inRegistry) noexcept = 0;
 
-    private:
         void resetTimelineTime() noexcept override;
     };
 }

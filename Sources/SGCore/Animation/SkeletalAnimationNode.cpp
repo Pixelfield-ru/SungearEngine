@@ -15,5 +15,21 @@ bool SGCore::SkeletalAnimationNode::isAnimationEnded(ECS::entity_t entity, ECS::
 {
     if(!m_skeletalAnimation) return true;
 
-    return m_currentAnimationTime >= m_skeletalAnimation->m_duration;
+    if(m_animationSpeed > 0.0f)
+    {
+        return m_currentAnimationTime >= m_skeletalAnimation->m_duration;
+    }
+
+    return m_currentAnimationTime <= 0.0f;
+}
+
+void SGCore::SkeletalAnimationNode::resetTimelineTime() noexcept
+{
+    if(m_animationSpeed >= 0.0f)
+    {
+        m_currentAnimationTime = 0.0f;
+        return;
+    }
+
+    m_currentAnimationTime = m_skeletalAnimation->m_duration;
 }

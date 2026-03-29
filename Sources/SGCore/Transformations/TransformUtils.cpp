@@ -184,3 +184,27 @@ glm::mat4 SGCore::TransformUtils::calculateModelMatrix(const glm::vec3& position
 
     return modelMatrix;
 }
+
+glm::vec3 SGCore::TransformUtils::calculateLocalPosition(const Transform& parentTransform,
+                                                         const glm::vec3& childWorldPosition) noexcept
+{
+    return glm::inverse(parentTransform.m_finalTransform.m_rotation) * ((childWorldPosition - parentTransform.m_finalTransform.m_position) / parentTransform.m_finalTransform.m_scale);
+}
+
+glm::quat SGCore::TransformUtils::calculateLocalRotation(const Transform& parentTransform,
+                                                         const glm::quat& childWorldRotation) noexcept
+{
+    return glm::inverse(parentTransform.m_finalTransform.m_rotation) * childWorldRotation;
+}
+
+glm::vec3 SGCore::TransformUtils::calculateWorldPosition(const Transform& parentTransform,
+                                                         const glm::vec3& childLocalPosition) noexcept
+{
+    return parentTransform.m_finalTransform.m_position + parentTransform.m_finalTransform.m_rotation * (childLocalPosition * parentTransform.m_finalTransform.m_scale);
+}
+
+glm::quat SGCore::TransformUtils::calculateWorldRotation(const Transform& parentTransform,
+                                                         const glm::quat& childLocalRotation) noexcept
+{
+    return parentTransform.m_finalTransform.m_rotation * childLocalRotation;
+}

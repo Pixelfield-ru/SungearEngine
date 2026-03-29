@@ -33,17 +33,7 @@ void SGCore::FrameAnimationsProcessor::update(double dt, double fixedDt) noexcep
 
             if(!mesh.m_base.getMaterial() || animationNode->getState() != PlayableState::SG_PLAYING) return;
 
-            FramesSequence* sequence {};
-            if(auto* gif = std::get_if<AssetRef<GIF>>(&animationNode->m_source))
-            {
-                if(!*gif) return;
-
-                sequence = &(*gif)->m_sequence;
-            }
-            else if(auto* seq = std::get_if<FramesSequence>(&animationNode->m_source))
-            {
-                sequence = seq;
-            }
+            const auto* sequence = animationNode->getUsedFramesSequence();
 
             if(!sequence || sequence->m_frames.empty()) return;
 

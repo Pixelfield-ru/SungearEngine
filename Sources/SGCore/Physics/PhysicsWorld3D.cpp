@@ -131,9 +131,12 @@ void SGCore::PhysicsWorld3D::update(double dt, double fixedDt) noexcept
 
         if(parentTransform)
         {
+            ownTransform.m_position = TransformUtils::calculateLocalPosition(*parentTransform, finalTransform.m_position);
+            ownTransform.m_rotation = TransformUtils::calculateLocalRotation(*parentTransform, finalTransform.m_rotation);
+
             // calculating local position & rotation to ignore parent rigidbody transform
-            ownTransform.m_position = glm::inverse(parentTransform->m_finalTransform.m_rotation) * ((finalTransform.m_position - parentTransform->m_finalTransform.m_position) / parentTransform->m_finalTransform.m_scale);
-            ownTransform.m_rotation = glm::inverse(parentTransform->m_finalTransform.m_rotation) * finalTransform.m_rotation;
+            /*ownTransform.m_position = glm::inverse(parentTransform->m_finalTransform.m_rotation) * ((finalTransform.m_position - parentTransform->m_finalTransform.m_position) / parentTransform->m_finalTransform.m_scale);
+            ownTransform.m_rotation = glm::inverse(parentTransform->m_finalTransform.m_rotation) * finalTransform.m_rotation;*/
         }
         else
         {
@@ -192,8 +195,11 @@ void SGCore::PhysicsWorld3D::calculatePrePhysicsEntitiesTransforms(const Ref<ECS
                 {
                     const auto& parentFinalTransform = parentTransform->m_finalTransform;
 
-                    childFinalTransform.m_position = parentFinalTransform.m_position + parentFinalTransform.m_rotation * (childOwnTransform.m_position * parentFinalTransform.m_scale);
+                    childFinalTransform.m_position = TransformUtils::calculateWorldPosition(*parentTransform, childOwnTransform.m_position);
                     childFinalTransform.m_rotation = parentFinalTransform.m_rotation * childOwnTransform.m_rotation;
+
+                    /*childFinalTransform.m_position = parentFinalTransform.m_position + parentFinalTransform.m_rotation * (childOwnTransform.m_position * parentFinalTransform.m_scale);
+                    childFinalTransform.m_rotation = parentFinalTransform.m_rotation * childOwnTransform.m_rotation;*/
                 }
                 else // else using local transform as world transform
                 {
@@ -249,8 +255,11 @@ void SGCore::PhysicsWorld3D::calculatePostPhysicsEntitiesTransforms(const Ref<EC
                     const auto& parentFinalTransform = parentTransform->m_finalTransform;
                     const auto& childOwnTransform = (*currentTransform)->m_ownTransform;
 
-                    childFinalTransform.m_position = parentFinalTransform.m_position + parentFinalTransform.m_rotation * (childOwnTransform.m_position * parentFinalTransform.m_scale);
+                    childFinalTransform.m_position = TransformUtils::calculateWorldPosition(*parentTransform, childOwnTransform.m_position);
                     childFinalTransform.m_rotation = parentFinalTransform.m_rotation * childOwnTransform.m_rotation;
+
+                    /*childFinalTransform.m_position = parentFinalTransform.m_position + parentFinalTransform.m_rotation * (childOwnTransform.m_position * parentFinalTransform.m_scale);
+                    childFinalTransform.m_rotation = parentFinalTransform.m_rotation * childOwnTransform.m_rotation;*/
                 }
                 else if(childRigidbody) // using rigidbody`s position and rotation as final position and rotation
                 {

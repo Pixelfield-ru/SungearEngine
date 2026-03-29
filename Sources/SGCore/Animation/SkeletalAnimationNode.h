@@ -17,5 +17,7 @@ namespace SGCore
 
         void tick(double dt, ECS::entity_t entity, ECS::registry_t& inRegistry) noexcept final;
         bool isAnimationEnded(ECS::entity_t entity, ECS::registry_t& inRegistry) noexcept final;
+
+        void resetTimelineTime() noexcept final;
     };
 }

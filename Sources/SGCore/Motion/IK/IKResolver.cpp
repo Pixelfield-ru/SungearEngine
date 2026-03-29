@@ -6,6 +6,7 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/norm.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include "IKRootJoint.h"
 #include "SGCore/Scene/Scene.h"
@@ -35,6 +36,8 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
         // collecting all joints chains from root to end effector
         collectJoints(*registry, entityBaseInfo, jointsChains, rootChain);
         // collectJoints(*registry, entityBaseInfo, jointsChains, *jointsChains.begin());
+
+        // std::println(std::cout, "chains count: {}", jointsChains.size());
 
         // processing joints chains
         for(size_t i = 0; i < jointsChains.size(); ++i)
@@ -68,111 +71,119 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
                 totalChainLength += boneLength;
             }
 
-            // classic FABRIK algorithm =======================================
+            // std::println(std::cout, "chain {} length: {}, joints count: {}", i, totalChainLength, jointsCount);
 
-            const auto& effectorTransform = jointsTransforms[jointsCount - 1];
-            auto& effectorJoint = registry->get<IKJoint>(chain[jointsCount - 1]);
+            // ======= FABRIK
 
-            if(!effectorJoint.m_targetPosition) continue;
+            auto& endJoint = registry->get<IKJoint>(chain[jointsCount - 1]);
 
-            const auto targetPos = *effectorJoint.m_targetPosition;
-            const glm::vec3 targetGlobalPos = jointsTransforms[jointsCount - 2]->m_finalTransform.m_animatedModelMatrix * glm::vec4(*effectorJoint.m_targetPosition, 1.0f);
+            if(!endJoint.m_targetPosition) continue;
 
-            // ====================================================
+            jointsTransforms[jointsCount - 1]->m_finalTransform.m_position = *endJoint.m_targetPosition;
 
-            const auto rootPos = jointsTransforms[0]->m_ownTransform.m_position;
-            const auto rootGlobalPos = jointsTransforms[0]->m_finalTransform.m_position;
+            const auto rootJointOriginalPos = jointsTransforms[0]->m_finalTransform.m_position;
 
-            const float distToTarget = glm::distance(rootGlobalPos, targetGlobalPos);
-            if(distToTarget > totalChainLength)
+            // === forward
+            for(std::int32_t j = jointsCount - 2; j >= 0; --j)
             {
-                /*glm::vec3 direction = glm::normalize(m_target - root);
-                for (size_t i = 1; i < m_points.size(); i++) {
-                    m_points[i].position = m_points[i-1].position + direction * m_lengths[i-1];
-                }*/
+                auto& finalTransform = jointsTransforms[j]->m_finalTransform;
+                auto& ownTransform = jointsTransforms[j]->m_ownTransform;
+                auto& nextFinalTransform = jointsTransforms[j + 1]->m_finalTransform;
 
-                // if(glm::distance2(jointsTransforms[jointsCount - 1]->m_ownTransform.m_position, targetPos) < tolerance * tolerance)
-                {
-                    effectorJoint.m_targetPosition = std::nullopt;
-                }
+                auto& jointBaseInfo = registry->get<EntityBaseInfo>(jointsTransforms[j]->getThisEntity());
 
-                continue;
-            }
+                const auto dir = finalTransform.m_position - nextFinalTransform.m_position;
+                finalTransform.m_position = nextFinalTransform.m_position + glm::normalize(dir) * bonesLengths[j];
 
-            // ====================================================
-
-            // jointsTransforms[jointsCount - 1]->m_ownTransform.m_position = glm::inverse(jointsTransforms[jointsCount - 1]->m_finalTransform.m_animatedModelMatrix) * glm::vec4(targetPos, 1.0);
-            effectorTransform->m_ownTransform.m_position = targetPos;
-            // effectorTransform->m_finalTransform.m_position = targetGlobalPos;
-            {
-                const auto& parentTransform = registry->tryGet<Transform>(registry->get<EntityBaseInfo>(chain[jointsCount - 1]).getParent());
-                TransformUtils::calculateTransform(*effectorTransform, parentTransform ? parentTransform->get() : nullptr);
-            }
-
-            // backward
-            for(std::int64_t j = jointsCount - 2; j >= 0; --j)
-            {
-                glm::vec3 dir = glm::normalize(jointsTransforms[j]->m_finalTransform.m_position - jointsTransforms[j + 1]->m_finalTransform.m_position);
-                const glm::vec3 globalPos = jointsTransforms[j + 1]->m_finalTransform.m_position + dir * bonesLengths[j];
-
-                glm::vec3 localPos = glm::vec4(globalPos, 0.0);
-                if(j - 1 >= 0)
-                {
-                    localPos = glm::inverse(jointsTransforms[j - 1]->m_finalTransform.m_animatedModelMatrix) * glm::vec4(globalPos, 0.0);
-                }
-
-                jointsTransforms[j]->m_ownTransform.m_position = localPos;
+                Transform* parentTransform {};
 
                 {
-                    const auto& parentTransform = registry->tryGet<Transform>(registry->get<EntityBaseInfo>(chain[j]).getParent());
-                    TransformUtils::calculateTransform(*jointsTransforms[j], parentTransform ? parentTransform->get() : nullptr);
+                    auto tmpTransform = registry->tryGet<Transform>(jointBaseInfo.getParent());
+                    parentTransform = tmpTransform ? tmpTransform->get() : nullptr;
                 }
 
-                // jointsTransforms[j]->m_finalTransform.m_position = globalPos;
-                // jointsTransforms[j]->m_ownTransform.m_position = globalPos;
-
-                /*const float d = glm::distance(jointsTransforms[j + 1]->m_finalTransform.m_position, jointsTransforms[j]->m_finalTransform.m_position);
-                const float lambda = bonesLengths[j] / d;
-
-                const glm::vec3 globalPosition = (1 - lambda) * jointsTransforms[j + 1]->m_finalTransform.m_position + lambda * jointsTransforms[j]->m_finalTransform.m_position;
-                const glm::vec3 localPosition = glm::inverse(jointsTransforms[j]->m_finalTransform.m_animatedModelMatrix) * glm::vec4(globalPosition, 1.0);
-
-                jointsTransforms[j]->m_ownTransform.m_position = localPosition;*/
-            }
-
-            // forward
-            jointsTransforms[0]->m_ownTransform.m_position = rootPos;
-
-            {
-                const auto& parentTransform = registry->tryGet<Transform>(registry->get<EntityBaseInfo>(chain[0]).getParent());
-                TransformUtils::calculateTransform(*jointsTransforms[0], parentTransform ? parentTransform->get() : nullptr);
-            }
-            // jointsTransforms[0]->m_finalTransform.m_position = rootGlobalPos;
-
-            for(std::int64_t j = 1; j < jointsCount; ++j)
-            {
-                glm::vec3 dir = glm::normalize(jointsTransforms[j]->m_finalTransform.m_position - jointsTransforms[j - 1]->m_finalTransform.m_position);
-                const glm::vec3 globalPos = jointsTransforms[j - 1]->m_finalTransform.m_position + dir * bonesLengths[j - 1];
-
-                glm::vec3 localPos = glm::vec4(globalPos, 0.0);
-                if(j - 1 >= 0)
+                if(parentTransform)
                 {
-                    localPos = glm::inverse(jointsTransforms[j - 1]->m_finalTransform.m_animatedModelMatrix) * glm::vec4(globalPos, 0.0);
+                    ownTransform.m_position = TransformUtils::calculateLocalPosition(*parentTransform, finalTransform.m_position);
                 }
+                else
+                {
+                    ownTransform.m_position = finalTransform.m_position;
+                }
+            }
 
-                jointsTransforms[j]->m_ownTransform.m_position = localPos;
+            // ==========
+
+            jointsTransforms[0]->m_finalTransform.m_position = rootJointOriginalPos;
+
+            // === backwards
+            for(std::int32_t j = 0; j < jointsCount - 1; ++j)
+            {
+                auto& finalTransform = jointsTransforms[j]->m_finalTransform;
+                auto& nextFinalTransform = jointsTransforms[j + 1]->m_finalTransform;
+                auto& nextOwnTransform = jointsTransforms[j + 1]->m_ownTransform;
+
+                auto& jointBaseInfo = registry->get<EntityBaseInfo>(jointsTransforms[j + 1]->getThisEntity());
+
+                const auto dir = nextFinalTransform.m_position - finalTransform.m_position;
+                nextFinalTransform.m_position = finalTransform.m_position + glm::normalize(dir) * bonesLengths[j];
+
+                Transform* parentTransform {};
 
                 {
-                    const auto& parentTransform = registry->tryGet<Transform>(registry->get<EntityBaseInfo>(chain[j]).getParent());
-                    TransformUtils::calculateTransform(*jointsTransforms[j], parentTransform ? parentTransform->get() : nullptr);
+                    auto tmpTransform = registry->tryGet<Transform>(jointBaseInfo.getParent());
+                    parentTransform = tmpTransform ? tmpTransform->get() : nullptr;
                 }
 
-                // jointsTransforms[j]->m_finalTransform.m_position = globalPos;
+                if(parentTransform)
+                {
+                    nextOwnTransform.m_position = TransformUtils::calculateLocalPosition(*parentTransform, nextFinalTransform.m_position);
+                }
+                else
+                {
+                    nextOwnTransform.m_position = nextFinalTransform.m_position;
+                }
             }
 
-            if(glm::distance2(effectorTransform->m_ownTransform.m_position, targetPos) < tolerance * tolerance)
+            // === calculating rotations
+
+            for(size_t j = 0; j < jointsCount - 1; ++j)
             {
-                effectorJoint.m_targetPosition = std::nullopt;
+                auto& finalTransform = jointsTransforms[j]->m_finalTransform;
+                auto& ownTransform = jointsTransforms[j]->m_ownTransform;
+                auto& nextFinalTransform = jointsTransforms[j + 1]->m_finalTransform;
+
+                auto& jointBaseInfo = registry->get<EntityBaseInfo>(jointsTransforms[j]->getThisEntity());
+
+                auto dir = nextFinalTransform.m_position - finalTransform.m_position;
+                dir = glm::normalize(dir);
+
+                Transform* parentTransform {};
+
+                {
+                    auto tmpTransform = registry->tryGet<Transform>(jointBaseInfo.getParent());
+                    parentTransform = tmpTransform ? tmpTransform->get() : nullptr;
+                }
+
+                // i think
+                // glm::vec3 rotationDir(1, 0, 0);
+                glm::vec3 rotationDir = finalTransform.m_forward;
+
+                finalTransform.m_rotation = glm::rotation(rotationDir, dir) * finalTransform.m_rotation;
+                // ownTransform.m_rotation = glm::rotation(rotationDir, forward);
+
+                if(parentTransform)
+                {
+                    ownTransform.m_rotation = TransformUtils::calculateLocalRotation(*parentTransform, finalTransform.m_rotation);
+                }
+                else
+                {
+                    ownTransform.m_rotation = finalTransform.m_rotation;
+                }
+
+                ownTransform.m_rotation = glm::normalize(ownTransform.m_rotation);
+
+                std::println(std::cout, "rotation: {}", glm::to_string(ownTransform.m_rotation));
             }
          }
 

@@ -23,6 +23,12 @@ namespace SGCore
          */
         static bool calculateTransform(Transform& childTransform, const Transform* parentTransform) noexcept;
 
-        static glm::mat4 calculateModelMatrix(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale) noexcept;
+        [[nodiscard]] static glm::mat4 calculateModelMatrix(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale) noexcept;
+
+        [[nodiscard]] static glm::vec3 calculateLocalPosition(const Transform& parentTransform, const glm::vec3& childWorldPosition) noexcept;
+        [[nodiscard]] static glm::quat calculateLocalRotation(const Transform& parentTransform, const glm::quat& childWorldRotation) noexcept;
+
+        [[nodiscard]] static glm::vec3 calculateWorldPosition(const Transform& parentTransform, const glm::vec3& childLocalPosition) noexcept;
+        [[nodiscard]] static glm::quat calculateWorldRotation(const Transform& parentTransform, const glm::quat& childLocalRotation) noexcept;
     };
 }
