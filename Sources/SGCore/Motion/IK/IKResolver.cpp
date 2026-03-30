@@ -85,6 +85,8 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
 
             // std::println(std::cout, "end pos: {}", glm::to_string(jointsTransforms[jointsCount - 1]->m_finalTransform.m_position));
 
+            // todo: вроде forward и backward правильно написаны, но работают некорректно. исправить
+
             // === forward
             for(std::ptrdiff_t j = jointsCount - 2; j >= 0; --j)
             {
@@ -94,13 +96,14 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
 
                 auto& jointBaseInfo = registry->get<EntityBaseInfo>(jointsTransforms[j]->getThisEntity());
 
-                const auto dir = glm::normalize(finalTransform.m_position - nextFinalTransform.m_position);
+                const auto dir = glm::normalize(nextFinalTransform.m_position - finalTransform.m_position);
                 if(glm::any(glm::isnan(dir)))
                 {
                     continue;
                 }
 
                 finalTransform.m_position = nextFinalTransform.m_position + dir * bonesLengths[j];
+                // finalTransform.m_position += dir * bonesLengths[j];
 
                 Transform* parentTransform {};
 
@@ -128,13 +131,14 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
             jointsTransforms[0]->m_finalTransform.m_position = rootJointOriginalPos;
 
             // === backwards
-            for(std::ptrdiff_t j = 0; j < jointsCount - 1; ++j)
+            for(std::ptrdiff_t j = 1; j <= jointsCount - 1; ++j)
             {
                 auto& finalTransform = jointsTransforms[j]->m_finalTransform;
-                auto& nextFinalTransform = jointsTransforms[j + 1]->m_finalTransform;
-                auto& nextOwnTransform = jointsTransforms[j + 1]->m_ownTransform;
+                auto& ownTransform = jointsTransforms[j]->m_ownTransform;
+                auto& nextFinalTransform = jointsTransforms[j - 1]->m_finalTransform;
+                auto& nextOwnTransform = jointsTransforms[j - 1]->m_ownTransform;
 
-                auto& jointBaseInfo = registry->get<EntityBaseInfo>(jointsTransforms[j + 1]->getThisEntity());
+                auto& jointBaseInfo = registry->get<EntityBaseInfo>(jointsTransforms[j]->getThisEntity());
 
                 const auto dir = glm::normalize(nextFinalTransform.m_position - finalTransform.m_position);
                 if(glm::any(glm::isnan(dir)))
@@ -142,7 +146,9 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
                     continue;
                 }
 
-                nextFinalTransform.m_position = finalTransform.m_position + dir * bonesLengths[j];
+                // nextFinalTransform.m_position = finalTransform.m_position + dir * bonesLengths[j];
+                finalTransform.m_position = nextFinalTransform.m_position + dir * bonesLengths[j];
+                // finalTransform.m_position += dir * bonesLengths[j];
 
                 Transform* parentTransform {};
 
@@ -153,12 +159,21 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
 
                 if(parentTransform)
                 {
+                    ownTransform.m_position = TransformUtils::calculateLocalPosition(*parentTransform, finalTransform.m_position);
+                }
+                else
+                {
+                    ownTransform.m_position = finalTransform.m_position;
+                }
+
+                /*if(parentTransform)
+                {
                     nextOwnTransform.m_position = TransformUtils::calculateLocalPosition(*parentTransform, nextFinalTransform.m_position);
                 }
                 else
                 {
                     nextOwnTransform.m_position = nextFinalTransform.m_position;
-                }
+                }*/
 
                 /*std::println(std::cout, "2222 normalized dir: {}, final pos: {}, local pos: {}, j: {}, j + 1: {}",
                              glm::to_string(dir), glm::to_string(nextFinalTransform.m_position),
