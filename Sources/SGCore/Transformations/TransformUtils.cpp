@@ -15,8 +15,8 @@
 bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
                                                 const Transform* parentTransform) noexcept
 {
-    auto& childOwnTransform = childTransform.m_ownTransform;
-    auto& childFinalTransform = childTransform.m_finalTransform;
+    auto& childLocalTransform = childTransform.m_localTransform;
+    auto& childWorldTransform = childTransform.m_worldTransform;
 
     bool translationChanged = false;
     bool rotationChanged = false;
@@ -24,13 +24,13 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
 
     // ============================================== translation calc
 
-    if(childOwnTransform.m_position != childOwnTransform.m_lastPosition)
+    if(childLocalTransform.m_position != childLocalTransform.m_lastPosition)
     {
-        childOwnTransform.m_translationMatrix = glm::translate(glm::mat4(1.0), childOwnTransform.m_position);
+        childLocalTransform.m_translationMatrix = glm::translate(glm::mat4(1.0), childLocalTransform.m_position);
 
-        // std::cout << "pos : " << ownTransform.m_position.x << ", " << ownTransform.m_position.y << ", " << ownTransform.m_position.z << std::endl;
+        // std::cout << "pos : " << localTransform.m_position.x << ", " << localTransform.m_position.y << ", " << localTransform.m_position.z << std::endl;
 
-        childOwnTransform.m_lastPosition = childOwnTransform.m_position;
+        childLocalTransform.m_lastPosition = childLocalTransform.m_position;
 
         translationChanged = true;
     }
@@ -38,67 +38,67 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
     if(parentTransform && childTransform.m_followParentTRS.x)
     {
         // std::cout << "dfdff" << std::endl;
-        childFinalTransform.m_translationMatrix =
-                parentTransform->m_finalTransform.m_translationMatrix * childOwnTransform.m_translationMatrix;
+        childWorldTransform.m_translationMatrix =
+                parentTransform->m_worldTransform.m_translationMatrix * childLocalTransform.m_translationMatrix;
     }
     else
     {
-        childFinalTransform.m_translationMatrix = childOwnTransform.m_translationMatrix;
+        childWorldTransform.m_translationMatrix = childLocalTransform.m_translationMatrix;
     }
 
     // ============================================== rotation calc
 
-    if(childOwnTransform.m_lastRotation != childOwnTransform.m_rotation)
+    if(childLocalTransform.m_lastRotation != childLocalTransform.m_rotation)
     {
-        childOwnTransform.m_rotationMatrix = glm::toMat4(childOwnTransform.m_rotation);
+        childLocalTransform.m_rotationMatrix = glm::toMat4(childLocalTransform.m_rotation);
 
-        const glm::vec3& column1 = childOwnTransform.m_rotationMatrix[0];
-        const glm::vec3& column2 = childOwnTransform.m_rotationMatrix[1];
-        const glm::vec3& column3 = childOwnTransform.m_rotationMatrix[2];
+        const glm::vec3& column1 = childLocalTransform.m_rotationMatrix[0];
+        const glm::vec3& column2 = childLocalTransform.m_rotationMatrix[1];
+        const glm::vec3& column3 = childLocalTransform.m_rotationMatrix[2];
 
-        childOwnTransform.m_right = column1;             // X ось
-        childOwnTransform.m_up = column2;             // Y ось
-        childOwnTransform.m_forward = -column3;
+        childLocalTransform.m_right = column1;             // X ось
+        childLocalTransform.m_up = column2;             // Y ось
+        childLocalTransform.m_forward = -column3;
 
-        /*childOwnTransform.m_up = glm::vec3(column1.y, column2.y, column3.y);
-        childOwnTransform.m_forward = -glm::vec3(column1.z, column2.z, column3.z);
-        childOwnTransform.m_right = glm::vec3(column1.x, column2.x, column3.x);*/
+        /*childLocalTransform.m_up = glm::vec3(column1.y, column2.y, column3.y);
+        childLocalTransform.m_forward = -glm::vec3(column1.z, column2.z, column3.z);
+        childLocalTransform.m_right = glm::vec3(column1.x, column2.x, column3.x);*/
 
-        childOwnTransform.m_lastRotation = childOwnTransform.m_rotation;
+        childLocalTransform.m_lastRotation = childLocalTransform.m_rotation;
 
         rotationChanged = true;
     }
 
     if(parentTransform && childTransform.m_followParentTRS.y)
     {
-        childFinalTransform.m_rotationMatrix =
-                parentTransform->m_finalTransform.m_rotationMatrix * childOwnTransform.m_rotationMatrix;
+        childWorldTransform.m_rotationMatrix =
+                parentTransform->m_worldTransform.m_rotationMatrix * childLocalTransform.m_rotationMatrix;
     }
     else
     {
-        childFinalTransform.m_rotationMatrix = childOwnTransform.m_rotationMatrix;
+        childWorldTransform.m_rotationMatrix = childLocalTransform.m_rotationMatrix;
     }
 
     // ============================================== scale calc
 
-    if(childOwnTransform.m_lastScale != childOwnTransform.m_scale)
+    if(childLocalTransform.m_lastScale != childLocalTransform.m_scale)
     {
-        childOwnTransform.m_scaleMatrix = glm::scale(glm::mat4(1.0),
-                                                childOwnTransform.m_scale
+        childLocalTransform.m_scaleMatrix = glm::scale(glm::mat4(1.0),
+                                                childLocalTransform.m_scale
         );
-        childOwnTransform.m_lastScale = childOwnTransform.m_scale;
+        childLocalTransform.m_lastScale = childLocalTransform.m_scale;
 
         scaleChanged = true;
     }
 
     if(parentTransform && childTransform.m_followParentTRS.z)
     {
-        childFinalTransform.m_scaleMatrix =
-                parentTransform->m_finalTransform.m_scaleMatrix * childOwnTransform.m_scaleMatrix;
+        childWorldTransform.m_scaleMatrix =
+                parentTransform->m_worldTransform.m_scaleMatrix * childLocalTransform.m_scaleMatrix;
     }
     else
     {
-        childFinalTransform.m_scaleMatrix = childOwnTransform.m_scaleMatrix;
+        childWorldTransform.m_scaleMatrix = childLocalTransform.m_scaleMatrix;
     }
 
     // ================================================= model matrix calc
@@ -114,21 +114,21 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
     // SCALE = BASIC SCALE (1.0) CHILD IS NOT UPDATED BECAUSE PARENT WAS UPDATED EARLIER AND CHILD HAS UNCHANGED TRANSFORMATIONS
     // if(childTransform.m_transformChanged)
     {
-        childOwnTransform.m_animatedModelMatrix =
-            childOwnTransform.m_translationMatrix * childOwnTransform.m_rotationMatrix * childOwnTransform.m_scaleMatrix;
-        childOwnTransform.m_modelMatrix = childOwnTransform.m_animatedModelMatrix;
+        childLocalTransform.m_animatedModelMatrix =
+            childLocalTransform.m_translationMatrix * childLocalTransform.m_rotationMatrix * childLocalTransform.m_scaleMatrix;
+        childLocalTransform.m_modelMatrix = childLocalTransform.m_animatedModelMatrix;
 
         if(parentTransform)
         {
-            childFinalTransform.m_animatedModelMatrix =
-                parentTransform->m_finalTransform.m_animatedModelMatrix * childTransform.m_boneMatrix * childOwnTransform.m_animatedModelMatrix;
+            childWorldTransform.m_animatedModelMatrix =
+                parentTransform->m_worldTransform.m_animatedModelMatrix * childTransform.m_boneMatrix * childLocalTransform.m_animatedModelMatrix;
 
-            childFinalTransform.m_modelMatrix = parentTransform->m_finalTransform.m_modelMatrix * childOwnTransform.m_modelMatrix;
+            childWorldTransform.m_modelMatrix = parentTransform->m_worldTransform.m_modelMatrix * childLocalTransform.m_modelMatrix;
         }
         else
         {
-            childFinalTransform.m_animatedModelMatrix = childTransform.m_boneMatrix * childOwnTransform.m_animatedModelMatrix;
-            childFinalTransform.m_modelMatrix = childOwnTransform.m_modelMatrix;
+            childWorldTransform.m_animatedModelMatrix = childTransform.m_boneMatrix * childLocalTransform.m_animatedModelMatrix;
+            childWorldTransform.m_modelMatrix = childLocalTransform.m_modelMatrix;
         }
 
         // ================================================= getting final TRS
@@ -140,33 +140,33 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
         glm::vec4 finalPerspective;
 
         // DECOMPOSE IS VERY HEAVY
-        glm::decompose(childFinalTransform.m_animatedModelMatrix, finalScale, finalRotation, finalTranslation, finalSkew,
+        glm::decompose(childWorldTransform.m_animatedModelMatrix, finalScale, finalRotation, finalTranslation, finalSkew,
                        finalPerspective);*/
 
-        childFinalTransform.m_lastPosition = childFinalTransform.m_position;
-        childFinalTransform.m_lastRotation = childFinalTransform.m_rotation;
-        childFinalTransform.m_lastScale = childFinalTransform.m_scale;
+        childWorldTransform.m_lastPosition = childWorldTransform.m_position;
+        childWorldTransform.m_lastRotation = childWorldTransform.m_rotation;
+        childWorldTransform.m_lastScale = childWorldTransform.m_scale;
 
-        auto finalTranslation = childOwnTransform.m_position;
-        auto finalRotation = childOwnTransform.m_rotation;
-        auto finalScale = childOwnTransform.m_scale;
+        auto finalTranslation = childLocalTransform.m_position;
+        auto finalRotation = childLocalTransform.m_rotation;
+        auto finalScale = childLocalTransform.m_scale;
 
         if(parentTransform)
         {
-            const auto childAnimatedMatrix = parentTransform->m_finalTransform.m_animatedModelMatrix * childTransform.m_boneMatrix;
+            const auto childAnimatedMatrix = parentTransform->m_worldTransform.m_animatedModelMatrix * childTransform.m_boneMatrix;
 
             finalTranslation = childAnimatedMatrix * glm::vec4(finalTranslation, 1.0f);
-            finalRotation = parentTransform->m_finalTransform.m_rotation * finalRotation;
-            finalScale = parentTransform->m_finalTransform.m_scale * finalScale;
+            finalRotation = parentTransform->m_worldTransform.m_rotation * finalRotation;
+            finalScale = parentTransform->m_worldTransform.m_scale * finalScale;
         }
 
-        childFinalTransform.m_position = finalTranslation;
-        childFinalTransform.m_rotation = finalRotation;
-        childFinalTransform.m_scale = finalScale;
+        childWorldTransform.m_position = finalTranslation;
+        childWorldTransform.m_rotation = finalRotation;
+        childWorldTransform.m_scale = finalScale;
 
-        childFinalTransform.m_forward = finalRotation * MathUtils::forward3;
-        childFinalTransform.m_right = finalRotation * MathUtils::right3;
-        childFinalTransform.m_up = finalRotation * MathUtils::up3;
+        childWorldTransform.m_forward = finalRotation * MathUtils::forward3;
+        childWorldTransform.m_right = finalRotation * MathUtils::right3;
+        childWorldTransform.m_up = finalRotation * MathUtils::up3;
     }
 
     return childTransform.m_transformChanged;
@@ -188,23 +188,23 @@ glm::mat4 SGCore::TransformUtils::calculateModelMatrix(const glm::vec3& position
 glm::vec3 SGCore::TransformUtils::calculateLocalPosition(const Transform& parentTransform,
                                                          const glm::vec3& childWorldPosition) noexcept
 {
-    return glm::inverse(parentTransform.m_finalTransform.m_rotation) * ((childWorldPosition - parentTransform.m_finalTransform.m_position) / parentTransform.m_finalTransform.m_scale);
+    return glm::inverse(parentTransform.m_worldTransform.m_rotation) * ((childWorldPosition - parentTransform.m_worldTransform.m_position) / parentTransform.m_worldTransform.m_scale);
 }
 
 glm::quat SGCore::TransformUtils::calculateLocalRotation(const Transform& parentTransform,
                                                          const glm::quat& childWorldRotation) noexcept
 {
-    return glm::inverse(parentTransform.m_finalTransform.m_rotation) * childWorldRotation;
+    return glm::inverse(parentTransform.m_worldTransform.m_rotation) * childWorldRotation;
 }
 
 glm::vec3 SGCore::TransformUtils::calculateWorldPosition(const Transform& parentTransform,
                                                          const glm::vec3& childLocalPosition) noexcept
 {
-    return parentTransform.m_finalTransform.m_position + parentTransform.m_finalTransform.m_rotation * (childLocalPosition * parentTransform.m_finalTransform.m_scale);
+    return parentTransform.m_worldTransform.m_position + parentTransform.m_worldTransform.m_rotation * (childLocalPosition * parentTransform.m_worldTransform.m_scale);
 }
 
 glm::quat SGCore::TransformUtils::calculateWorldRotation(const Transform& parentTransform,
                                                          const glm::quat& childLocalRotation) noexcept
 {
-    return parentTransform.m_finalTransform.m_rotation * childLocalRotation;
+    return parentTransform.m_worldTransform.m_rotation * childLocalRotation;
 }

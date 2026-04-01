@@ -42,7 +42,7 @@ void SGCore::MotionPlannersResolver::fixedUpdate(double dt, double fixedDt)
         auto* animationsTree = registry->tryGet<AnimationsTree>(entity);
 
         std::vector<Ref<SkeletalAnimationNode>> nodesToInterpolate;
-        
+
         if(animationsTree)
         {
             nodesToInterpolate = animationsTree->collectActiveNodesOfType<SkeletalAnimationNode>();
@@ -323,7 +323,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     }
     else
     {
-        animatedMatrix = currentEntityTransform->m_ownTransform.m_modelMatrix;
+        animatedMatrix = currentEntityTransform->m_localTransform.m_modelMatrix;
     }
 
     if(currentBone)
@@ -338,19 +338,19 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     // if current entity has parent with bone
     if(parentEntityTransform)
     {
-        currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix =
-                parentEntityTransform->m_finalTransform.m_boneAnimatedMatrix * animatedMatrix;
+        currentEntityTransform->m_worldTransform.m_boneAnimatedMatrix =
+                parentEntityTransform->m_worldTransform.m_boneAnimatedMatrix * animatedMatrix;
     }
     else
     {
-        currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix = animatedMatrix;
+        currentEntityTransform->m_worldTransform.m_boneAnimatedMatrix = animatedMatrix;
     }
 
-    currentEntityTransform->m_ownTransform.m_boneAnimatedMatrix = animatedMatrix;
+    currentEntityTransform->m_localTransform.m_boneAnimatedMatrix = animatedMatrix;
 
     // calculating final bone matrix for animated mesh
 
-    glm::mat4 boneFinalMatrix = currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix * offsetMatrix;
+    glm::mat4 boneFinalMatrix = currentEntityTransform->m_worldTransform.m_boneAnimatedMatrix * offsetMatrix;
 
     // if bone is not animated than we are set boneMatrix to identity to avoid incorrect position of node or mesh.
     // offset matrix will cancel the model matrix of node or mesh if bone is not animated
@@ -375,7 +375,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     // drawing skeleton ==============================================
     if(currentBone && debugRenderPass && debugRenderPass->m_mode != DebugDrawMode::NO_DEBUG)
     {
-        currentBone->m_currentPosition = (currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix)[3];
+        currentBone->m_currentPosition = (currentEntityTransform->m_worldTransform.m_boneAnimatedMatrix)[3];
 
         auto parentBone = currentBone->m_parent;
         if(parentBone)

@@ -72,9 +72,9 @@ void SGCore::PBRRPTransparentMeshesPass::render(const Scene* scene, const Ref<IR
             shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
 
             shaderToUse->useMatrix("objectTransform.modelMatrix",
-                                   meshTransform->m_finalTransform.m_animatedModelMatrix);
+                                   meshTransform->m_worldTransform.m_animatedModelMatrix);
 
-            shaderToUse->useVectorf("objectTransform.position", meshTransform->m_finalTransform.m_position);
+            shaderToUse->useVectorf("objectTransform.position", meshTransform->m_worldTransform.m_position);
 
             const auto* meshedEntityPickableComponent = registry->tryGet<Pickable>(meshEntity);
             // enable picking

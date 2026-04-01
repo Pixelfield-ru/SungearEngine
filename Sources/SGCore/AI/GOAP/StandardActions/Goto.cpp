@@ -40,7 +40,7 @@ SGCore::Coro::Task<SGCore::GOAP::ExecutionResult> SGCore::GOAP::Goto::executeImp
     auto& transform = *tmpTransform;
 
     auto currentThread = Threading::ThreadsManager::currentThread();
-    while(glm::distance(transform->m_finalTransform.m_position, targetPosition) > m_distanceErrorRate)
+    while(glm::distance(transform->m_worldTransform.m_position, targetPosition) > m_distanceErrorRate)
     {
         if(plan.isPaused())
         {
@@ -48,7 +48,7 @@ SGCore::Coro::Task<SGCore::GOAP::ExecutionResult> SGCore::GOAP::Goto::executeImp
         }
 
         const double dt = currentThread->getDeltaTime();
-        transform->m_ownTransform.m_position += glm::normalize(targetPosition - transform->m_finalTransform.m_position) * m_speed * dt;
+        transform->m_localTransform.m_position += glm::normalize(targetPosition - transform->m_worldTransform.m_position) * m_speed * dt;
 
         co_await Coro::returnToCaller();
     }

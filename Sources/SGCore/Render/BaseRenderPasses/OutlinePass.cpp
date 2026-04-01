@@ -94,8 +94,8 @@ void SGCore::OutlinePass::render(const Scene* scene,
             if(!camera3D->m_pickedEntities.contains(meshEntity)) return;
 
             m_shader->useVectorf("u_outlineColor", meshBaseInfo.m_outlineColor);
-            m_shader->useMatrix("objectTransform.modelMatrix", meshTransform->m_finalTransform.m_animatedModelMatrix);
-            m_shader->useVectorf("objectTransform.position", meshTransform->m_finalTransform.m_position);
+            m_shader->useMatrix("objectTransform.modelMatrix", meshTransform->m_worldTransform.m_animatedModelMatrix);
+            m_shader->useVectorf("objectTransform.position", meshTransform->m_worldTransform.m_position);
 
             if(auto bonesLockedBuffer = mesh.m_base.m_bonesBuffer.lock())
             {

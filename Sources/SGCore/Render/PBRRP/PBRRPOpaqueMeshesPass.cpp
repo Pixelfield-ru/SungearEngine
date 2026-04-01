@@ -74,9 +74,9 @@ void SGCore::PBRRPOpaqueMeshesPass::render(const Scene* scene, const Ref<IRender
             shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
 
             shaderToUse->useMatrix("objectTransform.modelMatrix",
-                                   meshTransform->m_finalTransform.m_animatedModelMatrix);
+                                   meshTransform->m_worldTransform.m_animatedModelMatrix);
 
-            shaderToUse->useVectorf("objectTransform.position", meshTransform->m_finalTransform.m_position);
+            shaderToUse->useVectorf("objectTransform.position", meshTransform->m_worldTransform.m_position);
 
             const auto* meshedEntityPickableComponent = registry->tryGet<Pickable>(meshEntity);
             // enable picking
@@ -151,8 +151,8 @@ void SGCore::PBRRPOpaqueMeshesPass::renderShadows(const Scene* scene, const Ref<
 
         if(!mesh.m_base.getMeshData() || !mesh.m_base.getMaterial()) return;
 
-        shadowGenShader->useMatrix("objectTransform.modelMatrix", meshTransform->m_finalTransform.m_animatedModelMatrix);
-        shadowGenShader->useVectorf("objectTransform.position", meshTransform->m_finalTransform.m_position);
+        shadowGenShader->useMatrix("objectTransform.modelMatrix", meshTransform->m_worldTransform.m_animatedModelMatrix);
+        shadowGenShader->useVectorf("objectTransform.position", meshTransform->m_worldTransform.m_position);
         shadowGenShader->useInteger("u_verticesColorsAttributesCount", mesh.m_base.getMeshData()->m_verticesColors.size());
 
         size_t texUnitOffset = 0;

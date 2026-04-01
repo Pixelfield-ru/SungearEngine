@@ -50,24 +50,24 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<Transform, TFormatType>::serialize(SerializableValueView<const Transform, TFormatType>& valueView) noexcept
     {
-        valueView.container().addMember("m_ownTransform", valueView.m_data->m_ownTransform);
-        valueView.container().addMember("m_finalTransform", valueView.m_data->m_finalTransform);
+        valueView.container().addMember("m_localTransform", valueView.m_data->m_localTransform);
+        valueView.container().addMember("m_worldTransform", valueView.m_data->m_worldTransform);
         valueView.container().addMember("m_followParentTRS", valueView.m_data->m_followParentTRS);
     }
 
     template<FormatType TFormatType>
     void SerdeSpec<Transform, TFormatType>::deserialize(DeserializableValueView<Transform, TFormatType>& valueView) noexcept
     {
-        const auto m_ownTransform = valueView.container().template getMember<decltype(valueView.m_data->m_ownTransform)>("m_ownTransform");
-        if(m_ownTransform)
+        const auto m_localTransform = valueView.container().template getMember<decltype(valueView.m_data->m_localTransform)>("m_localTransform");
+        if(m_localTransform)
         {
-            valueView.m_data->m_ownTransform = *m_ownTransform;
+            valueView.m_data->m_localTransform = *m_localTransform;
         }
 
-        const auto m_finalTransform = valueView.container().template getMember<decltype(valueView.m_data->m_finalTransform)>("m_finalTransform");
-        if(m_finalTransform)
+        const auto m_worldTransform = valueView.container().template getMember<decltype(valueView.m_data->m_worldTransform)>("m_worldTransform");
+        if(m_worldTransform)
         {
-            valueView.m_data->m_finalTransform = *m_finalTransform;
+            valueView.m_data->m_worldTransform = *m_worldTransform;
         }
 
         const auto m_followParentTRS = valueView.container().template getMember<decltype(valueView.m_data->m_followParentTRS)>("m_followParentTRS");

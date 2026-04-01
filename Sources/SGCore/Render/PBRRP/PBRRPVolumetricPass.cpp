@@ -74,13 +74,13 @@ void SGCore::PBRRPVolumetricPass::render(const Scene* scene, const Ref<IRenderPi
 
             shaderToUse->useFloat("u_sgVolumetricCoverage", clouds.m_coverage);
             shaderToUse->useFloat("u_sgVolumetricDensity", clouds.m_density);
-            shaderToUse->useVectorf("u_sgMeshAABBMin", transform->m_finalTransform.m_aabb.m_min);
-            shaderToUse->useVectorf("u_sgMeshAABBMax", transform->m_finalTransform.m_aabb.m_max);
+            shaderToUse->useVectorf("u_sgMeshAABBMin", transform->m_worldTransform.m_aabb.m_min);
+            shaderToUse->useVectorf("u_sgMeshAABBMax", transform->m_worldTransform.m_aabb.m_max);
 
             shaderToUse->useMatrix("objectTransform.modelMatrix",
-                                   transform->m_finalTransform.m_animatedModelMatrix);
+                                   transform->m_worldTransform.m_animatedModelMatrix);
 
-            shaderToUse->useVectorf("objectTransform.position", transform->m_finalTransform.m_position);
+            shaderToUse->useVectorf("objectTransform.position", transform->m_worldTransform.m_position);
 
             const auto* meshedEntityPickableComponent = registry->tryGet<Pickable>(volumetricEntity);
             // enable picking

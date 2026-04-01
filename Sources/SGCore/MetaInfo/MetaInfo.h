@@ -251,8 +251,8 @@ namespace SGCore
                 meta["annotations"]["doNotGenerateSerializationLogic"];
                 meta["annotations"]["doNotGenerateDeserializationLogic"];
 
-                meta["members"]["m_finalTransform"];
-                meta["members"]["m_ownTransform"];
+                meta["members"]["m_worldTransform"];
+                meta["members"]["m_localTransform"];
                 meta["members"]["m_followParentTRS"];
 
                 m_meta["structs"].push_back(meta);

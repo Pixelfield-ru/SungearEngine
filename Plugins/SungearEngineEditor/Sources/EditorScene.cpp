@@ -153,7 +153,7 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createBasicScene(const std::stri
 
         auto& skyboxTransform = newScene->getECSRegistry()->get<SGCore::Transform>(atmosphereEntity);
 
-        skyboxTransform->m_ownTransform.m_scale = { 1150, 1150, 1150 };
+        skyboxTransform->m_localTransform.m_scale = { 1150, 1150, 1150 };
     }
 
     return editorScene;
@@ -204,8 +204,8 @@ void SGE::EditorScene::addEditorEntities() noexcept
         gridMesh.m_base.setMaterial(SGCore::AssetManager::getInstance()->getAsset<SGCore::IMaterial, SGCore::AssetStorageType::BY_ALIAS>("standard_grid_material"));
 
         auto& gridTransform = *scene->getECSRegistry()->get<SGCore::Transform>(m_data.m_editorGrid);
-        gridTransform.m_ownTransform.m_scale = { 3.0f, 3.0f, 1.0f, };
-        gridTransform.m_ownTransform.m_rotation = glm::rotate(glm::identity<glm::quat>(), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        gridTransform.m_localTransform.m_scale = { 3.0f, 3.0f, 1.0f, };
+        gridTransform.m_localTransform.m_rotation = glm::rotate(glm::identity<glm::quat>(), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
         // todo: FOR TEST
         /*{

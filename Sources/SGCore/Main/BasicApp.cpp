@@ -125,7 +125,7 @@ void SGCore::BasicApp::initImpl() noexcept
 
             auto& skyboxTransform = ecsRegistry->get<Transform>(m_atmosphereEntity);
 
-            skyboxTransform->m_ownTransform.m_scale = { 1150, 1150, 1150 };
+            skyboxTransform->m_localTransform.m_scale = { 1150, 1150, 1150 };
         }
 
         // ================================================== creating camera
@@ -164,8 +164,8 @@ void SGCore::BasicApp::updateImpl(double dt, double fixedDt) noexcept
 
         if(cameraTransform)
         {
-            AudioListener::setPosition((*cameraTransform)->m_finalTransform.m_position);
-            AudioListener::setOrientation((*cameraTransform)->m_finalTransform.m_forward, (*cameraTransform)->m_finalTransform.m_up);
+            AudioListener::setPosition((*cameraTransform)->m_worldTransform.m_position);
+            AudioListener::setOrientation((*cameraTransform)->m_worldTransform.m_forward, (*cameraTransform)->m_worldTransform.m_up);
         }
 
         currentScene->update(dt, fixedDt);

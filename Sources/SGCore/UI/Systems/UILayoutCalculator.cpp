@@ -223,7 +223,7 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
                 currentElementPos += glm::vec3 { elementCurrentCache.m_finalSize, 0.0 } / 2.0f;
             }
 
-            currentElementTransform.m_transform.m_ownTransform.m_position = currentElementPos;
+            currentElementTransform.m_transform.m_localTransform.m_position = currentElementPos;
 
             std::println(std::cout, "KW_ROW: currentElementPos: {}, name: {}", glm::to_string(currentElementPos), currentUIElement->m_name);
 
@@ -233,8 +233,8 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
             {
                 parentElementCache.m_finalSize.y = parentElementCache.m_contentSize.y + parentElementCache.m_lastRowSize.y;
 
-                // parentElementTransform.m_transform.m_ownTransform.m_position.x += (parentElementCache.m_finalSize.x - lastParentElementCache.m_finalSize.x) / 2.0f;
-                parentElementTransform.m_transform.m_ownTransform.m_position.y += (parentElementCache.m_finalSize.y - parentElementLastCache.m_finalSize.y) / 2.0f;
+                // parentElementTransform.m_transform.m_localTransform.m_position.x += (parentElementCache.m_finalSize.x - lastParentElementCache.m_finalSize.x) / 2.0f;
+                parentElementTransform.m_transform.m_localTransform.m_position.y += (parentElementCache.m_finalSize.y - parentElementLastCache.m_finalSize.y) / 2.0f;
             }
         }
         else if(parentStyle->m_flexDirection == FlexboxKeyword::KW_COLUMN)
@@ -250,7 +250,7 @@ void SGCore::UI::UILayoutCalculator::calculateElementLayout(bool isFirstChildEle
             currentElementPos += glm::vec3 { elementCurrentCache.m_finalSize, 0.0 } / 2.0f;
         }
 
-        currentElementTransform.m_transform.m_ownTransform.m_position = currentElementPos;
+        currentElementTransform.m_transform.m_localTransform.m_position = currentElementPos;
 
         std::println(std::cout, "KW_BLOCK: currentElementPos: {}, name: {}", glm::to_string(currentElementPos), currentUIElement->m_name);
 

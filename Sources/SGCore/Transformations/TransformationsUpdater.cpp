@@ -64,8 +64,8 @@ void SGCore::TransformationsUpdater::update(double dt, double fixedDt) noexcept
 
             if(currentTransform && (*currentTransform)->isActive())
             {
-                auto& finalTransform = (*currentTransform)->m_finalTransform;
-                auto& ownTransform = (*currentTransform)->m_ownTransform;
+                auto& worldTransform = (*currentTransform)->m_worldTransform;
+                auto& localTransform = (*currentTransform)->m_localTransform;
 
                 bool isTransformChanged = false;
 
@@ -83,8 +83,8 @@ void SGCore::TransformationsUpdater::update(double dt, double fixedDt) noexcept
                 const auto* mesh = registry->tryGet<Mesh>(currentEntity);
                 if(mesh && mesh->m_base.getMeshData())
                 {
-                    finalTransform.m_aabb.applyTransformations(finalTransform.m_position, finalTransform.m_rotation, finalTransform.m_scale, mesh->m_base.getMeshData()->m_aabb);
-                    ownTransform.m_aabb.applyTransformations(ownTransform.m_position, ownTransform.m_rotation, ownTransform.m_scale, mesh->m_base.getMeshData()->m_aabb);
+                    worldTransform.m_aabb.applyTransformations(worldTransform.m_position, worldTransform.m_rotation, worldTransform.m_scale, mesh->m_base.getMeshData()->m_aabb);
+                    localTransform.m_aabb.applyTransformations(localTransform.m_position, localTransform.m_rotation, localTransform.m_scale, mesh->m_base.getMeshData()->m_aabb);
                 }
             }
 

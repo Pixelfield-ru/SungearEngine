@@ -55,7 +55,7 @@ void SGCore::OctreesSolver::fixedUpdate(double dt, double fixedDt) noexcept
                 
                 if(!cullable) continue;
 
-                const auto foundNode =  octree->subdivideWhileOverlap(p.first, p.second->m_finalTransform.m_aabb, octree->m_root);
+                const auto foundNode =  octree->subdivideWhileOverlap(p.first, p.second->m_worldTransform.m_aabb, octree->m_root);
                 if(foundNode)
                 {
                     cullable->m_parentNodes[entity] = foundNode;
@@ -75,7 +75,7 @@ void SGCore::OctreesSolver::fixedUpdate(double dt, double fixedDt) noexcept
 
                 if(!cullable) return;
 
-                const auto foundNode =  octree->subdivideWhileOverlap(transformEntity, transform->m_finalTransform.m_aabb, octree->m_root);
+                const auto foundNode =  octree->subdivideWhileOverlap(transformEntity, transform->m_worldTransform.m_aabb, octree->m_root);
                 if(foundNode)
                 {
                     cullable->m_parentNodes[entity] = foundNode;

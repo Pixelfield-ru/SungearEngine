@@ -23,10 +23,10 @@ namespace SGCore::UI
          * @param parentSelectorCache
          * @param thisSelectorCache
          * @param parentTransform
-         * @param ownTransform
+         * @param thisTransform
          */
         void doCalculateLayout(const UIElementCache* parentSelectorCache, UIElementCache& thisSelectorCache,
-                               const Transform* parentTransform, Transform& ownTransform) noexcept final;
+                               const Transform* parentTransform, Transform& thisTransform) noexcept final;
 
         /**
          * Does nothing.

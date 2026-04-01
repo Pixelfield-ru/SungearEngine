@@ -177,13 +177,13 @@ void SGE::InspectorView::inspectEntity() const noexcept
             {
                 auto& transform = *tmpTransform;
 
-                ImGui::DragFloat3("Position", &transform->m_ownTransform.m_position.x);
-                ImGui::DragFloat3("Scale", &transform->m_ownTransform.m_scale.x);
+                ImGui::DragFloat3("Position", &transform->m_localTransform.m_position.x);
+                ImGui::DragFloat3("Scale", &transform->m_localTransform.m_scale.x);
 
-                glm::vec3 euler = glm::degrees(glm::eulerAngles(transform->m_ownTransform.m_rotation));
+                glm::vec3 euler = glm::degrees(glm::eulerAngles(transform->m_localTransform.m_rotation));
                 if(ImGui::DragFloat3("Rotation", &euler.x))
                 {
-                    transform->m_ownTransform.m_rotation = glm::quat(glm::radians(euler));
+                    transform->m_localTransform.m_rotation = glm::quat(glm::radians(euler));
                 }
             }
 

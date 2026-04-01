@@ -25,12 +25,12 @@ void SGCore::Controllables3DUpdater::fixedUpdate(double dt, double fixedDt)
     auto controllablesView = lockedScene->getECSRegistry()->view<Transform, Controllable3D>();
 
     controllablesView.each([&finalDt](Transform::reg_t& transform, Controllable3D::reg_t& controllable3D) {
-        TransformBase& ownTransform = transform->m_ownTransform;
-        TransformBase& finalTransform = transform->m_finalTransform;
+        TransformBase& localTransform = transform->m_localTransform;
+        TransformBase& worldTransform = transform->m_worldTransform;
 
         const float inverseFactor = controllable3D.m_inverseMouse ? -1.0f : 1.0f;
 
-        if(!ownTransform.m_blockRotation)
+        if(!localTransform.m_blockRotation)
         {
             controllable3D.m_pitchYawRoll.x -= (float) Input::PC::getCursorPositionDeltaY() * controllable3D.m_rotationSensitive * inverseFactor;
             controllable3D.m_pitchYawRoll.y -= (float) Input::PC::getCursorPositionDeltaX() * controllable3D.m_rotationSensitive * inverseFactor;
@@ -41,13 +41,13 @@ void SGCore::Controllables3DUpdater::fixedUpdate(double dt, double fixedDt)
                 glm::radians(controllable3D.m_pitchYawRoll.z)
             };
 
-            ownTransform.m_rotation = glm::quat(rotation);
+            localTransform.m_rotation = glm::quat(rotation);
         }
 
         if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_R))
         {
-            ownTransform.m_position.x = ownTransform.m_position.y = ownTransform.m_position.z = 0.0f;
-            ownTransform.m_rotation = glm::identity<glm::quat>();
+            localTransform.m_position.x = localTransform.m_position.y = localTransform.m_position.z = 0.0f;
+            localTransform.m_rotation = glm::identity<glm::quat>();
         }
 
         float finalCameraSpeed = controllable3D.m_movementSpeed;
@@ -64,19 +64,19 @@ void SGCore::Controllables3DUpdater::fixedUpdate(double dt, double fixedDt)
 
         if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_W))
         {
-            ownTransform.m_position += finalTransform.m_forward * finalCameraSpeed * finalDt;
+            localTransform.m_position += worldTransform.m_forward * finalCameraSpeed * finalDt;
         }
         if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_S))
         {
-            ownTransform.m_position -= finalTransform.m_forward * finalCameraSpeed * finalDt;
+            localTransform.m_position -= worldTransform.m_forward * finalCameraSpeed * finalDt;
         }
         if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_A))
         {
-            ownTransform.m_position += finalTransform.m_right * finalCameraSpeed * finalDt;
+            localTransform.m_position += worldTransform.m_right * finalCameraSpeed * finalDt;
         }
         if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_D))
         {
-            ownTransform.m_position -= finalTransform.m_right * finalCameraSpeed * finalDt;
+            localTransform.m_position -= worldTransform.m_right * finalCameraSpeed * finalDt;
         }
 
         if(Input::PC::keyboardKeyReleased(Input::KeyboardKey::KEY_ESCAPE))
@@ -84,7 +84,7 @@ void SGCore::Controllables3DUpdater::fixedUpdate(double dt, double fixedDt)
             CoreMain::getWindow().setHideAndCentralizeCursor(
                     !CoreMain::getWindow().isHideAndCentralizeCursor());
 
-            ownTransform.m_blockRotation = !CoreMain::getWindow().isHideAndCentralizeCursor();
+            localTransform.m_blockRotation = !CoreMain::getWindow().isHideAndCentralizeCursor();
         }
     });
 }

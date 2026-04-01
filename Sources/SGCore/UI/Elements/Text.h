@@ -51,7 +51,7 @@ namespace SGCore::UI
         std::vector<bool> m_lineBreaks;
 
         void doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,
-                               const Transform* parentTransform, Transform& ownTransform) noexcept final;
+                               const Transform* parentTransform, Transform& thisTransform) noexcept final;
 
         void doGenerateMesh(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept final;
 

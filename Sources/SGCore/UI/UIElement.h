@@ -68,13 +68,13 @@ namespace SGCore::UI
          * @param parentElementCache May be nullptr.
          * @param thisElementCache
          * @param parentTransform May be nullptr.
-         * @param ownTransform
+         * @param thisTransform
          */
         void calculateLayout(const UIElementCache* parentElementCache,
                              const UIElementCache& thisLastElementCache,
                              UIElementCache& thisElementCache,
                              const Transform* parentTransform,
-                             Transform& ownTransform) noexcept;
+                             Transform& thisTransform) noexcept;
 
         virtual void useUniforms(UIElementCache& thisElementCache) const noexcept;
 
@@ -118,7 +118,7 @@ namespace SGCore::UI
 
     protected:
         virtual void doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,
-                                       const Transform* parentTransform, Transform& ownTransform) = 0;
+                                       const Transform* parentTransform, Transform& thisTransform) = 0;
 
         /**
          * Generates a mesh based on the selector (i.e. selector != nullptr).\n

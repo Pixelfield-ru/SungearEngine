@@ -20,22 +20,22 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(double dt, double fixedDt)
     auto renderingBasesView = lockedScene->getECSRegistry()->view<EntityBaseInfo, RenderingBase, Transform>();
 
     renderingBasesView.each([lockedScene](EntityBaseInfo& cameraInfo, RenderingBase::reg_t& renderingBase, Transform::reg_t& transform) {
-        TransformBase& finalTransform = transform->m_finalTransform;
-        TransformBase& ownTransform = transform->m_ownTransform;
+        TransformBase& worldTransform = transform->m_worldTransform;
+        TransformBase& localTransform = transform->m_localTransform;
 
-        bool viewMatrixChanged = ownTransform.m_rotationChanged ||
-            ownTransform.m_positionChanged ||
-            ownTransform.m_scaleChanged;
+        bool viewMatrixChanged = localTransform.m_rotationChanged ||
+            localTransform.m_positionChanged ||
+            localTransform.m_scaleChanged;
 
-        /*ownTransform.m_rotation = glm::quat(glm::vec3(glm::radians(ownTransform.m_yawPitchRoll.x),
-                                                      glm::radians(ownTransform.m_yawPitchRoll.y),
-                                                      glm::radians(ownTransform.m_yawPitchRoll.z)));*/
+        /*localTransform.m_rotation = glm::quat(glm::vec3(glm::radians(localTransform.m_yawPitchRoll.x),
+                                                      glm::radians(localTransform.m_yawPitchRoll.y),
+                                                      glm::radians(localTransform.m_yawPitchRoll.z)));*/
 
         renderingBase->m_projectionSpaceMatrixChanged = false;
 
         bool projectionMatrixChanged = false;
 
-        renderingBase->m_viewMatrix = glm::inverse(finalTransform.m_animatedModelMatrix);
+        renderingBase->m_viewMatrix = glm::inverse(worldTransform.m_animatedModelMatrix);
 
         // if some part of projection matrix of camera is changed
         if(renderingBase->m_lastFov != renderingBase->m_fov ||

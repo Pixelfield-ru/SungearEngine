@@ -64,7 +64,7 @@ void SGE::EntitiesManipulator::manipulateEntities(const SGCore::Scene& forScene,
     {
         SGCore::Ref<SGCore::Transform> firstEntityParentTransform;
 
-        auto tmpMatrix = entitiesTransforms[0]->m_finalTransform.m_modelMatrix;
+        auto tmpMatrix = entitiesTransforms[0]->m_worldTransform.m_modelMatrix;
 
         if(entitiesBaseInfo[0]->getParent() != entt::null)
         {
@@ -81,7 +81,7 @@ void SGE::EntitiesManipulator::manipulateEntities(const SGCore::Scene& forScene,
 
         if(firstEntityParentTransform)
         {
-            // tmpMatrix = glm::inverse(firstEntityParentTransform->m_finalTransform.m_scaleMatrix) * tmpMatrix;
+            // tmpMatrix = glm::inverse(firstEntityParentTransform->m_worldTransform.m_scaleMatrix) * tmpMatrix;
         }
 
         ImGuizmo::OPERATION usedOperation;
@@ -96,8 +96,8 @@ void SGE::EntitiesManipulator::manipulateEntities(const SGCore::Scene& forScene,
         {
             if(firstEntityParentTransform)
             {
-                tmpMatrix = glm::inverse(firstEntityParentTransform->m_finalTransform.m_modelMatrix) * tmpMatrix;
-                // tmpMatrix = glm::inverse(firstEntityParentTransform->m_finalTransform.m_rotationMatrix * firstEntityParentTransform->m_finalTransform.m_translationMatrix) * tmpMatrix;
+                tmpMatrix = glm::inverse(firstEntityParentTransform->m_worldTransform.m_modelMatrix) * tmpMatrix;
+                // tmpMatrix = glm::inverse(firstEntityParentTransform->m_worldTransform.m_rotationMatrix * firstEntityParentTransform->m_worldTransform.m_translationMatrix) * tmpMatrix;
             }
 
             glm::mat4 deltaMatrix;
@@ -107,19 +107,19 @@ void SGE::EntitiesManipulator::manipulateEntities(const SGCore::Scene& forScene,
             bool isScaled = usedOperation == ImGuizmo::OPERATION::SCALE;
 
             {
-                glm::mat4 originalMatrix = entitiesTransforms[0]->m_ownTransform.m_modelMatrix;
+                glm::mat4 originalMatrix = entitiesTransforms[0]->m_localTransform.m_modelMatrix;
 
                 glm::vec3 deltaTranslation;
                 glm::quat deltaRotation;
                 glm::vec3 deltaScale;
                 getDeltaBetweenMatrices(originalMatrix, tmpMatrix, deltaTranslation, deltaRotation, deltaScale);
 
-                entitiesTransforms[0]->m_ownTransform.m_position += deltaTranslation;
+                entitiesTransforms[0]->m_localTransform.m_position += deltaTranslation;
 
-                entitiesTransforms[0]->m_ownTransform.m_rotation =
-                        deltaRotation * entitiesTransforms[0]->m_ownTransform.m_rotation;
+                entitiesTransforms[0]->m_localTransform.m_rotation =
+                        deltaRotation * entitiesTransforms[0]->m_localTransform.m_rotation;
 
-                entitiesTransforms[0]->m_ownTransform.m_scale *= deltaScale;
+                entitiesTransforms[0]->m_localTransform.m_scale *= deltaScale;
 
                 std::cout << "translation: " << glm::to_string(deltaTranslation)
                           << ", rotation: " << glm::to_string(deltaRotation)
@@ -159,15 +159,15 @@ void SGE::EntitiesManipulator::manipulateEntities(const SGCore::Scene& forScene,
                     {
                         if(firstEntityParentTransform)
                         {
-                            finalMat = firstEntityParentTransform->m_finalTransform.m_scaleMatrix * finalMat;
-                            finalMat = firstEntityParentTransform->m_finalTransform.m_rotationMatrix * finalMat;
+                            finalMat = firstEntityParentTransform->m_worldTransform.m_scaleMatrix * finalMat;
+                            finalMat = firstEntityParentTransform->m_worldTransform.m_rotationMatrix * finalMat;
                         }
 
                         if(childEntityParent)
                         {
-                            finalMat = glm::inverse(childEntityParent->m_finalTransform.m_scaleMatrix) *
+                            finalMat = glm::inverse(childEntityParent->m_worldTransform.m_scaleMatrix) *
                                        finalMat;
-                            finalMat = glm::inverse(childEntityParent->m_finalTransform.m_rotationMatrix) *
+                            finalMat = glm::inverse(childEntityParent->m_worldTransform.m_rotationMatrix) *
                                        finalMat;
                         }
                     }
@@ -177,12 +177,12 @@ void SGE::EntitiesManipulator::manipulateEntities(const SGCore::Scene& forScene,
                     {
                         if(firstEntityParentTransform)
                         {
-                            finalMat = finalMat * glm::inverse(firstEntityParentTransform->m_finalTransform.m_rotationMatrix);
+                            finalMat = finalMat * glm::inverse(firstEntityParentTransform->m_worldTransform.m_rotationMatrix);
                         }
 
                         if(childEntityParent)
                         {
-                            finalMat = finalMat * childEntityParent->m_finalTransform.m_rotationMatrix;
+                            finalMat = finalMat * childEntityParent->m_worldTransform.m_rotationMatrix;
                         }
                     }
 
@@ -191,14 +191,14 @@ void SGE::EntitiesManipulator::manipulateEntities(const SGCore::Scene& forScene,
                         // for rotation
                         if(firstEntityParentTransform)
                         {
-                            finalMat = (firstEntityParentTransform->m_finalTransform.m_rotationMatrix *
+                            finalMat = (firstEntityParentTransform->m_worldTransform.m_rotationMatrix *
                                         finalMat *
-                                        glm::inverse(firstEntityParentTransform->m_finalTransform.m_rotationMatrix));
+                                        glm::inverse(firstEntityParentTransform->m_worldTransform.m_rotationMatrix));
                         }
 
-                        finalMat = (glm::inverse(transform->m_finalTransform.m_rotationMatrix) *
+                        finalMat = (glm::inverse(transform->m_worldTransform.m_rotationMatrix) *
                                     finalMat *
-                                    transform->m_finalTransform.m_rotationMatrix);
+                                    transform->m_worldTransform.m_rotationMatrix);
                     }
 
                     glm::vec3 updatedTranslation, updatedScale, skew;
@@ -208,18 +208,18 @@ void SGE::EntitiesManipulator::manipulateEntities(const SGCore::Scene& forScene,
 
                     if(isTranslated)
                     {
-                        transform->m_ownTransform.m_position += updatedTranslation;
+                        transform->m_localTransform.m_position += updatedTranslation;
                         std::cout << "translating" << std::endl;
                     }
                     if(isRotated)
                     {
-                        transform->m_ownTransform.m_rotation =
-                                transform->m_ownTransform.m_rotation * updatedRotation;
+                        transform->m_localTransform.m_rotation =
+                                transform->m_localTransform.m_rotation * updatedRotation;
                         std::cout << "rotating" << std::endl;
                     }
                     if(isScaled)
                     {
-                        transform->m_ownTransform.m_scale *= updatedScale;
+                        transform->m_localTransform.m_scale *= updatedScale;
                         std::cout << "scaling" << std::endl;
                     }
                 }

@@ -19,15 +19,15 @@ void SGCore::GotoAnimationNode::tick(double dt, ECS::entity_t entity, ECS::regis
 
     m_isDestinationReached = false;
 
-    auto& ownTransform = entityTransform->m_ownTransform;
-    auto& finalTransform = entityTransform->m_finalTransform;
+    auto& localTransform = entityTransform->m_localTransform;
+    auto& worldTransform = entityTransform->m_worldTransform;
 
-    const auto direction = glm::normalize(m_destination - finalTransform.m_position);
+    const auto direction = glm::normalize(m_destination - worldTransform.m_position);
 
     glm::vec3 offset = direction;
     if(m_interpolate)
     {
-        offset = m_destination - finalTransform.m_position;
+        offset = m_destination - worldTransform.m_position;
     }
 
     offset *= m_animationSpeed * dt;
@@ -37,9 +37,9 @@ void SGCore::GotoAnimationNode::tick(double dt, ECS::entity_t entity, ECS::regis
         offset *= m_currentBlendFactor;
     }
 
-    ownTransform.m_position += offset;
+    localTransform.m_position += offset;
 
-    if(glm::distance(m_destination, finalTransform.m_position) <= m_distanceErrorRate)
+    if(glm::distance(m_destination, worldTransform.m_position) <= m_distanceErrorRate)
     {
         m_isDestinationReached = true;
     }

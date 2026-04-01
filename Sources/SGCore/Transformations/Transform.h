@@ -19,9 +19,9 @@ namespace SGCore
     {
         friend class Node;
 
-        TransformBase m_finalTransform;
+        TransformBase m_worldTransform;
 
-        TransformBase m_ownTransform;
+        TransformBase m_localTransform;
 
         /// Can be glm::identity or boneAnimatedMatrix * boneOffsetMatrix.
         glm::mat4 m_boneMatrix = glm::identity<glm::mat4>();

@@ -281,7 +281,7 @@ void SGCore::UI::FontSpecializationRenderer::drawText(Text* text, const Transfor
             for(std::uint8_t i = 0; i < 6; ++i)
             {
                 std::memcpy(&m_charactersMatrices[matrixIdx + (16 * i)],
-                            glm::value_ptr(textTransform.m_finalTransform.m_animatedModelMatrix), 16 * sizeof(float));
+                            glm::value_ptr(textTransform.m_worldTransform.m_animatedModelMatrix), 16 * sizeof(float));
             }
 
 #pragma endregion Matrices

@@ -61,7 +61,7 @@ void SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::reg_t& c
     auto& currentTransformNode = uiComponent.m_transformTree.m_elements[currentTransformNodeIdx];
     auto& currentElementCache = currentTransformNode.m_elementCurrentCache;
 
-    std::println(std::cout, "pos: {}, name: {}", glm::to_string(currentTransformNode.m_transform.m_finalTransform.m_position), currentUIElement->m_name);
+    std::println(std::cout, "pos: {}, name: {}", glm::to_string(currentTransformNode.m_transform.m_worldTransform.m_position), currentUIElement->m_name);
 
     // =================================================================== rendering uielement
 
@@ -80,9 +80,9 @@ void SGCore::UIRenderPass::processUIElement(const LayeredFrameReceiver::reg_t& c
         uiElementShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
 
         uiElementShader->useMatrix("objectTransform.modelMatrix",
-                                   currentTransformNode.m_transform.m_finalTransform.m_animatedModelMatrix);
+                                   currentTransformNode.m_transform.m_worldTransform.m_animatedModelMatrix);
         uiElementShader->useVectorf("objectTransform.position",
-                                    currentTransformNode.m_transform.m_finalTransform.m_position);
+                                    currentTransformNode.m_transform.m_worldTransform.m_position);
 
         uiElementShader->useInteger("SGPP_CurrentLayerIndex", defaultPPLayer->getIndex());
 

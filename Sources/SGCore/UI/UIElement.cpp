@@ -48,13 +48,13 @@ void SGCore::UI::UIElement::calculateLayout(const UIElementCache* parentElementC
                                             const UIElementCache& thisLastElementCache,
                                             UIElementCache& thisElementCache,
                                             const Transform* parentTransform,
-                                            Transform& ownTransform) noexcept
+                                            Transform& thisTransform) noexcept
 {
     const bool isMeshGenerated = m_meshData != nullptr;
 
     checkForMeshGenerating(parentElementCache, thisElementCache);
 
-    doCalculateLayout(parentElementCache, thisElementCache, parentTransform, ownTransform);
+    doCalculateLayout(parentElementCache, thisElementCache, parentTransform, thisTransform);
 
     // ======================================== next are the conditions under which the mesh will be regenerated
 

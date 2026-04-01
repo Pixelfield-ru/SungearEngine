@@ -27,7 +27,7 @@ void SGCore::AudioProcessor::update(double dt, double fixedDt)
         auto* audioEntityTransform = lockedScene->getECSRegistry()->tryGet<Transform>(audioEntity);
         if(!audioEntityTransform) return;
 
-        audioSource.setPosition((*audioEntityTransform)->m_finalTransform.m_position);
+        audioSource.setPosition((*audioEntityTransform)->m_worldTransform.m_position);
 
         switch(audioSource.m_directionType)
         {
@@ -38,32 +38,32 @@ void SGCore::AudioProcessor::update(double dt, double fixedDt)
             }
             case AudioSourceDirectionType::SG_FORWARD_DIRECTION:
             {
-                audioSource.setDirection((*audioEntityTransform)->m_finalTransform.m_forward);
+                audioSource.setDirection((*audioEntityTransform)->m_worldTransform.m_forward);
                 break;
             }
             case AudioSourceDirectionType::SG_UP_DIRECTION:
             {
-                audioSource.setDirection((*audioEntityTransform)->m_finalTransform.m_up);
+                audioSource.setDirection((*audioEntityTransform)->m_worldTransform.m_up);
                 break;
             }
             case AudioSourceDirectionType::SG_RIGHT_DIRECTION:
             {
-                audioSource.setDirection((*audioEntityTransform)->m_finalTransform.m_right);
+                audioSource.setDirection((*audioEntityTransform)->m_worldTransform.m_right);
                 break;
             }
             case AudioSourceDirectionType::SG_BACKWARD_DIRECTION:
             {
-                audioSource.setDirection(-(*audioEntityTransform)->m_finalTransform.m_forward);
+                audioSource.setDirection(-(*audioEntityTransform)->m_worldTransform.m_forward);
                 break;
             }
             case AudioSourceDirectionType::SG_DOWN_DIRECTION:
             {
-                audioSource.setDirection(-(*audioEntityTransform)->m_finalTransform.m_up);
+                audioSource.setDirection(-(*audioEntityTransform)->m_worldTransform.m_up);
                 break;
             }
             case AudioSourceDirectionType::SG_LEFT_DIRECTION:
             {
-                audioSource.setDirection(-(*audioEntityTransform)->m_finalTransform.m_right);
+                audioSource.setDirection(-(*audioEntityTransform)->m_worldTransform.m_right);
                 break;
             }
         }

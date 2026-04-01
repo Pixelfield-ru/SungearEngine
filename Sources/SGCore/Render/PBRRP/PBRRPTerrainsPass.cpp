@@ -66,8 +66,8 @@ void SGCore::PBRRPTerrainsPass::render(const Scene* scene, const Ref<IRenderPipe
             shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
 
             shaderToUse->useMatrix("objectTransform.modelMatrix",
-                                   terrainTransform->m_finalTransform.m_animatedModelMatrix);
-            shaderToUse->useVectorf("objectTransform.position", terrainTransform->m_finalTransform.m_position);
+                                   terrainTransform->m_worldTransform.m_animatedModelMatrix);
+            shaderToUse->useVectorf("objectTransform.position", terrainTransform->m_worldTransform.m_position);
 
             const auto* meshedEntityPickableComponent = registry->tryGet<Pickable>(terrainEntity);
             // enable picking

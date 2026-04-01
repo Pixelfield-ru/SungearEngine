@@ -103,8 +103,8 @@ void SGCore::PBRRPDecalsPass::render(const Scene* scene, const Ref<IRenderPipeli
 
             {
                 shaderToUse->useMatrix("objectTransform.modelMatrix",
-                                       decalTransform->m_finalTransform.m_animatedModelMatrix);
-                shaderToUse->useVectorf("objectTransform.position", decalTransform->m_finalTransform.m_position);
+                                       decalTransform->m_worldTransform.m_animatedModelMatrix);
+                shaderToUse->useVectorf("objectTransform.position", decalTransform->m_worldTransform.m_position);
 
                 const auto* meshedEntityPickableComponent = registry->tryGet<Pickable>(decalEntity);
                 // enable picking

@@ -82,7 +82,7 @@ SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::Text::copy() const noexcept
 }
 
 void SGCore::UI::Text::doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,
-                                         const Transform* parentTransform, Transform& ownTransform) noexcept
+                                         const Transform* parentTransform, Transform& thisTransform) noexcept
 {
     for(auto* style : thisElementCache.m_currentFrameStyles)
     {

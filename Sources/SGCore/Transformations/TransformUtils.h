@@ -16,10 +16,10 @@ namespace SGCore
     struct SGCORE_EXPORT TransformUtils
     {
         /**
-         * Calculates TRS matrices in childTransform for m_ownTransform and for m_finalTransform
+         * Calculates TRS matrices in childTransform for m_localTransform and for m_worldTransform
          * @param childTransform
          * @param parentTransform Parent transform of childTransform. Can be nullptr (child does not have parent)
-         * @return Is m_ownTransform of childTransform has been changed.
+         * @return Is m_localTransform of childTransform has been changed.
          */
         static bool calculateTransform(Transform& childTransform, const Transform* parentTransform) noexcept;
 

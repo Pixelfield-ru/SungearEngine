@@ -17,7 +17,7 @@ SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::TemplateElement::copy() const noe
 void SGCore::UI::TemplateElement::doCalculateLayout(const UIElementCache* parentSelectorCache,
                                                     UIElementCache& thisSelectorCache,
                                                     const Transform* parentTransform,
-                                                    Transform& ownTransform) noexcept
+                                                    Transform& thisTransform) noexcept
 {
 }
 
