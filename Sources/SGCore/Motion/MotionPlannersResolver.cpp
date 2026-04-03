@@ -375,13 +375,13 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     // drawing skeleton ==============================================
     if(currentBone && debugRenderPass && debugRenderPass->m_mode != DebugDrawMode::NO_DEBUG)
     {
-        currentBone->m_currentPosition = (currentEntityTransform->m_worldTransform.m_boneAnimatedMatrix)[3];
+        const glm::vec3 bonePosition = currentEntityTransform->m_worldTransform.m_boneAnimatedMatrix[3];
 
-        auto parentBone = currentBone->m_parent;
-        if(parentBone)
+        if(parentEntityTransform)
         {
-            glm::vec3 startPos = parentBone->m_currentPosition;
-            m_debugDrawPassRef.lock()->drawLine(startPos, currentBone->m_currentPosition, { 1.0f, 1.0f, 0.0f, 1.0f });
+            // glm::vec3 startPos = parentBone->m_currentPosition;
+            const glm::vec3 startPos = parentEntityTransform->m_worldTransform.m_boneAnimatedMatrix[3];
+            m_debugDrawPassRef.lock()->drawLine(startPos, bonePosition, { 1.0f, 1.0f, 0.0f, 1.0f });
         }
     }
 

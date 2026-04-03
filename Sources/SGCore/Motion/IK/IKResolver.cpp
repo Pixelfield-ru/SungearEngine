@@ -13,7 +13,7 @@
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Transformations/TransformUtils.h"
 
-void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
+void SGCore::IKResolver::update(double dt, double fixedDt)
 {
     auto scene = getScene();
 
@@ -78,9 +78,9 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
 
             auto& endJoint = registry->get<IKJoint>(chain[jointsCount - 1]);
 
-            // if(!endJoint.m_targetPosition) continue;
+            if(!endJoint.m_targetPosition) continue;
 
-            // jointsTransforms[jointsCount - 1]->m_worldTransform.m_position = *endJoint.m_targetPosition;
+            jointsTransforms[jointsCount - 1]->m_worldTransform.m_position = *endJoint.m_targetPosition;
 
             const auto rootJointOriginalPos = jointsTransforms[0]->m_worldTransform.m_position;
 
@@ -132,20 +132,20 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
                     localTransform.m_position = worldTransform.m_position;
                 }
 
-                std::println(std::cout, "1111 normalized dir: {}, next final pos: {}, next local pos: {}, final pos: {}, local pos: {}, boneLength: {}, j: {}, j + 1: {}",
+                /*std::println(std::cout, "1111 normalized dir: {}, next final pos: {}, next local pos: {}, final pos: {}, local pos: {}, boneLength: {}, j: {}, j + 1: {}",
                              glm::to_string(dir),
                              glm::to_string(nextWorldTransform.m_position),
                              glm::to_string(nextLocalTransform.m_position),
                              glm::to_string(worldTransform.m_position),
                              glm::to_string(localTransform.m_position),
-                             boneLength, j, j + 1);
+                             boneLength, j, j + 1);*/
             }
 
             // ==========
 
             jointsTransforms[0]->m_worldTransform.m_position = rootJointOriginalPos;
 
-            /*auto& startJointBaseInfo = registry->get<EntityBaseInfo>(jointsTransforms[0]->getThisEntity());
+            auto& startJointBaseInfo = registry->get<EntityBaseInfo>(jointsTransforms[0]->getThisEntity());
             Transform* startParentTransform {};
 
             {
@@ -161,7 +161,6 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
             {
                 jointsTransforms[0]->m_localTransform.m_position = jointsTransforms[0]->m_worldTransform.m_position;
             }
-            */
 
             // === backwards
             for(std::ptrdiff_t j = 1; j <= jointsCount - 1; ++j)
@@ -202,18 +201,18 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
                     localTransform.m_position = worldTransform.m_position;
                 }
 
-                std::println(std::cout, "2222 normalized dir: {}, next final pos: {}, next local pos: {}, final pos: {}, local pos: {}, boneLength: {}, j: {}, j - 1: {}",
+                /*std::println(std::cout, "2222 normalized dir: {}, next final pos: {}, next local pos: {}, final pos: {}, local pos: {}, boneLength: {}, j: {}, j - 1: {}",
                              glm::to_string(dir),
                              glm::to_string(nextWorldTransform.m_position),
                              glm::to_string(nextLocalTransform.m_position),
                              glm::to_string(worldTransform.m_position),
                              glm::to_string(localTransform.m_position),
                              boneLength,
-                             j, j - 1);
+                             j, j - 1);*/
             }
 
             // === calculating rotations
-            continue;
+            // continue;
 
             for(size_t j = 0; j < jointsCount - 1; ++j)
             {
@@ -223,12 +222,6 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
 
                 auto& jointBaseInfo = registry->get<EntityBaseInfo>(jointsTransforms[j]->getThisEntity());
 
-                const auto dir = glm::normalize(nextWorldTransform.m_position - worldTransform.m_position);
-                if(glm::any(glm::isnan(dir)))
-                {
-                    continue;
-                }
-
                 Transform* parentTransform {};
 
                 {
@@ -236,7 +229,24 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
                     parentTransform = tmpTransform ? tmpTransform->get() : nullptr;
                 }
 
-                auto rotationDir = worldTransform.m_forward;
+                // worldTransform.m_rotation = glm::identity<glm::quat>();
+
+                localTransform.m_rotation = glm::identity<glm::quat>();
+
+                if(parentTransform)
+                {
+                    worldTransform.m_rotation = TransformUtils::calculateWorldRotation(*parentTransform, localTransform.m_rotation);
+                    worldTransform.m_position = TransformUtils::calculateWorldPosition(*parentTransform, localTransform.m_position);
+                }
+
+                const auto dir = glm::normalize(worldTransform.m_position - nextWorldTransform.m_position);
+                if(glm::any(glm::isnan(dir)))
+                {
+                    continue;
+                }
+
+                auto rotationDir = worldTransform.m_rotation * MathUtils::right3;
+                // auto rotationDir = localTransform.m_forward;
 
                 const auto delta = glm::rotation(rotationDir, dir);
 
@@ -246,7 +256,6 @@ void SGCore::IKResolver::fixedUpdate(double dt, double fixedDt)
                 }
 
                 worldTransform.m_rotation = delta * worldTransform.m_rotation;
-                // localTransform.m_rotation = delta * localTransform.m_rotation;
 
                 if(parentTransform)
                 {

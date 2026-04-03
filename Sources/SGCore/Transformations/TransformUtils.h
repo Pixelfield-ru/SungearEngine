@@ -30,5 +30,11 @@ namespace SGCore
 
         [[nodiscard]] static glm::vec3 calculateWorldPosition(const Transform& parentTransform, const glm::vec3& childLocalPosition) noexcept;
         [[nodiscard]] static glm::quat calculateWorldRotation(const Transform& parentTransform, const glm::quat& childLocalRotation) noexcept;
+
+        [[nodiscard]] static glm::vec3 screenToWorld(const glm::vec2& screenPosition,
+                                                     const glm::vec2& screenSize,
+                                                     const glm::mat4& cameraProjection,
+                                                     const glm::mat4& cameraView,
+                                                     float defaultZ = 0.5f) noexcept;
     };
 }

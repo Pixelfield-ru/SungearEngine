@@ -58,8 +58,6 @@ namespace SGCore
         std::int32_t m_id = -1;
         glm::mat4 m_offsetMatrix = glm::identity<glm::mat4>();
 
-        glm::vec3 m_currentPosition { 0.0f };
-
         // the meshes affected by this bone
         std::vector<MeshBoneData> m_affectedMeshesBoneData;
 

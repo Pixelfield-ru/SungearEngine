@@ -208,3 +208,31 @@ glm::quat SGCore::TransformUtils::calculateWorldRotation(const Transform& parent
 {
     return parentTransform.m_worldTransform.m_rotation * childLocalRotation;
 }
+
+glm::vec3 SGCore::TransformUtils::screenToWorld(const glm::vec2& screenPosition,
+                                                const glm::vec2& screenSize,
+                                                const glm::mat4& cameraProjection,
+                                                const glm::mat4& cameraView,
+                                                float defaultZ) noexcept
+{
+    // normalize to [-1, 1]
+    const float x = (2.0f * screenPosition.x) / screenSize.x - 1.0f;
+    const float y = 1.0f - (2.0f * screenPosition.y) / screenSize.y;
+    const float z = defaultZ;
+
+    const glm::vec4 rayNDC { x, y, z, 1.0f };
+
+    const glm::vec4 rayClip = glm::inverse(cameraProjection) * rayNDC;
+    const auto rayEye = glm::vec4(rayClip.x, rayClip.y, -1.0f, 0.0f);
+    const glm::vec4 rayWorld = glm::inverse(cameraView) * rayEye;
+
+    const auto rayDir = glm::normalize(glm::vec3(rayWorld));
+
+    // camera position
+    const glm::vec3 cameraPos = glm::inverse(cameraView)[3];
+
+    // find intersection with plane
+    const float t = -cameraPos.y / rayDir.y;
+
+    return cameraPos + rayDir * t;
+}

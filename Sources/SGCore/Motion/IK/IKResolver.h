@@ -13,7 +13,7 @@ namespace SGCore
     {
         sg_implement_type_id(SGCore::IKResolver)
 
-        void fixedUpdate(double dt, double fixedDt) final;
+        void update(double dt, double fixedDt) final;
 
     private:
         static void collectJoints(const ECS::registry_t& inRegistry,
