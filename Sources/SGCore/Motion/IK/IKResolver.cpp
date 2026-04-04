@@ -212,7 +212,6 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
             }
 
             // === calculating rotations
-            // continue;
 
             for(size_t j = 0; j < jointsCount - 1; ++j)
             {
@@ -230,12 +229,13 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
                 }
 
                 // worldTransform.m_rotation = glm::identity<glm::quat>();
-
-                localTransform.m_rotation = glm::identity<glm::quat>();
+                // localTransform.m_rotation = glm::identity<glm::quat>();
 
                 if(parentTransform)
                 {
                     worldTransform.m_rotation = TransformUtils::calculateWorldRotation(*parentTransform, localTransform.m_rotation);
+                    // ignoring parent rotation
+                    localTransform.m_position = TransformUtils::calculateLocalPosition(*parentTransform, worldTransform.m_position);
                     worldTransform.m_position = TransformUtils::calculateWorldPosition(*parentTransform, localTransform.m_position);
                 }
 
