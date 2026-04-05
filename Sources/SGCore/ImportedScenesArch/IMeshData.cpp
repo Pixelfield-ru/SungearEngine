@@ -20,6 +20,8 @@
 #include "SGCore/Render/SpacePartitioning/OctreeCullable.h"
 
 #include "SGCore/Memory/AssetManager.h"
+#include "SGCore/Render/Alpha/OpaqueEntityTag.h"
+#include "SGCore/Render/Alpha/TransparentEntityTag.h"
 #include "SGCore/Render/RenderAbilities/EnableMeshPass.h"
 
 /*SGCore::Mesh::Mesh() noexcept
@@ -213,23 +215,34 @@ void SGCore::IMeshData::setData(const AssetRef<IMeshData>& other) noexcept
     other->m_material->copyTexturesRefs(m_material.get());
 }
 
-SGCore::ECS::entity_t SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const std::string& layerName) noexcept
+SGCore::ECS::entity_t SGCore::IMeshData::addOnScene(const Ref<Scene>& scene) noexcept
 {
     auto registry = scene->getECSRegistry();
     
     auto meshEntity = registry->create();
 
     registry->emplace<Pickable>(meshEntity);
-    Ref<Transform>& meshTransform = registry->emplace<Transform>(meshEntity, MakeRef<Transform>());
-    Mesh& meshEntityMesh = registry->emplace<Mesh>(meshEntity);
+    registry->emplace<Transform>(meshEntity, MakeRef<Transform>());
     registry->emplace<EnableMeshPass>(meshEntity);
-    // NOT STANDARD
-    // auto cullableMesh = registry->emplace<Ref<OctreeCullable>>(meshEntity, MakeRef<OctreeCullable>());
+
+    Mesh& meshEntityMesh = registry->emplace<Mesh>(meshEntity);
     // maybe can load the ram
     meshEntityMesh.m_base.setMeshData(assetRef());
-    
-    // meshEntityMesh.m_base.m_meshData = shared_from_this();
-    
+
+    if(m_material->m_transparencyType == MaterialTransparencyType::MAT_BLEND ||
+       m_material->m_transparencyType == MaterialTransparencyType::MAT_MASK)
+    {
+        registry->emplace<TransparentEntityTag>(meshEntity);
+    }
+    else
+    {
+        registry->emplace<OpaqueEntityTag>(meshEntity);
+    }
+
+    auto& meshEntityBaseInfo = registry->get<EntityBaseInfo>(meshEntity);
+
+    meshEntityBaseInfo.setRawName(m_name);
+
     return meshEntity;
 }
 

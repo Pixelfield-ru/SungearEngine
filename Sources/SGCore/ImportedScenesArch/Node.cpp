@@ -52,35 +52,10 @@ SGCore::ECS::entity_t SGCore::Node::addOnScene(const Ref<Scene>& scene,
 
     for(auto& mesh : m_meshesData)
     {
-        ECS::entity_t meshEntity = registry->create();
-
-        registry->emplace<Pickable>(meshEntity);
+        const auto meshEntity = mesh->addOnScene(scene);
         auto& meshEntityBaseInfo = registry->get<EntityBaseInfo>(meshEntity);
-        auto meshTransform = registry->emplace<Transform>(meshEntity, MakeRef<Transform>());
-        auto& meshEntityMesh = registry->emplace<Mesh>(meshEntity);
-        // NOT STANDARD
-        // auto cullable = registry->emplace<Ref<OctreeCullable>>(meshEntity, MakeRef<OctreeCullable>());
-        meshEntityMesh.m_base.setMeshData(mesh);
-
-        if(mesh->m_material->m_transparencyType == MaterialTransparencyType::MAT_BLEND ||
-           mesh->m_material->m_transparencyType == MaterialTransparencyType::MAT_MASK)
-        {
-            registry->emplace<TransparentEntityTag>(meshEntity);
-        }
-        else
-        {
-            registry->emplace<OpaqueEntityTag>(meshEntity);
-        }
-
-        registry->emplace<EnableMeshPass>(meshEntity);
-        // meshEntityMesh.m_base.m_meshData->setData(mesh);
-
-        // meshComponent->addRequiredShaderPath("GeometryShader");
-
-        // meshEntityBaseInfo.m_layer = layer;
 
         meshEntityBaseInfo.setParent(parentEntity, *registry);
-        meshEntityBaseInfo.setRawName(mesh->m_name);
 
         meshFunc(parentEntity, meshEntity);
         eachEntityFunc(meshEntity);

@@ -113,8 +113,7 @@ namespace SGCore
 
         void setData(const AssetRef<IMeshData>& other) noexcept;
 
-        ECS::entity_t addOnScene(const Ref<Scene>& scene,
-                                 const std::string& layerName) noexcept;
+        ECS::entity_t addOnScene(const Ref<Scene>& scene) noexcept;
 
         /**
          * Moves all textures of the current material to the new material and sets the new material as the current one.

@@ -15,8 +15,6 @@
 
 namespace SGCore
 {
-    struct Layer;
-
     // sizeof
     struct SGCORE_EXPORT EntityBaseInfo final : UniqueNameWrapper, ECS::Component<EntityBaseInfo, const EntityBaseInfo>
     {
@@ -30,9 +28,6 @@ namespace SGCore
         static inline glm::vec4 s_outlineColor1 = { 0.0, 0.5, 0.5, 1.0 };
 
         glm::vec4 m_outlineColor = s_outlineColor0;
-
-        // sg_member()
-        Weak<Layer> m_layer;
 
         bool m_isEntityActive = true;
 

@@ -3,7 +3,6 @@
 #include <sgcore_export.h>
 #include <optional>
 
-#include "Layer.h"
 #include "ISystem.h"
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/Utils/Unique/UniqueNamesManager.h"
@@ -16,12 +15,6 @@ sg_predeclare_serde()
 namespace SGCore
 {
     struct UIDocument;
-
-    struct SGCORE_EXPORT SceneEntitySaveInfo
-    {
-        const Scene* m_serializableScene { };
-        ECS::entity_t m_serializableEntity { };
-    };
 
     // todo: make on path changed event
     struct SGCORE_EXPORT SceneMetaInfo
@@ -56,7 +49,6 @@ namespace SGCore
     public:
         sg_serde_as_friend()
 
-        Scene();
         ~Scene();
 
         SceneMetaInfo m_metaInfo;
@@ -117,17 +109,6 @@ namespace SGCore
             return m_ecsRegistry;
         }
         
-        /**
-         * Creates new layer or returns existing layer.
-         * @param name - Name of new layer.
-         * @return Layer.
-         */
-        Ref<Layer> createLayer(const std::string& name) noexcept;
-        
-        Ref<Layer> getLayer(const std::string& name) noexcept;
-
-        void reloadUI() noexcept;
-        
         double getUpdateFunctionExecutionTime() const noexcept;
         double getFixedUpdateFunctionExecutionTime() const noexcept;
         
@@ -186,7 +167,6 @@ namespace SGCore
         Ref<UniqueNamesManager> m_uniqueNamesManager = MakeRef<UniqueNamesManager>();
 
         systems_container_t m_systems;
-        std::vector<Ref<Layer>> m_layers;
 
         size_t m_maxLayersCount = 0;
         

@@ -228,15 +228,18 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
                     parentTransform = tmpTransform ? tmpTransform->get() : nullptr;
                 }
 
-                // worldTransform.m_rotation = glm::identity<glm::quat>();
-                // localTransform.m_rotation = glm::identity<glm::quat>();
-
                 if(parentTransform)
                 {
+                    localTransform.m_rotation = TransformUtils::calculateLocalRotation(*parentTransform, worldTransform.m_rotation);
                     worldTransform.m_rotation = TransformUtils::calculateWorldRotation(*parentTransform, localTransform.m_rotation);
                     // ignoring parent rotation
                     localTransform.m_position = TransformUtils::calculateLocalPosition(*parentTransform, worldTransform.m_position);
                     worldTransform.m_position = TransformUtils::calculateWorldPosition(*parentTransform, localTransform.m_position);
+                }
+                else
+                {
+                    worldTransform.m_rotation = glm::identity<glm::quat>();
+                    localTransform.m_rotation = glm::identity<glm::quat>();
                 }
 
                 const auto dir = glm::normalize(worldTransform.m_position - nextWorldTransform.m_position);
@@ -268,7 +271,7 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
 
                 localTransform.m_rotation = glm::normalize(localTransform.m_rotation);
 
-                // std::println(std::cout, "rotation: {}, delta: {}", glm::to_string(localTransform.m_rotation), glm::to_string(delta));
+                std::println(std::cout, "rotation: {}, delta: {}", glm::to_string(localTransform.m_rotation), glm::to_string(delta));
             }
          }
 

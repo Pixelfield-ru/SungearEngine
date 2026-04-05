@@ -29,11 +29,6 @@
 #include "SGCore/Animation/FrameAnimationsProcessor.h"
 #include "SGCore/UI/EventHandling/EventsHandlingSystem.h"
 
-SGCore::Scene::Scene()
-{
-   createLayer(SG_LAYER_OPAQUE_NAME);
-}
-
 SGCore::Scene::~Scene()
 {
     for(const auto& system : m_systems)
@@ -213,44 +208,6 @@ void SGCore::Scene::addSystem(const Ref<ISystem>& system) noexcept
 const std::vector<SGCore::Ref<SGCore::ISystem>>& SGCore::Scene::getAllSystems() const noexcept
 {
     return m_systems;
-}
-
-/*size_t SGCore::Scene::createBaseEntity() noexcept
-{
-    size_t entity = m_ecsRegistry->createEntity();
-    auto* baseEntityInfo = m_ecsRegistry->emplace<EntityBaseInfo>(entity);
-
-    return entity;
-}*/
-
-SGCore::Ref<SGCore::Layer> SGCore::Scene::createLayer(const std::string& name) noexcept
-{
-    auto foundIt = std::find_if(m_layers.begin(), m_layers.end(), [&name](const Ref<Layer>& layer) {
-        return name == layer->m_name;
-    });
-    
-    if(foundIt != m_layers.end())
-    {
-        return *foundIt;
-    }
-    else
-    {
-        Ref<Layer> newLayer = MakeRef<Layer>();
-        newLayer->m_name = name;
-        newLayer->m_index = m_maxLayersCount++;
-        m_layers.push_back(newLayer);
-        
-        return newLayer;
-    }
-}
-
-SGCore::Ref<SGCore::Layer> SGCore::Scene::getLayer(const std::string& name) noexcept
-{
-    auto foundIt = std::find_if(m_layers.begin(), m_layers.end(), [&name](const Ref<Layer>& layer) {
-        return name == layer->m_name;
-    });
-    
-    return foundIt != m_layers.end() ? *foundIt : nullptr;
 }
 
 double SGCore::Scene::getUpdateFunctionExecutionTime() const noexcept

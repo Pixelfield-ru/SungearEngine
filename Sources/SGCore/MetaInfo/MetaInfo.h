@@ -198,23 +198,6 @@ namespace SGCore
                 m_meta["structs"].push_back(meta);
             }
 
-            // SGCore::Layer
-            {
-                Meta meta;
-                meta["fullName"] = "SGCore::Layer";
-                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Scene/Layer.h";
-
-                meta["annotations"]["doNotGenerateSerdeSpec"];
-                meta["annotations"]["doNotGenerateSerializationLogic"];
-                meta["annotations"]["doNotGenerateDeserializationLogic"];
-
-                meta["members"]["m_name"];
-                meta["members"]["m_isOpaque"];
-                meta["members"]["m_index"];
-
-                m_meta["structs"].push_back(meta);
-            }
-
             // SGCore::TransformBase
             {
                 Meta meta;

@@ -12,7 +12,6 @@ namespace SGCore
 {
     struct AssetsPackage;
     class Node;
-    struct Layer;
     struct EntityRef;
 }
 
@@ -35,21 +34,6 @@ namespace SGCore::Serde
         static void deserialize(DeserializableValueView<EntityRef, TFormatType>& valueView,
                                 const ECS::entity_t& deserializedEntity,
                                 ECS::registry_t& toRegistry) noexcept;
-    };
-
-    // ======================================================== Layer FWD
-
-    template<FormatType TFormatType>
-    struct SerdeSpec<Layer, TFormatType> :
-            BaseTypes<>,
-            DerivedTypes<>
-    {
-        sg_serde_define_type_name("SGCore::Layer")
-        static inline constexpr bool is_pointer_type = false;
-
-        static void serialize(SerializableValueView<const Layer, TFormatType>& valueView) noexcept;
-
-        static void deserialize(DeserializableValueView<Layer, TFormatType>& valueView) noexcept;
     };
 
     // ======================================================== ECS::entity_t FWD

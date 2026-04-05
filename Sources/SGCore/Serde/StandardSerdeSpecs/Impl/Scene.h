@@ -69,38 +69,6 @@ namespace SGCore::Serde
         }
     }
 
-    // ======================================================== impl Layer
-
-    template<FormatType TFormatType>
-    void SerdeSpec<Layer, TFormatType>::serialize(SerializableValueView<const Layer, TFormatType>& valueView) noexcept
-    {
-        valueView.container().addMember("m_isOpaque", valueView.m_data->m_isOpaque);
-        valueView.container().addMember("m_name", valueView.m_data->m_name);
-        valueView.container().addMember("m_index", valueView.m_data->m_index);
-    }
-
-    template<FormatType TFormatType>
-    void SerdeSpec<Layer, TFormatType>::deserialize(DeserializableValueView<Layer, TFormatType>& valueView) noexcept
-    {
-        const auto m_isOpaque = valueView.container().template getMember<decltype(valueView.m_data->m_isOpaque)>("m_isOpaque");
-        if(m_isOpaque)
-        {
-            valueView.m_data->m_isOpaque = *m_isOpaque;
-        }
-
-        const auto m_name = valueView.container().template getMember<decltype(valueView.m_data->m_name)>("m_name");
-        if(m_name)
-        {
-            valueView.m_data->m_name = *m_name;
-        }
-
-        const auto m_index = valueView.container().template getMember<decltype(valueView.m_data->m_index)>("m_index");
-        if(m_index)
-        {
-            valueView.m_data->m_index = *m_index;
-        }
-    }
-
     // ======================================================== impl ECS::entity_t
 
     template<FormatType TFormatType>
