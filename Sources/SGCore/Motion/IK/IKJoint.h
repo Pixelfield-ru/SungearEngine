@@ -8,11 +8,17 @@
 #include <optional>
 
 #include "SGCore/ECS/Component.h"
+#include "SGCore/Math/MathUtils.h"
 
 namespace SGCore
 {
     struct SGCORE_EXPORT IKJoint : ECS::Component<IKJoint, const IKJoint>
     {
+        bool m_useRotationConstraints = false;
+        glm::vec3 m_minRotation {};
+        glm::vec3 m_maxRotation {};
+        glm::vec3 m_rotationDirectionReference = MathUtils::up3;
+
         std::optional<glm::vec3> m_targetPosition { };
         bool m_isEndJoint = false;
     };

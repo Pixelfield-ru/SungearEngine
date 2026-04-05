@@ -189,6 +189,7 @@ glm::vec3 SGCore::TransformUtils::calculateLocalPosition(const Transform& parent
                                                          const glm::vec3& childWorldPosition) noexcept
 {
     return glm::inverse(parentTransform.m_worldTransform.m_rotation) * ((childWorldPosition - parentTransform.m_worldTransform.m_position) / parentTransform.m_worldTransform.m_scale);
+    // return (glm::inverse(parentTransform.m_worldTransform.m_rotation) * (childWorldPosition - parentTransform.m_worldTransform.m_position)) / parentTransform.m_worldTransform.m_scale;
 }
 
 glm::quat SGCore::TransformUtils::calculateLocalRotation(const Transform& parentTransform,
@@ -201,6 +202,7 @@ glm::vec3 SGCore::TransformUtils::calculateWorldPosition(const Transform& parent
                                                          const glm::vec3& childLocalPosition) noexcept
 {
     return parentTransform.m_worldTransform.m_position + parentTransform.m_worldTransform.m_rotation * (childLocalPosition * parentTransform.m_worldTransform.m_scale);
+    // return parentTransform.m_worldTransform.m_position + (parentTransform.m_worldTransform.m_rotation * childLocalPosition) * parentTransform.m_worldTransform.m_scale;
 }
 
 glm::quat SGCore::TransformUtils::calculateWorldRotation(const Transform& parentTransform,

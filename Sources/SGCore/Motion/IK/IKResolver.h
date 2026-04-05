@@ -9,6 +9,8 @@
 
 namespace SGCore
 {
+    struct Transform;
+
     struct SGCORE_EXPORT IKResolver : ISystem
     {
         sg_implement_type_id(SGCore::IKResolver)
@@ -20,5 +22,11 @@ namespace SGCore
                                   const EntityBaseInfo::reg_t& currentIKEntityInfo,
                                   std::vector<std::vector<ECS::entity_t>>& jointsChains,
                                   std::vector<ECS::entity_t>& currentJointsChain) noexcept;
+
+        static void jointPass(ECS::registry_t& registry, Transform& currentJointTransform,
+                              const Transform& nextJointTransform, float boneLength) noexcept;
+
+        static glm::vec3 calculateJointLocalPosition(ECS::registry_t& registry, ECS::entity_t jointEntity,
+                                                     const glm::vec3& jointWorldPosition) noexcept;
     };
 }

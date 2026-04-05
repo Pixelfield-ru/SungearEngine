@@ -13,6 +13,8 @@
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Transformations/TransformUtils.h"
 
+// todo: fix constraints
+// todo: scale breaks IK
 void SGCore::IKResolver::update(double dt, double fixedDt)
 {
     auto scene = getScene();
@@ -21,23 +23,21 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
 
     auto registry = scene->getECSRegistry();
 
-    auto ikRootsView = registry->view<EntityBaseInfo, IKRootJoint, Transform>();
+    auto ikRootsView = registry->view<EntityBaseInfo, Transform, IKRootJoint, IKJoint>();
 
     std::vector<std::vector<ECS::entity_t>> jointsChains;
     // in chain
-    std::vector<Transform::reg_t> jointsTransforms;
+    std::vector<Transform*> jointsTransforms;
+    std::vector<IKJoint*> jointsComponents;
     // in chain
     std::vector<float> bonesLengths;
 
-    ikRootsView.each([&registry, &jointsChains, &jointsTransforms, &bonesLengths](const EntityBaseInfo::reg_t& entityBaseInfo, const IKRootJoint::reg_t& rootJoint, const Transform::reg_t& transform) {
+    ikRootsView.each([&](const EntityBaseInfo::reg_t& entityBaseInfo, const Transform::reg_t&, const IKRootJoint::reg_t&, const IKJoint::reg_t&) {
         // jointsChains.emplace_back();
         std::vector<ECS::entity_t> rootChain;
 
         // collecting all joints chains from root to end effector
         collectJoints(*registry, entityBaseInfo, jointsChains, rootChain);
-        // collectJoints(*registry, entityBaseInfo, jointsChains, *jointsChains.begin());
-
-        // std::println(std::cout, "chains count: {}", jointsChains.size());
 
         // processing joints chains
         for(size_t i = 0; i < jointsChains.size(); ++i)
@@ -49,30 +49,27 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
             jointsTransforms.clear();
             bonesLengths.clear();
 
-            const float tolerance = 0.001;
-
             const auto jointsCount = std::ssize(chain);
 
             // collecting transforms
             for(auto jointEntity : chain)
             {
                 auto jointTransform = registry->get<Transform>(jointEntity);
+                auto& jointComponent = registry->get<IKJoint>(jointEntity);
 
-                jointsTransforms.push_back(jointTransform);
+                jointsTransforms.push_back(jointTransform.get());
+                jointsComponents.push_back(&jointComponent);
             }
 
-            float totalChainLength = 0;
+            // GUARANTEED THAT jointsTransforms.size() == jointsComponents.size()
 
             // calculating bones lengths
             for(size_t j = 0; j < jointsCount - 1; ++j)
             {
                 const float boneLength = glm::distance(jointsTransforms[j]->m_worldTransform.m_position, jointsTransforms[j + 1]->m_worldTransform.m_position);
-                std::println(std::cout, "boneLength: {}", boneLength);
+                // const float boneLength = glm::length(jointsTransforms[j]->m_localTransform.m_position);
                 bonesLengths.push_back(boneLength);
-                totalChainLength += boneLength;
             }
-
-            // std::println(std::cout, "chain {} length: {}, joints count: {}", i, totalChainLength, jointsCount);
 
             // ======= FABRIK
 
@@ -80,144 +77,41 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
 
             if(!endJoint.m_targetPosition) continue;
 
+            // set end joint to target position
             jointsTransforms[jointsCount - 1]->m_worldTransform.m_position = *endJoint.m_targetPosition;
 
             const auto rootJointOriginalPos = jointsTransforms[0]->m_worldTransform.m_position;
 
-            // std::println(std::cout, "end pos: {}", glm::to_string(jointsTransforms[jointsCount - 1]->m_worldTransform.m_position));
-
-            // todo: вроде forward и backward правильно написаны, но работают некорректно. исправить
-
             // === forward
             for(std::ptrdiff_t j = jointsCount - 2; j >= 0; --j)
             {
-                auto& worldTransform = jointsTransforms[j]->m_worldTransform;
-                auto& localTransform = jointsTransforms[j]->m_localTransform;
-                auto& nextWorldTransform = jointsTransforms[j + 1]->m_worldTransform;
-                auto& nextLocalTransform = jointsTransforms[j + 1]->m_localTransform;
-
-                auto& jointBaseInfo = registry->get<EntityBaseInfo>(jointsTransforms[j]->getThisEntity());
-
-                // const auto dir = glm::normalize(nextWorldTransform.m_position - worldTransform.m_position);
-                const auto dir = glm::normalize(worldTransform.m_position - nextWorldTransform.m_position);
-                if(glm::any(glm::isnan(dir)))
-                {
-                    continue;
-                }
-
-                const auto boneLength = bonesLengths[j];
-
-                // worldTransform.m_position = worldTransform.m_position + dir * bonesLengths[j];
-                worldTransform.m_position = nextWorldTransform.m_position + dir * boneLength;
-
-                // localTransform.m_position += dir * bonesLengths[j];
-
-                // (1, 2) -
-                // (3, 3)
-                // -2, -1
-
-                Transform* parentTransform {};
-
-                {
-                    auto tmpTransform = registry->tryGet<Transform>(jointBaseInfo.getParent());
-                    parentTransform = tmpTransform ? tmpTransform->get() : nullptr;
-                }
-
-                if(parentTransform)
-                {
-                    localTransform.m_position = TransformUtils::calculateLocalPosition(*parentTransform, worldTransform.m_position);
-                }
-                else
-                {
-                    localTransform.m_position = worldTransform.m_position;
-                }
-
-                /*std::println(std::cout, "1111 normalized dir: {}, next final pos: {}, next local pos: {}, final pos: {}, local pos: {}, boneLength: {}, j: {}, j + 1: {}",
-                             glm::to_string(dir),
-                             glm::to_string(nextWorldTransform.m_position),
-                             glm::to_string(nextLocalTransform.m_position),
-                             glm::to_string(worldTransform.m_position),
-                             glm::to_string(localTransform.m_position),
-                             boneLength, j, j + 1);*/
+                jointPass(*registry, *jointsTransforms[j], *jointsTransforms[j + 1], bonesLengths[j]);
             }
 
             // ==========
 
+            // =============== set
             jointsTransforms[0]->m_worldTransform.m_position = rootJointOriginalPos;
 
-            auto& startJointBaseInfo = registry->get<EntityBaseInfo>(jointsTransforms[0]->getThisEntity());
-            Transform* startParentTransform {};
+            jointsTransforms[0]->m_localTransform.m_position = calculateJointLocalPosition(
+                *registry,
+                jointsTransforms[0]->getThisEntity(),
+                jointsTransforms[0]->m_worldTransform.m_position);
 
-            {
-                auto tmpTransform = registry->tryGet<Transform>(startJointBaseInfo.getParent());
-                startParentTransform = tmpTransform ? tmpTransform->get() : nullptr;
-            }
-
-            if(startParentTransform)
-            {
-                jointsTransforms[0]->m_localTransform.m_position = TransformUtils::calculateLocalPosition(*startParentTransform, jointsTransforms[0]->m_worldTransform.m_position);
-            }
-            else
-            {
-                jointsTransforms[0]->m_localTransform.m_position = jointsTransforms[0]->m_worldTransform.m_position;
-            }
-
-            // === backwards
+            // ============== backwards
             for(std::ptrdiff_t j = 1; j <= jointsCount - 1; ++j)
             {
-                auto& worldTransform = jointsTransforms[j]->m_worldTransform;
-                auto& localTransform = jointsTransforms[j]->m_localTransform;
-                auto& nextWorldTransform = jointsTransforms[j - 1]->m_worldTransform;
-                auto& nextLocalTransform = jointsTransforms[j - 1]->m_localTransform;
-
-                auto& jointBaseInfo = registry->get<EntityBaseInfo>(jointsTransforms[j]->getThisEntity());
-
-                // const auto dir = glm::normalize(nextWorldTransform.m_position - worldTransform.m_position);
-                const auto dir = glm::normalize(worldTransform.m_position - nextWorldTransform.m_position);
-                if(glm::any(glm::isnan(dir)))
-                {
-                    continue;
-                }
-
-                const auto boneLength = bonesLengths[j - 1];
-
-                // nextWorldTransform.m_position = worldTransform.m_position + dir * bonesLengths[j];
-                worldTransform.m_position = nextWorldTransform.m_position + dir * boneLength;
-                // worldTransform.m_position += dir * bonesLengths[j];
-
-                Transform* parentTransform {};
-
-                {
-                    auto tmpTransform = registry->tryGet<Transform>(jointBaseInfo.getParent());
-                    parentTransform = tmpTransform ? tmpTransform->get() : nullptr;
-                }
-
-                if(parentTransform)
-                {
-                    localTransform.m_position = TransformUtils::calculateLocalPosition(*parentTransform, worldTransform.m_position);
-                }
-                else
-                {
-                    localTransform.m_position = worldTransform.m_position;
-                }
-
-                /*std::println(std::cout, "2222 normalized dir: {}, next final pos: {}, next local pos: {}, final pos: {}, local pos: {}, boneLength: {}, j: {}, j - 1: {}",
-                             glm::to_string(dir),
-                             glm::to_string(nextWorldTransform.m_position),
-                             glm::to_string(nextLocalTransform.m_position),
-                             glm::to_string(worldTransform.m_position),
-                             glm::to_string(localTransform.m_position),
-                             boneLength,
-                             j, j - 1);*/
+                jointPass(*registry, *jointsTransforms[j], *jointsTransforms[j - 1], bonesLengths[j - 1]);
             }
 
-            // === calculating rotations
+            // ============== calculating rotations
 
             for(size_t j = 0; j < jointsCount - 1; ++j)
             {
                 auto& worldTransform = jointsTransforms[j]->m_worldTransform;
                 auto& localTransform = jointsTransforms[j]->m_localTransform;
                 auto& nextWorldTransform = jointsTransforms[j + 1]->m_worldTransform;
+                auto& joint = *jointsComponents[j];
 
                 auto& jointBaseInfo = registry->get<EntityBaseInfo>(jointsTransforms[j]->getThisEntity());
 
@@ -228,18 +122,16 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
                     parentTransform = tmpTransform ? tmpTransform->get() : nullptr;
                 }
 
+                // worldTransform.m_rotation = glm::identity<glm::quat>();
+                // localTransform.m_rotation = glm::identity<glm::quat>();
+
                 if(parentTransform)
                 {
-                    localTransform.m_rotation = TransformUtils::calculateLocalRotation(*parentTransform, worldTransform.m_rotation);
-                    worldTransform.m_rotation = TransformUtils::calculateWorldRotation(*parentTransform, localTransform.m_rotation);
+                    // localTransform.m_rotation = TransformUtils::calculateLocalRotation(*parentTransform, worldTransform.m_rotation);
+                    // worldTransform.m_rotation = TransformUtils::calculateWorldRotation(*parentTransform, localTransform.m_rotation);
                     // ignoring parent rotation
                     localTransform.m_position = TransformUtils::calculateLocalPosition(*parentTransform, worldTransform.m_position);
                     worldTransform.m_position = TransformUtils::calculateWorldPosition(*parentTransform, localTransform.m_position);
-                }
-                else
-                {
-                    worldTransform.m_rotation = glm::identity<glm::quat>();
-                    localTransform.m_rotation = glm::identity<glm::quat>();
                 }
 
                 const auto dir = glm::normalize(worldTransform.m_position - nextWorldTransform.m_position);
@@ -248,8 +140,7 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
                     continue;
                 }
 
-                auto rotationDir = worldTransform.m_rotation * MathUtils::right3;
-                // auto rotationDir = localTransform.m_forward;
+                const auto rotationDir = worldTransform.m_rotation * joint.m_rotationDirectionReference;
 
                 const auto delta = glm::rotation(rotationDir, dir);
 
@@ -269,9 +160,30 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
                     localTransform.m_rotation = worldTransform.m_rotation;
                 }
 
+                if(joint.m_useRotationConstraints)
+                {
+                    auto eulerLocalRotation = glm::degrees(glm::eulerAngles(localTransform.m_rotation));
+
+                    const auto& minRot = joint.m_minRotation;
+                    const auto& maxRot = joint.m_maxRotation;
+
+                    eulerLocalRotation.x = glm::clamp(eulerLocalRotation.x, minRot.x, maxRot.x);
+                    eulerLocalRotation.y = glm::clamp(eulerLocalRotation.y, minRot.y, maxRot.y);
+                    eulerLocalRotation.z = glm::clamp(eulerLocalRotation.z, minRot.z, maxRot.z);
+
+                    localTransform.m_rotation = glm::quat(glm::radians(eulerLocalRotation));
+                }
+
                 localTransform.m_rotation = glm::normalize(localTransform.m_rotation);
 
-                std::println(std::cout, "rotation: {}, delta: {}", glm::to_string(localTransform.m_rotation), glm::to_string(delta));
+                /*if(parentTransform)
+                {
+                    worldTransform.m_rotation = TransformUtils::calculateWorldRotation(*parentTransform, localTransform.m_rotation);
+                }
+                else
+                {
+                    worldTransform.m_rotation = localTransform.m_rotation;
+                }*/
             }
          }
 
@@ -305,7 +217,50 @@ void SGCore::IKResolver::collectJoints(const ECS::registry_t& inRegistry,
     }
 }
 
-// - 1 chain
-// -- 2 chain
-// ---
-// -- 3 chain
+void SGCore::IKResolver::jointPass(ECS::registry_t& registry, Transform& currentJointTransform,
+                                   const Transform& nextJointTransform, float boneLength) noexcept
+{
+    auto& worldTransform = currentJointTransform.m_worldTransform;
+    auto& localTransform = currentJointTransform.m_localTransform;
+    auto& nextWorldTransform = nextJointTransform.m_worldTransform;
+    auto& nextLocalTransform = nextJointTransform.m_localTransform;
+
+    const auto dir = glm::normalize(worldTransform.m_position - nextWorldTransform.m_position);
+    if(glm::any(glm::isnan(dir)))
+    {
+        return;
+    }
+
+    worldTransform.m_position = nextWorldTransform.m_position + dir * boneLength;
+
+    localTransform.m_position = calculateJointLocalPosition(registry, currentJointTransform.getThisEntity(), worldTransform.m_position);
+
+    std::println(std::cout, "1111 normalized dir: {}, next final pos: {}, next local pos: {}, final pos: {}, local pos: {}, new boneLength: {}, boneLength: {}",
+                 glm::to_string(dir),
+                 glm::to_string(nextWorldTransform.m_position),
+                 glm::to_string(nextLocalTransform.m_position),
+                 glm::to_string(worldTransform.m_position),
+                 glm::to_string(localTransform.m_position),
+                 glm::distance(worldTransform.m_position, nextWorldTransform.m_position),
+                 boneLength);
+}
+
+glm::vec3 SGCore::IKResolver::calculateJointLocalPosition(ECS::registry_t& registry, ECS::entity_t jointEntity,
+                                                          const glm::vec3& jointWorldPosition) noexcept
+{
+    auto& jointBaseInfo = registry.get<EntityBaseInfo>(jointEntity);
+
+    Transform* parentTransform {};
+
+    {
+        auto tmpTransform = registry.tryGet<Transform>(jointBaseInfo.getParent());
+        parentTransform = tmpTransform ? tmpTransform->get() : nullptr;
+    }
+
+    if(parentTransform)
+    {
+        return TransformUtils::calculateLocalPosition(*parentTransform, jointWorldPosition);
+    }
+
+    return jointWorldPosition;
+}
