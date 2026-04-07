@@ -1,0 +1,9 @@
+div {
+    "Test text";
+    .style: {
+        .width: 10;
+    }
+    div {
+        "sub div";
+    }
+}

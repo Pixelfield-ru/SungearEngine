@@ -29,6 +29,7 @@
 #include <utility>
 #include <tuple>
 #include <memory>
+#include <optional>
 
 namespace SGCore
 {
@@ -788,6 +789,34 @@ namespace SGCore
     
     template<typename T>
     using remove_noexcept_t = make_noexcept_t<T, false>;
+
+    // ===
+    // ===
+
+    template<typename Func, typename TypesContainer, size_t Index>
+    constexpr std::invoke_result_t<Func, TypeWrapper<typename TypesContainer::template get_type<0>::type>> for_types_until_impl(Func&& func) {
+        if constexpr (Index >= TypesContainer::types_count) {
+            return std::nullopt;
+        } else {
+            if (auto result = func(TypeWrapper<typename TypesContainer::template get_type<Index>::type>{})) {
+                return result;
+            }
+            return for_types_until_impl<Func, TypesContainer, Index + 1>(std::forward<Func>(func));
+        }
+    }
+
+    template<typename Func, typename TypesContainerT>
+    constexpr std::invoke_result_t<Func, TypeWrapper<typename TypesContainerT::template get_type<0>::type>> for_types_until(Func&& func, TypesContainerT) {
+        return for_types_until_impl<Func, TypesContainerT, 0>(std::forward<Func>(func));
+    }
+
+    template<typename T>
+    struct remove_pointer_to_member : std::false_type {};
+
+    template<typename T, typename U>
+    struct remove_pointer_to_member<T U::*> : std::true_type {
+        using type = T;
+    };
 }
 
 /**

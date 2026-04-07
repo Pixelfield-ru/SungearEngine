@@ -12,23 +12,20 @@ namespace SGCore::UI
     struct CSSFile;
     struct TemplateElement;
     
-    struct UIDocument : IAsset
+    struct UIDocument : public IAsset
     {
         friend struct UIElementNodeProcessor;
 
         sg_implement_type_id(UIDocument, 10)
 
-        pugi::xml_document m_document;
+        Scope<UIRoot> m_rootElement;
 
-        Ref<UIRoot> m_rootElement;
-
-        std::vector<AssetRef<UIDocument>> m_includedUIDocuments;
-
-        BindingsStorage m_bindingsStorage;
+        // std::vector<AssetRef<UIDocument>> m_includedUIDocuments;
+        // BindingsStorage m_bindingsStorage;
 
         [[nodiscard]] AssetRef<Style> findStyle(const std::string& selector) const noexcept;
         [[nodiscard]] Ref<UIElement> findElement(const std::string& elementName) const noexcept;
-        [[nodiscard]] Ref<TemplateElement> findTemplate(const std::string& templateName) const noexcept;
+        // [[nodiscard]] Ref<TemplateElement> findTemplate(const std::string& templateName) const noexcept;
 
         template<typename FuncT>
         requires(std::is_invocable_v<FuncT, UIElement*, UIElement*>)
@@ -66,8 +63,6 @@ namespace SGCore::UI
 
     private:
         void applyDefaultStylesToNonStyledElementsImpl(const Ref<UIElement>& element) noexcept;
-
-        std::optional<std::string> readXmlFileAndBuildOffsets(const std::filesystem::path& filePath) noexcept;
 
         std::vector<std::ptrdiff_t> m_debugOffsets;
     };

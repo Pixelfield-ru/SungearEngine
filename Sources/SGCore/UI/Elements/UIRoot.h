@@ -19,8 +19,6 @@ namespace SGCore::UI
         copy_operator(UIRoot) = default;
         move_operator(UIRoot) = default;
 
-        static inline auto properties_fields = std::tuple {};
-
     protected:
         void doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,
                                const Transform* parentTransform, Transform& ownTransform) noexcept final;
@@ -28,4 +26,10 @@ namespace SGCore::UI
         void doGenerateMesh(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept final;
     };
 
+    template<>
+    struct Deserialization::MetaDef<UIRoot>
+    {
+        static inline auto properties_fields = std::tuple {};
+        static inline auto base_types = types_container<TypeWrapper<UIElement>>{};
+    };
 }

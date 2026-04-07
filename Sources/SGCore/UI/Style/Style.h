@@ -29,32 +29,6 @@ namespace SGCore::UI
         copy_operator(Style) = default;
         move_operator(Style) = default;
 
-#pragma region Properties
-
-// iterate through all style properties names
-#define style_properties(prop) \
-    prop(display) \
-    prop(flexDirection) \
-    prop(flexWrap) \
-    prop(width) \
-    prop(height) \
-    prop(paddingLeft) \
-    prop(paddingRight) \
-    prop(paddingBottom) \
-    prop(paddingTop) \
-    prop(padding) \
-    prop(rowGap) \
-    prop(columnGap) \
-    prop(gap) \
-    prop(bottomLeftBorderRadius) \
-    prop(topLeftBorderRadius) \
-    prop(topRightBorderRadius) \
-    prop(bottomRightBorderRadius) \
-    prop(borderRadius) \
-    prop(backgroundColor) \
-    prop(fontSize)
-
-
         DisplayKeyword m_display = DisplayKeyword::SG_FLEX;
         FlexboxKeyword m_flexDirection = FlexboxKeyword::SG_ROW;
         FlexboxKeyword m_flexWrap = FlexboxKeyword::SG_NOWRAP;
@@ -125,8 +99,6 @@ namespace SGCore::UI
         /// Used as scale.
         DValue::DValueCowNode<std::variant<FontSizeKeyword, float>> m_fontSize {16.0f};
 
-#pragma endregion Properties
-
         // first - hash of pseudo class name. second - style
         std::unordered_map<size_t, AssetRef<Style>> m_pseudoClassesStyles;
 
@@ -174,4 +146,32 @@ namespace SGCore::UI
         mutable size_t m_selectorHash = 0;
         mutable size_t m_pseudoClassHash = 0;
     };
+
+
+};
+#include <SGCore/UI/Deserialization/MetaDefenition.h>
+
+template<>
+    struct SGCore::UI::Deserialization::MetaDef<SGCore::UI::Style>
+{
+    static inline auto properties_fields = std::make_tuple(
+        std::pair { &Style::m_display, "display" },
+        std::pair { &Style::m_flexDirection, "flex-direction" },
+        std::pair { &Style::m_flexWrap, "flex-wrap" },
+        std::pair { &Style::m_width, "width" },
+        std::pair { &Style::m_height, "height" },
+        std::pair { &Style::m_paddingLeft, "padding-left" },
+        std::pair { &Style::m_paddingRight, "padding-right" },
+        std::pair { &Style::m_paddingBottom, "padding-bottom" },
+        std::pair { &Style::m_paddingTop, "padding-top" },
+        std::pair { &Style::m_rowGap, "row-gap" },
+        std::pair { &Style::m_columnGap, "column-gap" },
+        std::pair { &Style::m_bottomLeftBorderRadius, "border-bottom-left-radius" },
+        std::pair { &Style::m_topLeftBorderRadius, "border-top-left-radius" },
+        std::pair { &Style::m_topRightBorderRadius, "border-top-right-radius" },
+        std::pair { &Style::m_bottomRightBorderRadius, "border-bottom-right-radius" },
+        std::pair { &Style::m_backgroundColor, "background-color" },
+        std::pair { &Style::m_font, "font" },
+        std::pair { &Style::m_fontSize, "font-size" }
+    );
 };

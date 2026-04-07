@@ -49,8 +49,6 @@ namespace SGCore::UI::DValue
         copy_constructor(DValueNodeInput) = default;
         move_constructor(DValueNodeInput) = default;
 
-        explicit DValueNodeInput(decltype(onReceived) onReceived) noexcept : onReceived(onReceived) {};
-
         ~DValueNodeInput() noexcept = default;
 
         void connectPrevious(DValueNodeOutput<In>* previous) noexcept;

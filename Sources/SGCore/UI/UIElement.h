@@ -13,6 +13,7 @@
 #include "Parser/XML/XMLSourceTreeView.h"
 #include <unordered_map>
 #include <string>
+#include "Deserialization/MetaDefenition.h"
 
 #define SG_DECLARE_UI_ELEMENT_TYPE(name) \
     static consteval size_t getTypeHashStatic() noexcept \
@@ -35,6 +36,7 @@ namespace SGCore::UI
         virtual ~UIElement() = default;
 
         friend struct UIDocument;
+        friend struct Deserialization::MetaDef<UIElement>;
 
         Signal<void(UIElement* self)> onPointerDown;
         Signal<void(UIElement* self)> onPointerUp;
@@ -116,60 +118,6 @@ namespace SGCore::UI
 
         [[nodiscard]] virtual Scope<UIElement> copy() const noexcept = 0;
 
-        static inline auto properties_fields = std::tuple {
-            std::pair {
-                &UIElement::m_style,
-                "style"
-            }
-        };
-
-        static inline auto children_field = &UIElement::m_children;
-
-    private:
-
-        static std::unordered_map<
-            std::string_view,
-            // This method should create new Derived and place it into target, then try to deserialize value into target pointer
-            // (check implementation for example)
-            Deserialization::DeserializeIntoResultType(*)(UISourceTreeViewValue&, UIElement*& target, Deserialization::DeserScope& scope)
-        > m_registry;
-
-        static Deserialization::DeserializeIntoResultType(*m_createTextComponent)(std::string_view, UIElement*& target, Deserialization::DeserScope& scope);
-
-    public:
-
-        SG_IMPL_DESERIALIZABLE_CONTAINER(UIElement) {
-            if (const auto component = value.tryGetComponent()) {
-                UIElement* pointer; // MANAGED IN "prepareWithPointer(field, POINTER)"
-                const auto& method = m_registry.find(component->getName());
-                if (method == m_registry.end()) {
-                    return std::format("Unknown component {}", component->getName());
-                }
-                auto result = method->second(component->getValue(), pointer, scope);
-                // Pointer initialized and contains deserialization value (if it was successful)
-                Deserialization::IsValidContainer<Container>::prepareWithPointer(field, pointer);
-                // DO MANAGE POINTER BEFORE RETURNING A ERROR
-
-                if (result) { return result; } // if not return error;
-
-                return std::nullopt;
-            }
-
-            if (auto text = value.tryGetString()) {
-                UIElement* pointer; // MANAGED IN "prepareWithPointer(field, POINTER)"
-                auto result = m_createTextComponent(*text, pointer, scope);
-                // Pointer initialized and contains deserialization value (if it was successful)
-                Deserialization::IsValidContainer<Container>::prepareWithPointer(field, pointer);
-                // DO MANAGE POINTER BEFORE RETURNING A ERROR
-
-                if (result) { return result; } // if not return error;
-
-                return std::nullopt;
-            }
-
-            return "Error: Component or Text expected";
-        }
-
     protected:
         virtual void doCalculateLayout(const UIElementCache* parentElementCache, UIElementCache& thisElementCache,
                                        const Transform* parentTransform, Transform& ownTransform) = 0;
@@ -188,6 +136,64 @@ namespace SGCore::UI
 
     private:
         void checkForMeshGenerating(const UIElementCache* parentElementCache, UIElementCache& thisElementCache) noexcept;
+    };
+
+    template<>
+    struct Deserialization::MetaDef<UIElement>
+    {
+        static inline auto properties_fields = std::make_tuple(
+            std::pair { &UIElement::m_style, "style" }
+        );
+
+        // static inline auto test = std::tuple {std::pair {1, 2} };
+        // THIS FUCKING THING HAS TYPE
+        // std::tuple<int, int>
+        // LIKE WHAT THE FUCK (aggregate types probably if tuple has only one arg it counts as range or smth?)
+        // So don't use std::tuple and use std::make_tuple instead
+
+        static inline auto children_field = &UIElement::m_children;
+
+        static std::unordered_map<
+                    std::string_view,
+                    // This method should create new Derived and place it into target, then try to deserialize value into target pointer
+                    // (check implementation for example)
+                    Deserialization::DeserializeIntoResultType(*)(UISourceTreeViewValue&, UIElement*& target, Deserialization::DeserScope& scope)
+                >& getRegistry();
+
+        static Deserialization::DeserializeIntoResultType createTextComponent(std::string_view text, UIElement*& target, Deserialization::DeserScope& scope);
+
+        // TODO: Move that into MetaDef
+        SG_IMPL_DESERIALIZABLE_CONTAINER(UIElement) {
+            if (const auto component = value.tryGetComponent()) {
+                UIElement* pointer; // MANAGED IN "prepareWithPointer(field, POINTER)"
+                const auto& method = getRegistry().find(component->getName());
+                if (method == getRegistry().end()) {
+                    return std::format("Unknown component {}", component->getName());
+                }
+                auto result = method->second(component->getValue(), pointer, scope);
+                // Pointer initialized and contains deserialization value (if it was successful)
+                Deserialization::IsValidContainer<Container>::prepareWithPointer(field, pointer);
+                // DO MANAGE POINTER BEFORE RETURNING A ERROR
+
+                if (result) { return result; } // if not return error;
+
+                return std::nullopt;
+            }
+
+            if (auto text = value.tryGetString()) {
+                UIElement* pointer; // MANAGED IN "prepareWithPointer(field, POINTER)"
+                auto result = createTextComponent(*text, pointer, scope);
+                // Pointer initialized and contains deserialization value (if it was successful)
+                Deserialization::IsValidContainer<Container>::prepareWithPointer(field, pointer);
+                // DO MANAGE POINTER BEFORE RETURNING A ERROR
+
+                if (result) { return result; } // if not return error;
+
+                return std::nullopt;
+            }
+
+            return "Error: Component or Text expected";
+        }
     };
 
     static_assert(SGCore::UI::Deserialization::ImplDeserializableContainer<Scope<UIElement>>);

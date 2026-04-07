@@ -3,12 +3,37 @@
 #include "UIDocument.h"
 
 #include "Elements/Text.h"
+#include "Parser/SIIML/Node/Node.h"
 #include "Parser/XML/XMLSourceTreeView.h"
+
+std::optional<std::string> readFile(const std::filesystem::path& filePath) {
+    auto file = std::ifstream(filePath.string(), std::ios::binary);
+    if (!file.is_open()) {
+        return std::nullopt;
+    }
+
+    std::string content {std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
+    file.close();
+
+    return content;
+}
 
 // TODO: Parameter to chose between siml and xml (and other ofc)
 void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
 {
-    // TODO
+    auto fileContent = readFile(path.resolved());
+    if (!fileContent) {
+        LOG_E(SGCORE_TAG, "Can't load UI document: Can't read XML by path '{}'", path.resolved().string())
+    }
+    const Scope<UISourceTreeViewHandler> handler = MakeScope<SIML::NodeRootHandler>(*fileContent);
+    if (const auto result =
+        SGCore::UI::Deserialization::Deserializer<Scope<UIRoot>>::deserializeInto(
+            handler->getRoot(), m_rootElement, SGCore::UI::Deserialization::DeserScope{nullptr}
+        )
+    ) {
+        LOG_E(SGCORE_TAG, "Can't load UI document: {}", *result)
+        return;
+    }
 }
 
 void SGCore::UI::UIDocument::doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept
@@ -53,10 +78,4 @@ SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIDocument::findElement(const std
 {
     // TODO
     return Ref<UIElement>();
-}
-
-SGCore::Ref<SGCore::UI::TemplateElement> SGCore::UI::UIDocument::findTemplate(const std::string& templateName) const noexcept
-{
-    // TODO
-    return Ref<TemplateElement>();
 }

@@ -110,13 +110,15 @@ SGCore::UI::UIElement* const SGCore::UI::UIElement::findPlace(const std::string&
 {
     for(const auto& child : m_children)
     {
-        if(child->m_places.contains(placeName)) return child.get();
+        // if(child->m_places.contains(placeName)) return child.get();
 
         if(auto found = child->findPlace(placeName)) return found;
     }
 
     return nullptr;
 }
+
+
 
 template<typename T>
 auto createRegistryEntry() {
@@ -128,19 +130,6 @@ auto createRegistryEntry() {
     };
 }
 
-decltype(SGCore::UI::UIElement::m_registry) SGCore::UI::UIElement::m_registry = {
-    {"div", createRegistryEntry<Div>()}
-};
-
-decltype(SGCore::UI::UIElement::m_createTextComponent) SGCore::UI::UIElement::m_createTextComponent =
-    [](std::string_view text, UIElement*& element, Deserialization::DeserScope& scope) -> Deserialization::DeserializeIntoResultType {
-        element = new Text();
-        auto textPointer = dynamic_cast<Text*>(element);
-        textPointer->m_text = text;
-
-        return std::nullopt;
-};
-
 void SGCore::UI::UIElement::doCopy(UIElement& to) const noexcept
 {
     to.m_style = MakeScope<Style>(*m_style);
@@ -148,7 +137,7 @@ void SGCore::UI::UIElement::doCopy(UIElement& to) const noexcept
 
     to.m_shader = m_shader;
 
-    to.m_places = m_places;
+    // to.m_places = m_places; TODO
 
     for(const auto& child : m_children)
     {
@@ -177,7 +166,23 @@ void SGCore::UI::UIElement::checkForMeshGenerating(const UIElementCache* parentE
     }
 }
 
-/*#define sg_deser_type SGCore::UI::UIElement
-#define sg_deser_children m_children
-#define sg_deser_properties(prop) prop(style)
-#include "Deserialization/ImplDeserializableStruct.h"*/
+static std::unordered_map<std::string_view, SGCore::UI::Deserialization::DeserializeIntoResultType(*)(SGCore::UI::
+UISourceTreeViewValue&, SGCore::UI::UIElement*& target, SGCore::UI::Deserialization::DeserScope& scope)> registry = {
+    {"div", createRegistryEntry<SGCore::UI::Div>()}
+};
+// BS WITH STATIC VARS IN CLASS ON WINDOWS, SO I WILL MOVE THAT OUT TO THE CPP
+
+std::unordered_map<std::string_view, SGCore::UI::Deserialization::DeserializeIntoResultType(*)(SGCore::UI::
+UISourceTreeViewValue&, SGCore::UI::UIElement*& target, SGCore::UI::Deserialization::DeserScope& scope)>& SGCore::UI::
+Deserialization::MetaDef<SGCore::UI::UIElement>::getRegistry() {
+    return registry;
+}
+
+SGCore::UI::Deserialization::DeserializeIntoResultType SGCore::UI::Deserialization::MetaDef<SGCore::UI::UIElement>::
+createTextComponent(std::string_view text, UIElement*& target, Deserialization::DeserScope& scope) {
+    target = new Text();
+    const auto textPointer = dynamic_cast<Text*>(target);
+    textPointer->m_text = text;
+
+    return std::nullopt;
+}

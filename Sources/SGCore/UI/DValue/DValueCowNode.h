@@ -3,6 +3,7 @@
 #include <variant>
 #include "SGCore/UI/DValue/DValueDestinationCacheNode.h"
 
+
 namespace SGCore::UI::DValue
 {
     /**
@@ -37,3 +38,27 @@ namespace SGCore::UI::DValue
         T* operator->() const noexcept { return &getValue(); }
     };
 }
+
+#include <SGCore/UI/Deserialization/MetaDefenition.h>
+#include <SGCore/UI/Deserialization/ImplDeserializable.h>
+#include <SGCore/UI/Deserialization/DeserializeField.h>
+template<typename T>
+struct SGCore::UI::Deserialization::MetaDef<SGCore::UI::DValue::DValueCowNode<T>>
+{
+    static SGCore::UI::Deserialization::DeserializeIntoResultType deserializeInto(
+        UISourceTreeViewValue& value,
+        DValue::DValueCowNode<T>& field,
+        const SGCore::UI::Deserialization::DeserScope& scope
+    ) {
+        // TODO: don't copy, instantiate in place
+        T val;
+            if (auto result = Deserializer<T>::deserializeInto(value, val, scope)) {
+            return result;
+        }
+        field.setValue(val);
+        return std::nullopt;
+    }
+};
+
+
+
