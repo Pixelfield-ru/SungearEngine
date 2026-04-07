@@ -15,8 +15,8 @@ namespace SGCore
     struct SGCORE_EXPORT IKJoint : ECS::Component<IKJoint, const IKJoint>
     {
         bool m_useRotationConstraints = false;
-        glm::vec3 m_minRotation {};
-        glm::vec3 m_maxRotation {};
+        float m_constraintMaxAngle {};
+        glm::vec3 m_constraintAxis {};
         glm::vec3 m_rotationDirectionReference = MathUtils::up3;
 
         std::optional<glm::vec3> m_targetPosition { };

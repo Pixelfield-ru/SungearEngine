@@ -10,6 +10,7 @@
 namespace SGCore
 {
     struct Transform;
+    struct IKJoint;
 
     struct SGCORE_EXPORT IKResolver : ISystem
     {
@@ -23,10 +24,12 @@ namespace SGCore
                                   std::vector<std::vector<ECS::entity_t>>& jointsChains,
                                   std::vector<ECS::entity_t>& currentJointsChain) noexcept;
 
-        static void jointPass(ECS::registry_t& registry, Transform& currentJointTransform,
-                              const Transform& nextJointTransform, float boneLength) noexcept;
+        static void jointPass(ECS::registry_t& registry, const IKJoint& joint, const IKJoint* parentJoint, Transform& currentJointTransform,
+                              const Transform& nextJointTransform, float boneLength, bool isBackwardPass) noexcept;
 
         static glm::vec3 calculateJointLocalPosition(ECS::registry_t& registry, ECS::entity_t jointEntity,
-                                                     const glm::vec3& jointWorldPosition) noexcept;
+                                                     const glm::vec3& jointWorldPosition, const Transform* parentTransform) noexcept;
+
+        static Transform* getJointParent(ECS::registry_t& registry, ECS::entity_t jointEntity) noexcept;
     };
 }
