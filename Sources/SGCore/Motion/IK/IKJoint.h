@@ -17,6 +17,8 @@ namespace SGCore
         bool m_useRotationConstraints = false;
         float m_constraintMaxAngle {};
         glm::vec3 m_constraintAxis {};
+        // glm::vec3 m_constraintMinRotation {};
+        // glm::vec3 m_constraintMaxRotation {};
         glm::vec3 m_rotationDirectionReference = MathUtils::up3;
 
         std::optional<glm::vec3> m_targetPosition { };

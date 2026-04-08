@@ -171,12 +171,37 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
                     localTransform.m_rotation = worldTransform.m_rotation;
                 }
 
+                if(joint.m_useRotationConstraints)
+                {
+                    auto constraintAxis = joint.m_constraintAxis;
+                    if(parentTransform)
+                    {
+                        constraintAxis = parentTransform->m_worldTransform.m_rotation * constraintAxis;
+                    }
+
+                    constraintAxis = glm::normalize(constraintAxis);
+
+                    const float rotationAngle = glm::degrees(acos(glm::dot(dir, constraintAxis)));
+
+                    if(rotationAngle > joint.m_constraintMaxAngle)
+                    {
+                        // const glm::vec3 axis = glm::normalize(glm::cross(constraintAxis, dir));
+                        const glm::vec3 axis = glm::normalize(glm::cross(dir, constraintAxis));
+                        const glm::quat rotation = glm::angleAxis(joint.m_constraintMaxAngle, axis);
+
+                        const float deltaAngle = rotationAngle - joint.m_constraintMaxAngle;
+                        const glm::quat constraintDelta = glm::angleAxis(glm::radians(deltaAngle), axis);
+
+                        localTransform.m_rotation = constraintDelta * localTransform.m_rotation;
+                    }
+                }
+
                 /*if(joint.m_useRotationConstraints)
                 {
                     auto eulerLocalRotation = glm::degrees(glm::eulerAngles(localTransform.m_rotation));
 
-                    const auto& minRot = joint.m_minRotation;
-                    const auto& maxRot = joint.m_maxRotation;
+                    const auto& minRot = joint.m_constraintMinRotation;
+                    const auto& maxRot = joint.m_constraintMaxRotation;
 
                     eulerLocalRotation.x = glm::clamp(eulerLocalRotation.x, minRot.x, maxRot.x);
                     eulerLocalRotation.y = glm::clamp(eulerLocalRotation.y, minRot.y, maxRot.y);
@@ -187,14 +212,15 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
 
                 localTransform.m_rotation = glm::normalize(localTransform.m_rotation);
 
-                /*if(parentTransform)
+                if(parentTransform)
                 {
+                    // worldTransform.m_position =
                     worldTransform.m_rotation = TransformUtils::calculateWorldRotation(*parentTransform, localTransform.m_rotation);
                 }
                 else
                 {
                     worldTransform.m_rotation = localTransform.m_rotation;
-                }*/
+                }
             }
          }
 
@@ -246,7 +272,7 @@ void SGCore::IKResolver::jointPass(ECS::registry_t& registry, const IKJoint& joi
 
     auto* parentTransform = getJointParent(registry, currentJointTransform.getThisEntity());
 
-    if(parentJoint && parentJoint->m_useRotationConstraints && isBackwardPass)
+    /*if(parentJoint && parentJoint->m_useRotationConstraints && isBackwardPass)
     {
         auto constraintAxis = parentJoint->m_constraintAxis;
         if(parentTransform)
@@ -257,7 +283,6 @@ void SGCore::IKResolver::jointPass(ECS::registry_t& registry, const IKJoint& joi
 
         constraintAxis = glm::normalize(constraintAxis);
 
-        // auto localDir = localTransform.m_rotation * joint.m_rotationDirectionReference;
         auto localDir = dir;
         const float rotationAngle = glm::degrees(acos(glm::dot(localDir, constraintAxis)));
 
@@ -268,33 +293,10 @@ void SGCore::IKResolver::jointPass(ECS::registry_t& registry, const IKJoint& joi
 
             auto currentRot = glm::rotation(parentJoint->m_rotationDirectionReference, dir);
 
-            // localTransform.m_rotation = rotation;
             auto dif = glm::inverse(rotation) * currentRot;
             dir = glm::inverse(dif) * dir;
-            // glm::vec3 result = rotation * joint.m_constraintAxis;
         }
-        /*auto localDir = dir;
-        if(parentTransform)
-        {
-            localDir = glm::inverse(parentTransform->m_worldTransform.m_rotation) * dir;
-        }
-
-        localDir = glm::normalize(localDir);
-
-        const float rotationAngle = glm::degrees(acos(glm::dot(localDir, joint.m_constraintAxis)));
-
-        if(rotationAngle > joint.m_constraintMaxAngle)
-        {
-            auto projectedDir = localDir;
-            glm::quat correction = glm::rotation(projectedDir, joint.m_constraintAxis);
-            projectedDir = correction * projectedDir;
-            dir = projectedDir * boneLength;
-            if(parentTransform)
-            {
-                dir = parentTransform->m_worldTransform.m_rotation * dir;
-            }
-        }*/
-    }
+    }*/
 
     worldTransform.m_position = nextWorldTransform.m_position + dir * boneLength;
 
