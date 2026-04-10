@@ -4,7 +4,10 @@
 
 #pragma once
 
+#include <glm/fwd.hpp>
 #include <glm/vec3.hpp>
+#include <glm/detail/type_quat.hpp>
+
 #include <optional>
 
 #include "SGCore/ECS/Component.h"
