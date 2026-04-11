@@ -57,6 +57,9 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
                 auto jointTransform = registry->get<Transform>(jointEntity);
                 auto& jointComponent = registry->get<IKJoint>(jointEntity);
 
+                jointComponent.m_constraintMinRotation = glm::max(jointComponent.m_constraintMinRotation, glm::vec3 { -180.0f });
+                jointComponent.m_constraintMaxRotation = glm::min(jointComponent.m_constraintMaxRotation, glm::vec3 { 180.0f });
+
                 jointsTransforms.push_back(jointTransform.get());
                 jointsComponents.push_back(&jointComponent);
             }
@@ -164,16 +167,6 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
 
                 worldTransform.m_rotation = delta * worldTransform.m_rotation;
 
-                // applying rotation constration
-                if(joint.m_useRotationConstraints)
-                {
-                    const auto constraintDelta = calculateConstraintDelta(
-                        joint, worldTransform, nextWorldTransform,
-                        parentTransform ? &parentTransform->m_worldTransform : nullptr);
-
-                    worldTransform.m_rotation = constraintDelta * worldTransform.m_rotation;
-                }
-
                 if(parentTransform)
                 {
                     localTransform.m_rotation = TransformUtils::calculateLocalRotation(*parentTransform, worldTransform.m_rotation);
@@ -182,6 +175,16 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
                 {
                     localTransform.m_rotation = worldTransform.m_rotation;
                 }
+
+                // applying rotation constration
+                /*if(joint.m_useRotationConstraints)
+                {
+                    const auto constraintDelta = calculateConstraintDelta(
+                        joint, worldTransform, nextWorldTransform,
+                        parentTransform ? &parentTransform->m_worldTransform : nullptr);
+
+                    localTransform.m_rotation = constraintDelta * localTransform.m_rotation;
+                }*/
 
                 localTransform.m_rotation = glm::normalize(localTransform.m_rotation);
 
@@ -300,30 +303,25 @@ glm::quat SGCore::IKResolver::calculateConstraintDelta(IKJoint& joint, const Tra
                                                        const TransformBase& nextWorldTransform,
                                                        const TransformBase* parentWorldTransform) noexcept
 {
-    if(joint.m_useRotationConstraints)
+    // direction to next joint
+    const auto dir = glm::normalize(jointWorldTransform.m_position - nextWorldTransform.m_position);
+
+    // rotation reference axis
+    auto referenceAxis = joint.m_rotationDirectionReference;
+    if(parentWorldTransform)
     {
-        auto constraintAxis = joint.m_constraintAxis;
-        if(parentWorldTransform)
-        {
-            constraintAxis = parentWorldTransform->m_rotation * constraintAxis;
-        }
-
-        constraintAxis = glm::normalize(constraintAxis);
-
-        const auto dir = glm::normalize(jointWorldTransform.m_position - nextWorldTransform.m_position);
-
-        const float rotationAngle = glm::degrees(acos(glm::dot(dir, constraintAxis)));
-
-        if(rotationAngle > joint.m_constraintMaxAngle)
-        {
-            const glm::vec3 axis = glm::normalize(glm::cross(dir, constraintAxis));
-
-            const float deltaAngle = rotationAngle - joint.m_constraintMaxAngle;
-            const auto deltaRotation = glm::angleAxis(glm::radians(deltaAngle), axis);
-
-            return deltaRotation;
-        }
+        // translating reference axis from world space to parent space
+        referenceAxis = parentWorldTransform->m_rotation * referenceAxis;
     }
 
-    return glm::identity<glm::quat>();
+    // calculating current joint rotation using direction to next joint and reference axis
+    const auto localRot = glm::rotation(referenceAxis, dir);
+
+    const auto euler = glm::degrees(glm::eulerAngles(localRot));
+    const auto clamped = glm::clamp(euler, joint.m_constraintMinRotation, joint.m_constraintMaxRotation);
+    // calculating clamped rotation
+    const auto newRot = glm::normalize(glm::quat(glm::radians(clamped)));
+
+    // getting delta between current joint rotation and new joint rotation (clamped)
+    return newRot * glm::inverse(localRot);
 }
