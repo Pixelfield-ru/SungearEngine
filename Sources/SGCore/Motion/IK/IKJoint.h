@@ -24,7 +24,10 @@ namespace SGCore
 
         std::optional<glm::vec3> m_targetPosition { };
         bool m_isEndJoint = false;
+        bool m_isFixed = false;
 
         glm::quat m_constraintDeltaRotation = glm::identity<glm::quat>();
+
+        bool m_updateIK = false;
     };
 }

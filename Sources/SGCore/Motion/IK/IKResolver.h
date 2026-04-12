@@ -23,11 +23,6 @@ namespace SGCore
         void update(double dt, double fixedDt) final;
 
     private:
-        static void collectJoints(const ECS::registry_t& inRegistry,
-                                  const EntityBaseInfo::reg_t& currentIKEntityInfo,
-                                  std::vector<std::vector<ECS::entity_t>>& jointsChains,
-                                  std::vector<ECS::entity_t>& currentJointsChain) noexcept;
-
         static void jointPass(ECS::registry_t& registry, const IKJoint& joint, const IKJoint& nextJoint, IKJoint* parentJoint, Transform& currentJointTransform,
                               const Transform& nextJointTransform, float boneLength, bool isBackwardPass) noexcept;
 
