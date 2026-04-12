@@ -28,7 +28,7 @@ namespace SGCore
                                   std::vector<std::vector<ECS::entity_t>>& jointsChains,
                                   std::vector<ECS::entity_t>& currentJointsChain) noexcept;
 
-        static void jointPass(ECS::registry_t& registry, const IKJoint& joint, IKJoint* parentJoint, Transform& currentJointTransform,
+        static void jointPass(ECS::registry_t& registry, const IKJoint& joint, const IKJoint& nextJoint, IKJoint* parentJoint, Transform& currentJointTransform,
                               const Transform& nextJointTransform, float boneLength, bool isBackwardPass) noexcept;
 
         static glm::vec3 calculateJointLocalPosition(ECS::registry_t& registry, ECS::entity_t jointEntity,
@@ -37,6 +37,7 @@ namespace SGCore
         static Transform* getJointParent(ECS::registry_t& registry, ECS::entity_t jointEntity) noexcept;
 
         static glm::quat calculateConstraintDelta(IKJoint& joint, const TransformBase& jointWorldTransform,
+                                                  const TransformBase& jointLocalTransform,
                                                   const TransformBase& nextWorldTransform,
                                                   const TransformBase* parentWorldTransform) noexcept;
     };
