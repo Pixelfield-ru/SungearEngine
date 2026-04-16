@@ -1,14 +1,14 @@
 //
-// Created by stuka on 28.02.2026.
+// Created by stuka on 16.04.2026.
 //
 
-#include "FilmGrain.h"
+#include "Distortion.h"
 
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 
-SGCore::FilmGrain::FilmGrain()
+SGCore::Distortion::Distortion()
 {
-    m_name = "SG_FILM_GRAIN";
+    m_name = "SG_DISTORTION";
 
     auto assetManager = AssetManager::getInstance();
 
@@ -25,24 +25,24 @@ SGCore::FilmGrain::FilmGrain()
     };
 
     // ======================== set default shader
-    auto defaultShader = assetManager->loadAsset<IShader>("${enginePath}/Resources/sg_shaders/features/postprocessing/layered/film_grain.sgshader");
+    auto defaultShader = assetManager->loadAsset<IShader>("${enginePath}/Resources/sg_shaders/features/postprocessing/layered/distortion.sgshader");
 
     setShader(defaultShader);
 }
 
-void SGCore::FilmGrain::passValuesToSubPassShader() noexcept
+void SGCore::Distortion::passValuesToSubPassShader() noexcept
 {
-    setIntensity(getIntensity());
+
 }
 
-void SGCore::FilmGrain::onSetupAttachments(const Ref<IFrameBuffer>& targetFrameBuffer) noexcept
+void SGCore::Distortion::onSetupAttachments(const Ref<IFrameBuffer>& targetFrameBuffer) noexcept
 {
     if(targetFrameBuffer->hasAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2)) return;
 
     targetFrameBuffer->bind();
 
     targetFrameBuffer->addAttachment(
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2, // FILM GRAIN ATTACHMENT
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2, // DISTORTION ATTACHMENT
             SGGColorFormat::SGG_RGBA,
             SGGColorInternalFormat::SGG_RGBA16_FLOAT,
             SGGDataType::SGG_FLOAT,
@@ -51,20 +51,4 @@ void SGCore::FilmGrain::onSetupAttachments(const Ref<IFrameBuffer>& targetFrameB
     );
 
     targetFrameBuffer->unbind();
-}
-
-float SGCore::FilmGrain::getIntensity() const noexcept
-{
-    return m_intensity;
-}
-
-void SGCore::FilmGrain::setIntensity(float intensity) noexcept
-{
-    m_intensity = intensity;
-
-    auto shader = getShader();
-    if(!shader) return;
-
-    shader->bind();
-    shader->useFloat(m_name + "_intensity", m_intensity);
 }
