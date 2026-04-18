@@ -4,6 +4,8 @@
 
 #include "IKRootJoint.h"
 
+#include <iostream>
+
 #include "SGCore/ECS/Registry.h"
 #include "SGCore/Transformations/Transform.h"
 
@@ -28,6 +30,8 @@ void SGCore::IKRootJoint::buildChains(const ECS::registry_t& registry) noexcept
             auto& nextTransform = registry.get<Transform>(nextNode.m_jointEntity);
 
             node.m_boneLength = glm::distance(transform->m_worldTransform.m_position, nextTransform->m_worldTransform.m_position);
+
+            std::println(std::cout, "bone {} length: {}", j, node.m_boneLength);
         }
     }
 

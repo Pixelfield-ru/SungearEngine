@@ -73,67 +73,55 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
             // set end joint to target position
             jointsTransforms[jointsCount - 1]->m_worldTransform.m_position = *endJoint.m_targetPosition;
 
+            /*const auto* endJointParent = getJointParent(*registry, chain[jointsCount - 1].m_jointEntity);
+
+            jointsTransforms[jointsCount - 1]->m_localTransform.m_position = calculateJointLocalPosition(
+                *registry,
+                jointsTransforms[jointsCount - 1]->getThisEntity(),
+                jointsTransforms[jointsCount - 1]->m_worldTransform.m_position, endJointParent);*/
+
             const auto rootJointOriginalPos = jointsTransforms[0]->m_worldTransform.m_position;
 
-            // ============= FABRIK forward
-            for(std::ptrdiff_t j = jointsCount - 1; j >= 1; --j)
+            // ============= FABRIK backward
+            for(std::ptrdiff_t j = jointsCount - 2; j >= 0; --j)
             {
-                const auto boneLength = chain[j - 1].m_boneLength;
-                const auto& joint = *jointsComponents[j - 1];
+                const auto boneLength = chain[j].m_boneLength;
+                const auto* joint = jointsComponents[j];
 
                 auto& worldTransform = jointsTransforms[j]->m_worldTransform;
-                auto& prevWorldTransform = jointsTransforms[j - 1]->m_worldTransform;
-                auto& prevLocalTransform = jointsTransforms[j - 1]->m_worldTransform;
-                auto prevPrevPosition = (j > 1) ? jointsTransforms[j - 2]->m_worldTransform.m_position : rootJointOriginalPos;
+                auto& localTransform = jointsTransforms[j]->m_localTransform;
+                auto& nextWorldTransform = jointsTransforms[j + 1]->m_worldTransform;
 
-                const auto* parentTransform = getJointParent(*registry, jointsTransforms[j - 1]->getThisEntity());
+                // todo: должен брать предыдущий джоинт для калькуляции констреинтов
 
-                auto currentRotDir = joint.m_rotationDirectionReference;
-                if(parentTransform)
+                // auto dir = glm::normalize(worldTransform.m_position - nextWorldTransform.m_position);
+                auto dir = -glm::normalize(nextWorldTransform.m_rotation * joint->m_rotationDirectionReference);
+                if(glm::any(glm::isnan(dir)))
                 {
-                    currentRotDir = parentTransform->m_worldTransform.m_rotation * currentRotDir;
+                    continue;
                 }
 
-                // prevprev to prev
-                const auto prevPrevDir = glm::normalize(prevWorldTransform.m_position - prevPrevPosition);
-                // const auto prevPrevDir = glm::normalize(prevPrevPosition - prevWorldTransform.m_position);
-                const auto rootRotation = glm::rotation(currentRotDir, prevPrevDir);
-                // const auto rootRotation = glm::rotation(prevPrevPosition, prevWorldTransform.m_position);
+                const auto dirRotation = glm::rotation(joint->m_rotationDirectionReference, dir);
 
-                const auto prevDir = glm::normalize(worldTransform.m_position - prevWorldTransform.m_position);
-                // const auto prevDir = glm::normalize(prevWorldTransform.m_position - worldTransform.m_position);
-                const auto diffRotationRaw = glm::inverse(rootRotation) * glm::rotation(currentRotDir, prevDir);
-                // const auto diffRotationRaw = glm::inverse(rootRotation) * glm::rotation(prevWorldTransform.m_position, worldTransform.m_position);
+                const auto euler = glm::degrees(glm::eulerAngles(dirRotation));
+                const auto clamped = glm::clamp(euler, joint->m_constraintMinRotation, joint->m_constraintMaxRotation);
+                const auto newRotation = glm::quat(glm::radians(clamped));
 
-                const auto euler = glm::degrees(glm::eulerAngles(diffRotationRaw));
-                const auto clamped = glm::clamp(euler, joint.m_constraintMinRotation, joint.m_constraintMaxRotation);
+                dir = -glm::normalize(newRotation * joint->m_rotationDirectionReference);
 
-                const auto rotation = rootRotation * glm::quat(glm::radians(clamped));
-                // const auto rotation = glm::quat(glm::radians(clamped));
+                worldTransform.m_position = nextWorldTransform.m_position + dir * boneLength;
 
-                prevWorldTransform.m_position = worldTransform.m_position + (rotation * joint.m_rotationDirectionReference) * boneLength;
+                auto* parentTransform = getJointParent(*registry, jointsTransforms[j]->getThisEntity());
 
                 if(parentTransform)
                 {
-                    prevLocalTransform.m_position = TransformUtils::calculateLocalPosition(*parentTransform, prevWorldTransform.m_position);
+                    localTransform.m_position = TransformUtils::calculateLocalPosition(*parentTransform, worldTransform.m_position);
                 }
                 else
                 {
-                    prevLocalTransform.m_position = prevWorldTransform.m_position;
+                    localTransform.m_position = worldTransform.m_position;
                 }
             }
-
-            /*for(std::ptrdiff_t j = jointsCount - 2; j >= 0; --j)
-            {
-                IKJoint* parentJoint {};
-                if(j - 1 >= 0)
-                {
-                    parentJoint = jointsComponents[j - 1];
-                }
-                jointPass(*registry, *jointsComponents[j], *jointsComponents[j + 1], parentJoint, *jointsTransforms[j],
-                          *jointsTransforms[j + 1],
-                          chain[j].m_boneLength, false);
-            }*/
 
             // ==========
 
@@ -147,56 +135,52 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
                 jointsTransforms[0]->getThisEntity(),
                 jointsTransforms[0]->m_worldTransform.m_position, rootJointParent);
 
-            // =============== FABRIK backwards
+            // continue;
+
+            // =============== FABRIK forward
             auto rootRotation = glm::identity<glm::quat>();
 
-            for(std::ptrdiff_t j = 0; j < jointsCount - 1; ++j)
+            for(std::ptrdiff_t j = 1; j < jointsCount; ++j)
             {
-                const auto boneLength = chain[j].m_boneLength;
-
-                const auto& joint = *jointsComponents[j];
+                const auto boneLength = chain[j - 1].m_boneLength;
+                const auto* joint = jointsComponents[j - 1];
 
                 auto& worldTransform = jointsTransforms[j]->m_worldTransform;
-                auto& nextWorldTransform = jointsTransforms[j + 1]->m_worldTransform;
-                auto& nextLocalTransform = jointsTransforms[j + 1]->m_localTransform;
+                auto& localTransform = jointsTransforms[j]->m_localTransform;
+                auto& nextWorldTransform = jointsTransforms[j - 1]->m_worldTransform;
 
-                const auto* parentTransform = getJointParent(*registry, jointsTransforms[j + 1]->getThisEntity());
-
-                auto currentRotDir = joint.m_rotationDirectionReference;
-                if(parentTransform)
+                auto dir = glm::normalize(worldTransform.m_position - nextWorldTransform.m_position);
+                if(glm::any(glm::isnan(dir)))
                 {
-                    currentRotDir = parentTransform->m_worldTransform.m_rotation * currentRotDir;
+                    continue;
                 }
 
-                const auto dir = glm::normalize(nextWorldTransform.m_position - worldTransform.m_position);
-                // const auto dir = glm::normalize(worldTransform.m_position - nextWorldTransform.m_position);
-                const auto diffRotationRaw = glm::inverse(rootRotation) *  glm::rotation(currentRotDir, dir);
-                // const auto diffRotationRaw = glm::inverse(rootRotation) *  glm::rotation(worldTransform.m_position, nextWorldTransform.m_position);
+                const auto dirRotation = glm::rotation(joint->m_rotationDirectionReference, dir);
 
-                const auto euler = glm::degrees(glm::eulerAngles(diffRotationRaw));
-                const auto clamped = glm::clamp(euler, joint.m_constraintMinRotation, joint.m_constraintMaxRotation);
+                const auto euler = glm::degrees(glm::eulerAngles(dirRotation));
+                const auto clamped = glm::clamp(euler, joint->m_constraintMinRotation, joint->m_constraintMaxRotation);
+                const auto newRotation = glm::quat(glm::radians(clamped));
 
-                const auto rotation = rootRotation * glm::quat(glm::radians(clamped));
+                dir = -glm::normalize(newRotation * joint->m_rotationDirectionReference);
 
-                nextWorldTransform.m_position = worldTransform.m_position + rotation * (joint.m_rotationDirectionReference * boneLength);
+                worldTransform.m_position = nextWorldTransform.m_position + dir * boneLength;
 
-                rootRotation = rotation;
+                auto* parentTransform = getJointParent(*registry, jointsTransforms[j]->getThisEntity());
 
                 if(parentTransform)
                 {
-                    nextLocalTransform.m_position = TransformUtils::calculateLocalPosition(*parentTransform, nextWorldTransform.m_position);
+                    localTransform.m_position = TransformUtils::calculateLocalPosition(*parentTransform, worldTransform.m_position);
                 }
                 else
                 {
-                    nextLocalTransform.m_position = nextWorldTransform.m_position;
+                    localTransform.m_position = worldTransform.m_position;
                 }
-
-                /*jointPass(*registry, *jointsComponents[j], *jointsComponents[j - 1], jointsComponents[j - 1], *jointsTransforms[j],
-                          *jointsTransforms[j - 1],
-                          chain[j - 1].m_boneLength, true);*/
             }
 
-            // continue;
+            /*std::println(std::cout, "effector position: {}, effector - 1 position: {}",
+                glm::to_string(jointsTransforms[jointsCount - 1]->m_worldTransform.m_position),
+                glm::to_string(jointsTransforms[jointsCount - 2]->m_worldTransform.m_position)
+            );*/
 
             // ============== calculating rotations
             for(size_t j = 0; j < jointsCount - 1; ++j)
@@ -206,14 +190,7 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
                 auto& nextWorldTransform = jointsTransforms[j + 1]->m_worldTransform;
                 auto& joint = *jointsComponents[j];
 
-                auto& jointBaseInfo = registry->get<EntityBaseInfo>(jointsTransforms[j]->getThisEntity());
-
-                Transform* parentTransform {};
-
-                {
-                    auto tmpTransform = registry->tryGet<Transform>(jointBaseInfo.getParent());
-                    parentTransform = tmpTransform ? tmpTransform->get() : nullptr;
-                }
+                auto* parentTransform = getJointParent(*registry, joint.getThisEntity());
 
                 // worldTransform.m_rotation = glm::identity<glm::quat>();
                 // localTransform.m_rotation = glm::identity<glm::quat>();
@@ -260,7 +237,7 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
 
                 localTransform.m_rotation = glm::normalize(localTransform.m_rotation);
 
-                std::println(std::cout, "ik joint index: {}, rotation BEFORE constraints: {}", j, glm::to_string(glm::degrees(glm::eulerAngles(localTransform.m_rotation))));
+                // std::println(std::cout, "ik joint index: {}, rotation BEFORE constraints: {}", j, glm::to_string(glm::degrees(glm::eulerAngles(localTransform.m_rotation))));
 
                 // applying rotation constration
                 /*if(joint.m_useRotationConstraints)
@@ -274,10 +251,10 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
                     // worldTransform.m_rotation = constraintDelta * worldTransform.m_rotation;
                 }*/
 
-                std::println(std::cout, "ik joint index: {}, rotation AFTER constraints: {}", j, glm::to_string(glm::degrees(glm::eulerAngles(localTransform.m_rotation))));
+                // std::println(std::cout, "ik joint index: {}, rotation AFTER constraints: {}", j, glm::to_string(glm::degrees(glm::eulerAngles(localTransform.m_rotation))));
 
                 // it may help prevent chain breakage
-                /*if(parentTransform)
+                if(parentTransform)
                 {
                     worldTransform.m_rotation = TransformUtils::calculateWorldRotation(*parentTransform, localTransform.m_rotation);
                     worldTransform.m_position = TransformUtils::calculateWorldPosition(*parentTransform, localTransform.m_position);
@@ -287,7 +264,7 @@ void SGCore::IKResolver::update(double dt, double fixedDt)
                 {
                     worldTransform.m_rotation = localTransform.m_rotation;
                     worldTransform.m_position = localTransform.m_position;
-                }*/
+                }
             }
 
             r->m_updateIK = false;
