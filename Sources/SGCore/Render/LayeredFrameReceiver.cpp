@@ -111,7 +111,7 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             0
     );
     m_layersFrameBuffer->addAttachment(
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7, // GBUFFER VERTEX NORMAL
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7, // MATERIAL PARAMS
             SGGColorFormat::SGG_RGBA,
             SGGColorInternalFormat::SGG_RGBA16_FLOAT,
             SGGDataType::SGG_FLOAT,
@@ -119,15 +119,15 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             0
     );
 
-    auto colorAttachment2 = m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2);
+    /*auto colorAttachment2 = m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2);
     colorAttachment2->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ONE;
     colorAttachment2->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ZERO;
     colorAttachment2->m_clearColor = { 1, 1, 1, 1 };
 
     auto colorAttachment3 = m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3);
-    /*colorAttachment3->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ONE;
-    colorAttachment3->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ONE;*/
-    colorAttachment3->m_clearColor = { 0, 0, 0, 0 };
+    colorAttachment3->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ONE;
+    colorAttachment3->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ONE;
+    colorAttachment3->m_clearColor = { 0, 0, 0, 0 };*/
 
     // FOR WBOIT
     /*auto colorAttachment4 = m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4);
@@ -188,9 +188,6 @@ SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addOrGetLaye
 
     if(foundPPLayer)
     {
-        LOG_E(SGCORE_TAG,
-              "Error: can not add a new post-process layer to the camera. This layer already exists.\n{}",
-              SGCore::Utils::sourceLocationToString(std::source_location::current()));
         return foundPPLayer;
     }
 

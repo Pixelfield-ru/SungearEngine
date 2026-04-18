@@ -535,11 +535,12 @@ void SGCore::GL4Renderer::useState(const SGCore::RenderState& newRenderState, bo
 void SGCore::GL4Renderer::useBlendingState(const SGCore::BlendingState& newBlendingState,
                                            bool forceState) noexcept
 {
+    if(newBlendingState.m_forAttachment >= 32)
     {
         const std::string assertMsg =
                 fmt::format("Can not apply blending state for attachment '{}'. Attachment index must LESS than 32",
                             newBlendingState.m_forAttachment);
-        SG_ASSERT(newBlendingState.m_forAttachment < 32, assertMsg.c_str());
+        SG_ASSERT(false, assertMsg.c_str());
     }
 
     if(m_cachedRenderState.m_globalBlendingState.m_useBlending != newBlendingState.m_useBlending || forceState)

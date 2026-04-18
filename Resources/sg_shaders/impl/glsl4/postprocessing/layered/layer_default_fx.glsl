@@ -124,7 +124,7 @@ void main()
 
             vec4 STColor = texture(SGPP_LayersSTColor, finalUV);
 
-            vec2 STColorTexSize = vec2(0.0, 0.0);
+            /*vec2 STColorTexSize = vec2(0.0, 0.0);
 
             {
                 ivec2 tmpSize = textureSize(SGPP_LayersSTColor, 0);
@@ -149,11 +149,12 @@ void main()
                 }
             }
 
-            STColor.a /= sampledSamples;
+            STColor.a /= sampledSamples;*/
 
-            fragColor = vec4(layerColor.rgb, 1.0);
+            // fragColor = vec4(layerColor.rgb, 1.0);
+            fragColor = vec4(mix(layerColor.rgb, STColor.rgb, STColor.a), 1.0);
 
-            vec3 fragPos = texture(u_GBufferWorldPos, finalUV).xyz;
+            // vec3 fragPos = texture(u_GBufferWorldPos, finalUV).xyz;
         }
     }
 }

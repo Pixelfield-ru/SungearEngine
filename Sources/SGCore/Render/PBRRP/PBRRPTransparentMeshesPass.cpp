@@ -36,7 +36,7 @@ void SGCore::PBRRPTransparentMeshesPass::render(const Scene* scene, const Ref<IR
 
     auto transparentMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, TransparentEntityTag, EnableMeshPass>();
 
-    // m_renderState.use();
+    m_renderState.use();
 
     iterateCameras(scene, [&](const CameraRenderingInfo& cameraRenderingInfo) {
         transparentMeshesView.each([&](const ECS::entity_t& meshEntity,

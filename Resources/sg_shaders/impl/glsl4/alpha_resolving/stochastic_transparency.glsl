@@ -21,7 +21,7 @@ bool calculateStochasticTransparencyComponents(vec3 inputCol,
             return true;
         }
 
-        outputSTColor = vec4(inputCol.rgb, 1.0);
+        outputSTColor = vec4(inputCol.rgb, a);
         // outputLayerColor = vec4(inputCol.rgb, 1.0);
     }
     else

@@ -348,13 +348,9 @@ void main()
 
         if(isSTNotPassed)
         {
-            discard;
+            // discard;
         }
     }
-
-    // layerColor.rgba = vec4(1.0);
-
-
 
     // discard;
 

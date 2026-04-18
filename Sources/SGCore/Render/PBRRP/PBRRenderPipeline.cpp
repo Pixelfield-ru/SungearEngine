@@ -128,12 +128,6 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
     }
 
     {
-        auto transparentPass = MakeRef<PBRRPTransparentMeshesPass>();
-
-        m_renderPasses.push_back(transparentPass);
-    }
-
-    {
         auto instancingPass = MakeRef<PBRRPInstancingPass>();
 
         m_renderPasses.push_back(instancingPass);
@@ -155,6 +149,12 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
         auto volumetricPass = MakeRef<PBRRPVolumetricPass>();
 
         m_renderPasses.push_back(volumetricPass);
+    }
+
+    {
+        auto transparentPass = MakeRef<PBRRPTransparentMeshesPass>();
+
+        m_renderPasses.push_back(transparentPass);
     }
 
     // ALWAYS AFTER GEOMETRY PASS

@@ -22,8 +22,6 @@
 
 void SGCore::PBRRPOpaqueMeshesPass::create(const Ref<IRenderPipeline>& parentRenderPipeline)
 {
-    IGeometryPass::create(parentRenderPipeline);
-
     m_shader = AssetManager::getInstance()->loadAsset<IShader>(*parentRenderPipeline->m_shadersPaths["StandardMeshShader"]);
 
     m_shadowsGenerationShader = AssetManager::getInstance()->loadAsset<IShader>(*parentRenderPipeline->m_shadersPaths["ShadowsGen/ObjectShader"]);
@@ -38,7 +36,7 @@ void SGCore::PBRRPOpaqueMeshesPass::render(const Scene* scene, const Ref<IRender
 
     auto opaqueMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, OpaqueEntityTag, EnableMeshPass>();
 
-    // m_renderState.use();
+    m_renderState.use();
 
     iterateCameras(scene, [&](const CameraRenderingInfo& cameraRenderingInfo) {
         opaqueMeshesView.each([&](const ECS::entity_t& meshEntity,

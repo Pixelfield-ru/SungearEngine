@@ -59,11 +59,6 @@ vec3 getNormal(vec2 uv)
     return texture(u_GBufferFragmentNormal, uv).xyz;
 }
 
-float getDepth(vec2 uv)
-{
-    return texture(u_DepthBuffer, uv).x;
-}
-
 void main()
 {
     vec2 finalUV = vs_UVAttribute.xy;
@@ -159,6 +154,7 @@ void main()
     {
         vec4 albedo = texture(SG_SSAO_final, finalUV);
         fragColor = albedo;
+        // fragColor = vec4(0.0f, 1.0f, 0.0f, 1.0f);
         // fragColor = vec4(vec3(0.0), 1.0);
     }
 }

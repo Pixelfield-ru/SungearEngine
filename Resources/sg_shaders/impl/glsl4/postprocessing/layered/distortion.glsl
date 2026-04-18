@@ -63,8 +63,8 @@ void main()
     // reads SGPP_LayersColorsFX
     if(SGPP_CurrentFXSubPassSeqIndex == 0)
     {
-        // vec4 albedo = texture(SGPP_LayersColorsFX, finalUV + vec2(programData.currentTime, programData.currentTime) * vec2(0.01, 0.01));
-        vec4 albedo = texture(SGPP_LayersColorsFX, finalUV + vec2(programData.currentTime, programData.currentTime) * vec2(0.001, 0.001));
+        vec4 albedo = texture(SGPP_LayersColorsFX, finalUV + vec2(0.006, 0.006));
+        // vec4 albedo = texture(SGPP_LayersColorsFX, finalUV + vec2(0.01, 0.01));
 
         fragColor = vec4(albedo.rgb, albedo.a);
     }
