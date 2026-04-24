@@ -25,14 +25,14 @@ namespace SGCore
 
     private:
         void processMotionNodes(const double& dt,
-                                SGCore::Ref<SGCore::ECS::registry_t>& inRegistry,
+                                Ref<ECS::registry_t>& inRegistry,
                                 MotionPlanner& motionPlanner,
                                 const std::vector<Ref<SkeletalAnimationNode>>& nodesToInterpolate,
                                 const AssetRef<Skeleton>& skeleton,
                                 const ECS::entity_t& currentEntity,
-                                const EntityBaseInfo::reg_t& currentEntityBaseInfo,
-                                const Transform::reg_t& currentEntityTransform,
-                                const Transform::reg_t& parentEntityTransform,
+                                const EntityBaseInfo& currentEntityBaseInfo,
+                                Transform* currentEntityTransform,
+                                const Transform* parentEntityTransform,
                                 std::int32_t& bonesCount) noexcept;
 
         Weak<DebugDraw> m_debugDrawPassRef;

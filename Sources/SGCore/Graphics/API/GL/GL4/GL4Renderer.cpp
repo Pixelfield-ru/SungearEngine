@@ -147,35 +147,35 @@ void SGCore::GL4Renderer::prepareFrame(const glm::ivec2& windowSize)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void SGCore::GL4Renderer::prepareUniformBuffers(const Ref<RenderingBase>& renderingBase,
-                                                const Ref<Transform>& transform)
+void SGCore::GL4Renderer::prepareUniformBuffers(const RenderingBase& renderingBase,
+                                                const Transform& transform)
 {
     // double t0 = glfwGetTime();
 
     m_viewMatricesBuffer->bind();
 
     m_viewMatricesBuffer->subData("camera.projectionSpaceMatrix",
-                                  glm::value_ptr(renderingBase->m_projectionSpaceMatrix), 16
+                                  glm::value_ptr(renderingBase.m_projectionSpaceMatrix), 16
     );
     m_viewMatricesBuffer->subData("camera.orthographicSpaceMatrix",
-                                  glm::value_ptr(renderingBase->m_orthographicSpaceMatrix), 16
+                                  glm::value_ptr(renderingBase.m_orthographicSpaceMatrix), 16
     );
     m_viewMatricesBuffer->subData("camera.orthographicMatrix",
-                                  glm::value_ptr(renderingBase->m_orthographicMatrix), 16
+                                  glm::value_ptr(renderingBase.m_orthographicMatrix), 16
     );
     m_viewMatricesBuffer->subData("camera.projectionMatrix",
-                                  glm::value_ptr(renderingBase->m_projectionMatrix), 16
+                                  glm::value_ptr(renderingBase.m_projectionMatrix), 16
     );
     m_viewMatricesBuffer->subData("camera.viewMatrix",
-                                  glm::value_ptr(renderingBase->m_viewMatrix), 16
+                                  glm::value_ptr(renderingBase.m_viewMatrix), 16
     );
 
     m_viewMatricesBuffer->subData("camera.position",
-                                         glm::value_ptr(transform->m_worldTransform.m_position), 3
+                                         glm::value_ptr(transform.m_worldTransform.m_position), 3
     );
 
     m_viewMatricesBuffer->subData("camera.zFar",
-                                  &renderingBase->m_zFar, 1
+                                  &renderingBase.m_zFar, 1
     );
 
     int windowWidth;

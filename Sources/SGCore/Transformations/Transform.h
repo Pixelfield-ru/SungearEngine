@@ -15,7 +15,7 @@ namespace SGCore
     /**
      *
      */
-    struct SGCORE_EXPORT Transform : ECS::Component<Ref<Transform>, Ref<const Transform>>
+    struct SGCORE_EXPORT Transform : ECS::Component<Transform, const Transform>
     {
         friend class Node;
 

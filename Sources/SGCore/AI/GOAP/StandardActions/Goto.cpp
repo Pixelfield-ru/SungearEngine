@@ -23,8 +23,8 @@ SGCore::Coro::Task<SGCore::GOAP::ExecutionResult> SGCore::GOAP::Goto::executeImp
     auto* goapState = registry.tryGet<EntityState>(forEntity);
     if(!goapState) co_return ExecutionResult::EXEC_FAILED;
 
-    auto* tmpTransform = registry.tryGet<Transform>(forEntity);
-    if(!tmpTransform) co_return ExecutionResult::EXEC_FAILED;
+    auto* transform = registry.tryGet<Transform>(forEntity);
+    if(!transform) co_return ExecutionResult::EXEC_FAILED;
 
     const auto& positionData = goapState->getStateData(States::POSITION_FOUND).m_data;
 
@@ -36,8 +36,6 @@ SGCore::Coro::Task<SGCore::GOAP::ExecutionResult> SGCore::GOAP::Goto::executeImp
     }
 
     const auto targetPosition = std::any_cast<glm::vec3>(positionData);
-
-    auto& transform = *tmpTransform;
 
     auto currentThread = Threading::ThreadsManager::currentThread();
     while(glm::distance(transform->m_worldTransform.m_position, targetPosition) > m_distanceErrorRate)

@@ -29,7 +29,7 @@ SGCore::ECS::entity_t SGCore::ECS::Utils::createDecal(registry_t& inRegistry, en
     auto& decalBaseInfo = inRegistry.get<EntityBaseInfo>(decalEntity);
     decalBaseInfo.setParent(parentEntity, inRegistry);
 
-    auto& decalTransform = inRegistry.emplace<Transform>(decalEntity, MakeRef<Transform>());
+    auto& decalTransform = inRegistry.emplace<Transform>(decalEntity);
     // decalTransform->m_localTransform.m_rotation = glm::angleAxis(glm::radians(-90.0f), glm::vec3 { 1.0f, 0.0f, 0.0f });
 
     auto& decalMesh = inRegistry.emplace<Mesh>(decalEntity);

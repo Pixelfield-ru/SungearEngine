@@ -37,10 +37,10 @@ void SGCore::PBRRPTerrainsPass::render(const Scene* scene, const Ref<IRenderPipe
 
     iterateCameras(scene, [&](const CameraRenderingInfo& cameraRenderingInfo) {
         terrainsView.each([&](const ECS::entity_t& terrainEntity,
-                              EntityBaseInfo::reg_t& terrainEntityBaseInfo,
-                              Mesh::reg_t& mesh,
-                              Transform::reg_t& terrainTransform,
-                              const Terrain::reg_t& terrain, auto) {
+                              const EntityBaseInfo& terrainEntityBaseInfo,
+                              Mesh& mesh,
+                              const Transform& terrainTransform,
+                              const Terrain& terrain, auto) {
             Ref<PostProcessLayer> meshPPLayer = mesh.m_base.m_layeredFrameReceiversMarkup[cameraRenderingInfo.m_cameraFrameReceiver].lock();
 
             if(!meshPPLayer)
@@ -66,8 +66,8 @@ void SGCore::PBRRPTerrainsPass::render(const Scene* scene, const Ref<IRenderPipe
             shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
 
             shaderToUse->useMatrix("objectTransform.modelMatrix",
-                                   terrainTransform->m_worldTransform.m_animatedModelMatrix);
-            shaderToUse->useVectorf("objectTransform.position", terrainTransform->m_worldTransform.m_position);
+                                   terrainTransform.m_worldTransform.m_animatedModelMatrix);
+            shaderToUse->useVectorf("objectTransform.position", terrainTransform.m_worldTransform.m_position);
 
             const auto* meshedEntityPickableComponent = registry->tryGet<Pickable>(terrainEntity);
             // enable picking

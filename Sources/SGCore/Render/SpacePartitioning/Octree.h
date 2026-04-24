@@ -32,7 +32,7 @@ namespace SGCore
         // std::atomic<bool> m_isSubdivided = false;
     };
     
-    struct SGCORE_EXPORT Octree : ECS::Component<Ref<Octree>, Ref<const Octree>>
+    struct SGCORE_EXPORT Octree : ECS::Component<Octree, const Octree>
     {
         glm::vec3 m_nodeMinSize { 10 };
         

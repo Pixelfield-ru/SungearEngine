@@ -9,7 +9,7 @@
 
 namespace SGCore
 {
-    struct SGCORE_EXPORT ObjectsCullingOctree : ECS::Component<Ref<ObjectsCullingOctree>, Ref<const ObjectsCullingOctree>>
+    struct SGCORE_EXPORT ObjectsCullingOctree : ECS::Component<ObjectsCullingOctree, const ObjectsCullingOctree>
     {
     private:
         bool m_dummy = true;

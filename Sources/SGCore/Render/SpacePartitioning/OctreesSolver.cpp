@@ -40,8 +40,8 @@ void SGCore::OctreesSolver::fixedUpdate(double dt, double fixedDt) noexcept
     
     auto octreesView = registry->view<Octree>();
     
-    octreesView.each([this, &registry](const ECS::entity_t& entity, Octree::reg_t octree) {
-        if(octree->m_root->m_isSubdivided)
+    octreesView.each([this, &registry](const ECS::entity_t& entity, Octree& octree) {
+        if(octree.m_root->m_isSubdivided)
         {
             for(const auto& p : m_changedTransforms)
             {
@@ -50,41 +50,37 @@ void SGCore::OctreesSolver::fixedUpdate(double dt, double fixedDt) noexcept
                     continue;
                 }
                 
-                auto* tmpCullable = registry->tryGet<OctreeCullable>(p.first);
-                auto cullable = (tmpCullable ? *tmpCullable : nullptr);
+                auto* cullable = registry->tryGet<OctreeCullable>(p.first);
                 
                 if(!cullable) continue;
 
-                const auto foundNode =  octree->subdivideWhileOverlap(p.first, p.second->m_worldTransform.m_aabb, octree->m_root);
+                const auto foundNode =  octree.subdivideWhileOverlap(p.first, p.second.m_worldTransform.m_aabb, octree.m_root);
                 if(foundNode)
                 {
                     cullable->m_parentNodes[entity] = foundNode;
                 }
             }
-            
-            m_changedTransforms.clear();
         }
         else // check all transformations
         {
             auto transformationsView = registry->view<Transform>();
-            transformationsView.each([&octree, &registry, &entity](const ECS::entity_t& transformEntity, Transform::reg_t transform) {
+            transformationsView.each([&octree, &registry, &entity](const ECS::entity_t& transformEntity, Transform& transform) {
                 if(registry->allOf<IgnoreOctrees>(transformEntity)) return;
 
-                auto* tmpCullable = registry->tryGet<OctreeCullable>(transformEntity);
-                auto cullable = (tmpCullable ? *tmpCullable : nullptr);
+                auto* cullable = registry->tryGet<OctreeCullable>(transformEntity);
 
                 if(!cullable) return;
 
-                const auto foundNode =  octree->subdivideWhileOverlap(transformEntity, transform->m_worldTransform.m_aabb, octree->m_root);
+                const auto foundNode =  octree.subdivideWhileOverlap(transformEntity, transform.m_worldTransform.m_aabb, octree.m_root);
                 if(foundNode)
                 {
                     cullable->m_parentNodes[entity] = foundNode;
                 }
             });
-            
-            m_changedTransforms.clear();
         }
     });
+
+    m_changedTransforms.clear();
     
     IParallelSystem::fixedUpdate(dt, fixedDt);
 }

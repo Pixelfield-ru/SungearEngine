@@ -222,7 +222,7 @@ SGCore::ECS::entity_t SGCore::IMeshData::addOnScene(const Ref<Scene>& scene) noe
     auto meshEntity = registry->create();
 
     registry->emplace<Pickable>(meshEntity);
-    registry->emplace<Transform>(meshEntity, MakeRef<Transform>());
+    registry->emplace<Transform>(meshEntity);
     registry->emplace<EnableMeshPass>(meshEntity);
 
     Mesh& meshEntityMesh = registry->emplace<Mesh>(meshEntity);

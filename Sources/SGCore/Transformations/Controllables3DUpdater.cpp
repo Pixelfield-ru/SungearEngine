@@ -25,8 +25,8 @@ void SGCore::Controllables3DUpdater::fixedUpdate(double dt, double fixedDt)
     auto controllablesView = lockedScene->getECSRegistry()->view<Transform, Controllable3D>();
 
     controllablesView.each([&finalDt](Transform::reg_t& transform, Controllable3D::reg_t& controllable3D) {
-        TransformBase& localTransform = transform->m_localTransform;
-        TransformBase& worldTransform = transform->m_worldTransform;
+        TransformBase& localTransform = transform.m_localTransform;
+        TransformBase& worldTransform = transform.m_worldTransform;
 
         const float inverseFactor = controllable3D.m_inverseMouse ? -1.0f : 1.0f;
 

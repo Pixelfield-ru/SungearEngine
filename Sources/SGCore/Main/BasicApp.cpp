@@ -125,7 +125,7 @@ void SGCore::BasicApp::initImpl() noexcept
 
             auto& skyboxTransform = ecsRegistry->get<Transform>(m_atmosphereEntity);
 
-            skyboxTransform->m_localTransform.m_scale = { 1150, 1150, 1150 };
+            skyboxTransform.m_localTransform.m_scale = { 1150, 1150, 1150 };
         }
 
         // ================================================== creating camera
@@ -134,10 +134,10 @@ void SGCore::BasicApp::initImpl() noexcept
         m_cameraEntity = ecsRegistry->create();
 
         // creating components for entity
-        auto cameraTransform = ecsRegistry->emplace<Transform>(m_cameraEntity, MakeRef<Transform>());
+        auto cameraTransform = ecsRegistry->emplace<Transform>(m_cameraEntity);
         ecsRegistry->emplace<NonSavable>(m_cameraEntity);
-        ecsRegistry->emplace<Camera3D>(m_cameraEntity, MakeRef<Camera3D>());
-        ecsRegistry->emplace<RenderingBase>(m_cameraEntity, MakeRef<RenderingBase>());
+        ecsRegistry->emplace<Camera3D>(m_cameraEntity);
+        ecsRegistry->emplace<RenderingBase>(m_cameraEntity);
         ecsRegistry->emplace<Controllable3D>(m_cameraEntity);
         auto& cameraReceiver = ecsRegistry->emplace<LayeredFrameReceiver>(m_cameraEntity);
 
@@ -160,12 +160,12 @@ void SGCore::BasicApp::updateImpl(double dt, double fixedDt) noexcept
 
     if(currentScene)
     {
-        auto cameraTransform = currentScene->getECSRegistry()->tryGet<Transform>(m_cameraEntity);
+        auto* cameraTransform = currentScene->getECSRegistry()->tryGet<Transform>(m_cameraEntity);
 
         if(cameraTransform)
         {
-            AudioListener::setPosition((*cameraTransform)->m_worldTransform.m_position);
-            AudioListener::setOrientation((*cameraTransform)->m_worldTransform.m_forward, (*cameraTransform)->m_worldTransform.m_up);
+            AudioListener::setPosition(cameraTransform->m_worldTransform.m_position);
+            AudioListener::setOrientation(cameraTransform->m_worldTransform.m_forward, cameraTransform->m_worldTransform.m_up);
         }
 
         currentScene->update(dt, fixedDt);

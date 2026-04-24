@@ -41,7 +41,7 @@ void SGCore::PBRRPVolumetricPass::render(const Scene* scene, const Ref<IRenderPi
     iterateCameras(scene, [&](const CameraRenderingInfo& cameraRenderingInfo) {
         volumetrics.each([&](ECS::entity_t volumetricEntity,
                              const EntityBaseInfo& baseInfo,
-                             const Transform::reg_t& transform,
+                             const Transform& transform,
                              VolumetricFog& clouds,
                              Mesh& mesh, auto) {
             const bool willRender = cameraRenderingInfo.m_camera3D->isEntityVisibleForCamera(registry, cameraRenderingInfo.m_cameraEntity, volumetricEntity);
@@ -74,13 +74,13 @@ void SGCore::PBRRPVolumetricPass::render(const Scene* scene, const Ref<IRenderPi
 
             shaderToUse->useFloat("u_sgVolumetricCoverage", clouds.m_coverage);
             shaderToUse->useFloat("u_sgVolumetricDensity", clouds.m_density);
-            shaderToUse->useVectorf("u_sgMeshAABBMin", transform->m_worldTransform.m_aabb.m_min);
-            shaderToUse->useVectorf("u_sgMeshAABBMax", transform->m_worldTransform.m_aabb.m_max);
+            shaderToUse->useVectorf("u_sgMeshAABBMin", transform.m_worldTransform.m_aabb.m_min);
+            shaderToUse->useVectorf("u_sgMeshAABBMax", transform.m_worldTransform.m_aabb.m_max);
 
             shaderToUse->useMatrix("objectTransform.modelMatrix",
-                                   transform->m_worldTransform.m_animatedModelMatrix);
+                                   transform.m_worldTransform.m_animatedModelMatrix);
 
-            shaderToUse->useVectorf("objectTransform.position", transform->m_worldTransform.m_position);
+            shaderToUse->useVectorf("objectTransform.position", transform.m_worldTransform.m_position);
 
             const auto* meshedEntityPickableComponent = registry->tryGet<Pickable>(volumetricEntity);
             // enable picking

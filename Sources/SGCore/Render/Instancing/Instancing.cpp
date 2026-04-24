@@ -119,10 +119,10 @@ void SGCore::Instancing::update(const ECS::registry_t& inRegistry) noexcept
         const auto& transform = *tmpTransform;
 
         m_instancesTransforms.push_back({
-            .m_modelMatrix = transform->m_worldTransform.m_animatedModelMatrix,
-            .m_position = transform->m_worldTransform.m_position,
-            .m_rotation = glm::degrees(glm::eulerAngles(transform->m_worldTransform.m_rotation)),
-            .m_scale = transform->m_worldTransform.m_scale
+            .m_modelMatrix = transform.m_worldTransform.m_animatedModelMatrix,
+            .m_position = transform.m_worldTransform.m_position,
+            .m_rotation = glm::degrees(glm::eulerAngles(transform.m_worldTransform.m_rotation)),
+            .m_scale = transform.m_worldTransform.m_scale
         });
 
         ++activeEntitiesCount;

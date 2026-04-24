@@ -5,11 +5,12 @@
 #pragma once
 
 #include "SGCore/Render/IRenderPass.h"
-#include "SGCore/Render/RenderingBase.h"
-#include "SGCore/Render/ShadowMapping/CSM/CSMTarget.h"
 
 namespace SGCore
 {
+    struct RenderingBase;
+    struct CSMTarget;
+
     struct SGCORE_EXPORT SunShadowsPass : IRenderPass
     {
         void create(const Ref<IRenderPipeline>& parentRenderPipeline) final;
@@ -24,9 +25,9 @@ namespace SGCore
 
         void renderShadows(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline);
 
-        static glm::mat4 getLightSpaceMatrix(const RenderingBase::reg_t& cameraRenderingBase, const glm::vec3& sunDir, float nearPlane, float farPlane) noexcept;
+        static glm::mat4 getLightSpaceMatrix(const RenderingBase& cameraRenderingBase, const glm::vec3& sunDir, float nearPlane, float farPlane) noexcept;
         static std::array<glm::vec4, 8> getFrustumCornersWorldSpace(const glm::mat4& projView) noexcept;
         static std::array<glm::vec4, 8> getFrustumCornersWorldSpace(const glm::mat4& proj, const glm::mat4& view) noexcept;
-        static std::vector<glm::mat4> getLightSpaceMatrices(const CSMTarget::reg_t& csm, const RenderingBase::reg_t& cameraRenderingBase, const glm::vec3& sunDir) noexcept;
+        static std::vector<glm::mat4> getLightSpaceMatrices(const CSMTarget& csm, const RenderingBase& cameraRenderingBase, const glm::vec3& sunDir) noexcept;
     };
 }

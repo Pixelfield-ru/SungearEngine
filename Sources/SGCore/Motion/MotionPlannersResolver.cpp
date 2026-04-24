@@ -35,7 +35,7 @@ void SGCore::MotionPlannersResolver::fixedUpdate(double dt, double fixedDt)
 
     motionPlannersView.each([dt, &registry, this](const ECS::entity_t& entity,
                                                   const EntityBaseInfo::reg_t& entityBaseInfo,
-                                                  const Transform::reg_t& transform,
+                                                  Transform& transform,
                                                   MotionPlanner::reg_t& motionPlanner) {
         auto skeleton = motionPlanner.m_skeleton;
 
@@ -113,7 +113,7 @@ void SGCore::MotionPlannersResolver::fixedUpdate(double dt, double fixedDt)
                                motionPlanner.m_skeleton,
                                entity,
                                entityBaseInfo,
-                               transform,
+                               &transform,
                                nullptr,
                                updatedBonesCount);
 
@@ -142,8 +142,8 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
                                                         const AssetRef<Skeleton>& skeleton,
                                                         const ECS::entity_t& currentEntity,
                                                         const EntityBaseInfo& currentEntityBaseInfo,
-                                                        const Transform::reg_t& currentEntityTransform,
-                                                        const Transform::reg_t& parentEntityTransform,
+                                                        Transform* currentEntityTransform,
+                                                        const Transform* parentEntityTransform,
                                                         std::int32_t& bonesCount) noexcept
 {
     Mesh::reg_t* currentEntityMesh = inRegistry->tryGet<Mesh>(currentEntity);
@@ -408,7 +408,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     for(const auto& childEntity : currentEntityBaseInfo.getChildren())
     {
         EntityBaseInfo::reg_t& childEntityBaseInfo = inRegistry->get<EntityBaseInfo>(childEntity);
-        Transform::reg_t* childEntityTransform = inRegistry->tryGet<Transform>(childEntity);
+        Transform* childEntityTransform = inRegistry->tryGet<Transform>(childEntity);
 
         // if(!childEntityTransform) continue;
 
@@ -419,7 +419,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
                            motionPlanner.m_skeleton,
                            childEntity,
                            childEntityBaseInfo,
-                           *childEntityTransform,
+                           childEntityTransform,
                            currentEntityTransform,
                            bonesCount
         );

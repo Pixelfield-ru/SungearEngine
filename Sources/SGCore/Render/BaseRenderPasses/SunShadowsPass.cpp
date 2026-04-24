@@ -13,6 +13,8 @@
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "SGCore/Render/IRenderPipeline.h"
+#include "SGCore/Render/RenderingBase.h"
+#include "SGCore/Render/ShadowMapping/CSM/CSMTarget.h"
 
 void SGCore::SunShadowsPass::create(const Ref<IRenderPipeline>& parentRenderPipeline)
 {
@@ -112,12 +114,12 @@ void SGCore::SunShadowsPass::renderShadows(const Scene* scene, const Ref<IRender
     // CoreMain::getRenderer()->checkForErrors();
 }
 
-glm::mat4 SGCore::SunShadowsPass::getLightSpaceMatrix(const RenderingBase::reg_t& cameraRenderingBase, const glm::vec3& sunDir, float nearPlane, float farPlane) noexcept
+glm::mat4 SGCore::SunShadowsPass::getLightSpaceMatrix(const RenderingBase& cameraRenderingBase, const glm::vec3& sunDir, float nearPlane, float farPlane) noexcept
 {
     const auto proj = glm::perspective(
-                glm::radians(cameraRenderingBase->m_fov), cameraRenderingBase->m_aspect, nearPlane,
+                glm::radians(cameraRenderingBase.m_fov), cameraRenderingBase.m_aspect, nearPlane,
                 farPlane);
-    const auto corners = getFrustumCornersWorldSpace(proj, cameraRenderingBase->m_viewMatrix);
+    const auto corners = getFrustumCornersWorldSpace(proj, cameraRenderingBase.m_viewMatrix);
 
     // std::cout << proj << std::endl;
 
@@ -211,7 +213,7 @@ std::array<glm::vec4, 8> SGCore::SunShadowsPass::getFrustumCornersWorldSpace(con
     return getFrustumCornersWorldSpace(proj * view);
 }
 
-std::vector<glm::mat4> SGCore::SunShadowsPass::getLightSpaceMatrices(const CSMTarget::reg_t& csm, const RenderingBase::reg_t& cameraRenderingBase, const glm::vec3& sunDir) noexcept
+std::vector<glm::mat4> SGCore::SunShadowsPass::getLightSpaceMatrices(const CSMTarget& csm, const RenderingBase& cameraRenderingBase, const glm::vec3& sunDir) noexcept
 {
     const auto& levels = csm.getCascades();
 
@@ -220,11 +222,11 @@ std::vector<glm::mat4> SGCore::SunShadowsPass::getLightSpaceMatrices(const CSMTa
     {
         if (i == 0)
         {
-            ret.push_back(getLightSpaceMatrix(cameraRenderingBase, sunDir, cameraRenderingBase->m_zNear, cameraRenderingBase->m_zFar / levels[i].m_level));
+            ret.push_back(getLightSpaceMatrix(cameraRenderingBase, sunDir, cameraRenderingBase.m_zNear, cameraRenderingBase.m_zFar / levels[i].m_level));
         }
         else if (i < levels.size())
         {
-            ret.push_back(getLightSpaceMatrix(cameraRenderingBase, sunDir, cameraRenderingBase->m_zFar / levels[i - 1].m_level, cameraRenderingBase->m_zFar / levels[i].m_level));
+            ret.push_back(getLightSpaceMatrix(cameraRenderingBase, sunDir, cameraRenderingBase.m_zFar / levels[i - 1].m_level, cameraRenderingBase.m_zFar / levels[i].m_level));
         }
     }
     return ret;

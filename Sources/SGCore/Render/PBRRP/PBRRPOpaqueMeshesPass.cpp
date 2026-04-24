@@ -40,8 +40,9 @@ void SGCore::PBRRPOpaqueMeshesPass::render(const Scene* scene, const Ref<IRender
 
     iterateCameras(scene, [&](const CameraRenderingInfo& cameraRenderingInfo) {
         opaqueMeshesView.each([&](const ECS::entity_t& meshEntity,
-                                       EntityBaseInfo::reg_t& meshedEntityBaseInfo,
-                                       Mesh::reg_t& mesh, Transform::reg_t& meshTransform,
+                                       EntityBaseInfo& meshedEntityBaseInfo,
+                                       Mesh& mesh,
+                                       Transform& meshTransform,
                                        auto, auto) {
             const bool willRender = cameraRenderingInfo.m_camera3D->isEntityVisibleForCamera(registry, cameraRenderingInfo.m_cameraEntity, meshEntity);
 
@@ -72,9 +73,9 @@ void SGCore::PBRRPOpaqueMeshesPass::render(const Scene* scene, const Ref<IRender
             shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
 
             shaderToUse->useMatrix("objectTransform.modelMatrix",
-                                   meshTransform->m_worldTransform.m_animatedModelMatrix);
+                                   meshTransform.m_worldTransform.m_animatedModelMatrix);
 
-            shaderToUse->useVectorf("objectTransform.position", meshTransform->m_worldTransform.m_position);
+            shaderToUse->useVectorf("objectTransform.position", meshTransform.m_worldTransform.m_position);
 
             const auto* meshedEntityPickableComponent = registry->tryGet<Pickable>(meshEntity);
             // enable picking
@@ -149,8 +150,8 @@ void SGCore::PBRRPOpaqueMeshesPass::renderShadows(const Scene* scene, const Ref<
 
         if(!mesh.m_base.getMeshData() || !mesh.m_base.getMaterial()) return;
 
-        shadowGenShader->useMatrix("objectTransform.modelMatrix", meshTransform->m_worldTransform.m_animatedModelMatrix);
-        shadowGenShader->useVectorf("objectTransform.position", meshTransform->m_worldTransform.m_position);
+        shadowGenShader->useMatrix("objectTransform.modelMatrix", meshTransform.m_worldTransform.m_animatedModelMatrix);
+        shadowGenShader->useVectorf("objectTransform.position", meshTransform.m_worldTransform.m_position);
         shadowGenShader->useInteger("u_verticesColorsAttributesCount", mesh.m_base.getMeshData()->m_verticesColors.size());
 
         size_t texUnitOffset = 0;

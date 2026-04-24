@@ -52,7 +52,7 @@ void SGCore::TransformationsUpdater::update(double dt, double fixedDt) noexcept
     // =======================================================================
     transformsView.each([&](ECS::entity_t entity,
                                  EntityBaseInfo& entityBaseInfo,
-                                 const Transform::reg_t& transform, auto) {
+                                 Transform& transform, auto) {
         m_entitiesDesc.emplace(entity, &entityBaseInfo, &transform, nullptr);
 
         while(!m_entitiesDesc.empty())
@@ -62,16 +62,16 @@ void SGCore::TransformationsUpdater::update(double dt, double fixedDt) noexcept
 
             // ======================= updating transform
 
-            if(currentTransform && (*currentTransform)->isActive())
+            if(currentTransform && currentTransform->isActive())
             {
-                auto& worldTransform = (*currentTransform)->m_worldTransform;
-                auto& localTransform = (*currentTransform)->m_localTransform;
+                auto& worldTransform = currentTransform->m_worldTransform;
+                auto& localTransform = currentTransform->m_localTransform;
 
                 bool isTransformChanged = false;
 
                 // if(!rigidbody3D)
                 {
-                    isTransformChanged |= TransformUtils::calculateTransform(*currentTransform->get(), parentTransform);
+                    isTransformChanged |= TransformUtils::calculateTransform(*currentTransform, parentTransform);
                 }
 
                 if(isTransformChanged)
@@ -93,9 +93,9 @@ void SGCore::TransformationsUpdater::update(double dt, double fixedDt) noexcept
             for(auto childEntity : currentEntityBaseInfo->getChildren())
             {
                 const auto& childBaseInfo = registry->get<EntityBaseInfo>(childEntity);
-                const auto* childTransform = registry->tryGet<Transform>(childEntity);
+                auto* childTransform = registry->tryGet<Transform>(childEntity);
 
-                m_entitiesDesc.emplace(childEntity, &childBaseInfo, childTransform, currentTransform ? currentTransform->get() : parentTransform);
+                m_entitiesDesc.emplace(childEntity, &childBaseInfo, childTransform, currentTransform ? currentTransform : parentTransform);
             }
         }
     });

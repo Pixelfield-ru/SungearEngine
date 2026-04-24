@@ -29,12 +29,12 @@ SGCore::ECS::entity_t SGCore::Node::addOnScene(const Ref<Scene>& scene,
 
     registry->emplace<Pickable>(parentEntity);
     auto& nodeBaseInfo = registry->get<EntityBaseInfo>(parentEntity);
-    auto nodeTransform = registry->emplace<Transform>(parentEntity, MakeRef<Transform>());
-    nodeTransform->m_localTransform.m_position = m_position;
+    auto& nodeTransform = registry->emplace<Transform>(parentEntity);
+    nodeTransform.m_localTransform.m_position = m_position;
     // auto eulerRot = glm::eulerAngles(m_rotationQuaternion);
-    nodeTransform->m_localTransform.m_rotation = m_rotationQuaternion;
-    nodeTransform->m_localTransform.m_scale = m_scale;
-    nodeTransform->m_initialModelMatrix = TransformUtils::calculateModelMatrix(m_position, m_rotationQuaternion, m_scale);
+    nodeTransform.m_localTransform.m_rotation = m_rotationQuaternion;
+    nodeTransform.m_localTransform.m_scale = m_scale;
+    nodeTransform.m_initialModelMatrix = TransformUtils::calculateModelMatrix(m_position, m_rotationQuaternion, m_scale);
 
     nodeBaseInfo.setRawName(m_name);
 

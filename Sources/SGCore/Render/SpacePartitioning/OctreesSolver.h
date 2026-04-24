@@ -28,8 +28,8 @@ namespace SGCore
     private:
         void onTransformChanged(const ECS::entity_t& entity, const Transform::const_reg_t& transform) noexcept;
 
-        Slot<void(const Ref<ECS::registry_t>& registry, const ECS::entity_t&, Ref<const Transform>)> m_transformChangedListener =
-        [this](const Ref<ECS::registry_t>& registry, const ECS::entity_t& entity, Ref<const Transform> transform) {
+        Slot<void(const Ref<ECS::registry_t>& registry, const ECS::entity_t&, const Transform&)> m_transformChangedListener =
+        [this](const Ref<ECS::registry_t>& registry, const ECS::entity_t& entity, const Transform& transform) {
             onTransformChanged(entity, transform);
         };
 

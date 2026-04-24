@@ -22,8 +22,8 @@ void SGCore::ObjectsCullingOctreesSolver::fixedUpdate(const double& dt, const do
     auto camerasView = registry->view<Camera3D, RenderingBase, Transform>();
     objectsCullingOctrees.each([&camerasView, &registry, this](Octree::reg_t octree, ObjectsCullingOctree::reg_t&) {
         camerasView.each([&octree, this]
-        (const ECS::entity_t& cameraEntity, Camera3D::reg_t camera3D, RenderingBase::reg_t renderingBase, Transform::reg_t cameraTransform) {
-            testNode(cameraEntity, renderingBase->m_frustum, octree->m_root, true);
+        (const ECS::entity_t& cameraEntity, Camera3D& camera3D, RenderingBase& renderingBase, Transform& cameraTransform) {
+            testNode(cameraEntity, renderingBase.m_frustum, octree.m_root, true);
         });
     });
 }

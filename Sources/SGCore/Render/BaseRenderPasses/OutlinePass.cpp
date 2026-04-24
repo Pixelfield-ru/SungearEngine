@@ -88,14 +88,14 @@ void SGCore::OutlinePass::render(const Scene* scene,
         // color of outlined objects = u_outlineColor
         meshesView.each([&camera3D,
                          this](const ECS::entity_t& meshEntity,
-                               const EntityBaseInfo::reg_t& meshBaseInfo,
-                               const Mesh::reg_t& mesh,
-                               const Transform::reg_t& meshTransform) mutable {
-            if(!camera3D->m_pickedEntities.contains(meshEntity)) return;
+                               const EntityBaseInfo& meshBaseInfo,
+                               const Mesh& mesh,
+                               const Transform& meshTransform) mutable {
+            if(!camera3D.m_pickedEntities.contains(meshEntity)) return;
 
             m_shader->useVectorf("u_outlineColor", meshBaseInfo.m_outlineColor);
-            m_shader->useMatrix("objectTransform.modelMatrix", meshTransform->m_worldTransform.m_animatedModelMatrix);
-            m_shader->useVectorf("objectTransform.position", meshTransform->m_worldTransform.m_position);
+            m_shader->useMatrix("objectTransform.modelMatrix", meshTransform.m_worldTransform.m_animatedModelMatrix);
+            m_shader->useVectorf("objectTransform.position", meshTransform.m_worldTransform.m_position);
 
             if(auto bonesLockedBuffer = mesh.m_base.m_bonesBuffer.lock())
             {
@@ -117,7 +117,7 @@ void SGCore::OutlinePass::render(const Scene* scene,
 
         // then scaling up attachment0 (contains outlining objects)
 
-        if(!camera3D->m_pickedEntities.empty())
+        if(!camera3D.m_pickedEntities.empty())
         {
             // rendering outline
             m_shader->useInteger("u_pass", 2);

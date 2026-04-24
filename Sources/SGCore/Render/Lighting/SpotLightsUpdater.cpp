@@ -79,7 +79,7 @@ void SGCore::SpotLightsUpdater::updateLights() noexcept
     
     m_uniformBuffer->bind();
     
-    spotLightsView.each([&currentLightIdx, this](SpotLight::reg_t& spotLight, RenderingBase::reg_t& renderingBase, Transform::reg_t& transform) {
+    spotLightsView.each([&currentLightIdx, this](SpotLight::reg_t& spotLight, RenderingBase& renderingBase, Transform& transform) {
         if(currentLightIdx < m_maxLightsCount)
         {
             const std::string currentSpotLight = "sg_spotLights[" + std::to_string(currentLightIdx) + "]";
@@ -104,13 +104,13 @@ void SGCore::SpotLightsUpdater::updateLights() noexcept
                 spotLight.m_base.m_lastIntensity = spotLight.m_base.m_intensity;
             }
 
-            const glm::vec3 lightDirection = transform->m_worldTransform.m_rotation * spotLight.m_basicDirection;
+            const glm::vec3 lightDirection = transform.m_worldTransform.m_rotation * spotLight.m_basicDirection;
 
             // std::cout << "lightDirection: " << lightDirection.x << ", " << lightDirection.y << ", " << lightDirection.z << std::endl;
 
-            m_uniformBuffer->subData(currentSpotLight + ".projectionSpaceMatrix", glm::value_ptr(renderingBase->m_projectionSpaceMatrix), 16);
-            m_uniformBuffer->subData(currentSpotLight + ".modelMatrix", glm::value_ptr(transform->m_worldTransform.m_animatedModelMatrix), 16);
-            m_uniformBuffer->subData(currentSpotLight + ".position", glm::value_ptr(transform->m_worldTransform.m_position), 3);
+            m_uniformBuffer->subData(currentSpotLight + ".projectionSpaceMatrix", glm::value_ptr(renderingBase.m_projectionSpaceMatrix), 16);
+            m_uniformBuffer->subData(currentSpotLight + ".modelMatrix", glm::value_ptr(transform.m_worldTransform.m_animatedModelMatrix), 16);
+            m_uniformBuffer->subData(currentSpotLight + ".position", glm::value_ptr(transform.m_worldTransform.m_position), 3);
             m_uniformBuffer->subData(currentSpotLight + ".direction", glm::value_ptr(lightDirection), 3);
             m_uniformBuffer->subData(currentSpotLight + ".innerCutoff", { spotLight.getInnerCutoff() });
             m_uniformBuffer->subData(currentSpotLight + ".outerCutoff", { spotLight.getOuterCutoff() });

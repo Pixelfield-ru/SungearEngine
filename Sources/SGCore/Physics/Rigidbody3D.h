@@ -25,7 +25,7 @@ namespace SGCore
 {
     struct PhysicsWorld3D;
 
-    struct SGCORE_EXPORT Rigidbody3D : ECS::Component<Ref<Rigidbody3D>, Ref<const Rigidbody3D>>
+    struct SGCORE_EXPORT Rigidbody3D : ECS::Component<Rigidbody3D, const Rigidbody3D>
     {
         sg_serde_as_friend()
 

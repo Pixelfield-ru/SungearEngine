@@ -9,11 +9,7 @@
 
 void SGCore::GotoAnimationNode::tick(double dt, ECS::entity_t entity, ECS::registry_t& inRegistry) noexcept
 {
-    Ref<Transform> entityTransform;
-    {
-        auto* tmpTransform = inRegistry.tryGet<Transform>(entity);
-        entityTransform = tmpTransform ? *tmpTransform : nullptr;
-    }
+    auto* entityTransform = inRegistry.tryGet<Transform>(entity);
 
     if(!entityTransform) return;
 

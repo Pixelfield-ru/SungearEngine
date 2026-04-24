@@ -69,10 +69,10 @@ void SGCore::PBRRPDecalsPass::render(const Scene* scene, const Ref<IRenderPipeli
 
         decalsView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, &cameraCSMTarget, &cameraRenderingBase, this](
         const ECS::entity_t& decalEntity,
-        const EntityBaseInfo::reg_t& decalInfo,
-        const Transform::reg_t& decalTransform,
-        const Decal::reg_t& decal,
-        Mesh::reg_t& decalMesh, auto) {
+        const EntityBaseInfo& decalInfo,
+        const Transform& decalTransform,
+        const Decal& decal,
+        Mesh& decalMesh, auto) {
 
             Ref<PostProcessLayer> meshPPLayer =
                 decalMesh.m_base.m_layeredFrameReceiversMarkup[&cameraLayeredFrameReceiver].lock();
@@ -103,8 +103,8 @@ void SGCore::PBRRPDecalsPass::render(const Scene* scene, const Ref<IRenderPipeli
 
             {
                 shaderToUse->useMatrix("objectTransform.modelMatrix",
-                                       decalTransform->m_worldTransform.m_animatedModelMatrix);
-                shaderToUse->useVectorf("objectTransform.position", decalTransform->m_worldTransform.m_position);
+                                       decalTransform.m_worldTransform.m_animatedModelMatrix);
+                shaderToUse->useVectorf("objectTransform.position", decalTransform.m_worldTransform.m_position);
 
                 const auto* meshedEntityPickableComponent = registry->tryGet<Pickable>(decalEntity);
                 // enable picking
@@ -135,7 +135,7 @@ void SGCore::PBRRPDecalsPass::render(const Scene* scene, const Ref<IRenderPipeli
             shaderToUse->useMaterialFactors(decalMesh.m_base.getMaterial().get());
             if(cameraCSMTarget)
             {
-                texUnitOffset = cameraCSMTarget->bindUniformsToShader(shaderToUse.get(), cameraRenderingBase->m_zFar, texUnitOffset);
+                texUnitOffset = cameraCSMTarget->bindUniformsToShader(shaderToUse.get(), cameraRenderingBase.m_zFar, texUnitOffset);
             }
 
             bindUniformBuffers(shaderToUse.get());
@@ -224,7 +224,7 @@ void SGCore::PBRRPDecalsPass::render(const Scene* scene, const Ref<IRenderPipeli
             shaderToUse->useMaterialFactors(instancing.getBaseMaterial().get());
             if(cameraCSMTarget)
             {
-                texUnitOffset = cameraCSMTarget->bindUniformsToShader(shaderToUse.get(), cameraRenderingBase->m_zFar, texUnitOffset);
+                texUnitOffset = cameraCSMTarget->bindUniformsToShader(shaderToUse.get(), cameraRenderingBase.m_zFar, texUnitOffset);
             }
 
             bindUniformBuffers(shaderToUse.get());

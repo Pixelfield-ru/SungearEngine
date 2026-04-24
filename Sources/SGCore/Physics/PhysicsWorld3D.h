@@ -75,7 +75,7 @@ namespace SGCore
         {
             ECS::entity_t m_entity = entt::null;
             const EntityBaseInfo* m_baseInfo {};
-            const Ref<Transform>* m_transform {};
+            Transform* m_transform {};
             Transform* m_parentTransform {};
         };
 

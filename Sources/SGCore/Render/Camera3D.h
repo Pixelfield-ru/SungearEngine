@@ -12,7 +12,7 @@
 
 namespace SGCore
 {
-    struct SGCORE_EXPORT Camera3D : ECS::Component<Ref<Camera3D>, Ref<const Camera3D>>
+    struct SGCORE_EXPORT Camera3D : ECS::Component<Camera3D, const Camera3D>
     {
         std::unordered_set<ECS::entity_t> m_pickedEntities;
         // todo: make saving

@@ -40,8 +40,9 @@ void SGCore::PBRRPTransparentMeshesPass::render(const Scene* scene, const Ref<IR
 
     iterateCameras(scene, [&](const CameraRenderingInfo& cameraRenderingInfo) {
         transparentMeshesView.each([&](const ECS::entity_t& meshEntity,
-                                       EntityBaseInfo::reg_t& meshedEntityBaseInfo,
-                                       Mesh::reg_t& mesh, Transform::reg_t& meshTransform,
+                                       EntityBaseInfo& meshedEntityBaseInfo,
+                                       Mesh& mesh,
+                                       Transform& meshTransform,
                                        const auto&, auto) {
             const bool willRender = cameraRenderingInfo.m_camera3D->isEntityVisibleForCamera(registry, cameraRenderingInfo.m_cameraEntity, meshEntity);
 
@@ -72,9 +73,9 @@ void SGCore::PBRRPTransparentMeshesPass::render(const Scene* scene, const Ref<IR
             shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
 
             shaderToUse->useMatrix("objectTransform.modelMatrix",
-                                   meshTransform->m_worldTransform.m_animatedModelMatrix);
+                                   meshTransform.m_worldTransform.m_animatedModelMatrix);
 
-            shaderToUse->useVectorf("objectTransform.position", meshTransform->m_worldTransform.m_position);
+            shaderToUse->useVectorf("objectTransform.position", meshTransform.m_worldTransform.m_position);
 
             const auto* meshedEntityPickableComponent = registry->tryGet<Pickable>(meshEntity);
             // enable picking

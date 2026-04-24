@@ -316,10 +316,10 @@ void SGCore::Batch::update(const ECS::registry_t& inRegistry) noexcept
         const auto& transform = *tmpTransform;
 
         const BatchInstanceTransform instanceTransform {
-            .m_modelMatrix = transform->m_worldTransform.m_animatedModelMatrix,
-            .m_position = transform->m_worldTransform.m_position,
-            .m_rotation = glm::degrees(glm::eulerAngles(transform->m_worldTransform.m_rotation)),
-            .m_scale = transform->m_worldTransform.m_scale
+            .m_modelMatrix = transform.m_worldTransform.m_animatedModelMatrix,
+            .m_position = transform.m_worldTransform.m_position,
+            .m_rotation = glm::degrees(glm::eulerAngles(transform.m_worldTransform.m_rotation)),
+            .m_scale = transform.m_worldTransform.m_scale
         };
 
         m_transforms.push_back(instanceTransform);

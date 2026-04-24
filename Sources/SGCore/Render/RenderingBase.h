@@ -14,7 +14,7 @@
 
 namespace SGCore
 {
-    struct SGCORE_EXPORT RenderingBase : ECS::Component<Ref<RenderingBase>, Ref<const RenderingBase>>
+    struct SGCORE_EXPORT RenderingBase : ECS::Component<RenderingBase, const RenderingBase>
     {
         float m_fov = 75.0f;
         float m_aspect = 16.0f / 9.0f;

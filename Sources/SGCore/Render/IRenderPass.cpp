@@ -38,12 +38,12 @@ void SGCore::IRenderPass::iterateCameras(const Scene* scene, const std::function
 
     auto camerasView = registry->view<EntityBaseInfo, Camera3D, LayeredFrameReceiver, RenderingBase, Transform>();
 
-    camerasView.each([&registry, this, &func](const ECS::entity_t& cameraEntity,
-                                              const EntityBaseInfo::reg_t& camera3DBaseInfo,
-                                              const Camera3D::reg_t& camera3D,
-                                              LayeredFrameReceiver::reg_t& layeredFrameReceiver,
-                                              const RenderingBase::reg_t& cameraRenderingBase,
-                                              const Transform::reg_t& cameraTransform) {
+    camerasView.each([&registry, &func](const ECS::entity_t& cameraEntity,
+                                              const EntityBaseInfo& camera3DBaseInfo,
+                                              const Camera3D& camera3D,
+                                              LayeredFrameReceiver& layeredFrameReceiver,
+                                              const RenderingBase& cameraRenderingBase,
+                                              const Transform& cameraTransform) {
         const auto* cameraCSMTarget = registry->tryGet<CSMTarget>(cameraEntity);
 
         CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
@@ -62,10 +62,10 @@ void SGCore::IRenderPass::iterateCameras(const Scene* scene, const std::function
         CameraRenderingInfo cameraRenderingInfo;
         cameraRenderingInfo.m_cameraEntity = cameraEntity;
         cameraRenderingInfo.m_cameraInfo = &camera3DBaseInfo;
-        cameraRenderingInfo.m_camera3D = camera3D.get();
+        cameraRenderingInfo.m_camera3D = &camera3D;
         cameraRenderingInfo.m_cameraFrameReceiver = &layeredFrameReceiver;
-        cameraRenderingInfo.m_cameraRenderingBase = cameraRenderingBase.get();
-        cameraRenderingInfo.m_cameraTransform = cameraTransform.get();
+        cameraRenderingInfo.m_cameraRenderingBase = &cameraRenderingBase;
+        cameraRenderingInfo.m_cameraTransform = &cameraTransform;
         cameraRenderingInfo.m_cameraCSMTarget = cameraCSMTarget;
 
         func(cameraRenderingInfo);

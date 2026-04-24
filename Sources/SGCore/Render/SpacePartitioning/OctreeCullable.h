@@ -13,7 +13,7 @@ namespace SGCore
 {
     struct OctreeNode;
     
-    struct SGCORE_EXPORT OctreeCullable : ECS::Component<Ref<OctreeCullable>, Ref<const OctreeCullable>>
+    struct SGCORE_EXPORT OctreeCullable : ECS::Component<OctreeCullable, const OctreeCullable>
     {
         std::unordered_map<ECS::entity_t, Weak<OctreeNode>> m_parentNodes;
         

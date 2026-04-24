@@ -29,7 +29,7 @@ void SGCore::IKRootJoint::buildChains(const ECS::registry_t& registry) noexcept
             auto& transform = registry.get<Transform>(node.m_jointEntity);
             auto& nextTransform = registry.get<Transform>(nextNode.m_jointEntity);
 
-            node.m_boneLength = glm::distance(transform->m_worldTransform.m_position, nextTransform->m_worldTransform.m_position);
+            node.m_boneLength = glm::distance(transform.m_worldTransform.m_position, nextTransform.m_worldTransform.m_position);
 
             std::println(std::cout, "bone {} length: {}", j, node.m_boneLength);
         }
