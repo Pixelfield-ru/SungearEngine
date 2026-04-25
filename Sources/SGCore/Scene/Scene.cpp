@@ -203,6 +203,8 @@ void SGCore::Scene::addSystem(const Ref<ISystem>& system) noexcept
 
     system->setScene(this);
     m_systems.push_back(system);
+
+    // std::println(std::cout, "adding system {}", typeid(*system).name());
 }
 
 const std::vector<SGCore::Ref<SGCore::ISystem>>& SGCore::Scene::getAllSystems() const noexcept
@@ -339,7 +341,7 @@ bool SGCore::Scene::isSystemExists(const SGCore::Ref<SGCore::ISystem>& system) c
 {
     for(const auto& sys : m_systems)
     {
-        LOG_W(SGCORE_TAG, "Current system '{}' (type id: '{}'), finding system '{}' (type id: '{}').", typeid(*sys).name(), sys->getTypeID(), typeid(*system).name(), system->getTypeID());
+        // LOG_W(SGCORE_TAG, "Current system '{}' (type id: '{}'), finding system '{}' (type id: '{}').", typeid(*sys).name(), sys->getTypeID(), typeid(*system).name(), system->getTypeID());
 
         if(sys->getTypeID() == system->getTypeID()) return true;
     }

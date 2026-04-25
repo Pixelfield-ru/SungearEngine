@@ -16,7 +16,7 @@
 /// \p getTypeID() is needed to get real static type ID of object.\n
 /// Implementation of this macro must has public access.
 #define sg_implement_type_id(current_class)                          \
-static size_t getTypeIDStatic() { static size_t typeID = SGCore::StaticTypeID<current_class>::setID(constexprHash(#current_class)); return typeID; }   \
+static size_t getTypeIDStatic() { static size_t typeID = SGCore::StaticTypeID<current_class>::setID(SGCore::constexprHash(#current_class)); return typeID; }   \
 size_t getTypeID() const noexcept final { return current_class::getTypeIDStatic(); }
 
 /// Pass current class type as first argument. PLEASE, QUALIFY YOUR TYPE BY NAMESPACE IN WHICH THE TYPE IS LOCATED. \n
@@ -24,14 +24,14 @@ size_t getTypeID() const noexcept final { return current_class::getTypeIDStatic(
 /// \p getTypeID() is needed to get real static type ID of object.\n
 /// Implementation of this macro must has public access.
 #define sg_implement_type_id_base(current_class)                          \
-static size_t getTypeIDStatic() { static size_t typeID = SGCore::StaticTypeID<current_class>::setID(constexprHash(#current_class)); return typeID; }        \
+static size_t getTypeIDStatic() { static size_t typeID = SGCore::StaticTypeID<current_class>::setID(SGCore::constexprHash(#current_class)); return typeID; }        \
 virtual size_t getTypeID() const noexcept { return current_class::getTypeIDStatic(); }
 
 /// Pass current class type as first argument. PLEASE, QUALIFY YOUR TYPE BY NAMESPACE IN WHICH THE TYPE IS LOCATED.\n
 /// Creates only static function to get type ID without virtual function to get type ID of object.
 /// Implementation of this macro must has public access.
 #define sg_implement_nonvirtual_type_id(current_class)                    \
-static size_t getTypeIDStatic() { static size_t typeID = SGCore::StaticTypeID<current_class>::setID(constexprHash(#current_class)); return typeID; }
+static size_t getTypeIDStatic() { static size_t typeID = SGCore::StaticTypeID<current_class>::setID(SGCore::constexprHash(#current_class)); return typeID; }
 
 namespace SGCore
 {
