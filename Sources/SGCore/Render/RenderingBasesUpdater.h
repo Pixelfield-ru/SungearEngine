@@ -12,6 +12,6 @@ namespace SGCore
     {
         sg_implement_type_id(SGCore::RenderingBasesUpdater)
 
-        void fixedUpdate(double dt, double fixedDt) final;
+        void update(double dt, double fixedDt) final;
     };
 }

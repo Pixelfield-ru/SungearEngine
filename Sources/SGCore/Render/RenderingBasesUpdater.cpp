@@ -12,7 +12,7 @@
 #include "glm/ext/quaternion_trigonometric.hpp"
 #include "glm/gtx/quaternion.hpp"
 
-void SGCore::RenderingBasesUpdater::fixedUpdate(double dt, double fixedDt)
+void SGCore::RenderingBasesUpdater::update(double dt, double fixedDt)
 {
     auto lockedScene = getScene();
     if(!lockedScene) return;
