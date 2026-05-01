@@ -36,15 +36,9 @@ void SGE::EntitiesManipulator::manipulateEntities(const SGCore::Scene& forScene,
 
     ImGuizmo::SetRect(m_rectPos.x, m_rectPos.y, m_rectSize.x, m_rectSize.y);
 
-    SGCore::Ref<SGCore::RenderingBase> camera3DRenderingBase;
-    {
-        auto* tmp = forScene.getECSRegistry()->tryGet<SGCore::RenderingBase>(camera3DEntity);
-        if(!tmp) return;
+    auto* camera3DRenderingBase = forScene.getECSRegistry()->tryGet<SGCore::RenderingBase>(camera3DEntity);
 
-        camera3DRenderingBase = *tmp;
-    }
-
-    std::vector<SGCore::Ref<SGCore::Transform>> entitiesTransforms;
+    std::vector<SGCore::Transform*> entitiesTransforms;
     std::vector<SGCore::EntityBaseInfo::reg_t*> entitiesBaseInfo;
 
     for(const auto& entity : m_manipulatingEntities)
@@ -54,7 +48,7 @@ void SGE::EntitiesManipulator::manipulateEntities(const SGCore::Scene& forScene,
 
         if(!tmpTransform || !tmpBaseInfo) continue;
 
-        entitiesTransforms.push_back(*tmpTransform);
+        entitiesTransforms.push_back(tmpTransform);
 
         entitiesBaseInfo.push_back(tmpBaseInfo);
     }
@@ -62,22 +56,10 @@ void SGE::EntitiesManipulator::manipulateEntities(const SGCore::Scene& forScene,
     // manipulating each entity base first entity
     if(!entitiesTransforms.empty() && !entitiesBaseInfo.empty())
     {
-        SGCore::Ref<SGCore::Transform> firstEntityParentTransform;
-
         auto tmpMatrix = entitiesTransforms[0]->m_worldTransform.m_modelMatrix;
 
-        if(entitiesBaseInfo[0]->getParent() != entt::null)
-        {
-            {
-                auto* tmp = forScene.getECSRegistry()->tryGet<SGCore::Transform>(
+        auto* firstEntityParentTransform = forScene.getECSRegistry()->tryGet<SGCore::Transform>(
                         entitiesBaseInfo[0]->getParent());
-
-                if(tmp)
-                {
-                    firstEntityParentTransform = *tmp;
-                }
-            }
-        }
 
         if(firstEntityParentTransform)
         {
@@ -137,20 +119,8 @@ void SGE::EntitiesManipulator::manipulateEntities(const SGCore::Scene& forScene,
                     auto& transform = entitiesTransforms[i];
                     auto* baseInfo = entitiesBaseInfo[i];
 
-                    SGCore::Ref<SGCore::Transform> childEntityParent;
-
-                    if(baseInfo->getParent() != entt::null)
-                    {
-                        {
-                            auto* tmp = forScene.getECSRegistry()->tryGet<SGCore::Transform>(
+                    auto* childEntityParent = forScene.getECSRegistry()->tryGet<SGCore::Transform>(
                                     baseInfo->getParent());
-
-                            if(tmp)
-                            {
-                                childEntityParent = *tmp;
-                            }
-                        }
-                    }
 
                     auto finalMat = deltaMatrix;
 

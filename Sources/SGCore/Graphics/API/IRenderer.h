@@ -43,6 +43,8 @@ namespace SGCore
         // Buffer for storing matrices of the program.
         Ref<IUniformBuffer> m_programDataBuffer;
 
+        AssetRef<IShader> m_screenShader;
+
         /**
          * YOU MUST CALL THIS FUNCTION IN YOUR DERIVED IMPLEMENTATIONS.
          */
@@ -143,7 +145,6 @@ namespace SGCore
         std::array<BlendingState, 32> m_cachedColorAttachmentsBlendingStates;
 
         Ref<IMeshData> m_screenQuadMesh;
-        AssetRef<IShader> m_screenShader;
         MeshRenderState m_screenQuadMeshRenderState;
     };
 }

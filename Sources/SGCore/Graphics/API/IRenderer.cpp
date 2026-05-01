@@ -58,7 +58,7 @@ void SGCore::IRenderer::renderTextureOnScreen(const ITexture2D* texture, bool fl
     // todo: bad idea
     if(!m_screenShader)
     {
-        m_screenShader = SGCore::AssetManager::getInstance()->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
+        m_screenShader = AssetManager::getInstance()->loadAsset<IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
     }
 
     m_screenShader->bind();

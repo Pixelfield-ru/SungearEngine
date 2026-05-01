@@ -337,7 +337,7 @@ void SGE::ProjectCreateDialog::submit()
         // setting variable 'projectPath' to interpolating
         SGCore::PathInterpolationMarkupSpec::setKey("projectPath", dirPath);
 
-        LOG_D(SGEDITOR_TAG, "Opened project: '{}'", SGCore::Utils::toUTF8(SGCore::PathInterpolationMarkupData::getByKey("projectPath")->u16string()));
+        LOG_D(SGEDITOR_TAG, "Opened project: '{}'", SGCore::Utils::toUTF8(SGCore::PathInterpolationMarkupData::instance().getByKey("projectPath")->u16string()));
 
         const std::string projectName = SGCore::Utils::toUTF8(dirPath.stem().u16string());
         const std::filesystem::path cmakePresetsPath = dirPath / "CMakePresets.json";

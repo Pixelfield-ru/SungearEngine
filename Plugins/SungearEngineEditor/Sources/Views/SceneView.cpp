@@ -20,7 +20,8 @@
 #include <SGCore/Scene/SceneUtils.h>
 #include <SGCore/Memory/Assets/AnimationsFile.h>
 #include <SGCore/Motion/MotionPlanner.h>
-#include <SGCore/Motion/MotionPlannerConnection.h>
+#include <SGCore/Animation/AnimationsTree.h>
+#include <SGCore/Animation/SkeletalAnimationNode.h>
 
 #include "SungearEngineEditor.h"
 #include "Views/MainView.h"
@@ -33,7 +34,7 @@ bool SGE::SceneView::begin()
 
 void SGE::SceneView::renderBody()
 {
-    SGCore::Ref<SGCore::Camera3D> editorCamera3D;
+    SGCore::Camera3D* editorCamera3D;
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5, 0.5));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
@@ -65,13 +66,11 @@ void SGE::SceneView::renderBody()
         auto* renderingBase = currentEditorScene->m_scene->getECSRegistry()->tryGet<SGCore::RenderingBase>
                 (EditorScene::getCurrentScene()->m_data.m_editorCamera);
 
-        auto* camera3D = currentEditorScene->m_scene->getECSRegistry()->tryGet<SGCore::Camera3D>
+        editorCamera3D = currentEditorScene->m_scene->getECSRegistry()->tryGet<SGCore::Camera3D>
                 (EditorScene::getCurrentScene()->m_data.m_editorCamera);
 
-        if(layeredFrameReceiver && camera3D)
+        if(layeredFrameReceiver && editorCamera3D)
         {
-            editorCamera3D = *camera3D;
-
             ImGui::Image((ImTextureID) layeredFrameReceiver->m_layersFXFrameBuffer->getAttachment(
                     SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7
             )->getTextureNativeHandler(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 });
@@ -106,7 +105,7 @@ void SGE::SceneView::renderBody()
                                                        SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2
                                                        );
 
-                auto& cameraPickedEntities = (*camera3D)->m_pickedEntities;
+                auto& cameraPickedEntities = editorCamera3D->m_pickedEntities;
 
                 auto leftControlDown = SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_LEFT_CONTROL);
 
@@ -116,7 +115,7 @@ void SGE::SceneView::renderBody()
                     cameraPickedEntities.clear();
                     m_entitiesManipulator.m_manipulatingEntities.clear();
                 }
-                else if(camera3D && pickedEntity != entt::null)
+                else if(editorCamera3D && pickedEntity != entt::null)
                 {
                     auto inspectorView = SungearEngineEditor::getInstance()->getMainView()->getInspectorView();
 
@@ -237,7 +236,7 @@ void SGE::SceneView::renderBody()
         {
             if(windowSize.x != 0 && windowSize.y != 0)
             {
-                (*renderingBase)->m_aspect = windowSize.x / windowSize.y;
+                renderingBase->m_aspect = windowSize.x / windowSize.y;
             }
             if(layeredFrameReceiver)
             {
@@ -338,9 +337,9 @@ void SGE::SceneView::acceptFilesFromDirectoryExplorer() noexcept
 
 void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) const noexcept
 {
-    std::cout << "project path: " << *SGCore::PathInterpolationMarkupData::getByKey("projectPath") << std::endl;
+    std::cout << "project path: " << *SGCore::PathInterpolationMarkupData::instance().getByKey("projectPath") << std::endl;
 
-    const SGCore::InterpolatedPath relativeModelPath = std::filesystem::relative(modelPath, *SGCore::PathInterpolationMarkupData::getByKey("projectPath"));
+    const SGCore::InterpolatedPath relativeModelPath = std::filesystem::relative(modelPath, *SGCore::PathInterpolationMarkupData::instance().getByKey("projectPath"));
     auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${projectPath}" / relativeModelPath);
 
     if(!modelAsset)
@@ -358,7 +357,7 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
     }
 
     std::vector<SGCore::ECS::entity_t> entities;
-    modelAsset->m_rootNode->addOnScene(SGCore::Scene::getCurrentScene(), SG_LAYER_OPAQUE_NAME, [&entities](const auto& entity) {
+    modelAsset->m_rootNode->addOnScene(SGCore::Scene::getCurrentScene(), [&entities](const auto& entity) {
         entities.push_back(entity);
         auto* pickableComponent =
                 SGCore::Scene::getCurrentScene()->getECSRegistry()->tryGet<SGCore::Pickable>(entity);
@@ -420,10 +419,12 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
         }
 
         auto& motionPlanner = SGCore::Scene::getCurrentScene()->getECSRegistry()->emplace<SGCore::MotionPlanner>(entities[0]);
+        auto& animationTree = SGCore::Scene::getCurrentScene()->getECSRegistry()->emplace<SGCore::AnimationsTree>(entities[0]);
+
         motionPlanner.m_skeleton = skeleton;
 
-        auto mainNode = SGCore::MotionPlannerNode::createNode();
-        mainNode->m_isRepeated = true;
+        auto mainNode = SGCore::MakeRef<SGCore::SkeletalAnimationNode>();
+        mainNode->m_isLooping = true;
         mainNode->m_animationSpeed = 1.0f;
         mainNode->m_skeletalAnimation = animations->m_skeletalAnimations[0];
 
@@ -449,6 +450,7 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
 
         mainNode->m_connections.push_back(walkConnection);*/
 
-        motionPlanner.m_rootNodes.push_back(mainNode);
+        animationTree.m_rootNodes.push_back(mainNode);
+        // motionPlanner.m_rootNodes.push_back(mainNode);
     }
 }

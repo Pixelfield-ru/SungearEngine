@@ -51,7 +51,7 @@ void SGE::InspectorView::renderBody()
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
     
     ImGuiWindowClass windowClass;
-    windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoDockingOverOther | ImGuiDockNodeFlags_AutoHideTabBar;
+    windowClass.DockNodeFlagsOverrideSet = ((ImGuiDockNodeFlags_) ImGuiDockNodeFlags_NoDockingOverOther) | ImGuiDockNodeFlags_AutoHideTabBar;
     ImGui::SetNextWindowClass(&windowClass);
     
     ImGui::Begin("InspectorView");
@@ -110,7 +110,7 @@ void SGE::InspectorView::renderBody()
 
                 const auto rigidbodies = currentScene->getECSRegistry()->view<SGCore::Rigidbody3D>();
                 rigidbodies.each([&](auto& rigidbody) {
-                    rigidbody->stop();
+                    rigidbody.stop();
                 });
             }
         }
@@ -172,10 +172,9 @@ void SGE::InspectorView::inspectEntity() const noexcept
                 }
             }
 
-            auto* tmpTransform = ecsRegistry->tryGet<SGCore::Transform>(m_currentChosenEntity);
-            if(tmpTransform && ImGui::CollapsingHeader("Transform"))
+            auto* transform = ecsRegistry->tryGet<SGCore::Transform>(m_currentChosenEntity);
+            if(transform && ImGui::CollapsingHeader("Transform"))
             {
-                auto& transform = *tmpTransform;
 
                 ImGui::DragFloat3("Position", &transform->m_localTransform.m_position.x);
                 ImGui::DragFloat3("Scale", &transform->m_localTransform.m_scale.x);
@@ -197,11 +196,9 @@ void SGE::InspectorView::inspectEntity() const noexcept
                 }
             }
 
-            auto* tmpRigidbody3D = ecsRegistry->tryGet<SGCore::Rigidbody3D>(m_currentChosenEntity);
-            if(tmpRigidbody3D && ImGui::CollapsingHeader("Rigidbody3D"))
+            auto* rigidbody = ecsRegistry->tryGet<SGCore::Rigidbody3D>(m_currentChosenEntity);
+            if(rigidbody && ImGui::CollapsingHeader("Rigidbody3D"))
             {
-                auto rigidbody = *tmpRigidbody3D;
-
                 ImGui::BeginGroup();
 
                 ImGui::Text("Rigidbody type");
@@ -360,7 +357,7 @@ void SGE::InspectorView::inspectEntity() const noexcept
                 {
                     if(ImGui::Button("Generate"))
                     {
-                        SGCore::Terrain::generate(*terrain, mesh->m_base.getMeshData(), 10, 10, 10);
+                        terrain->generate(mesh->m_base.getMeshData(), 10, 10, 10);
                     }
                 }
             }
@@ -378,7 +375,7 @@ void SGE::InspectorView::inspectEntity() const noexcept
         {
             if(!ecsRegistry->allOf<SGCore::Rigidbody3D>(m_currentChosenEntity))
             {
-                ecsRegistry->emplace<SGCore::Rigidbody3D>(m_currentChosenEntity, SGCore::MakeRef<SGCore::Rigidbody3D>(currentScene->getSystem<SGCore::PhysicsWorld3D>()));
+                ecsRegistry->emplace<SGCore::Rigidbody3D>(m_currentChosenEntity, currentScene->getSystem<SGCore::PhysicsWorld3D>());
             }
         }
 

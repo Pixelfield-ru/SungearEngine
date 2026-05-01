@@ -83,11 +83,11 @@ void SGE::SungearEngineEditor::update(const double& dt, const double& fixedDt)
             const auto ikRootJointsView = currentScene->getECSRegistry()->view<SGCore::Transform, SGCore::IKRootJoint>();
 
             ikJointsView.each([&debugDraw](const SGCore::Transform::reg_t& jointTransform, const auto&) {
-                debugDraw->drawAABB(jointTransform->m_worldTransform.m_position - 0.01f, jointTransform->m_worldTransform.m_position + 0.01f, { 1.0f, 0.5f, 0.5f, 1.0f });
+                debugDraw->drawAABB(jointTransform.m_worldTransform.m_position - 0.01f, jointTransform.m_worldTransform.m_position + 0.01f, { 1.0f, 0.5f, 0.5f, 1.0f });
             });
 
             ikRootJointsView.each([&debugDraw](const SGCore::Transform::reg_t& jointTransform, const auto&) {
-                debugDraw->drawAABB(jointTransform->m_worldTransform.m_position - 0.01f, jointTransform->m_worldTransform.m_position + 0.01f, { 0.3f, 1.0f, 0.1f, 1.0f });
+                debugDraw->drawAABB(jointTransform.m_worldTransform.m_position - 0.01f, jointTransform.m_worldTransform.m_position + 0.01f, { 0.3f, 1.0f, 0.1f, 1.0f });
             });
         }
     }

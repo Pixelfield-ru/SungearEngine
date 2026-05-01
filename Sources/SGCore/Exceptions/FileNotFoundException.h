@@ -8,9 +8,11 @@
 #include <exception>
 #include <filesystem>
 
+#include <sgcore_export.h>
+
 namespace SGCore
 {
-    struct FileNotFoundException : std::runtime_error
+    struct SGCORE_EXPORT FileNotFoundException : std::runtime_error
     {
         FileNotFoundException(const std::filesystem::path& filePath, const std::string& err) noexcept;
 

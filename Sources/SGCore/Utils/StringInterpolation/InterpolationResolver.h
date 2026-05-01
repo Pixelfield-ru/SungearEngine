@@ -16,8 +16,8 @@ namespace SGCore
 
     namespace Impl
     {
-        InterpolationMarkupData<std::filesystem::path>& getInterpolationMarkupDataInstance(std::filesystem::path*) noexcept;
-        InterpolationMarkupData<std::string>& getInterpolationMarkupDataInstance(std::string*) noexcept;
+        SGCORE_EXPORT InterpolationMarkupData<std::filesystem::path>& getInterpolationMarkupDataInstance(std::filesystem::path*) noexcept;
+        SGCORE_EXPORT InterpolationMarkupData<std::string>& getInterpolationMarkupDataInstance(std::string*) noexcept;
     }
 
     template<typename>
@@ -36,8 +36,8 @@ namespace SGCore
 
         const T* getByKey(const std::string& key) noexcept
         {
-            auto it = m_markup().find(key);
-            if (it == m_markup().end()) return nullptr;
+            auto it = m_markup.find(key);
+            if (it == m_markup.end()) return nullptr;
 
             return &it->second;
         }

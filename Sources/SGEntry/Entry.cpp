@@ -138,17 +138,15 @@ void coreInit()
               SGCore::Utils::toUTF8(configPath.u16string()),
               configLoadLog);
     }
-    else
-    {
-        for(const auto& loadablePluginConfig : loadedConfig.m_loadablePlugins)
-        {
-            if(!loadablePluginConfig.m_enabled) continue;
 
-            SGCore::PluginsManager::loadPlugin(loadablePluginConfig.m_pluginName,
-                                               loadablePluginConfig.m_pluginPath.resolved(),
-                                               loadablePluginConfig.m_pluginEntryArgs,
-                                               loadablePluginConfig.m_pluginCMakeBuildDir);
-        }
+    for(const auto& loadablePluginConfig : loadedConfig.m_loadablePlugins)
+    {
+        if(!loadablePluginConfig.m_enabled) continue;
+
+        SGCore::PluginsManager::loadPlugin(loadablePluginConfig.m_pluginName,
+                                           loadablePluginConfig.m_pluginPath.resolved(),
+                                           loadablePluginConfig.m_pluginEntryArgs,
+                                           loadablePluginConfig.m_pluginCMakeBuildDir);
     }
 
     if(SGCore::Scene::getCurrentScene())
