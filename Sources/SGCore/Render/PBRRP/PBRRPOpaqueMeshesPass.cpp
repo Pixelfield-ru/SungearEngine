@@ -39,6 +39,8 @@ void SGCore::PBRRPOpaqueMeshesPass::render(const Scene* scene, const Ref<IRender
     m_renderState.use();
 
     iterateCameras(scene, [&](const CameraRenderingInfo& cameraRenderingInfo) {
+        std::println(std::cout, "opaque render for camera");
+
         opaqueMeshesView.each([&](const ECS::entity_t& meshEntity,
                                        EntityBaseInfo& meshedEntityBaseInfo,
                                        Mesh& mesh,
@@ -47,6 +49,8 @@ void SGCore::PBRRPOpaqueMeshesPass::render(const Scene* scene, const Ref<IRender
             const bool willRender = cameraRenderingInfo.m_camera3D->isEntityVisibleForCamera(registry, cameraRenderingInfo.m_cameraEntity, meshEntity);
 
             if(!willRender) return;
+
+            std::println(std::cout, "opaque render 0. mesh data: {}, material: {}", (std::intptr_t) mesh.m_base.getMeshData().get(), (std::intptr_t) mesh.m_base.getMaterial().get());
 
             Ref<PostProcessLayer> meshPPLayer = mesh.m_base.m_layeredFrameReceiversMarkup[cameraRenderingInfo.m_cameraFrameReceiver].lock();
 
@@ -62,10 +66,14 @@ void SGCore::PBRRPOpaqueMeshesPass::render(const Scene* scene, const Ref<IRender
 
             if(!mesh.m_base.getMeshData() || !mesh.m_base.getMaterial()) return;
 
+            std::println(std::cout, "opaque render 1");
+
             const auto& meshGeomShader = mesh.m_base.getMaterial()->m_shaders["GeometryPass"];
             const auto& shaderToUse = meshGeomShader ? meshGeomShader : m_shader;
 
             if(!shaderToUse) return;
+
+            std::println(std::cout, "opaque render 2");
 
             shaderToUse->bind();
 

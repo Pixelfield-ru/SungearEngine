@@ -26,6 +26,12 @@
 #include "SGCore/Transformations/Controllable3D.h"
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Audio/AudioSource.h"
+#include "SGCore/Render/RenderAbilities/EnableBatchingPass.h"
+#include "SGCore/Render/RenderAbilities/EnableDecalPass.h"
+#include "SGCore/Render/RenderAbilities/EnableInstancingPass.h"
+#include "SGCore/Render/RenderAbilities/EnableMeshPass.h"
+#include "SGCore/Render/RenderAbilities/EnableTerrainPass.h"
+#include "SGCore/Render/RenderAbilities/EnableVolumetricPass.h"
 
 namespace SGCore::Serde
 {
@@ -285,6 +291,60 @@ namespace SGCore::Serde
             }
         }
 
+        {
+            auto* component = serializableScene.getECSRegistry()->tryGet<EnableBatchingPass>(serializableEntity);
+
+            if(component)
+            {
+                valueView.container().addMember(SerdeSpec<EnableBatchingPass, TFormatType>::type_name(), *component);
+            }
+        }
+
+        {
+            auto* component = serializableScene.getECSRegistry()->tryGet<EnableDecalPass>(serializableEntity);
+
+            if(component)
+            {
+                valueView.container().addMember(SerdeSpec<EnableDecalPass, TFormatType>::type_name(), *component);
+            }
+        }
+
+        {
+            auto* component = serializableScene.getECSRegistry()->tryGet<EnableInstancingPass>(serializableEntity);
+
+            if(component)
+            {
+                valueView.container().addMember(SerdeSpec<EnableInstancingPass, TFormatType>::type_name(), *component);
+            }
+        }
+
+        {
+            auto* component = serializableScene.getECSRegistry()->tryGet<EnableMeshPass>(serializableEntity);
+
+            if(component)
+            {
+                valueView.container().addMember(SerdeSpec<EnableMeshPass, TFormatType>::type_name(), *component);
+            }
+        }
+
+        {
+            auto* component = serializableScene.getECSRegistry()->tryGet<EnableTerrainPass>(serializableEntity);
+
+            if(component)
+            {
+                valueView.container().addMember(SerdeSpec<EnableTerrainPass, TFormatType>::type_name(), *component);
+            }
+        }
+
+        {
+            auto* component = serializableScene.getECSRegistry()->tryGet<EnableVolumetricPass>(serializableEntity);
+
+            if(component)
+            {
+                valueView.container().addMember(SerdeSpec<EnableVolumetricPass, TFormatType>::type_name(), *component);
+            }
+        }
+
         #pragma endregion Components
 
         // ==================================================================================
@@ -531,6 +591,66 @@ namespace SGCore::Serde
             if(component)
             {
                 toRegistry.emplace<IKRootJoint>(entity, std::move(*component));
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<EnableBatchingPass, TFormatType>::type_name()))
+        {
+            auto component = valueView.container().template getMember<EnableBatchingPass::reg_t>(SerdeSpec<EnableBatchingPass, TFormatType>::type_name());
+
+            if(component)
+            {
+                toRegistry.emplace<EnableBatchingPass>(entity, std::move(*component));
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<EnableDecalPass, TFormatType>::type_name()))
+        {
+            auto component = valueView.container().template getMember<EnableDecalPass::reg_t>(SerdeSpec<EnableDecalPass, TFormatType>::type_name());
+
+            if(component)
+            {
+                toRegistry.emplace<EnableDecalPass>(entity, std::move(*component));
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<EnableInstancingPass, TFormatType>::type_name()))
+        {
+            auto component = valueView.container().template getMember<EnableInstancingPass::reg_t>(SerdeSpec<EnableInstancingPass, TFormatType>::type_name());
+
+            if(component)
+            {
+                toRegistry.emplace<EnableInstancingPass>(entity, std::move(*component));
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<EnableMeshPass, TFormatType>::type_name()))
+        {
+            auto component = valueView.container().template getMember<EnableMeshPass::reg_t>(SerdeSpec<EnableMeshPass, TFormatType>::type_name());
+
+            if(component)
+            {
+                toRegistry.emplace<EnableMeshPass>(entity, std::move(*component));
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<EnableTerrainPass, TFormatType>::type_name()))
+        {
+            auto component = valueView.container().template getMember<EnableTerrainPass::reg_t>(SerdeSpec<EnableTerrainPass, TFormatType>::type_name());
+
+            if(component)
+            {
+                toRegistry.emplace<EnableTerrainPass>(entity, std::move(*component));
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<EnableVolumetricPass, TFormatType>::type_name()))
+        {
+            auto component = valueView.container().template getMember<EnableVolumetricPass::reg_t>(SerdeSpec<EnableVolumetricPass, TFormatType>::type_name());
+
+            if(component)
+            {
+                toRegistry.emplace<EnableVolumetricPass>(entity, std::move(*component));
             }
         }
 

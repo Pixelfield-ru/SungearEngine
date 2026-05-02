@@ -870,4 +870,76 @@ namespace SGCore::Serde
             valueView.m_data->m_isEndJoint = *isEndJoint;
         }
     }
+
+    // ======================================================== impl EnableBatchingPass
+
+    template<FormatType TFormatType>
+    void SerdeSpec<EnableBatchingPass, TFormatType>::serialize(SerializableValueView<const EnableBatchingPass, TFormatType>& valueView) noexcept
+    {
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<EnableBatchingPass, TFormatType>::deserialize(DeserializableValueView<EnableBatchingPass, TFormatType>& valueView) noexcept
+    {
+    }
+
+    // ======================================================== impl EnableDecalPass
+
+    template<FormatType TFormatType>
+    void SerdeSpec<EnableDecalPass, TFormatType>::serialize(SerializableValueView<const EnableDecalPass, TFormatType>& valueView) noexcept
+    {
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<EnableDecalPass, TFormatType>::deserialize(DeserializableValueView<EnableDecalPass, TFormatType>& valueView) noexcept
+    {
+    }
+
+    // ======================================================== impl EnableInstancingPass
+
+    template<FormatType TFormatType>
+    void SerdeSpec<EnableInstancingPass, TFormatType>::serialize(SerializableValueView<const EnableInstancingPass, TFormatType>& valueView) noexcept
+    {
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<EnableInstancingPass, TFormatType>::deserialize(DeserializableValueView<EnableInstancingPass, TFormatType>& valueView) noexcept
+    {
+    }
+
+    // ======================================================== impl EnableMeshPass
+
+    template<FormatType TFormatType>
+    void SerdeSpec<EnableMeshPass, TFormatType>::serialize(SerializableValueView<const EnableMeshPass, TFormatType>& valueView) noexcept
+    {
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<EnableMeshPass, TFormatType>::deserialize(DeserializableValueView<EnableMeshPass, TFormatType>& valueView) noexcept
+    {
+    }
+
+    // ======================================================== impl EnableTerrainPass
+
+    template<FormatType TFormatType>
+    void SerdeSpec<EnableTerrainPass, TFormatType>::serialize(SerializableValueView<const EnableTerrainPass, TFormatType>& valueView) noexcept
+    {
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<EnableTerrainPass, TFormatType>::deserialize(DeserializableValueView<EnableTerrainPass, TFormatType>& valueView) noexcept
+    {
+    }
+
+    // ======================================================== impl EnableVolumetricPass
+
+    template<FormatType TFormatType>
+    void SerdeSpec<EnableVolumetricPass, TFormatType>::serialize(SerializableValueView<const EnableVolumetricPass, TFormatType>& valueView) noexcept
+    {
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<EnableVolumetricPass, TFormatType>::deserialize(DeserializableValueView<EnableVolumetricPass, TFormatType>& valueView) noexcept
+    {
+    }
 }

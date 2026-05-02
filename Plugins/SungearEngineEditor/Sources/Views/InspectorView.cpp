@@ -361,6 +361,18 @@ void SGE::InspectorView::inspectEntity() const noexcept
                     }
                 }
             }
+
+            auto* opaqueEntityTag = ecsRegistry->tryGet<SGCore::OpaqueEntityTag>(m_currentChosenEntity);
+            if(opaqueEntityTag && ImGui::CollapsingHeader("OpaqueEntityTag"))
+            {
+
+            }
+
+            auto* enableMeshPass = ecsRegistry->tryGet<SGCore::EnableMeshPass>(m_currentChosenEntity);
+            if(enableMeshPass && ImGui::CollapsingHeader("EnableMeshPass"))
+            {
+
+            }
         }
 
         if(ImGui::Button("Add Transform"))
@@ -408,6 +420,22 @@ void SGE::InspectorView::inspectEntity() const noexcept
             if(!ecsRegistry->allOf<SGCore::Terrain>(m_currentChosenEntity))
             {
                 ecsRegistry->emplace<SGCore::Terrain>(m_currentChosenEntity);
+            }
+        }
+
+        if(ImGui::Button("Add OpaqueEntityTag"))
+        {
+            if(!ecsRegistry->allOf<SGCore::OpaqueEntityTag>(m_currentChosenEntity))
+            {
+                ecsRegistry->emplace<SGCore::OpaqueEntityTag>(m_currentChosenEntity);
+            }
+        }
+
+        if(ImGui::Button("Add EnableMeshPass"))
+        {
+            if(!ecsRegistry->allOf<SGCore::EnableMeshPass>(m_currentChosenEntity))
+            {
+                ecsRegistry->emplace<SGCore::EnableMeshPass>(m_currentChosenEntity);
             }
         }
 

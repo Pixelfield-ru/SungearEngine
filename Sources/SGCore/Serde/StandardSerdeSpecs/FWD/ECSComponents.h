@@ -32,6 +32,12 @@ namespace SGCore
     struct SphereGizmo;
     struct AudioSource;
     struct Pickable;
+    struct EnableBatchingPass;
+    struct EnableDecalPass;
+    struct EnableInstancingPass;
+    struct EnableMeshPass;
+    struct EnableTerrainPass;
+    struct EnableVolumetricPass;
 
     template<typename ScalarT>
     requires(std::is_signed_v<ScalarT>)
@@ -417,5 +423,95 @@ namespace SGCore::Serde
         static void serialize(SerializableValueView<const IKJoint, TFormatType>& valueView) noexcept;
 
         static void deserialize(DeserializableValueView<IKJoint, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== EnableBatchingPass FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<EnableBatchingPass, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        sg_serde_define_type_name("SGCore::EnableBatchingPass")
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const EnableBatchingPass, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<EnableBatchingPass, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== EnableDecalPass FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<EnableDecalPass, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        sg_serde_define_type_name("SGCore::EnableDecalPass")
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const EnableDecalPass, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<EnableDecalPass, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== EnableInstancingPass FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<EnableInstancingPass, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        sg_serde_define_type_name("SGCore::EnableInstancingPass")
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const EnableInstancingPass, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<EnableInstancingPass, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== EnableMeshPass FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<EnableMeshPass, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        sg_serde_define_type_name("SGCore::EnableMeshPass")
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const EnableMeshPass, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<EnableMeshPass, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== EnableTerrainPass FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<EnableTerrainPass, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        sg_serde_define_type_name("SGCore::EnableTerrainPass")
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const EnableTerrainPass, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<EnableTerrainPass, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== EnableVolumetricPass FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<EnableVolumetricPass, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        sg_serde_define_type_name("SGCore::EnableVolumetricPass")
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const EnableVolumetricPass, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<EnableVolumetricPass, TFormatType>& valueView) noexcept;
     };
 }
