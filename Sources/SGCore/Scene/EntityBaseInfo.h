@@ -47,7 +47,7 @@ namespace SGCore
         /**
          * Removes this entity and all children entities.
          */
-        void destroy(ECS::registry_t& inRegistry) const noexcept;
+        void destroy(ECS::registry_t& inRegistry) noexcept;
 
         /**
          * @param allEntitiesInTree (OPTIONAL) The entities of the entire tree, starting from the root entity, ending with the entity for which this function was called.
@@ -72,8 +72,6 @@ namespace SGCore
 
         [[nodiscard]] glm::vec3 getUniqueColor() const noexcept;
 
-        [[nodiscard]] ECS::entity_t getThisEntity() const noexcept override;
-
         void resolveAllEntitiesRefs(const Ref<ECS::registry_t>& registry) noexcept;
 
         EntityBaseInfo& operator=(const EntityBaseInfo&) = default;
@@ -95,5 +93,7 @@ namespace SGCore
         UniqueColor m_uniqueColor;
 
         std::vector<ECS::entity_t> m_children;
+
+        void destroyImpl(ECS::registry_t& inRegistry) noexcept;
     };
 }

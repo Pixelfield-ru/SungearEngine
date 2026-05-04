@@ -363,8 +363,6 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<ECS::entity_t, TFormatType>::deserialize(DeserializableValueView<ECS::entity_t, TFormatType>& valueView, Scene& deserializableScene) noexcept
     {
-        std::vector<ECS::entity_t> childrenEntities;
-
         auto& toRegistry = *deserializableScene.getECSRegistry();
 
         // creating entity
@@ -665,7 +663,6 @@ namespace SGCore::Serde
                 deserializableScene
         );
 
-        // set entity identifier (because we moved other EntityBaseInfo in entityBaseInfo)
         entityBaseInfo.m_thisEntity = entity;
 
         // loading children

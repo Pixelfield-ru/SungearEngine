@@ -51,8 +51,8 @@ void SGCore::TransformationsUpdater::update(double dt, double fixedDt) noexcept
 
     // =======================================================================
     transformsView.each([&](ECS::entity_t entity,
-                                 EntityBaseInfo& entityBaseInfo,
-                                 Transform& transform, auto) {
+                            EntityBaseInfo& entityBaseInfo,
+                            Transform& transform, auto) {
         m_entitiesDesc.emplace(entity, &entityBaseInfo, &transform, nullptr);
 
         while(!m_entitiesDesc.empty())
