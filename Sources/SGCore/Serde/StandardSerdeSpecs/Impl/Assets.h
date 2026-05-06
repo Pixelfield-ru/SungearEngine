@@ -1070,7 +1070,7 @@ namespace SGCore::Serde
         }
     }
 
-    // =============================================== impl AssetRef
+    // =============================================== impl DataMarkup
 
     template<FormatType TFormatType>
     void SerdeSpec<AssetsPackage::DataMarkup, TFormatType>::serialize(SerializableValueView<const AssetsPackage::DataMarkup, TFormatType>& valueView) noexcept

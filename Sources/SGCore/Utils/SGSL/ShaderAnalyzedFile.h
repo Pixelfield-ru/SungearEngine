@@ -10,7 +10,7 @@
 
 namespace SGCore
 {
-    struct SGCORE_EXPORT ShaderAnalyzedFile : public IAsset, public std::enable_shared_from_this<ShaderAnalyzedFile>
+    struct SGCORE_EXPORT ShaderAnalyzedFile : public IAsset
     {
         sg_serde_as_friend();
 

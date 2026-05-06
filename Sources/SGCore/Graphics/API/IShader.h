@@ -6,7 +6,6 @@
 #include "SGCore/Main/CoreMain.h"
 #include "IRenderer.h"
 // #include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"
-#include "SGCore/Memory/AssetRefFromThis.h"
 #include "SGCore/Memory/IAssetsRefsResolver.h"
 
 #include "SGCore/Graphics/ShaderTextureBinding.h"
@@ -32,7 +31,7 @@ namespace SGCore
     struct SGSLESubShader;
 
     // todo: add various types of defines like material textures block define e.t.c.
-    class SGCORE_EXPORT IShader : public AssetRefFromThis<IShader>, public IAsset, public IAssetsRefsResolver<IShader>
+    class SGCORE_EXPORT IShader : public IAsset, public IAssetsRefsResolver<IShader>
     {
     public:
         friend class AssetManager;

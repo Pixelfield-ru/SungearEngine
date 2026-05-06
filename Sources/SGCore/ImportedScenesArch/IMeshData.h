@@ -7,7 +7,6 @@
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Math/AABB.h"
 #include "SGCore/Serde/Defines.h"
-#include "SGCore/Memory/AssetRefFromThis.h"
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Main/CoreMain.h"
 #include "Vertex.h"
@@ -40,7 +39,7 @@ namespace SGCore
         std::streamsize m_sizeInPackage = 0;
     };
 
-    class SGCORE_EXPORT IMeshData : public IAsset, public AssetRefFromThis<IMeshData>, public IAssetsRefsResolver<IMeshData>
+    class SGCORE_EXPORT IMeshData : public IAsset, public IAssetsRefsResolver<IMeshData>
     {
     public:
         sg_serde_as_friend()

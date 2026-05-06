@@ -17,13 +17,12 @@ namespace SGCore
         friend class AssetManager;
 
         template<typename>
-        friend struct AssetRefFromThis;
-
-        template<typename>
         friend struct AssetWeakRef;
 
         template<typename>
         friend struct AssetRef;
+
+        friend class IAsset;
 
         AssetRef() = default;
         AssetRef(const AssetRef& other)

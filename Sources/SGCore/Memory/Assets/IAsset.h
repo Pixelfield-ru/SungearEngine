@@ -43,7 +43,7 @@ namespace SGCore
     class AssetManager;
 
     /// You must use \p sg_implement_type_id macro in your assets types to implement static type ID.
-    class SGCORE_EXPORT IAsset
+    class SGCORE_EXPORT IAsset : public std::enable_shared_from_this<IAsset>
     {
     public:
         sg_serde_as_friend()
@@ -118,6 +118,14 @@ namespace SGCore
         size_t getHash() const noexcept;
         
     protected:
+        /// Indicates whether this asset was loaded along the path to any file (for example: .wav, .gltf) or loaded from the binary file of the some AssetManager.\n
+        /// You can change value of this variable in your implementations of \p doLoad , \p doLazyLoad or \p doLoadFromBinaryFile functions to indicate whether this asset was successfully loaded or it is need to be reloaded.
+        bool m_isLoaded = false;
+        /// Is asset is in loading now.
+        bool m_isLoadingNow = false;
+
+        long m_lastModified = -1;
+
         /// In the implementation of the \p doLoad function, you must implement all the logic of loading an asset, which can be executed in parallel (for example: loading an asset from disk).
         /// The \p doLoad function can be called in parallel.
         virtual void doLoad(const InterpolatedPath& path) = 0;
@@ -141,13 +149,17 @@ namespace SGCore
          */
         virtual void doLoadFromBinaryFile(AssetManager* parentAssetManager) = 0;
 
-        /// Indicates whether this asset was loaded along the path to any file (for example: .wav, .gltf) or loaded from the binary file of the some AssetManager.\n
-        /// You can change value of this variable in your implementations of \p doLoad , \p doLazyLoad or \p doLoadFromBinaryFile functions to indicate whether this asset was successfully loaded or it is need to be reloaded.
-        bool m_isLoaded = false;
-        /// Is asset is in loading now.
-        bool m_isLoadingNow = false;
+        template<typename DerivedAssetT>
+        AssetRef<DerivedAssetT> sharedFromBase()
+        {
+            return AssetRef<DerivedAssetT>(std::static_pointer_cast<DerivedAssetT>(this->shared_from_this()));
+        }
 
-        long m_lastModified = -1;
+        template<typename DerivedAssetT>
+        AssetRef<const DerivedAssetT> sharedFromBase() const
+        {
+            return AssetRef<const DerivedAssetT>(std::static_pointer_cast<const DerivedAssetT>(this->shared_from_this()));
+        }
 
     private:
         /// Not serializable.

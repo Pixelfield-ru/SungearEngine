@@ -5,14 +5,13 @@
 #pragma once
 
 #include "IAsset.h"
-#include "SGCore/Memory/AssetRefFromThis.h"
 #include "SGCore/Memory/IAssetsRefsResolver.h"
 
 namespace SGCore
 {
     struct Bone;
 
-    struct SGCORE_EXPORT Skeleton : public IAsset, public IAssetsRefsResolver<Skeleton>, public AssetRefFromThis<Skeleton>
+    struct SGCORE_EXPORT Skeleton : IAsset, IAssetsRefsResolver<Skeleton>
     {
         sg_serde_as_friend()
 

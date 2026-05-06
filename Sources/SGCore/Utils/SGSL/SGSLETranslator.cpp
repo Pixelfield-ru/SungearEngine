@@ -10,7 +10,7 @@
 #include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"
 
 void SGCore::SGSLETranslator::processCode(const std::filesystem::path& path, const std::string& code,
-                                          const Ref<ShaderAnalyzedFile>& toAnalyzedFile) noexcept
+ShaderAnalyzedFile* toAnalyzedFile) noexcept
 {
     const std::string preprocessedCode = preprocessorPass(path, code);
     // std::cout << preprocessedCode << std::endl;
@@ -200,7 +200,7 @@ std::string SGCore::SGSLETranslator::preprocessorPass(const std::filesystem::pat
 }
 
 void SGCore::SGSLETranslator::translateCode(const std::filesystem::path& path, const std::string& code,
-                                            const SGCore::Ref<SGCore::ShaderAnalyzedFile>& toAnalyzedFile) noexcept
+ShaderAnalyzedFile* toAnalyzedFile) noexcept
 {
     SGSLESubShader* currentSubShader = nullptr;
 

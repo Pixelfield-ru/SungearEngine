@@ -227,7 +227,7 @@ SGCore::ECS::entity_t SGCore::IMeshData::addOnScene(const Ref<Scene>& scene) noe
 
     Mesh& meshEntityMesh = registry->emplace<Mesh>(meshEntity);
     // maybe can load the ram
-    meshEntityMesh.m_base.setMeshData(assetRef());
+    meshEntityMesh.m_base.setMeshData(sharedFromBase<IMeshData>());
 
     if(m_material->m_transparencyType == MaterialTransparencyType::MAT_BLEND ||
        m_material->m_transparencyType == MaterialTransparencyType::MAT_MASK)

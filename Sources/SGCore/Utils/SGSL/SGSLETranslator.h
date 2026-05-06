@@ -33,7 +33,7 @@ namespace SGCore
 
         SGSLETranslatorConfiguration m_config;
 
-        void processCode(const std::filesystem::path& path, const std::string& code, const Ref<ShaderAnalyzedFile>& toAnalyzedFile) noexcept;
+        void processCode(const std::filesystem::path& path, const std::string& code, ShaderAnalyzedFile* toAnalyzedFile) noexcept;
 
         void clearOutputDirectory() const noexcept;
 
@@ -48,7 +48,7 @@ namespace SGCore
          */
         [[nodiscard]] std::string preprocessorPass(const std::filesystem::path& path, const std::string& code) noexcept;
 
-        void translateCode(const std::filesystem::path& path, const std::string& code, const Ref<ShaderAnalyzedFile>& toAnalyzedFile) noexcept;
+        void translateCode(const std::filesystem::path& path, const std::string& code, ShaderAnalyzedFile* toAnalyzedFile) noexcept;
 
         std::unordered_set<std::filesystem::path> m_includedPaths;
 

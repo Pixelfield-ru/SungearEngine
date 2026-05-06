@@ -57,7 +57,7 @@ void SGCore::Skeleton::addBone(AssetRef<Bone> bone, std::string boneName) noexce
         lastParentSkeleton->removeBone(bone->getName());
     }
 
-    bone->m_parentSkeleton = assetRef();
+    bone->m_parentSkeleton = sharedFromBase<Skeleton>();
 
     m_allBonesMap[boneName] = m_allBones.size();
     bone->m_boneName = std::move(boneName);
@@ -86,7 +86,7 @@ void SGCore::Skeleton::setRootBone(AssetRef<Bone> rootBone, std::string boneName
             lastParentSkeleton->removeBone(rootBone->getName());
         }
 
-        rootBone->m_parentSkeleton = assetRef();
+        rootBone->m_parentSkeleton = sharedFromBase<Skeleton>();
     }
 
     m_rootBone = rootBone;
