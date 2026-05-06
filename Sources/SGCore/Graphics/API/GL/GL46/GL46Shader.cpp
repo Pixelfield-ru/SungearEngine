@@ -13,7 +13,10 @@ SGCore::GL46Shader::~GL46Shader() noexcept
 {
     destroy();
 
-    static_cast<GLObjectsStorage&>(CoreMain::getRenderer()->storage()).m_shaders.erase(this);
+    if(!CoreMain::getWindow().shouldClose())
+    {
+        static_cast<GLObjectsStorage&>(CoreMain::getRenderer()->storage()).m_shaders.erase(this);
+    }
 }
 
 // TODO: watch SGP1

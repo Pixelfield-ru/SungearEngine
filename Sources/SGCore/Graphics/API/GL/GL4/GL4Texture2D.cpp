@@ -10,7 +10,10 @@
 
 SGCore::GL4Texture2D::~GL4Texture2D() noexcept
 {
-    static_cast<GLObjectsStorage&>(CoreMain::getRenderer()->storage()).m_textures.erase(this);
+    if(!CoreMain::getWindow().shouldClose())
+    {
+        static_cast<GLObjectsStorage&>(CoreMain::getRenderer()->storage()).m_textures.erase(this);
+    }
 
     auto deleteTask = MakeRef<Threading::Task>();
     deleteTask->setOnExecuteCallback([texHandler = this->m_textureHandler, bufHandler = this->m_textureBufferHandler] {

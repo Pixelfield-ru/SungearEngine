@@ -17,7 +17,10 @@ SGCore::GL4FrameBuffer::~GL4FrameBuffer() noexcept
 {
     GL4FrameBuffer::destroy();
 
-    static_cast<GLObjectsStorage&>(CoreMain::getRenderer()->storage()).m_frameBuffers.erase(this);
+    if(!CoreMain::getWindow().shouldClose())
+    {
+        static_cast<GLObjectsStorage&>(CoreMain::getRenderer()->storage()).m_frameBuffers.erase(this);
+    }
 }
 
 void SGCore::GL4FrameBuffer::bindAttachment

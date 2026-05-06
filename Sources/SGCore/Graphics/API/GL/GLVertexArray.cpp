@@ -11,8 +11,10 @@ SGCore::GLVertexArray::~GLVertexArray() noexcept
 {
     GLVertexArray::destroy();
 
-    // todo: FIX CRASH ON EXIT!!!!!!!!! i think renderer is somehow destroyed before the GLVertexArray
-    static_cast<GLObjectsStorage&>(CoreMain::getRenderer()->storage()).m_vertexArrays.erase(this);
+    if(!CoreMain::getWindow().shouldClose())
+    {
+        static_cast<GLObjectsStorage&>(CoreMain::getRenderer()->storage()).m_vertexArrays.erase(this);
+    }
 }
 
 void SGCore::GLVertexArray::create() noexcept

@@ -14,7 +14,10 @@ SGCore::GL4UniformBuffer::~GL4UniformBuffer()
 {
     destroy();
 
-    static_cast<GLObjectsStorage&>(CoreMain::getRenderer()->storage()).m_uniformBuffers.erase(this);
+    if(!CoreMain::getWindow().shouldClose())
+    {
+        static_cast<GLObjectsStorage&>(CoreMain::getRenderer()->storage()).m_uniformBuffers.erase(this);
+    }
 }
 
 void SGCore::GL4UniformBuffer::bind() noexcept

@@ -25,7 +25,7 @@ namespace SGCore
         friend struct BasicApp;
 
     public:
-        static inline Signal<void()> onInit;
+        static Signal<void()> onInit;
         
         CoreMain() = delete;
 

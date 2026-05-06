@@ -26,6 +26,7 @@
 #include "SGCore/Serde/StandardSerdeSpecs/STD.h"
 #include "SGCore/Serde/StandardSerdeSpecs/Utils.h"
 
+SGCore::Signal<void()> SGCore::CoreMain::onInit;
 std::filesystem::path SGCore::CoreMain::s_sungearEngineRootPath;
 SGCore::Window SGCore::CoreMain::m_window;
 SGCore::Ref<SGCore::IRenderer> SGCore::CoreMain::m_renderer;
