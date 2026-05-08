@@ -809,7 +809,7 @@ namespace SGCore::Serde
         const auto inertia = value->m_body->getLocalInertia();
         valueContainer.addMember("m_inertia", inertia);
 
-        valueContainer.addMember("m_finalShape", static_cast<btCollisionShape*>(value->m_finalShape.get()), btTransform {}, *valueView.m_data);
+        valueContainer.addMember("m_finalShape", static_cast<btCollisionShape*>(value->m_finalShape.get()), btTransform::getIdentity(), *valueView.m_data);
 
         valueContainer.addMember("m_type", value->getType());
     }

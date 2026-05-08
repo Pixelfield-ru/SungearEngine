@@ -319,6 +319,19 @@ SGCore::Ref<SGCore::Scene> SGCore::Scene::loadSceneAndSetAsCurrent(const std::fi
     return loadedScene;
 }
 
+SGCore::ECS::entity_t SGCore::Scene::findEntity(const std::string& name) const noexcept
+{
+    auto entitiesView = m_ecsRegistry->view<EntityBaseInfo>();
+    for(const auto& [entity, baseInfo] : entitiesView.each())
+    {
+        if(baseInfo.getName() != name) continue;
+
+        return entity;
+    }
+
+    return entt::null;
+}
+
 void SGCore::Scene::resolveAllEntitiesRefs() const noexcept
 {
     auto entityBaseInfoView = m_ecsRegistry->template view<EntityBaseInfo::reg_t>();

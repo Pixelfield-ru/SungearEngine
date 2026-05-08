@@ -125,6 +125,8 @@ namespace SGCore
         static void setCurrentScene(const Ref<Scene>& scene) noexcept;
         static Ref<Scene> loadSceneAndSetAsCurrent(const std::filesystem::path& scenePath) noexcept;
 
+        ECS::entity_t findEntity(const std::string& name) const noexcept;
+
         void resolveAllEntitiesRefs() const noexcept;
 
         SG_NOINLINE static auto& getOnSceneSavedEvent() noexcept

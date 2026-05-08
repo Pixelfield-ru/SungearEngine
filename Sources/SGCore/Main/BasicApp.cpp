@@ -36,16 +36,6 @@ void SGCore::BasicApp::start(bool createBasicScene) noexcept
     onDestroy();
 }
 
-SGCore::ECS::entity_t SGCore::BasicApp::getCameraEntity() const noexcept
-{
-    return m_cameraEntity;
-}
-
-SGCore::ECS::entity_t SGCore::BasicApp::getAtmosphereEntity() const noexcept
-{
-    return m_atmosphereEntity;
-}
-
 void SGCore::BasicApp::initImpl() noexcept
 {
     m_config = CoreMain::loadConfig(m_configPath.resolved());
@@ -173,7 +163,7 @@ void SGCore::BasicApp::updateImpl(double dt, double fixedDt) noexcept
 
     if(!currentScene) return;
 
-    auto frameReceiver = currentScene->getECSRegistry()->tryGet<LayeredFrameReceiver>(m_cameraEntity);
+    auto* frameReceiver = currentScene->getECSRegistry()->tryGet<LayeredFrameReceiver>(m_cameraEntity);
     if(frameReceiver)
     {
         auto attachment = frameReceiver->m_layersFXFrameBuffer->getAttachment(m_attachmentToDisplay);
