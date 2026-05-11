@@ -130,9 +130,9 @@ SGCore::PluginProject SGCore::PluginsManager::createPluginProject(const std::fil
 
         for(const auto& presetPath : std::filesystem::directory_iterator(templatePresetsPath))
         {
-            std::cout << "SGCore::PluginsManager: copying preset: " << presetPath.path().string() << std::endl;
+            std::cout << "SGCore::PluginsManager: copying preset: " << Utils::toUTF8(presetPath.path().u16string()) << std::endl;
             const std::string presetContent = FileUtils::readFile(presetPath.path());
-            FileUtils::writeToFile(pluginDir + "/cmake/presets/" + presetPath.path().filename().string(), presetContent, false, true);
+            FileUtils::writeToFile(pluginDir + "/cmake/presets/" + Utils::toUTF8(presetPath.path().filename().u16string()), presetContent, false, true);
         }
 
         // ====================================== vcpkg.json
@@ -195,7 +195,7 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
     {
         loadedPlugin = MakeRef<PluginWrap>();
         
-        std::string pluginDLPath = std::filesystem::path(u8Path + "/" + cmakeBuildDir + "/" + pluginName + DL_POSTFIX).string();
+        const auto pluginDLPath = std::filesystem::path(u8Path + "/" + cmakeBuildDir + "/" + pluginName + DL_POSTFIX);
         
         std::string dlErr;
         
@@ -204,7 +204,7 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
         
         if(!pluginDL->getNativeHandler())
         {
-            LOG_E(SGCORE_TAG, "Cannot load plugin '{}' by path '{}'. Error is: {}", pluginName, pluginDLPath, dlErr);
+            LOG_E(SGCORE_TAG, "Cannot load plugin '{}' by path '{}'. Error is: {}", pluginName, Utils::toUTF8(pluginDLPath.u16string()), dlErr);
             return nullptr;
         }
         
@@ -213,7 +213,7 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
         
         if(!pluginEntry)
         {
-            LOG_E(SGCORE_TAG, "Cannot load plugin '{}' main function by path '{}'. Error is: {}", pluginName, pluginDLPath, dlEntryErr);
+            LOG_E(SGCORE_TAG, "Cannot load plugin '{}' main function by path '{}'. Error is: {}", pluginName, Utils::toUTF8(pluginDLPath.u16string()), dlEntryErr);
             return nullptr;
         }
         
@@ -221,7 +221,6 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
         loadedPlugin->m_plugin->m_path = u8Path;
         std::cout << "LOADED PLUGIN: " << loadedPlugin->m_plugin << std::endl;
         loadedPlugin->m_plugin->onConstruct(entryArgs);
-        std::cout << "ERROR HERE" << std::endl;
         loadedPlugin->m_pluginLib = pluginDL;
 
         LOG_I(SGCORE_TAG, "Loaded plugin '{}'.", pluginName);

@@ -20,7 +20,7 @@ SGCore::AssetRef<SGCore::SVGImageSpecialization> SGCore::SVGImage::getSpecializa
               "Cannot create specialization (with width: '{}', height: '{}') of SVGImage loaded at path '{}': document equals to nullptr (SVGImage was not successfully loaded previously).",
               width,
               height,
-              getPath().resolved().string());
+              Utils::toUTF8(getPath().resolved().u16string()));
         
         return nullptr;
     }
@@ -42,7 +42,7 @@ SGCore::AssetRef<SGCore::SVGImageSpecialization> SGCore::SVGImage::getSpecializa
                   "Cannot create specialization (with width: '{}', height: '{}') of SVGImage loaded at path '{}': bitmap was not loaded successfully (not valid).",
                   width,
                   height,
-                  getPath().resolved().string());
+                  Utils::toUTF8(getPath().resolved().u16string()));
             
             return nullptr;
         }

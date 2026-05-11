@@ -39,7 +39,7 @@ void SGCore::ITexture2D::doLoad(const InterpolatedPath& path)
         /*stbi_load_from_memory(m_textureData.get(), readBytes, &m_width, &m_height,
                               &m_channelsCount, channelsDesired);*/
         m_textureData = data_ptr(
-            stbi_load(getPath().resolved().string().data(),
+            stbi_load(Utils::toUTF8(getPath().resolved().u16string()).data(),
                       &m_width, &m_height,
                       &m_channelsCount, channelsDesired));
         
@@ -75,7 +75,7 @@ void SGCore::ITexture2D::doLoad(const InterpolatedPath& path)
         m_dataType = SGGDataType::SGG_FLOAT;
 
         m_textureData = data_ptr(
-            reinterpret_cast<std::uint8_t*>(stbi_loadf(getPath().resolved().string().data(),
+            reinterpret_cast<std::uint8_t*>(stbi_loadf(Utils::toUTF8(getPath().resolved().u16string()).data(),
                                                        &m_width, &m_height,
                                                        &m_channelsCount, channelsDesired)));
 
@@ -131,7 +131,7 @@ void SGCore::ITexture2D::doLazyLoad()
           m_height,
           size_t(m_width * m_height) * getSGGInternalFormatChannelsSizeInBytes(m_internalFormat) / 1024.0 / 1024.0,
           m_channelsCount,
-          getPath().resolved().string());
+          Utils::toUTF8(getPath().resolved().u16string()));
 }
 
 void SGCore::ITexture2D::destroyOnRAM() noexcept

@@ -4,12 +4,8 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 
-#include <glm/gtc/type_ptr.hpp>
 #include <execution>
-#include <glm/gtx/rotate_vector.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtx/string_cast.hpp>
+#include <print>
 
 #include "TransformationsUpdater.h"
 
@@ -30,9 +26,7 @@
 
 SGCore::TransformationsUpdater::TransformationsUpdater()
 {
-    std::printf("creating TransformationsUpdater %llu\n", std::hash<size_t>()((size_t) (IParallelSystem<TransformationsUpdater>*) this));
-    m_thread->setSleepTime(std::chrono::milliseconds(0));
-    m_thread->start();
+    std::printf("creating TransformationsUpdater %llu\n", std::hash<size_t>()((size_t) (ISystem*) this));
 }
 
 void SGCore::TransformationsUpdater::update(double dt, double fixedDt) noexcept
@@ -43,18 +37,18 @@ void SGCore::TransformationsUpdater::update(double dt, double fixedDt) noexcept
 
     auto registry = lockedScene->getECSRegistry();
 
-    auto transformsView = registry->view<EntityBaseInfo, Transform, RootEntityTag>();
-
-    auto start = std::chrono::system_clock::now();
+    auto transformsView = registry->view<EntityBaseInfo, RootEntityTag>();
 
     // std::cout << "Elapsed: " << std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - start) << " for clearing notTransformUpdatedEntities and copying updatedByPhysicsEntities: " << updatedByPhysicsEntities.size() << std::endl;
 
     // =======================================================================
-    transformsView.each([&](ECS::entity_t entity,
-                            EntityBaseInfo& entityBaseInfo,
-                            Transform& transform, auto) {
-        m_entitiesDesc.emplace(entity, &entityBaseInfo, &transform, nullptr);
+    for(auto&& [entity, rootBaseInfo, rootTag] : transformsView.each())
+    {
+        auto* rootTransform = registry->tryGet<Transform>(entity);
 
+        m_entitiesDesc.emplace(entity, &rootBaseInfo, rootTransform, nullptr);
+
+        // auto start = std::chrono::steady_clock::now();
         while(!m_entitiesDesc.empty())
         {
             auto [currentEntity, currentEntityBaseInfo, currentTransform, parentTransform] = m_entitiesDesc.top();
@@ -74,18 +68,10 @@ void SGCore::TransformationsUpdater::update(double dt, double fixedDt) noexcept
                     isTransformChanged |= TransformUtils::calculateTransform(*currentTransform, parentTransform);
                 }
 
-                if(isTransformChanged)
+                /*if(isTransformChanged)
                 {
                     onTransformChanged(registry, currentEntity, *currentTransform);
-                }
-
-                // calculating aabb
-                const auto* mesh = registry->tryGet<Mesh>(currentEntity);
-                if(mesh && mesh->m_base.getMeshData())
-                {
-                    worldTransform.m_aabb.applyTransformations(worldTransform.m_position, worldTransform.m_rotation, worldTransform.m_scale, mesh->m_base.getMeshData()->m_aabb);
-                    localTransform.m_aabb.applyTransformations(localTransform.m_position, localTransform.m_rotation, localTransform.m_scale, mesh->m_base.getMeshData()->m_aabb);
-                }
+                }*/
             }
 
             // =======================
@@ -98,7 +84,21 @@ void SGCore::TransformationsUpdater::update(double dt, double fixedDt) noexcept
                 m_entitiesDesc.emplace(childEntity, &childBaseInfo, childTransform, currentTransform ? currentTransform : parentTransform);
             }
         }
-    });
+    }
+
+    auto meshesView = registry->view<Transform, Mesh>();
+    for(auto&& [entity, transform, mesh] : meshesView.each())
+    {
+        auto& worldTransform = transform.m_worldTransform;
+        auto& localTransform = transform.m_localTransform;
+
+        // calculating aabb
+        if(mesh.m_base.getMeshData())
+        {
+            worldTransform.m_aabb.applyTransformations(worldTransform.m_position, worldTransform.m_rotation, worldTransform.m_scale, mesh.m_base.getMeshData()->m_aabb);
+            localTransform.m_aabb.applyTransformations(localTransform.m_position, localTransform.m_rotation, localTransform.m_scale, mesh.m_base.getMeshData()->m_aabb);
+        }
+    }
 
     // ==========================================================================================
 

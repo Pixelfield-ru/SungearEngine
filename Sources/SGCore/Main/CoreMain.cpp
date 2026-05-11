@@ -37,7 +37,7 @@ SGCore::Timer SGCore::CoreMain::m_fixedTimer { true, 100 };
 void SGCore::CoreMain::init()
 {
     HwExceptionHandler::setApplicationName("Sungear Engine");
-    HwExceptionHandler::setOutputLogFilePath(Logger::getDefaultLogger()->getLogFilePath().string());
+    HwExceptionHandler::setOutputLogFilePath(Utils::toUTF8(Logger::getDefaultLogger()->getLogFilePath().u16string()));
     HwExceptionHandler::setupHandler();
     
     // ================================================================================

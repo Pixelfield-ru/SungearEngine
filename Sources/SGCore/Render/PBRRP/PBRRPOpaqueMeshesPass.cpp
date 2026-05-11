@@ -43,7 +43,7 @@ void SGCore::PBRRPOpaqueMeshesPass::render(const Scene* scene, const Ref<IRender
                                        EntityBaseInfo& meshedEntityBaseInfo,
                                        Mesh& mesh,
                                        Transform& meshTransform,
-                                       auto, auto) {
+                                       const auto&, const auto&) {
             const bool willRender = cameraRenderingInfo.m_camera3D->isEntityVisibleForCamera(registry, cameraRenderingInfo.m_cameraEntity, meshEntity);
 
             if(!willRender) return;

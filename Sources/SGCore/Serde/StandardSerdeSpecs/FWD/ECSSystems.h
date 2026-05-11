@@ -152,7 +152,7 @@ namespace SGCore::Serde
 
     template<FormatType TFormatType>
     struct SerdeSpec<TransformationsUpdater, TFormatType> :
-            BaseTypes<IParallelSystem<TransformationsUpdater>, ISystem>,
+            BaseTypes<ISystem>,
             DerivedTypes<>
     {
         sg_serde_define_type_name("SGCore::TransformationsUpdater")

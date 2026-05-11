@@ -510,7 +510,7 @@ void SGCore::ModelAsset::loadTextures(aiMaterial* aiMat,
         aiMat->GetTexture(aiTexType, i, &texturePath);
 
         // final path is model directory file + separator + relative texture path
-        InterpolatedPath finalPath = getPath().raw().parent_path().string();
+        InterpolatedPath finalPath = getPath().raw().parent_path();
         finalPath /= InterpolatedPath(texturePath.data);
 
         sgMaterial->findAndAddTexture2D(sgMaterialTextureType, finalPath);

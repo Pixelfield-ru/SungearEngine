@@ -73,7 +73,7 @@ void SGCore::AudioTrackAsset::doLoad(const InterpolatedPath& path)
     createALBuffer();
 
     AudioTrackType trackType;
-    std::string extension = getPath().resolved().extension().string();
+    const auto extension = getPath().resolved().extension().string();
     if(extension == ".wav")
     {
         trackType = AudioTrackType::WAV;

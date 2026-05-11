@@ -70,8 +70,6 @@ namespace SGCore
     };
 }
 
-#include "Signal.h"
-
 template<typename ReturnT, typename ... Args>
 SGCore::Slot<ReturnT(Args...)>::~Slot() noexcept
 {

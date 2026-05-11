@@ -32,7 +32,7 @@ void SGCore::IShader::compile(const SGCore::AssetRef<SGCore::TextFileAsset>& tex
     if(shaderAnalyzedFile->getSubShaders().empty())
     {
         LOG_E(SGCORE_TAG,
-              "No sub shaders to compile! Shader path: {}\n{}", textFileAsset->getPath().resolved().string(), SG_CURRENT_LOCATION_STR);
+              "No sub shaders to compile! Shader path: {}\n{}", Utils::toUTF8(textFileAsset->getPath().resolved().u16string()), SG_CURRENT_LOCATION_STR);
         return;
     }
 

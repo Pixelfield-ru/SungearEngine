@@ -11,7 +11,6 @@
 #include "SGCore/Utils/Signal.h"
 #include "Transform.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
-#include "SGCore/Scene/IParallelSystem.h"
 
 namespace SGCore
 {
@@ -19,7 +18,7 @@ namespace SGCore
 
     struct TransformBase;
 
-    struct SGCORE_EXPORT TransformationsUpdater : public IParallelSystem<TransformationsUpdater>
+    struct SGCORE_EXPORT TransformationsUpdater : public ISystem
     {
         sg_implement_type_id(SGCore::TransformationsUpdater)
 
@@ -44,5 +43,6 @@ namespace SGCore
         };
 
         std::stack<EntityDesc> m_entitiesDesc;
+        // std::stack<EntityDesc> m_entitiesDesc;
     };
 }

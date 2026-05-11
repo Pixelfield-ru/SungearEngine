@@ -85,7 +85,7 @@ void SGCore::GL46Shader::doCompile()
 
             LOG_E(SGCORE_TAG,
                   "Error in shader program by path: {}\n{}",
-                  fileAsset->getPath().resolved().string(),
+                  Utils::toUTF8(fileAsset->getPath().resolved().u16string()),
                   infoLog.data());
         }
 
@@ -191,7 +191,7 @@ GLuint SGCore::GL46Shader::compileSubShader(SGCore::SGSLESubShaderType shaderTyp
 
         LOG_E(SGCORE_TAG,
               "Error in shader by path: {}\n{}",
-              fileAsset->getPath().resolved().string(),
+              Utils::toUTF8(fileAsset->getPath().resolved().u16string()),
               infoLog.data());
 
         return 0;

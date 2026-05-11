@@ -13,6 +13,8 @@
 #include "ObjectsCullingOctree.h"
 #include "OctreeCullable.h"
 
+// todo: rewrite
+
 SGCore::OctreesSolver::OctreesSolver()
 {
     m_thread->start();

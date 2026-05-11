@@ -106,22 +106,25 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
     bool modelMatrixChanged = translationChanged || rotationChanged || scaleChanged;
 
     // О ТАК ВЕРНО
-    childTransform.m_transformChanged =
-            modelMatrixChanged || (parentTransform && parentTransform->m_transformChanged) || childTransform.m_isAnimated;
+    /*childTransform.m_transformChanged =
+            modelMatrixChanged || (parentTransform && parentTransform->m_transformChanged) || childTransform.m_isAnimated;*/
 
     // todo: FIX! MAY PRODUCE INCORRECT RESULTS WHEN TransformationsUpdater WORKS IN PARALLEL.
     // I THINK THAT PARENT UPDATES FIRST AND THEN WHEN CHILD WAS ADD AND IT HAS POSITION = BASIC POSITION (0.0), ROTATION = BASIC ROTATION (0.0) AND
     // SCALE = BASIC SCALE (1.0) CHILD IS NOT UPDATED BECAUSE PARENT WAS UPDATED EARLIER AND CHILD HAS UNCHANGED TRANSFORMATIONS
     // if(childTransform.m_transformChanged)
     {
+        glm::mat4 childAnimatedMatrix;
         childLocalTransform.m_animatedModelMatrix =
             childLocalTransform.m_translationMatrix * childLocalTransform.m_rotationMatrix * childLocalTransform.m_scaleMatrix;
         childLocalTransform.m_modelMatrix = childLocalTransform.m_animatedModelMatrix;
 
         if(parentTransform)
         {
+            childAnimatedMatrix = parentTransform->m_worldTransform.m_animatedModelMatrix * childTransform.m_boneMatrix;
+
             childWorldTransform.m_animatedModelMatrix =
-                parentTransform->m_worldTransform.m_animatedModelMatrix * childTransform.m_boneMatrix * childLocalTransform.m_animatedModelMatrix;
+                childAnimatedMatrix * childLocalTransform.m_animatedModelMatrix;
 
             childWorldTransform.m_modelMatrix = parentTransform->m_worldTransform.m_modelMatrix * childLocalTransform.m_modelMatrix;
         }
@@ -153,8 +156,6 @@ bool SGCore::TransformUtils::calculateTransform(Transform& childTransform,
 
         if(parentTransform)
         {
-            const auto childAnimatedMatrix = parentTransform->m_worldTransform.m_animatedModelMatrix * childTransform.m_boneMatrix;
-
             finalTranslation = childAnimatedMatrix * glm::vec4(finalTranslation, 1.0f);
             finalRotation = parentTransform->m_worldTransform.m_rotation * finalRotation;
             finalScale = parentTransform->m_worldTransform.m_scale * finalScale;

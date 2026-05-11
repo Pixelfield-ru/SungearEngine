@@ -66,7 +66,7 @@ SGCore::Ref<SGCore::Logger> SGCore::Logger::getDefaultLogger() noexcept
 {
     if(!m_defaultLogger)
     {
-        const std::string finalLogFileName = FileUtils::getAppPublicResourcesPath().string() + "/logs/sg_log_" + Utils::getTimeAsString("%Y_%m_%d_%H_%M_%S") + ".log";
+        const std::string finalLogFileName = Utils::toUTF8(FileUtils::getAppPublicResourcesPath().u16string()) + "/logs/sg_log_" + Utils::getTimeAsString("%Y_%m_%d_%H_%M_%S") + ".log";
         setDefaultLogger(createLogger("current_session", finalLogFileName));
     }
 
