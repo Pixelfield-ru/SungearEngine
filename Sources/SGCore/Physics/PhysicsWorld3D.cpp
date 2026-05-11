@@ -125,12 +125,9 @@ void SGCore::PhysicsWorld3D::update(double dt, double fixedDt) noexcept
 
         if(parentTransform)
         {
+            // calculating local position & rotation to ignore parent rigidbody transform
             localTransform.m_position = TransformUtils::calculateLocalPosition(*parentTransform, worldTransform.m_position);
             localTransform.m_rotation = TransformUtils::calculateLocalRotation(*parentTransform, worldTransform.m_rotation);
-
-            // calculating local position & rotation to ignore parent rigidbody transform
-            /*localTransform.m_position = glm::inverse(parentTransform->m_worldTransform.m_rotation) * ((worldTransform.m_position - parentTransform->m_worldTransform.m_position) / parentTransform->m_worldTransform.m_scale);
-            localTransform.m_rotation = glm::inverse(parentTransform->m_worldTransform.m_rotation) * worldTransform.m_rotation;*/
         }
         else
         {

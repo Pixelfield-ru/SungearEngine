@@ -4,6 +4,7 @@
 
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <imgui_stdlib.h>
 #include "InspectorView.h"
 
 #include <SGCore/Render/DebugDraw.h>
@@ -142,7 +143,23 @@ void SGE::InspectorView::end()
     IView::end();
 }
 
-void SGE::InspectorView::inspectEntity() const noexcept
+void SGE::InspectorView::setChosenEntity(SGCore::ECS::entity_t entity) noexcept
+{
+    m_currentChosenEntity = entity;
+
+    if(m_currentChosenEntity == entt::null) return;
+
+    auto ecsRegistry = SGCore::Scene::getCurrentScene()->getECSRegistry();
+    auto& entityBaseInfo = ecsRegistry->get<SGCore::EntityBaseInfo>(m_currentChosenEntity);
+    m_currentEntityEditableName = entityBaseInfo.getRawName();
+}
+
+SGCore::ECS::entity_t SGE::InspectorView::getChosenEntity() const noexcept
+{
+    return m_currentChosenEntity;
+}
+
+void SGE::InspectorView::inspectEntity() noexcept
 {
     if(m_currentChosenEntity != entt::null && SGCore::Scene::getCurrentScene())
     {
@@ -160,7 +177,14 @@ void SGE::InspectorView::inspectEntity() const noexcept
             auto& entityBaseInfo = ecsRegistry->get<SGCore::EntityBaseInfo>(m_currentChosenEntity);
             if(ImGui::CollapsingHeader("Entity Base Info"))
             {
-                ImGui::Text("Name: %s", entityBaseInfo.getName().c_str());
+
+
+                // ImGui::Text("Name: %s", entityBaseInfo.getName().c_str());
+                if(ImGui::InputText("Name", &m_currentEntityEditableName))
+                {
+                    entityBaseInfo.setRawName(m_currentEntityEditableName);
+                }
+
                 if(entityBaseInfo.getParent() != entt::null)
                 {
                     auto& parentBaseInfo = ecsRegistry->get<SGCore::EntityBaseInfo>(entityBaseInfo.getParent());

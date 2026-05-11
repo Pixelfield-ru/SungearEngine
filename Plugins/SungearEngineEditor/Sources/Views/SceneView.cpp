@@ -149,7 +149,7 @@ void SGE::SceneView::renderBody()
 
                             entityBaseInfo.m_outlineColor = SGCore::EntityBaseInfo::s_outlineColor0;
 
-                            inspectorView->m_currentChosenEntity = pickedEntity;
+                            inspectorView->setChosenEntity(pickedEntity);
                             inspectorView->m_type = InspectorViewType::INSPECT_ENTITY;
                         }
                         else
@@ -166,7 +166,7 @@ void SGE::SceneView::renderBody()
                             m_entitiesManipulator.m_manipulatingEntities.insert(rootEntity);
                             m_entitiesManipulator.m_isWholeModelPicking = true;
 
-                            inspectorView->m_currentChosenEntity = rootEntity;
+                            inspectorView->setChosenEntity(rootEntity);
                             inspectorView->m_type = InspectorViewType::INSPECT_ENTITY;
                         }
                     }

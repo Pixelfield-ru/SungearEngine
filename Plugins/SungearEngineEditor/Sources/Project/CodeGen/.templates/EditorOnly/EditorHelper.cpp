@@ -166,7 +166,7 @@ void fixedUpdate(const double& dt, const double& fixedDt)
 void onInspectorViewRender()
 {
     auto inspectorViewInstance = SGE::SungearEngineEditor::getInstance()->getMainView()->getInspectorView();
-    auto currentChosenEntity = SGE::SungearEngineEditor::getInstance()->getMainView()->getInspectorView()->m_currentChosenEntity;
+    auto currentChosenEntity = SGE::SungearEngineEditor::getInstance()->getMainView()->getInspectorView()->getChosenEntity();
     auto currentSceneRegistry = SGCore::Scene::getCurrentScene()->getECSRegistry();
 
     // TODO: MAKE PREDICATE THAT IT IS NEEDS TO BE RENDERED

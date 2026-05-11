@@ -2,16 +2,41 @@
 // Created by ilya on 23.06.24.
 //
 
+#include <print>
+
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <SGCore/Render/LayeredFrameReceiver.h>
 #include <SGCore/Graphics/API/IFrameBuffer.h>
 #include <SGCore/Graphics/API/ITexture2D.h>
 #include <SGCore/Memory/Assets/SkeletalAnimationAsset.h>
+#include <SGCore/Scene/RootEntityTag.h>
+#include <SGCore/Transformations/TransformUtils.h>
+
 #include "SceneTreeView.h"
 #include "EditorScene.h"
 #include "ImGuiUtils.h"
 #include "SungearEngineEditor.h"
+
+SGE::SceneTreeView::SceneTreeView() noexcept
+{
+    m_popup.onElementClicked += [this](const SGCore::Ref<PopupElement>& element) {
+        auto currentScene = EditorScene::getCurrentScene()->m_scene;
+        auto registry = currentScene->getECSRegistry();
+
+        if(element->m_ID == "NewEntityAction")
+        {
+            const auto newEntity = registry->create();
+            auto& newBaseInfo = registry->get<SGCore::EntityBaseInfo>(newEntity);
+            newBaseInfo.setParent(m_rightClickedEntity, *registry);
+        }
+        else if(element->m_ID == "DeleteEntityAction")
+        {
+            auto& newBaseInfo = registry->get<SGCore::EntityBaseInfo>(m_rightClickedEntity);
+            newBaseInfo.destroy(*registry);
+        }
+    };
+}
 
 bool SGE::SceneTreeView::begin()
 {
@@ -20,11 +45,13 @@ bool SGE::SceneTreeView::begin()
 
 void SGE::SceneTreeView::renderBody()
 {
+    m_isTreeRightClicked = false;
+
     ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5, 0.5));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
     
     ImGuiWindowClass windowClass;
-    windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoDockingOverOther | ImGuiDockNodeFlags_AutoHideTabBar;
+    windowClass.DockNodeFlagsOverrideSet = (ImGuiDockNodeFlags_) ImGuiDockNodeFlags_NoDockingOverOther | ImGuiDockNodeFlags_AutoHideTabBar;
     ImGui::SetNextWindowClass(&windowClass);
     
     ImGui::Begin("SceneTreeView");
@@ -95,15 +122,23 @@ void SGE::SceneTreeView::renderBody()
             );
         }
 
-        ImGui::TreePush("Entities");
+        auto entitiesView = currentEditorScene->m_scene->getECSRegistry()->view<SGCore::EntityBaseInfo, SGCore::RootEntityTag>();
 
-        auto entitiesView = currentEditorScene->m_scene->getECSRegistry()->view<SGCore::EntityBaseInfo>();
-        for(const auto& e : entitiesView)
+        const bool sceneNodeOpened = ImGui::TreeNodeEx((currentEditorScene->m_scene->m_metaInfo.m_sceneName).c_str(), ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow);
+        drawEntity(entt::null);
+        acceptDragNDrop(entt::null, DragNDropType::TARGET);
+
+        if(sceneNodeOpened)
         {
-            drawTreeNode(e, true);
-        }
+            acceptDragNDrop(entt::null, DragNDropType::TARGET);
 
-        ImGui::TreePop();
+            for(const auto& e : entitiesView)
+            {
+                drawTreeNode(e);
+            }
+
+            ImGui::TreePop();
+        }
 
         ImGui::Separator();
 
@@ -122,7 +157,13 @@ void SGE::SceneTreeView::renderBody()
 
         ImGui::TreePop();
     }
-    
+
+    if(m_isTreeRightClicked)
+    {
+        m_popup.setOpened(true);
+    }
+    m_popup.draw();
+
     ImGui::End();
     
     ImGui::PopStyleVar(2);
@@ -133,7 +174,7 @@ void SGE::SceneTreeView::end()
     IView::end();
 }
 
-void SGE::SceneTreeView::drawTreeNode(const SGCore::ECS::entity_t& parentEntity, bool checkForRoot) noexcept
+void SGE::SceneTreeView::drawTreeNode(SGCore::ECS::entity_t entity) noexcept
 {
     static auto formEntityName = [](const SGCore::EntityBaseInfo& entityBaseInfo, const SGCore::ECS::entity_t& entity) {
         return entityBaseInfo.getName() + " (entity: " + std::to_string(std::to_underlying(entity)) + ")";
@@ -141,32 +182,35 @@ void SGE::SceneTreeView::drawTreeNode(const SGCore::ECS::entity_t& parentEntity,
 
     const auto& currentScene = EditorScene::getCurrentScene()->m_scene;
 
-    auto& entityBaseInfo = currentScene->getECSRegistry()->get<SGCore::EntityBaseInfo>(parentEntity);
+    auto& entityBaseInfo = currentScene->getECSRegistry()->get<SGCore::EntityBaseInfo>(entity);
 
-    if((entityBaseInfo.getParent() == entt::null || !checkForRoot) &&
-       ImGui::TreeNodeEx(formEntityName(entityBaseInfo, parentEntity).c_str(), ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow))
+    bool treeNodeOpened = false;
+    if(!entityBaseInfo.getChildren().empty())
     {
-        drawEntity(parentEntity);
+        treeNodeOpened = ImGui::TreeNodeEx(formEntityName(entityBaseInfo, entity).c_str(), ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow);
+    }
+    else
+    {
+        treeNodeOpened = ImGui::TreeNodeEx(formEntityName(entityBaseInfo, entity).c_str(), ImGuiTreeNodeFlags_Bullet);
+    }
 
-        for(const auto& childEntity : entityBaseInfo.getChildren())
+    drawEntity(entity);
+    acceptDragNDrop(entity, DragNDropType::BOTH);
+
+    if(!entityBaseInfo.getChildren().empty())
+    {
+        if(treeNodeOpened)
         {
-            auto& childEntityBaseInfo = currentScene->getECSRegistry()->get<SGCore::EntityBaseInfo>(childEntity);
-
-            if(childEntityBaseInfo.getChildren().empty())
+            for(const auto& childEntity : entityBaseInfo.getChildren())
             {
-                if(ImGui::TreeNodeEx(formEntityName(childEntityBaseInfo, childEntity).c_str(), ImGuiTreeNodeFlags_Bullet))
-                {
-                    drawEntity(childEntity);
+                drawTreeNode(childEntity);
+            }
 
-                    ImGui::TreePop();
-                }
-            }
-            else
-            {
-                drawTreeNode(childEntity, false);
-            }
+            ImGui::TreePop();
         }
-
+    }
+    else if(treeNodeOpened)
+    {
         ImGui::TreePop();
     }
 }
@@ -177,10 +221,52 @@ void SGE::SceneTreeView::drawEntity(SGCore::ECS::entity_t entity) noexcept
 
     if(ImGui::IsItemClicked())
     {
-        inspectorView->m_currentChosenEntity = entity;
+        inspectorView->setChosenEntity(entity);
         inspectorView->m_type = InspectorViewType::INSPECT_ENTITY;
     }
 
+    if(ImGui::IsItemClicked(ImGuiMouseButton_Right))
+    {
+        LOG_I(SGEDITOR_TAG, "Righted clicked entity {}", std::to_underlying(entity));
+
+        m_rightClickedEntity = entity;
+        m_isTreeRightClicked = true;
+    }
+}
+
+void SGE::SceneTreeView::acceptDragNDrop(SGCore::ECS::entity_t entity, DragNDropType dndType) noexcept
+{
     DragNDropInfo info;
-    // info.
+    info.m_type = dndType;
+    info.m_payloadProcessFunction = [entity](const ImGuiPayload* payload) {
+        const auto droppedEntity = *reinterpret_cast<SGCore::ECS::entity_t*>(payload->Data);
+
+        const auto scene = EditorScene::getCurrentScene()->m_scene;
+
+        auto& entityBaseInfo = scene->getECSRegistry()->get<SGCore::EntityBaseInfo>(droppedEntity);
+
+        auto* parentTransform = scene->getECSRegistry()->tryGet<SGCore::Transform>(entity);
+
+        if(parentTransform)
+        {
+            auto& entityTransform = scene->getECSRegistry()->get<SGCore::Transform>(droppedEntity);
+
+            entityTransform.m_localTransform.m_position = SGCore::TransformUtils::calculateLocalPosition(*parentTransform, entityTransform.m_worldTransform.m_position);
+            entityTransform.m_localTransform.m_rotation = SGCore::TransformUtils::calculateLocalRotation(*parentTransform, entityTransform.m_worldTransform.m_rotation);
+        }
+        // entityTransform.m_localTransform.m_scale = SGCore::TransformUtils::calculateLocalScale(parentTransform, entityTransform.m_worldTransform.m_scale);
+
+        entityBaseInfo.setParent(entity, *scene->getECSRegistry());
+
+        LOG_I(SGEDITOR_TAG, "Dropped entity {} into entity {}", std::to_underlying(droppedEntity), std::to_underlying(entity));
+    };
+    info.m_name = "EntityDragNDrop";
+    info.m_flags = ImGuiDragDropFlags_None;
+    info.m_drawSourceFunction = [entity]() {
+        ImGui::Text(("Drop Entity " + std::to_string(std::to_underlying(entity))).c_str());
+    };
+    info.m_data = &entity;
+    info.m_dataSize = sizeof(entity);
+
+    ImGuiUtils::UseDragNDrop(&info);
 }

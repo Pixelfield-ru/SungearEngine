@@ -25,17 +25,22 @@ namespace SGE
 
         InspectorViewType m_type = InspectorViewType::INSPECT_ENTITY;
 
-        SGCore::ECS::entity_t m_currentChosenEntity { };
         SGCore::AssetRef<SGCore::IMaterial>  m_currentMaterial;
 
         bool begin() final;
         void renderBody() final;
         void end() final;
 
-    private:
-        SGCore::Ref<Window> m_assetChooseWindow;
+        void setChosenEntity(SGCore::ECS::entity_t entity) noexcept;
+        SGCore::ECS::entity_t getChosenEntity() const noexcept;
 
-        void inspectEntity() const noexcept;
+    private:
+        SGCore::ECS::entity_t m_currentChosenEntity { };
+
+        SGCore::Ref<Window> m_assetChooseWindow;
+        std::string m_currentEntityEditableName;
+
+        void inspectEntity() noexcept;
         void inspectMaterial() const noexcept;
     };
 }
