@@ -151,7 +151,7 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createBasicScene(const std::stri
 
         auto& skyboxMesh = newScene->getECSRegistry()->get<SGCore::Mesh>(atmosphereEntity);
         auto& atmosphereScattering = newScene->getECSRegistry()->emplace<SGCore::Atmosphere>(atmosphereEntity);
-        skyboxMesh.m_base.setMaterial(SGCore::AssetManager::getInstance()->getAsset<SGCore::IMaterial, SGCore::AssetStorageType::BY_ALIAS>("standard_skybox_material0"));
+        skyboxMesh.m_base.setMaterial(SGCore::AssetManager::getInstance()->loadAsset<SGCore::IMaterial>("${enginePath}/Resources/materials/standard_skybox_material0.sgmat"));
 
         auto& skyboxTransform = newScene->getECSRegistry()->get<SGCore::Transform>(atmosphereEntity);
 

@@ -5,6 +5,7 @@
 // for glm/gtx/rotate_vector.hpp
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/rotate_vector.hpp>
+#include <print>
 
 #include "AtmosphereUpdater.h"
 
@@ -81,6 +82,8 @@ void SGCore::AtmosphereUpdater::updateAtmosphere() noexcept
     
     atmosphereScatteringsView.each([&lockedScene, this](const ECS::entity_t& entity, Atmosphere::reg_t& atmosphere, Mesh::reg_t& mesh) {
         if(!mesh.m_base.getMaterial()) return;
+
+        std::println("rendering atmosphere");
 
         size_t hashedSunPos = MathUtils::hashVector(atmosphere.m_sunPosition);
 

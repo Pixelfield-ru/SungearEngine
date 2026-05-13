@@ -41,9 +41,9 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             const SGCore::InterpolatedPath interpolatedPath = std::filesystem::relative(byPath, *SGCore::PathInterpolationMarkupData::instance().getByKey("projectPath"));
             auto createdMaterial = SGCore::AssetManager::getInstance()->getOrAddAssetByPath<SGCore::IMaterial>("${projectPath}" / interpolatedPath);
 
-            const std::string serializedMaterialRef = SGCore::Serde::Serializer::toFormat(createdMaterial);
+            const std::string serializedMaterial = SGCore::Serde::Serializer::toFormat(*createdMaterial.get());
 
-            SGCore::FileUtils::writeToFile(byPath, serializedMaterialRef, false, false);
+            SGCore::FileUtils::writeToFile(byPath, serializedMaterial, false, false);
 
             LOG_I(SGEDITOR_TAG, "Material by path '{}' created!", SGCore::Utils::toUTF8(byPath.u16string()));
         }

@@ -1,0 +1,50 @@
+{
+	"__sg_version": "1",
+	"m_path": "${enginePath}/Resources/skyboxes/standard_skybox0.sgsky",
+    "m_alias": "2729e623-502e-4f52-a3ba-19800d171582",
+    "m_storedBy": 0,
+    "m_parts": [
+        {
+            "m_path": "${enginePath}/Resources/textures/skyboxes/skybox0/standard_skybox0_xleft.png",
+            "m_assetTypeID": 3815052396,
+            "m_alias": "3f131ad2-dbb6-4c9a-94c5-56f95a5d39a2",
+            "m_storedBy": 0,
+            "m_parentAssetManagerName": "MainAssetManager"
+        },
+        {
+            "m_path": "${enginePath}/Resources/textures/skyboxes/skybox0/standard_skybox0_xright.png",
+            "m_assetTypeID": 3815052396,
+            "m_alias": "96a56cda-70d9-4697-a81f-17eab19db1ac",
+            "m_storedBy": 0,
+            "m_parentAssetManagerName": "MainAssetManager"
+        },
+        {
+            "m_path": "${enginePath}/Resources/textures/skyboxes/skybox0/standard_skybox0_ytop.png",
+            "m_assetTypeID": 3815052396,
+            "m_alias": "d70f218d-a5a1-4378-9229-510922b9d68d",
+            "m_storedBy": 0,
+            "m_parentAssetManagerName": "MainAssetManager"
+        },
+        {
+            "m_path": "${enginePath}/Resources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png",
+            "m_assetTypeID": 3815052396,
+            "m_alias": "43a5e6e9-742c-44ab-a76c-e41a4a0f52cd",
+            "m_storedBy": 0,
+            "m_parentAssetManagerName": "MainAssetManager"
+        },
+        {
+            "m_path": "${enginePath}/Resources/textures/skyboxes/skybox0/standard_skybox0_zfront.png",
+            "m_assetTypeID": 3815052396,
+            "m_alias": "b8dea3de-6deb-41a7-8626-256aeeefcea9",
+            "m_storedBy": 0,
+            "m_parentAssetManagerName": "MainAssetManager"
+        },
+        {
+            "m_path": "${enginePath}/Resources/textures/skyboxes/skybox0/standard_skybox0_zback.png",
+            "m_assetTypeID": 3815052396,
+            "m_alias": "e70d4789-da64-4577-9188-3772cc5a4986",
+            "m_storedBy": 0,
+            "m_parentAssetManagerName": "MainAssetManager"
+        }
+    ]
+}

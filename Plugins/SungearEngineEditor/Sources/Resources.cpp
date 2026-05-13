@@ -14,44 +14,15 @@
 void SGE::Resources::loadStandardResources(SGCore::AssetManager& toManager) noexcept
 {
     // auto standardCubemap = SGCore::Ref<SGCore::ICubemapTexture>(SGCore::CoreMain::getRenderer()->createCubemapTexture());
-    auto standardCubemap = toManager.getOrAddAssetByAlias<SGCore::ICubemapTexture>("standard_skybox0");
+    auto standardCubemap = toManager.loadAsset<SGCore::ICubemapTexture>("${enginePath}/Resources/skyboxes/standard_skybox0.sgsky");
 
     {
-        standardCubemap->m_parts.push_back(toManager.loadAsset<SGCore::ITexture2D>(
-                "${enginePath}/Resources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
-        ));
-        standardCubemap->m_parts.push_back(toManager.loadAsset<SGCore::ITexture2D>(
-                "${enginePath}/Resources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
-        ));
-
-        standardCubemap->m_parts.push_back(toManager.loadAsset<SGCore::ITexture2D>(
-                "${enginePath}/Resources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
-        ));
-        standardCubemap->m_parts.push_back(toManager.loadAsset<SGCore::ITexture2D>(
-                "${enginePath}/Resources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
-        ));
-
-        standardCubemap->m_parts.push_back(toManager.loadAsset<SGCore::ITexture2D>(
-                "${enginePath}/Resources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
-        ));
-        standardCubemap->m_parts.push_back(toManager.loadAsset<SGCore::ITexture2D>(
-                "${enginePath}/Resources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
-        ));
-
-        standardCubemap->create();
-
-        auto standardCubemapMaterial = toManager.getOrAddAssetByAlias<SGCore::IMaterial>("standard_skybox_material0");
-        standardCubemapMaterial->m_shaders["GeometryPass"] =
-                toManager.loadAsset<SGCore::IShader>(
-                        *SGCore::RenderPipelinesManager::instance().getCurrentRenderPipeline()->m_shadersPaths["SkyboxShader"]);
-        standardCubemapMaterial->m_meshRenderState.m_useFacesCulling = false;
+        auto standardCubemapMaterial = toManager.loadAsset<SGCore::IMaterial>("${enginePath}/Resources/materials/standard_skybox_material0.sgmat");
 
         auto standardGridMaterial = toManager.getOrAddAssetByAlias<SGCore::IMaterial>("standard_grid_material");
         standardGridMaterial->m_shaders["GeometryPass"] =
                 toManager.loadAsset<SGCore::IShader>(*SGCore::Paths::getDefaultPaths()["Shaders/InfiniteGrid"]);
         standardGridMaterial->m_meshRenderState.m_useFacesCulling = false;
-
-        standardCubemapMaterial->addTexture2D(SGTextureSlot::SGTT_SKYBOX, standardCubemap);
     }
 
     toManager.loadAssetWithAlias<SGCore::ModelAsset>(

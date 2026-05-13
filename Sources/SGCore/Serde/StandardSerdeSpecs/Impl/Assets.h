@@ -2,6 +2,9 @@
 // Created by stuka on 22.08.2025.
 //
 
+// Note that in the asset serializer, you need to check whether the binary file is being serialized or not.
+// If not, then you need to load the asset from the file along the path of asset, if your asset can be represented as a file.
+
 #pragma once
 
 #include "SGCore/Serde/Serde.h"
@@ -104,10 +107,8 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<ITexture2D, TFormatType>::serialize(SerializableValueView<const ITexture2D, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept
     {
-        if(!assetsPackage.isSerializingBinary())
-        {
-            return;
-        }
+        // skipping saving metadata because we dont serializing binary file
+        if(!assetsPackage.isSerializingBinary()) return;
 
         /// Next, we serialize the heavy data (in this case, \p m_data )
         /// into a binary package file and get the output markup,
@@ -134,6 +135,7 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<ITexture2D, TFormatType>::deserialize(DeserializableValueView<ITexture2D, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept
     {
+        // if not binary serializing then loading texture directly from file
         if(!assetsPackage.isSerializingBinary())
         {
             valueView.m_data->getParentAssetManager()->template loadAsset<ITexture2D>(valueView.m_data->getPath());
@@ -200,6 +202,8 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<ByteFileAsset, TFormatType>::serialize(SerializableValueView<const ByteFileAsset, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept
     {
+        if(!assetsPackage.isSerializingBinary()) return;
+
         const AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_dataBuffer, valueView.m_data->m_dataBufferSize);
 
         valueView.container().addMember("m_dataMarkupInPackage", dataMarkup);
@@ -208,6 +212,12 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<ByteFileAsset, TFormatType>::deserialize(DeserializableValueView<ByteFileAsset, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept
     {
+        if(!assetsPackage.isSerializingBinary())
+        {
+            valueView.m_data->getParentAssetManager()->template loadAsset<ByteFileAsset>(valueView.m_data->getPath());
+            return;
+        }
+
         const auto dataMarkup = valueView.container().template getMember<AssetsPackage::DataMarkup>("m_dataMarkupInPackage");
 
         if(dataMarkup)
@@ -219,8 +229,10 @@ namespace SGCore::Serde
     // =============================================== impl AudioTrackAsset
 
     template<FormatType TFormatType>
-    void SerdeSpec<AudioTrackAsset, TFormatType>::serialize(SerializableValueView<const AudioTrackAsset, TFormatType>& valueView) noexcept
+    void SerdeSpec<AudioTrackAsset, TFormatType>::serialize(SerializableValueView<const AudioTrackAsset, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept
     {
+        if(!assetsPackage.isSerializingBinary()) return;
+
         valueView.container().addMember("m_audioTrackType", valueView.m_data->m_audioTrackType);
         valueView.container().addMember("m_audioFormat", valueView.m_data->m_audioFormat);
         valueView.container().addMember("m_numChannels", valueView.m_data->m_numChannels);
@@ -232,8 +244,14 @@ namespace SGCore::Serde
     }
 
     template<FormatType TFormatType>
-    void SerdeSpec<AudioTrackAsset, TFormatType>::deserialize(DeserializableValueView<AudioTrackAsset, TFormatType>& valueView) noexcept
+    void SerdeSpec<AudioTrackAsset, TFormatType>::deserialize(DeserializableValueView<AudioTrackAsset, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept
     {
+        if(!assetsPackage.isSerializingBinary())
+        {
+            valueView.m_data->getParentAssetManager()->template loadAsset<AudioTrackAsset>(valueView.m_data->getPath());
+            return;
+        }
+
         const auto audioTrackType = valueView.container().template getMember<AudioTrackType>("m_audioTrackType");
         if(audioTrackType)
         {
@@ -312,6 +330,8 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<TextFileAsset, TFormatType>::serialize(SerializableValueView<const TextFileAsset, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept
     {
+        if(!assetsPackage.isSerializingBinary()) return;
+
         AssetsPackage::DataMarkup textureDataMarkup = assetsPackage.addData(valueView.m_data->m_data);
 
         valueView.container().addMember("m_dataOffset", textureDataMarkup.m_offset);
@@ -321,6 +341,12 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<TextFileAsset, TFormatType>::deserialize(DeserializableValueView<TextFileAsset, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept
     {
+        if(!assetsPackage.isSerializingBinary())
+        {
+            valueView.m_data->getParentAssetManager()->template loadAsset<TextFileAsset>(valueView.m_data->getPath());
+            return;
+        }
+
         auto dataOffsetOpt = valueView.container().template getMember<std::streamsize>("m_dataOffset");
         auto dataSizeInBytesOpt = valueView.container().template getMember<std::streamsize>("m_dataSizeInBytes");
 
@@ -681,11 +707,7 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<ModelAsset, TFormatType>::serialize(SerializableValueView<const ModelAsset, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept
     {
-        // it is assumed that asset files will be loaded from disk in the future
-        if(!assetsPackage.isSerializingBinary())
-        {
-            return;
-        }
+        if(!assetsPackage.isSerializingBinary()) return;
 
         valueView.container().addMember("m_importerFlags", valueView.m_data->m_importerFlags);
         valueView.container().addMember("m_modelName", valueView.m_data->m_modelName);
@@ -695,9 +717,6 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<ModelAsset, TFormatType>::deserialize(DeserializableValueView<ModelAsset, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept
     {
-        // special logic for model asset because no one refers on ModelAsset using AssetRef,
-        // so ModelAsset wont be loaded from disk automatically
-        // if loading from disk
         if(!assetsPackage.isSerializingBinary())
         {
             valueView.m_data->getParentAssetManager()->template loadAsset<ModelAsset>(valueView.m_data->getPath());

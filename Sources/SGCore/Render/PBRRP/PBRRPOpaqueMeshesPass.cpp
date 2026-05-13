@@ -4,6 +4,8 @@
 
 #include "PBRRPOpaqueMeshesPass.h"
 
+#include <print>
+
 #include "SGCore/ECS/Registry.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
@@ -119,6 +121,8 @@ void SGCore::PBRRPOpaqueMeshesPass::render(const Scene* scene, const Ref<IRender
             {
                 texUnitOffset = cameraRenderingInfo.m_cameraCSMTarget->bindUniformsToShader(shaderToUse.get(), cameraRenderingInfo.m_cameraRenderingBase->m_zFar, texUnitOffset);
             }
+
+            // std::println("rendering object: {}", meshedEntityBaseInfo.getName());
 
             CoreMain::getRenderer()->renderMeshData(
                 mesh.m_base.getMeshData().get(),

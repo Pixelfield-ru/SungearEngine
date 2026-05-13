@@ -363,6 +363,8 @@ void main()
         pickingColor = vec3(u_pickingColor);
     }
 
+    // layerColor.rgba = vec4(albedo.rgb, 1.0);
+
     layerWorldPosColor = vsIn.fragPos;
     layerFragmentNormalColor = finalNormal;
     layerVertexNormalColor = vsIn.worldNormal;

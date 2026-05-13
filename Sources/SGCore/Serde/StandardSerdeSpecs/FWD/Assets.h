@@ -136,9 +136,9 @@ namespace SGCore::Serde
         sg_serde_define_type_name("SGCore::AudioTrackAsset")
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<const AudioTrackAsset, TFormatType>& valueView) noexcept;
+        static void serialize(SerializableValueView<const AudioTrackAsset, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept;
 
-        static void deserialize(DeserializableValueView<AudioTrackAsset, TFormatType>& valueView) noexcept;
+        static void deserialize(DeserializableValueView<AudioTrackAsset, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept;
     };
 
     // ======================================================== ICubemapTexture FWD
