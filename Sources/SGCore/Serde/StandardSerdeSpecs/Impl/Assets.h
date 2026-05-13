@@ -30,7 +30,6 @@ namespace SGCore::Serde
         valueView.container().addMember("m_path", valueView.m_data->getPath());
         valueView.container().addMember("m_alias", valueView.m_data->getAlias());
         valueView.container().addMember("m_storedBy", valueView.m_data->storedByWhat());
-        valueView.container().addMember("m_useDataSerde", true);
     }
 
     template<FormatType TFormatType>
@@ -54,7 +53,8 @@ namespace SGCore::Serde
             valueView.m_data->m_storedBy = *assetStorageType;
         }
 
-        const auto useDataSerde = valueView.container().template getMember<bool>("m_useDataSerde");
+        valueView.m_data->m_isSavedInBinaryFile = assetsPackage.isSerializingBinary();
+        /*const auto useDataSerde = valueView.container().template getMember<bool>("m_useDataSerde");
         if(useDataSerde)
         {
             valueView.m_data->m_isSavedInBinaryFile = *useDataSerde;
@@ -62,7 +62,7 @@ namespace SGCore::Serde
         else
         {
             valueView.m_data->m_isSavedInBinaryFile = false;
-        }
+        }*/
 
         valueView.m_data->m_parentAssetManager = assetsPackage.getParentAssetManager()->shared_from_this();
     }
@@ -104,6 +104,11 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<ITexture2D, TFormatType>::serialize(SerializableValueView<const ITexture2D, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept
     {
+        if(!assetsPackage.isSerializingBinary())
+        {
+            return;
+        }
+
         /// Next, we serialize the heavy data (in this case, \p m_data )
         /// into a binary package file and get the output markup,
         /// which indicates the position of the \p m_data data in the binary file,
@@ -129,6 +134,12 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<ITexture2D, TFormatType>::deserialize(DeserializableValueView<ITexture2D, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept
     {
+        if(!assetsPackage.isSerializingBinary())
+        {
+            valueView.m_data->getParentAssetManager()->template loadAsset<ITexture2D>(valueView.m_data->getPath());
+            return;
+        }
+
         /// We just deserialize lightweight data because it is always in the JSON file (we always serialize lightweight data).
         auto width = valueView.container().template getMember<std::int32_t>("m_width");
         auto height = valueView.container().template getMember<std::int32_t>("m_height");
@@ -670,6 +681,12 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<ModelAsset, TFormatType>::serialize(SerializableValueView<const ModelAsset, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept
     {
+        // it is assumed that asset files will be loaded from disk in the future
+        if(!assetsPackage.isSerializingBinary())
+        {
+            return;
+        }
+
         valueView.container().addMember("m_importerFlags", valueView.m_data->m_importerFlags);
         valueView.container().addMember("m_modelName", valueView.m_data->m_modelName);
         valueView.container().addMember("m_rootNode", valueView.m_data->m_rootNode, assetsPackage);
@@ -678,6 +695,15 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<ModelAsset, TFormatType>::deserialize(DeserializableValueView<ModelAsset, TFormatType>& valueView, AssetsPackage& assetsPackage) noexcept
     {
+        // special logic for model asset because no one refers on ModelAsset using AssetRef,
+        // so ModelAsset wont be loaded from disk automatically
+        // if loading from disk
+        if(!assetsPackage.isSerializingBinary())
+        {
+            valueView.m_data->getParentAssetManager()->template loadAsset<ModelAsset>(valueView.m_data->getPath());
+            return;
+        }
+
         auto importerFlags = valueView.container().template getMember<int>("m_importerFlags");
         if(importerFlags)
         {

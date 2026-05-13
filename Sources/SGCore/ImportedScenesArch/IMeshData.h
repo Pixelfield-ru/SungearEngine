@@ -3,6 +3,7 @@
 #include <BulletCollision/CollisionShapes/btTriangleMesh.h>
 
 #include "SGCore/Memory/IAssetsRefsResolver.h"
+#include "SGCore/Memory/AssetWeakRef.h"
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Math/AABB.h"

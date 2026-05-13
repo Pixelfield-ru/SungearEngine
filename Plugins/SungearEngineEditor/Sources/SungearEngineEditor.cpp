@@ -94,7 +94,7 @@ void SGE::SungearEngineEditor::update(const double& dt, const double& fixedDt)
 
     if(SGCore::Input::PC::keyboardKeyReleased(SGCore::Input::KeyboardKey::KEY_Y) && !ImGui::GetIO().WantTextInput)
     {
-        SGCore::AssetManager::getInstance()->createPackage("./", "assets");
+        SGCore::AssetManager::getInstance()->createPackage("${projectPath}/Resources", "assets", false);
 
         /*try
         {
@@ -117,7 +117,12 @@ void SGE::SungearEngineEditor::update(const double& dt, const double& fixedDt)
 
     if(SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_L) && !ImGui::GetIO().WantTextInput)
     {
-        SGCore::AssetManager::getInstance()->loadPackage("./", "assets");
+        SGCore::AssetManager::getInstance()->loadPackage("${projectPath}/Resources", "assets", false);
+    }
+
+    if(SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_G) && !ImGui::GetIO().WantTextInput)
+    {
+        SGCore::AssetManager::getInstance()->loadPackage("${projectPath}/Resources", "assets", true);
     }
 
     if(SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_F11))

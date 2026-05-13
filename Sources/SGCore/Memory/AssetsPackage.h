@@ -31,6 +31,8 @@ namespace SGCore
         template<collection CollectionT>
         [[nodiscard]] DataMarkup addData(const CollectionT& data) noexcept
         {
+            if(!m_serializeBinary) return { };
+
             using value_t = typename CollectionT::value_type;
 
             DataMarkup writtenDataMarkup { std::ssize(m_buffer), std::ssize(data) * (std::streamsize) sizeof(value_t) };
@@ -44,6 +46,8 @@ namespace SGCore
         template<typename T>
         [[nodiscard]] DataMarkup addData(const T& data) noexcept
         {
+            if(!m_serializeBinary) return { };
+
             DataMarkup writtenDataMarkup { std::ssize(m_buffer), sizeof(T) };
 
             auto* bytes = reinterpret_cast<const char*>(&data);
@@ -55,7 +59,7 @@ namespace SGCore
         template<typename T>
         [[nodiscard]] DataMarkup addData(const T* buffer, const std::streamsize& bufferSize) noexcept
         {
-            if(!buffer) return { 0, 0 };
+            if(!buffer || !m_serializeBinary) return { 0, 0 };
 
             DataMarkup writtenDataMarkup { std::ssize(m_buffer), bufferSize * (std::streamsize) sizeof(T) };
 
@@ -116,6 +120,11 @@ namespace SGCore
             return m_path;
         }
 
+        bool isSerializingBinary() const noexcept
+        {
+            return m_serializeBinary;
+        }
+
         [[nodiscard]] auto getParentAssetManager() const noexcept
         {
             return m_parentAssetManager;
@@ -125,5 +134,6 @@ namespace SGCore
         AssetManager* m_parentAssetManager { };
         std::filesystem::path m_path;
         std::vector<char> m_buffer;
+        bool m_serializeBinary = true;
     };
 }

@@ -1056,8 +1056,8 @@ namespace SGCore
 
         [[nodiscard]] SG_NOINLINE static Ref<AssetManager> getInstance() noexcept;
 
-        void createPackage(const InterpolatedPath& toDirectory, const std::string& packageName) noexcept;
-        void loadPackage(const InterpolatedPath& fromDirectory, const std::string& packageName) noexcept;
+        void createPackage(const InterpolatedPath& toDirectory, const std::string& packageName, bool createBinary = true) noexcept;
+        void loadPackage(const InterpolatedPath& fromDirectory, const std::string& packageName, bool loadBinary = true) noexcept;
 
         [[nodiscard]] const AssetsPackage& getPackage() const noexcept;
 
@@ -1261,7 +1261,7 @@ namespace SGCore
          * @param assetPath
          * @return Does asset exist in local filesystem?
          */
-        static bool checkForAssetExistenceInFilesystem(const int64_t& assetTypeID,
+        static bool checkForAssetExistenceInFilesystem(int64_t assetTypeID,
                                                        const InterpolatedPath& assetPath) noexcept;
 
         /// This event is using for resolve references of member assets after package deserialization.

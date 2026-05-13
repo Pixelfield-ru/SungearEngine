@@ -56,7 +56,8 @@ bool SGCore::AssetManager::isAssetExists(const std::string& alias, const Interpo
 }
 
 void SGCore::AssetManager::createPackage(const InterpolatedPath& toDirectory,
-                                         const std::string& packageName) noexcept
+                                         const std::string& packageName,
+                                         bool createBinary) noexcept
 {
     const std::filesystem::path binaryFilePath = (toDirectory / (packageName + ".bin")).resolved();
     const std::filesystem::path markupFilePath = (toDirectory / (packageName + ".json")).resolved();
@@ -65,23 +66,30 @@ void SGCore::AssetManager::createPackage(const InterpolatedPath& toDirectory,
 
     m_package.m_path = binaryFilePath;
     m_package.m_parentAssetManager = this;
+    m_package.m_serializeBinary = createBinary;
 
     const std::string writtenJSON = Serde::Serializer::toFormat(Serde::FormatType::JSON, m_assets, m_package);
 
     // writing markup (json) file
     FileUtils::writeToFile(markupFilePath, writtenJSON, false, true);
-    // writing binary file
-    FileUtils::writeBytes(binaryFilePath, 0, m_package.m_buffer, false);
+
+    if(createBinary)
+    {
+        // writing binary file
+        FileUtils::writeBytes(binaryFilePath, 0, m_package.m_buffer, false);
+    }
 }
 
 void SGCore::AssetManager::loadPackage(const InterpolatedPath& fromDirectory,
-                                       const std::string& packageName) noexcept
+                                       const std::string& packageName,
+                                       bool loadBinary) noexcept
 {
     const std::filesystem::path binaryFilePath = (fromDirectory / (packageName + ".bin")).resolved();
     const std::filesystem::path markupFilePath = (fromDirectory / (packageName + ".json")).resolved();
 
     m_package.m_path = binaryFilePath;
     m_package.m_parentAssetManager = this;
+    m_package.m_serializeBinary = loadBinary;
 
     std::string outputLog;
     decltype(m_assets) loadedAssets;
@@ -219,7 +227,7 @@ void SGCore::AssetManager::reloadAssetFromDisk(SGCore::IAsset* asset, SGCore::As
     }
 }
 
-bool SGCore::AssetManager::checkForAssetExistenceInFilesystem(const int64_t& assetTypeID,
+bool SGCore::AssetManager::checkForAssetExistenceInFilesystem(int64_t assetTypeID,
                                                               const SGCore::InterpolatedPath& assetPath) noexcept
 {
     if(!std::filesystem::exists(assetPath.resolved()))

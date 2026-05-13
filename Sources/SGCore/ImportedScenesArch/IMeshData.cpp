@@ -1,11 +1,11 @@
+#include "IMeshData.h"
+
 #include <LinearMath/btVector3.h>
 
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/Picking/Pickable.h"
-
-#include "IMeshData.h"
 
 #include "SGCore/Graphics/API/GPUDeviceInfo.h"
 #include "SGCore/Main/CoreMain.h"
@@ -15,9 +15,6 @@
 #include "SGCore/Graphics/API/IIndexBuffer.h"
 
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
-
-#include "SGCore/Scene/Scene.h"
-#include "SGCore/Render/SpacePartitioning/OctreeCullable.h"
 
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Render/Alpha/OpaqueEntityTag.h"
