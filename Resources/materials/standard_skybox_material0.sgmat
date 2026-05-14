@@ -46,7 +46,7 @@
         [],
         [
 			{
-				"m_path": "${enginePath}/Resources/skyboxes/standard_skybox0.sgsky",
+				"m_path": "${enginePath}/Resources/skyboxes/standard_skybox0.sgcm",
 				"m_assetTypeID": 3815052396,
 				"m_alias": "2729e623-502e-4f52-a3ba-19800d171582",
 				"m_storedBy": 0,

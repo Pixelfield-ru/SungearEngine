@@ -65,20 +65,12 @@ public:
 const SGCore::Atlas* testAtlas { };
 std::vector<SGCore::AssetRef<SGCore::ITexture2D>> testTextures;
 
-SGCore::AssetRef<SGCore::IShader> screenShader;
 SGCore::Ref<SGCore::ITexture2D> depthAttachment;
 SGCore::Ref<SGCore::ITexture2D> cameraDepthAttachment;
-SGCore::Ref<SGCore::IMeshData> m_screenQuadMeshData;
-SGCore::MeshRenderState m_screenQuadMeshRenderState;
 
 void coreInit()
 {
     ImGui::SetCurrentContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());
-
-    screenShader = SGCore::AssetManager::getInstance()->loadAsset<SGCore::IShader>("${enginePath}/Resources/sg_shaders/features/screen.sgshader");
-
-    // SG_SERDE_ARG_COUNT();
-    // SG_SERDE_DEFINE_CONNECTION(Base, Derived)
 
     std::unique_ptr<Base> d = std::make_unique<Derived0>();
     d->a = 10;
@@ -167,41 +159,6 @@ void coreInit()
         });
     }
 
-    m_screenQuadMeshData = SGCore::Ref<SGCore::IMeshData>(SGCore::CoreMain::getRenderer()->createMeshData());
-
-    m_screenQuadMeshData->m_vertices.resize(4);
-
-    m_screenQuadMeshData->m_vertices[0] = {
-        .m_position = glm::vec3 { -1, -1, 0.0f },
-        .m_uv = glm::vec3 { 0.0f, 0.0f, 0.0f }
-    };
-
-    m_screenQuadMeshData->m_vertices[1] = {
-        .m_position = glm::vec3 { -1, 0, 0.0f },
-        .m_uv = glm::vec3 { 0.0f, 1.0f, 0.0f }
-    };
-
-    m_screenQuadMeshData->m_vertices[2] = {
-        .m_position = glm::vec3 { 0, 0, 0.0f },
-        .m_uv = glm::vec3 { 1.0f, 1.0f, 0.0f }
-    };
-
-    m_screenQuadMeshData->m_vertices[3] = {
-        .m_position = glm::vec3 { 0, -1, 0.0f },
-        .m_uv = glm::vec3 { 1.0f, 0.0f, 0.0f }
-    };
-
-    m_screenQuadMeshData->m_indices.resize(6);
-
-    m_screenQuadMeshData->m_indices[0] = 0;
-    m_screenQuadMeshData->m_indices[1] = 2;
-    m_screenQuadMeshData->m_indices[2] = 1;
-    m_screenQuadMeshData->m_indices[3] = 0;
-    m_screenQuadMeshData->m_indices[4] = 3;
-    m_screenQuadMeshData->m_indices[5] = 2;
-
-    m_screenQuadMeshData->prepare();
-
     /*SGCore::CodeGen::Generator generator;
     const std::string generated = generator.generate(SGCore::InterpolatedPath("${enginePath}/Sources/SGCore/CodeGeneration/SerdeGeneration/.templates/SerdeSpec.h").resolved());
     SGCore::FileUtils::writeToFile("generated.h", generated, false, true);*/
@@ -248,41 +205,6 @@ void onUpdate(const double& dt, const double& fixedDt)
     {
         SGCore::PluginsManager::unloadAllPlugins();
     }
-
-    /*screenShader->bind();
-
-    // use this to flip screen output
-    screenShader->useInteger("u_flipOutput", false);*/
-
-    // someTexture->bind(0);
-    /*if(testAtlas->getTexture())
-    {
-        testAtlas->getTexture()->bind(0);
-    }*/
-
-    /*if(depthAttachment)
-    {
-        depthAttachment->bind(0);
-    }*/
-
-    /*if(cameraDepthAttachment)
-    {
-        cameraDepthAttachment->bind(0);
-    }*/
-
-    /*if(testTextures[0])
-    {
-        testTextures[0]->bind(0);
-    }*/
-
-    /*screenShader->useTextureBlock("u_bufferToDisplay", 0);
-
-    SGCore::CoreMain::getRenderer()->renderArray(
-        m_screenQuadMeshData->getVertexArray(),
-        m_screenQuadMeshRenderState,
-        m_screenQuadMeshData->m_vertices.size(),
-        m_screenQuadMeshData->m_indices.size()
-    );*/
 
     if(SGCore::Scene::getCurrentScene())
     {

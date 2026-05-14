@@ -9,7 +9,7 @@
 #include "Config.h"
 #include "CoreGlobals.h"
 #include "SGCore/Graphics/API/GraphicsDataTypes.h"
-#include "SGCore/Utils/Slot.h"
+#include "SGCore/Utils/Signal.h"
 #include "SGCore/Utils/StringInterpolation/InterpolatedPath.h"
 
 namespace SGCore

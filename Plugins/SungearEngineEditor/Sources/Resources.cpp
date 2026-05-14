@@ -14,7 +14,7 @@
 void SGE::Resources::loadStandardResources(SGCore::AssetManager& toManager) noexcept
 {
     // auto standardCubemap = SGCore::Ref<SGCore::ICubemapTexture>(SGCore::CoreMain::getRenderer()->createCubemapTexture());
-    auto standardCubemap = toManager.loadAsset<SGCore::ICubemapTexture>("${enginePath}/Resources/skyboxes/standard_skybox0.sgsky");
+    auto standardCubemap = toManager.loadAsset<SGCore::ICubemapTexture>("${enginePath}/Resources/skyboxes/standard_skybox0.sgcm");
 
     {
         auto standardCubemapMaterial = toManager.loadAsset<SGCore::IMaterial>("${enginePath}/Resources/materials/standard_skybox_material0.sgmat");
