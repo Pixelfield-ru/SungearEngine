@@ -20,6 +20,7 @@
 #include <SGCore/Motion/IK/IKJoint.h>
 #include <SGCore/Motion/IK/IKRootJoint.h>
 #include <SGCore/Render/Terrain/Terrain.h>
+#include <SGCore/Render/MainCameraTag.h>
 
 #include "SungearEngineEditor.h"
 
@@ -376,7 +377,6 @@ void SGE::InspectorView::inspectEntity() noexcept
             auto* terrain = ecsRegistry->tryGet<SGCore::Terrain>(m_currentChosenEntity);
             if(terrain && ImGui::CollapsingHeader("Terrain"))
             {
-                auto* mesh = ecsRegistry->tryGet<SGCore::Mesh>(m_currentChosenEntity);
                 if(mesh)
                 {
                     if(ImGui::Button("Generate"))
@@ -397,7 +397,35 @@ void SGE::InspectorView::inspectEntity() noexcept
             {
 
             }
+
+            auto* mainCameraTag = ecsRegistry->tryGet<SGCore::MainCameraTag>(m_currentChosenEntity);
+            if(mainCameraTag && ImGui::CollapsingHeader("MainCameraTag"))
+            {
+
+            }
+
+            auto* renderingBase = ecsRegistry->tryGet<SGCore::RenderingBase>(m_currentChosenEntity);
+            if(renderingBase && ImGui::CollapsingHeader("RenderingBase"))
+            {
+
+            }
+
+            auto* camera3D = ecsRegistry->tryGet<SGCore::Camera3D>(m_currentChosenEntity);
+            if(camera3D && ImGui::CollapsingHeader("Camera3D"))
+            {
+
+            }
+
+            auto* layeredFrameReceiver = ecsRegistry->tryGet<SGCore::LayeredFrameReceiver>(m_currentChosenEntity);
+            if(layeredFrameReceiver && ImGui::CollapsingHeader("LayeredFrameReceiver"))
+            {
+
+            }
         }
+
+        // ============================================================================
+        // ============================================================================
+        // ============================================================================
 
         if(ImGui::Button("Add Transform"))
         {
@@ -460,6 +488,38 @@ void SGE::InspectorView::inspectEntity() noexcept
             if(!ecsRegistry->allOf<SGCore::EnableMeshPass>(m_currentChosenEntity))
             {
                 ecsRegistry->emplace<SGCore::EnableMeshPass>(m_currentChosenEntity);
+            }
+        }
+
+        if(ImGui::Button("Add MainCameraTag"))
+        {
+            if(!ecsRegistry->allOf<SGCore::MainCameraTag>(m_currentChosenEntity))
+            {
+                ecsRegistry->emplace<SGCore::MainCameraTag>(m_currentChosenEntity);
+            }
+        }
+
+        if(ImGui::Button("Add RenderingBase"))
+        {
+            if(!ecsRegistry->allOf<SGCore::RenderingBase>(m_currentChosenEntity))
+            {
+                ecsRegistry->emplace<SGCore::RenderingBase>(m_currentChosenEntity);
+            }
+        }
+
+        if(ImGui::Button("Add Camera3D"))
+        {
+            if(!ecsRegistry->allOf<SGCore::Camera3D>(m_currentChosenEntity))
+            {
+                ecsRegistry->emplace<SGCore::Camera3D>(m_currentChosenEntity);
+            }
+        }
+
+        if(ImGui::Button("Add LayeredFrameReceiver"))
+        {
+            if(!ecsRegistry->allOf<SGCore::LayeredFrameReceiver>(m_currentChosenEntity))
+            {
+                ecsRegistry->emplace<SGCore::LayeredFrameReceiver>(m_currentChosenEntity);
             }
         }
 

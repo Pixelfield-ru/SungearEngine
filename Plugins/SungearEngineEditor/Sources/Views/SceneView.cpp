@@ -266,7 +266,7 @@ void SGE::SceneView::renderBody()
         {
             m_copiedEntities = SGCore::Serde::Serializer::toFormat(SGCore::Serde::FormatType::JSON, m_entitiesManipulator.m_manipulatingEntities, *currentEditorScene->m_scene);
 
-            LOG_I_UNFORMATTED(SGEDITOR_TAG, m_copiedEntities);
+            // LOG_I_UNFORMATTED(SGEDITOR_TAG, m_copiedEntities);
         }
     }
 

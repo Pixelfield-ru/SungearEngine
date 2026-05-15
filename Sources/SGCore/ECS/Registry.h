@@ -2,12 +2,13 @@
 // Created by stuka on 28.12.2024.
 //
 
-#ifndef SUNGEARENGINE_ECSREGISTRY_H
-#define SUNGEARENGINE_ECSREGISTRY_H
+#pragma once
 
 #include <entt/entity/registry.hpp>
 
+#include "SingletonComponent.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
+#include "SGCore/Utils/Assert.h"
 
 namespace SGCore::ECS
 {
@@ -264,7 +265,21 @@ namespace SGCore::ECS
 
     private:
         entt_reg_t m_registry;
+
+        std::unordered_map<size_t, EntityT> m_singletonsStorage;
+
+        static std::vector<std::function<void(Registry&, EntityT)>>& getSingletonConstructCallbacks() noexcept
+        {
+            static std::vector<std::function<void(Registry&, EntityT)>> singletonConstructCallbacks;
+            return singletonConstructCallbacks;
+        }
+
+        template<typename SingletonT>
+        static void registerSingleton() noexcept
+        {
+            getSingletonConstructCallbacks().push_back([](Registry& registry, EntityT entity) {
+
+            });
+        }
     };
 }
-
-#endif //SUNGEARENGINE_ECSREGISTRY_H
