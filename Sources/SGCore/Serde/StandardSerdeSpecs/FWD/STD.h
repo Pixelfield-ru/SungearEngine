@@ -143,8 +143,7 @@ namespace SGCore::Serde
 
         static void serialize(SerializableValueView<const IntegerT, TFormatType>& valueView) noexcept
         {
-            const IntegerT finalVal = std::isfinite(*valueView.m_data) ? *valueView.m_data : 0;
-            valueView.container().setAsInt64(finalVal);
+            valueView.container().setAsInt64(*valueView.m_data);
         }
 
         static void deserialize(DeserializableValueView<IntegerT, TFormatType>& valueView) noexcept
