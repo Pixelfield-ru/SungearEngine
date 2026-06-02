@@ -6,7 +6,6 @@
 
 #include <entt/entity/registry.hpp>
 
-#include "SingletonComponent.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Utils/Assert.h"
 
@@ -31,6 +30,44 @@ namespace SGCore::ECS
         using version_type = typename entt_reg_t::version_type;
         template<typename T>
         using storage_for_type = typename entt_reg_t::template storage_for_type<T>;
+
+        template<typename>
+        friend struct SingletonComponent;
+
+        // todo: сделать конструктор, в котором будет автоматическая подписка на ивент создания и удаления синглтон компонентов
+        // todo: сделать также copy, move операторы и copy, move конструкторы
+
+        Registry()
+        {
+            // subscribing to construct & destroy event of singleton components
+            for(auto& subscriber : getSingletonConstructSubscribers())
+            {
+                subscriber(*this);
+            }
+
+            for(auto& subscriber : getSingletonDestroySubscribers())
+            {
+                subscriber(*this);
+            }
+        }
+
+        Registry(const Registry& other) noexcept = delete;
+        Registry(Registry&& other) noexcept
+        {
+            m_registry = std::move(other.m_registry);
+            m_singletonsStorage = std::move(other.m_singletonsStorage);
+
+            // subscribing to construct & destroy event of singleton components
+            for(auto& subscriber : getSingletonConstructSubscribers())
+            {
+                subscriber(*this);
+            }
+
+            for(auto& subscriber : getSingletonDestroySubscribers())
+            {
+                subscriber(*this);
+            }
+        }
 
         [[nodiscard]] bool valid(const EntityT& entt) const noexcept
         {
@@ -263,22 +300,103 @@ namespace SGCore::ECS
             return m_registry.template view<typename Type::reg_t, typename Other::reg_t...>(typename decltype(exc)::exclude_t { });
         }
 
+        template<typename SingletonT>
+        EntityT getEntityOfSingleton() const noexcept
+        {
+            const auto entitiesIt = m_singletonsStorage.find(SingletonT::getTypeIDStatic());
+            if(entitiesIt == m_singletonsStorage.end()) return entt::null;
+
+            return entitiesIt->second;
+        }
+
+        template<typename SingletonT>
+        const SingletonT* tryGetSingleton() const noexcept
+        {
+            const auto singletonEntity = getEntityOfSingleton<SingletonT>();
+            if(singletonEntity == entt::null) return {};
+
+            return m_registry.template get<SingletonT>(singletonEntity);
+        }
+
+        template<typename SingletonT>
+        SingletonT* tryGetSingleton() noexcept
+        {
+            const auto singletonEntity = getEntityOfSingleton<SingletonT>();
+            if(singletonEntity == entt::null) return {};
+
+            return m_registry.template get<SingletonT>(singletonEntity);
+        }
+
+        Registry& operator=(const Registry& other) noexcept = delete;
+        Registry& operator=(Registry&& other) noexcept
+        {
+            if(std::addressof(other) == this) return *this;
+
+            m_registry = std::move(other.m_registry);
+            m_singletonsStorage = std::move(other.m_singletonsStorage);
+
+            // subscribing to construct & destroy event of singleton components
+            for(auto& subscriber : getSingletonConstructSubscribers())
+            {
+                subscriber(*this);
+            }
+
+            for(auto& subscriber : getSingletonDestroySubscribers())
+            {
+                subscriber(*this);
+            }
+
+            return *this;
+        }
+
     private:
         entt_reg_t m_registry;
 
         std::unordered_map<size_t, EntityT> m_singletonsStorage;
 
-        static std::vector<std::function<void(Registry&, EntityT)>>& getSingletonConstructCallbacks() noexcept
+        static std::vector<std::function<void(Registry&)>>& getSingletonConstructSubscribers() noexcept
         {
-            static std::vector<std::function<void(Registry&, EntityT)>> singletonConstructCallbacks;
+            static std::vector<std::function<void(Registry&)>> singletonConstructCallbacks;
             return singletonConstructCallbacks;
+        }
+
+        static std::vector<std::function<void(Registry&)>>& getSingletonDestroySubscribers() noexcept
+        {
+            static std::vector<std::function<void(Registry&)>> singletonDestroyCallbacks;
+            return singletonDestroyCallbacks;
         }
 
         template<typename SingletonT>
         static void registerSingleton() noexcept
         {
-            getSingletonConstructCallbacks().push_back([](Registry& registry, EntityT entity) {
+            getSingletonConstructSubscribers().push_back([](Registry& registry) {
+                static auto observer = [&registry](entt_reg_t& enttRegistry, EntityT entity) {
+                    if(!registry.valid(entity)) return;
 
+                    // removing component from old valid entity
+                    const auto entitiesIt = registry.m_singletonsStorage.find(SingletonT::getTypeIDStatic());
+                    if(entitiesIt != registry.m_singletonsStorage.end())
+                    {
+                        if(registry.valid(entitiesIt->second))
+                        {
+                            registry.remove<SingletonT>(entitiesIt->second);
+                        }
+                    }
+
+                    registry.m_singletonsStorage[SingletonT::getTypeIDStatic()] = entity;
+                };
+
+                registry.onConstruct<SingletonT>().template connect<&observer>();
+            });
+
+            getSingletonDestroySubscribers().push_back([](Registry& registry) {
+                static auto observer = [&registry](entt_reg_t& enttRegistry, EntityT entity) {
+                    if(!registry.valid(entity)) return;
+
+                    registry.m_singletonsStorage[SingletonT::getTypeIDStatic()] = entt::null;
+                };
+
+                registry.onDestroy<SingletonT>().template connect<&observer>();
             });
         }
     };

@@ -5,6 +5,7 @@
 #pragma once
 
 #include "SGCore/Utils/StaticTypeID.h"
+#include "Registry.h"
 
 #define sg_implement_singleton_component(ComponentT) \
     sg_implement_nonvirtual_type_id(ComponentT);
@@ -14,12 +15,16 @@ namespace SGCore::ECS
     template<typename DerivedT>
     struct SingletonComponent
     {
-    private:
-        static inline bool staticInit = []() {
-            return true;
-        }();
+        SingletonComponent()
+        {
+            static bool staticInit = []() {
+                registry_t::registerSingleton<DerivedT>();
 
-        void assertDerived() const noexcept
+                return true;
+            }();
+        }
+
+        ~SingletonComponent() noexcept
         {
             static_assert(
                 requires { DerivedT::getTypeIDStatic(); },
