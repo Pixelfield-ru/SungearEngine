@@ -32,6 +32,7 @@
 #include "SGCore/Render/RenderAbilities/EnableMeshPass.h"
 #include "SGCore/Render/RenderAbilities/EnableTerrainPass.h"
 #include "SGCore/Render/RenderAbilities/EnableVolumetricPass.h"
+#include "SGCore/Render/MainCameraTag.h"
 
 namespace SGCore::Serde
 {
@@ -345,6 +346,15 @@ namespace SGCore::Serde
             }
         }
 
+        {
+            auto* component = serializableScene.getECSRegistry()->tryGet<MainCameraTag>(serializableEntity);
+
+            if(component)
+            {
+                valueView.container().addMember(SerdeSpec<MainCameraTag, TFormatType>::type_name(), *component);
+            }
+        }
+
         #pragma endregion Components
 
         // ==================================================================================
@@ -649,6 +659,16 @@ namespace SGCore::Serde
             if(component)
             {
                 toRegistry.emplace<EnableVolumetricPass>(entity, std::move(*component));
+            }
+        }
+
+        if(valueView.container().hasMember(SerdeSpec<MainCameraTag, TFormatType>::type_name()))
+        {
+            auto component = valueView.container().template getMember<MainCameraTag::reg_t>(SerdeSpec<MainCameraTag, TFormatType>::type_name());
+
+            if(component)
+            {
+                toRegistry.emplace<MainCameraTag>(entity, std::move(*component));
             }
         }
 

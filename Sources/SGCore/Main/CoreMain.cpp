@@ -191,12 +191,14 @@ SGCore::Config SGCore::CoreMain::loadConfig(const std::filesystem::path& configP
     {
         for(const auto& loadablePluginConfig : loadedConfig.m_loadablePlugins)
         {
-            if(!loadablePluginConfig.m_enabled) continue;
+            if(!loadablePluginConfig.m_isLoadable) continue;
 
-            PluginsManager::loadPlugin(loadablePluginConfig.m_pluginName,
+            const auto pluginWrap = PluginsManager::loadPlugin(loadablePluginConfig.m_pluginName,
                                        loadablePluginConfig.m_pluginPath.resolved(),
                                        loadablePluginConfig.m_pluginEntryArgs,
                                        loadablePluginConfig.m_pluginCMakeBuildDir);
+
+            pluginWrap->getPlugin()->m_isActive = loadablePluginConfig.m_isActive;
         }
     }
 
@@ -207,14 +209,16 @@ void SGCore::CoreMain::fixedUpdateStart(const double& dt, const double& fixedDt)
 {
     Input::PC::startFrame();
 
-    for(const auto& plugin : PluginsManager::getPlugins())
+    for(const auto& pluginWrap : PluginsManager::getPlugins())
     {
+        if(!pluginWrap) continue;
+        if(!pluginWrap->getPluginLib()->getNativeHandler()) continue;
+        if(!pluginWrap->getPlugin()) continue;
+        if(!pluginWrap->getPlugin()->m_isActive) continue;
+
         /*try
         {*/
-        if(plugin && plugin->getPluginLib()->getNativeHandler() && plugin->getPlugin())
-        {
-            plugin->getPlugin()->fixedUpdate(dt, fixedDt);
-        }
+        pluginWrap->getPlugin()->fixedUpdate(dt, fixedDt);
         /*}
         catch(const std::exception& e)
         {
@@ -236,14 +240,16 @@ void SGCore::CoreMain::updateStart(const double& dt, const double& fixedDt)
     m_window.getSize(windowSize.x, windowSize.y);
     m_renderer->prepareFrame(windowSize);
 
-    for(const auto& plugin : PluginsManager::getPlugins())
+    for(const auto& pluginWrap : PluginsManager::getPlugins())
     {
+        if(!pluginWrap) continue;
+        if(!pluginWrap->getPluginLib()->getNativeHandler()) continue;
+        if(!pluginWrap->getPlugin()) continue;
+        if(!pluginWrap->getPlugin()->m_isActive) continue;
+
         /*try
         {*/
-        if(plugin && plugin->getPluginLib()->getNativeHandler() && plugin->getPlugin())
-        {
-            plugin->getPlugin()->update(dt, fixedDt);
-        }
+        pluginWrap->getPlugin()->update(dt, fixedDt);
         /*}
         catch(const std::exception& e)
         {

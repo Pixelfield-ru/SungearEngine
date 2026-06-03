@@ -69,7 +69,8 @@ namespace SGCore::Serde
         valueView.container().addMember("m_pluginPath", valueView.m_data->m_pluginPath);
         valueView.container().addMember("m_pluginEntryArgs", valueView.m_data->m_pluginEntryArgs);
         valueView.container().addMember("m_pluginCMakeBuildDir", valueView.m_data->m_pluginCMakeBuildDir);
-        valueView.container().addMember("m_enabled", valueView.m_data->m_enabled);
+        valueView.container().addMember("m_isLoadable", valueView.m_data->m_isLoadable);
+        valueView.container().addMember("m_isActive", valueView.m_data->m_isActive);
     }
 
     template<FormatType TFormatType>
@@ -99,10 +100,16 @@ namespace SGCore::Serde
             valueView.m_data->m_pluginCMakeBuildDir = std::move(*m_pluginCMakeBuildDir);
         }
 
-        auto m_enabled = valueView.container().template getMember<bool>("m_enabled");
-        if(m_enabled)
+        auto m_isLoadable = valueView.container().template getMember<bool>("m_isLoadable");
+        if(m_isLoadable)
         {
-            valueView.m_data->m_enabled = *m_enabled;
+            valueView.m_data->m_isLoadable = *m_isLoadable;
+        }
+
+        auto m_isActive = valueView.container().template getMember<bool>("m_isActive");
+        if(m_isActive)
+        {
+            valueView.m_data->m_isActive = *m_isActive;
         }
     }
 

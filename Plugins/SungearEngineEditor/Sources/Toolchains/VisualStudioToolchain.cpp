@@ -91,7 +91,7 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
                                                          platformTypeAsString,
                                                          m_winSDKVersion);
 
-        const std::string cmakeProjectLoadingCommand = fmt::format(R"("{0}" --preset {1} -S {2})",
+        const std::string cmakeProjectLoadingCommand = fmt::format(R"("{0}" --preset {1} -S {2} -DSG_EDITOR_BUILD)",
                                                                    SGCore::Utils::toUTF8(m_cmakePath.u16string()),
                                                                    cmakePresetName,
                                                                    SGCore::Utils::toUTF8(

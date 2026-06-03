@@ -23,6 +23,7 @@
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/Alpha/TransparentEntityTag.h"
 #include "SGCore/Render/Alpha/OpaqueEntityTag.h"
+#include "SGCore/Render/MainCameraTag.h"
 
 namespace SGCore::Serde
 {
@@ -940,6 +941,18 @@ namespace SGCore::Serde
 
     template<FormatType TFormatType>
     void SerdeSpec<EnableVolumetricPass, TFormatType>::deserialize(DeserializableValueView<EnableVolumetricPass, TFormatType>& valueView) noexcept
+    {
+    }
+
+    // ======================================================== impl MainCameraTag
+
+    template<FormatType TFormatType>
+    void SerdeSpec<MainCameraTag, TFormatType>::serialize(SerializableValueView<const MainCameraTag, TFormatType>& valueView) noexcept
+    {
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<MainCameraTag, TFormatType>::deserialize(DeserializableValueView<MainCameraTag, TFormatType>& valueView) noexcept
     {
     }
 }

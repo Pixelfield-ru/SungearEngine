@@ -27,6 +27,9 @@ namespace SGCore
     {
         friend struct PluginsManager;
 
+        bool m_isActive = true;
+
+        virtual void init() { }
         virtual void update(const double& dt, const double& fixedDt) { }
         virtual void fixedUpdate(const double& dt, const double& fixedDt) { }
         virtual void restoreState() { }

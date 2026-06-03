@@ -38,6 +38,7 @@ namespace SGCore
     struct EnableMeshPass;
     struct EnableTerrainPass;
     struct EnableVolumetricPass;
+    struct MainCameraTag;
 
     template<typename ScalarT>
     requires(std::is_signed_v<ScalarT>)
@@ -513,5 +514,20 @@ namespace SGCore::Serde
         static void serialize(SerializableValueView<const EnableVolumetricPass, TFormatType>& valueView) noexcept;
 
         static void deserialize(DeserializableValueView<EnableVolumetricPass, TFormatType>& valueView) noexcept;
+    };
+
+    // ======================================================== MainCameraTag FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<MainCameraTag, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        sg_serde_define_type_name("SGCore::MainCameraTag")
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const MainCameraTag, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<MainCameraTag, TFormatType>& valueView) noexcept;
     };
 }

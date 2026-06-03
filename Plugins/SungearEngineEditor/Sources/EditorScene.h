@@ -11,8 +11,6 @@
 #include <SGCore/Serde/Serde.h>
 #include <SGCore/Serde/StandardSerdeSpecs/SerdeSpecs.h>
 
-#include "Components/EditorCamera.h"
-
 namespace SGE
 {
     // enum editor_camera : std::underlying_type_t<SGCore::entity_t> { };

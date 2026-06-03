@@ -354,6 +354,32 @@ namespace SGCore::ECS
 
         std::unordered_map<size_t, EntityT> m_singletonsStorage;
 
+        template<typename SingletonT>
+        void singletonConstructObserver(entt_reg_t& enttRegistry, EntityT entity) noexcept
+        {
+            if(!valid(entity)) return;
+
+            // removing component from old valid entity
+            const auto entitiesIt = m_singletonsStorage.find(SingletonT::getTypeIDStatic());
+            if(entitiesIt != m_singletonsStorage.end())
+            {
+                if(valid(entitiesIt->second))
+                {
+                    remove<SingletonT>(entitiesIt->second);
+                }
+            }
+
+            m_singletonsStorage[SingletonT::getTypeIDStatic()] = entity;
+        }
+
+        template<typename SingletonT>
+        void singletonDestroyObserver(entt_reg_t& enttRegistry, EntityT entity) noexcept
+        {
+            if(!valid(entity)) return;
+
+            m_singletonsStorage[SingletonT::getTypeIDStatic()] = entt::null;
+        }
+
         static std::vector<std::function<void(Registry&)>>& getSingletonConstructSubscribers() noexcept
         {
             static std::vector<std::function<void(Registry&)>> singletonConstructCallbacks;
@@ -370,33 +396,11 @@ namespace SGCore::ECS
         static void registerSingleton() noexcept
         {
             getSingletonConstructSubscribers().push_back([](Registry& registry) {
-                static auto observer = [&registry](entt_reg_t& enttRegistry, EntityT entity) {
-                    if(!registry.valid(entity)) return;
-
-                    // removing component from old valid entity
-                    const auto entitiesIt = registry.m_singletonsStorage.find(SingletonT::getTypeIDStatic());
-                    if(entitiesIt != registry.m_singletonsStorage.end())
-                    {
-                        if(registry.valid(entitiesIt->second))
-                        {
-                            registry.remove<SingletonT>(entitiesIt->second);
-                        }
-                    }
-
-                    registry.m_singletonsStorage[SingletonT::getTypeIDStatic()] = entity;
-                };
-
-                registry.onConstruct<SingletonT>().template connect<&observer>();
+                registry.onConstruct<SingletonT>().template connect<&Registry::singletonConstructObserver<SingletonT>>(registry);
             });
 
             getSingletonDestroySubscribers().push_back([](Registry& registry) {
-                static auto observer = [&registry](entt_reg_t& enttRegistry, EntityT entity) {
-                    if(!registry.valid(entity)) return;
-
-                    registry.m_singletonsStorage[SingletonT::getTypeIDStatic()] = entt::null;
-                };
-
-                registry.onDestroy<SingletonT>().template connect<&observer>();
+                registry.onDestroy<SingletonT>().template connect<&Registry::singletonDestroyObserver<SingletonT>>(registry);
             });
         }
     };

@@ -133,12 +133,14 @@ void coreInit()
 
     for(const auto& loadablePluginConfig : loadedConfig.m_loadablePlugins)
     {
-        if(!loadablePluginConfig.m_enabled) continue;
+        if(!loadablePluginConfig.m_isLoadable) continue;
 
-        SGCore::PluginsManager::loadPlugin(loadablePluginConfig.m_pluginName,
+        const auto pluginWrap = SGCore::PluginsManager::loadPlugin(loadablePluginConfig.m_pluginName,
                                            loadablePluginConfig.m_pluginPath.resolved(),
                                            loadablePluginConfig.m_pluginEntryArgs,
                                            loadablePluginConfig.m_pluginCMakeBuildDir);
+
+        pluginWrap->getPlugin()->m_isActive = loadablePluginConfig.m_isActive;
     }
 
     if(SGCore::Scene::getCurrentScene())

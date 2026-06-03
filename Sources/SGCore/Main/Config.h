@@ -17,7 +17,9 @@ namespace SGCore
         std::vector<std::string> m_pluginEntryArgs;
         std::string m_pluginCMakeBuildDir;
 
-        bool m_enabled = true;
+        bool m_isLoadable = true;
+        /// Initial value of IPlugin::m_isActive.
+        bool m_isActive = true;
     };
 
     struct SGCORE_EXPORT Config
