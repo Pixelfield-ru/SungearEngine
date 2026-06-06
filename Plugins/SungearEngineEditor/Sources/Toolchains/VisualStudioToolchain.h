@@ -45,7 +45,8 @@ namespace SGE
         std::filesystem::path m_vcvarsallPath;
 
         void configurate() final;
-        void buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName, bool loadCMakeProject) final;
+        void buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName,
+                          bool loadCMakeProject, const std::vector<std::string>& additionalDefinitions) final;
 
         [[nodiscard]] VisualStudioToolchain* copy() const final;
 

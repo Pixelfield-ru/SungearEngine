@@ -75,10 +75,11 @@ void SGE::VisualStudioToolchain::configurate()
 
 void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathToProjectRoot,
                                               const std::string& cmakePresetName,
-                                              bool loadCMakeProject)
+                                              bool loadCMakeProject,
+                                              const std::vector<std::string>& additionalDefinitions)
 {
-    auto buildLambda = [this, pathToProjectRoot, cmakePresetName, loadCMakeProject]() {
-        Toolchain::buildProject(pathToProjectRoot, cmakePresetName, loadCMakeProject);
+    auto buildLambda = [this, pathToProjectRoot, cmakePresetName, loadCMakeProject, additionalDefinitions]() {
+        Toolchain::buildProject(pathToProjectRoot, cmakePresetName, loadCMakeProject, additionalDefinitions);
 
         // BUILDING PROJECT
         const std::string archTypeAsString = VCArchTypeToString(m_archType);
@@ -91,13 +92,24 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
                                                          platformTypeAsString,
                                                          m_winSDKVersion);
 
-        const std::string cmakeProjectLoadingCommand = fmt::format(R"("{0}" --preset {1} -S {2} -DSG_EDITOR_BUILD)",
-                                                                   SGCore::Utils::toUTF8(m_cmakePath.u16string()),
-                                                                   cmakePresetName,
-                                                                   SGCore::Utils::toUTF8(
-                                                                           pathToProjectRoot.u16string()));
+        std::string cxxFlags = "";
+        if(additionalDefinitions.empty())
+        {
+            cxxFlags = R"(-DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} ")";
+            for(const auto& def : additionalDefinitions)
+            {
+                cxxFlags += "-D" + def;
+            }
+        }
 
-        const std::string cmakeProjectBuildCommand = fmt::format(R"("{0}" --build {1})",
+        const std::string cmakeConfigureCommand = fmt::format(R"("{0}" --preset {1} -S {2} {3})",
+                                                              SGCore::Utils::toUTF8(m_cmakePath.u16string()),
+                                                              cmakePresetName,
+                                                              SGCore::Utils::toUTF8(
+                                                                  pathToProjectRoot.u16string()),
+                                                              cxxFlags);
+
+        const std::string cmakeProjectBuildCommand = fmt::format(R"("{0}" --build "{1}")",
                                                                  SGCore::Utils::toUTF8(m_cmakePath.u16string()),
                                                                  SGCore::Utils::toUTF8(pathToProjectRoot.u16string()) +
                                                                  "/" + m_currentBuildingPresetBinaryDir);
@@ -107,7 +119,7 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
         {
             finalCommand = fmt::format("{0} & {1} & {2}",
                                        vcvarsallCommand,
-                                       cmakeProjectLoadingCommand,
+                                       cmakeConfigureCommand,
                                        cmakeProjectBuildCommand);
         }
         else

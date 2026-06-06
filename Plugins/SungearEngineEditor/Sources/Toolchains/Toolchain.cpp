@@ -163,7 +163,7 @@ void SGE::Toolchain::configurate()
     {
         case ToolchainType::VISUAL_STUDIO:
         {
-            #ifdef SG_PLATFORM_OS_LINUX
+            #if SG_PLATFORM_OS_LINUX
             throw std::runtime_error("Toolchain unsupported combination: host platform Linux and toolchain type is Visual Studio");
             #endif
 
@@ -220,7 +220,10 @@ void SGE::Toolchain::configurate()
     }
 }
 
-void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName, bool loadCMakeProject)
+void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot,
+                                  const std::string& cmakePresetName,
+                                  bool loadCMakeProject,
+                                  const std::vector<std::string>& additionalDefinitions)
 {
     // Configuring incomplete
 
@@ -330,7 +333,7 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
 
         // building meta info project
         toolchainCopy->buildProject(currentEditorProject->m_pluginProject.m_pluginPath / "MetaInfo",
-                                    m_currentCMakePreset, loadCMakeProject);
+                                    m_currentCMakePreset, loadCMakeProject, {});
 
         toolchainCopy->onProjectBuilt = [&currentEditorProject, projectName]
                 (const Toolchain::ProjectBuildOutput& buildOutput) {
@@ -386,7 +389,7 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
         for(const auto& dirEntry : std::filesystem::directory_iterator(sungearPluginsPathStr))
         {
             // building plugin after building the Sungear Engine
-            toolchainCopy->buildProject(dirEntry.path(), m_currentCMakePreset, loadCMakeProject);
+            toolchainCopy->buildProject(dirEntry.path(), m_currentCMakePreset, loadCMakeProject, { "SG_EDITOR_BUILD" });
         }
 
         // IF CURRENT ENGINE INSTANCE IS BUILT BY THE SAME PRESET
@@ -396,6 +399,8 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
                     (const Toolchain::ProjectBuildOutput& buildOutput)
             {
                 std::string projectDynamicLibraryLoadError;
+
+                LOG_I(SGEDITOR_TAG, "Project '{}': Loading project`s dynamic library...", projectName);
 
                 currentEditorProject->m_loadedPlugin = SGCore::PluginsManager::loadPlugin(
                         SGCore::Utils::toUTF8(buildOutput.m_projectName.u16string()),
@@ -442,13 +447,14 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
         }
 
         // building new project after building the Sungear Engine
-        toolchainCopy->buildProject(currentEditorProject->m_pluginProject.m_pluginPath, m_currentCMakePreset, loadCMakeProject);
+        toolchainCopy->buildProject(currentEditorProject->m_pluginProject.m_pluginPath, m_currentCMakePreset,
+                                    loadCMakeProject, { "SG_EDITOR_BUILD" });
 
         // restore state of m_doInBackground to use parallel building in next project builds
         toolchainPtr->m_doInBackground = true;
     };
     // building the Sungear Engine
-    toolchain->buildProject(SGCore::CoreMain::getSungearEngineRootPath(), m_currentCMakePreset, loadCMakeProject);
+    toolchain->buildProject(SGCore::CoreMain::getSungearEngineRootPath(), m_currentCMakePreset, loadCMakeProject, {});
 }
 
 void SGE::Toolchain::ProjectSpecific::buildProject(bool loadCMakeProject) noexcept

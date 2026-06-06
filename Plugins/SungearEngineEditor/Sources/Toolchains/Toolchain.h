@@ -71,8 +71,8 @@ namespace SGE
         void setCXXCompilerPath(const std::filesystem::path& CXXCompilerPath);*/
 
         virtual void configurate();
-
-        virtual void buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName, bool loadCMakeProject);
+        virtual void buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName,
+                                  bool loadCMakeProject, const std::vector<std::string>& additionalDefinitions);
 
         virtual Toolchain* copy() const = 0;
 

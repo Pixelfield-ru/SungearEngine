@@ -78,8 +78,13 @@ SGE::TopToolbarView::TopToolbarView()
         "ToolbarProjectActions",
         {
             {
-                .m_text = "Rebuild",
-                .m_ID = "Project/Rebuild",
+                .m_text = "Build",
+                .m_ID = "Project/Build",
+                .m_icon = StylesManager::getCurrentStyle()->m_dummyIcon->getSpecialization(18, 18)->getTexture()
+            },
+         {
+                .m_text = "Configure And Build",
+                .m_ID = "Project/ConfigureAndBuild",
                 .m_icon = StylesManager::getCurrentStyle()->m_dummyIcon->getSpecialization(18, 18)->getTexture()
             }
         }
@@ -118,7 +123,7 @@ SGE::TopToolbarView::TopToolbarView()
     };
 
     m_projectButtonPopup.onElementClicked += [this](const SGCore::Ref<PopupElement>& element) {
-        if(element->m_ID == "Project/Rebuild")
+        if(element->m_ID == "Project/Build")
         {
             auto currentEditorProject = SungearEngineEditor::getInstance()->m_currentProject;
             if(!currentEditorProject) return;
@@ -132,6 +137,20 @@ SGE::TopToolbarView::TopToolbarView()
 
             LOG_E(SGCORE_TAG, "BUILDING PROJECT!!!!")
             Toolchain::ProjectSpecific::buildProject(false);
+        } else if(element->m_ID == "Project/ConfigureAndBuild")
+        {
+            auto currentEditorProject = SungearEngineEditor::getInstance()->m_currentProject;
+            if(!currentEditorProject) return;
+
+            SGCore::PluginsManager::unloadPlugin(currentEditorProject->m_pluginProject.m_name);
+
+            /*if(auto pluginLib = currentEditorProject->m_loadedPlugin->getPluginLib())
+            {
+                pluginLib->unload();
+            }*/
+
+            LOG_E(SGCORE_TAG, "BUILDING PROJECT!!!!")
+            Toolchain::ProjectSpecific::buildProject(true);
         }
     };
 
