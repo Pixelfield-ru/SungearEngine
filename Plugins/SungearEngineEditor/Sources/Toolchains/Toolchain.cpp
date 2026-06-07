@@ -412,6 +412,8 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
                 // if plugin was successfully loaded
                 if(currentEditorProject->m_loadedPlugin)
                 {
+                    currentEditorProject->m_loadedPlugin->getPlugin()->m_isActive = false;
+
                     const auto projectPlugin = currentEditorProject->m_loadedPlugin;
 
                     std::string userProjectEntriesLoadingErr;

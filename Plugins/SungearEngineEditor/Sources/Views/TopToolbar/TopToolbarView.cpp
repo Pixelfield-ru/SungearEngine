@@ -82,9 +82,19 @@ SGE::TopToolbarView::TopToolbarView()
                 .m_ID = "Project/Build",
                 .m_icon = StylesManager::getCurrentStyle()->m_dummyIcon->getSpecialization(18, 18)->getTexture()
             },
-         {
+            {
                 .m_text = "Configure And Build",
                 .m_ID = "Project/ConfigureAndBuild",
+                .m_icon = StylesManager::getCurrentStyle()->m_dummyIcon->getSpecialization(18, 18)->getTexture()
+            },
+            {
+                .m_text = "Run",
+                .m_ID = "Project/Run",
+                .m_icon = StylesManager::getCurrentStyle()->m_dummyIcon->getSpecialization(18, 18)->getTexture()
+            },
+            {
+                .m_text = "Stop",
+                .m_ID = "Project/Stop",
                 .m_icon = StylesManager::getCurrentStyle()->m_dummyIcon->getSpecialization(18, 18)->getTexture()
             }
         }
@@ -137,7 +147,8 @@ SGE::TopToolbarView::TopToolbarView()
 
             LOG_E(SGCORE_TAG, "BUILDING PROJECT!!!!")
             Toolchain::ProjectSpecific::buildProject(false);
-        } else if(element->m_ID == "Project/ConfigureAndBuild")
+        }
+        else if(element->m_ID == "Project/ConfigureAndBuild")
         {
             auto currentEditorProject = SungearEngineEditor::getInstance()->m_currentProject;
             if(!currentEditorProject) return;
@@ -151,6 +162,25 @@ SGE::TopToolbarView::TopToolbarView()
 
             LOG_E(SGCORE_TAG, "BUILDING PROJECT!!!!")
             Toolchain::ProjectSpecific::buildProject(true);
+        }
+        else if(element->m_ID == "Project/Run")
+        {
+            auto currentEditorProject = SungearEngineEditor::getInstance()->m_currentProject;
+            if(!currentEditorProject) return;
+
+            if(!currentEditorProject->m_loadedPlugin) return;
+
+            currentEditorProject->m_loadedPlugin->getPlugin()->m_isActive = true;
+            currentEditorProject->m_loadedPlugin->getPlugin()->init();
+        }
+        else if(element->m_ID == "Project/Stop")
+        {
+            auto currentEditorProject = SungearEngineEditor::getInstance()->m_currentProject;
+            if(!currentEditorProject) return;
+
+            if(!currentEditorProject->m_loadedPlugin) return;
+
+            currentEditorProject->m_loadedPlugin->getPlugin()->m_isActive = false;
         }
     };
 

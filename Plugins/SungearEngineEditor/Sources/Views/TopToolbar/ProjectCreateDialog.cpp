@@ -374,9 +374,12 @@ void SGE::ProjectCreateDialog::submit()
 
         const std::filesystem::path metaInfoDLPath = dirPath / "MetaInfo" / projectPreset->m_binaryDir / (std::string("MetaInfo") + DL_POSTFIX);
 
+        const std::filesystem::path projectDLPath = presetPath / (projectName + DL_POSTFIX);
+
+        LOG_I(SGEDITOR_TAG, "Trying to load project`s binary by path '{}'...", SGCore::Utils::toUTF8(projectDLPath.u16string()));
+
         // if dynamic library (or meta info dynamic library) of current preset was not found or built library of loaded project was not found
-        if(!std::filesystem::exists(presetPath / (projectName + DL_POSTFIX)) ||
-           !std::filesystem::exists(metaInfoDLPath))
+        if(!std::filesystem::exists(projectDLPath))
         {
             setActive(false);
 
@@ -409,36 +412,46 @@ void SGE::ProjectCreateDialog::submit()
         // if project was successfully loaded
         if(currentEditorProject->m_loadedPlugin)
         {
+            // to disable project update and init
+            currentEditorProject->m_loadedPlugin->getPlugin()->m_isActive = false;
+
             // loading symbols of project and meta info
 
-            currentEditorProject->m_metaInfoProjectDL = SGCore::MakeRef<SGCore::DynamicLibrary>();
-            std::string metaInfoDLErr;
-            currentEditorProject->m_metaInfoProjectDL->load(metaInfoDLPath, metaInfoDLErr);
-            if(!metaInfoDLErr.empty())
+            if(std::filesystem::exists(metaInfoDLPath))
             {
-                LOG_E(SGEDITOR_TAG, "Can not load meta info project of project '{}': {}.", projectName, metaInfoDLErr);
+                currentEditorProject->m_metaInfoProjectDL = SGCore::MakeRef<SGCore::DynamicLibrary>();
+                std::string metaInfoDLErr;
+                currentEditorProject->m_metaInfoProjectDL->load(metaInfoDLPath, metaInfoDLErr);
+                if(!metaInfoDLErr.empty())
+                {
+                    LOG_E(SGEDITOR_TAG, "Can not load meta info project of project '{}': {}.", projectName, metaInfoDLErr);
+                }
+                else
+                {
+                    // loading symbols of meta info
+                    currentEditorProject->m_metaInfoProjectEntryPoint = currentEditorProject->m_metaInfoProjectDL->loadSymbol<void()>("addMetaInfo", metaInfoDLErr);
+                    auto** currentProjectPath = currentEditorProject->m_metaInfoProjectDL->loadSymbol<std::filesystem::path*>("myProjectPath", metaInfoDLErr);
+
+                    if(!metaInfoDLErr.empty())
+                    {
+                        LOG_E(SGEDITOR_TAG, "Can not load meta info project symbols (project: '{}'): {}.", projectName, metaInfoDLErr);
+                    }
+
+                    // calling entry point of meta info generated code
+                    if(currentEditorProject->m_metaInfoProjectEntryPoint)
+                    {
+                        currentEditorProject->m_metaInfoProjectEntryPoint();
+                    }
+
+                    if(currentProjectPath)
+                    {
+                        *currentProjectPath = &currentEditorProject->m_pluginProject.m_pluginPath;
+                    }
+                }
             }
             else
             {
-                // loading symbols of meta info
-                currentEditorProject->m_metaInfoProjectEntryPoint = currentEditorProject->m_metaInfoProjectDL->loadSymbol<void()>("addMetaInfo", metaInfoDLErr);
-                auto** currentProjectPath = currentEditorProject->m_metaInfoProjectDL->loadSymbol<std::filesystem::path*>("myProjectPath", metaInfoDLErr);
-
-                if(!metaInfoDLErr.empty())
-                {
-                    LOG_E(SGEDITOR_TAG, "Can not load meta info project symbols (project: '{}'): {}.", projectName, metaInfoDLErr);
-                }
-
-                // calling entry point of meta info generated code
-                if(currentEditorProject->m_metaInfoProjectEntryPoint)
-                {
-                    currentEditorProject->m_metaInfoProjectEntryPoint();
-                }
-
-                if(currentProjectPath)
-                {
-                    *currentProjectPath = &currentEditorProject->m_pluginProject.m_pluginPath;
-                }
+                // todo: make warning that meta info project was not built earlier...
             }
 
             const auto projectPlugin = currentEditorProject->m_loadedPlugin;

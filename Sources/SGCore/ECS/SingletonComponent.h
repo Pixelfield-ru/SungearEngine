@@ -15,10 +15,11 @@ namespace SGCore::ECS
     template<typename DerivedT>
     struct SingletonComponent
     {
-        SingletonComponent()
+        SingletonComponent() noexcept
         {
             static bool staticInit = []() {
                 registry_t::registerSingleton<DerivedT>();
+                std::cout << "registered singleton component with type: " << typeid(DerivedT).name() << std::endl;
 
                 return true;
             }();
