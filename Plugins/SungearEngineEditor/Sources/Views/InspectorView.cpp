@@ -401,7 +401,10 @@ void SGE::InspectorView::inspectEntity() noexcept
             auto* mainCameraTag = ecsRegistry->tryGet<SGCore::MainCameraTag>(m_currentChosenEntity);
             if(mainCameraTag && ImGui::CollapsingHeader("MainCameraTag"))
             {
-
+                if(ImGui::Button("Remove"))
+                {
+                    ecsRegistry->remove<SGCore::MainCameraTag>(m_currentChosenEntity);
+                }
             }
 
             auto* renderingBase = ecsRegistry->tryGet<SGCore::RenderingBase>(m_currentChosenEntity);

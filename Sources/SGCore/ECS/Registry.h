@@ -7,6 +7,7 @@
 #include <entt/entity/registry.hpp>
 
 #include "SGCore/Scene/EntityBaseInfo.h"
+#include "SGCore/Utils/Slot.h"
 #include "SGCore/Utils/Assert.h"
 
 namespace SGCore::ECS
@@ -17,6 +18,8 @@ namespace SGCore::ECS
     {
         using exclude_t = entt::exclude_t<typename Exclude::reg_t...>;
     };
+
+    // Signal<void(&)>
 
     /**
      *
@@ -39,16 +42,9 @@ namespace SGCore::ECS
 
         Registry()
         {
-            // subscribing to construct & destroy event of singleton components
-            for(auto& subscriber : getSingletonConstructSubscribers())
-            {
-                subscriber(*this);
-            }
+            subscribeToAllSingletonsEvents();
 
-            for(auto& subscriber : getSingletonDestroySubscribers())
-            {
-                subscriber(*this);
-            }
+            getNewSingletonTypeSignal() += onNewSingletonType;
         }
 
         Registry(const Registry& other) noexcept = delete;
@@ -57,16 +53,9 @@ namespace SGCore::ECS
             m_registry = std::move(other.m_registry);
             m_singletonsStorage = std::move(other.m_singletonsStorage);
 
-            // subscribing to construct & destroy event of singleton components
-            for(auto& subscriber : getSingletonConstructSubscribers())
-            {
-                subscriber(*this);
-            }
+            subscribeToAllSingletonsEvents();
 
-            for(auto& subscriber : getSingletonDestroySubscribers())
-            {
-                subscriber(*this);
-            }
+            getNewSingletonTypeSignal() += onNewSingletonType;
         }
 
         [[nodiscard]] bool valid(const EntityT& entt) const noexcept
@@ -335,16 +324,9 @@ namespace SGCore::ECS
             m_registry = std::move(other.m_registry);
             m_singletonsStorage = std::move(other.m_singletonsStorage);
 
-            // subscribing to construct & destroy event of singleton components
-            for(auto& subscriber : getSingletonConstructSubscribers())
-            {
-                subscriber(*this);
-            }
+            subscribeToAllSingletonsEvents();
 
-            for(auto& subscriber : getSingletonDestroySubscribers())
-            {
-                subscriber(*this);
-            }
+            getNewSingletonTypeSignal() += onNewSingletonType;
 
             return *this;
         }
@@ -353,6 +335,10 @@ namespace SGCore::ECS
         entt_reg_t m_registry;
 
         std::unordered_map<size_t, EntityT> m_singletonsStorage;
+
+        Slot<void(const std::function<void(Registry&)>&)> onNewSingletonType = [this](const std::function<void(Registry&)>& subscribeFunc) {
+            subscribeToSingletonEvents(subscribeFunc);
+        };
 
         template<typename SingletonT>
         void singletonConstructObserver(entt_reg_t& enttRegistry, EntityT entity) noexcept
@@ -380,28 +366,46 @@ namespace SGCore::ECS
             m_singletonsStorage[SingletonT::getTypeIDStatic()] = entt::null;
         }
 
-        static std::vector<std::function<void(Registry&)>>& getSingletonConstructSubscribers() noexcept
+        void subscribeToSingletonEvents(const std::function<void(Registry&)>& subscribeFunc) noexcept
         {
-            static std::vector<std::function<void(Registry&)>> singletonConstructCallbacks;
-            return singletonConstructCallbacks;
+            std::cout << "subsribing on singleton events" << std::endl;
+
+            // subscribing to construct & destroy event of singleton component of type
+            subscribeFunc(*this);
         }
 
-        static std::vector<std::function<void(Registry&)>>& getSingletonDestroySubscribers() noexcept
+        void subscribeToAllSingletonsEvents() noexcept
         {
-            static std::vector<std::function<void(Registry&)>> singletonDestroyCallbacks;
-            return singletonDestroyCallbacks;
+            // subscribing to construct & destroy event of all singletons components
+            for(const auto& subscribeFunc : getSingletonLifecycleSubscribers())
+            {
+                subscribeFunc(*this);
+            }
+        }
+
+        static Signal<void(const std::function<void(Registry&)>&)>& getNewSingletonTypeSignal() noexcept
+        {
+            static Signal<void(const std::function<void(Registry&)>&)> newSingletonTypeSignal;
+            return newSingletonTypeSignal;
+        }
+
+        static std::vector<std::function<void(Registry&)>>& getSingletonLifecycleSubscribers() noexcept
+        {
+            static std::vector<std::function<void(Registry&)>> singletonLifecycleCallbacks;
+            return singletonLifecycleCallbacks;
         }
 
         template<typename SingletonT>
         static void registerSingleton() noexcept
         {
-            getSingletonConstructSubscribers().push_back([](Registry& registry) {
+            const auto subscribeFunc = [](Registry& registry) {
                 registry.onConstruct<SingletonT>().template connect<&Registry::singletonConstructObserver<SingletonT>>(registry);
-            });
-
-            getSingletonDestroySubscribers().push_back([](Registry& registry) {
                 registry.onDestroy<SingletonT>().template connect<&Registry::singletonDestroyObserver<SingletonT>>(registry);
-            });
+            };
+
+            getSingletonLifecycleSubscribers().push_back(subscribeFunc);
+
+            getNewSingletonTypeSignal()(subscribeFunc);
         }
     };
 }

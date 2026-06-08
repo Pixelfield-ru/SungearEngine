@@ -17,12 +17,7 @@ namespace SGCore::ECS
     {
         SingletonComponent() noexcept
         {
-            static bool staticInit = []() {
-                registry_t::registerSingleton<DerivedT>();
-                std::cout << "registered singleton component with type: " << typeid(DerivedT).name() << std::endl;
-
-                return true;
-            }();
+            std::cout << "creating singleton component with type: " << typeid(DerivedT).name() << std::endl;
         }
 
         ~SingletonComponent() noexcept
@@ -32,5 +27,13 @@ namespace SGCore::ECS
                 "Please, implement singleton component sg_implement_singleton_component() macro."
             );
         }
+
+    private:
+        static inline volatile bool staticInit = []() {
+            registry_t::registerSingleton<DerivedT>();
+            // std::cout << "registered singleton component with type: " << typeid(DerivedT).name() << std::endl;
+
+            return true;
+        }();
     };
 }
