@@ -31,6 +31,8 @@ void SGCore::EntityBaseInfo::setActiveRecursive(bool active, ECS::registry_t& in
 void SGCore::EntityBaseInfo::setParent(const ECS::entity_t& parent,
                                        ECS::registry_t& inRegistry) noexcept
 {
+    if(m_parent == parent) return;
+
     if(!inRegistry.valid(m_thisEntity))
     {
         LOG_E(SGCORE_TAG, "Can not set parent for entity '{}'. Entity '{}' (current) is not valid.",

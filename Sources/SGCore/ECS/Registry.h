@@ -5,10 +5,11 @@
 #pragma once
 
 #include <entt/entity/registry.hpp>
+#include <iostream>
 
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Utils/Slot.h"
-#include "SGCore/Utils/Assert.h"
+#include "SGCore/Utils/Signal.h"
 
 namespace SGCore::ECS
 {
@@ -326,7 +327,7 @@ namespace SGCore::ECS
 
             subscribeToAllSingletonsEvents();
 
-            getNewSingletonTypeSignal() += onNewSingletonType;
+            // getNewSingletonTypeSignal() += onNewSingletonType;
 
             return *this;
         }
@@ -368,8 +369,6 @@ namespace SGCore::ECS
 
         void subscribeToSingletonEvents(const std::function<void(Registry&)>& subscribeFunc) noexcept
         {
-            std::cout << "subsribing on singleton events" << std::endl;
-
             // subscribing to construct & destroy event of singleton component of type
             subscribeFunc(*this);
         }
@@ -383,13 +382,13 @@ namespace SGCore::ECS
             }
         }
 
-        static Signal<void(const std::function<void(Registry&)>&)>& getNewSingletonTypeSignal() noexcept
+        static SGCORE_EXPORT Signal<void(const std::function<void(Registry&)>&)>& getNewSingletonTypeSignal() noexcept
         {
             static Signal<void(const std::function<void(Registry&)>&)> newSingletonTypeSignal;
             return newSingletonTypeSignal;
         }
 
-        static std::vector<std::function<void(Registry&)>>& getSingletonLifecycleSubscribers() noexcept
+        static SGCORE_EXPORT std::vector<std::function<void(Registry&)>>& getSingletonLifecycleSubscribers() noexcept
         {
             static std::vector<std::function<void(Registry&)>> singletonLifecycleCallbacks;
             return singletonLifecycleCallbacks;

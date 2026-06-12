@@ -81,6 +81,7 @@ SGCore::Slot<ReturnT(Args...)>::~Slot() noexcept
 
         signal->m_slots.remove(this);
         signal->m_uniqueSlots.erase(this);
+        --signal->m_slotsCount;
     }
 }
 
@@ -129,6 +130,7 @@ void SGCore::Slot<ReturnT(Args...)>::connectToSignals(const Slot& slot, bool rem
             std::lock_guard signalLock(signal->m_mutex);
             if(!signal->m_uniqueSlots.contains(this)) continue;
 
+            --signal->m_slotsCount;
             signal->m_uniqueSlots.erase(this);
             signal->m_slots.remove(this);
         }
@@ -142,6 +144,7 @@ void SGCore::Slot<ReturnT(Args...)>::connectToSignals(const Slot& slot, bool rem
         std::lock_guard signalLock(signal->m_mutex);
         if(signal->m_uniqueSlots.contains(this)) continue;
 
+        ++signal->m_slotsCount;
         signal->m_uniqueSlots.insert(this);
         signal->m_slots.push_back(this);
 
@@ -160,6 +163,7 @@ void SGCore::Slot<ReturnT(Args...)>::disconnectFromAll() noexcept
         std::lock_guard signalLock(signal->m_mutex);
         if(!signal->m_uniqueSlots.contains(this)) continue;
 
+        --signal->m_slotsCount;
         signal->m_uniqueSlots.erase(this);
         signal->m_slots.remove(this);
     }
