@@ -34,7 +34,7 @@ bool SGE::SceneView::begin()
 
 void SGE::SceneView::renderBody()
 {
-    SGCore::Camera3D* editorCamera3D;
+    SGCore::Camera3D* editorCamera3D {};
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5, 0.5));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
@@ -53,23 +53,44 @@ void SGE::SceneView::renderBody()
     m_entitiesManipulator.m_rectPos = windowPos;
     m_entitiesManipulator.m_rectSize = windowSize;
 
+    auto currentEditorProject = SungearEngineEditor::getInstance()->m_currentProject;
     auto currentEditorScene = EditorScene::getCurrentScene();
+    bool isProjectActive = false;
+
+    if(currentEditorProject && currentEditorProject->m_loadedPlugin)
+    {
+        isProjectActive = currentEditorProject->m_loadedPlugin->getPlugin()->m_isActive;
+    }
+
     if(currentEditorScene && currentEditorScene->m_scene)
     {
+        auto currentCameraEntity = EditorScene::getCurrentScene()->m_data.m_editorCamera;
+
+        if(isProjectActive)
+        {
+            const auto gameTmpCamera = currentEditorScene->m_scene->getECSRegistry()->getEntityOfSingleton<SGCore::MainCameraTag>();
+            if(gameTmpCamera != entt::null)
+            {
+                currentCameraEntity = gameTmpCamera;
+            }
+        }
 
         /*auto tex = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
                 "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
         );*/
         auto* layeredFrameReceiver = currentEditorScene->m_scene->getECSRegistry()->tryGet<SGCore::LayeredFrameReceiver>
-                (EditorScene::getCurrentScene()->m_data.m_editorCamera);
+                (currentCameraEntity);
 
         auto* renderingBase = currentEditorScene->m_scene->getECSRegistry()->tryGet<SGCore::RenderingBase>
-                (EditorScene::getCurrentScene()->m_data.m_editorCamera);
+                (currentCameraEntity);
 
-        editorCamera3D = currentEditorScene->m_scene->getECSRegistry()->tryGet<SGCore::Camera3D>
-                (EditorScene::getCurrentScene()->m_data.m_editorCamera);
+        if(!isProjectActive)
+        {
+            editorCamera3D = currentEditorScene->m_scene->getECSRegistry()->tryGet<SGCore::Camera3D>
+                    (currentCameraEntity);
+        }
 
-        if(layeredFrameReceiver && editorCamera3D)
+        if(layeredFrameReceiver)
         {
             ImGui::Image((ImTextureID) layeredFrameReceiver->m_layersFXFrameBuffer->getAttachment(
                     SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7
@@ -78,14 +99,14 @@ void SGE::SceneView::renderBody()
             if(editorCamera3D)
             {
                 m_entitiesManipulator.manipulateEntities(*currentEditorScene->m_scene,
-                                                         currentEditorScene->m_data.m_editorCamera);
+                                                         currentCameraEntity);
             }
 
             const bool isMouseDoubleClicked = ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
 
             // picking entity
             if(SGCore::Input::PC::mouseButtonPressed(SGCore::Input::MouseButton::MOUSE_BUTTON_LEFT) &&
-               ImGui::IsWindowHovered() && !ImGuizmo::IsOver())
+               ImGui::IsWindowHovered() && !ImGuizmo::IsOver() && editorCamera3D)
             {
                 const glm::vec2 mousePos = { SGCore::Input::PC::getCursorPositionX(),
                                              SGCore::Input::PC::getCursorPositionY() };
@@ -229,7 +250,10 @@ void SGE::SceneView::renderBody()
                       std::to_underlying(pickedEntity));
             }
 
-            acceptFilesFromDirectoryExplorer();
+            if(!isProjectActive)
+            {
+                acceptFilesFromDirectoryExplorer();
+            }
         }
 
         if(renderingBase)
@@ -250,7 +274,7 @@ void SGE::SceneView::renderBody()
 
         if(SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_LEFT_CONTROL) &&
            SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_B) &&
-           !ImGui::GetIO().WantTextInput)
+           !ImGui::GetIO().WantTextInput && !isProjectActive)
         {
             const auto& scenePath = currentEditorScene->m_scene->m_metaInfo.m_sceneLocalPath;
             currentEditorScene->saveByPath(scenePath.parent_path(), scenePath.stem());
@@ -260,7 +284,10 @@ void SGE::SceneView::renderBody()
 
     const bool isThisViewFocused = ImGui::IsWindowFocused();
 
-    if(SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_LEFT_CONTROL) && SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_C) && isThisViewFocused)
+    if(SGCore::Input::PC::keyboardKeyDown(SGCore::Input::KeyboardKey::KEY_LEFT_CONTROL) &&
+       SGCore::Input::PC::keyboardKeyPressed(SGCore::Input::KeyboardKey::KEY_C) &&
+       isThisViewFocused &&
+       !isProjectActive)
     {
         if(!m_entitiesManipulator.m_manipulatingEntities.empty())
         {
