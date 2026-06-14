@@ -23,6 +23,8 @@ namespace SGCore
 
         // определяем для каждого ресивера какой слой будет использоваться для данной сущности
         std::unordered_map<LayeredFrameReceiver*, Weak<PostProcessLayer>> m_layeredFrameReceiversMarkup;
+        // first - camera entity, second - index of layer
+        // std::unordered_map<ECS::entity_t, Weak<PostProcessLayer>> m_layeredFrameReceiversMarkup;
 
         void setMeshData(const AssetRef<IMeshData>& meshData) noexcept;
         AssetRef<IMeshData> getMeshData() const noexcept;

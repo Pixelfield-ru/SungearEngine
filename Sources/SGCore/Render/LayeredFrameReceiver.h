@@ -105,8 +105,6 @@ namespace SGCore
     public:
         LayeredFrameReceiver();
 
-        Ref<IShader> m_shader;
-
         // CONTAINS ONLY COLOR0 WITH VALUES OF LAYERS AND COLOR1 WITH COLORS OF LAYERS
         Ref<IFrameBuffer> m_layersFrameBuffer;
         // CONTAINS OUTPUT FX

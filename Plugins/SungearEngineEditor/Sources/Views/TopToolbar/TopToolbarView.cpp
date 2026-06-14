@@ -9,6 +9,7 @@
 
 #include <SGCore/PluginsSystem/PluginsManager.h>
 
+#include "EditorScene.h"
 #include "SungearEngineEditor.h"
 #include "ImGuiUtils.h"
 
@@ -172,6 +173,8 @@ SGE::TopToolbarView::TopToolbarView()
 
             currentEditorProject->m_loadedPlugin->getPlugin()->m_isActive = true;
             currentEditorProject->m_loadedPlugin->getPlugin()->init();
+
+            m_runningScene = EditorScene::getCurrentScene()->m_scene;
         }
         else if(element->m_ID == "Project/Stop")
         {
@@ -181,6 +184,11 @@ SGE::TopToolbarView::TopToolbarView()
             if(!currentEditorProject->m_loadedPlugin) return;
 
             currentEditorProject->m_loadedPlugin->getPlugin()->m_isActive = false;
+
+            // LOG_I(SGEDITOR_TAG, "Loading scene by path '{}'", SGCore::Utils::toUTF8(m_runningScene->m_metaInfo.m_sceneLocalPath.u16string()));
+
+            const auto sceneBackup = EditorScene::getCurrentScene()->loadByPath(m_runningScene->m_metaInfo.m_sceneLocalPath.parent_path(), m_runningScene->m_metaInfo.m_sceneName);
+            EditorScene::setCurrentScene(sceneBackup);
         }
     };
 

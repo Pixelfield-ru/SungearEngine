@@ -10,6 +10,11 @@
 #include "ProjectCreateDialog.h"
 #include "Views/TopToolbar/Settings/Engine/EngineSettingsView.h"
 
+namespace SGCore
+{
+    class Scene;
+}
+
 namespace SGE
 {
     struct TopToolbarView : public SGCore::ImGuiWrap::IView
@@ -33,6 +38,7 @@ namespace SGE
 
         SGCore::AssetRef<SGCore::ITexture2D> m_engineIcon;
         SGCore::AssetRef<SGCore::ITexture2D> m_moreIcon;
+        SGCore::Ref<SGCore::Scene> m_runningScene;
 
         Popup m_fileButtonPopup;
         Popup m_helpButtonPopup;
