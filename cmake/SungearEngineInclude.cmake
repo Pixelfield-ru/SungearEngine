@@ -196,4 +196,10 @@ find_package(Lua REQUIRED)
 list(APPEND SungearEngine_INCLUDE_DIRS "${LUA_INCLUDE_DIR}")
 list(APPEND SungearEngine_LIBS "${LUA_LIBRARIES}")
 
+find_package(recastnavigation CONFIG REQUIRED)
+list(APPEND SungearEngine_LIBS "RecastNavigation::Detour")
+list(APPEND SungearEngine_LIBS "RecastNavigation::Recast")
+list(APPEND SungearEngine_LIBS "RecastNavigation::DebugUtils")
+list(APPEND SungearEngine_LIBS "RecastNavigation::DetourCrowd")
+
 list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}")

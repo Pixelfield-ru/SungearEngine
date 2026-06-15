@@ -104,6 +104,11 @@
          Boost::asio
          spdlog::spdlog
 
+         RecastNavigation::Detour
+         RecastNavigation::Recast
+         RecastNavigation::DebugUtils
+         RecastNavigation::DetourCrowd
+
          ${SG_BULLET_LIBS}
          ${FREETYPE_LIBRARIES}
          ${JNI_LIBRARIES}

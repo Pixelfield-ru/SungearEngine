@@ -107,5 +107,8 @@
   }, {
     "name" : "lua",
     "version>=" : "5.4.8#0"
+  }, {
+    "name" : "recastnavigation",
+    "version>=" : "1.6.0#1"
   } ]
 }
