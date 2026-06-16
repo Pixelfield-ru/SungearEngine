@@ -4,36 +4,43 @@
 
 #include "NavMesh.h"
 
-#include "Steps/FilterErosionStep.h"
-#include "Steps/HeightfieldBuildStep.h"
-#include "Steps/InputFilteringStep.h"
-#include "Steps/RegionsPartitionStep.h"
-#include "Steps/VoxelizationStep.h"
+#include <recastnavigation/Recast.h>
 
-void SGCore::Navigation::NavMesh::useStandardSteps() noexcept
+#include "SGCore/Logger/Logger.h"
+#include "SGCore/Math/AABB.h"
+
+void SGCore::Navigation::NavMesh::build(const std::vector<Primitives::Triangle<>>& geometry) noexcept
 {
-    // required step
-    addStep(0, MakeRef<InputFilteringStep>());
-    // todo: i think it is required step
-    addStep(1, MakeRef<VoxelizationStep>());
-    // todo: optional step if mesh is simple (not 3d)
-    // addStep(2, MakeRef<HeightfieldBuildStep>());
-    // todo: optional: filter erosion (step 3)
-    addStep(2, MakeRef<FilterErosionStep>());
-    // todo: optional: region partitioner (step 4)
-    addStep(3, MakeRef<RegionsPartitionStep>());
-    // todo: required: contour builder (step 5)
-    // todo: optional: contour simplifier (step 6)
-    // todo: required: triangulator (step 7)
-    // todo: required: adjacency graph builder (for A*) (step 8)
-}
-
-void SGCore::Navigation::NavMesh::build(std::vector<MathPrimitivesUtils::Triangle<>> sceneTriangles) noexcept
-{
-    m_inputSceneTriangles = std::move(sceneTriangles);
-
-    for(const auto& step : m_steps)
+    if(geometry.empty())
     {
-        step->process(*this, m_config);
+        LOG_W(SGCORE_TAG, "Cannot build navigation mesh: no geometry was provided.");
+        return;
     }
+
+    AABB<> geometryAABB;
+    geometryAABB.calculate(geometry);
+
+    rcConfig recastConfig {};
+    memset(&recastConfig, 0, sizeof(rcConfig));
+
+    recastConfig.cs = m_config.m_cellSize;
+    recastConfig.ch = m_config.m_cellHeight;
+    recastConfig.walkableSlopeAngle = m_config.m_agentMaxSlope;
+    recastConfig.walkableHeight = static_cast<int>(std::ceilf(m_config.m_agentHeight / recastConfig.ch));
+    recastConfig.walkableClimb = static_cast<int>(std::floorf(m_config.m_agentMaxClimb / recastConfig.ch));
+    recastConfig.walkableRadius = static_cast<int>(std::ceilf(m_config.m_agentRadius / recastConfig.cs));
+    recastConfig.maxEdgeLen = static_cast<int>(m_config.m_edgeMaxLength / recastConfig.cs);
+    recastConfig.maxSimplificationError = m_config.m_maxSimplificationError;
+    recastConfig.minRegionArea = rcSqr(m_config.m_minRegionSize);
+    recastConfig.mergeRegionArea = rcSqr(m_config.m_mergeRegionSize);
+    recastConfig.maxVertsPerPoly = m_config.m_maxVerticesPerPoly;
+    recastConfig.detailSampleDist = m_config.m_detailSampleDistance < 0.9f ? 0 : recastConfig.cs * m_config.m_detailSampleDistance;
+    recastConfig.detailSampleMaxError = recastConfig.ch * m_config.m_detailSampleMaxError;
+
+    rcVcopy(recastConfig.bmin, &geometryAABB.m_min[0]);
+    rcVcopy(recastConfig.bmax, &geometryAABB.m_max[0]);
+
+    rcCalcGridSize(recastConfig.bmin, recastConfig.bmax, recastConfig.cs, &recastConfig.width, &recastConfig.height);
+
+
 }

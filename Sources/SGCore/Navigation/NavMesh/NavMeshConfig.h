@@ -18,7 +18,13 @@ namespace SGCore::Navigation
         float m_cellSize = 5.0f;
         float m_cellHeight = 5.0f;
         float m_maxSimplificationError = 1.3f;
-        std::int32_t m_minRegionArea = 8;
-        std::int32_t m_mergeRegionArea = 20;
+        float m_edgeMaxLength = 20.0f;
+        std::int32_t m_minRegionSize = 8;
+        std::int32_t m_mergeRegionSize = 20;
+
+        std::int32_t m_maxVerticesPerPoly = 100;
+
+        float m_detailSampleDistance = 10.0f;
+        float m_detailSampleMaxError = 2.0f;
     };
 }

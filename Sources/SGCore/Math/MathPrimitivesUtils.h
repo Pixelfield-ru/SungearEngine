@@ -2,12 +2,12 @@
 // Created by ilya on 11.04.24.
 //
 
-#ifndef SUNGEARENGINE_MATHPRIMITIVESUTILS_H
-#define SUNGEARENGINE_MATHPRIMITIVESUTILS_H
+#pragma once
 
 #include <glm/glm.hpp>
 
 #include "AABB.h"
+#include "Primitives.h"
 
 namespace SGCore::MathPrimitivesUtils
 {
@@ -17,68 +17,6 @@ namespace SGCore::MathPrimitivesUtils
     {
         ScalarT m_hitDistance = std::numeric_limits<ScalarT>::max();
         bool m_isIntersected = false;
-    };
-    
-    template<typename ScalarT = float>
-    requires(std::is_scalar_v<ScalarT>)
-    struct Line3D
-    {
-        glm::vec<3, ScalarT, glm::defaultp> m_origin = { 0, 0, 0 };
-        glm::vec<3, ScalarT, glm::defaultp> m_direction = { 0, 0, 0 };
-        ScalarT m_length = 0;
-    };
-    
-    template<typename ScalarT = float>
-    requires(std::is_scalar_v<ScalarT>)
-    struct Ray3D
-    {
-        glm::vec<3, ScalarT, glm::defaultp> m_origin = { 0, 0, 0 };
-        glm::vec<3, ScalarT, glm::defaultp> m_direction = { 0, 0, 0 };
-    };
-    
-    template<typename ScalarT = float>
-    requires(std::is_scalar_v<ScalarT>)
-    struct Plane3D
-    {
-        glm::vec<3, ScalarT, glm::defaultp> m_origin = { 0, 0, 0 };
-        glm::vec<3, ScalarT, glm::defaultp> m_normal = { 0, 0, 0 };
-    };
-
-    template<typename ScalarT = float>
-    requires(std::is_scalar_v<ScalarT>)
-    struct Triangle
-    {
-        using vec3_t = glm::vec<3, ScalarT, glm::defaultp>;
-        using vec2_t = glm::vec<2, ScalarT, glm::defaultp>;
-
-        std::array<vec3_t, 3> m_vertices {};
-        vec3_t m_normal {};
-
-        void calculateNormal() noexcept
-        {
-            const auto edge1 = m_vertices[1] - m_vertices[0];
-            const auto edge2 = m_vertices[2] - m_vertices[0];
-            m_normal = glm::normalize(glm::cross(edge1, edge2));
-        }
-
-        vec3_t center() const noexcept
-        {
-            return (m_vertices[0] + m_vertices[1] + m_vertices[2]) / 3.0f;
-        }
-
-        vec2_t minXZ() const noexcept
-        {
-            return glm::min(glm::min(vec2_t(m_vertices[0].x, m_vertices[0].z),
-                                     vec2_t(m_vertices[1].x, m_vertices[1].z)),
-                                     vec2_t(m_vertices[2].x, m_vertices[2].z));
-        }
-
-        vec2_t maxXZ() const noexcept
-        {
-            return glm::max(glm::max(vec2_t(m_vertices[0].x, m_vertices[0].z),
-                                     vec2_t(m_vertices[1].x, m_vertices[1].z)),
-                                     vec2_t(m_vertices[2].x, m_vertices[2].z));
-        }
     };
     
     template<typename ScalarT = float>
@@ -131,7 +69,7 @@ namespace SGCore::MathPrimitivesUtils
     }
     
     template<typename ScalarT = float>
-    static void rayAABBIntersection(const Ray3D<ScalarT>& ray,
+    static void rayAABBIntersection(const Primitives::Ray3D<ScalarT>& ray,
                                     const AABB<ScalarT>& aabb,
                                     RayIntersectionInfo<ScalarT>& intersectionInfo) noexcept
     {
@@ -139,7 +77,7 @@ namespace SGCore::MathPrimitivesUtils
     }
     
     template<typename ScalarT = float>
-    static void lineAABBIntersection(const Line3D<ScalarT>& line,
+    static void lineAABBIntersection(const Primitives::Line3D<ScalarT>& line,
                                      const AABB<ScalarT>& aabb,
                                      RayIntersectionInfo<ScalarT>& intersectionInfo) noexcept
     {
@@ -265,8 +203,8 @@ namespace SGCore::MathPrimitivesUtils
     }
     
     template<typename ScalarT = float>
-    static void rayPlaneIntersection(const Ray3D<ScalarT>& ray,
-                                     const Plane3D<ScalarT>& plane,
+    static void rayPlaneIntersection(const Primitives::Ray3D<ScalarT>& ray,
+                                     const Primitives::Plane3D<ScalarT>& plane,
                                      RayIntersectionInfo<ScalarT>& intersectionInfo,
                                      const ScalarT& epsilon = 1e-8)
     {
@@ -275,8 +213,8 @@ namespace SGCore::MathPrimitivesUtils
     }
     
     template<typename ScalarT = float>
-    static void linePlaneIntersection(const Line3D<ScalarT>& line,
-                                      const Plane3D<ScalarT>& plane,
+    static void linePlaneIntersection(const Primitives::Line3D<ScalarT>& line,
+                                      const Primitives::Plane3D<ScalarT>& plane,
                                       RayIntersectionInfo<ScalarT>& intersectionInfo,
                                       const ScalarT& epsilon = 1e-8)
     {
@@ -284,5 +222,3 @@ namespace SGCore::MathPrimitivesUtils
                               line.m_length, intersectionInfo, epsilon);
     }
 }
-
-#endif // SUNGEARENGINE_MATHPRIMITIVESUTILS_H

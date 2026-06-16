@@ -10,6 +10,7 @@
 #include <glm/gtx/matrix_decompose.hpp>
 
 #include "MathUtils.h"
+#include "Primitives.h"
 #include "SGCore/ECS/Component.h"
 #include "SGCore/ImportedScenesArch/Vertex.h"
 
@@ -154,6 +155,23 @@ namespace SGCore
                 if(vertex.m_position.z > m_max.z)
                 {
                     m_max.z = vertex.m_position.z;
+                }
+            }
+        }
+
+        void calculate(const std::vector<Primitives::Triangle<>>& triangles) noexcept
+        {
+            setToInitial();
+
+            m_min = triangles[0].m_vertices[0];
+            m_max = triangles[0].m_vertices[0];
+
+            for(const auto& tri : triangles)
+            {
+                for(std::uint8_t i = 0; i < 3; ++i)
+                {
+                    m_min = glm::min(m_min, tri.m_vertices[i]);
+                    m_max = glm::max(m_max, tri.m_vertices[i]);
                 }
             }
         }
