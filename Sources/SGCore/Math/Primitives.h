@@ -42,13 +42,13 @@ namespace SGCore::Primitives
         using vec2_t = glm::vec<2, ScalarT, glm::defaultp>;
 
         std::array<vec3_t, 3> m_vertices {};
-        vec3_t m_normal {};
+        // vec3_t m_normal {};
 
-        void calculateNormal() noexcept
+        vec3_t calculateNormal() noexcept
         {
             const auto edge1 = m_vertices[1] - m_vertices[0];
             const auto edge2 = m_vertices[2] - m_vertices[0];
-            m_normal = glm::normalize(glm::cross(edge1, edge2));
+            return glm::normalize(glm::cross(edge1, edge2));
         }
 
         vec3_t center() const noexcept

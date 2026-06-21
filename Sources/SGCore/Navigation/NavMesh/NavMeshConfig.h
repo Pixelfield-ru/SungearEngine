@@ -9,6 +9,13 @@
 
 namespace SGCore::Navigation
 {
+    enum class PartitionType
+    {
+        PT_WATERSHED,
+        PT_MONOTONE,
+        PT_LAYERS
+    };
+
     struct SGCORE_EXPORT NavMeshConfig
     {
         float m_agentRadius = 0.5f;
@@ -26,5 +33,11 @@ namespace SGCore::Navigation
 
         float m_detailSampleDistance = 10.0f;
         float m_detailSampleMaxError = 2.0f;
+
+        bool m_filterLowHangingObstacles = true;
+        bool m_filterLedgeSpans = true;
+        bool m_filterLowHeightSpans = true;
+
+        PartitionType m_partitionType = PartitionType::PT_WATERSHED;
     };
 }

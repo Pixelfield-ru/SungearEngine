@@ -15,9 +15,9 @@ SGCore::Ref<SGCore::AudioDevice> SGCore::AudioDevice::m_defaultDevice;
 std::vector<SGCore::Ref<SGCore::AudioDevice>> SGCore::AudioDevice::m_devices;
 ALCcontext* SGCore::AudioDevice::m_currentContext {};
 
-SGCore::AudioDevice::AudioDevice(const char* deviceName)
+SGCore::AudioDevice::AudioDevice(const std::string& deviceName)
 {
-    if(!deviceName)
+    if(deviceName.empty())
     {
         m_name = "Preferred";
     }
@@ -26,20 +26,20 @@ SGCore::AudioDevice::AudioDevice(const char* deviceName)
         m_name = deviceName;
     }
     
-    m_handle = alcOpenDevice(deviceName);
+    m_handle = alcOpenDevice(m_name.c_str());
     if(m_handle)
     {
         m_context = alcCreateContext(m_handle, nullptr);
     }
     else
     {
-        LOG_E(SGCORE_TAG, "Could not load a sound device with the name '{}'.", deviceName);
+        LOG_E(SGCORE_TAG, "Could not load a sound device with the name '{}'.", m_name);
     }
 }
 
 void SGCore::AudioDevice::init() noexcept
 {
-    m_defaultDevice = createAudioDevice(nullptr);
+    m_defaultDevice = createAudioDevice("");
 }
 
 SGCore::AudioDevice::~AudioDevice()
@@ -60,9 +60,9 @@ SGCore::AudioDevice::~AudioDevice()
     }
 }
 
-SGCore::Ref<SGCore::AudioDevice> SGCore::AudioDevice::createAudioDevice(const char* deviceName) noexcept
+SGCore::Ref<SGCore::AudioDevice> SGCore::AudioDevice::createAudioDevice(const std::string& deviceName) noexcept
 {
-    Ref<AudioDevice> newAudioDevice = Ref<AudioDevice>(new AudioDevice(deviceName));
+    auto newAudioDevice = Ref<AudioDevice>(new AudioDevice(deviceName));
     m_devices.push_back(newAudioDevice);
     
     return newAudioDevice;

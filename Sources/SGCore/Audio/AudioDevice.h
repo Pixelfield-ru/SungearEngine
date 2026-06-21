@@ -33,7 +33,7 @@ namespace SGCore
          * @param deviceName Name of device.
          * @return New device.
          */
-        static Ref<AudioDevice> createAudioDevice(const char* deviceName) noexcept;
+        static Ref<AudioDevice> createAudioDevice(const std::string& deviceName = "") noexcept;
 
         /**
          * Makes device as current to play audio.
@@ -51,7 +51,7 @@ namespace SGCore
         bool isLoaded() const noexcept;
         
     private:
-        explicit AudioDevice(const char* deviceName);
+        explicit AudioDevice(const std::string& deviceName);
         
         ALCdevice* m_handle = nullptr;
         ALCcontext* m_context = nullptr;

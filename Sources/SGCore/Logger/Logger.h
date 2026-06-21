@@ -22,11 +22,11 @@
 #define LOG_NOT_IMPLEMENTED(tag) LOG_E(tag, "Do not call this function! It is not implemented!\n{}", SG_CURRENT_LOCATION_STR)
 #define LOG_NOT_SUPPORTED_FUNC(tag) LOG_E(tag, "Do not call this function! It is not supported!\n{}", SG_CURRENT_LOCATION_STR)
 
-#define LOG_I_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->info<false>(tag, msg, ##__VA_ARGS__); LOGCAT_I_UNFORMATTED(tag, msg);
-#define LOG_D_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->debug<false>(tag, msg, ##__VA_ARGS__); LOGCAT_D_UNFORMATTED(tag, msg);
-#define LOG_W_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->warn<false>(tag, msg, ##__VA_ARGS__); LOGCAT_W_UNFORMATTED(tag, msg);
-#define LOG_E_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->error<false>(tag, msg, ##__VA_ARGS__); LOGCAT_E_UNFORMATTED(tag, msg);
-#define LOG_C_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->critical<false>(tag, msg, ##__VA_ARGS__); LOGCAT_E_UNFORMATTED(tag, msg);
+#define LOG_I_UNFORMATTED(tag, msg) SGCore::Logger::getDefaultLogger()->info<false>(tag, msg); LOGCAT_I_UNFORMATTED(tag, msg);
+#define LOG_D_UNFORMATTED(tag, msg) SGCore::Logger::getDefaultLogger()->debug<false>(tag, msg); LOGCAT_D_UNFORMATTED(tag, msg);
+#define LOG_W_UNFORMATTED(tag, msg) SGCore::Logger::getDefaultLogger()->warn<false>(tag, msg); LOGCAT_W_UNFORMATTED(tag, msg);
+#define LOG_E_UNFORMATTED(tag, msg) SGCore::Logger::getDefaultLogger()->error<false>(tag, msg); LOGCAT_E_UNFORMATTED(tag, msg);
+#define LOG_C_UNFORMATTED(tag, msg) SGCore::Logger::getDefaultLogger()->critical<false>(tag, msg); LOGCAT_E_UNFORMATTED(tag, msg);
 
 #define SGCORE_TAG "SGCore"
 #define PROJECT_BUILD_TAG "Project Build"
@@ -49,8 +49,6 @@ namespace SGCore
             LVL_CRITICAL
         };
 
-        static std::string levelToString(Level level) noexcept;
-
         struct LogMessage
         {
             Level m_level = Level::LVL_INFO;
@@ -60,11 +58,6 @@ namespace SGCore
 
         using messages_key = std::pair<Level, std::string>;
 
-        static messages_key make_messages_key(Level lvl, const std::string& tag) noexcept
-        {
-            return std::make_pair(lvl, tag);
-        }
-
         struct SGCORE_EXPORT MessageKeyHash
         {
             std::size_t operator()(const messages_key& messagesKey) const noexcept
@@ -73,6 +66,13 @@ namespace SGCore
                 return h;
             }
         };
+
+        static std::string levelToString(Level level) noexcept;
+
+        static messages_key make_messages_key(Level lvl, const std::string& tag) noexcept
+        {
+            return std::make_pair(lvl, tag);
+        }
 
         static Ref<Logger> createLogger(const std::string& loggerName, const std::filesystem::path& filePath, bool saveMessages = true) noexcept;
 

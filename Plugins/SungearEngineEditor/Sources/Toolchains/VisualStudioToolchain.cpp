@@ -92,7 +92,7 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
                                                          platformTypeAsString,
                                                          m_winSDKVersion);
 
-        std::string cxxFlags = "";
+        std::string cxxFlags;
         if(additionalDefinitions.empty())
         {
             cxxFlags = R"(-DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} ")";
