@@ -5,20 +5,16 @@
 #include "NavMesh.h"
 
 #include <recastnavigation/Recast.h>
+#include <recastnavigation/DetourNavMeshBuilder.h>
+#include <recastnavigation/DetourNavMesh.h>
+#include <recastnavigation/DetourNavMeshQuery.h>
 
 #include "SGCore/Logger/Logger.h"
 #include "SGCore/Math/AABB.h"
 
 SGCore::Navigation::NavMesh::~NavMesh() noexcept
 {
-    rcFreeHeightField(m_heightfield);
-    m_heightfield = {};
-
-    rcFreeCompactHeightfield(m_compactHeightfield);
-    m_compactHeightfield = {};
-
-    rcFreeContourSet(m_contourSet);
-    m_contourSet = {};
+    clear();
 }
 
 void SGCore::Navigation::NavMesh::build(const std::vector<Primitives::Triangle<>>& geometry) noexcept
@@ -28,6 +24,8 @@ void SGCore::Navigation::NavMesh::build(const std::vector<Primitives::Triangle<>
         LOG_W(SGCORE_TAG, "Cannot build navigation mesh: no geometry was provided.");
         return;
     }
+
+    clear();
 
     // step 1. init
 
@@ -226,11 +224,146 @@ void SGCore::Navigation::NavMesh::build(const std::vector<Primitives::Triangle<>
         return;
     }
 
-    if (!rcBuildContours(&m_context, *m_compactHeightfield, recastConfig.maxSimplificationError, recastConfig.maxEdgeLen, *m_contourSet))
+    if(!rcBuildContours(&m_context, *m_compactHeightfield, recastConfig.maxSimplificationError, recastConfig.maxEdgeLen, *m_contourSet))
     {
         m_context.log(RC_LOG_ERROR, "Could not create contours.");
         return;
     }
 
-    // todo: finish
+    m_polyMesh = rcAllocPolyMesh();
+    if (!m_polyMesh)
+    {
+        m_context.log(RC_LOG_ERROR, "Cannot allocate poly mesh.");
+        return;
+    }
+    if (!rcBuildPolyMesh(&m_context, *m_contourSet, recastConfig.maxVertsPerPoly, *m_polyMesh))
+    {
+        m_context.log(RC_LOG_ERROR, "Cannot triangulate contours.");
+        return;
+    }
+
+    m_detailMesh = rcAllocPolyMeshDetail();
+    if (!m_detailMesh)
+    {
+        m_context.log(RC_LOG_ERROR, "Cannot allocate detail mesh.");
+        return;
+    }
+    if (!rcBuildPolyMeshDetail(
+            &m_context,
+            *m_polyMesh,
+            *m_compactHeightfield,
+            recastConfig.detailSampleDist,
+            recastConfig.detailSampleMaxError,
+            *m_detailMesh))
+    {
+        m_context.log(RC_LOG_ERROR, "buildNavigation: Could not build detail mesh.");
+        return;
+    }
+
+    dtNavMeshCreateParams params {};
+    params.verts = m_polyMesh->verts;
+    params.vertCount = m_polyMesh->nverts;
+    params.polys = m_polyMesh->polys;
+    params.polyAreas = m_polyMesh->areas;
+    params.polyFlags = m_polyMesh->flags;
+    params.polyCount = m_polyMesh->npolys;
+    params.nvp = m_polyMesh->nvp;
+    params.detailMeshes = m_detailMesh->meshes;
+    params.detailVerts = m_detailMesh->verts;
+    params.detailVertsCount = m_detailMesh->nverts;
+    params.detailTris = m_detailMesh->tris;
+    params.detailTriCount = m_detailMesh->ntris;
+    /*params.offMeshConVerts = inputGeometry->offmeshConnVerts.data();
+    params.offMeshConRad = inputGeometry->offmeshConnRadius.data();
+    params.offMeshConDir = inputGeometry->offmeshConnBidirectional.data();
+    params.offMeshConAreas = inputGeometry->offmeshConnArea.data();
+    params.offMeshConFlags = inputGeometry->offmeshConnFlags.data();
+    params.offMeshConUserID = inputGeometry->offmeshConnId.data();
+    params.offMeshConCount = static_cast<int>(inputGeometry->offmeshConnArea.size());*/
+    /*params.walkableHeight = recastConfig.walkableHeight;
+    params.walkableRadius = recastConfig.walkableRadius;
+    params.walkableClimb = recastConfig.walkableClimb;*/
+    params.walkableHeight = m_config.m_agentHeight;
+    params.walkableRadius = m_config.m_agentRadius;
+    params.walkableClimb = m_config.m_agentMaxClimb;
+    rcVcopy(params.bmin, m_polyMesh->bmin);
+    rcVcopy(params.bmax, m_polyMesh->bmax);
+    params.cs = recastConfig.cs;
+    params.ch = recastConfig.ch;
+    params.buildBvTree = true;
+
+    if (!dtCreateNavMeshData(&params, &m_navData, &m_navDataSize))
+    {
+        m_context.log(RC_LOG_ERROR, "Cannot build Detour navmesh.");
+        return;
+    }
+
+    m_navMesh = dtAllocNavMesh();
+    if (!m_navMesh)
+    {
+        m_context.log(RC_LOG_ERROR, "Cannot create Detour navmesh.");
+        return;
+    }
+
+    auto status = m_navMesh->init(m_navData, m_navDataSize, DT_TILE_FREE_DATA);
+    if (dtStatusFailed(status))
+    {
+        dtFree(m_navData);
+        m_navData = {};
+
+        m_context.log(RC_LOG_ERROR, "Cannot init Detour navmesh.");
+        return;
+    }
+
+    m_navQuery = dtAllocNavMeshQuery();
+    if(!m_navQuery)
+    {
+        m_context.log(RC_LOG_ERROR, "Cannot allocate navmesh query.");
+        return;
+    }
+
+    status = m_navQuery->init(m_navMesh, 2048);
+    if (dtStatusFailed(status))
+    {
+        m_context.log(RC_LOG_ERROR, "Cannot init Detour navmesh query.");
+        return;
+    }
+
+    LOG_I(SGCORE_TAG, "Navmesh was successfully built.");
+}
+
+std::vector<glm::vec3> SGCore::Navigation::NavMesh::findPath(const glm::vec3& start,
+                                                             const glm::vec3& end) const noexcept
+{
+    std::vector<glm::vec3> points;
+
+    /*m_navQuery->findNearestPoly(startPos, extent, &filter, &startRef, nullptr);
+    m_navQuery->findNearestPoly(endPos, extent, &filter, &endRef, nullptr);*/
+}
+
+void SGCore::Navigation::NavMesh::clear() noexcept
+{
+    rcFreeHeightField(m_heightfield);
+    m_heightfield = {};
+
+    rcFreeCompactHeightfield(m_compactHeightfield);
+    m_compactHeightfield = {};
+
+    rcFreeContourSet(m_contourSet);
+    m_contourSet = {};
+
+    rcFreePolyMesh(m_polyMesh);
+    m_polyMesh = {};
+
+    rcFreePolyMeshDetail(m_detailMesh);
+    m_detailMesh = {};
+
+    dtFree(m_navData);
+    m_navData = {};
+
+    dtFreeNavMesh(m_navMesh);
+    m_navMesh = {};
+
+    dtFreeNavMeshQuery(m_navQuery);
+    m_navQuery = {};
 }

@@ -4,8 +4,9 @@
 
 #pragma once
 
-#include <Recast.h>
 #include <vector>
+#include <DetourNavMesh.h>
+#include <Recast.h>
 
 #include "NavBuildContext.h"
 #include "NavMeshConfig.h"
@@ -22,10 +23,23 @@ namespace SGCore::Navigation
 
         void build(const std::vector<Primitives::Triangle<>>& geometry) noexcept;
 
+        [[nodiscard]] std::vector<glm::vec3> findPath(const glm::vec3& start, const glm::vec3& end) const noexcept;
+
+        void clear() noexcept;
+
     private:
+        // recast data
         rcHeightfield* m_heightfield {};
         rcCompactHeightfield* m_compactHeightfield {};
         rcContourSet* m_contourSet {};
+        rcPolyMesh* m_polyMesh {};
+        rcPolyMeshDetail* m_detailMesh {};
+
+        // detour data
+        std::uint8_t* m_navData {};
+        std::int32_t m_navDataSize {};
+        dtNavMesh* m_navMesh {};
+        dtNavMeshQuery* m_navQuery {};
 
         NavBuildContext m_context {};
     };
