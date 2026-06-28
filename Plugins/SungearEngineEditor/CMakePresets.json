@@ -1,9 +1,9 @@
 {
-  "version": 5,
+  "version": 7,
   "include": [
-    "cmake/presets/x64-windows.json",
-    "cmake/presets/x64-linux.json",
-    "cmake/presets/arm64-android.json"
+    "$penv{SUNGEAR_SOURCES_ROOT}/cmake/presets/x64-windows.json",
+    "$penv{SUNGEAR_SOURCES_ROOT}/cmake/presets/x64-linux.json",
+    "$penv{SUNGEAR_SOURCES_ROOT}/cmake/presets/arm64-android.json"
   ],
   "configurePresets": [
 

@@ -23,7 +23,9 @@ namespace SGCore::Navigation
 
         void build(const std::vector<Primitives::Triangle<>>& geometry) noexcept;
 
-        [[nodiscard]] std::vector<glm::vec3> findPath(const glm::vec3& start, const glm::vec3& end) const noexcept;
+        [[nodiscard]] std::vector<glm::vec3> findPath(const glm::vec3& start,
+                                                      const glm::vec3& end,
+                                                      const glm::vec3& polyPickHalfExt) const noexcept;
 
         void clear() noexcept;
 

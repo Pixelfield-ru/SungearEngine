@@ -333,12 +333,67 @@ void SGCore::Navigation::NavMesh::build(const std::vector<Primitives::Triangle<>
 }
 
 std::vector<glm::vec3> SGCore::Navigation::NavMesh::findPath(const glm::vec3& start,
-                                                             const glm::vec3& end) const noexcept
+                                                             const glm::vec3& end,
+                                                             const glm::vec3& polyPickHalfExt) const noexcept
 {
+    dtPolyRef startRef, endRef;
+    dtQueryFilter filter {};
+
+    if(dtStatusFailed(m_navQuery->findNearestPoly(&start[0], &polyPickHalfExt[0], &filter, &startRef, nullptr)))
+    {
+        LOG_E(SGCORE_TAG, "Cannot find nearest poly to start point.");
+        return {};
+    }
+
+    if(dtStatusFailed(m_navQuery->findNearestPoly(&end[0], &polyPickHalfExt[0], &filter, &endRef, nullptr)))
+    {
+        LOG_E(SGCORE_TAG, "Cannot find nearest poly to end point.");
+        return {};
+    }
+
+    if(!startRef || !endRef)
+    {
+        return {};
+    }
+
+    constexpr std::int32_t maxPolygons = 256;
+    dtPolyRef polys[maxPolygons];
+    std::int32_t polyCount = 0;
+
+    if(dtStatusFailed(m_navQuery->findPath(startRef, endRef, &start[0], &end[0], &filter, polys, &polyCount,
+                                           maxPolygons)))
+    {
+        LOG_E(SGCORE_TAG, "Cannot find path between polys.");
+        return {};
+    }
+
+    if(polyCount == 0)
+    {
+        LOG_E(SGCORE_TAG, "Cannot find path between polys. No polys found.");
+        return {};
+    }
+
+    float straightPath[maxPolygons * 3];
+    unsigned char straightPathFlags[maxPolygons];
+    dtPolyRef straightPathPolys[maxPolygons];
+    int straightPathCount;
+
+    if(dtStatusFailed(m_navQuery->findStraightPath(&start[0], &end[0], polys, polyCount,
+                                                   straightPath, straightPathFlags, straightPathPolys,
+                                                   &straightPathCount, maxPolygons)))
+    {
+        LOG_E(SGCORE_TAG, "Cannot find straight path between polys.");
+        return {};
+    }
+
     std::vector<glm::vec3> points;
 
-    /*m_navQuery->findNearestPoly(startPos, extent, &filter, &startRef, nullptr);
-    m_navQuery->findNearestPoly(endPos, extent, &filter, &endRef, nullptr);*/
+    for(int i = 0; i < straightPathCount; ++i)
+    {
+        points.emplace_back(straightPath[i * 3], straightPath[i * 3 + 1], straightPath[i * 3 + 2]);
+    }
+
+    return points;
 }
 
 void SGCore::Navigation::NavMesh::clear() noexcept

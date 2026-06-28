@@ -1,3 +1,5 @@
+# set(VCPKG_MANIFEST_DIR "$ENV{SUNGEAR_SOURCES_ROOT}")
+
 cmake_minimum_required(VERSION 3.25)
 project(SungearEngineEditor)
 

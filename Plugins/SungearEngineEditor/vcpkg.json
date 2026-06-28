@@ -98,17 +98,20 @@
     "name" : "boost-asio",
     "version>=" : "1.88.0#0"
   }, {
+    "name" : "gtest",
+    "version>=" : "1.17.0#1"
+  }, {
     "name" : "sol2",
     "version>=" : "3.5.0#0"
   }, {
     "name" : "lua",
     "version>=" : "5.4.8#0"
   }, {
+    "name" : "recastnavigation",
+    "version>=" : "1.6.0#1"
+  }, {
     "name" : "nativefiledialog-extended",
     "version>=" : "1.2.1#0",
     "platform": "!android & !ios & !uwp"
-  }, {
-    "name" : "recastnavigation",
-    "version>=" : "1.6.0#1"
   } ]
 }

@@ -124,17 +124,6 @@ SGCore::PluginProject SGCore::PluginsManager::createPluginProject(const std::fil
         std::ofstream cmakePresetsStream(pluginDir + "/CMakePresets.json");
         cmakePresetsStream << cmakePresetsContent;
 
-        // ====================================== CMakePresets.json
-
-        const std::filesystem::path templatePresetsPath = sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.templates/cmake/presets";
-
-        for(const auto& presetPath : std::filesystem::directory_iterator(templatePresetsPath))
-        {
-            std::cout << "SGCore::PluginsManager: copying preset: " << Utils::toUTF8(presetPath.path().u16string()) << std::endl;
-            const std::string presetContent = FileUtils::readFile(presetPath.path());
-            FileUtils::writeToFile(pluginDir + "/cmake/presets/" + Utils::toUTF8(presetPath.path().filename().u16string()), presetContent, false, true);
-        }
-
         // ====================================== vcpkg.json
         
         std::string vcpkgContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.templates/vcpkg.json"));
