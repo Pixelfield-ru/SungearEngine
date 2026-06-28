@@ -33,10 +33,10 @@ void SGCore::Navigation::NavMesh::build(const std::vector<Primitives::Triangle<>
     const size_t verticesCount = geometry.size() * 3;
 
     // making triangles indices
-    std::vector<int> trianglesIndices(verticesCount);
-    for(size_t i = 0; i < verticesCount; ++i)
+    std::vector<int> trianglesIndices(verticesCount, 0);
+    for(size_t i = 0; i < trianglesIndices.size(); ++i)
     {
-        trianglesIndices[i] = i / 3;
+        trianglesIndices[i] = i;
     }
 
     AABB<> geometryAABB;
@@ -101,7 +101,7 @@ void SGCore::Navigation::NavMesh::build(const std::vector<Primitives::Triangle<>
         vertices,
         verticesCount,
         trianglesIndices.data(),
-        trianglesIndices.size(),
+        trianglesIndices.size() / 3,
         triAreas.data());
 
     const bool isRasterized = rcRasterizeTriangles(
@@ -110,7 +110,7 @@ void SGCore::Navigation::NavMesh::build(const std::vector<Primitives::Triangle<>
         verticesCount,
         trianglesIndices.data(),
         triAreas.data(),
-        trianglesIndices.size(),
+        trianglesIndices.size() / 3,
         *m_heightfield,
         recastConfig.walkableClimb);
 

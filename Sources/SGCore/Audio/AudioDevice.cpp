@@ -14,22 +14,27 @@
 SGCore::Ref<SGCore::AudioDevice> SGCore::AudioDevice::m_defaultDevice;
 std::vector<SGCore::Ref<SGCore::AudioDevice>> SGCore::AudioDevice::m_devices;
 ALCcontext* SGCore::AudioDevice::m_currentContext {};
+// std::string SGCore::AudioDevice::m_defaultDeviceName {};
+std::vector<std::string> SGCore::AudioDevice::m_devicesNames {};
 
 SGCore::AudioDevice::AudioDevice(const std::string& deviceName)
 {
-    if(deviceName.empty())
-    {
-        m_name = "Preferred";
-    }
-    else
-    {
-        m_name = deviceName;
-    }
-    
-    m_handle = alcOpenDevice(m_name.c_str());
+    m_handle = alcOpenDevice(deviceName.empty() ? nullptr : deviceName.c_str());
+    // m_handle = alcOpenDevice("Preferred");
     if(m_handle)
     {
         m_context = alcCreateContext(m_handle, nullptr);
+
+        if(deviceName.empty())
+        {
+            m_name = alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER);;
+        }
+        else
+        {
+            m_name = deviceName;
+        }
+
+        LOG_I(SGCORE_TAG, "Created audio device '{}'", m_name);
     }
     else
     {
@@ -39,6 +44,18 @@ SGCore::AudioDevice::AudioDevice(const std::string& deviceName)
 
 void SGCore::AudioDevice::init() noexcept
 {
+    const ALCchar* devices = alcGetString(nullptr, ALC_ALL_DEVICES_SPECIFIER);
+    if(devices && *devices != '\0')
+    {
+        while(*devices)
+        {
+            m_devicesNames.push_back(devices);
+
+            LOG_I(SGCORE_TAG, "Found audio device '{}'", m_devicesNames.back());
+            devices += strlen(devices) + 1;
+        }
+    }
+
     m_defaultDevice = createAudioDevice("");
 }
 

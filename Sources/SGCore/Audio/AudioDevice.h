@@ -66,5 +66,8 @@ namespace SGCore
         static std::vector<Ref<AudioDevice>> m_devices;
         
         static ALCcontext* m_currentContext;
+
+        // static std::string m_defaultDeviceName;
+        static std::vector<std::string> m_devicesNames;
     };
 }
