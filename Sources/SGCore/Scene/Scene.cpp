@@ -27,6 +27,7 @@
 #include "../UI/Systems/UILayoutCalculator.h"
 #include "SGCore/Animation/AnimationsTreesProcessor.h"
 #include "SGCore/Animation/FrameAnimationsProcessor.h"
+#include "SGCore/Navigation/NavMesh/NavMeshDebugDraw.h"
 #include "SGCore/UI/EventHandling/EventsHandlingSystem.h"
 
 SGCore::Scene::~Scene()
@@ -139,6 +140,11 @@ void SGCore::Scene::createDefaultSystems()
 
     auto instancingUpdater = MakeRef<InstancingUpdater>();
     addSystem(instancingUpdater);
+
+    // navmesh debug draw =================================
+
+    auto navMeshDebugDraw = MakeRef<Navigation::NavMeshDebugDraw>();
+    addSystem(navMeshDebugDraw);
 }
 
 // ----------------

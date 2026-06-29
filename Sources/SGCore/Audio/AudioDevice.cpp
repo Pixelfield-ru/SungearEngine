@@ -49,7 +49,7 @@ void SGCore::AudioDevice::init() noexcept
     {
         while(*devices)
         {
-            m_devicesNames.push_back(devices);
+            m_devicesNames.emplace_back(devices);
 
             LOG_I(SGCORE_TAG, "Found audio device '{}'", m_devicesNames.back());
             devices += strlen(devices) + 1;

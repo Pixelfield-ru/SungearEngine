@@ -260,6 +260,11 @@ void SGCore::Navigation::NavMesh::build(const std::vector<Primitives::Triangle<>
         return;
     }
 
+    LOG_I(SGCORE_TAG, "Building navmesh... Vertices count: {}, polys count: {}, NVP: {}",
+          m_polyMesh->nverts,
+          m_polyMesh->npolys,
+          m_polyMesh->nvp);
+
     dtNavMeshCreateParams params {};
     params.verts = m_polyMesh->verts;
     params.vertCount = m_polyMesh->nverts;
@@ -396,29 +401,34 @@ std::vector<glm::vec3> SGCore::Navigation::NavMesh::findPath(const glm::vec3& st
     return points;
 }
 
+const dtNavMesh* SGCore::Navigation::NavMesh::getNativeNavMesh() const noexcept
+{
+    return m_navMesh;
+}
+
 void SGCore::Navigation::NavMesh::clear() noexcept
 {
-    rcFreeHeightField(m_heightfield);
+    if(m_heightfield) rcFreeHeightField(m_heightfield);
     m_heightfield = {};
 
-    rcFreeCompactHeightfield(m_compactHeightfield);
+    if(m_compactHeightfield) rcFreeCompactHeightfield(m_compactHeightfield);
     m_compactHeightfield = {};
 
-    rcFreeContourSet(m_contourSet);
+    if(m_contourSet) rcFreeContourSet(m_contourSet);
     m_contourSet = {};
 
-    rcFreePolyMesh(m_polyMesh);
+    if(m_polyMesh) rcFreePolyMesh(m_polyMesh);
     m_polyMesh = {};
 
-    rcFreePolyMeshDetail(m_detailMesh);
+    if(m_detailMesh) rcFreePolyMeshDetail(m_detailMesh);
     m_detailMesh = {};
 
-    dtFree(m_navData);
-    m_navData = {};
-
-    dtFreeNavMesh(m_navMesh);
+    if(m_navMesh) dtFreeNavMesh(m_navMesh);
     m_navMesh = {};
 
-    dtFreeNavMeshQuery(m_navQuery);
+    if(m_navQuery) dtFreeNavMeshQuery(m_navQuery);
     m_navQuery = {};
+
+    /*if(m_navData) dtFree(m_navData);
+    m_navData = {};*/
 }

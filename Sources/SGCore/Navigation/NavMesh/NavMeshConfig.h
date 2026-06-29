@@ -29,7 +29,7 @@ namespace SGCore::Navigation
         std::int32_t m_minRegionSize = 8;
         std::int32_t m_mergeRegionSize = 20;
 
-        std::int32_t m_maxVerticesPerPoly = 100;
+        std::int32_t m_maxVerticesPerPoly = 4;
 
         float m_detailSampleDistance = 10.0f;
         float m_detailSampleMaxError = 2.0f;

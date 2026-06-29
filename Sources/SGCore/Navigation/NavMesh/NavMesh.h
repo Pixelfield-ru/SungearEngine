@@ -27,6 +27,8 @@ namespace SGCore::Navigation
                                                       const glm::vec3& end,
                                                       const glm::vec3& polyPickHalfExt) const noexcept;
 
+        const dtNavMesh* getNativeNavMesh() const noexcept;
+
         void clear() noexcept;
 
     private:
