@@ -12,6 +12,7 @@ namespace SGCore
     {
         static void buildLine(MeshBase& meshBase, const glm::vec3& start, const glm::vec3& end) noexcept;
         static void buildBox3D(MeshBase& meshBase, const glm::vec3& size) noexcept;
+        // todo: fix
         static void buildSphereVariant1(MeshBase& meshBase, const float& radius, const float& angleIncrement) noexcept;
     };
 }

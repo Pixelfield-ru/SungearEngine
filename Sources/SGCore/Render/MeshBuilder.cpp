@@ -21,68 +21,95 @@ void SGCore::MeshBuilder::buildBox3D(SGCore::MeshBase& meshBase, const glm::vec3
     meshBase.setMeshData(meshData);
 
     meshData->m_vertices.clear();
+    meshData->m_vertices.resize(8);
 
-    meshData->m_vertices.push_back({ .m_position = { -size.x / 2.0f, -size.y / 2.0f, size.z / 2.0f }});
+    auto addVertex = [&](const glm::vec3& pos, const glm::vec3& normal, const glm::vec2& uv) {
+        meshData->m_vertices.push_back({ .m_position = pos, .m_uv = { uv.x, uv.y, 0.0f }, .m_normal = normal });
+    };
 
-    meshData->m_vertices.push_back({ .m_position = { -size.x / 2.0f, -size.y / 2.0f, -size.z / 2.0f }});
+    auto addQuad = [&](const glm::vec3& normal,
+                       const glm::vec3& v0, const glm::vec3& v1,
+                       const glm::vec3& v2, const glm::vec3& v3,
+                       const glm::vec2& uv0, const glm::vec2& uv1,
+                       const glm::vec2& uv2, const glm::vec2& uv3) {
+        const auto base = meshData->m_vertices.size();
 
-    meshData->m_vertices.push_back({ .m_position = { -size.x / 2.0f, size.y / 2.0f, -size.z / 2.0f }});
+        addVertex(v0, normal, uv0);
+        addVertex(v1, normal, uv1);
+        addVertex(v2, normal, uv2);
+        addVertex(v3, normal, uv3);
 
-    meshData->m_vertices.push_back({ .m_position = { -size.x / 2.0f, size.y / 2.0f, size.z / 2.0f }});
+        // CW
+        meshData->m_indices.push_back(base + 0);
+        meshData->m_indices.push_back(base + 2);
+        meshData->m_indices.push_back(base + 1);
 
+        meshData->m_indices.push_back(base + 0);
+        meshData->m_indices.push_back(base + 3);
+        meshData->m_indices.push_back(base + 2);
+    };
 
+    const auto h = size / 2.0f;
 
-    meshData->m_vertices.push_back({ .m_position = { size.x / 2.0f, -size.y / 2.0f, size.z / 2.0f }});
+    // left
+    addQuad(
+        { -1, 0, 0 },
+        { -h.x, -h.y,  h.z },
+        { -h.x, -h.y, -h.z },
+        { -h.x,  h.y, -h.z },
+        { -h.x,  h.y,  h.z },
+        { 1, 1 }, { 0, 1 }, { 0, 0 }, { 1, 0 }
+    );
 
-    meshData->m_vertices.push_back({ .m_position = { size.x / 2.0f, -size.y / 2.0f, -size.z / 2.0f }});
+    // right
+    addQuad(
+        { 1, 0, 0 },
+        { h.x, -h.y, -h.z },
+        { h.x, -h.y, h.z },
+        { h.x, h.y, h.z },
+        { h.x, h.y, -h.z },
+        { 1, 1 }, { 0, 1 }, { 0, 0 }, { 1, 0 }
+    );
 
-    meshData->m_vertices.push_back({ .m_position = { size.x / 2.0f, size.y / 2.0f, -size.z / 2.0f }});
+    // down
+    addQuad(
+        { 0, -1, 0 },
+        {-h.x, -h.y,  h.z},
+        { h.x, -h.y,  h.z},
+        { h.x, -h.y, -h.z},
+        {-h.x, -h.y, -h.z},
+        { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 1 }
+    );
 
-    meshData->m_vertices.push_back({ .m_position = { size.x / 2.0f, size.y / 2.0f, size.z / 2.0f }});
+    // up
+    addQuad(
+        { 0, 1, 0 },
+        { h.x, h.y, h.z },
+        { -h.x, h.y, h.z },
+        { -h.x, h.y, -h.z },
+        { h.x, h.y, -h.z },
+        { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 1 }
+    );
 
-    // --------------------------------
+    // forward
+    addQuad(
+        { 0, 0, 1 },
+        { h.x, -h.y, h.z },
+        { -h.x, -h.y, h.z },
+        { -h.x, h.y, h.z },
+        { h.x, h.y, h.z },
+        { 1, 1 }, { 0, 1 }, { 0, 0 }, { 1, 0 }
+    );
 
-    meshData->m_indices.clear();
-
-    meshData->m_indices.push_back(0);
-    meshData->m_indices.push_back(1);
-
-    meshData->m_indices.push_back(1);
-    meshData->m_indices.push_back(2);
-
-    meshData->m_indices.push_back(2);
-    meshData->m_indices.push_back(3);
-
-    meshData->m_indices.push_back(3);
-    meshData->m_indices.push_back(0);
-
-
-
-    meshData->m_indices.push_back(4);
-    meshData->m_indices.push_back(5);
-
-    meshData->m_indices.push_back(5);
-    meshData->m_indices.push_back(6);
-
-    meshData->m_indices.push_back(6);
-    meshData->m_indices.push_back(7);
-
-    meshData->m_indices.push_back(7);
-    meshData->m_indices.push_back(4);
-
-
-
-    meshData->m_indices.push_back(0);
-    meshData->m_indices.push_back(4);
-
-    meshData->m_indices.push_back(3);
-    meshData->m_indices.push_back(7);
-
-    meshData->m_indices.push_back(2);
-    meshData->m_indices.push_back(6);
-
-    meshData->m_indices.push_back(1);
-    meshData->m_indices.push_back(5);
+    // backward
+    addQuad(
+        { 0, 0, -1 },
+        { -h.x, -h.y, -h.z },
+        { h.x, -h.y, -h.z },
+        { h.x, h.y, -h.z },
+        { -h.x, h.y, -h.z },
+        { 1, 1 }, { 0, 1 }, { 0, 0 }, { 1, 0 }
+    );
 
     meshData->prepare();
 }
