@@ -4,6 +4,8 @@
 
 #include "CoroScheduler.h"
 
+#include <stack>
+
 void SGCore::Coro::CoroScheduler::process() noexcept
 {
     {
@@ -12,29 +14,27 @@ void SGCore::Coro::CoroScheduler::process() noexcept
 
         for(auto& awaitable : lastVec)
         {
-            if(!awaitable.done())
-            {
-                awaitable.resume();
-            }
+            if(awaitable.done()) continue;
+
+            awaitable.resume();
         }
     }
 
     {
         std::vector<std::coroutine_handle<>> corosToResume { };
 
-        auto it = m_timerAwaitableCoros.begin();
-        while(it != m_timerAwaitableCoros.end())
+        for(std::ptrdiff_t i = static_cast<std::ptrdiff_t>(m_timerAwaitableCoros.size()) - 1; i >= 0; --i)
         {
-            auto& awaitable = *it;
-            if(awaitable.await_ready())
+            auto& awaitable = m_timerAwaitableCoros[i];
+
+            if (awaitable.await_ready())
             {
                 auto coro = awaitable.getOwnerCoro();
-                it = m_timerAwaitableCoros.erase(it);
-                corosToResume.push_back(coro);
-                continue;
-            }
 
-            ++it;
+                m_timerAwaitableCoros.erase(m_timerAwaitableCoros.begin() + i);
+
+                corosToResume.push_back(coro);
+            }
         }
 
         for(auto& coro : corosToResume) coro.resume();
@@ -43,19 +43,18 @@ void SGCore::Coro::CoroScheduler::process() noexcept
     {
         std::vector<std::coroutine_handle<>> corosToResume { };
 
-        auto it = m_taskAwaitableCoros.begin();
-        while(it != m_taskAwaitableCoros.end())
+        for(std::ptrdiff_t i = static_cast<std::ptrdiff_t>(m_taskAwaitableCoros.size()) - 1; i >= 0; --i)
         {
-            auto& awaitable = *it;
-            if(awaitable.await_ready())
+            auto& awaitable = m_taskAwaitableCoros[i];
+
+            if (awaitable.await_ready())
             {
                 auto coro = awaitable.getOwnerCoro();
-                it = m_taskAwaitableCoros.erase(it);
-                corosToResume.push_back(coro);
-                continue;
-            }
 
-            ++it;
+                m_taskAwaitableCoros.erase(m_taskAwaitableCoros.begin() + i);
+
+                corosToResume.push_back(coro);
+            }
         }
 
         for(auto& coro : corosToResume) coro.resume();

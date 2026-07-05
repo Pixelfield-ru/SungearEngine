@@ -297,6 +297,19 @@ void SGCore::Navigation::NavMesh::build(const std::vector<Primitives::Triangle<>
     params.ch = recastConfig.ch;
     params.buildBvTree = true;
 
+    auto polyFlags = new unsigned short[m_polyMesh->npolys];
+    auto polyAreas = new unsigned char[m_polyMesh->npolys];
+
+    // todo: make flags & areas
+    for (int i = 0; i < params.polyCount; ++i)
+    {
+        polyAreas[i] = RC_WALKABLE_AREA;
+        polyFlags[i] = 1;
+    }
+
+    params.polyAreas = polyAreas;
+    params.polyFlags = polyFlags;
+
     if (!dtCreateNavMeshData(&params, &m_navData, &m_navDataSize))
     {
         m_context.log(RC_LOG_ERROR, "Cannot build Detour navmesh.");
@@ -334,7 +347,13 @@ void SGCore::Navigation::NavMesh::build(const std::vector<Primitives::Triangle<>
         return;
     }
 
-    LOG_I(SGCORE_TAG, "Navmesh was successfully built.");
+    if(m_navMesh->getMaxTiles() <= 0)
+    {
+        m_context.log(RC_LOG_ERROR, "Cannot build navmesh.");
+        return;
+    }
+
+    LOG_I(SGCORE_TAG, "Navmesh was built successfully.");
 }
 
 std::vector<glm::vec3> SGCore::Navigation::NavMesh::findPath(const glm::vec3& start,
@@ -342,7 +361,10 @@ std::vector<glm::vec3> SGCore::Navigation::NavMesh::findPath(const glm::vec3& st
                                                              const glm::vec3& polyPickHalfExt) const noexcept
 {
     dtPolyRef startRef, endRef;
+
     dtQueryFilter filter {};
+    filter.setIncludeFlags(0xFFFF);  // Все полигоны
+    filter.setExcludeFlags(0);
 
     if(dtStatusFailed(m_navQuery->findNearestPoly(&start[0], &polyPickHalfExt[0], &filter, &startRef, nullptr)))
     {
@@ -358,6 +380,16 @@ std::vector<glm::vec3> SGCore::Navigation::NavMesh::findPath(const glm::vec3& st
 
     if(!startRef || !endRef)
     {
+        if(!startRef)
+        {
+            LOG_E(SGCORE_TAG, "Cannot find start polygon.");
+        }
+
+        if(!endRef)
+        {
+            LOG_E(SGCORE_TAG, "Cannot find end polygon.");
+        }
+
         return {};
     }
 
@@ -379,12 +411,12 @@ std::vector<glm::vec3> SGCore::Navigation::NavMesh::findPath(const glm::vec3& st
     }
 
     float straightPath[maxPolygons * 3];
-    unsigned char straightPathFlags[maxPolygons];
+    unsigned char straightPathFlags[maxPolygons] {};
     dtPolyRef straightPathPolys[maxPolygons];
     int straightPathCount;
 
     if(dtStatusFailed(m_navQuery->findStraightPath(&start[0], &end[0], polys, polyCount,
-                                                   straightPath, straightPathFlags, straightPathPolys,
+                                                   straightPath, nullptr, nullptr,
                                                    &straightPathCount, maxPolygons)))
     {
         LOG_E(SGCORE_TAG, "Cannot find straight path between polys.");
