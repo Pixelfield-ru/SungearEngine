@@ -5,6 +5,7 @@
 #pragma once
 
 #include <string>
+#include "sgcore_export.h"
 
 namespace SGCore::Net
 {

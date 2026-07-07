@@ -360,6 +360,12 @@ std::vector<glm::vec3> SGCore::Navigation::NavMesh::findPath(const glm::vec3& st
                                                              const glm::vec3& end,
                                                              const glm::vec3& polyPickHalfExt) const noexcept
 {
+    if(!m_navQuery)
+    {
+        LOG_E(SGCORE_TAG, "NavMesh was not built.");
+        return {};
+    }
+
     dtPolyRef startRef, endRef;
 
     dtQueryFilter filter {};
