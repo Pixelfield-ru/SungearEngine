@@ -128,5 +128,16 @@ namespace SGCore::Net
 
             return true;
         }
+
+        template<typename MessageT>
+        static void writeMessage(Packet& packet, boost::asio::ip::udp::endpoint senderEndpoint)
+        {
+            const std::uint64_t dataTypeHash = MessageT::getTypeIDStatic();
+
+            size_t clientEndpointSize = 0;
+
+            std::memcpy(packet.data(), &dataTypeHash, sizeof(dataTypeHash));
+            writeEndpoint(packet, sizeof(dataTypeHash) + sizeof(MessageT), senderEndpoint, clientEndpointSize);
+        }
     };
 }

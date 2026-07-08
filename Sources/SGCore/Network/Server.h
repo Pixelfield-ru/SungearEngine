@@ -16,12 +16,13 @@
 #include <boost/asio/strand.hpp>
 #include <boost/asio/ip/udp.hpp>
 
+#include "ClientConnectedMessage.h"
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Threading/ThreadsPool.h"
 
 #include "SGCore/Coro/Task.h"
 
-#include "ClientDisconnectedPacket.h"
+#include "ClientDisconnectedMessage.h"
 
 #include "Utils.h"
 
@@ -38,7 +39,7 @@ namespace SGCore::Net
 
         template<typename T>
         requires(std::is_invocable_v<T, const Packet&, size_t, endpoint_t>)
-        Coro::Task<> runReceivePoll(T callback) noexcept
+        Coro::Task<> runReceivePoll(T&& callback) noexcept
         {
             while(m_contextThread->isRunning())
             {
@@ -48,8 +49,8 @@ namespace SGCore::Net
                     continue;
                 }
 
-                boost::asio::post(m_strand, [this, callback] {
-                    m_socket->async_receive_from(boost::asio::buffer(m_recvBuffer), m_receivedFromEndpoint, [this, callback](const boost::system::error_code& error, std::size_t bufferSize) {
+                boost::asio::post(m_strand, [this, callback = std::forward<T>(callback)] {
+                    m_socket->async_receive_from(boost::asio::buffer(m_recvBuffer), m_receivedFromEndpoint, [this, callback = std::move(callback)](const boost::system::error_code& error, std::size_t bufferSize) {
                         const auto clientEndpoint = m_receivedFromEndpoint;
                         auto tmpBuf = m_recvBuffer;
                         const auto originalData = m_recvBuffer;
@@ -60,18 +61,15 @@ namespace SGCore::Net
 
                             {
                                 std::lock_guard guard(m_connectedClientsContainersMutex);
-                                m_connectedClients.erase(std::ranges::find(m_connectedClients, m_receivedFromEndpoint));
-                                m_connectedClientsSet.erase(m_receivedFromEndpoint);
+                                m_connectedClients.erase(std::ranges::find(m_connectedClients, clientEndpoint));
+                                m_connectedClientsSet.erase(clientEndpoint);
+                                /*m_connectedClients.erase(std::ranges::find(m_connectedClients, m_receivedFromEndpoint));
+                                m_connectedClientsSet.erase(m_receivedFromEndpoint);*/
                             }
 
                             tmpBuf = {};
 
-                            const std::uint64_t dataTypeHash = SGCore::hashString(ClientDisconnectedPacket::type_name);
-
-                            size_t clientEndpointSize = 0;
-
-                            std::memcpy(tmpBuf.data(), &dataTypeHash, sizeof(dataTypeHash));
-                            Utils::writeEndpoint(tmpBuf, sizeof(dataTypeHash), clientEndpoint, clientEndpointSize);
+                            Utils::writeMessage<ClientDisconnectedMessage>(tmpBuf, clientEndpoint);
 
                             // we will definitely notify other clients about the client disconnection.
                             propagatePacket(tmpBuf, clientEndpoint);
@@ -88,16 +86,22 @@ namespace SGCore::Net
                             }
 
                             std::cout << "new client: " << clientEndpoint << ", clients count: " << m_connectedClients.size() << std::endl;
+
+                            Packet outPacket;
+                            Utils::writeMessage<ClientConnectedMessage>(outPacket, clientEndpoint);
+
+                            propagatePacket(outPacket, clientEndpoint);
                         }
 
                         size_t formedPacketOffset = 0;
                         size_t originalPacketOffset = 0;
 
-                        // processing all packet
+                        // todo: fix data receiving or data sending or something like that idk
+                        // processing all packet. adding client endpoint
                         while(true)
                         {
                             std::uint64_t dataTypeHash;
-                            std::memcpy(&dataTypeHash, tmpBuf.data() + formedPacketOffset, sizeof(dataTypeHash));
+                            std::memcpy(&dataTypeHash, originalData.data() + originalPacketOffset, sizeof(dataTypeHash));
 
                             auto registeredTypeIt = m_registeredTypes.find(dataTypeHash);
                             if(registeredTypeIt == m_registeredTypes.end())
@@ -128,13 +132,13 @@ namespace SGCore::Net
 
                             std::memcpy(tmpBuf.data() + formedPacketOffset, originalData.data() + originalPacketOffset + sizeof(dataTypeHash), registeredTypeSize);
 
-                            if(bufferSize > 0)
-                            {
-                                callback(tmpBuf, bufferSize, clientEndpoint);
-                            }
-
                             formedPacketOffset += registeredTypeSize;
                             originalPacketOffset += sizeof(dataTypeHash) + registeredTypeSize;
+                        }
+
+                        if(bufferSize > 0)
+                        {
+                            callback(tmpBuf, bufferSize, clientEndpoint);
                         }
                     });
                 });
@@ -146,7 +150,7 @@ namespace SGCore::Net
         template<typename T>
         void registerDataType() noexcept
         {
-            m_registeredTypes[SGCore::hashString(T::type_name)] = sizeof(T);
+            m_registeredTypes[T::getTypeIDStatic()] = sizeof(T);
         }
 
         Coro::Task<> propagatePacket(const Packet& packet, endpoint_t fromClient) noexcept;

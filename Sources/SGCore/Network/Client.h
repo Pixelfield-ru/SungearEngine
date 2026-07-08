@@ -44,11 +44,11 @@ namespace SGCore::Net
 
         void connect(const std::string& endpointAddress, boost::asio::ip::port_type endpointPort, std::chrono::system_clock::duration retryInterval = std::chrono::seconds(3), int retriesCount = 5) noexcept;
 
-        template<typename T>
-        requires(requires { T::type_name; })
-        Coro::Task<> send(const T& data) noexcept
+        template<typename MessageT>
+        requires(requires { MessageT::getTypeIDStatic(); })
+        Coro::Task<> send(const MessageT& data) noexcept
         {
-            const std::uint64_t dataTypeHash = SGCore::hashString(T::type_name);
+            const std::uint64_t dataTypeHash = MessageT::getTypeIDStatic();
 
             if(!m_registeredDataStreams.contains(dataTypeHash))
             {
@@ -84,7 +84,7 @@ namespace SGCore::Net
         template<typename T>
         DataStream& registerDataStream() noexcept
         {
-            auto& dataStream = m_registeredDataStreams[SGCore::hashString(T::type_name)];
+            auto& dataStream = m_registeredDataStreams[T::getTypeIDStatic()];
             dataStream.m_dataSize = sizeof(T);
 
             return dataStream;

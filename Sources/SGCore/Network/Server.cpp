@@ -56,7 +56,7 @@ SGCore::Net::Server::Server(Server&& other) noexcept : m_protocol(other.m_protoc
         other.m_socket = std::nullopt;
     }
 
-    m_recvBuffer = std::move(other.m_recvBuffer);
+    m_recvBuffer = other.m_recvBuffer;
 
     if(m_socket)
     {
@@ -83,10 +83,8 @@ SGCore::Coro::Task<> SGCore::Net::Server::propagatePacket(const Packet& packet, 
         connectedClientsVec = m_connectedClients;
     }
 
-    for(size_t i = 0; i < connectedClientsVec.size(); ++i)
+    for(const auto& client : connectedClientsVec)
     {
-        const auto& client = connectedClientsVec[i];
-
         if(client == fromClient) continue;
 
         auto clientPacket = m_packetsToSend[client];
