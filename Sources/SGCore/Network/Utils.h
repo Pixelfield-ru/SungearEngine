@@ -7,6 +7,7 @@
 #include <boost/asio.hpp>
 #include <boost/container_hash/hash_fwd.hpp>
 #include "Packet.h"
+#include "sgcore_export.h"
 
 namespace SGCore::Net
 {

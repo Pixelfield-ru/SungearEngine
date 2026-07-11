@@ -18,38 +18,29 @@ SGCore::Net::Server::Server(boost::asio::ip::udp protocol, boost::asio::ip::port
 {
     m_socket = socket_t(m_context, m_endpoint);
 
-    m_contextThread = Threading::Thread::create(std::chrono::milliseconds(0));
+    createContextThread();
+}
 
-    auto contextTask = MakeRef<Threading::Task>();
-    contextTask->m_isStatic = true;
-    contextTask->setOnExecuteCallback([this]() {
-        m_context.run();
-    });
-
-    m_contextThread->addTask(contextTask);
-    m_contextThread->start();
+SGCore::Net::Server::~Server() noexcept
+{
+    m_context.stop();
+    m_contextThread->join();
 }
 
 SGCore::Net::Server::Server() noexcept :
     m_endpoint(m_protocol, m_port)
 {
-    m_contextThread = Threading::Thread::create(std::chrono::milliseconds(0));
-
-    auto contextTask = MakeRef<Threading::Task>();
-    contextTask->m_isStatic = true;
-    contextTask->setOnExecuteCallback([this]() {
-        m_context.run();
-    });
-
-    m_contextThread->addTask(contextTask);
-    m_contextThread->start();
+    createContextThread();
 }
 
 SGCore::Net::Server::Server(Server&& other) noexcept : m_protocol(other.m_protocol),
     m_port(other.m_port),
     m_endpoint(m_protocol, m_port)
 {
-    other.m_contextThread->join();
+    if(other.m_contextThread)
+    {
+        other.m_contextThread->join();
+    }
 
     if(other.m_socket)
     {
@@ -65,14 +56,7 @@ SGCore::Net::Server::Server(Server&& other) noexcept : m_protocol(other.m_protoc
 
     m_socket = socket_t(m_context, m_endpoint);
 
-    auto contextTask = MakeRef<Threading::Task>();
-    contextTask->m_isStatic = true;
-    contextTask->setOnExecuteCallback([this]() {
-        m_context.run();
-    });
-
-    m_contextThread->addTask(contextTask);
-    m_contextThread->start();
+    createContextThread();
 }
 
 SGCore::Coro::Task<> SGCore::Net::Server::propagatePacket(const Packet& packet, endpoint_t fromClient) noexcept
@@ -101,7 +85,7 @@ SGCore::Coro::Task<> SGCore::Net::Server::propagatePacket(const Packet& packet, 
             m_socket->async_send_to(boost::asio::buffer(*clientPacket), client, [client, clientPacket](boost::system::error_code errorCode, size_t bufferSize) {
                 if(errorCode)
                 {
-                    std::cout << "can not propagate buffer with size " << bufferSize << " to client " << client << std::endl;
+                    LOG_E(SGCORE_TAG, "Cannot propagate buffer with size {} to client {}", bufferSize, client.address().to_string());
                 }
             });
         });
@@ -114,7 +98,10 @@ SGCore::Net::Server& SGCore::Net::Server::operator=(Server&& other) noexcept
 {
     if(this == std::addressof(other)) return *this;
 
-    other.m_contextThread->join();
+    if(other.m_contextThread)
+    {
+        other.m_contextThread->join();
+    }
 
     m_recvBuffer = std::move(other.m_recvBuffer);
 
@@ -135,6 +122,15 @@ SGCore::Net::Server& SGCore::Net::Server::operator=(Server&& other) noexcept
 
     m_socket = socket_t(m_context, m_endpoint);
 
+    createContextThread();
+
+    return *this;
+}
+
+void SGCore::Net::Server::createContextThread() noexcept
+{
+    if(m_contextThread) return;
+
     m_contextThread = Threading::Thread::create(std::chrono::milliseconds(0));
 
     auto contextTask = MakeRef<Threading::Task>();
@@ -145,6 +141,4 @@ SGCore::Net::Server& SGCore::Net::Server::operator=(Server&& other) noexcept
 
     m_contextThread->addTask(contextTask);
     m_contextThread->start();
-
-    return *this;
 }

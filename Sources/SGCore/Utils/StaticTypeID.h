@@ -16,22 +16,22 @@
 /// \p getTypeID() is needed to get real static type ID of object.\n
 /// Implementation of this macro must has public access.
 #define sg_implement_type_id(current_class)                          \
-static size_t getTypeIDStatic() { static size_t typeID = SGCore::StaticTypeID<current_class>::setID(SGCore::constexprHash(#current_class)); return typeID; }   \
-size_t getTypeID() const noexcept final { return current_class::getTypeIDStatic(); }
+static std::uint64_t getTypeIDStatic() { static std::uint64_t typeID = SGCore::StaticTypeID<current_class>::setID(SGCore::constexprHash(#current_class)); return typeID; }   \
+std::uint64_t getTypeID() const noexcept final { return current_class::getTypeIDStatic(); }
 
 /// Pass current class type as first argument. PLEASE, QUALIFY YOUR TYPE BY NAMESPACE IN WHICH THE TYPE IS LOCATED. \n
 /// Use this macro in base types to implement virtual function \p getTypeID() .\n
 /// \p getTypeID() is needed to get real static type ID of object.\n
 /// Implementation of this macro must has public access.
 #define sg_implement_type_id_base(current_class)                          \
-static size_t getTypeIDStatic() { static size_t typeID = SGCore::StaticTypeID<current_class>::setID(SGCore::constexprHash(#current_class)); return typeID; }        \
-virtual size_t getTypeID() const noexcept { return current_class::getTypeIDStatic(); }
+static std::uint64_t getTypeIDStatic() { static std::uint64_t typeID = SGCore::StaticTypeID<current_class>::setID(SGCore::constexprHash(#current_class)); return typeID; }        \
+virtual std::uint64_t getTypeID() const noexcept { return current_class::getTypeIDStatic(); }
 
 /// Pass current class type as first argument. PLEASE, QUALIFY YOUR TYPE BY NAMESPACE IN WHICH THE TYPE IS LOCATED.\n
 /// Creates only static function to get type ID without virtual function to get type ID of object.
 /// Implementation of this macro must has public access.
 #define sg_implement_nonvirtual_type_id(current_class)                    \
-static size_t getTypeIDStatic() { static size_t typeID = SGCore::StaticTypeID<current_class>::setID(SGCore::constexprHash(#current_class)); return typeID; }
+static std::uint64_t getTypeIDStatic() { static std::uint64_t typeID = SGCore::StaticTypeID<current_class>::setID(SGCore::constexprHash(#current_class)); return typeID; }
 
 namespace SGCore
 {
@@ -40,12 +40,12 @@ namespace SGCore
         template<typename>
         friend struct StaticTypeID;
 
-        static bool isTypeIDExists(const size_t& typeID) noexcept;
+        static bool isTypeIDExists(std::uint64_t typeID) noexcept;
 
     private:
-        static void addTypeID(size_t typeID) noexcept;
+        static void addTypeID(std::uint64_t typeID) noexcept;
 
-        static std::set<size_t>& getExistingTypeIDs() noexcept;
+        static std::set<std::uint64_t>& getExistingTypeIDs() noexcept;
     };
 
     template<typename T>
@@ -53,13 +53,13 @@ namespace SGCore
     {
         friend T;
 
-        static size_t getID()
+        static std::uint64_t getID()
         {
             return m_typeID;
         }
 
     private:
-        static size_t setID(size_t typeID)
+        static std::uint64_t setID(std::uint64_t typeID)
         {
             m_typeID = typeID;
             if(StaticTypeIDsContainer::isTypeIDExists(typeID))
@@ -74,6 +74,6 @@ namespace SGCore
             return m_typeID;
         }
 
-        static inline size_t m_typeID = 0;
+        static inline std::uint64_t m_typeID = 0;
     };
 }

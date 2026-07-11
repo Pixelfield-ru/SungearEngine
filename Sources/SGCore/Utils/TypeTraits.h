@@ -32,7 +32,7 @@
 
 namespace SGCore
 {
-    unsigned constexpr constexprHash(char const* input)
+    std::uint64_t constexpr constexprHash(char const* input)
     {
         return *input ?
                static_cast<unsigned int>(*input) + 33 * constexprHash(input + 1) :

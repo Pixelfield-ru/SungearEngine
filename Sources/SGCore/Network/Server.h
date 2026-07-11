@@ -34,12 +34,13 @@ namespace SGCore::Net
         using endpoint_t = boost::asio::ip::udp::endpoint;
 
         Server(boost::asio::ip::udp protocol, boost::asio::ip::port_type port);
+        ~Server() noexcept;
         Server() noexcept;
         Server(Server&& other) noexcept;
 
         template<typename T>
         requires(std::is_invocable_v<T, const Packet&, size_t, endpoint_t>)
-        Coro::Task<> runReceivePoll(T&& callback) noexcept
+        Coro::Task<> runReceivePoll(T callback) noexcept
         {
             while(m_contextThread->isRunning())
             {
@@ -49,22 +50,21 @@ namespace SGCore::Net
                     continue;
                 }
 
-                boost::asio::post(m_strand, [this, callback = std::forward<T>(callback)] {
+                boost::asio::post(m_strand, [this, callback = std::move(callback)] {
                     m_socket->async_receive_from(boost::asio::buffer(m_recvBuffer), m_receivedFromEndpoint, [this, callback = std::move(callback)](const boost::system::error_code& error, std::size_t bufferSize) {
                         const auto clientEndpoint = m_receivedFromEndpoint;
-                        auto tmpBuf = m_recvBuffer;
-                        const auto originalData = m_recvBuffer;
+                        // auto tmpBuf = m_recvBuffer;
+                        Packet tmpBuf {};
+                        const auto originalBuffer = m_recvBuffer;
 
                         if(error)
                         {
-                            std::cout << "error while reading data from client: " << clientEndpoint << ". error is: " << error.what() << std::endl;
+                            LOG_E(SGCORE_TAG, "Cannot read data from client {}. Error is: {}", clientEndpoint.address().to_string(), error.what());
 
                             {
                                 std::lock_guard guard(m_connectedClientsContainersMutex);
                                 m_connectedClients.erase(std::ranges::find(m_connectedClients, clientEndpoint));
                                 m_connectedClientsSet.erase(clientEndpoint);
-                                /*m_connectedClients.erase(std::ranges::find(m_connectedClients, m_receivedFromEndpoint));
-                                m_connectedClientsSet.erase(m_receivedFromEndpoint);*/
                             }
 
                             tmpBuf = {};
@@ -85,7 +85,7 @@ namespace SGCore::Net
                                 m_connectedClients.push_back(clientEndpoint);
                             }
 
-                            std::cout << "new client: " << clientEndpoint << ", clients count: " << m_connectedClients.size() << std::endl;
+                            LOG_E(SGCORE_TAG, "New client {} connected. Clients count: {}", clientEndpoint.address().to_string(), m_connectedClients.size());
 
                             Packet outPacket;
                             Utils::writeMessage<ClientConnectedMessage>(outPacket, clientEndpoint);
@@ -100,18 +100,25 @@ namespace SGCore::Net
                         // processing all packet. adding client endpoint
                         while(true)
                         {
+                            // std::cout << "originalPacketOffset: " << originalPacketOffset << std::endl;
                             std::uint64_t dataTypeHash;
-                            std::memcpy(&dataTypeHash, originalData.data() + originalPacketOffset, sizeof(dataTypeHash));
+                            std::memcpy(&dataTypeHash, originalBuffer.data() + originalPacketOffset, sizeof(dataTypeHash));
 
                             auto registeredTypeIt = m_registeredTypes.find(dataTypeHash);
                             if(registeredTypeIt == m_registeredTypes.end())
                             {
-                                std::cout << "invalid data type: " << dataTypeHash << std::endl;
+                                // std::cout << "invalid data type: " << dataTypeHash << std::endl;
 
                                 // todo: maybe += 1 byte and continue to trying to find valid data??
                                 // invalid data type data or incomplete buffer
-                                return;
+                                ++originalPacketOffset;
+                                if(originalPacketOffset >= originalBuffer.size()) break;
+
+                                continue;
+                                // break;
                             }
+
+                            std::cout << "normal data: " << originalPacketOffset << std::endl;
 
                             const auto registeredTypeSize = registeredTypeIt->second;
 
@@ -119,18 +126,18 @@ namespace SGCore::Net
 
                             // writing client endpoint ====================================
                             size_t clientEndpointSize = 0;
-                            bool clientEndpointWriteSuccess = Utils::writeEndpoint(tmpBuf, formedPacketOffset, clientEndpoint, clientEndpointSize);
+                            const bool clientEndpointWriteSuccess = Utils::writeEndpoint(tmpBuf, formedPacketOffset, clientEndpoint, clientEndpointSize);
                             formedPacketOffset += clientEndpointSize;
                             // ============================================================
 
                             if(!clientEndpointWriteSuccess ||
                                formedPacketOffset + registeredTypeSize > tmpBuf.size() ||
-                               originalPacketOffset + sizeof(dataTypeHash) + registeredTypeSize > originalData.size())
+                               originalPacketOffset + sizeof(dataTypeHash) + registeredTypeSize > originalBuffer.size())
                             {
                                 break;
                             }
 
-                            std::memcpy(tmpBuf.data() + formedPacketOffset, originalData.data() + originalPacketOffset + sizeof(dataTypeHash), registeredTypeSize);
+                            std::memcpy(tmpBuf.data() + formedPacketOffset, originalBuffer.data() + originalPacketOffset + sizeof(dataTypeHash), registeredTypeSize);
 
                             formedPacketOffset += registeredTypeSize;
                             originalPacketOffset += sizeof(dataTypeHash) + registeredTypeSize;
@@ -181,5 +188,7 @@ namespace SGCore::Net
         // first - data type id, second - sizeof data
         std::unordered_map<std::uint64_t, std::uint64_t> m_registeredTypes;
         // std::unordered_map<endpoint_t, std::vector<Ref<Packet>>> m_sentPackets;
+
+        void createContextThread() noexcept;
     };
 }

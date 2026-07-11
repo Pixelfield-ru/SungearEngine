@@ -41,6 +41,7 @@ namespace SGCore::Net
         using endpoint_t = boost::asio::ip::udp::endpoint;
 
         Client() noexcept;
+        ~Client() noexcept;
 
         void connect(const std::string& endpointAddress, boost::asio::ip::port_type endpointPort, std::chrono::system_clock::duration retryInterval = std::chrono::seconds(3), int retriesCount = 5) noexcept;
 
@@ -72,7 +73,7 @@ namespace SGCore::Net
                 m_socket.async_send(boost::asio::buffer(*sharedPacket), [this, sharedPacket](boost::system::error_code errorCode, size_t bytesCnt) {
                     if(errorCode)
                     {
-                        std::cout << "send failed: " << errorCode.message() << ". count of bytes to send: " << bytesCnt << std::endl;
+                        LOG_E(SGCORE_TAG, "Cannot send packet to server. Error is: {}. Bytes count: {}", errorCode.message(), bytesCnt);
                         return;
                     }
                 });
@@ -93,7 +94,7 @@ namespace SGCore::Net
         [[nodiscard]] bool isConnected() const noexcept;
 
     private:
-        Ref<Threading::Thread> m_contextThread = Threading::Thread::create(std::chrono::milliseconds(0));
+        Ref<Threading::Thread> m_contextThread;
 
         endpoint_t m_recvEndpoint;
         endpoint_t m_serverEndpoint;
@@ -110,5 +111,7 @@ namespace SGCore::Net
         std::unordered_map<std::uint64_t, DataStream> m_registeredDataStreams;
 
         std::atomic<bool> m_isConnected = false;
+
+        void createContextThread() noexcept;
     };
 }
