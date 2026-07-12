@@ -33,7 +33,7 @@ void SGCore::Net::Client::connect(const std::string& endpointAddress,
         if(retriesCount == 0)
         {
             LOG_E(SGCORE_TAG, "Server {} does not respond.", m_serverEndpoint.address().to_string());
-            m_isConnected = false;
+            setConnected(false);
             co_return;
         }
 
@@ -48,7 +48,7 @@ void SGCore::Net::Client::connect(const std::string& endpointAddress,
             co_return;
         }
 
-        m_isConnected = true;
+        setConnected(true);
         LOG_I(SGCORE_TAG, "Connected to server {}", m_serverEndpoint.address().to_string());
     });
 }
@@ -57,7 +57,7 @@ SGCore::Coro::Task<> SGCore::Net::Client::runReceivePoll() noexcept
 {
     while(m_contextThread->isRunning())
     {
-        if(m_socket.available() == 0 || !m_isConnected.load())
+        if(m_socket.available() == 0 || !m_isConnected)
         {
             co_await Coro::returnToCaller();
             continue;
@@ -112,8 +112,9 @@ SGCore::Coro::Task<> SGCore::Net::Client::runReceivePoll() noexcept
                     size_t fromClientEndpointSize = 0;
                     bool isReadClientEndpointSuccessful = false;
                     const endpoint_t fromClient = Utils::readEndpoint(originalBuffer, currentPacketOffset, fromClientEndpointSize, isReadClientEndpointSuccessful);
-                    currentPacketOffset += fromClientEndpointSize;
                     // ====================================
+
+                    currentPacketOffset += fromClientEndpointSize;
 
                     if(!isReadClientEndpointSuccessful ||
                        currentPacketOffset + registeredTypeSize > originalBuffer.size())
@@ -153,4 +154,18 @@ void SGCore::Net::Client::createContextThread() noexcept
 
     m_contextThread->addTask(contextTask);
     m_contextThread->start();
+}
+
+void SGCore::Net::Client::setConnected(bool connected) noexcept
+{
+    m_isConnected = connected;
+
+    if(connected && onConnected)
+    {
+        onConnected();
+    }
+    else if(!connected && onDisconnected)
+    {
+        onDisconnected();
+    }
 }

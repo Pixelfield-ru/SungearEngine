@@ -28,6 +28,7 @@
 
 namespace SGCore::Net
 {
+    // todo: make tcp
     struct SGCORE_EXPORT Server
     {
         using socket_t = boost::asio::ip::udp::socket;
@@ -63,12 +64,14 @@ namespace SGCore::Net
 
                             {
                                 std::lock_guard guard(m_connectedClientsContainersMutex);
-                                m_connectedClients.erase(std::ranges::find(m_connectedClients, clientEndpoint));
+                                if(const auto clientIt = std::ranges::find(m_connectedClients, clientEndpoint); clientIt != m_connectedClients.end())
+                                {
+                                    m_connectedClients.erase(std::ranges::find(m_connectedClients, clientEndpoint));
+                                }
                                 m_connectedClientsSet.erase(clientEndpoint);
                             }
 
-                            tmpBuf = {};
-
+                            // todo: make other disconnect logic. maybe something like multiple errors in a row
                             Utils::writeMessage<ClientDisconnectedMessage>(tmpBuf, clientEndpoint);
 
                             // we will definitely notify other clients about the client disconnection.
@@ -118,17 +121,20 @@ namespace SGCore::Net
                                 // break;
                             }
 
-                            std::cout << "normal data: " << originalPacketOffset << std::endl;
-
                             const auto registeredTypeSize = registeredTypeIt->second;
+
+                            // writing data size ==========================================
+                            std::memcpy(tmpBuf.data() + formedPacketOffset, &dataTypeHash, sizeof(dataTypeHash));
+                            // ============================================================
 
                             formedPacketOffset += sizeof(dataTypeHash);
 
                             // writing client endpoint ====================================
                             size_t clientEndpointSize = 0;
                             const bool clientEndpointWriteSuccess = Utils::writeEndpoint(tmpBuf, formedPacketOffset, clientEndpoint, clientEndpointSize);
-                            formedPacketOffset += clientEndpointSize;
                             // ============================================================
+
+                            formedPacketOffset += clientEndpointSize;
 
                             if(!clientEndpointWriteSuccess ||
                                formedPacketOffset + registeredTypeSize > tmpBuf.size() ||
@@ -161,6 +167,7 @@ namespace SGCore::Net
         }
 
         Coro::Task<> propagatePacket(const Packet& packet, endpoint_t fromClient) noexcept;
+        void sendPacket(const Packet& packet, endpoint_t toClient) noexcept;
 
         Server& operator=(Server&& other) noexcept;
 

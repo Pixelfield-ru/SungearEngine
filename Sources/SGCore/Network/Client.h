@@ -35,10 +35,14 @@ namespace SGCore::Net
         std::uint64_t m_dataSize = 0;
     };
 
+    // todo: make tcp
     struct SGCORE_EXPORT Client
     {
         using socket_t = boost::asio::ip::udp::socket;
         using endpoint_t = boost::asio::ip::udp::endpoint;
+
+        std::function<void()> onConnected;
+        std::function<void()> onDisconnected;
 
         Client() noexcept;
         ~Client() noexcept;
@@ -74,7 +78,16 @@ namespace SGCore::Net
                     if(errorCode)
                     {
                         LOG_E(SGCORE_TAG, "Cannot send packet to server. Error is: {}. Bytes count: {}", errorCode.message(), bytesCnt);
-                        return;
+                        ++m_sendErrorsCount;
+
+                        if(m_sendErrorsCount == m_maxSendErrors)
+                        {
+                            setConnected(false);
+                        }
+                    }
+                    else
+                    {
+                        m_sendErrorsCount = 0;
                     }
                 });
             });
@@ -106,12 +119,15 @@ namespace SGCore::Net
         socket_t m_socket = socket_t(m_context);
 
         Packet m_recvBuffer;
-        size_t m_bytesToSkip = 0;
 
         std::unordered_map<std::uint64_t, DataStream> m_registeredDataStreams;
 
         std::atomic<bool> m_isConnected = false;
 
+        std::atomic<std::uint16_t> m_maxSendErrors = 8;
+        std::uint16_t m_sendErrorsCount {};
+
         void createContextThread() noexcept;
+        void setConnected(bool connected) noexcept;
     };
 }

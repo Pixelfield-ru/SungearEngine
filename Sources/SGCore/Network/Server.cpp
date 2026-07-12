@@ -94,6 +94,27 @@ SGCore::Coro::Task<> SGCore::Net::Server::propagatePacket(const Packet& packet, 
     }
 }
 
+void SGCore::Net::Server::sendPacket(const Packet& packet, endpoint_t toClient) noexcept
+{
+    auto clientPacket = m_packetsToSend[toClient];
+    if(!clientPacket)
+    {
+        clientPacket = MakeRef<Packet>();
+    }
+
+    *clientPacket = packet;
+
+    // capturing client packet to save data
+    boost::asio::post(m_strand, [this, clientPacket, toClient] {
+        m_socket->async_send_to(boost::asio::buffer(*clientPacket), toClient, [toClient, clientPacket](boost::system::error_code errorCode, size_t bufferSize) {
+            if(errorCode)
+            {
+                LOG_E(SGCORE_TAG, "Cannot send buffer with size {} to client {}", bufferSize, toClient.address().to_string());
+            }
+        });
+    });
+}
+
 SGCore::Net::Server& SGCore::Net::Server::operator=(Server&& other) noexcept
 {
     if(this == std::addressof(other)) return *this;
