@@ -12,11 +12,11 @@
 
 #include <SGCore/Threading/Task.h>
 
-SGCore::Net::Server::Server(boost::asio::ip::udp protocol, boost::asio::ip::port_type port) : m_protocol(protocol),
-    m_port(port),
-    m_endpoint(m_protocol, m_port)
+SGCore::Net::Server::Server(boost::asio::ip::port_type port)
 {
-    m_socket = socket_t(m_context, m_endpoint);
+    m_port = port;
+    m_udpStream.m_serverEndpoint = UDPStream::endpoint_t(boost::asio::ip::udp::v4(), m_port);
+    m_udpStream.m_socket = socket_t(m_context, m_udpStream.m_serverEndpoint);
 
     createContextThread();
 }
@@ -27,34 +27,36 @@ SGCore::Net::Server::~Server() noexcept
     m_contextThread->join();
 }
 
-SGCore::Net::Server::Server() noexcept :
-    m_endpoint(m_protocol, m_port)
+SGCore::Net::Server::Server() noexcept
 {
+    m_udpStream.m_serverEndpoint = UDPStream::endpoint_t(boost::asio::ip::udp::v4(), m_port);
+
     createContextThread();
 }
 
-SGCore::Net::Server::Server(Server&& other) noexcept : m_protocol(other.m_protocol),
-    m_port(other.m_port),
-    m_endpoint(m_protocol, m_port)
+SGCore::Net::Server::Server(Server&& other) noexcept
 {
+    m_port = other.m_port;
+    m_udpStream.m_serverEndpoint = UDPStream::endpoint_t(boost::asio::ip::udp::v4(), m_port);
+
     if(other.m_contextThread)
     {
         other.m_contextThread->join();
     }
 
-    if(other.m_socket)
+    if(other.m_udpStream.m_socket)
     {
-        other.m_socket = std::nullopt;
+        other.m_udpStream.m_socket = std::nullopt;
     }
 
     m_recvBuffer = other.m_recvBuffer;
 
-    if(m_socket)
+    if(m_udpStream.m_socket)
     {
-        m_socket = std::nullopt;
+        m_udpStream.m_socket = std::nullopt;
     }
 
-    m_socket = socket_t(m_context, m_endpoint);
+    m_udpStream.m_socket = socket_t(m_context, m_udpStream.m_serverEndpoint);
 
     createContextThread();
 }
@@ -71,24 +73,7 @@ SGCore::Coro::Task<> SGCore::Net::Server::propagatePacket(const Packet& packet, 
     {
         if(client == fromClient) continue;
 
-        auto clientPacket = m_packetsToSend[client];
-        if(!clientPacket)
-        {
-            clientPacket = MakeRef<Packet>();
-        }
-
-        *clientPacket = packet;
-
-        // capturing client packet to save data
-        // m_socket->send_to(boost::asio::buffer(packet), client);
-        boost::asio::post(m_strand, [this, clientPacket, client] {
-            m_socket->async_send_to(boost::asio::buffer(*clientPacket), client, [client, clientPacket](boost::system::error_code errorCode, size_t bufferSize) {
-                if(errorCode)
-                {
-                    LOG_E(SGCORE_TAG, "Cannot propagate buffer with size {} to client {}", bufferSize, client.address().to_string());
-                }
-            });
-        });
+        m_udpStream.sendPacket(m_strand, packet, client);
 
         co_await Coro::returnToCaller();
     }
@@ -96,23 +81,7 @@ SGCore::Coro::Task<> SGCore::Net::Server::propagatePacket(const Packet& packet, 
 
 void SGCore::Net::Server::sendPacket(const Packet& packet, endpoint_t toClient) noexcept
 {
-    auto clientPacket = m_packetsToSend[toClient];
-    if(!clientPacket)
-    {
-        clientPacket = MakeRef<Packet>();
-    }
-
-    *clientPacket = packet;
-
-    // capturing client packet to save data
-    boost::asio::post(m_strand, [this, clientPacket, toClient] {
-        m_socket->async_send_to(boost::asio::buffer(*clientPacket), toClient, [toClient, clientPacket](boost::system::error_code errorCode, size_t bufferSize) {
-            if(errorCode)
-            {
-                LOG_E(SGCORE_TAG, "Cannot send buffer with size {} to client {}", bufferSize, toClient.address().to_string());
-            }
-        });
-    });
+    m_udpStream.sendPacket(m_strand, packet, std::move(toClient));
 }
 
 SGCore::Net::Server& SGCore::Net::Server::operator=(Server&& other) noexcept
@@ -126,22 +95,21 @@ SGCore::Net::Server& SGCore::Net::Server::operator=(Server&& other) noexcept
 
     m_recvBuffer = std::move(other.m_recvBuffer);
 
-    m_protocol = other.m_protocol;
     m_port = other.m_port;
 
-    m_endpoint = endpoint_t(m_protocol, m_port);
+    m_udpStream.m_serverEndpoint = endpoint_t(boost::asio::ip::udp::v4(), m_port);
 
-    if(other.m_socket)
+    if(other.m_udpStream.m_socket)
     {
-        other.m_socket = std::nullopt;
+        other.m_udpStream.m_socket = std::nullopt;
     }
 
-    if(m_socket)
+    if(m_udpStream.m_socket)
     {
-        m_socket = std::nullopt;
+        m_udpStream.m_socket = std::nullopt;
     }
 
-    m_socket = socket_t(m_context, m_endpoint);
+    m_udpStream.m_socket = socket_t(m_context, m_udpStream.m_serverEndpoint);
 
     createContextThread();
 

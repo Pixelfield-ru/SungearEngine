@@ -25,6 +25,7 @@
 
 namespace SGCore::Net
 {
+    // todo: убрать. использовать SGCore::Net::DataType
     struct DataStream
     {
         friend struct Client;
@@ -36,6 +37,8 @@ namespace SGCore::Net
     };
 
     // todo: make tcp
+    // todo: добавить UDPStream и убрать использование udp endpoint из структуры Client.
+    // todo: отправлять специфическое сообщение серверу в функции Client::connect() для регистрации клиента
     struct SGCORE_EXPORT Client
     {
         using socket_t = boost::asio::ip::udp::socket;
@@ -111,7 +114,6 @@ namespace SGCore::Net
 
         endpoint_t m_recvEndpoint;
         endpoint_t m_serverEndpoint;
-        endpoint_t m_clientAddress;
 
         boost::asio::io_context m_context;
         boost::asio::strand<decltype(m_context)::executor_type> m_strand = boost::asio::make_strand(m_context);
