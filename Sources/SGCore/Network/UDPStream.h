@@ -4,44 +4,56 @@
 
 #pragma once
 
-#include <optional>
-#include <unordered_map>
 #include <boost/asio/ip/udp.hpp>
-#include <boost/asio/strand.hpp>
 
-#include "Packet.h"
-#include "DataType.h"
-
-#include "sgcore_export.h"
+#include "IStream.h"
 
 namespace SGCore::Net
 {
-    struct SGCORE_EXPORT UDPStream
+    // здесь вроде всё
+    struct SGCORE_EXPORT UDPStream : IStream<boost::asio::ip::udp>
     {
-        using socket_t = boost::asio::ip::udp::socket;
-        using endpoint_t = boost::asio::ip::udp::endpoint;
-        using strand_t = boost::asio::strand<boost::asio::io_context::executor_type>;
+        static constexpr char footer[4] { 'S', 'G', 'P', 'K' };
 
-        std::optional<socket_t> m_socket = std::nullopt;
-
-        endpoint_t m_receiveEndpoint;
-        endpoint_t m_serverEndpoint;
-
-        template<typename DataT>
-        DataType& registerDataType() noexcept
+        template<typename MsgT>
+        void sendMessage(strand_t& strand, const MsgT& message, std::int64_t currentSessionID, std::int64_t targetSessionID) noexcept
         {
-            auto& data = m_registeredDataTypes[DataT::getTypeIDStatic()];
-            data.m_dataSize = sizeof(DataT);
+            static const auto messageTypeID = MsgT::getTypeIDStatic();
 
-            return data;
+            if(!m_registeredDataTypes.contains(messageTypeID))
+            {
+                return;
+            }
+
+            const auto targetClientIt = m_registeredClients.find(targetSessionID);
+            if(targetClientIt == m_registeredClients.end())
+            {
+                // unknown session
+                return;
+            }
+
+            const auto& targetClientEndpoint = targetClientIt->second;
+
+            Packet packet {};
+            // writing message type id
+            std::memcpy(packet.data(), &messageTypeID, sizeof(messageTypeID));
+            // writing client session id
+            std::memcpy(packet.data() + sizeof(messageTypeID), &currentSessionID, sizeof(currentSessionID));
+            // writing message data
+            std::memcpy(packet.data() + sizeof(messageTypeID) + sizeof(currentSessionID), &message, sizeof(MsgT));
+            // writing footer
+            std::memcpy(packet.data() + sizeof(messageTypeID) + sizeof(currentSessionID) + sizeof(MsgT), footer, sizeof(footer));
+
+            boost::asio::post(strand, [this, packet, targetClientEndpoint] {
+                m_socket->async_send_to(boost::asio::buffer(packet), targetClientEndpoint, [targetClientEndpoint](boost::system::error_code errorCode, size_t bufferSize) {
+                    if(errorCode)
+                    {
+                        LOG_E(SGCORE_TAG, "Cannot send packet with size {} to client {}", bufferSize, targetClientEndpoint.address().to_string());
+                    }
+                });
+            });
         }
 
-        void sendPacket(strand_t& strand, const Packet& packet, endpoint_t toClient) noexcept;
         void receive(strand_t& strand) noexcept;
-
-    private:
-        Packet m_recvBuffer {};
-
-        std::unordered_map<std::uint64_t, DataType> m_registeredDataTypes;
     };
 }

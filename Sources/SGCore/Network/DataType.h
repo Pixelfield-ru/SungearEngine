@@ -13,7 +13,8 @@ namespace SGCore::Net
 {
     struct DataType
     {
-        std::function<void(const Packet& data)> onReceive;
+        std::function<void(const Packet& data, boost::asio::ip::udp::endpoint senderEndpoint, std::uint64_t senderID)> onReceive;
         std::uint64_t m_dataSize = 0;
+        bool m_authRequired = true;
     };
 }
