@@ -22,20 +22,10 @@
 #include "SGCore/Threading/Thread.h"
 
 #include "Packet.h"
+#include "UDPStream.h"
 
 namespace SGCore::Net
 {
-    // todo: убрать. использовать SGCore::Net::DataType
-    struct DataStream
-    {
-        friend struct Client;
-
-        std::function<void(const Packet& data, boost::asio::ip::udp::endpoint from)> onReceive;
-
-    private:
-        std::uint64_t m_dataSize = 0;
-    };
-
     // todo: make tcp
     // todo: добавить UDPStream и убрать использование udp endpoint из структуры Client.
     // todo: отправлять специфическое сообщение серверу в функции Client::connect() для регистрации клиента
@@ -54,80 +44,41 @@ namespace SGCore::Net
 
         template<typename MessageT>
         requires(requires { MessageT::getTypeIDStatic(); })
-        Coro::Task<> send(const MessageT& data) noexcept
+        Coro::Task<> send(MessageT&& data) noexcept
         {
-            const std::uint64_t dataTypeHash = MessageT::getTypeIDStatic();
-
-            if(!m_registeredDataStreams.contains(dataTypeHash))
-            {
-                // unregistered data type
-                co_return;
-            }
-
-            Packet packet;
-            std::memcpy(packet.data(), &dataTypeHash, sizeof(dataTypeHash));
-            std::memcpy(packet.data() + sizeof(dataTypeHash), &data, sizeof(data));
-
-            auto sharedPacket = MakeRef<Packet>(packet);
-
             while(!m_isConnected)
             {
                 co_await Coro::returnToCaller();
             }
 
-            // capturing sharedPacket to save packet (extend the lifetime)
-            boost::asio::post(m_strand, [this, sharedPacket] {
-                m_socket.async_send(boost::asio::buffer(*sharedPacket), [this, sharedPacket](boost::system::error_code errorCode, size_t bytesCnt) {
-                    if(errorCode)
-                    {
-                        LOG_E(SGCORE_TAG, "Cannot send packet to server. Error is: {}. Bytes count: {}", errorCode.message(), bytesCnt);
-                        ++m_sendErrorsCount;
-
-                        if(m_sendErrorsCount == m_maxSendErrors)
-                        {
-                            setConnected(false);
-                        }
-                    }
-                    else
-                    {
-                        m_sendErrorsCount = 0;
-                    }
-                });
-            });
+            m_udpStream.sendMessage(m_strand, std::forward<MessageT>(data), m_udpStream.m_sessionID, 0);
         }
 
         Coro::Task<> runReceivePoll() noexcept;
 
         template<typename T>
-        DataStream& registerDataStream() noexcept
+        DataType& registerDataType() noexcept
         {
-            auto& dataStream = m_registeredDataStreams[T::getTypeIDStatic()];
-            dataStream.m_dataSize = sizeof(T);
-
-            return dataStream;
+            return m_udpStream.registerDataType<T>();
         }
+
+        void setSessionID(std::int64_t id) noexcept;
+        std::int64_t getSessionID() const noexcept;
 
         [[nodiscard]] bool isConnected() const noexcept;
 
     private:
         Ref<Threading::Thread> m_contextThread;
 
-        endpoint_t m_recvEndpoint;
-        endpoint_t m_serverEndpoint;
-
         boost::asio::io_context m_context;
         boost::asio::strand<decltype(m_context)::executor_type> m_strand = boost::asio::make_strand(m_context);
-
-        socket_t m_socket = socket_t(m_context);
-
-        Packet m_recvBuffer;
-
-        std::unordered_map<std::uint64_t, DataStream> m_registeredDataStreams;
 
         std::atomic<bool> m_isConnected = false;
 
         std::atomic<std::uint16_t> m_maxSendErrors = 8;
         std::uint16_t m_sendErrorsCount {};
+
+        UDPStream m_udpStream;
 
         void createContextThread() noexcept;
         void setConnected(bool connected) noexcept;

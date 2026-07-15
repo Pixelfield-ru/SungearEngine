@@ -43,9 +43,7 @@ namespace SGCore::Net
         Server() noexcept;
         Server(Server&& other) noexcept;
 
-        template<typename T>
-        requires(std::is_invocable_v<T, const Packet&, size_t, endpoint_t>)
-        Coro::Task<> runReceivePoll(T callback) noexcept
+        Coro::Task<> runReceivePoll() noexcept
         {
             while(m_contextThread->isRunning())
             {
@@ -55,13 +53,34 @@ namespace SGCore::Net
         }
 
         template<typename T>
-        void registerDataType() noexcept
+        DataType& registerDataType() noexcept
         {
-            m_udpStream.registerDataType<T>();
+            return m_udpStream.registerDataType<T>();
         }
 
-        Coro::Task<> propagatePacket(const Packet& packet, endpoint_t fromClient) noexcept;
-        void sendPacket(const Packet& packet, endpoint_t toClient) noexcept;
+        void registerClient(const endpoint_t& clientEndpoint, std::int64_t clientSessionID) noexcept;
+        bool isClientRegistered(std::int64_t clientSessionID) const noexcept;
+
+        template<typename MsgT>
+        Coro::Task<> propagateMessage(MsgT&& msg, std::int64_t senderSessionID) noexcept
+        {
+            const auto clients = m_udpStream.getRegisteredClients();
+
+            for(const auto& [clientSessionID, clientEndpoint] : clients)
+            {
+                if(clientSessionID == senderSessionID) continue;
+
+                m_udpStream.sendMessage(m_strand, msg, senderSessionID, clientSessionID);
+
+                co_await Coro::returnToCaller();
+            }
+        }
+
+        template<typename MsgT>
+        void sendMessage(MsgT&& message, std::int64_t targetSessionID) noexcept
+        {
+            m_udpStream.sendMessage(m_strand, std::forward<MsgT>(message), 0, targetSessionID);
+        }
 
         Server& operator=(Server&& other) noexcept;
 
@@ -75,14 +94,7 @@ namespace SGCore::Net
         boost::asio::io_context m_context;
         boost::asio::strand<decltype(m_context)::executor_type> m_strand = boost::asio::make_strand(m_context);
 
-        endpoint_t m_receivedFromEndpoint;
-
-        std::unordered_set<endpoint_t> m_connectedClientsSet;
-        std::vector<endpoint_t> m_connectedClients;
-        std::mutex m_connectedClientsContainersMutex;
-
         Packet m_recvBuffer;
-        std::unordered_map<endpoint_t, Ref<Packet>> m_packetsToSend;
 
         void createContextThread() noexcept;
     };

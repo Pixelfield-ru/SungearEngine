@@ -16,7 +16,7 @@ SGCore::Net::Server::Server(boost::asio::ip::port_type port)
 {
     m_port = port;
     m_udpStream.m_serverEndpoint = UDPStream::endpoint_t(boost::asio::ip::udp::v4(), m_port);
-    m_udpStream.m_socket = socket_t(m_context, m_udpStream.m_serverEndpoint);
+    m_udpStream.m_socket = UDPStream::socket_t(m_context, m_udpStream.m_serverEndpoint);
 
     createContextThread();
 }
@@ -56,32 +56,19 @@ SGCore::Net::Server::Server(Server&& other) noexcept
         m_udpStream.m_socket = std::nullopt;
     }
 
-    m_udpStream.m_socket = socket_t(m_context, m_udpStream.m_serverEndpoint);
+    m_udpStream.m_socket = UDPStream::socket_t(m_context, m_udpStream.m_serverEndpoint);
 
     createContextThread();
 }
 
-SGCore::Coro::Task<> SGCore::Net::Server::propagatePacket(const Packet& packet, endpoint_t fromClient) noexcept
+void SGCore::Net::Server::registerClient(const endpoint_t& clientEndpoint, std::int64_t clientSessionID) noexcept
 {
-    std::vector<endpoint_t> connectedClientsVec;
-    {
-        std::lock_guard guard(m_connectedClientsContainersMutex);
-        connectedClientsVec = m_connectedClients;
-    }
-
-    for(const auto& client : connectedClientsVec)
-    {
-        if(client == fromClient) continue;
-
-        m_udpStream.sendPacket(m_strand, packet, client);
-
-        co_await Coro::returnToCaller();
-    }
+    m_udpStream.registerClient(clientEndpoint, clientSessionID);
 }
 
-void SGCore::Net::Server::sendPacket(const Packet& packet, endpoint_t toClient) noexcept
+bool SGCore::Net::Server::isClientRegistered(std::int64_t clientSessionID) const noexcept
 {
-    m_udpStream.sendPacket(m_strand, packet, std::move(toClient));
+    return m_udpStream.isClientRegistered(clientSessionID);
 }
 
 SGCore::Net::Server& SGCore::Net::Server::operator=(Server&& other) noexcept
@@ -109,7 +96,7 @@ SGCore::Net::Server& SGCore::Net::Server::operator=(Server&& other) noexcept
         m_udpStream.m_socket = std::nullopt;
     }
 
-    m_udpStream.m_socket = socket_t(m_context, m_udpStream.m_serverEndpoint);
+    m_udpStream.m_socket = UDPStream::socket_t(m_context, m_udpStream.m_serverEndpoint);
 
     createContextThread();
 

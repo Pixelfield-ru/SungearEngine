@@ -10,8 +10,9 @@
 
 SGCore::Net::Client::Client() noexcept
 {
-    m_socket.open(boost::asio::ip::udp::v4());
-    m_socket.bind(endpoint_t(boost::asio::ip::make_address("127.0.0.1"), 0));
+    m_udpStream.m_socket = UDPStream::socket_t(m_context);
+    m_udpStream.m_socket->open(boost::asio::ip::udp::v4());
+    m_udpStream.m_socket->bind(endpoint_t(boost::asio::ip::make_address("127.0.0.1"), 0));
 
     createContextThread();
 }
@@ -27,29 +28,33 @@ void SGCore::Net::Client::connect(const std::string& endpointAddress,
                                   std::chrono::system_clock::duration retryInterval,
                                   int retriesCount) noexcept
 {
-    m_serverEndpoint = endpoint_t(boost::asio::ip::make_address(endpointAddress), endpointPort);
+    auto& serverEndpoint = m_udpStream.m_serverEndpoint;
 
-    m_socket.async_connect(m_serverEndpoint, [this, retriesCount, retryInterval](boost::system::error_code errorCode) -> Coro::Task<> {
+    serverEndpoint = endpoint_t(boost::asio::ip::make_address(endpointAddress), endpointPort);
+    // server always has session with ID equals to 0
+    m_udpStream.registerClient(serverEndpoint, 0);
+
+    m_udpStream.m_socket->async_connect(serverEndpoint, [this, retriesCount, retryInterval, &serverEndpoint](boost::system::error_code errorCode) -> Coro::Task<> {
         if(retriesCount == 0)
         {
-            LOG_E(SGCORE_TAG, "Server {} does not respond.", m_serverEndpoint.address().to_string());
+            LOG_E(SGCORE_TAG, "Server {} does not respond.", serverEndpoint.address().to_string());
             setConnected(false);
             co_return;
         }
 
         if(errorCode)
         {
-            LOG_E(SGCORE_TAG, "Cannot connect to server {}: {}. Retrying...", m_serverEndpoint.address().to_string(), errorCode.message());
+            LOG_E(SGCORE_TAG, "Cannot connect to server {}: {}. Retrying...", serverEndpoint.address().to_string(), errorCode.message());
 
             co_await retryInterval;
 
-            connect(m_serverEndpoint.address().to_string(), m_serverEndpoint.port(), retryInterval, retriesCount - 1);
+            connect(serverEndpoint.address().to_string(), serverEndpoint.port(), retryInterval, retriesCount - 1);
 
             co_return;
         }
 
         setConnected(true);
-        LOG_I(SGCORE_TAG, "Connected to server {}", m_serverEndpoint.address().to_string());
+        LOG_I(SGCORE_TAG, "Connected to server {}", serverEndpoint.address().to_string());
     });
 }
 
@@ -57,84 +62,26 @@ SGCore::Coro::Task<> SGCore::Net::Client::runReceivePoll() noexcept
 {
     while(m_contextThread->isRunning())
     {
-        if(m_socket.available() == 0 || !m_isConnected)
+        if(!m_isConnected)
         {
             co_await Coro::returnToCaller();
             continue;
         }
 
-        boost::asio::post(m_strand, [this] {
-            m_socket.async_receive_from(boost::asio::buffer(m_recvBuffer), m_recvEndpoint, [this](const boost::system::error_code& error, std::size_t bufferSize) {
-                const auto originalBuffer = m_recvBuffer;
-
-                if(m_recvEndpoint != m_serverEndpoint)
-                {
-                    LOG_E(SGCORE_TAG, "Unknown endpoint: {}", m_recvEndpoint.address().to_string());
-                    return;
-                }
-
-                if(error)
-                {
-                    LOG_E(SGCORE_TAG, "Error while receiving packet: {}", error.message());
-                    return;
-                }
-
-                size_t currentPacketOffset = 0;
-
-                // processing all packet
-                while(true)
-                {
-                    std::uint64_t dataTypeHash;
-                    std::memcpy(&dataTypeHash, originalBuffer.data() + currentPacketOffset, sizeof(dataTypeHash));
-
-                    const auto dataStreamIt = m_registeredDataStreams.find(dataTypeHash);
-
-                    if(dataStreamIt == m_registeredDataStreams.end())
-                    {
-                        // std::cout << "invalid data type: " << dataTypeHash << std::endl;
-
-                        // todo: maybe += 1 byte and continue to trying to find valid data??
-                        // invalid data type or incomplete buffer
-                        ++currentPacketOffset;
-                        if(currentPacketOffset >= originalBuffer.size()) break;
-
-                        continue;
-                        // break;
-                    }
-
-                    auto& dataStream = dataStreamIt->second;
-
-                    const auto registeredTypeSize = dataStream.m_dataSize;
-
-                    currentPacketOffset += sizeof(dataTypeHash);
-
-                    // reading from client endpoint =======
-                    size_t fromClientEndpointSize = 0;
-                    bool isReadClientEndpointSuccessful = false;
-                    const endpoint_t fromClient = Utils::readEndpoint(originalBuffer, currentPacketOffset, fromClientEndpointSize, isReadClientEndpointSuccessful);
-                    // ====================================
-
-                    currentPacketOffset += fromClientEndpointSize;
-
-                    if(!isReadClientEndpointSuccessful ||
-                       currentPacketOffset + registeredTypeSize > originalBuffer.size())
-                    {
-                        break;
-                    }
-
-                    Packet pureData;
-
-                    std::memcpy(pureData.data(), originalBuffer.data() + currentPacketOffset, registeredTypeSize);
-
-                    dataStream.onReceive(pureData, fromClient);
-
-                    currentPacketOffset += registeredTypeSize;
-                }
-            });
-        });
+        m_udpStream.receive(m_strand);
 
         co_await Coro::returnToCaller();
     }
+}
+
+void SGCore::Net::Client::setSessionID(std::int64_t id) noexcept
+{
+    m_udpStream.m_sessionID = id;
+}
+
+std::int64_t SGCore::Net::Client::getSessionID() const noexcept
+{
+    return m_udpStream.m_sessionID;
 }
 
 bool SGCore::Net::Client::isConnected() const noexcept

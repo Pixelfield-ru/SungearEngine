@@ -16,35 +16,41 @@ namespace SGCore::Net
         static constexpr char footer[4] { 'S', 'G', 'P', 'K' };
 
         template<typename MsgT>
-        void sendMessage(strand_t& strand, const MsgT& message, std::int64_t currentSessionID, std::int64_t targetSessionID) noexcept
+        void sendMessage(strand_t& strand, MsgT message, std::int64_t senderSessionID, std::int64_t targetSessionID) noexcept
         {
             static const auto messageTypeID = MsgT::getTypeIDStatic();
 
-            if(!m_registeredDataTypes.contains(messageTypeID))
-            {
-                return;
-            }
+            boost::asio::post(strand, [this, senderSessionID, targetSessionID, msg = std::move(message)] {
+                Packet packet {};
+                endpoint_t targetClientEndpoint;
 
-            const auto targetClientIt = m_registeredClients.find(targetSessionID);
-            if(targetClientIt == m_registeredClients.end())
-            {
-                // unknown session
-                return;
-            }
+                {
+                    std::lock_guard lock(m_dataAccessMutex);
 
-            const auto& targetClientEndpoint = targetClientIt->second;
+                    if(!m_registeredDataTypes.contains(messageTypeID))
+                    {
+                        return;
+                    }
 
-            Packet packet {};
-            // writing message type id
-            std::memcpy(packet.data(), &messageTypeID, sizeof(messageTypeID));
-            // writing client session id
-            std::memcpy(packet.data() + sizeof(messageTypeID), &currentSessionID, sizeof(currentSessionID));
-            // writing message data
-            std::memcpy(packet.data() + sizeof(messageTypeID) + sizeof(currentSessionID), &message, sizeof(MsgT));
-            // writing footer
-            std::memcpy(packet.data() + sizeof(messageTypeID) + sizeof(currentSessionID) + sizeof(MsgT), footer, sizeof(footer));
+                    const auto targetClientIt = m_registeredClients.find(targetSessionID);
+                    if(targetClientIt == m_registeredClients.end())
+                    {
+                        // unknown session
+                        return;
+                    }
 
-            boost::asio::post(strand, [this, packet, targetClientEndpoint] {
+                    targetClientEndpoint = targetClientIt->second;
+
+                    // writing message type id
+                    std::memcpy(packet.data(), &messageTypeID, sizeof(messageTypeID));
+                    // writing client session id
+                    std::memcpy(packet.data() + sizeof(messageTypeID), &senderSessionID, sizeof(senderSessionID));
+                    // writing message data
+                    std::memcpy(packet.data() + sizeof(messageTypeID) + sizeof(senderSessionID), &msg, sizeof(MsgT));
+                    // writing footer
+                    std::memcpy(packet.data() + sizeof(messageTypeID) + sizeof(senderSessionID) + sizeof(MsgT), footer, sizeof(footer));
+                }
+
                 m_socket->async_send_to(boost::asio::buffer(packet), targetClientEndpoint, [targetClientEndpoint](boost::system::error_code errorCode, size_t bufferSize) {
                     if(errorCode)
                     {
