@@ -24,12 +24,10 @@ void SGCore::Net::UDPStream::receive(strand_t& strand) noexcept
             }
 
             decltype(m_registeredDataTypes) registeredDataTypes;
-            decltype(m_registeredClients) registeredClients;
 
             {
                 std::lock_guard lock(m_dataAccessMutex);
                 registeredDataTypes = m_registeredDataTypes;
-                registeredClients = m_registeredClients;
             }
 
             std::uint64_t dataTypeHash;
@@ -56,12 +54,19 @@ void SGCore::Net::UDPStream::receive(strand_t& strand) noexcept
             }
 
             std::memcpy(&sessionID, m_recvBuffer.data() + sizeof(dataTypeHash), sizeof(sessionID));
-            if(!registeredClients.contains(sessionID))
-            {
-                // unauthorized
-                if(registeredStream.m_authRequired) return;
 
-                sessionID = -1;
+            {
+                std::lock_guard lock(m_dataAccessMutex);
+
+                if(!m_registeredClients.contains(sessionID))
+                {
+                    // unauthorized
+                    if(registeredStream.m_authRequired) return;
+                }
+                else
+                {
+                    m_registeredClients[sessionID].m_lastSendTime = std::chrono::steady_clock::now();
+                }
             }
 
             Packet pureData {};

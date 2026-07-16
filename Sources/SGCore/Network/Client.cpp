@@ -10,9 +10,9 @@
 
 SGCore::Net::Client::Client() noexcept
 {
-    m_udpStream.m_socket = UDPStream::socket_t(m_context);
-    m_udpStream.m_socket->open(boost::asio::ip::udp::v4());
-    m_udpStream.m_socket->bind(endpoint_t(boost::asio::ip::make_address("127.0.0.1"), 0));
+    m_stream.m_socket = UDPStream::socket_t(m_context);
+    m_stream.m_socket->open(boost::asio::ip::udp::v4());
+    m_stream.m_socket->bind(endpoint_t(boost::asio::ip::make_address("127.0.0.1"), 0));
 
     createContextThread();
 }
@@ -28,13 +28,13 @@ void SGCore::Net::Client::connect(const std::string& endpointAddress,
                                   std::chrono::system_clock::duration retryInterval,
                                   int retriesCount) noexcept
 {
-    auto& serverEndpoint = m_udpStream.m_serverEndpoint;
+    auto& serverEndpoint = m_stream.m_serverEndpoint;
 
     serverEndpoint = endpoint_t(boost::asio::ip::make_address(endpointAddress), endpointPort);
     // server always has session with ID equals to 0
-    m_udpStream.registerClient(serverEndpoint, 0);
+    m_stream.registerClient(serverEndpoint, 0);
 
-    m_udpStream.m_socket->async_connect(serverEndpoint, [this, retriesCount, retryInterval, &serverEndpoint](boost::system::error_code errorCode) -> Coro::Task<> {
+    m_stream.m_socket->async_connect(serverEndpoint, [this, retriesCount, retryInterval, &serverEndpoint](boost::system::error_code errorCode) -> Coro::Task<> {
         if(retriesCount == 0)
         {
             LOG_E(SGCORE_TAG, "Server {} does not respond.", serverEndpoint.address().to_string());
@@ -68,20 +68,10 @@ SGCore::Coro::Task<> SGCore::Net::Client::runReceivePoll() noexcept
             continue;
         }
 
-        m_udpStream.receive(m_strand);
+        m_stream.receive(m_strand);
 
         co_await Coro::returnToCaller();
     }
-}
-
-void SGCore::Net::Client::setSessionID(std::int64_t id) noexcept
-{
-    m_udpStream.m_sessionID = id;
-}
-
-std::int64_t SGCore::Net::Client::getSessionID() const noexcept
-{
-    return m_udpStream.m_sessionID;
 }
 
 bool SGCore::Net::Client::isConnected() const noexcept

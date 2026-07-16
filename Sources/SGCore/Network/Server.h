@@ -38,56 +38,47 @@ namespace SGCore::Net
     {
         using endpoint_t = boost::asio::ip::udp::endpoint;
 
+        UDPStream m_stream;
+        std::chrono::steady_clock::duration m_clientTimeout = std::chrono::seconds(3);
+
         Server(boost::asio::ip::port_type port);
         ~Server() noexcept;
         Server() noexcept;
         Server(Server&& other) noexcept;
 
-        Coro::Task<> runReceivePoll() noexcept
-        {
-            while(m_contextThread->isRunning())
-            {
-                m_udpStream.receive(m_strand);
-                co_await Coro::returnToCaller();
-            }
-        }
-
-        template<typename T>
-        DataType& registerDataType() noexcept
-        {
-            return m_udpStream.registerDataType<T>();
-        }
-
-        void registerClient(const endpoint_t& clientEndpoint, std::int64_t clientSessionID) noexcept;
-        bool isClientRegistered(std::int64_t clientSessionID) const noexcept;
+        Coro::Task<> runReceivePoll() noexcept;
 
         template<typename MsgT>
-        Coro::Task<> propagateMessage(MsgT&& msg, std::int64_t senderSessionID) noexcept
+        Coro::Task<> propagate(MsgT&& msg, std::int64_t senderSessionID) noexcept
         {
-            const auto clients = m_udpStream.getRegisteredClients();
+            const auto clients = m_stream.getRegisteredClients();
 
             for(const auto& [clientSessionID, clientEndpoint] : clients)
             {
                 if(clientSessionID == senderSessionID) continue;
 
-                m_udpStream.sendMessage(m_strand, msg, senderSessionID, clientSessionID);
+                m_stream.send(m_strand, msg, senderSessionID, clientSessionID);
 
                 co_await Coro::returnToCaller();
             }
         }
 
         template<typename MsgT>
-        void sendMessage(MsgT&& message, std::int64_t targetSessionID) noexcept
+        void send(MsgT&& message, std::int64_t senderSessionID, std::int64_t targetSessionID) noexcept
         {
-            m_udpStream.sendMessage(m_strand, std::forward<MsgT>(message), 0, targetSessionID);
+            m_stream.send(m_strand, std::forward<MsgT>(message), senderSessionID, targetSessionID);
+        }
+
+        template<typename MsgT>
+        void send(MsgT&& message, std::int64_t targetSessionID) noexcept
+        {
+            m_stream.send(m_strand, std::forward<MsgT>(message), m_stream.m_sessionID, targetSessionID);
         }
 
         Server& operator=(Server&& other) noexcept;
 
     private:
         Ref<Threading::Thread> m_contextThread;
-
-        UDPStream m_udpStream;
 
         std::uint16_t m_port = 2025;
 

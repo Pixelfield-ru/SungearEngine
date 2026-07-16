@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <cstdint>
+#include <boost/asio/ip/udp.hpp>
 
 #include "Packet.h"
 

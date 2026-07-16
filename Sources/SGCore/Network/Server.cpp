@@ -15,8 +15,13 @@
 SGCore::Net::Server::Server(boost::asio::ip::port_type port)
 {
     m_port = port;
-    m_udpStream.m_serverEndpoint = UDPStream::endpoint_t(boost::asio::ip::udp::v4(), m_port);
-    m_udpStream.m_socket = UDPStream::socket_t(m_context, m_udpStream.m_serverEndpoint);
+    m_stream.m_serverEndpoint = UDPStream::endpoint_t(boost::asio::ip::udp::v4(), m_port);
+    m_stream.m_socket = UDPStream::socket_t(m_context, m_stream.m_serverEndpoint);
+
+    m_stream.m_sessionID = 0;
+
+    m_stream.registerDataType<ClientDisconnectedMessage>();
+    m_stream.registerDataType<ClientConnectedMessage>();
 
     createContextThread();
 }
@@ -29,7 +34,7 @@ SGCore::Net::Server::~Server() noexcept
 
 SGCore::Net::Server::Server() noexcept
 {
-    m_udpStream.m_serverEndpoint = UDPStream::endpoint_t(boost::asio::ip::udp::v4(), m_port);
+    m_stream.m_serverEndpoint = UDPStream::endpoint_t(boost::asio::ip::udp::v4(), m_port);
 
     createContextThread();
 }
@@ -37,38 +42,53 @@ SGCore::Net::Server::Server() noexcept
 SGCore::Net::Server::Server(Server&& other) noexcept
 {
     m_port = other.m_port;
-    m_udpStream.m_serverEndpoint = UDPStream::endpoint_t(boost::asio::ip::udp::v4(), m_port);
+
+    m_stream.m_sessionID = 0;
+    m_stream.m_serverEndpoint = UDPStream::endpoint_t(boost::asio::ip::udp::v4(), m_port);
+    m_stream.registerDataType<ClientDisconnectedMessage>();
+    m_stream.registerDataType<ClientConnectedMessage>();
 
     if(other.m_contextThread)
     {
         other.m_contextThread->join();
     }
 
-    if(other.m_udpStream.m_socket)
+    if(other.m_stream.m_socket)
     {
-        other.m_udpStream.m_socket = std::nullopt;
+        other.m_stream.m_socket = std::nullopt;
     }
 
     m_recvBuffer = other.m_recvBuffer;
 
-    if(m_udpStream.m_socket)
+    if(m_stream.m_socket)
     {
-        m_udpStream.m_socket = std::nullopt;
+        m_stream.m_socket = std::nullopt;
     }
 
-    m_udpStream.m_socket = UDPStream::socket_t(m_context, m_udpStream.m_serverEndpoint);
+    m_stream.m_socket = UDPStream::socket_t(m_context, m_stream.m_serverEndpoint);
 
     createContextThread();
 }
 
-void SGCore::Net::Server::registerClient(const endpoint_t& clientEndpoint, std::int64_t clientSessionID) noexcept
+SGCore::Coro::Task<> SGCore::Net::Server::runReceivePoll() noexcept
 {
-    m_udpStream.registerClient(clientEndpoint, clientSessionID);
-}
+    while(m_contextThread->isRunning())
+    {
+        const auto registeredClients = m_stream.getRegisteredClients();
+        for(const auto& [sessionID, endpointInfo] : registeredClients)
+        {
+            if(std::chrono::steady_clock::now() - endpointInfo.m_lastSendTime > m_clientTimeout)
+            {
+                ClientDisconnectedMessage disconnectedMessage;
+                propagate(disconnectedMessage, sessionID);
 
-bool SGCore::Net::Server::isClientRegistered(std::int64_t clientSessionID) const noexcept
-{
-    return m_udpStream.isClientRegistered(clientSessionID);
+                m_stream.removeClient(sessionID);
+            }
+        }
+
+        m_stream.receive(m_strand);
+        co_await Coro::returnToCaller();
+    }
 }
 
 SGCore::Net::Server& SGCore::Net::Server::operator=(Server&& other) noexcept
@@ -84,19 +104,19 @@ SGCore::Net::Server& SGCore::Net::Server::operator=(Server&& other) noexcept
 
     m_port = other.m_port;
 
-    m_udpStream.m_serverEndpoint = endpoint_t(boost::asio::ip::udp::v4(), m_port);
+    m_stream.m_serverEndpoint = endpoint_t(boost::asio::ip::udp::v4(), m_port);
 
-    if(other.m_udpStream.m_socket)
+    if(other.m_stream.m_socket)
     {
-        other.m_udpStream.m_socket = std::nullopt;
+        other.m_stream.m_socket = std::nullopt;
     }
 
-    if(m_udpStream.m_socket)
+    if(m_stream.m_socket)
     {
-        m_udpStream.m_socket = std::nullopt;
+        m_stream.m_socket = std::nullopt;
     }
 
-    m_udpStream.m_socket = UDPStream::socket_t(m_context, m_udpStream.m_serverEndpoint);
+    m_stream.m_socket = UDPStream::socket_t(m_context, m_stream.m_serverEndpoint);
 
     createContextThread();
 

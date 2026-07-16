@@ -34,6 +34,8 @@ namespace SGCore::Net
         using socket_t = boost::asio::ip::udp::socket;
         using endpoint_t = boost::asio::ip::udp::endpoint;
 
+        UDPStream m_stream;
+
         std::function<void()> onConnected;
         std::function<void()> onDisconnected;
 
@@ -44,26 +46,12 @@ namespace SGCore::Net
 
         template<typename MessageT>
         requires(requires { MessageT::getTypeIDStatic(); })
-        Coro::Task<> send(MessageT&& data) noexcept
+        void send(MessageT&& data) noexcept
         {
-            while(!m_isConnected)
-            {
-                co_await Coro::returnToCaller();
-            }
-
-            m_udpStream.sendMessage(m_strand, std::forward<MessageT>(data), m_udpStream.m_sessionID, 0);
+            m_stream.send(m_strand, std::forward<MessageT>(data), m_stream.m_sessionID, 0);
         }
 
         Coro::Task<> runReceivePoll() noexcept;
-
-        template<typename T>
-        DataType& registerDataType() noexcept
-        {
-            return m_udpStream.registerDataType<T>();
-        }
-
-        void setSessionID(std::int64_t id) noexcept;
-        std::int64_t getSessionID() const noexcept;
 
         [[nodiscard]] bool isConnected() const noexcept;
 
@@ -74,11 +62,6 @@ namespace SGCore::Net
         boost::asio::strand<decltype(m_context)::executor_type> m_strand = boost::asio::make_strand(m_context);
 
         std::atomic<bool> m_isConnected = false;
-
-        std::atomic<std::uint16_t> m_maxSendErrors = 8;
-        std::uint16_t m_sendErrorsCount {};
-
-        UDPStream m_udpStream;
 
         void createContextThread() noexcept;
         void setConnected(bool connected) noexcept;

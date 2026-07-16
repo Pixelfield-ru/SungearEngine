@@ -16,7 +16,7 @@ namespace SGCore::Net
         static constexpr char footer[4] { 'S', 'G', 'P', 'K' };
 
         template<typename MsgT>
-        void sendMessage(strand_t& strand, MsgT message, std::int64_t senderSessionID, std::int64_t targetSessionID) noexcept
+        void send(strand_t& strand, MsgT message, std::int64_t senderSessionID, std::int64_t targetSessionID) noexcept
         {
             static const auto messageTypeID = MsgT::getTypeIDStatic();
 
@@ -39,7 +39,7 @@ namespace SGCore::Net
                         return;
                     }
 
-                    targetClientEndpoint = targetClientIt->second;
+                    targetClientEndpoint = targetClientIt->second.m_endpoint;
 
                     // writing message type id
                     std::memcpy(packet.data(), &messageTypeID, sizeof(messageTypeID));

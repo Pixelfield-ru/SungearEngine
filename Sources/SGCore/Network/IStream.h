@@ -18,11 +18,17 @@
 namespace SGCore::Net
 {
     template<typename ProtocolT>
-    struct SGCORE_EXPORT IStream
+    struct IStream
     {
         using socket_t = ProtocolT::socket;
         using endpoint_t = ProtocolT::endpoint;
         using strand_t = boost::asio::strand<boost::asio::io_context::executor_type>;
+
+        struct EndpointInfo
+        {
+            endpoint_t m_endpoint;
+            std::chrono::steady_clock::time_point m_lastSendTime {};
+        };
 
         /// Current device session ID. By default equals to -1.
         std::atomic<std::int64_t> m_sessionID = -1;
@@ -47,7 +53,9 @@ namespace SGCore::Net
         void registerClient(const endpoint_t& clientEndpoint, std::int64_t clientSessionID) noexcept
         {
             std::lock_guard lock(m_dataAccessMutex);
-            m_registeredClients[clientSessionID] = clientEndpoint;
+            auto& client = m_registeredClients[clientSessionID];
+            client.m_endpoint = clientEndpoint;
+            client.m_lastSendTime = std::chrono::steady_clock::now();
         }
 
         bool isClientRegistered(std::int64_t clientSessionID) const noexcept
@@ -62,6 +70,12 @@ namespace SGCore::Net
             return m_registeredClients;
         }
 
+        void removeClient(std::int64_t clientSessionID) noexcept
+        {
+            std::lock_guard lock(m_dataAccessMutex);
+            m_registeredClients.erase(clientSessionID);
+        }
+
     protected:
         endpoint_t m_receiveEndpoint;
         Packet m_recvBuffer {};
@@ -69,6 +83,6 @@ namespace SGCore::Net
         mutable std::mutex m_dataAccessMutex;
 
         std::unordered_map<std::uint64_t, DataType> m_registeredDataTypes;
-        std::unordered_map<std::int64_t, endpoint_t> m_registeredClients;
+        std::unordered_map<std::int64_t, EndpointInfo> m_registeredClients;
     };
 }
