@@ -31,7 +31,7 @@ namespace SGCore::Net
         };
 
         /// Current device session ID. By default equals to -1.
-        std::atomic<std::int64_t> m_sessionID = -1;
+        std::atomic<session_id_t> m_sessionID = -1;
 
         /// Current device socket.
         std::optional<socket_t> m_socket = std::nullopt;
@@ -47,7 +47,22 @@ namespace SGCore::Net
             auto& data = m_registeredDataTypes[DataT::getTypeIDStatic()];
             data.m_dataSize = sizeof(DataT);
 
+            if constexpr(requires { DataT::use_rudp; })
+            {
+                data.m_useRUDP = DataT::use_rudp;
+            }
+
+            if constexpr(requires { DataT::use_for_auth; })
+            {
+                data.m_isUsedForAuth = DataT::use_for_auth;
+            }
+
             return data;
+        }
+
+        DataType& getDataType(std::uint64_t dataTypeHash) noexcept
+        {
+            return m_registeredDataTypes.at(dataTypeHash);
         }
 
         void registerClient(const endpoint_t& clientEndpoint, std::int64_t clientSessionID) noexcept
@@ -83,6 +98,6 @@ namespace SGCore::Net
         mutable std::mutex m_dataAccessMutex;
 
         std::unordered_map<std::uint64_t, DataType> m_registeredDataTypes;
-        std::unordered_map<std::int64_t, EndpointInfo> m_registeredClients;
+        std::unordered_map<session_id_t, EndpointInfo> m_registeredClients;
     };
 }

@@ -1,5 +1,5 @@
 //
-// Created by stuka on 19.08.2025.
+// Created by stuka on 17.07.2026.
 //
 
 #pragma once
@@ -9,9 +9,9 @@
 
 namespace SGCore::Net
 {
-    struct SGCORE_EXPORT ClientDisconnectedMessage
+    struct SGCORE_EXPORT GotReliablePacketMessage
     {
-        sg_implement_nonvirtual_type_id(SGCore::Net::ClientDisconnectedMessage);
+        sg_implement_nonvirtual_type_id(SGCore::Net::GotReliablePacketMessage);
 
         static constexpr bool use_rudp = true;
     };

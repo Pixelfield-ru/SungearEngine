@@ -22,19 +22,16 @@
 #include "SGCore/Threading/Thread.h"
 
 #include "Packet.h"
-#include "UDPStream.h"
+#include "RUDPStream.h"
 
 namespace SGCore::Net
 {
-    // todo: make tcp
-    // todo: добавить UDPStream и убрать использование udp endpoint из структуры Client.
-    // todo: отправлять специфическое сообщение серверу в функции Client::connect() для регистрации клиента
     struct SGCORE_EXPORT Client
     {
         using socket_t = boost::asio::ip::udp::socket;
         using endpoint_t = boost::asio::ip::udp::endpoint;
 
-        UDPStream m_stream;
+        RUDPStream m_stream;
 
         std::function<void()> onConnected;
         std::function<void()> onDisconnected;

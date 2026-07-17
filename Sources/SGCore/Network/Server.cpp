@@ -15,8 +15,8 @@
 SGCore::Net::Server::Server(boost::asio::ip::port_type port)
 {
     m_port = port;
-    m_stream.m_serverEndpoint = UDPStream::endpoint_t(boost::asio::ip::udp::v4(), m_port);
-    m_stream.m_socket = UDPStream::socket_t(m_context, m_stream.m_serverEndpoint);
+    m_stream.m_serverEndpoint = RUDPStream::endpoint_t(boost::asio::ip::udp::v4(), m_port);
+    m_stream.m_socket = RUDPStream::socket_t(m_context, m_stream.m_serverEndpoint);
 
     m_stream.m_sessionID = 0;
 
@@ -34,7 +34,7 @@ SGCore::Net::Server::~Server() noexcept
 
 SGCore::Net::Server::Server() noexcept
 {
-    m_stream.m_serverEndpoint = UDPStream::endpoint_t(boost::asio::ip::udp::v4(), m_port);
+    m_stream.m_serverEndpoint = RUDPStream::endpoint_t(boost::asio::ip::udp::v4(), m_port);
 
     createContextThread();
 }
@@ -44,7 +44,7 @@ SGCore::Net::Server::Server(Server&& other) noexcept
     m_port = other.m_port;
 
     m_stream.m_sessionID = 0;
-    m_stream.m_serverEndpoint = UDPStream::endpoint_t(boost::asio::ip::udp::v4(), m_port);
+    m_stream.m_serverEndpoint = RUDPStream::endpoint_t(boost::asio::ip::udp::v4(), m_port);
     m_stream.registerDataType<ClientDisconnectedMessage>();
     m_stream.registerDataType<ClientConnectedMessage>();
 
@@ -65,7 +65,7 @@ SGCore::Net::Server::Server(Server&& other) noexcept
         m_stream.m_socket = std::nullopt;
     }
 
-    m_stream.m_socket = UDPStream::socket_t(m_context, m_stream.m_serverEndpoint);
+    m_stream.m_socket = RUDPStream::socket_t(m_context, m_stream.m_serverEndpoint);
 
     createContextThread();
 }
@@ -86,7 +86,10 @@ SGCore::Coro::Task<> SGCore::Net::Server::runReceivePoll() noexcept
             }
         }
 
+        m_stream.pollReliableStreams();
+
         m_stream.receive(m_strand);
+
         co_await Coro::returnToCaller();
     }
 }
@@ -100,7 +103,7 @@ SGCore::Net::Server& SGCore::Net::Server::operator=(Server&& other) noexcept
         other.m_contextThread->join();
     }
 
-    m_recvBuffer = std::move(other.m_recvBuffer);
+    m_recvBuffer = other.m_recvBuffer;
 
     m_port = other.m_port;
 
@@ -116,7 +119,7 @@ SGCore::Net::Server& SGCore::Net::Server::operator=(Server&& other) noexcept
         m_stream.m_socket = std::nullopt;
     }
 
-    m_stream.m_socket = UDPStream::socket_t(m_context, m_stream.m_serverEndpoint);
+    m_stream.m_socket = RUDPStream::socket_t(m_context, m_stream.m_serverEndpoint);
 
     createContextThread();
 

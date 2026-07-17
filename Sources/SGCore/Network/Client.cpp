@@ -10,7 +10,7 @@
 
 SGCore::Net::Client::Client() noexcept
 {
-    m_stream.m_socket = UDPStream::socket_t(m_context);
+    m_stream.m_socket = RUDPStream::socket_t(m_context);
     m_stream.m_socket->open(boost::asio::ip::udp::v4());
     m_stream.m_socket->bind(endpoint_t(boost::asio::ip::make_address("127.0.0.1"), 0));
 
@@ -67,6 +67,8 @@ SGCore::Coro::Task<> SGCore::Net::Client::runReceivePoll() noexcept
             co_await Coro::returnToCaller();
             continue;
         }
+
+        m_stream.pollReliableStreams();
 
         m_stream.receive(m_strand);
 

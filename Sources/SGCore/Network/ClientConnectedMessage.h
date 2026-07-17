@@ -14,7 +14,7 @@ namespace SGCore::Net
     struct SGCORE_EXPORT ClientConnectedMessage
     {
         sg_implement_nonvirtual_type_id(SGCore::Net::ClientConnectedMessage);
-    private:
-        bool m_dummy = false;
+
+        static constexpr bool use_rudp = true;
     };
 }

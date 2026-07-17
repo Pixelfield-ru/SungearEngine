@@ -26,7 +26,7 @@
 
 #include "Utils.h"
 
-#include "UDPStream.h"
+#include "RUDPStream.h"
 
 namespace SGCore::Net
 {
@@ -38,7 +38,7 @@ namespace SGCore::Net
     {
         using endpoint_t = boost::asio::ip::udp::endpoint;
 
-        UDPStream m_stream;
+        RUDPStream m_stream;
         std::chrono::steady_clock::duration m_clientTimeout = std::chrono::seconds(3);
 
         Server(boost::asio::ip::port_type port);
