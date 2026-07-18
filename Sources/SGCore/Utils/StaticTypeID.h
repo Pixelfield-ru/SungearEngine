@@ -11,6 +11,10 @@
 
 #include "SGCore/Utils/TypeTraits.h"
 
+#ifdef SUNGEAR_DEBUG
+#include "SGCore/Logger/Logger.h"
+#endif
+
 /// Pass current class type as first argument. PLEASE, QUALIFY YOUR TYPE BY NAMESPACE IN WHICH THE TYPE IS LOCATED.\n
 /// Use this macro in derived types to implement function \p getTypeID() that overrides virtual function in base type\n
 /// \p getTypeID() is needed to get real static type ID of object.\n
@@ -66,8 +70,11 @@ namespace SGCore
             {
                 const std::string message = fmt::format("Can not set type ID '{}' for type '{}': some other type with this ID is already exists.", typeID, typeid(T).name());
                 std::cerr << message;
-                std::exit(0);
             }
+
+#ifdef SUNGEAR_DEBUG
+            LOG_I(SGCORE_TAG, "Set type ID {} for type '{}'", m_typeID, typeid(T).name());
+#endif
 
             StaticTypeIDsContainer::addTypeID(m_typeID);
 

@@ -162,6 +162,8 @@ void SGCore::Net::RUDPStream::receive(strand_t& strand) noexcept
             Packet pureData {};
             std::memcpy(pureData.data(), m_recvBuffer.data() + sizeof(dataTypeHash) + sizeof(sessionID), registeredTypeSize);
 
+            LOG_I(SGCORE_TAG, "Got packet with type ID '{}', from {}", dataTypeHash, sessionID);
+
             if(registeredType.onReceive)
             {
                 registeredType.onReceive(pureData, m_receiveEndpoint, sessionID);

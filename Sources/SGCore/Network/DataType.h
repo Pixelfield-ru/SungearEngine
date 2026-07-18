@@ -31,7 +31,7 @@ namespace SGCore::Net
         std::function<void(const Packet& data, boost::asio::ip::udp::endpoint targetEndpoint, session_id_t targetSessionID)> onSendFailed;
         bool m_authRequired = true;
 
-        bool getDataSize() const noexcept
+        std::uint64_t getDataSize() const noexcept
         {
             return m_dataSize;
         }
