@@ -23,6 +23,10 @@ namespace SGCore::Net
         template<typename ProtocolT>
         friend struct IStream;
 
+        /**
+         * @brief Used to handle packet receipt.
+         * @note You must send GotReliablePacketMessage message before sending other RUDP messages if you are handling custom auth message.
+         */
         std::function<void(const Packet& data, boost::asio::ip::udp::endpoint senderEndpoint, session_id_t senderSessionID)> onReceive;
         std::function<void(const Packet& data, boost::asio::ip::udp::endpoint targetEndpoint, session_id_t targetSessionID)> onSendFailed;
         bool m_authRequired = true;

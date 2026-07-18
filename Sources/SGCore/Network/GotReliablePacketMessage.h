@@ -12,7 +12,5 @@ namespace SGCore::Net
     struct SGCORE_EXPORT GotReliablePacketMessage
     {
         sg_implement_nonvirtual_type_id(SGCore::Net::GotReliablePacketMessage);
-
-        static constexpr bool use_rudp = true;
     };
 }

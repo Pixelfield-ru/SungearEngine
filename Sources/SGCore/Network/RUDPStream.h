@@ -22,7 +22,6 @@ namespace SGCore::Net
             Ref<Packet> m_packet;
             std::chrono::steady_clock::time_point m_sendTime = std::chrono::steady_clock::now();
             std::uint64_t m_packetTypeID {};
-            session_id_t m_targetSessionID {};
         };
 
         struct ReliableStream
@@ -35,8 +34,8 @@ namespace SGCore::Net
             void pollPackets() noexcept;
         };
 
-        std::chrono::steady_clock::duration m_reliablePacketSendTimeout = std::chrono::seconds(3);
-        std::chrono::steady_clock::duration m_reliablePacketTryTimeout = std::chrono::milliseconds(500);
+        std::chrono::steady_clock::duration m_reliablePacketSendTimeout = std::chrono::seconds(6);
+        std::chrono::steady_clock::duration m_reliablePacketTryTimeout = std::chrono::seconds(2);
 
         RUDPStream() noexcept;
 
@@ -89,16 +88,20 @@ namespace SGCore::Net
                     {
                         auto& reliableStream = m_reliableStreams[targetSessionID];
                         reliableStream.m_udpStream = this;
-                        reliableStream.m_reliablePackets.emplace(packet, std::chrono::steady_clock::now(), messageTypeID, targetSessionID);
+                        reliableStream.m_targetSessionID = targetSessionID;
+                        reliableStream.m_reliablePackets.emplace(packet, std::chrono::steady_clock::now(), messageTypeID);
 
                         // if this packet is first
                         if(reliableStream.m_reliablePackets.size() == 1)
                         {
+                            LOG_I(SGCORE_TAG, "Send reliable message {}", typeid(MsgT).name());
                             sendPacket(packet, targetClientEndpoint);
                         }
                         return;
                     }
                 }
+
+                LOG_I(SGCORE_TAG, "Send message {}", typeid(MsgT).name());
 
                 sendPacket(packet, targetClientEndpoint);
             });

@@ -25,14 +25,14 @@ void SGCore::Net::RUDPStream::ReliableStream::pollPackets() noexcept
     if(isSendFailed)
     {
         auto& dataType = m_udpStream->m_registeredDataTypes.at(packet.m_packetTypeID);
-        const auto targetEndpoint = m_udpStream->m_registeredClients.at(packet.m_targetSessionID).m_endpoint;
+        const auto targetEndpoint = m_udpStream->m_registeredClients.at(m_targetSessionID).m_endpoint;
 
         Packet pureData {};
         std::memcpy(pureData.data(), packet.m_packet->data() + sizeof(packet.m_packetTypeID) + sizeof(session_id_t), dataType.getDataSize());
 
         if(dataType.onSendFailed)
         {
-            dataType.onSendFailed(pureData, targetEndpoint, packet.m_targetSessionID);
+            dataType.onSendFailed(pureData, targetEndpoint, m_targetSessionID);
         }
 
         m_reliablePackets.pop();
@@ -43,7 +43,7 @@ void SGCore::Net::RUDPStream::ReliableStream::pollPackets() noexcept
             auto& nextPacket = m_reliablePackets.front();
             nextPacket.m_sendTime = std::chrono::steady_clock::now();
 
-            const auto nextTargetEndpoint = m_udpStream->m_registeredClients.at(nextPacket.m_targetSessionID).m_endpoint;
+            const auto nextTargetEndpoint = m_udpStream->m_registeredClients.at(m_targetSessionID).m_endpoint;
 
             m_udpStream->sendPacket(nextPacket.m_packet, nextTargetEndpoint);
         }
@@ -51,7 +51,7 @@ void SGCore::Net::RUDPStream::ReliableStream::pollPackets() noexcept
 
     if(isTryFailed)
     {
-        const auto targetEndpoint = m_udpStream->m_registeredClients.at(packet.m_targetSessionID).m_endpoint;
+        const auto targetEndpoint = m_udpStream->m_registeredClients.at(m_targetSessionID).m_endpoint;
 
         // send packet again
         m_udpStream->sendPacket(packet.m_packet, targetEndpoint);
@@ -109,15 +109,15 @@ void SGCore::Net::RUDPStream::receive(strand_t& strand) noexcept
             std::uint64_t dataTypeHash;
             std::memcpy(&dataTypeHash, m_recvBuffer.data(), sizeof(dataTypeHash));
 
-            auto registeredStreamIt = registeredDataTypes.find(dataTypeHash);
-            if(registeredStreamIt == registeredDataTypes.end())
+            auto registeredTypeIt = registeredDataTypes.find(dataTypeHash);
+            if(registeredTypeIt == registeredDataTypes.end())
             {
-                // invalid data type
+                LOG_E(SGCORE_TAG, "Unknown message type: {}", dataTypeHash);
                 return;
             }
 
-            auto& registeredStream = registeredStreamIt->second;
-            const auto registeredTypeSize = registeredStream.getDataSize();
+            auto& registeredType = registeredTypeIt->second;
+            const auto registeredTypeSize = registeredType.getDataSize();
 
             std::int64_t sessionID {};
 
@@ -125,7 +125,7 @@ void SGCore::Net::RUDPStream::receive(strand_t& strand) noexcept
             std::memcpy(factFooter, m_recvBuffer.data() + sizeof(dataTypeHash) + sizeof(sessionID) + registeredTypeSize, 4);
             if(std::memcmp(factFooter, footer, 4) != 0)
             {
-                // broken packet
+                LOG_E(SGCORE_TAG, "Broken packet.");
                 return;
             }
 
@@ -137,7 +137,11 @@ void SGCore::Net::RUDPStream::receive(strand_t& strand) noexcept
                 if(!m_registeredClients.contains(sessionID))
                 {
                     // unauthorized
-                    if(registeredStream.m_authRequired) return;
+                    if(registeredType.m_authRequired)
+                    {
+                        LOG_E(SGCORE_TAG, "Unauthorized. Message type: {}. Sender session: {}", dataTypeHash, sessionID);
+                        return;
+                    }
                 }
                 else
                 {
@@ -150,7 +154,7 @@ void SGCore::Net::RUDPStream::receive(strand_t& strand) noexcept
 
             // if type is not used for auth then sending response GotReliablePacketMessage immediately
             // to avoid wasting time on user data processing
-            if(!isMessageIsReliableACK && registeredStream.isUsingRUDP() && !registeredStream.isUsedForAuth())
+            if(!isMessageIsReliableACK && registeredType.isUsingRUDP() && !registeredType.isUsedForAuth())
             {
                 send(strand, GotReliablePacketMessage {}, m_sessionID, sessionID);
             }
@@ -158,28 +162,9 @@ void SGCore::Net::RUDPStream::receive(strand_t& strand) noexcept
             Packet pureData {};
             std::memcpy(pureData.data(), m_recvBuffer.data() + sizeof(dataTypeHash) + sizeof(sessionID), registeredTypeSize);
 
-            if(registeredStream.onReceive)
+            if(registeredType.onReceive)
             {
-                registeredStream.onReceive(pureData, m_receiveEndpoint, sessionID);
-            }
-
-            // if type is used for auth then sending response GotReliablePacketMessage after user data processing.
-            // it is because user must set session id for new client
-            if(!isMessageIsReliableACK && registeredStream.isUsingRUDP() && registeredStream.isUsedForAuth())
-            {
-                // getting new session id.
-                // i think that this cycle is not too bad because auth message won't be used so often
-                for(const auto& [clientSessionID, endpointInfo] : m_registeredClients)
-                {
-                    if(endpointInfo.m_endpoint == m_receiveEndpoint)
-                    {
-                        sessionID = clientSessionID;
-                    }
-                }
-
-                std::cout << "sending reliable to: " << sessionID << std::endl;
-
-                send(strand, GotReliablePacketMessage {}, m_sessionID, sessionID);
+                registeredType.onReceive(pureData, m_receiveEndpoint, sessionID);
             }
         });
     });
