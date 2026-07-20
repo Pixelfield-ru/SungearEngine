@@ -12,7 +12,6 @@
 
 namespace SGCore::Net
 {
-    // todo: fix rudp
     struct SGCORE_EXPORT RUDPStream : IStream<boost::asio::ip::udp>
     {
         static constexpr char footer[4] { 'S', 'G', 'P', 'K' };
@@ -39,7 +38,7 @@ namespace SGCore::Net
 
         RUDPStream() noexcept;
 
-        template<typename MsgT>
+        template<NetMessage MsgT>
         void send(strand_t& strand, MsgT message, std::int64_t senderSessionID, std::int64_t targetSessionID) noexcept
         {
             static const auto messageTypeID = MsgT::getTypeIDStatic();

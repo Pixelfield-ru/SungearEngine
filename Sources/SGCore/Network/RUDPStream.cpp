@@ -22,17 +22,22 @@ void SGCore::Net::RUDPStream::ReliableStream::pollPackets() noexcept
     const bool isSendFailed = timeElapsed > m_udpStream->m_reliablePacketSendTimeout;
     const bool isTryFailed = timeElapsed > m_udpStream->m_reliablePacketTryTimeout;
 
+    const auto targetEndpointIt = m_udpStream->m_registeredClients.find(m_targetSessionID);
+    const bool isTargetExists = targetEndpointIt != m_udpStream->m_registeredClients.end();
+
     if(isSendFailed)
     {
         auto& dataType = m_udpStream->m_registeredDataTypes.at(packet.m_packetTypeID);
-        const auto targetEndpoint = m_udpStream->m_registeredClients.at(m_targetSessionID).m_endpoint;
 
-        Packet pureData {};
-        std::memcpy(pureData.data(), packet.m_packet->data() + sizeof(packet.m_packetTypeID) + sizeof(session_id_t), dataType.getDataSize());
-
-        if(dataType.onSendFailed)
+        if(isTargetExists)
         {
-            dataType.onSendFailed(pureData, targetEndpoint, m_targetSessionID);
+            Packet pureData {};
+            std::memcpy(pureData.data(), packet.m_packet->data() + sizeof(packet.m_packetTypeID) + sizeof(session_id_t), dataType.getDataSize());
+
+            if(dataType.onSendFailed)
+            {
+                dataType.onSendFailed(pureData, targetEndpointIt->second.m_endpoint, m_targetSessionID);
+            }
         }
 
         m_reliablePackets.pop();
@@ -43,18 +48,30 @@ void SGCore::Net::RUDPStream::ReliableStream::pollPackets() noexcept
             auto& nextPacket = m_reliablePackets.front();
             nextPacket.m_sendTime = std::chrono::steady_clock::now();
 
-            const auto nextTargetEndpoint = m_udpStream->m_registeredClients.at(m_targetSessionID).m_endpoint;
-
-            m_udpStream->sendPacket(nextPacket.m_packet, nextTargetEndpoint);
+            if(isTargetExists)
+            {
+                m_udpStream->sendPacket(nextPacket.m_packet, targetEndpointIt->second.m_endpoint);
+            }
+            else
+            {
+                // next packet is invalid
+                m_reliablePackets.pop();
+            }
         }
     }
 
-    if(isTryFailed)
+    if(isTryFailed && !isSendFailed)
     {
-        const auto targetEndpoint = m_udpStream->m_registeredClients.at(m_targetSessionID).m_endpoint;
-
-        // send packet again
-        m_udpStream->sendPacket(packet.m_packet, targetEndpoint);
+        if(isTargetExists)
+        {
+            // send packet again
+            m_udpStream->sendPacket(packet.m_packet, targetEndpointIt->second.m_endpoint);
+        }
+        else
+        {
+            // packet is invalid
+            m_reliablePackets.pop();
+        }
     }
 }
 

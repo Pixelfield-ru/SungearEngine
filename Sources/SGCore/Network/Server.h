@@ -12,6 +12,7 @@
 #include <WinSock2.h>
 #endif
 
+#include <ranges>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/strand.hpp>
 #include <boost/asio/ip/udp.hpp>
@@ -48,13 +49,17 @@ namespace SGCore::Net
 
         Coro::Task<> runReceivePoll() noexcept;
 
-        template<typename MsgT>
+        template<NetMessage MsgT>
         Coro::Task<> propagate(MsgT&& msg, std::int64_t senderSessionID) noexcept
         {
             const auto clients = m_stream.getRegisteredClients();
 
-            for(const auto& [clientSessionID, clientEndpoint] : clients)
+            for(const auto& clientSessionID : clients | std::views::keys)
             {
+                LOG_I(SGCORE_TAG,
+                      "Propagating packet to client {}. Sender is {}. Message type is '{}'",
+                      clientSessionID, senderSessionID, typeid(MsgT).name());
+
                 if(clientSessionID == senderSessionID) continue;
 
                 m_stream.send(m_strand, msg, senderSessionID, clientSessionID);
@@ -63,13 +68,13 @@ namespace SGCore::Net
             }
         }
 
-        template<typename MsgT>
+        template<NetMessage MsgT>
         void send(MsgT&& message, std::int64_t senderSessionID, std::int64_t targetSessionID) noexcept
         {
             m_stream.send(m_strand, std::forward<MsgT>(message), senderSessionID, targetSessionID);
         }
 
-        template<typename MsgT>
+        template<NetMessage MsgT>
         void send(MsgT&& message, std::int64_t targetSessionID) noexcept
         {
             m_stream.send(m_strand, std::forward<MsgT>(message), m_stream.m_sessionID, targetSessionID);

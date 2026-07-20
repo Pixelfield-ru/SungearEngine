@@ -40,6 +40,7 @@ namespace SGCore::Net
         endpoint_t m_serverEndpoint;
 
         template<typename DataT>
+        requires(requires { std::declval<DataT>().getTypeIDStatic(); })
         DataType& registerDataType() noexcept
         {
             std::lock_guard lock(m_dataAccessMutex);

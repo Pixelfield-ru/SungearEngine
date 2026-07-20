@@ -41,8 +41,7 @@ namespace SGCore::Net
 
         void connect(const std::string& endpointAddress, boost::asio::ip::port_type endpointPort, std::chrono::system_clock::duration retryInterval = std::chrono::seconds(3), int retriesCount = 5) noexcept;
 
-        template<typename MessageT>
-        requires(requires { MessageT::getTypeIDStatic(); })
+        template<NetMessage MessageT>
         void send(MessageT&& data) noexcept
         {
             m_stream.send(m_strand, std::forward<MessageT>(data), m_stream.m_sessionID, 0);

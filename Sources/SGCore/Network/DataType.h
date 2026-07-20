@@ -9,12 +9,10 @@
 #include <boost/asio/ip/udp.hpp>
 
 #include "Packet.h"
+#include "Types.h"
 
 namespace SGCore::Net
 {
-    using session_id_t = std::int64_t;
-    using packet_id_t = std::uint32_t;
-
     template<typename ProtocolT>
     struct IStream;
 
