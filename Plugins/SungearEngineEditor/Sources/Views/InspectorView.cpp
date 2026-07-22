@@ -323,10 +323,10 @@ void SGE::InspectorView::inspectEntity() noexcept
 
                 if(ImGui::Button("Add Box Shape"))
                 {
-                    auto boxShape = SGCore::MakeRef<btBoxShape>(btVector3(0.5f, 0.5f, 0.5f));
+                    auto boxShape = SGCore::MakeScope<btBoxShape>(btVector3(0.5f, 0.5f, 0.5f));
                     btTransform boxTransform;
                     boxTransform.setIdentity();
-                    rigidbody->addShape(boxTransform, boxShape);
+                    rigidbody->addShape(boxTransform, std::move(boxShape));
                 }
             }
 

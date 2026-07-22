@@ -62,13 +62,13 @@ namespace SGCore::Serde
         for(auto it = valueView.container().begin(); it != valueView.container().end(); ++it)
         {
             childShapeTransform.setIdentity();
-            const auto shape = valueView.container().template getMember<Ref<btCollisionShape>>(it, childShapeTransform, parentRigidbody3D);
+            auto shape = valueView.container().template getMember<Scope<btCollisionShape>>(it, childShapeTransform, parentRigidbody3D);
 
             if(shape)
             {
                 value->addChildShape(childShapeTransform, shape->get());
                 // saving reference to shape to avoid deletion of current child shape
-                parentRigidbody3D.m_shapes.push_back(*shape);
+                parentRigidbody3D.m_shapes.push_back(std::move(*shape));
                 // WRONG!
                 // parentRigidbody3D.addShape(childShapeTransform, *shape);
             }
@@ -138,7 +138,7 @@ namespace SGCore::Serde
 
         if(*shapeType == COMPOUND_SHAPE_PROXYTYPE)
         {
-            const auto shape = valueView.container().template getMember<Ref<btCompoundShape>>("m_shapeObject", shapeTransform, parentRigidbody3D);
+            const auto shape = valueView.container().template getMember<Scope<btCompoundShape>>("m_shapeObject", shapeTransform, parentRigidbody3D);
             if(!shape)
             {
                 LOG_E(SGCORE_TAG, "Error while deserializing physical collision shape: no 'm_shapeObject' field detected!");

@@ -157,7 +157,7 @@ void SGCore::PhysicsWorld3D::onAddToScene(const Scene* scene)
     auto rigidbodies3DView = scene->getECSRegistry()->view<Rigidbody3D>();
 
     rigidbodies3DView.each([this](const Rigidbody3D& rigidbody3D) {
-        this->addBody(rigidbody3D.m_body);
+        this->addBody(rigidbody3D.m_body.get());
     });
 }
 

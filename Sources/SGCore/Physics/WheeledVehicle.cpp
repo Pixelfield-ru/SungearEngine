@@ -17,7 +17,7 @@ SGCore::WheeledVehicle::~WheeledVehicle()
     }
 }
 
-void SGCore::configureVehicle(WheeledVehicle& vehicle, Rigidbody3D& vehicleBody)
+void SGCore::WheeledVehicle::configure(WheeledVehicle& vehicle, Rigidbody3D& vehicleBody)
 {
 
 }

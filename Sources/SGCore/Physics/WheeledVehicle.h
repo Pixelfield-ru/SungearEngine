@@ -21,7 +21,7 @@ namespace SGCore
         Weak<PhysicsWorld3D> m_parentPhysicsWorld;
 
         ~WheeledVehicle() override;
-    };
 
-    void configureVehicle(WheeledVehicle& vehicle, Rigidbody3D& vehicleBody);
+        static void configure(WheeledVehicle& vehicle, Rigidbody3D& vehicleBody);
+    };
 }

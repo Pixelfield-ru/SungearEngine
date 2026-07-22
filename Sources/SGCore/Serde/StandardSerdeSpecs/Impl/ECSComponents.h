@@ -828,10 +828,10 @@ namespace SGCore::Serde
 
         // deserializing final shape (compound shape)
         btTransform finalShapeTransform; // unused
-        auto finalShape = valueView.container().template getMember<Ref<btCollisionShape>>("m_finalShape", finalShapeTransform, *valueView.m_data);
+        auto finalShape = valueView.container().template getMember<Scope<btCollisionShape>>("m_finalShape", finalShapeTransform, *valueView.m_data);
         if(finalShape && (*finalShape)->getShapeType() == COMPOUND_SHAPE_PROXYTYPE)
         {
-            valueView.m_data->m_finalShape = std::move(std::static_pointer_cast<btCompoundShape>(*finalShape));
+            valueView.m_data->m_finalShape = Scope<btCompoundShape>(static_cast<btCompoundShape*>(finalShape->release()));
             valueView.m_data->m_body->setCollisionShape(finalShape->get());
         }
 
