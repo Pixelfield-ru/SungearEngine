@@ -88,6 +88,9 @@ SGCore::Net::RUDPStream::RUDPStream() noexcept
         }
 
         auto& reliableStream = reliableStreamIt->second;
+
+        if(reliableStream.m_reliablePackets.empty()) return;
+
         reliableStream.m_reliablePackets.pop();
 
         if(reliableStream.m_reliablePackets.empty()) return;
@@ -179,7 +182,7 @@ void SGCore::Net::RUDPStream::receive(strand_t& strand) noexcept
             Packet pureData {};
             std::memcpy(pureData.data(), m_recvBuffer.data() + sizeof(dataTypeHash) + sizeof(sessionID), registeredTypeSize);
 
-            LOG_I(SGCORE_TAG, "Got packet with type ID '{}', from {}", dataTypeHash, sessionID);
+            // LOG_I(SGCORE_TAG, "Got packet with type ID '{}', from {}", dataTypeHash, sessionID);
 
             if(registeredType.onReceive)
             {

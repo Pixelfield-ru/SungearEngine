@@ -93,14 +93,14 @@ namespace SGCore::Net
                         // if this packet is first
                         if(reliableStream.m_reliablePackets.size() == 1)
                         {
-                            LOG_I(SGCORE_TAG, "Send reliable message {}", typeid(MsgT).name());
+                            // LOG_I(SGCORE_TAG, "Send reliable message {}", typeid(MsgT).name());
                             sendPacket(packet, targetClientEndpoint);
                         }
                         return;
                     }
                 }
 
-                LOG_I(SGCORE_TAG, "Send message {}", typeid(MsgT).name());
+                // LOG_I(SGCORE_TAG, "Send message {}", typeid(MsgT).name());
 
                 sendPacket(packet, targetClientEndpoint);
             });

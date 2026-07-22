@@ -56,9 +56,9 @@ namespace SGCore::Net
 
             for(const auto& clientSessionID : clients | std::views::keys)
             {
-                LOG_I(SGCORE_TAG,
+                /*LOG_I(SGCORE_TAG,
                       "Propagating packet to client {}. Sender is {}. Message type is '{}'",
-                      clientSessionID, senderSessionID, typeid(MsgT).name());
+                      clientSessionID, senderSessionID, typeid(MsgT).name());*/
 
                 if(clientSessionID == senderSessionID) continue;
 
