@@ -25,23 +25,23 @@ namespace SGCore
 {
     struct PhysicsWorld3D;
 
-    struct SGCORE_EXPORT Rigidbody3D : ECS::Component<Rigidbody3D, const Rigidbody3D>
+    struct SGCORE_EXPORT Rigidbody3D final : ECS::Component<Rigidbody3D, const Rigidbody3D>
     {
         sg_serde_as_friend()
 
         friend struct PhysicsWorld3D;
         friend struct TransformationsUpdater;
 
-        Ref<btRigidBody> m_body;
+        Scope<btRigidBody> m_body;
 
         Rigidbody3D(const Ref<PhysicsWorld3D>& physicsWorld);
         Rigidbody3D();
         Rigidbody3D(const Rigidbody3D& other) noexcept = default;
         Rigidbody3D(Rigidbody3D&& other) noexcept = default;
         
-        ~Rigidbody3D();
+        ~Rigidbody3D() override;
         
-        Ref<btMotionState> m_state;
+        Scope<btMotionState> m_state;
 
         void stop() const noexcept;
 
@@ -51,13 +51,13 @@ namespace SGCore
         ConstraintInfo addPointToPointConstraint(Rigidbody3D& otherRigidbody, const glm::vec3& pointA, const glm::vec3& pointB, ECS::registry_t& inRegistry, bool disableCollisionBetweenBodies) noexcept;
         ConstraintInfo addConeTwistConstraint(Rigidbody3D& otherRigidbody, ECS::registry_t& inRegistry, bool disableCollisionBetweenBodies) noexcept;
         
-        [[nodiscard]] Ref<const btCompoundShape> getFinalShape() const noexcept;
+        [[nodiscard]] const Scope<btCompoundShape>& getFinalShape() const noexcept;
 
-        void addShape(const btTransform& shapeTransform, const Ref<btCollisionShape>& shape) noexcept;
-        void removeShape(const Ref<btCollisionShape>& shape) noexcept;
+        void addShape(const btTransform& shapeTransform, Scope<btCollisionShape> shape) noexcept;
+        void removeShape(const Scope<btCollisionShape>& shape) noexcept;
         void removeAllShapes() noexcept;
         size_t getShapesCount() const noexcept;
-        [[nodiscard]] const std::vector<Ref<btCollisionShape>>& getShapes() const noexcept;
+        [[nodiscard]] const std::vector<Scope<btCollisionShape>>& getShapes() const noexcept;
 
         [[nodiscard]] btTransform& getShapeTransform(size_t index) noexcept;
         [[nodiscard]] const btTransform& getShapeTransform(size_t index) const noexcept;
@@ -75,8 +75,8 @@ namespace SGCore
         
     private:
         // contains ALL shapes in ALL COMPOUND SHAPES
-        std::vector<Ref<btCollisionShape>> m_shapes;
-        Ref<btCompoundShape> m_finalShape;
+        std::vector<Scope<btCollisionShape>> m_shapes;
+        Scope<btCompoundShape> m_finalShape;
         Weak<PhysicsWorld3D> m_parentPhysicsWorld;
 
         std::vector<ConstraintInfo> m_constraints;

@@ -15,13 +15,13 @@ SGCore::Rigidbody3D::Rigidbody3D(const SGCore::Ref<PhysicsWorld3D>& parentWorld)
     
     btTransform initialTransform;
     initialTransform.setIdentity();
-    m_state = MakeRef<btDefaultMotionState>(initialTransform);
-    m_finalShape = MakeRef<btCompoundShape>();
+    m_state = MakeScope<btDefaultMotionState>(initialTransform);
+    m_finalShape = MakeScope<btCompoundShape>();
     btRigidBody::btRigidBodyConstructionInfo constructionInfo =
             btRigidBody::btRigidBodyConstructionInfo(0, m_state.get(), m_finalShape.get(), btVector3(0, 0, 0));
-    m_body = MakeRef<btRigidBody>(constructionInfo);
+    m_body = MakeScope<btRigidBody>(constructionInfo);
     
-    parentWorld->addBody(m_body);
+    parentWorld->addBody(m_body.get());
 
     setType(m_type);
 }
@@ -30,11 +30,11 @@ SGCore::Rigidbody3D::Rigidbody3D()
 {
     btTransform initialTransform;
     initialTransform.setIdentity();
-    m_state = MakeRef<btDefaultMotionState>(initialTransform);
-    m_finalShape = MakeRef<btCompoundShape>();
+    m_state = MakeScope<btDefaultMotionState>(initialTransform);
+    m_finalShape = MakeScope<btCompoundShape>();
     btRigidBody::btRigidBodyConstructionInfo constructionInfo =
             btRigidBody::btRigidBodyConstructionInfo(0, m_state.get(), m_finalShape.get(), btVector3(0, 0, 0));
-    m_body = MakeRef<btRigidBody>(constructionInfo);
+    m_body = MakeScope<btRigidBody>(constructionInfo);
 
     setType(m_type);
 }
@@ -55,9 +55,9 @@ SGCore::Rigidbody3D::~Rigidbody3D()
     
     if(auto lockedWorld = m_parentPhysicsWorld.lock())
     {
-        if(m_body.use_count() == 1 && m_body)
+        if(m_body)
         {
-            lockedWorld->removeBody(m_body);
+            lockedWorld->removeBody(m_body.get());
             
             /*delete m_body.get();
             m_body = nullptr;*/
@@ -74,19 +74,19 @@ SGCore::Rigidbody3D::~Rigidbody3D()
     m_body->setCollisionShape(m_shape.get());
 }*/
 
-SGCore::Ref<const btCompoundShape> SGCore::Rigidbody3D::getFinalShape() const noexcept
+const SGCore::Scope<btCompoundShape>& SGCore::Rigidbody3D::getFinalShape() const noexcept
 {
     return m_finalShape;
 }
 
-void SGCore::Rigidbody3D::addShape(const btTransform& shapeTransform, const Ref<btCollisionShape>& shape) noexcept
+void SGCore::Rigidbody3D::addShape(const btTransform& shapeTransform, Scope<btCollisionShape> shape) noexcept
 {
-    m_shapes.push_back(shape);
+    m_shapes.push_back(std::move(shape));
 
     m_finalShape->addChildShape(shapeTransform, shape.get());
 }
 
-void SGCore::Rigidbody3D::removeShape(const Ref<btCollisionShape>& shape) noexcept
+void SGCore::Rigidbody3D::removeShape(const Scope<btCollisionShape>& shape) noexcept
 {
     size_t i = 0;
     for(; i < m_shapes.size(); ++i)
@@ -117,7 +117,7 @@ size_t SGCore::Rigidbody3D::getShapesCount() const noexcept
     return m_shapes.size();
 }
 
-const std::vector<SGCore::Ref<btCollisionShape>>& SGCore::Rigidbody3D::getShapes() const noexcept
+const std::vector<SGCore::Scope<btCollisionShape>>& SGCore::Rigidbody3D::getShapes() const noexcept
 {
     return m_shapes;
 }
@@ -150,14 +150,14 @@ void SGCore::Rigidbody3D::setParentWorld(const SGCore::Ref<SGCore::PhysicsWorld3
 
     if(lockedWorld)
     {
-        lockedWorld->removeBody(m_body);
+        lockedWorld->removeBody(m_body.get());
     }
     
     m_parentPhysicsWorld = world;
     
     if(world)
     {
-        world->addBody(m_body);
+        world->addBody(m_body.get());
         setType(m_type);
     }
 }
@@ -246,8 +246,8 @@ void SGCore::Rigidbody3D::reAddToWorld() const noexcept
 {
     if(auto lockedWorld = m_parentPhysicsWorld.lock())
     {
-        lockedWorld->removeBody(m_body);
-        lockedWorld->addBody(m_body);
+        lockedWorld->removeBody(m_body.get());
+        lockedWorld->addBody(m_body.get());
     }
 }
 
@@ -256,7 +256,7 @@ void SGCore::Rigidbody3D::removeFromWorld() const noexcept
     auto lockedWorld = m_parentPhysicsWorld.lock();
     if(lockedWorld && m_body)
     {
-        lockedWorld->removeBody(m_body);
+        lockedWorld->removeBody(m_body.get());
     }
 }
 

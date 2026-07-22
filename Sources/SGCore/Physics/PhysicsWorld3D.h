@@ -10,6 +10,7 @@
 #include <BulletCollision/CollisionDispatch/btCollisionConfiguration.h>
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolver.h>
 #include <BulletDynamics/Dynamics/btDynamicsWorld.h>
+#include <BulletDynamics/Vehicle/btRaycastVehicle.h>
 
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Main/CoreGlobals.h"
@@ -33,9 +34,12 @@ namespace SGCore
 
         void parallelUpdate(const double& dt, const double& fixedDt) noexcept final;
 
-        void addBody(const Ref<btRigidBody>& rigidBody) noexcept;
-        void removeBody(const Ref<btRigidBody>& rigidBody) noexcept;
-        
+        void addBody(btRigidBody* rigidBody) noexcept;
+        void removeBody(btRigidBody* rigidBody) noexcept;
+
+        void addVehicle(btRaycastVehicle* vehicle) noexcept;
+        void removeVehicle(btRaycastVehicle* vehicle) noexcept;
+
         void update(double dt, double fixedDt) noexcept override;
         void onAddToScene(const Scene* scene) override;
         void onRemoveFromScene(const Ref<Scene>& scene) override;

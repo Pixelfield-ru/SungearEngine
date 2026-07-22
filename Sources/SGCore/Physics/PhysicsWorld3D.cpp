@@ -48,14 +48,14 @@ SGCore::PhysicsWorld3D::PhysicsWorld3D()
     m_thread->start();
 }
 
-void SGCore::PhysicsWorld3D::addBody(const SGCore::Ref<btRigidBody>& rigidBody) noexcept
+void SGCore::PhysicsWorld3D::addBody(btRigidBody* rigidBody) noexcept
 {
     std::lock_guard guard(m_bodiesCountChangeMutex);
-    m_dynamicsWorld->addRigidBody(rigidBody.get());
+    m_dynamicsWorld->addRigidBody(rigidBody);
     rigidBody->activate();
 }
 
-void SGCore::PhysicsWorld3D::removeBody(const Ref<btRigidBody>& rigidBody) noexcept
+void SGCore::PhysicsWorld3D::removeBody(btRigidBody* rigidBody) noexcept
 {
     std::lock_guard guard(m_bodiesCountChangeMutex);
     int num = rigidBody->getNumConstraintRefs();
@@ -63,7 +63,19 @@ void SGCore::PhysicsWorld3D::removeBody(const Ref<btRigidBody>& rigidBody) noexc
     {
         m_dynamicsWorld->removeConstraint(rigidBody->getConstraintRef(0));
     }
-    m_dynamicsWorld->removeRigidBody(rigidBody.get());
+    m_dynamicsWorld->removeRigidBody(rigidBody);
+}
+
+void SGCore::PhysicsWorld3D::addVehicle(btRaycastVehicle* vehicle) noexcept
+{
+    std::lock_guard guard(m_bodiesCountChangeMutex);
+    m_dynamicsWorld->addVehicle(vehicle);
+}
+
+void SGCore::PhysicsWorld3D::removeVehicle(btRaycastVehicle* vehicle) noexcept
+{
+    std::lock_guard guard(m_bodiesCountChangeMutex);
+    m_dynamicsWorld->removeVehicle(vehicle);
 }
 
 void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixedDt) noexcept

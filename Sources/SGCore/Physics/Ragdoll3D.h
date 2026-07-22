@@ -4,17 +4,7 @@
 
 #pragma once
 
-#include <functional>
-#include <vector>
-
-#include <BulletDynamics/ConstraintSolver/btTypedConstraint.h>
-#include <entt/entity/entity.hpp>
-#include <glm/vec3.hpp>
-
-#include "Constraint.h"
 #include "SGCore/ECS/Component.h"
-#include "SGCore/Main/CoreGlobals.h"
-#include "SGCore/Utils/Macroses.h"
 
 namespace SGCore
 {
