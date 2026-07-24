@@ -13,6 +13,7 @@
 
 #include "PhysicsDebugDraw.h"
 #include "Rigidbody3D.h"
+#include "VehicleWheel.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
 #include "SGCore/Threading/WrappedObject.h"
@@ -101,7 +102,7 @@ void SGCore::PhysicsWorld3D::update(double dt, double fixedDt) noexcept
 
     auto rigidbodiesView = ecsRegistry->view<EntityBaseInfo, Rigidbody3D, Transform>();
 
-    rigidbodiesView.each([](const auto&, const Rigidbody3D& rigidbody, const Transform& transform) {
+    rigidbodiesView.each([](const auto&,  const Rigidbody3D& rigidbody, const Transform& transform) {
         const auto worldPosition = transform.m_worldTransform.m_position;
         const auto worldRotation = transform.m_worldTransform.m_rotation;
 
@@ -109,6 +110,20 @@ void SGCore::PhysicsWorld3D::update(double dt, double fixedDt) noexcept
 
         bodyTransform.setOrigin({ worldPosition.x, worldPosition.y, worldPosition.z });
         bodyTransform.setRotation({ worldRotation.x, worldRotation.y, worldRotation.z, worldRotation.w });
+    });
+
+    auto wheelsView = ecsRegistry->view<EntityBaseInfo, VehicleWheel, Transform>();
+
+    wheelsView.each([](const auto&, const VehicleWheel& wheel, const Transform& transform) {
+        const auto worldPosition = transform.m_worldTransform.m_position;
+        const auto worldRotation = transform.m_worldTransform.m_rotation;
+
+        if(!wheel.m_wheelInfo) return;
+
+        auto& wheelTransform = wheel.m_wheelInfo->m_worldTransform;
+
+        wheelTransform.setOrigin({ worldPosition.x, worldPosition.y, worldPosition.z });
+        wheelTransform.setRotation({ worldRotation.x, worldRotation.y, worldRotation.z, worldRotation.w });
     });
 
     // =============================
@@ -128,8 +143,28 @@ void SGCore::PhysicsWorld3D::update(double dt, double fixedDt) noexcept
     calculatePostPhysicsEntitiesTransforms(ecsRegistry);
 
     // ============================= set transform world position
-    // rigidbodies are ignoring parent rigidbodies. rigidbodies are independent of parent rigidbodies in physics world
-    rigidbodiesView.each([&ecsRegistry](const EntityBaseInfo& baseInfo, const Rigidbody3D& rigidbody, Transform& transform) {
+    // rigidbodies (and wheels) are ignoring parent rigidbodies. rigidbodies are independent of parent rigidbodies in physics world
+    rigidbodiesView.each([&ecsRegistry](const EntityBaseInfo& baseInfo, const Rigidbody3D&, Transform& transform) {
+        auto* parentTransform = ecsRegistry->tryGet<Transform>(baseInfo.getParent());
+
+        auto& localTransform = transform.m_localTransform;
+        auto& worldTransform = transform.m_worldTransform;
+
+        if(parentTransform)
+        {
+            // calculating local position & rotation to ignore parent rigidbody transform
+            localTransform.m_position = TransformUtils::calculateLocalPosition(*parentTransform, worldTransform.m_position);
+            localTransform.m_rotation = TransformUtils::calculateLocalRotation(*parentTransform, worldTransform.m_rotation);
+        }
+        else
+        {
+            // no parent then using transform from rigidbody (worldTransform)
+            localTransform.m_position = worldTransform.m_position;
+            localTransform.m_rotation = worldTransform.m_rotation;
+        }
+    });
+
+    wheelsView.each([&ecsRegistry](const EntityBaseInfo& baseInfo, const VehicleWheel&, Transform& transform) {
         auto* parentTransform = ecsRegistry->tryGet<Transform>(baseInfo.getParent());
 
         auto& localTransform = transform.m_localTransform;
@@ -239,39 +274,49 @@ void SGCore::PhysicsWorld3D::calculatePostPhysicsEntitiesTransforms(const Ref<EC
 
             if(currentTransform && currentTransform->isActive())
             {
-                auto* childRigidbody = inRegistry->tryGet<Rigidbody3D>(currentEntity);
+                static auto getPhysicalTransform = [](ECS::registry_t& inRegistry, ECS::entity_t entity) -> btTransform* {
+                    const auto* childRigidbody = inRegistry.tryGet<Rigidbody3D>(entity);
+                    if(childRigidbody) return &childRigidbody->m_body->getWorldTransform();
+
+                    const auto* wheel = inRegistry.tryGet<VehicleWheel>(entity);
+                    if(wheel && wheel->m_wheelInfo) return &wheel->m_wheelInfo->m_worldTransform;
+
+                    return {};
+                };
+
+                auto* childPhysicalTransform = getPhysicalTransform(*inRegistry, currentEntity);
 
                 auto& childWorldTransform = currentTransform->m_worldTransform;
 
-                if(parentTransform && !childRigidbody) // calculating child position and rotation relating to parent
+                if(parentTransform && !childPhysicalTransform) // calculating child position and rotation relating to parent
                 {
                     const auto& childLocalTransform = currentTransform->m_localTransform;
 
                     childWorldTransform.m_position = TransformUtils::calculateWorldPosition(*parentTransform, childLocalTransform.m_position);
                     childWorldTransform.m_rotation = TransformUtils::calculateWorldRotation(*parentTransform, childLocalTransform.m_rotation);
                 }
-                else if(childRigidbody) // using rigidbody`s position and rotation as final position and rotation
+                else if(childPhysicalTransform) // using rigidbody`s position and rotation as final position and rotation
                 {
-                    const auto& bodyTransform = childRigidbody->m_body->getWorldTransform();
+                    const auto& physicalTransform = *childPhysicalTransform;
 
-                    const auto btPosition = bodyTransform.getOrigin();
-                    const auto btRotation = bodyTransform.getRotation();
+                    const auto btPosition = physicalTransform.getOrigin();
+                    const auto btRotation = physicalTransform.getRotation();
 
-                    const glm::vec3 bodyPos {
+                    const glm::vec3 physPos {
                         btPosition.x(),
                         btPosition.y(),
                         btPosition.z()
                     };
 
-                    const glm::quat bodyRot {
+                    const glm::quat physRot {
                         btRotation.w(),
                         btRotation.x(),
                         btRotation.y(),
                         btRotation.z()
                     };
 
-                    childWorldTransform.m_position = bodyPos;
-                    childWorldTransform.m_rotation = bodyRot;
+                    childWorldTransform.m_position = physPos;
+                    childWorldTransform.m_rotation = physRot;
                 }
                 // else skipping child because it does not have parent and rigidbody. transform was not changed by parent
             }

@@ -15,8 +15,6 @@
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Graphics/API/IUniformBuffer.h"
-#include "SGCore/Physics/Rigidbody3D.h"
-#include "SGCore/Physics/PhysicsWorld3D.h"
 #include "Transform.h"
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/ECS/Registry.h"
@@ -38,8 +36,6 @@ void SGCore::TransformationsUpdater::update(double dt, double fixedDt) noexcept
     auto registry = lockedScene->getECSRegistry();
 
     auto transformsView = registry->view<EntityBaseInfo, RootEntityTag>();
-
-    // std::cout << "Elapsed: " << std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - start) << " for clearing notTransformUpdatedEntities and copying updatedByPhysicsEntities: " << updatedByPhysicsEntities.size() << std::endl;
 
     // =======================================================================
     for(auto&& [entity, rootBaseInfo, rootTag] : transformsView.each())
