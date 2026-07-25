@@ -44,39 +44,42 @@ void SGCore::Controllables3DUpdater::fixedUpdate(double dt, double fixedDt)
             localTransform.m_rotation = glm::quat(rotation);
         }
 
-        if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_R))
+        if(!localTransform.m_blockTranslation)
         {
-            localTransform.m_position.x = localTransform.m_position.y = localTransform.m_position.z = 0.0f;
-            localTransform.m_rotation = glm::identity<glm::quat>();
-        }
+            if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_R))
+            {
+                localTransform.m_position.x = localTransform.m_position.y = localTransform.m_position.z = 0.0f;
+                localTransform.m_rotation = glm::identity<glm::quat>();
+            }
 
-        float finalCameraSpeed = controllable3D.m_movementSpeed;
+            float finalCameraSpeed = controllable3D.m_movementSpeed;
 
-        if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_LEFT_SHIFT))
-        {
-            finalCameraSpeed *= 6.0;
-        }
+            if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_LEFT_SHIFT))
+            {
+                finalCameraSpeed *= 6.0;
+            }
 
-        if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_LEFT_CONTROL))
-        {
-            finalCameraSpeed /= 6.0;
-        }
+            if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_LEFT_CONTROL))
+            {
+                finalCameraSpeed /= 6.0;
+            }
 
-        if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_W))
-        {
-            localTransform.m_position += worldTransform.m_forward * finalCameraSpeed * finalDt;
-        }
-        if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_S))
-        {
-            localTransform.m_position -= worldTransform.m_forward * finalCameraSpeed * finalDt;
-        }
-        if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_A))
-        {
-            localTransform.m_position += worldTransform.m_right * finalCameraSpeed * finalDt;
-        }
-        if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_D))
-        {
-            localTransform.m_position -= worldTransform.m_right * finalCameraSpeed * finalDt;
+            if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_W))
+            {
+                localTransform.m_position += worldTransform.m_forward * finalCameraSpeed * finalDt;
+            }
+            if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_S))
+            {
+                localTransform.m_position -= worldTransform.m_forward * finalCameraSpeed * finalDt;
+            }
+            if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_A))
+            {
+                localTransform.m_position += worldTransform.m_right * finalCameraSpeed * finalDt;
+            }
+            if(Input::PC::keyboardKeyDown(Input::KeyboardKey::KEY_D))
+            {
+                localTransform.m_position -= worldTransform.m_right * finalCameraSpeed * finalDt;
+            }
         }
 
         if(Input::PC::keyboardKeyReleased(Input::KeyboardKey::KEY_ESCAPE))
