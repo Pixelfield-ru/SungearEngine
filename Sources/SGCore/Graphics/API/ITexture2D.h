@@ -20,7 +20,7 @@ namespace SGCore
 {
     class IFrameBuffer;
 
-    struct STBITextureDataDeleter
+    struct SGCORE_EXPORT STBITextureDataDeleter
     {
         void operator()(const std::uint8_t* data);
     };
