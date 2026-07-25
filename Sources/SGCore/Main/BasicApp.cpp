@@ -163,11 +163,14 @@ void SGCore::BasicApp::updateImpl(double dt, double fixedDt) noexcept
 
     if(!currentScene) return;
 
-    auto* frameReceiver = currentScene->getECSRegistry()->tryGet<LayeredFrameReceiver>(m_cameraEntity);
-    if(frameReceiver)
+    if(m_displayAttachmentOnScreen)
     {
-        auto attachment = frameReceiver->m_layersFXFrameBuffer->getAttachment(m_attachmentToDisplay);
-        CoreMain::getRenderer()->renderTextureOnScreen(attachment.get(), m_flipDisplay);
+        auto* frameReceiver = currentScene->getECSRegistry()->tryGet<LayeredFrameReceiver>(m_cameraEntity);
+        if(frameReceiver)
+        {
+            auto attachment = frameReceiver->m_layersFXFrameBuffer->getAttachment(m_attachmentToDisplay);
+            CoreMain::getRenderer()->renderTextureOnScreen(attachment.get(), m_flipDisplay);
+        }
     }
 }
 

@@ -21,6 +21,7 @@ namespace SGCore
         /// Attachment from main camera that will be displayed on screen.
         SGFrameBufferAttachmentType m_attachmentToDisplay = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7;
         bool m_flipDisplay = false;
+        bool m_displayAttachmentOnScreen = true;
 
         /// Created automatically if basic scene was created.
         ECS::entity_t m_cameraEntity = entt::null;
