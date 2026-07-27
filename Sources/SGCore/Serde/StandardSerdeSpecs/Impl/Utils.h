@@ -312,4 +312,43 @@ namespace SGCore::Serde
             valueView.m_data->m_presets = std::move(*configurePresets);
         }
     }
+
+     // ======================================================== impl Logger::Message
+
+    template<FormatType TFormatType>
+    void SerdeSpec<Logger::Message, TFormatType>::serialize(SerializableValueView<const Logger::Message, TFormatType>& valueView) noexcept
+    {
+        valueView.container().addMember("level", valueView.m_data->m_level);
+        valueView.container().addMember("tag", valueView.m_data->m_tag);
+        valueView.container().addMember("message", valueView.m_data->m_message);
+        valueView.container().addMember("time", valueView.m_data->m_time);
+    }
+
+    template<FormatType TFormatType>
+    void SerdeSpec<Logger::Message, TFormatType>::deserialize(DeserializableValueView<Logger::Message, TFormatType>& valueView) noexcept
+    {
+        const auto level = valueView.container().template getMember<Logger::Level>("level");
+        if(level)
+        {
+            valueView.m_data->m_level = *level;
+        }
+
+        auto tag = valueView.container().template getMember<std::string>("tag");
+        if(tag)
+        {
+            valueView.m_data->m_tag = std::move(*tag);
+        }
+
+        auto message = valueView.container().template getMember<std::string>("message");
+        if(message)
+        {
+            valueView.m_data->m_message = std::move(*message);
+        }
+
+        const auto time = valueView.container().template getMember<std::chrono::system_clock::time_point>("time");
+        if(time)
+        {
+            valueView.m_data->m_time = *time;
+        }
+    }
 }

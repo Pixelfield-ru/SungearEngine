@@ -128,4 +128,19 @@ namespace SGCore::Serde
 
         static void deserialize(DeserializableValueView<CMake::PresetsFileInfo, TFormatType>& valueView) noexcept;
     };
+
+    // ======================================================== Logger::Message FWD
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<Logger::Message, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        sg_serde_define_type_name("SGCore::Logger::Message")
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const Logger::Message, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<Logger::Message, TFormatType>& valueView) noexcept;
+    };
 }

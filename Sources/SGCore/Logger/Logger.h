@@ -52,9 +52,10 @@ namespace SGCore
 
         struct Message
         {
-            Level m_Level = Level::LVL_INFO;
+            Level m_level = Level::LVL_INFO;
             std::string m_tag;
             std::string m_message;
+            std::chrono::system_clock::time_point m_time;
         };
 
         Signal<void(Message msg)> onNewMessage;
@@ -108,10 +109,12 @@ namespace SGCore
                 formattedMsg = msg;
             }
 
+            const auto now = std::chrono::system_clock::now();
+
             std::lock_guard lock(m_mutex);
 
             const auto finalText = fmt::format("[{}] [logger: {}] [{}] [tag: {}] {}",
-                                                  Utils::getTimeAsString("%Y-%m-%d %H:%M:%S"),
+                                                  Utils::getTimeAsString("%Y-%m-%d %H:%M:%S", now),
                                                   m_name,
                                                   levelStr,
                                                   tag,
@@ -151,9 +154,10 @@ namespace SGCore
             }
 
             Message message {
-                .m_Level = level,
+                .m_level = level,
                 .m_tag = std::move(tag),
-                .m_message = std::move(formattedMsg)
+                .m_message = std::move(formattedMsg),
+                .m_time = now
             };
 
             onNewMessage(std::move(message));

@@ -309,4 +309,17 @@ namespace SGCore::Serde
             *valueView.m_data = (T) valueView.container().getAsInt64();
         }
     };
+
+    // ======================================================== std::chrono::time_point
+
+    template<typename ClockT, typename DurationT, FormatType TFormatType>
+    struct SerdeSpec<std::chrono::time_point<ClockT, DurationT>, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        sg_serde_define_type_name("std::chrono::time_point")
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<const std::chrono::time_point<ClockT, DurationT>, TFormatType>& valueView) noexcept;
+
+        static void deserialize(DeserializableValueView<std::chrono::time_point<ClockT, DurationT>, TFormatType>& valueView) noexcept;
+    };
 }

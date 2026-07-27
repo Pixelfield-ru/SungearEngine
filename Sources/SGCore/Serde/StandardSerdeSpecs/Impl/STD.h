@@ -334,4 +334,18 @@ namespace SGCore::Serde
     {
         *valueView.m_data = valueView.container().getAsBool();
     }
+
+    // =============================================== impl std::chrono::time_point
+
+    template<typename ClockT, typename DurationT, FormatType TFormatType>
+    void SerdeSpec<std::chrono::time_point<ClockT, DurationT>, TFormatType>::serialize(SerializableValueView<const std::chrono::time_point<ClockT, DurationT>, TFormatType>& valueView) noexcept
+    {
+        valueView.container().setAsInt64(valueView.m_data->time_since_epoch().count());
+    }
+
+    template<typename ClockT, typename DurationT, FormatType TFormatType>
+    void SerdeSpec<std::chrono::time_point<ClockT, DurationT>, TFormatType>::deserialize(DeserializableValueView<std::chrono::time_point<ClockT, DurationT>, TFormatType>& valueView) noexcept
+    {
+        *valueView.m_data = DurationT(valueView.container().getAsInt64());
+    }
 }
