@@ -71,7 +71,7 @@ SGCore::Logger::Logger(const std::string& loggerName, const std::filesystem::pat
 
     m_spdlogLogger->flush_on(spdlog::level::info);
 
-    spdlog::register_logger(m_spdlogLogger);
+    // spdlog::register_logger(m_spdlogLogger);
 }
 
 SGCore::Logger::Logger(const std::string& loggerName) noexcept
@@ -88,7 +88,7 @@ SGCore::Logger::Logger(const std::string& loggerName) noexcept
 
     m_spdlogLogger->flush_on(spdlog::level::info);
 
-    spdlog::register_logger(m_spdlogLogger);
+    // spdlog::register_logger(m_spdlogLogger);
 }
 
 void SGCore::Logger::setDefaultLogger(const Ref<Logger>& logger) noexcept
