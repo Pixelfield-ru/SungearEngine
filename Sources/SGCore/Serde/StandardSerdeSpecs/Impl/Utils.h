@@ -318,6 +318,7 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<Logger::Message, TFormatType>::serialize(SerializableValueView<const Logger::Message, TFormatType>& valueView) noexcept
     {
+        valueView.container().addMember("id", valueView.m_data->m_id);
         valueView.container().addMember("level", valueView.m_data->m_level);
         valueView.container().addMember("tag", valueView.m_data->m_tag);
         valueView.container().addMember("message", valueView.m_data->m_message);
@@ -327,6 +328,12 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<Logger::Message, TFormatType>::deserialize(DeserializableValueView<Logger::Message, TFormatType>& valueView) noexcept
     {
+        const auto id = valueView.container().template getMember<std::uint64_t>("id");
+        if(id)
+        {
+            valueView.m_data->m_level = *id;
+        }
+
         const auto level = valueView.container().template getMember<Logger::Level>("level");
         if(level)
         {

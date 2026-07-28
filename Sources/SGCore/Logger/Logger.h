@@ -52,6 +52,7 @@ namespace SGCore
 
         struct Message
         {
+            std::uint64_t m_id {};
             Level m_level = Level::LVL_INFO;
             std::string m_tag;
             std::string m_message;
@@ -154,6 +155,7 @@ namespace SGCore
             }
 
             Message message {
+                .m_id = m_totalMessages,
                 .m_level = level,
                 .m_tag = std::move(tag),
                 .m_message = std::move(formattedMsg),
@@ -161,6 +163,8 @@ namespace SGCore
             };
 
             onNewMessage(std::move(message));
+
+            ++m_totalMessages;
         }
 
         const std::filesystem::path& getLogFilePath() const noexcept;
@@ -178,6 +182,8 @@ namespace SGCore
 
         std::string m_name;
         std::filesystem::path m_logFilePath;
+
+        std::uint64_t m_totalMessages {};
     };
 }
 
