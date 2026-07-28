@@ -78,6 +78,7 @@ std::string SerializerImpl<FormatType::JSON>::to(const T& value,
     // converting to string
     rapidjson::StringBuffer stringBuffer;
     stringBuffer.Clear();
+    // todo: make prettify flag
     rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
     toDocument.Accept(writer);
 
