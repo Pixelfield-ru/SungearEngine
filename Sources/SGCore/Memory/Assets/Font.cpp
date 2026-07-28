@@ -27,7 +27,7 @@ void SGCore::UI::Font::doLoad(const InterpolatedPath& path)
 {
     const auto ftLib = FontsManager::getInstance().getFTLibrary();
 
-    m_fontHandler = msdfgen::loadFont(ftLib, Utils::toUTF8(path.resolved().u16string()).c_str());
+    m_fontHandler = msdfgen::loadFont(ftLib, Utils::toUTF8(path.resolved()).c_str());
 }
 
 SGCore::Ref<SGCore::UI::FontSpecialization>

@@ -26,14 +26,14 @@ void SGCore::ModelAsset::doLoad(const InterpolatedPath& path)
 
     Assimp::Importer importer;
 
-    const std::string u8Path = Utils::toUTF8(getPath().resolved().u16string());
+    const std::string u8Path = Utils::toUTF8(getPath().resolved());
 
     // TODO: maybe shared_ptr
     const aiScene* aiImportedScene(importer.ReadFile(u8Path, m_importerFlags));
 
     if(!aiImportedScene || aiImportedScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !aiImportedScene->mRootNode)
     {
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Assimp error (while importing scene): {}\n{}",
               importer.GetErrorString(),
               SG_CURRENT_LOCATION_STR);
@@ -56,8 +56,7 @@ void SGCore::ModelAsset::doLoad(const InterpolatedPath& path)
 
     importer.FreeScene();
 
-    LOG_I(SGCORE_TAG,
-          "Loaded model '{}'", m_modelName);
+    SG_LOG_I("Loaded model '{}'", m_modelName);
 }
 
 void SGCore::ModelAsset::processNode(const aiNode* aiNode,
@@ -323,8 +322,12 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(aiMesh* aiMe
     // if does not have material
     if(aiMesh->mMaterialIndex < 0)
     {
-        sgMeshData->m_material = sgMeshData->getParentAssetManager()->loadAsset<IMaterial>("${enginePath}/Resources/materials/no_material.sgmat");
-        LOG_W(SGCORE_TAG, "Mesh '{}' does not have materials! Default material was applied to this mesh.", Utils::toUTF8(sgMeshData->getPath().resolved().u16string()));
+        sgMeshData->m_material = sgMeshData->getParentAssetManager()->loadAsset<IMaterial>(
+            "${enginePath}/Resources/materials/no_material.sgmat");
+
+        SG_LOG_W("Mesh '{}' does not have materials! Default material was applied to this mesh.",
+                 Utils::toUTF8(sgMeshData->getPath().resolved()));
+
         return sgMeshData;
     }
 
@@ -426,9 +429,9 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(aiMesh* aiMe
         }
     }
 
-    LOG_I(SGCORE_TAG,
+    SG_LOG_I(
           "Current material: {}",
-          Utils::toUTF8(sgMeshData->m_material->getPath().resolved().u16string()));
+          Utils::toUTF8(sgMeshData->m_material->getPath().resolved()));
 
     loadTextures(aiMat, sgMeshData->m_material, aiTextureType_EMISSIVE, SGTextureSlot::SGTT_EMISSIVE);
     loadTextures(aiMat, sgMeshData->m_material, aiTextureType_AMBIENT_OCCLUSION, SGTextureSlot::SGTT_AMBIENT_OCCLUSION);
@@ -515,11 +518,10 @@ void SGCore::ModelAsset::loadTextures(aiMaterial* aiMat,
 
         sgMaterial->findAndAddTexture2D(sgMaterialTextureType, finalPath);
 
-        LOG_I(SGCORE_TAG,
-              "Loaded material`s '{}' texture. Raw type name: '{}', path: {}",
-              aiMat->GetName().data,
-              sgStandardTextureTypeToString(sgMaterialTextureType), Utils::toUTF8(finalPath.resolved().u16string())
-        );
+        SG_LOG_I(
+            "Loaded material`s '{}' texture. Raw type name: '{}', path: {}",
+            aiMat->GetName().data,
+            sgStandardTextureTypeToString(sgMaterialTextureType), Utils::toUTF8(finalPath.resolved()));
     }
 }
 
@@ -559,8 +561,8 @@ std::vector<SGCore::AssetRef<SGCore::Skeleton>> SGCore::ModelAsset::processSkele
 
                 std::cout << "processed new skeleton: " << skeleton->getPath().resolved() << std::endl;
 
-                LOG_I(SGCORE_TAG, "Loaded new skeleton by path '{}'!",
-                      Utils::toUTF8(skeletonPath.resolved().u16string()));
+                SG_LOG_I("Loaded new skeleton by path '{}'!",
+                      Utils::toUTF8(skeletonPath.resolved()));
 
                 AssetRef<Bone> rootBone;
                 initAndAddBoneToSkeleton(rootBone, currentBoneHierarchyNode, bones, skeleton, inputMeshes);
@@ -572,8 +574,8 @@ std::vector<SGCore::AssetRef<SGCore::Skeleton>> SGCore::ModelAsset::processSkele
             {
                 auto skeleton = parentAssetManager->getOrAddAssetByPath<Skeleton>(skeletonPath);
 
-                LOG_W(SGCORE_TAG, "Can not add new skeleton! Skeleton by path '{}' is already exist!",
-                      Utils::toUTF8(skeletonPath.resolved().u16string()));
+                SG_LOG_W("Can not add new skeleton! Skeleton by path '{}' is already exist!",
+                      Utils::toUTF8(skeletonPath.resolved()));
 
                 outputSkeletons.push_back(skeleton);
             }

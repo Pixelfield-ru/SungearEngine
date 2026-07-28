@@ -69,9 +69,9 @@ void SGCore::UI::UIIncludeNodeProcessor::processElement(UIDocument* inDocument,
 
         if(!uiDocument)
         {
-            LOG_E(SGCORE_TAG, "In UI document '{}': can not include XML file by path '{}': this path does not exist.",
+            SG_LOG_E("In UI document '{}': can not include XML file by path '{}': this path does not exist.",
                   Utils::toUTF8(inDocument->getPath().resolved().u16string()),
-                  Utils::toUTF8(resolvedIncludePath.resolved().u16string()))
+                  Utils::toUTF8(resolvedIncludePath.resolved().u16string()));
             return;
         }
 

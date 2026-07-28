@@ -146,7 +146,7 @@ SGE::TopToolbarView::TopToolbarView()
                 pluginLib->unload();
             }*/
 
-            LOG_E(SGCORE_TAG, "BUILDING PROJECT!!!!")
+            SG_LOG_E("BUILDING PROJECT!!!!");
             Toolchain::ProjectSpecific::buildProject(false);
         }
         else if(element->m_ID == "Project/ConfigureAndBuild")
@@ -161,7 +161,7 @@ SGE::TopToolbarView::TopToolbarView()
                 pluginLib->unload();
             }*/
 
-            LOG_E(SGCORE_TAG, "BUILDING PROJECT!!!!")
+            SG_LOG_E("BUILDING PROJECT!!!!");
             Toolchain::ProjectSpecific::buildProject(true);
         }
         else if(element->m_ID == "Project/Run")
@@ -185,7 +185,7 @@ SGE::TopToolbarView::TopToolbarView()
 
             currentEditorProject->m_loadedPlugin->getPlugin()->m_isActive = false;
 
-            // LOG_I(SGEDITOR_TAG, "Loading scene by path '{}'", SGCore::Utils::toUTF8(m_runningScene->m_metaInfo.m_sceneLocalPath.u16string()));
+            // SG_LOG_I("Loading scene by path '{}'", SGCore::Utils::toUTF8(m_runningScene->m_metaInfo.m_sceneLocalPath));
 
             const auto sceneBackup = EditorScene::getCurrentScene()->loadByPath(m_runningScene->m_metaInfo.m_sceneLocalPath.parent_path(), m_runningScene->m_metaInfo.m_sceneName);
             EditorScene::setCurrentScene(sceneBackup);

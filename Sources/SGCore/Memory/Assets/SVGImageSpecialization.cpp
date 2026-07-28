@@ -12,7 +12,7 @@ void SGCore::SVGImageSpecialization::regenerate(std::uint8_t channelsCount,
 {
     if(!m_bitmap.valid())
     {
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Cannot create specialization (with width: '{}', height: '{}'): bitmap was not loaded successfully (not valid).",
               m_bitmap.width(),
               m_bitmap.height());

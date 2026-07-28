@@ -69,7 +69,7 @@ void SGCore::GL4Texture2D::create() noexcept
                     const std::string assertMsg = fmt::format(
                         "Can not create texture with compressed format and target not equals to GL_TEXTURE_2D. "
                         "Texture by path: '{}', texture target: GLenum '{}'.",
-                        Utils::toUTF8(getPath().resolved().u16string()),
+                        Utils::toUTF8(getPath().resolved()),
                         target
                     );
 

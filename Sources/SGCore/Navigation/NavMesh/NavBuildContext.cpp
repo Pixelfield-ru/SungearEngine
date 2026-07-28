@@ -19,13 +19,13 @@ void SGCore::NavBuildContext::doLog(rcLogCategory category, const char* msg, int
     switch(category)
     {
         case RC_LOG_PROGRESS:
-            LOG_I_UNFORMATTED(SGCORE_TAG, strMsg);
+            SG_LOG_I_UNFORMATTED(strMsg);
             break;
         case RC_LOG_WARNING:
-            LOG_W_UNFORMATTED(SGCORE_TAG, strMsg);
+            SG_LOG_W_UNFORMATTED(strMsg);
             break;
         case RC_LOG_ERROR:
-            LOG_E_UNFORMATTED(SGCORE_TAG, strMsg);
+            SG_LOG_E_UNFORMATTED(strMsg);
             break;
     }
 }

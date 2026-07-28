@@ -48,7 +48,7 @@ SGCore::CodeGen::Generator::Generator()
                                           const std::vector<Lang::FunctionArgument>& args) -> std::string {
             if(args.size() != 1)
             {
-                LOG_E(SGCORE_TAG,
+                SG_LOG_E(
                       "Error in CodeGenerator (line: {}): in function 'place': bad count of passed arguments (required: {}, provided: {})",
                       curLine, placeFunc.m_arguments.size(), args.size());
                 // outputValue = false;
@@ -57,7 +57,7 @@ SGCore::CodeGen::Generator::Generator()
 
             if(args[0].m_name != "separator")
             {
-                LOG_E(SGCORE_TAG,
+                SG_LOG_E(
                       "Error in CodeGenerator (line: {}): in function 'place': unknown argument '{}'",
                       curLine, args[0].m_name);
                 return "";
@@ -65,7 +65,7 @@ SGCore::CodeGen::Generator::Generator()
 
             if(args[0].m_acceptableType.m_name != "string")
             {
-                LOG_E(SGCORE_TAG,
+                SG_LOG_E(
                       "Error in CodeGenerator (line: {}): in function 'place': type of argument '{}' is not string",
                       curLine, args[0].m_name);
                 return "";
@@ -118,7 +118,7 @@ SGCore::CodeGen::Generator::Generator()
                                    std::string& outputText, const std::vector<Lang::FunctionArgument>& args) {
             if(args.size() != 1)
             {
-                LOG_E(SGCORE_TAG,
+                SG_LOG_E(
                       "Error in CodeGenerator (line: {}): in function 'equals': bad count of passed arguments (required: {}, provided: {})",
                       curLine, equalsFunc.m_arguments.size(), args.size());
                 // outputValue = false;
@@ -127,7 +127,7 @@ SGCore::CodeGen::Generator::Generator()
 
             if(args[0].m_name != "value")
             {
-                LOG_E(SGCORE_TAG,
+                SG_LOG_E(
                       "Error in CodeGenerator (line: {}): in function 'equals': unknown argument '{}'",
                       curLine, args[0].m_name);
                 return false;
@@ -135,7 +135,7 @@ SGCore::CodeGen::Generator::Generator()
 
             if(args[0].m_acceptableType.m_name != "string")
             {
-                LOG_E(SGCORE_TAG,
+                SG_LOG_E(
                       "Error in CodeGenerator (line: {}): in function 'equals': type of argument '{}' is not string",
                       curLine, args[0].m_name);
                 return false;
@@ -157,7 +157,7 @@ SGCore::CodeGen::Generator::Generator()
                                                   std::string& outputText, const std::vector<Lang::FunctionArgument>& args) {
             if(args.size() != 1)
             {
-                LOG_E(SGCORE_TAG,
+                SG_LOG_E(
                       "Error in CodeGenerator (line: {}): in function 'hasMember': bad count of passed arguments (required: {}, provided: {})",
                       curLine, hasMemberFunc.m_arguments.size(), args.size());
                 // outputValue = false;
@@ -166,7 +166,7 @@ SGCore::CodeGen::Generator::Generator()
 
             if(args[0].m_name != "name")
             {
-                LOG_E(SGCORE_TAG,
+                SG_LOG_E(
                       "Error in CodeGenerator (line: {}): in function 'hasMember': unknown argument '{}'",
                       curLine, args[0].m_name);
                 return false;
@@ -174,7 +174,7 @@ SGCore::CodeGen::Generator::Generator()
 
             if(args[0].m_acceptableType.m_name != "string")
             {
-                LOG_E(SGCORE_TAG,
+                SG_LOG_E(
                       "Error in CodeGenerator (line: {}): in function 'hasMember': type of argument '{}' is not string",
                       curLine, args[0].m_name);
                 return false;
@@ -515,7 +515,7 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                 {
                     // todo: make error that token is not variable
 
-                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: (for cycle) trying to iterate not variable type.")
+                    SG_LOG_E("Error in CodeGenerator: (for cycle) trying to iterate not variable type.");
                     continue;
                 }
 
@@ -523,7 +523,7 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                 {
                     // todo: make error that token is not variable
 
-                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: (for cycle) trying to bind not variable type.")
+                    SG_LOG_E("Error in CodeGenerator: (for cycle) trying to bind not variable type.");
                     continue;
                 }
 
@@ -534,7 +534,7 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                 {
                     // todo: make error that variable does not exist
 
-                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: (for cycle) trying to iterate variable '{}' that does not exist.", tokenAndVariableToForIn.m_token->m_name)
+                    SG_LOG_E("Error in CodeGenerator: (for cycle) trying to iterate variable '{}' that does not exist.", tokenAndVariableToForIn.m_token->m_name);
                     continue;
                 }
 
@@ -542,11 +542,11 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                 {
                     // todo: make error that variable is not instance of iterable
 
-                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: trying to iterate variable '{}' that is not instance of 'iterable'.", tokenAndVariableToForIn.m_token->m_name)
+                    SG_LOG_E("Error in CodeGenerator: trying to iterate variable '{}' that is not instance of 'iterable'.", tokenAndVariableToForIn.m_token->m_name);
                     continue;
                 }
 
-                LOG_I(SGCORE_TAG, "CodeGenerator: iterating variable '{}'...", tokenAndVariableToForIn.m_token->m_name)
+                SG_LOG_I("CodeGenerator: iterating variable '{}'...", tokenAndVariableToForIn.m_token->m_name);
 
                 size_t iterationsCount = tokenAndVariableToForIn.m_variable->membersCount();
 
@@ -557,7 +557,8 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
 
                     token->m_scope[bindableVariableToken->m_name] = elem.second;
 
-                    LOG_I(SGCORE_TAG, "CodeGenerator: iterating variable '{}'. Iteration '{}'. Current member: '{}'", tokenAndVariableToForIn.m_token->m_name, curElemIdx, elem.second->m_name);
+                    SG_LOG_I("CodeGenerator: iterating variable '{}'. Iteration '{}'. Current member: '{}'",
+                             tokenAndVariableToForIn.m_token->m_name, curElemIdx, elem.second->m_name);
                     generateCodeUsingAST(child, outputString);
 
                     ++curElemIdx;
@@ -584,7 +585,7 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                     {
                         if(i != child->m_children.size() - 2)
                         {
-                            LOG_E(SGCORE_TAG, "Error in CodeGenerator: (if branch) 'else' branch is not last in 'if'-'else if' sequence.")
+                            SG_LOG_E("Error in CodeGenerator: (if branch) 'else' branch is not last in 'if'-'else if' sequence.");
                             break;
                         }
 
@@ -623,7 +624,8 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                     std::any funcOutput = processFunctionTokensAndCallFunc(child, tokenAndVar.m_tokenIndex, *tokenAndVar.m_function, outputString);
                     if(!std::any_cast<std::string>(&funcOutput))
                     {
-                        LOG_E(SGCORE_TAG, "Error in CodeGenerator: return type of function '{}' is not 'string' type.", tokenAndVar.m_function->m_name);
+                        SG_LOG_E("Error in CodeGenerator: return type of function '{}' is not 'string' type.",
+                                 tokenAndVar.m_function->m_name);
                         continue;
                     }
 
@@ -948,10 +950,11 @@ SGCore::CodeGen::Generator::getLastVariable(const std::shared_ptr<Lang::ASTToken
                     auto foundFunction = outVariable->getTypeInfo().tryGetFunction(child->m_name);
                     if(!foundMember && !foundFunction)
                     {
-                        LOG_E(SGCORE_TAG, "Error in CodeGenerator: member or function '{}' does not exist in '{}' type (variable: '{}').",
-                              child->m_name,
-                              outVariable->getTypeInfo().m_name,
-                              lastToken->m_name)
+                        SG_LOG_E(
+                            "Error in CodeGenerator: member or function '{}' does not exist in '{}' type (variable: '{}').",
+                            child->m_name,
+                            outVariable->getTypeInfo().m_name,
+                            lastToken->m_name);
                     }
                     else
                     {
@@ -989,7 +992,7 @@ SGCore::CodeGen::Generator::getLastVariable(const std::shared_ptr<Lang::ASTToken
 
     if(isDotWas)
     {
-        LOG_E(SGCORE_TAG, "Error in CodeGenerator: unknown member variable ''. (DOT token found but VAR token was not found after DOT)")
+        SG_LOG_E("Error in CodeGenerator: unknown member variable ''. (DOT token found but VAR token was not found after DOT)");
         outToken = nullptr;
         outVariable = nullptr;
     }
@@ -1048,7 +1051,7 @@ std::any SGCore::CodeGen::Generator::processFunctionTokensAndCallFunc(const std:
                 auto scopeVariable = inToken->getScopeVariable(curFuncToken->m_cppCode);
                 if(!scopeVariable)
                 {
-                    LOG_E(SGCORE_TAG,
+                    SG_LOG_E(
                           "Error in CodeGenerator: unknown scope variable '{}' in function argument '{}'.",
                           curFuncToken->m_name, currentArgToken->m_name);
                     continue;
@@ -1073,7 +1076,7 @@ std::any SGCore::CodeGen::Generator::processFunctionTokensAndCallFunc(const std:
             {
                 if(currentArgToken)
                 {
-                    LOG_E(SGCORE_TAG, "Error in CodeGenerator (in function call): unknown token with name '{}'.", curFuncToken->m_name);
+                    SG_LOG_E("Error in CodeGenerator (in function call): unknown token with name '{}'.", curFuncToken->m_name);
                 }
             }
         }
@@ -1081,7 +1084,7 @@ std::any SGCore::CodeGen::Generator::processFunctionTokensAndCallFunc(const std:
 
     if(!lparenFound || !rparenFound)
     {
-        LOG_E(SGCORE_TAG, "Error in CodeGenerator: in function '{}': parens mismatch.", callableFunction.m_name);
+        SG_LOG_E("Error in CodeGenerator: in function '{}': parens mismatch.", callableFunction.m_name);
     }
 
     if(auto lockedParentLockedVar = callableFunction.m_parentVariable.lock())
@@ -1117,7 +1120,7 @@ bool SGCore::CodeGen::Generator::analyzeIf(const std::shared_ptr<Lang::ASTToken>
             // if found variable is not variable type (maybe some keyword ('for', 'if' or something else))
             if(variableFindResult.m_token->m_type != Lang::Tokens::K_VAR)
             {
-                LOG_E(SGCORE_TAG, "Error in CodeGenerator: (if branch) trying to test variable that is not variable type (maybe keyword).");
+                SG_LOG_E("Error in CodeGenerator: (if branch) trying to test variable that is not variable type (maybe keyword).");
                 // dot not parse further expression
                 return false;
             }
@@ -1131,7 +1134,7 @@ bool SGCore::CodeGen::Generator::analyzeIf(const std::shared_ptr<Lang::ASTToken>
                 // if type of variable is not bool
                 if(variableFindResult.m_variable->getTypeInfo().m_name != "bool")
                 {
-                    LOG_E(SGCORE_TAG,
+                    SG_LOG_E(
                           "Error in CodeGenerator: (if branch) trying to test variable that is not boolean type.");
                     // dot not parse further expression
                     return false;
@@ -1154,7 +1157,7 @@ bool SGCore::CodeGen::Generator::analyzeIf(const std::shared_ptr<Lang::ASTToken>
 
                 if(!funcOutputBool)
                 {
-                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: return type of function '{}' is not 'bool' type.",
+                    SG_LOG_E("Error in CodeGenerator: return type of function '{}' is not 'bool' type.",
                           variableFindResult.m_function->m_name);
 
                     // dot not parse further expression
@@ -1171,7 +1174,7 @@ bool SGCore::CodeGen::Generator::analyzeIf(const std::shared_ptr<Lang::ASTToken>
             }
             else
             {
-                LOG_E(SGCORE_TAG, "Error in CodeGenerator: unknown variable.");
+                SG_LOG_E("Error in CodeGenerator: unknown variable.");
 
                 // dot not parse further expression
                 return false;

@@ -25,7 +25,7 @@ void SGCore::UI::UITemplateNodeProcessor::processElement(UIDocument* inDocument,
     }
     else
     {
-        LOG_W(SGCORE_TAG, "XML template element must have name attribute.")
+        SG_LOG_W("XML template element must have name attribute.");
     }
     /*auto nameAttrib = elementNode.find_attribute([](const pugi::xml_attribute& attribute) {
         return attribute.name() == std::string("name");
@@ -40,10 +40,10 @@ void SGCore::UI::UITemplateNodeProcessor::processElement(UIDocument* inDocument,
 
             if(!attribNameAttrib)
             {
-                LOG_W(SGCORE_TAG,
+                SG_LOG_W(
                       "In UI document by path '{}': attribute of template '{}' must have name",
                       SGCore::Utils::toUTF8(inDocument->getPath().resolved().u16string()),
-                      templateElement->m_name)
+                      templateElement->m_name);
                 continue;
             }
 

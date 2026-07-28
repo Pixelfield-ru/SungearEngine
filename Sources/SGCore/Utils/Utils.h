@@ -312,6 +312,11 @@ namespace SGCore
             }
         }
 
+        static std::string toUTF8(const std::filesystem::path& path)
+        {
+            return toUTF8(path.u16string());
+        }
+
         template<typename T>
         static void fromUTF8(const std::string& source, std::basic_string<T>& result)
         {

@@ -15,11 +15,11 @@ ShaderAnalyzedFile* toAnalyzedFile) noexcept
     const std::string preprocessedCode = preprocessorPass(path, code);
     // std::cout << preprocessedCode << std::endl;
 
-    // LOG_I(SGCORE_TAG, "SGSLETranslator preprocessed code:\n{}", preprocessedCode)
+    // SG_LOG_I("SGSLETranslator preprocessed code:\n{}", preprocessedCode)
 
     translateCode(path, preprocessedCode, toAnalyzedFile);
 
-    std::string savePath = Utils::toUTF8(path.u16string());
+    std::string savePath = Utils::toUTF8(path);
 
     std::replace(savePath.begin(), savePath.end(), '/', '_');
     std::replace(savePath.begin(), savePath.end(), '\\', '_');
@@ -46,7 +46,7 @@ ShaderAnalyzedFile* toAnalyzedFile) noexcept
         std::uniform_int_distribution<> distrib(1, 1'000'000);
 
         const auto compiledShaderPath = std::filesystem::path(m_config.m_outputDebugDirectoryPath) / (savePath + "_" + subShaderType + ".shader");
-        LOG_I(SGCORE_TAG, "Path of compiled shader cache: '{}'", Utils::toUTF8(compiledShaderPath.u16string()))
+        SG_LOG_I("Path of compiled shader cache: '{}'", Utils::toUTF8(compiledShaderPath));
         FileUtils::writeToFile(compiledShaderPath, s.getCode(), false, true);
     }
 }
@@ -142,12 +142,12 @@ std::string SGCore::SGSLETranslator::preprocessorPass(const std::filesystem::pat
                                                                       includedFilePair.first.begin(),
                                                                       includedFilePair.first.end()
                                                               )
-                            ).u16string());
+                            ));
 
                     // finally trying to include file near the current file
                     if(!std::filesystem::exists(includedFilePath))
                     {
-                        includedFilePath = SGCore::Utils::getRealPath(Utils::toUTF8((path.parent_path() / includedFilePair.first).u16string()));
+                        includedFilePath = SGCore::Utils::getRealPath(Utils::toUTF8((path.parent_path() / includedFilePair.first)));
                     }
                 }
 
@@ -159,7 +159,7 @@ std::string SGCore::SGSLETranslator::preprocessorPass(const std::filesystem::pat
 
                 if(!m_includedPaths.contains(includedFilePath))
                 {
-                    const auto includedFile = AssetManager::getInstance()->loadAsset<TextFileAsset>(includedFilePath.u16string());
+                    const auto includedFile = AssetManager::getInstance()->loadAsset<TextFileAsset>(includedFilePath);
 
                     if(includedFile)
                     {
@@ -168,7 +168,7 @@ std::string SGCore::SGSLETranslator::preprocessorPass(const std::filesystem::pat
                             includedFile->reloadFromDisk();
                         }
 
-                        LOG_I(SGCORE_TAG, "Including path: '{}'", Utils::toUTF8(includedFilePath.u16string()));
+                        SG_LOG_I("Including path: '{}'", Utils::toUTF8(includedFilePath));
 
                         outputCode += preprocessorPass(includedFilePath, includedFile->getData());
 
@@ -176,9 +176,9 @@ std::string SGCore::SGSLETranslator::preprocessorPass(const std::filesystem::pat
                     }
                     else
                     {
-                        LOG_E(SGCORE_TAG, "SGSLE PREPROCESSING: In file '{}': error including file by path '{}': this file does not exist!",
-                              Utils::toUTF8(path.u16string()),
-                              Utils::toUTF8(includedFilePath.u16string()));
+                        SG_LOG_E("SGSLE PREPROCESSING: In file '{}': error including file by path '{}': this file does not exist!",
+                              Utils::toUTF8(path),
+                              Utils::toUTF8(includedFilePath));
                     }
                 }
 
@@ -238,18 +238,18 @@ ShaderAnalyzedFile* toAnalyzedFile) noexcept
             auto wordPair = readWord(i, code);
             const auto word = Utils::trim(wordPair.first, std::string(" \t\n\r\f\v"));
             const auto& wordOffset = wordPair.second;
-            // LOG_I(SGCORE_TAG, "SGSLETranslator: got word '{}'", word)
+            // SG_LOG_I("SGSLETranslator: got word '{}'", word)
 
             // trying to process shader type directives
             {
                 if(word == "#vertex")
                 {
-                    // LOG_I(SGCORE_TAG, "SGSLETranslator: got vertex shader")
+                    // SG_LOG_I("SGSLETranslator: got vertex shader")
                     curSubShaderType = SGSLESubShaderType::SST_VERTEX;
                 }
                 else if(word == "#fragment")
                 {
-                    // LOG_I(SGCORE_TAG, "SGSLETranslator: got fragment shader")
+                    // SG_LOG_I("SGSLETranslator: got fragment shader")
                     curSubShaderType = SGSLESubShaderType::SST_FRAGMENT;
                 }
                 else if(word == "#geometry")
@@ -279,13 +279,14 @@ ShaderAnalyzedFile* toAnalyzedFile) noexcept
                 {
                     if(currentSubShader)
                     {
-                        LOG_E(SGCORE_TAG, "The declaration of a new SubShader was met (decl: '{}'),"
-                                          " but the previous SubShader was not completed with the #end directive. Translation aborted.", word);
+                        SG_LOG_E("The declaration of a new SubShader was met (decl: '{}'),"
+                                 " but the previous SubShader was not completed with the #end directive. Translation aborted.",
+                                 word);
 
                         break;
                     }
 
-                    // LOG_I(SGCORE_TAG, "SGSLETranslator: got subshader with type '{}'", std::to_underlying(curSubShaderType))
+                    // SG_LOG_I("SGSLETranslator: got subshader with type '{}'", std::to_underlying(curSubShaderType))
 
                     metSubShaders.insert(curSubShaderType);
 
@@ -352,7 +353,7 @@ ShaderAnalyzedFile* toAnalyzedFile) noexcept
         {
             if(!metSubShaders.contains(it->m_type))
             {
-                // LOG_I(SGCORE_TAG, "SGSLETranslator: removing subshader with type '{}'", std::to_underlying(it->m_type))
+                // SG_LOG_I("SGSLETranslator: removing subshader with type '{}'", std::to_underlying(it->m_type))
                 it = toAnalyzedFile->m_subShaders.erase(it);
             }
             else
@@ -364,12 +365,12 @@ ShaderAnalyzedFile* toAnalyzedFile) noexcept
 
     if(toAnalyzedFile->m_subPassName.empty())
     {
-        LOG_E(SGCORE_TAG, "SGSLE ERROR: #subpass is required for shader by path '{}'.", Utils::toUTF8(path.u16string()));
+        SG_LOG_E("SGSLE ERROR: #subpass is required for shader by path '{}'.", Utils::toUTF8(path));
     }
     else
     {
-        LOG_I(SGCORE_TAG, "SGSLE: Translated shader by path '{}'. Shader is using subpass '{}'.",
-              Utils::toUTF8(path.u16string()), toAnalyzedFile->m_subPassName);
+        SG_LOG_I("SGSLE: Translated shader by path '{}'. Shader is using subpass '{}'.",
+                 Utils::toUTF8(path), toAnalyzedFile->m_subPassName);
     }
 }
 
@@ -464,14 +465,16 @@ SGCore::SGSLETranslator::findRealIncludePath(const std::filesystem::path& origin
     for(const auto& includedDir : s_includedDirectories)
     {
         finalIncludedFilePath = includedDir / originalIncludePath;
-        finalIncludedFilePath = SGCore::Utils::getRealPath(SGCore::Utils::toUTF8(finalIncludedFilePath.u16string()));
+        finalIncludedFilePath = Utils::getRealPath(Utils::toUTF8(finalIncludedFilePath));
         if(std::filesystem::exists(finalIncludedFilePath)) break;
     }
 
     if(finalIncludedFilePath == "unknown")
     {
-        LOG_E(SGCORE_TAG, "SGSLE PROCESSOR: can not find real include path for path '{}'. Check that you include all needed directories using function 'includeDirectory'.",
-              SGCore::Utils::toUTF8(originalIncludePath.u16string()));
+        SG_LOG_E(
+            "SGSLE PROCESSOR: can not find real include path for path '{}'. Check that you include all needed directories using function 'includeDirectory'.",
+            SGCore::Utils::toUTF8(originalIncludePath));
+
         return originalIncludePath;
     }
 

@@ -27,7 +27,7 @@ SGCore::PluginProject SGCore::PluginsManager::createPluginProject(const std::fil
                                                                   const std::string& cxxStandard,
                                                                   std::string& error)
 {
-    const std::string u8Path = Utils::toUTF8(projectPath.u16string());
+    const std::string u8Path = Utils::toUTF8(projectPath);
 
     PluginProject pluginProject;
     pluginProject.m_pluginPath = u8Path + '/' + pluginName;
@@ -160,7 +160,7 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
                                    const std::vector<std::string>& entryArgs,
                                    const std::string& cmakeBuildDir)
 {
-    const std::string u8Path = Utils::toUTF8(localPluginPath.u16string());
+    const std::string u8Path = Utils::toUTF8(localPluginPath);
 
     const auto& sep = (char) std::filesystem::path::preferred_separator;
     
@@ -176,8 +176,10 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
         
         if(loadedPlugin->getPlugin()->m_path != localPluginPath)
         {
-            LOG_W(SGCORE_TAG, "Warning: Plugin '{}' (ver. {}) has other path. Requested local load path: '{}', plugin cached path: '{}'.",
-                  pluginName, loadedPlugin->m_plugin->m_version, u8Path, Utils::toUTF8(loadedPlugin->getPlugin()->m_path.u16string()));
+            SG_LOG_W(
+                "Warning: Plugin '{}' (ver. {}) has other path. Requested local load path: '{}', plugin cached path: '{}'.",
+                pluginName, loadedPlugin->m_plugin->m_version, u8Path,
+                Utils::toUTF8(loadedPlugin->getPlugin()->m_path));
         }
     }
     else
@@ -193,7 +195,8 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
         
         if(!pluginDL->getNativeHandler())
         {
-            LOG_E(SGCORE_TAG, "Cannot load plugin '{}' by path '{}'. Error is: {}", pluginName, Utils::toUTF8(pluginDLPath.u16string()), dlErr);
+            SG_LOG_E("Cannot load plugin '{}' by path '{}'. Error is: {}", pluginName, Utils::toUTF8(pluginDLPath),
+                     dlErr);
             return nullptr;
         }
         
@@ -202,7 +205,8 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
         
         if(!pluginEntry)
         {
-            LOG_E(SGCORE_TAG, "Cannot load plugin '{}' main function by path '{}'. Error is: {}", pluginName, Utils::toUTF8(pluginDLPath.u16string()), dlEntryErr);
+            SG_LOG_E("Cannot load plugin '{}' main function by path '{}'. Error is: {}", pluginName,
+                     Utils::toUTF8(pluginDLPath), dlEntryErr);
             return nullptr;
         }
         
@@ -212,7 +216,7 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
         loadedPlugin->m_plugin->onConstruct(entryArgs);
         loadedPlugin->m_pluginLib = pluginDL;
 
-        LOG_I(SGCORE_TAG, "Loaded plugin '{}'.", pluginName);
+        SG_LOG_I("Loaded plugin '{}'.", pluginName);
 
         m_plugins.push_back(loadedPlugin);
     }
@@ -233,7 +237,7 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
 
     if(foundIt == m_plugins.end())
     {
-        LOG_E(SGCORE_TAG, "Cannot reload plugin: The plugin '{}' has not been loaded before.", pluginName);
+        SG_LOG_E("Cannot reload plugin: The plugin '{}' has not been loaded before.", pluginName);
 
         return nullptr;
     }
@@ -253,7 +257,7 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
 
     if(!loadedPlugin->m_pluginLib->getNativeHandler())
     {
-        LOG_E(SGCORE_TAG, "Cannot reload plugin '{}' by path '{}'. Error is: {}", pluginName, Utils::toUTF8(pluginDLPath.u16string()), dlErr);
+        SG_LOG_E("Cannot reload plugin '{}' by path '{}'. Error is: {}", pluginName, Utils::toUTF8(pluginDLPath), dlErr);
         return nullptr;
     }
 
@@ -262,7 +266,7 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
 
     if(!pluginEntry)
     {
-        LOG_E(SGCORE_TAG, "Cannot reload plugin '{}' main function. Error is: {}", pluginName, dlEntryErr);
+        SG_LOG_E("Cannot reload plugin '{}' main function. Error is: {}", pluginName, dlEntryErr);
         return nullptr;
     }
 

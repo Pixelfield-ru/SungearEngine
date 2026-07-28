@@ -258,7 +258,7 @@ void SGCore::UI::CSSStyle::copy(CSSStyle& to) const noexcept
 
 void SGCore::UI::CSSStyle::doLoad(const InterpolatedPath& path)
 {
-    LOG_NOT_SUPPORTED_FUNC(SGCORE_TAG);
+    SG_LOG_NOT_SUPPORTED_FUNC();
 }
 
 void SGCore::UI::CSSStyle::doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept
@@ -269,5 +269,5 @@ void SGCore::UI::CSSStyle::doLoadFromBinaryFile(AssetManager* parentAssetManager
 void SGCore::UI::CSSStyle::doReloadFromDisk(AssetsLoadPolicy loadPolicy,
                                                Ref<Threading::Thread> lazyLoadInThread) noexcept
 {
-    LOG_NOT_SUPPORTED_FUNC(SGCORE_TAG);
+    SG_LOG_NOT_SUPPORTED_FUNC();
 }

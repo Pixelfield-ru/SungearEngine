@@ -83,7 +83,7 @@ SGCore::Net::RUDPStream::RUDPStream() noexcept
         const auto reliableStreamIt = m_reliableStreams.find(senderSessionID);
         if(reliableStreamIt == m_reliableStreams.end())
         {
-            LOG_E(SGCORE_TAG, "Unknown sender: {}", senderSessionID);
+            SG_LOG_E("Unknown sender: {}", senderSessionID);
             return;
         }
 
@@ -114,7 +114,7 @@ void SGCore::Net::RUDPStream::receive(strand_t& strand) noexcept
         m_socket->async_receive_from(boost::asio::buffer(m_recvBuffer), m_receiveEndpoint, [this, &strand](const boost::system::error_code& error, std::size_t bufferSize) {
             if(error)
             {
-                LOG_E(SGCORE_TAG, "Cannot read data from {}. Error is: {}", m_receiveEndpoint.address().to_string(), error.what());
+                SG_LOG_E("Cannot read data from {}. Error is: {}", m_receiveEndpoint.address().to_string(), error.what());
 
                 return;
             }
@@ -132,7 +132,7 @@ void SGCore::Net::RUDPStream::receive(strand_t& strand) noexcept
             auto registeredTypeIt = registeredDataTypes.find(dataTypeHash);
             if(registeredTypeIt == registeredDataTypes.end())
             {
-                LOG_E(SGCORE_TAG, "Unknown message type: {}", dataTypeHash);
+                SG_LOG_E("Unknown message type: {}", dataTypeHash);
                 return;
             }
 
@@ -145,7 +145,7 @@ void SGCore::Net::RUDPStream::receive(strand_t& strand) noexcept
             std::memcpy(factFooter, m_recvBuffer.data() + sizeof(dataTypeHash) + sizeof(sessionID) + registeredTypeSize, 4);
             if(std::memcmp(factFooter, footer, 4) != 0)
             {
-                LOG_E(SGCORE_TAG, "Broken packet.");
+                SG_LOG_E("Broken packet.");
                 return;
             }
 
@@ -159,7 +159,7 @@ void SGCore::Net::RUDPStream::receive(strand_t& strand) noexcept
                     // unauthorized
                     if(registeredType.m_authRequired)
                     {
-                        LOG_E(SGCORE_TAG, "Unauthorized. Message type: {}. Sender session: {}", dataTypeHash, sessionID);
+                        SG_LOG_E("Unauthorized. Message type: {}. Sender session: {}", dataTypeHash, sessionID);
                         return;
                     }
                 }
@@ -182,7 +182,7 @@ void SGCore::Net::RUDPStream::receive(strand_t& strand) noexcept
             Packet pureData {};
             std::memcpy(pureData.data(), m_recvBuffer.data() + sizeof(dataTypeHash) + sizeof(sessionID), registeredTypeSize);
 
-            // LOG_I(SGCORE_TAG, "Got packet with type ID '{}', from {}", dataTypeHash, sessionID);
+            // SG_LOG_I("Got packet with type ID '{}', from {}", dataTypeHash, sessionID);
 
             if(registeredType.onReceive)
             {
@@ -205,7 +205,7 @@ void SGCore::Net::RUDPStream::sendPacket(const Ref<Packet>& packet, const endpoi
     m_socket->async_send_to(boost::asio::buffer(*packet), targetEndpoint, [targetEndpoint, packet](boost::system::error_code errorCode, size_t bufferSize) {
         if(errorCode)
         {
-            LOG_E(SGCORE_TAG, "Cannot send packet with size {} to client {}", bufferSize, targetEndpoint.address().to_string());
+            SG_LOG_E("Cannot send packet with size {} to client {}", bufferSize, targetEndpoint.address().to_string());
         }
     });
 }

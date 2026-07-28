@@ -33,7 +33,7 @@ SGCore::UI::FontSpecialization::FontSpecialization()
 
 void SGCore::UI::FontSpecialization::saveAtlasAsTexture(const std::filesystem::path& path) const noexcept
 {
-    stbi_write_png(Utils::toUTF8(path.u16string()).c_str(), m_atlasTexture->getWidth(), m_atlasTexture->getHeight(), m_atlasTexture->m_channelsCount,
+    stbi_write_png(Utils::toUTF8(path).c_str(), m_atlasTexture->getWidth(), m_atlasTexture->getHeight(), m_atlasTexture->m_channelsCount,
                    m_atlasTexture->getData(), m_atlasTexture->m_channelsCount * m_maxAtlasWidth);
 }
 
@@ -48,7 +48,7 @@ void SGCore::UI::FontSpecialization::parse(const uint32_t& from, const uint32_t&
 {
     if(!m_usedFont)
     {
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Can not load bunch of characters in font specialization with settings: name: '{}', height: {}. Parent font is nullptr!",
               m_settings.m_name,
               m_settings.m_height);
@@ -70,7 +70,7 @@ void SGCore::UI::FontSpecialization::parse(const std::vector<uint32_t>& characte
 {
     if(!m_usedFont)
     {
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Can not load bunch of characters in font specialization with settings: name: '{}', height: {}. Parent font is nullptr!",
               m_settings.m_name,
               m_settings.m_height);
@@ -92,7 +92,7 @@ bool SGCore::UI::FontSpecialization::parse(const uint32_t& character) noexcept
 {
     if(!m_usedFont)
     {
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Can not load character '{}' in font specialization with settings: name: '{}', height: {}. Parent font is nullptr!",
               character,
               m_settings.m_name,
@@ -128,7 +128,7 @@ void SGCore::UI::FontSpecialization::createAtlas() noexcept
 
         if(!m_geometry.loadCharset(m_usedFont->getFontHandler(), 1, m_charset))
         {
-            LOG_E(SGCORE_TAG,
+            SG_LOG_E(
                   "Can not load bunch of characters in font specialization with settings: name: '{}', height: {}. Character was not found in font!",
                   m_settings.m_name,
                   m_settings.m_height);

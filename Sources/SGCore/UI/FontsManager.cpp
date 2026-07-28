@@ -15,7 +15,7 @@ SGCore::UI::FontsManager::FontsManager() noexcept
     m_FTLib = msdfgen::initializeFreetype();
     if(!m_FTLib)
     {
-        LOG_E(SGCORE_TAG, "Could not init FreeType! Error code is hidden in msdf-atlas-gen :)!");
+        SG_LOG_E("Could not init FreeType! Error code is hidden in msdf-atlas-gen :)!");
         return;
     }
 

@@ -244,7 +244,7 @@ void SGE::SceneView::renderBody()
                     m_entitiesManipulator.m_isWholeModelPicking = true;
                 }
 
-                LOG_I(SGEDITOR_TAG, "ENTITY PICKING: Mouse pos x = '{}', y = '{}'. Picked entity: '{}'",
+                SG_LOG_I("ENTITY PICKING: Mouse pos x = '{}', y = '{}'. Picked entity: '{}'",
                       mouseRelativePos.x,
                       mouseRelativePos.y,
                       std::to_underlying(pickedEntity));
@@ -371,14 +371,14 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
 
     if(!modelAsset)
     {
-        LOG_E(SGEDITOR_TAG, "Can not drop model asset on scene: can not load model asset by path '{}'",
+        SG_LOG_E(SGEDITOR_TAG, "Can not drop model asset on scene: can not load model asset by path '{}'",
               SGCore::Utils::toUTF8(modelPath.u16string()));
         return;
     }
 
     if(!modelAsset->m_rootNode)
     {
-        LOG_E(SGEDITOR_TAG, "Can not drop model asset on scene: model by path '{}' does not have nodes.",
+        SG_LOG_E(SGEDITOR_TAG, "Can not drop model asset on scene: model by path '{}' does not have nodes.",
               SGCore::Utils::toUTF8(modelPath.u16string()));
         return;
     }

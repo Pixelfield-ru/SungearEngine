@@ -477,13 +477,14 @@ void SGCore::Batch::insertEntityImpl(ECS::entity_t entity, const ECS::registry_t
                     m_atlas.findBestRect({ texture->getWidth(), texture->getHeight() }, rect, textureHash);
                     m_usedTextures[textureHash] = texture;
 
-                    std::cout << fmt::format("adding texture to atlas: texture type: {}, rect pos: {}, {}, rect size: {}, {}, texture path: '{}'",
+                    SG_LOG_I(
+                        "Adding texture to atlas: texture type: {}, rect pos: {}, {}, rect size: {}, {}, texture path: '{}'",
                         sgStandardTextureTypeToString(textureType),
                         rect.x,
                         rect.y,
                         rect.w,
                         rect.h,
-                        Utils::toUTF8(texture->getPath().resolved().u16string())) << std::endl;
+                        Utils::toUTF8(texture->getPath().resolved()));
                 }
 
                 rect = *m_atlas.getRectByHash(textureHash);

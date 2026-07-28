@@ -23,12 +23,8 @@ static void sgAssert(const char* exprStr, bool expr, const char* file, int line,
 {
     if(!expr)
     {
-        const std::string finalMsg = fmt::format("Assert failed:\t {}\nExpected:\t{}\nSource:\t\t{}, line: {}\n",
-                                                 msg, exprStr, file, line);
-
-        std::cerr << finalMsg;
-
-        LOG_C_UNFORMATTED(SGCORE_TAG, finalMsg);
+        SG_LOG_C("Assert failed:\t {}\nExpected:\t{}\nSource:\t\t{}, line: {}\n",
+                 msg, exprStr, file, line);
 
         abort();
     }

@@ -383,7 +383,7 @@ namespace SGCore::Serde
         // getting EntityBaseInfo of current entity to add all children entities
         auto& entityBaseInfo = toRegistry.get<EntityBaseInfo>(entity);
 
-        LOG_I(SGCORE_TAG, "Loading entity: {}", std::to_underlying(*valueView.m_data));
+        SG_LOG_I("Loading entity: {}", std::to_underlying(*valueView.m_data));
 
         // trying to load standard components ===============================================
         // ==================================================================================
@@ -486,7 +486,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                LOG_D(SGCORE_TAG, "Atmosphere component deserializing");
+                SG_LOG_D("Atmosphere component deserializing");
                 toRegistry.emplace<Atmosphere>(entity, std::move(*component));
             }
         }
@@ -497,7 +497,7 @@ namespace SGCore::Serde
 
             if(component)
             {
-                LOG_D(SGCORE_TAG, "Mesh component deserializing");
+                SG_LOG_D("Mesh component deserializing");
                 toRegistry.emplace<Mesh>(entity, std::move(*component));
             }
         }
@@ -691,7 +691,7 @@ namespace SGCore::Serde
         {
             for(auto child : *children)
             {
-                LOG_I(SGCORE_TAG, "Adding child entity '{}' to parent entity '{}'...", std::to_underlying(child), std::to_underlying(entity));
+                SG_LOG_I("Adding child entity '{}' to parent entity '{}'...", std::to_underlying(child), std::to_underlying(entity));
                 entityBaseInfo.addChild(child, toRegistry);
             }
         }
@@ -707,8 +707,6 @@ namespace SGCore::Serde
         auto entitiesView = valueView.m_data->template view<EntityBaseInfo>();
         for(const auto& entity : entitiesView)
         {
-            LOG_I(SGCORE_TAG, "Trying to save entity '{}'", std::to_underlying(entity))
-
             // if entity has component 'NonSavable' then skipping this entity
             if(serializableScene.getECSRegistry()->anyOf<NonSavable>(entity)) continue;
 
@@ -722,7 +720,6 @@ namespace SGCore::Serde
                 continue;
             }
 
-            LOG_I(SGCORE_TAG, "Saving ROOT entity '{}'", std::to_underlying(entity))
             valueView.container().pushBack(entity, serializableScene);
         }
 
@@ -732,11 +729,10 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<ECS::registry_t, TFormatType>::deserialize(DeserializableValueView<ECS::registry_t, TFormatType>& valueView, Scene& serializableScene) noexcept
     {
-        LOG_I(SGCORE_TAG, "Loading registry...")
+        SG_LOG_I("Loading registry...");
 
         for(auto entityIt = valueView.container().begin(); entityIt != valueView.container().end(); ++entityIt)
         {
-            LOG_I(SGCORE_TAG, "Trying to deserialize entity...")
             // deserializing entity and passing registry to getMember to put entity in scene
             valueView.container().template getMember<ECS::entity_t>(entityIt, serializableScene);
         }
@@ -775,7 +771,7 @@ namespace SGCore::Serde
             const auto system = valueView.container().template getMember<Ref<ISystem>>(systemsIt);
             if(system)
             {
-                LOG_D(SGCORE_TAG, "LOADING SYSTEM {}", std::string(typeid(**system).name()));
+                SG_LOG_D("Loading system '{}'", std::string(typeid(**system).name()));
 
                 valueView.m_data->emplace_back(std::move(*system));
             }

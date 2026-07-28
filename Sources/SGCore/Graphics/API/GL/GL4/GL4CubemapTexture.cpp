@@ -16,7 +16,7 @@ void SGCore::GL4CubemapTexture::create()
     std::uint8_t currentPartId = 0;
     for(auto& part : m_parts)
     {
-        LOG_I(SGCORE_TAG, "Adding cubemap part '{}'", currentPartId)
+        SG_LOG_I("Adding cubemap part '{}'", currentPartId);
 
         // all parts must be loaded at this time
         if(!part)
@@ -56,7 +56,7 @@ void SGCore::GL4CubemapTexture::subTextureDataOnGAPISide(const std::uint8_t* dat
               fmt::format("OPENGL: Can not do subTextureDataOnGAPISide(...) for cubemap texture: not supported now.\n"
                   "Texture path: '{}'\n"
                   "Texture alias: '{}'",
-                  Utils::toUTF8(getPath().resolved().u16string()),
+                  Utils::toUTF8(getPath().resolved()),
                   getAlias()).c_str());
 }
 

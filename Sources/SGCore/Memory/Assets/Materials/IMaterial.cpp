@@ -24,7 +24,7 @@ void SGCore::IMaterial::doLoad(const InterpolatedPath& path)
     Serde::Serializer::fromFormat(FileUtils::readFile(path.resolved()), *this, deserLog);
     if(!deserLog.empty())
     {
-        LOG_E(SGCORE_TAG, "Material loading (path: '{}') error: {}", Utils::toUTF8(path.resolved().u16string()), deserLog);
+        SG_LOG_E("Material loading (path: '{}') error: {}", Utils::toUTF8(path.resolved()), deserLog);
     }
 }
 
@@ -140,7 +140,7 @@ void SGCore::IMaterial::onMemberAssetsReferencesResolveImpl(AssetManager* update
         {
             auto& texture = textures[j];
 
-            LOG_I(SGCORE_TAG, "Resolving texture for IMaterial. Texture type: '{}'", i);
+            SG_LOG_I("Resolving texture for IMaterial. Texture type: '{}'", i);
             AssetManager::resolveAssetReference(updatedAssetManager, texture);
         }
     }
@@ -149,7 +149,7 @@ void SGCore::IMaterial::onMemberAssetsReferencesResolveImpl(AssetManager* update
     {
         // if(!shader) continue;
 
-        LOG_I(SGCORE_TAG, "Resolving SHADER for IMaterial. Shader tag: '{}'", tag);
+        SG_LOG_I("Resolving SHADER for IMaterial. Shader tag: '{}'", tag);
         AssetManager::resolveAssetReference(updatedAssetManager, shader);
     }
 }

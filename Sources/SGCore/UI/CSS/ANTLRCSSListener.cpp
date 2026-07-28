@@ -88,7 +88,7 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
 
     if(!m_currentStyle)
     {
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "ANTLRCSSListener ERROR: can not enter the known declaration without entering "
               "the selector (declaration of property was found but selector was not found). In CSS file: '{}'",
               Utils::toUTF8(m_toCSSFile->getPath().resolved().u16string()));
@@ -234,7 +234,9 @@ void SGCore::UI::ANTLRCSSListener::resolvePseudos() noexcept
         auto selector = m_toCSSFile->findStyle(pseudo->m_selector);
         if(!selector)
         {
-            LOG_W(SGCORE_TAG, "SGCore::UI::ANTLRCSSListener::resolvePseudos: cannot resolve pseudo '{}' for selector '{}': this selector does not exist.", pseudo->m_pseudoClass, pseudo->m_selector);
+            SG_LOG_W(
+                "SGCore::UI::ANTLRCSSListener::resolvePseudos: cannot resolve pseudo '{}' for selector '{}': this selector does not exist.",
+                pseudo->m_pseudoClass, pseudo->m_selector);
             continue;
         }
 
@@ -364,7 +366,7 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
                     newNumberNode->m_value = std::stof(asExpr->calcOperand(i)->calcValue()->unknownDimension()->UnknownDimension()->getText());
                     newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_PX;
 
-                    LOG_W(SGCORE_TAG,
+                    SG_LOG_W(
                           "ANTLRCSSListener calculation processing warning: calculation "
                           "expression has unknown dimension: '{}'. Note: The default qualifier ('px') "
                           "is assigned to the operand.\nIn CSS file: '{}'",
@@ -438,7 +440,7 @@ void SGCore::UI::ANTLRCSSListener::printInvalidCountOfTermsInPropertyError(const
         finalValidTermsMaxCount = validTermsMinCount;
     }
 
-    LOG_E(SGCORE_TAG,
+    SG_LOG_E(
           "ANTLRCSSListener can not process property '{}' correctly: property has invalid count of terms in section 'value'. "
           "Property has been set to the default value. "
           "Count of terms: '{}'. "
@@ -466,7 +468,7 @@ void SGCore::UI::ANTLRCSSListener::printInvalidCountOfOperatorsInPropertyError(c
         finalValidOperatorsMaxCount = validOperatorsMinCount;
     }
 
-    LOG_E(SGCORE_TAG,
+    SG_LOG_E(
           "ANTLRCSSListener can not process property '{}' correctly: property has invalid count of operators in section 'value'. "
           "Property has been set to the default value. "
           "Count of operators: '{}'. "
@@ -487,7 +489,7 @@ SGCore::UI::ANTLRCSSListener::printBadTermInPropertyError(const std::string& pro
                                                           const std::string& termValue,
                                                           const std::string& defaultSetKeyword) const noexcept
 {
-    LOG_E(SGCORE_TAG,
+    SG_LOG_E(
           "ANTLRCSSListener can not process property '{}' correctly: property has invalid term in section 'value'. "
           "Property has been set to the default value. "
           "Term index: '{}'. Term value: '{}'. "
@@ -505,7 +507,7 @@ void SGCore::UI::ANTLRCSSListener::printBadOperatorInPropertyError(const std::st
                                                                    const std::string& operatorValue,
                                                                    const std::string& defaultSetKeyword) const noexcept
 {
-    LOG_E(SGCORE_TAG,
+    SG_LOG_E(
           "ANTLRCSSListener can not process property '{}' correctly: property has invalid operator in section 'value'. "
           "Property has been set to the default value. "
           "Operator index: '{}'. Operator value: '{}'. "
@@ -522,7 +524,7 @@ void SGCore::UI::ANTLRCSSListener::printUnknownKeywordUsedError(const std::strin
                                                                 const std::string& currentKeyword,
                                                                 const std::string& defaultSetKeyword) const noexcept
 {
-    LOG_E(SGCORE_TAG,
+    SG_LOG_E(
           "ANTLRCSSListener can not process property '{}' correctly: property has unknown keyword in section 'value'. "
           "Property has been set to the default value. "
           "Current keyword: '{}'. "
@@ -556,7 +558,7 @@ void SGCore::UI::ANTLRCSSListener::printUnsupportedQualifierInCurrentContextErro
         qualifiersString.erase(qualifiersString.size() - 1);
     }
 
-    LOG_E(SGCORE_TAG,
+    SG_LOG_E(
           "ANTLRCSSListener can not process property '{}' correctly: value of property has unsupported dimension qualifier in current context (context: '{}'). "
           "Property has been set to the default value. "
           "Current dimension: '{}'.\n"
@@ -573,7 +575,7 @@ void SGCore::UI::ANTLRCSSListener::printInvalidHexError(const std::string& prope
                                                         const std::string& currentHex,
                                                         const std::string& defaultSetKeyword) const noexcept
 {
-    LOG_E(SGCORE_TAG,
+    SG_LOG_E(
           "ANTLRCSSListener can not process property '{}' correctly: property has unknown HEX in section 'value'. "
           "Property has been set to the default value. "
           "Current HEX: '{}'. "

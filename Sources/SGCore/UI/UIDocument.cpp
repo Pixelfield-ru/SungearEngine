@@ -26,14 +26,14 @@ void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
 
     m_debugOffsets.clear();
 
-    const std::string u8Path = Utils::toUTF8(path.resolved().u16string());
+    const std::string u8Path = Utils::toUTF8(path.resolved());
 
     const auto xmlContent = readXmlFileAndBuildOffsets(path.resolved());
     if(!xmlContent)
     {
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "In UI document: Cannot read XML file by path '{}'",
-              SGCore::Utils::toUTF8(path.resolved().u16string()))
+              SGCore::Utils::toUTF8(path.resolved()));
         return;
     }
 
@@ -41,7 +41,7 @@ void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
     
     if(!parseResult)
     {
-        LOG_E(SGCORE_TAG, "Error while parsing XML document by path '{}': '{}'", u8Path, parseResult.description());
+        SG_LOG_E("Error while parsing XML document by path '{}': '{}'", u8Path, parseResult.description());
         return;
     }
 
@@ -49,7 +49,7 @@ void SGCore::UI::UIDocument::doLoad(const InterpolatedPath& path)
 
     if(!rootElement || rootElement->getTypeHash() != UIRoot::getTypeHashStatic())
     {
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Can not process UIDocument: root element must be <xml>.\n"
               "In XML file: '{}'",
               u8Path);
@@ -89,10 +89,10 @@ SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIDocument::processUIElement(UIDo
 {
     if(!xmlNode)
     {
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Cannot process UIDocument correctly: invalid node.\n"
               "In XML file: '{}'",
-              Utils::toUTF8(inDocument.getPath().resolved().u16string()));
+              Utils::toUTF8(inDocument.getPath().resolved()));
 
         return nullptr;
     }
@@ -116,7 +116,9 @@ SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIDocument::processUIElement(UIDo
             return nullptr;
         }
 
-        LOG_W(SGCORE_TAG, "In UIDocument by path '{}': cannot process node '{}': processor for this node does not exist.", Utils::toUTF8(inDocument.getPath().resolved().u16string()), xmlNode.name());
+        SG_LOG_W("In UIDocument by path '{}': cannot process node '{}': processor for this node does not exist.",
+                 Utils::toUTF8(inDocument.getPath().resolved()), xmlNode.name());
+
         return nullptr;
     }
 
@@ -138,7 +140,7 @@ SGCore::Ref<SGCore::UI::UIElement> SGCore::UI::UIDocument::processUIElement(UIDo
             }
             else
             {
-                LOG_W(SGCORE_TAG, "Place node must have 'name' attribute")
+                SG_LOG_W("Place node must have 'name' attribute");
             }
         }
     }

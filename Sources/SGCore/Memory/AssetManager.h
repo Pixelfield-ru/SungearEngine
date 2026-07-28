@@ -51,22 +51,22 @@ namespace SGCore
         {
             if(assetRef.m_isResolved)
             {
-                LOG_I(SGCORE_TAG,
+                SG_LOG_I(
                       "Asset reference is already resolved! "
                       "Info about asset reference:  type ID: '{}' alias: '{}', path: '{}', stored by: '{}'",
                       assetRef->getTypeID(),
                       assetRef->getAlias(),
-                      Utils::toUTF8(assetRef->getPath().resolved().u16string()),
+                      Utils::toUTF8(assetRef->getPath().resolved()),
                       std::to_underlying(assetRef->storedByWhat()));
                 return;
             }
 
             /*if(!assetRef.m_asset)
             {
-                LOG_W(SGCORE_TAG, "Can not resolve asset reference: AssetRef points to null asset! AssetRef deserialized data: type ID: '{}' alias: '{}', path: '{}', stored by: '{}'",
+                SG_LOG_W("Can not resolve asset reference: AssetRef points to null asset! AssetRef deserialized data: type ID: '{}' alias: '{}', path: '{}', stored by: '{}'",
                       assetRef.m_deserializedAssetTypeID,
                       assetRef.m_deserializedAssetAlias,
-                      Utils::toUTF8(assetRef.m_deserializedAssetPath.resolved().u16string()),
+                      Utils::toUTF8(assetRef.m_deserializedAssetPath.resolved()),
                       std::to_underlying(assetRef.m_deserializedAssetStoredBy));
 
                 return;
@@ -83,11 +83,12 @@ namespace SGCore
 
             if(!usedAssetManager)
             {
-                LOG_W(SGCORE_TAG, "Can not resolve asset reference: parent asset manager of asset equals to nullptr! AssetRef deserialized data: type ID: '{}' alias: '{}', path: '{}', stored by: '{}'",
-                      assetRef.m_deserializedAssetTypeID,
-                      assetRef.m_deserializedAssetAlias,
-                      Utils::toUTF8(assetRef.m_deserializedAssetPath.resolved().u16string()),
-                      std::to_underlying(assetRef.m_deserializedAssetStoredBy));
+                SG_LOG_W(
+                    "Can not resolve asset reference: parent asset manager of asset equals to nullptr! AssetRef deserialized data: type ID: '{}' alias: '{}', path: '{}', stored by: '{}'",
+                    assetRef.m_deserializedAssetTypeID,
+                    assetRef.m_deserializedAssetAlias,
+                    Utils::toUTF8(assetRef.m_deserializedAssetPath.resolved()),
+                    std::to_underlying(assetRef.m_deserializedAssetStoredBy));
 
                 return;
             }
@@ -106,11 +107,12 @@ namespace SGCore
 
             if(!newAssetRef)
             {
-                LOG_W(SGCORE_TAG, "Can not resolve asset reference: can not find asset in manager! Info about asset reference: alias - '{}', path - '{}', stored by - '{}', asset type ID - '{}'",
-                      assetAlias,
-                      Utils::toUTF8(assetPath.resolved().u16string()),
-                      std::to_underlying(assetStoredBy),
-                      assetTypeID);
+                SG_LOG_W(
+                    "Can not resolve asset reference: can not find asset in manager! Info about asset reference: alias - '{}', path - '{}', stored by - '{}', asset type ID - '{}'",
+                    assetAlias,
+                    Utils::toUTF8(assetPath.resolved()),
+                    std::to_underlying(assetStoredBy),
+                    assetTypeID);
 
                 return;
             }
@@ -118,11 +120,12 @@ namespace SGCore
             assetRef = newAssetRef.template staticCast<AssetT>();
             assetRef.m_isResolved = true;
 
-            LOG_I(SGCORE_TAG, "Asset reference was resolved! Info about asset reference: alias - '{}', path - '{}', stored by - '{}', asset type ID - '{}'",
-                  assetAlias,
-                  Utils::toUTF8(assetPath.resolved().u16string()),
-                  std::to_underlying(assetStoredBy),
-                  assetTypeID);
+            SG_LOG_I(
+                "Asset reference was resolved! Info about asset reference: alias - '{}', path - '{}', stored by - '{}', asset type ID - '{}'",
+                assetAlias,
+                Utils::toUTF8(assetPath.resolved()),
+                std::to_underlying(assetStoredBy),
+                assetTypeID);
         }
 
         template<typename AssetT>
@@ -182,7 +185,7 @@ namespace SGCore
             // bringing the path to a single view
             auto normalizedPath = InterpolatedPath(Utils::normalizePath(path.raw()));
 
-            const size_t hashedAssetPath = hashString(Utils::toUTF8(normalizedPath.raw().u16string()));
+            const size_t hashedAssetPath = hashString(Utils::toUTF8(normalizedPath.raw()));
 
             std::unordered_map<size_t, Ref<IAsset>> foundVariants { };
 
@@ -209,8 +212,9 @@ namespace SGCore
                     }
 
                     distributeAsset(asset, normalizedPath, assetsLoadPolicy, lazyLoadInThread);
-                    LOG_I(SGCORE_TAG, "Loaded existing asset associated by path: {}. Asset type: {}. Asset type ID: {}",
-                          Utils::toUTF8(normalizedPath.resolved().u16string()), typeid(AssetT).name(), AssetT::getTypeIDStatic());
+                    SG_LOG_I("Loaded existing asset associated by path: {}. Asset type: {}. Asset type ID: {}",
+                             Utils::toUTF8(normalizedPath.resolved()), typeid(AssetT).name(),
+                             AssetT::getTypeIDStatic());
                 }
 
                 // WE ARE USING STATIC CAST BECAUSE WE KNOW THAT ONLY AN ASSET WITH THE ASSET TYPE HAS SUCH AN asset_type_id.
@@ -239,8 +243,9 @@ namespace SGCore
             
             distributeAsset(newAsset, normalizedPath, assetsLoadPolicy, lazyLoadInThread);
 
-            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}. Asset type ID: {}",
-                  Utils::toUTF8(normalizedPath.resolved().u16string()), typeid(AssetT).name(), AssetT::getTypeIDStatic());
+            SG_LOG_I("Loaded new asset associated by path: {}. Asset type: {}. Asset type ID: {}",
+                     Utils::toUTF8(normalizedPath.resolved()), typeid(AssetT).name(),
+                     AssetT::getTypeIDStatic());
             
             return AssetRef<AssetT>(newAsset);
         }
@@ -276,7 +281,7 @@ namespace SGCore
             // bringing the path to a single view
             auto normalizedPath = InterpolatedPath(Utils::normalizePath(path.raw()));
 
-            const size_t hashedAssetPath = hashString(Utils::toUTF8(normalizedPath.raw().u16string()));
+            const size_t hashedAssetPath = hashString(Utils::toUTF8(normalizedPath.raw()));
 
             std::unordered_map<size_t, Ref<IAsset>> foundVariants { };
 
@@ -302,8 +307,8 @@ namespace SGCore
                     }
 
                     distributeAsset(assetToLoad.m_asset, normalizedPath, assetsLoadPolicy, lazyLoadInThread);
-                    LOG_I(SGCORE_TAG, "Loaded existing asset associated by path: {}. Asset type: {}",
-                          Utils::toUTF8(normalizedPath.resolved().u16string()), typeid(AssetT).name());
+                    SG_LOG_I("Loaded existing asset associated by path: {}. Asset type: {}",
+                             Utils::toUTF8(normalizedPath.resolved()), typeid(AssetT).name());
                 }
 
                 return;
@@ -334,8 +339,8 @@ namespace SGCore
 
             distributeAsset(assetToLoad.m_asset, normalizedPath, assetsLoadPolicy, lazyLoadInThread);
 
-            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}",
-                  Utils::toUTF8(normalizedPath.resolved().u16string()), typeid(AssetT).name());
+            SG_LOG_I("Loaded new asset associated by path: {}. Asset type: {}",
+                     Utils::toUTF8(normalizedPath.resolved()), typeid(AssetT).name());
         }
         
         template<typename AssetT>
@@ -387,7 +392,7 @@ namespace SGCore
             {
                 case AssetStorageType::BY_PATH:
                 {
-                    hashedAssetPath = hashString(Utils::toUTF8(normalizedPath.raw().u16string()));
+                    hashedAssetPath = hashString(Utils::toUTF8(normalizedPath.raw()));
                     break;
                 }
                 case AssetStorageType::BY_ALIAS:
@@ -422,8 +427,8 @@ namespace SGCore
                     }
 
                     distributeAsset(asset, normalizedPath, assetsLoadPolicy, lazyLoadInThread);
-                    LOG_I(SGCORE_TAG, "Loaded existing asset (deferred load) with path: {}; and alias: {}. Asset type ID: {}",
-                          Utils::toUTF8(normalizedPath.resolved().u16string()), alias, assetTypeID);
+                    SG_LOG_I("Loaded existing asset (deferred load) with path: {}; and alias: {}. Asset type ID: {}",
+                             Utils::toUTF8(normalizedPath.resolved()), alias, assetTypeID);
                 }
 
                 return AssetRef<IAsset>(foundAssetOfTIt->second);
@@ -492,8 +497,8 @@ namespace SGCore
                     }
 
                     distributeAsset(assetToLoad.m_asset, normalizedPath, assetsLoadPolicy, lazyLoadInThread);
-                    LOG_I(SGCORE_TAG, "Loaded existing asset associated by path: {}. Asset type: {}",
-                          Utils::toUTF8(normalizedPath.resolved().u16string()), typeid(AssetT).name());
+                    SG_LOG_I("Loaded existing asset associated by path: {}. Asset type: {}",
+                             Utils::toUTF8(normalizedPath.resolved()), typeid(AssetT).name());
                 }
 
                 return;
@@ -525,8 +530,8 @@ namespace SGCore
             
             distributeAsset(assetToLoad.m_asset, normalizedPath, assetsLoadPolicy, lazyLoadInThread);
 
-            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}",
-                  Utils::toUTF8(normalizedPath.resolved().u16string()), typeid(AssetT).name());
+            SG_LOG_I("Loaded new asset associated by path: {}. Asset type: {}",
+                     Utils::toUTF8(normalizedPath.resolved()), typeid(AssetT).name());
         }
         
         template<typename AssetT>
@@ -591,8 +596,10 @@ namespace SGCore
                     }
 
                     distributeAsset(asset, normalizedPath, assetsLoadPolicy, lazyLoadInThread);
-                    LOG_I(SGCORE_TAG, "Loaded existing asset associated by path: {}; and alias: {}. Asset type: {}. Asset type ID: {}",
-                          Utils::toUTF8(normalizedPath.resolved().u16string()), alias, typeid(AssetT).name(), AssetT::getTypeIDStatic());
+                    SG_LOG_I(
+                        "Loaded existing asset associated by path: {}; and alias: {}. Asset type: {}. Asset type ID: {}",
+                        Utils::toUTF8(normalizedPath.resolved()), alias, typeid(AssetT).name(),
+                        AssetT::getTypeIDStatic());
                 }
 
                 // WE ARE USING STATIC CAST BECAUSE WE KNOW THAT ONLY AN ASSET WITH THE ASSET TYPE HAS SUCH AN asset_type_id.
@@ -622,8 +629,9 @@ namespace SGCore
 
             distributeAsset(newAsset, normalizedPath, assetsLoadPolicy, lazyLoadInThread);
 
-            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}; and alias: {}. Asset type: {}. Asset type ID: {}",
-                  Utils::toUTF8(normalizedPath.resolved().u16string()), alias, typeid(AssetT).name(), AssetT::getTypeIDStatic());
+            SG_LOG_I("Loaded new asset associated by path: {}; and alias: {}. Asset type: {}. Asset type ID: {}",
+                     Utils::toUTF8(normalizedPath.resolved()), alias, typeid(AssetT).name(),
+                     AssetT::getTypeIDStatic());
             
             return AssetRef<AssetT>(newAsset);
         }
@@ -693,8 +701,8 @@ namespace SGCore
 
             asset->m_parentAssetManager = shared_from_this();
 
-            LOG_I(SGCORE_TAG, "Added new asset with alias '{}', path '{}' and type '{}'",
-                  alias, Utils::toUTF8(asset->getPath().resolved().u16string()), typeid(AssetT).name())
+            SG_LOG_I("Added new asset with alias '{}', path '{}' and type '{}'",
+                     alias, Utils::toUTF8(asset->getPath().resolved()), typeid(AssetT).name());
         }
         
         template<typename AssetT>
@@ -704,7 +712,7 @@ namespace SGCore
             // bringing the path to a single view
             auto normalizedPath = InterpolatedPath(Utils::normalizePath(assetPath.raw()));
 
-            const size_t hashedAssetPath = hashString(Utils::toUTF8(normalizedPath.raw().u16string()));
+            const size_t hashedAssetPath = hashString(Utils::toUTF8(normalizedPath.raw()));
 
             asset->m_path = normalizedPath;
             asset->m_storedBy = AssetStorageType::BY_PATH;
@@ -741,8 +749,8 @@ namespace SGCore
             }
             asset->m_parentAssetManager = shared_from_this();
 
-            LOG_I(SGCORE_TAG, "Added new asset with alias '{}', path '{}' and type '{}'",
-                  asset->m_alias, Utils::toUTF8(asset->getPath().resolved().u16string()), typeid(AssetT).name())
+            SG_LOG_I("Added new asset with alias '{}', path '{}' and type '{}'",
+                     asset->m_alias, Utils::toUTF8(asset->getPath().resolved()), typeid(AssetT).name());
         }
 
         template<AssetStorageType AssetStorage>
@@ -784,7 +792,7 @@ namespace SGCore
             {
                 case AssetStorageType::BY_PATH:
                 {
-                    pathOrAlias = Utils::toUTF8(asset->m_path.raw().u16string());
+                    pathOrAlias = Utils::toUTF8(asset->m_path.raw());
                     break;
                 }
                 case AssetStorageType::BY_ALIAS:
@@ -872,7 +880,7 @@ namespace SGCore
             switch(asset->m_storedBy)
             {
                 case AssetStorageType::BY_PATH:
-                    pathOrAliasHash = hashString(Utils::toUTF8(asset->getPath().raw().u16string()));
+                    pathOrAliasHash = hashString(Utils::toUTF8(asset->getPath().raw()));
                     break;
 
                 case AssetStorageType::BY_ALIAS:
@@ -920,7 +928,7 @@ namespace SGCore
             switch(byAsset->m_storedBy)
             {
                 case AssetStorageType::BY_PATH:
-                    pathOrAliasHash = hashString(Utils::toUTF8(byAsset->getPath().raw().u16string()));
+                    pathOrAliasHash = hashString(Utils::toUTF8(byAsset->getPath().raw()));
                     break;
                 case AssetStorageType::BY_ALIAS:
                     pathOrAliasHash = hashString(byAsset->getAlias());
@@ -968,7 +976,7 @@ namespace SGCore
             // bringing the path to a single view
             auto normalizedPath = InterpolatedPath(Utils::normalizePath(path.raw()));
 
-            const size_t pathHash = hashString(Utils::toUTF8(normalizedPath.raw().u16string()));
+            const size_t pathHash = hashString(Utils::toUTF8(normalizedPath.raw()));
 
             auto foundVariantsIt = m_assets.find(pathHash);
 
@@ -1044,7 +1052,7 @@ namespace SGCore
             {
                 // bringing the path to a single view
                 auto normalizedPath = InterpolatedPath(Utils::normalizePath(key.raw()));
-                return hashString(Utils::toUTF8(normalizedPath.raw().u16string()));
+                return hashString(Utils::toUTF8(normalizedPath.raw()));
             }
             else
             {
@@ -1091,7 +1099,7 @@ namespace SGCore
             Ref<AssetT> asset = createAssetInstance<AssetT>(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
             asset->m_path = Utils::normalizePath(withPath.raw());
             asset->m_storedBy = AssetStorageType::BY_PATH;
-            m_assets[hashString(Utils::toUTF8(asset->getPath().raw().u16string()))][AssetT::getTypeIDStatic()] = asset;
+            m_assets[hashString(Utils::toUTF8(asset->getPath().raw()))][AssetT::getTypeIDStatic()] = asset;
 
             return AssetRef<AssetT>(asset);
         }
@@ -1123,7 +1131,7 @@ namespace SGCore
             switch(storedBy)
             {
                 case AssetStorageType::BY_PATH:
-                    m_assets[hashString(Utils::toUTF8(asset->getPath().raw().u16string()))][AssetT::getTypeIDStatic()] = asset;
+                    m_assets[hashString(Utils::toUTF8(asset->getPath().raw()))][AssetT::getTypeIDStatic()] = asset;
                     break;
                 case AssetStorageType::BY_ALIAS:
                     m_assets[hashString(asset->getAlias())][AssetT::getTypeIDStatic()] = asset;

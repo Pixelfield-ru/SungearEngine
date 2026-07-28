@@ -91,7 +91,7 @@ struct SGCore::Serde::SerdeSpec<SGE::EditorSceneData, TFormatType> : SGCore::Ser
             scene.getECSRegistry()->emplace<SGCore::LayeredFrameReceiver>(*m_editorCamera);
             scene.getECSRegistry()->emplace<SGCore::NonSavable>(*m_editorCamera);
 
-            LOG_W(SGCORE_TAG, "Loaded editor camera entity: {}", std::to_underlying(*m_editorCamera));
+            SG_LOG_W("Loaded editor camera entity: {}", std::to_underlying(*m_editorCamera));
         }
 
         const auto m_editorGrid = valueView.container().template getMember<SGCore::ECS::entity_t>("m_editorGrid", scene);
@@ -102,7 +102,7 @@ struct SGCore::Serde::SerdeSpec<SGE::EditorSceneData, TFormatType> : SGCore::Ser
             /*scene.getECSRegistry()->emplace<SGCore::LayeredFrameReceiver>(valueView.m_data->m_editorCamera);
             scene.getECSRegistry()->emplace<SGCore::NonSavable>(valueView.m_data->m_editorCamera);*/
 
-            LOG_W(SGCORE_TAG, "Loaded editor camera entity: {}", std::to_underlying(*m_editorGrid));
+            SG_LOG_W("Loaded editor camera entity: {}", std::to_underlying(*m_editorGrid));
         }
     }
 };

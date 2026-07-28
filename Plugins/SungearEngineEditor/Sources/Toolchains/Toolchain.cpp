@@ -233,7 +233,7 @@ void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot
 
     if(!std::filesystem::exists(cmakePresetsPath))
     {
-        LOG_E(SGEDITOR_TAG,
+        SG_LOG_E(SGEDITOR_TAG,
               "Error while building project '{}'. File CMakePresets.json was not found in project directory '{}'",
               projectName, SGCore::Utils::toUTF8(pathToProjectRoot.u16string()));
 
@@ -244,7 +244,7 @@ void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot
     const SGCore::CMake::Preset* projectPreset = projectCMakePresetsFileInfo.getPreset(cmakePresetName);
     if(!projectPreset)
     {
-        LOG_E(SGEDITOR_TAG,
+        SG_LOG_E(SGEDITOR_TAG,
               "Error while building project '{}'. Preset '{}' was not found in CMakePreset.json file of project.",
               projectName, cmakePresetName);
 
@@ -253,7 +253,7 @@ void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot
 
     if(projectPreset->m_binaryDir.empty())
     {
-        LOG_E(SGEDITOR_TAG, "Error while building project '{}'. Preset '{}' was not found in CMakePresets.json",
+        SG_LOG_E(SGEDITOR_TAG, "Error while building project '{}'. Preset '{}' was not found in CMakePresets.json",
               projectName, cmakePresetName);
 
         return;
@@ -267,7 +267,7 @@ void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot
     m_builtDynamicLibraryPath += '/' + projectPreset->m_binaryDir + '/' + projectName + DL_POSTFIX;
     m_projectName = projectName;
 
-    LOG_I(PROJECT_BUILD_TAG, "Building project '{}' using Visual Studio toolchain: found binary dir '{}'.\n",
+    SG_LOG_I("Building project '{}' using Visual Studio toolchain: found binary dir '{}'.\n",
           SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
           projectPreset->m_binaryDir.c_str());
 }
@@ -350,12 +350,12 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
             if(!metaInfoProjectDLLoadOutput.empty())
             {
                 // printing error of meta info project loading
-                LOG_E(SGEDITOR_TAG, "Important! Can not load meta info project of project '{}'. Error is: {}",
+                SG_LOG_E(SGEDITOR_TAG, "Important! Can not load meta info project of project '{}'. Error is: {}",
                       projectName, metaInfoProjectDLLoadOutput);
             }
             else
             {
-                LOG_D(SGEDITOR_TAG, "Meta info project of project '{}' was successfully loaded.",
+                SG_LOG_D("Meta info project of project '{}' was successfully loaded.",
                       projectName);
 
                 std::string symbolsLoadingErr;
@@ -367,7 +367,7 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
 
                 if(!symbolsLoadingErr.empty())
                 {
-                    LOG_E(SGEDITOR_TAG, "Important! Can not load meta info project symbols (symbols 'addMetaInfo' and 'myProjectPath') of project '{}'. Error is: {}",
+                    SG_LOG_E(SGEDITOR_TAG, "Important! Can not load meta info project symbols (symbols 'addMetaInfo' and 'myProjectPath') of project '{}'. Error is: {}",
                           projectName, symbolsLoadingErr);
                 }
                 else
@@ -377,7 +377,7 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
 
                     currentEditorProject->m_metaInfoProjectEntryPoint = metaInfoEntry;
 
-                    LOG_D(SGEDITOR_TAG, "Meta info project symbols of project '{}' were successfully set.",
+                    SG_LOG_D("Meta info project symbols of project '{}' were successfully set.",
                           projectName);
                 }
             }
@@ -400,7 +400,7 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
             {
                 std::string projectDynamicLibraryLoadError;
 
-                LOG_I(SGEDITOR_TAG, "Project '{}': Loading project`s dynamic library...", projectName);
+                SG_LOG_I("Project '{}': Loading project`s dynamic library...", projectName);
 
                 currentEditorProject->m_loadedPlugin = SGCore::PluginsManager::loadPlugin(
                         SGCore::Utils::toUTF8(buildOutput.m_projectName.u16string()),
@@ -426,7 +426,7 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
 
                     if(!userProjectEntriesLoadingErr.empty())
                     {
-                        LOG_E(SGEDITOR_TAG,
+                        SG_LOG_E(SGEDITOR_TAG,
                               "Important! Can not load project' symbols (symbols 'editorGeneratedCodeEntry' and 'editorGeneratedCodeExit') of project '{}'. This project will not work correct. Error is: {}",
                               projectName,
                               userProjectEntriesLoadingErr);

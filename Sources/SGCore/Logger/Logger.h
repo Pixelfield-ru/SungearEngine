@@ -1,7 +1,6 @@
 //
 
-#ifndef SUNGEARENGINE_LOGGER_H
-#define SUNGEARENGINE_LOGGER_H
+#pragma once
 
 #include <iostream>
 
@@ -11,26 +10,24 @@
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
 
-#include "AndroidLogcat.h"
 #include "SGCore/Utils/Signal.h"
 
-#define LOG_I(tag, msg, ...) SGCore::Logger::getDefaultLogger()->info<true>(tag, msg, ##__VA_ARGS__); LOGCAT_I(tag, msg, ##__VA_ARGS__);
-#define LOG_D(tag, msg, ...) SGCore::Logger::getDefaultLogger()->debug<true>(tag, msg, ##__VA_ARGS__); LOGCAT_D(tag, msg, ##__VA_ARGS__);
-#define LOG_W(tag, msg, ...) SGCore::Logger::getDefaultLogger()->warn<true>(tag, msg, ##__VA_ARGS__); LOGCAT_W(tag, msg, ##__VA_ARGS__);
-#define LOG_E(tag, msg, ...) SGCore::Logger::getDefaultLogger()->error<true>(tag, msg, ##__VA_ARGS__); LOGCAT_E(tag, msg, ##__VA_ARGS__);
-#define LOG_C(tag, msg, ...) SGCore::Logger::getDefaultLogger()->critical<true>(tag, msg, ##__VA_ARGS__); LOGCAT_D(tag, msg, ##__VA_ARGS__);
+#define SG_LOG_T(msg, ...) SGCore::Logger::getDefaultLogger()->trace<true>(msg, ##__VA_ARGS__)
+#define SG_LOG_D(msg, ...) SGCore::Logger::getDefaultLogger()->debug<true>(msg, ##__VA_ARGS__)
+#define SG_LOG_I(msg, ...) SGCore::Logger::getDefaultLogger()->info<true>(msg, ##__VA_ARGS__)
+#define SG_LOG_W(msg, ...) SGCore::Logger::getDefaultLogger()->warn<true>(msg, ##__VA_ARGS__)
+#define SG_LOG_E(msg, ...) SGCore::Logger::getDefaultLogger()->error<true>(msg, ##__VA_ARGS__)
+#define SG_LOG_C(msg, ...) SGCore::Logger::getDefaultLogger()->critical<true>(msg, ##__VA_ARGS__)
 
-#define LOG_NOT_IMPLEMENTED(tag) LOG_E(tag, "Do not call this function! It is not implemented!\n{}", SG_CURRENT_LOCATION_STR)
-#define LOG_NOT_SUPPORTED_FUNC(tag) LOG_E(tag, "Do not call this function! It is not supported!\n{}", SG_CURRENT_LOCATION_STR)
+#define SG_LOG_NOT_IMPLEMENTED() SG_LOG_E("Do not call this function! It is not implemented!\n{}", SG_CURRENT_LOCATION_STR)
+#define SG_LOG_NOT_SUPPORTED_FUNC() SG_LOG_E("Do not call this function! It is not supported!\n{}", SG_CURRENT_LOCATION_STR)
 
-#define LOG_I_UNFORMATTED(tag, msg) SGCore::Logger::getDefaultLogger()->info<false>(tag, msg); LOGCAT_I_UNFORMATTED(tag, msg);
-#define LOG_D_UNFORMATTED(tag, msg) SGCore::Logger::getDefaultLogger()->debug<false>(tag, msg); LOGCAT_D_UNFORMATTED(tag, msg);
-#define LOG_W_UNFORMATTED(tag, msg) SGCore::Logger::getDefaultLogger()->warn<false>(tag, msg); LOGCAT_W_UNFORMATTED(tag, msg);
-#define LOG_E_UNFORMATTED(tag, msg) SGCore::Logger::getDefaultLogger()->error<false>(tag, msg); LOGCAT_E_UNFORMATTED(tag, msg);
-#define LOG_C_UNFORMATTED(tag, msg) SGCore::Logger::getDefaultLogger()->critical<false>(tag, msg); LOGCAT_E_UNFORMATTED(tag, msg);
-
-#define SGCORE_TAG "SGCore"
-#define PROJECT_BUILD_TAG "Project Build"
+#define SG_LOG_T_UNFORMATTED(msg) SGCore::Logger::getDefaultLogger()->trace<false>(msg)
+#define SG_LOG_D_UNFORMATTED(msg) SGCore::Logger::getDefaultLogger()->debug<false>(msg)
+#define SG_LOG_I_UNFORMATTED(msg) SGCore::Logger::getDefaultLogger()->info<false>(msg)
+#define SG_LOG_W_UNFORMATTED(msg) SGCore::Logger::getDefaultLogger()->warn<false>(msg)
+#define SG_LOG_E_UNFORMATTED(msg) SGCore::Logger::getDefaultLogger()->error<false>(msg)
+#define SG_LOG_C_UNFORMATTED(msg) SGCore::Logger::getDefaultLogger()->critical<false>(msg)
 
 namespace SGCore
 {
@@ -43,60 +40,57 @@ namespace SGCore
     public:
         enum class Level
         {
-            LVL_INFO,
+            LVL_TRACE,
             LVL_DEBUG,
+            LVL_INFO,
             LVL_WARN,
             LVL_ERROR,
             LVL_CRITICAL
         };
 
-        struct Message
-        {
-            std::uint64_t m_id {};
-            Level m_level = Level::LVL_INFO;
-            std::string m_tag;
-            std::string m_message;
-            std::chrono::system_clock::time_point m_time;
-        };
-
-        Signal<void(Message msg)> onNewMessage;
-
         static std::string levelToString(Level level) noexcept;
 
         static Ref<Logger> createLogger(const std::string& loggerName, const std::filesystem::path& filePath) noexcept;
+        static Ref<Logger> createLogger(const std::string& loggerName) noexcept;
 
         template<bool UseStaticFormatting, typename... Args>
-        void info(std::string tag, msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
+        void trace(msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
         {
-            log<UseStaticFormatting>(Level::LVL_INFO, std::move(tag), msg, std::forward<Args>(args)...);
+            log<UseStaticFormatting>(Level::LVL_TRACE, msg, std::forward<Args>(args)...);
         }
 
         template<bool UseStaticFormatting, typename... Args>
-        void debug(std::string tag, msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
+        void debug(msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
         {
-            log<UseStaticFormatting>(Level::LVL_DEBUG, std::move(tag), msg, std::forward<Args>(args)...);
+            log<UseStaticFormatting>(Level::LVL_DEBUG, msg, std::forward<Args>(args)...);
         }
 
         template<bool UseStaticFormatting, typename... Args>
-        void warn(std::string tag, msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
+        void info(msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
         {
-            log<UseStaticFormatting>(Level::LVL_WARN, std::move(tag), msg, std::forward<Args>(args)...);
+            log<UseStaticFormatting>(Level::LVL_INFO, msg, std::forward<Args>(args)...);
         }
 
         template<bool UseStaticFormatting, typename... Args>
-        void error(std::string tag, msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
+        void warn(msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
         {
-            log<UseStaticFormatting>(Level::LVL_ERROR, std::move(tag), msg, std::forward<Args>(args)...);
+            log<UseStaticFormatting>(Level::LVL_WARN, msg, std::forward<Args>(args)...);
         }
 
         template<bool UseStaticFormatting, typename... Args>
-        void critical(std::string tag, msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
+        void error(msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
         {
-            log<UseStaticFormatting>(Level::LVL_CRITICAL, std::move(tag), msg, std::forward<Args>(args)...);
+            log<UseStaticFormatting>(Level::LVL_ERROR, msg, std::forward<Args>(args)...);
         }
 
         template<bool UseStaticFormatting, typename... Args>
-        void log(Level level, std::string tag, msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
+        void critical(msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
+        {
+            log<UseStaticFormatting>(Level::LVL_CRITICAL, msg, std::forward<Args>(args)...);
+        }
+
+        template<bool UseStaticFormatting, typename... Args>
+        void log(Level level, msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
         {
             const auto levelStr = levelToString(level);
 
@@ -112,29 +106,29 @@ namespace SGCore
 
             const auto now = std::chrono::system_clock::now();
 
-            std::lock_guard lock(m_mutex);
-
-            const auto finalText = fmt::format("[{}] [logger: {}] [{}] [tag: {}] {}",
+            const auto finalText = fmt::format("[{}] [{}] [{}] {}",
                                                   Utils::getTimeAsString("%Y-%m-%d %H:%M:%S", now),
-                                                  m_name,
+                                                  m_spdlogLogger->name(),
                                                   levelStr,
-                                                  tag,
                                                   formattedMsg);
-
-            std::cout << finalText << std::endl;
 
             if(!m_spdlogLogger) return;
 
             switch (level)
             {
-                case Level::LVL_INFO:
+                case Level::LVL_TRACE:
                 {
-                    m_spdlogLogger->info(formattedMsg);
+                    m_spdlogLogger->trace(formattedMsg);
                     break;
                 }
                 case Level::LVL_DEBUG:
                 {
                     m_spdlogLogger->debug(formattedMsg);
+                    break;
+                }
+                case Level::LVL_INFO:
+                {
+                    m_spdlogLogger->info(formattedMsg);
                     break;
                 }
                 case Level::LVL_WARN:
@@ -153,19 +147,10 @@ namespace SGCore
                     break;
                 }
             }
-
-            Message message {
-                .m_id = m_totalMessages,
-                .m_level = level,
-                .m_tag = std::move(tag),
-                .m_message = std::move(formattedMsg),
-                .m_time = now
-            };
-
-            onNewMessage(std::move(message));
-
-            ++m_totalMessages;
         }
+
+        std::vector<std::shared_ptr<spdlog::sinks::sink>>& sinks() noexcept;
+        const std::vector<std::shared_ptr<spdlog::sinks::sink>>& sinks() const noexcept;
 
         const std::filesystem::path& getLogFilePath() const noexcept;
 
@@ -174,17 +159,12 @@ namespace SGCore
 
     private:
         Logger(const std::string& loggerName, const std::filesystem::path& filePath) noexcept;
+        Logger(const std::string& loggerName) noexcept;
 
         static Ref<Logger> m_defaultLogger;
+
         Ref<spdlog::logger> m_spdlogLogger;
 
-        std::mutex m_mutex;
-
-        std::string m_name;
         std::filesystem::path m_logFilePath;
-
-        std::uint64_t m_totalMessages {};
     };
 }
-
-#endif //SUNGEARENGINE_LOGGER_H

@@ -52,14 +52,14 @@ namespace SGCore::Net
 
                     if(!m_registeredDataTypes.contains(messageTypeID))
                     {
-                        LOG_E(SGCORE_TAG, "Unknown message type: {}. Type name: {}", messageTypeID, typeid(MsgT).name());
+                        SG_LOG_E("Unknown message type: {}. Type name: {}", messageTypeID, typeid(MsgT).name());
                         return;
                     }
 
                     const auto targetClientIt = m_registeredClients.find(targetSessionID);
                     if(targetClientIt == m_registeredClients.end())
                     {
-                        LOG_E(SGCORE_TAG,
+                        SG_LOG_E(
                               "Unknown target session: {}. Type ID: {}, type name: {}",
                               targetSessionID, messageTypeID, typeid(MsgT).name());
                         return;
@@ -93,14 +93,14 @@ namespace SGCore::Net
                         // if this packet is first
                         if(reliableStream.m_reliablePackets.size() == 1)
                         {
-                            // LOG_I(SGCORE_TAG, "Send reliable message {}", typeid(MsgT).name());
+                            // SG_LOG_I("Send reliable message {}", typeid(MsgT).name());
                             sendPacket(packet, targetClientEndpoint);
                         }
                         return;
                     }
                 }
 
-                // LOG_I(SGCORE_TAG, "Send message {}", typeid(MsgT).name());
+                // SG_LOG_I("Send message {}", typeid(MsgT).name());
 
                 sendPacket(packet, targetClientEndpoint);
             });

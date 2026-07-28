@@ -227,7 +227,7 @@ void SGE::SceneTreeView::drawEntity(SGCore::ECS::entity_t entity) noexcept
 
     if(ImGui::IsItemClicked(ImGuiMouseButton_Right))
     {
-        LOG_I(SGEDITOR_TAG, "Righted clicked entity {}", std::to_underlying(entity));
+        SG_LOG_I("Righted clicked entity {}", std::to_underlying(entity));
 
         m_rightClickedEntity = entity;
         m_isTreeRightClicked = true;
@@ -258,7 +258,7 @@ void SGE::SceneTreeView::acceptDragNDrop(SGCore::ECS::entity_t entity, DragNDrop
 
         entityBaseInfo.setParent(entity, *scene->getECSRegistry());
 
-        LOG_I(SGEDITOR_TAG, "Dropped entity {} into entity {}", std::to_underlying(droppedEntity), std::to_underlying(entity));
+        SG_LOG_I("Dropped entity {} into entity {}", std::to_underlying(droppedEntity), std::to_underlying(entity));
     };
     info.m_name = "EntityDragNDrop";
     info.m_flags = ImGuiDragDropFlags_None;

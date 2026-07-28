@@ -337,7 +337,7 @@ void SGE::ProjectCreateDialog::submit()
         // setting variable 'projectPath' to interpolating
         SGCore::PathInterpolationMarkupSpec::setKey("projectPath", dirPath);
 
-        LOG_D(SGEDITOR_TAG, "Opened project: '{}'", SGCore::Utils::toUTF8(SGCore::PathInterpolationMarkupData::instance().getByKey("projectPath")->u16string()));
+        SG_LOG_D("Opened project: '{}'", SGCore::Utils::toUTF8(SGCore::PathInterpolationMarkupData::instance().getByKey("projectPath")->u16string()));
 
         const std::string projectName = SGCore::Utils::toUTF8(dirPath.stem().u16string());
         const std::filesystem::path cmakePresetsPath = dirPath / "CMakePresets.json";
@@ -376,7 +376,7 @@ void SGE::ProjectCreateDialog::submit()
 
         const std::filesystem::path projectDLPath = presetPath / (projectName + DL_POSTFIX);
 
-        LOG_I(SGEDITOR_TAG, "Trying to load project`s binary by path '{}'...", SGCore::Utils::toUTF8(projectDLPath.u16string()));
+        SG_LOG_I("Trying to load project`s binary by path '{}'...", SGCore::Utils::toUTF8(projectDLPath.u16string()));
 
         // if dynamic library (or meta info dynamic library) of current preset was not found or built library of loaded project was not found
         if(!std::filesystem::exists(projectDLPath))
@@ -424,7 +424,7 @@ void SGE::ProjectCreateDialog::submit()
                 currentEditorProject->m_metaInfoProjectDL->load(metaInfoDLPath, metaInfoDLErr);
                 if(!metaInfoDLErr.empty())
                 {
-                    LOG_E(SGEDITOR_TAG, "Can not load meta info project of project '{}': {}.", projectName, metaInfoDLErr);
+                    SG_LOG_E(SGEDITOR_TAG, "Can not load meta info project of project '{}': {}.", projectName, metaInfoDLErr);
                 }
                 else
                 {
@@ -434,7 +434,7 @@ void SGE::ProjectCreateDialog::submit()
 
                     if(!metaInfoDLErr.empty())
                     {
-                        LOG_E(SGEDITOR_TAG, "Can not load meta info project symbols (project: '{}'): {}.", projectName, metaInfoDLErr);
+                        SG_LOG_E(SGEDITOR_TAG, "Can not load meta info project symbols (project: '{}'): {}.", projectName, metaInfoDLErr);
                     }
 
                     // calling entry point of meta info generated code
@@ -463,7 +463,7 @@ void SGE::ProjectCreateDialog::submit()
 
             if(!projectSymbolsLoadErr.empty())
             {
-                LOG_E(SGEDITOR_TAG, "Can not load project '{}' symbols: {}.", projectName, projectSymbolsLoadErr);
+                SG_LOG_E(SGEDITOR_TAG, "Can not load project '{}' symbols: {}.", projectName, projectSymbolsLoadErr);
             }
 
             // calling entry point of project generated code

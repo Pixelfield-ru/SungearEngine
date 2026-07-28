@@ -59,7 +59,7 @@ namespace SGCore
         {
             unload();
 
-            const std::string u8Path = Utils::toUTF8(pluginDLPath.u16string());
+            const std::string u8Path = Utils::toUTF8(pluginDLPath);
             
             #if SG_PLATFORM_OS_LINUX || SG_PLATFORM_OS_ANDROID
             m_nativeHandler = dlopen(u8Path.c_str(), RTLD_NOW | RTLD_GLOBAL);

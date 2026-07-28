@@ -19,6 +19,6 @@ void SGCore::UI::UIPlaceNodeProcessor::processElement(UIDocument* inDocument,
     }
     else
     {
-        LOG_W(SGCORE_TAG, "Place node must have 'name' attribute")
+        SG_LOG_W("Place node must have 'name' attribute");
     }
 }

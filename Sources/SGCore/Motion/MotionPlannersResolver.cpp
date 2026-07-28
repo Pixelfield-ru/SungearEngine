@@ -168,7 +168,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
         else
         {
             currentBoneAnims.push_back(nullptr);
-            /*LOG_W(SGCORE_TAG, "MotionPlannersResolver: Can not find bone '{}' in skeletal animation '{}'!",
+            /*SG_LOG_W("MotionPlannersResolver: Can not find bone '{}' in skeletal animation '{}'!",
                   currentBone->m_boneName, node->m_skeletalAnimation->m_animationName);*/
         }
     }

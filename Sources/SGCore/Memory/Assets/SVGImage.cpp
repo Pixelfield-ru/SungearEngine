@@ -9,18 +9,18 @@
 
 void SGCore::SVGImage::doLoad(const InterpolatedPath& path)
 {
-    m_document = lunasvg::Document::loadFromFile(Utils::toUTF8(path.resolved().u16string()));
+    m_document = lunasvg::Document::loadFromFile(Utils::toUTF8(path.resolved()));
 }
 
 SGCore::AssetRef<SGCore::SVGImageSpecialization> SGCore::SVGImage::getSpecialization(const std::uint32_t& width, const std::uint32_t& height) noexcept
 {
     if(!m_document)
     {
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Cannot create specialization (with width: '{}', height: '{}') of SVGImage loaded at path '{}': document equals to nullptr (SVGImage was not successfully loaded previously).",
               width,
               height,
-              Utils::toUTF8(getPath().resolved().u16string()));
+              Utils::toUTF8(getPath().resolved()));
         
         return nullptr;
     }
@@ -38,11 +38,11 @@ SGCore::AssetRef<SGCore::SVGImageSpecialization> SGCore::SVGImage::getSpecializa
         
         if(!bitmap.valid())
         {
-            LOG_E(SGCORE_TAG,
+            SG_LOG_E(
                   "Cannot create specialization (with width: '{}', height: '{}') of SVGImage loaded at path '{}': bitmap was not loaded successfully (not valid).",
                   width,
                   height,
-                  Utils::toUTF8(getPath().resolved().u16string()));
+                  Utils::toUTF8(getPath().resolved()));
             
             return nullptr;
         }

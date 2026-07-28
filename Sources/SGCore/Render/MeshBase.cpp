@@ -33,7 +33,7 @@ SGCore::AssetRef<SGCore::IMaterial> SGCore::MeshBase::getMaterial() const noexce
 
 void SGCore::MeshBase::onMemberAssetsReferencesResolveImpl(SGCore::AssetManager* updatedAssetManager) noexcept
 {
-    LOG_W(SGCORE_TAG, "Resolving m_meshData asset...");
+    SG_LOG_W("Resolving m_meshData asset...");
     AssetManager::resolveAssetReference(updatedAssetManager, m_meshData);
     AssetManager::resolveAssetReference(updatedAssetManager, m_material);
 }

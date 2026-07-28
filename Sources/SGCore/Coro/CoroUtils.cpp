@@ -13,9 +13,10 @@ SGCore::Ref<SGCore::Threading::Thread> SGCore::Coro::CoroUtils::assumeCurrentThr
     const auto currentThread = Threading::ThreadsManager::currentThread();
     if(!currentThread)
     {
-        const std::string msg = fmt::format("SGCore::Coro : Thread with id '{}' does not exist in Sungear Engine Core Threads Manager. Please, use Sungear Engine Threading.", std::hash<std::thread::id>()(std::this_thread::get_id()));
-        LOG_C_UNFORMATTED(SGCORE_TAG, msg);
-        std::cerr << msg << std::endl;
+        SG_LOG_C(
+            "SGCore::Coro : Thread with id '{}' does not exist in Sungear Engine Core Threads Manager. Please, use Sungear Engine Threading.",
+            std::hash<std::thread::id>()(std::this_thread::get_id()));
+
         std::terminate();
     }
 

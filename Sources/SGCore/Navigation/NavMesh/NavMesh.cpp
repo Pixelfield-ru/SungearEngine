@@ -21,7 +21,7 @@ void SGCore::Navigation::NavMesh::build(const std::vector<Primitives::Triangle<>
 {
     if(geometry.empty())
     {
-        LOG_W(SGCORE_TAG, "Cannot build navigation mesh: no geometry was provided.");
+        SG_LOG_W("Cannot build navigation mesh: no geometry was provided.");
         return;
     }
 
@@ -260,7 +260,7 @@ void SGCore::Navigation::NavMesh::build(const std::vector<Primitives::Triangle<>
         return;
     }
 
-    LOG_I(SGCORE_TAG, "Building navmesh... Vertices count: {}, polys count: {}, NVP: {}",
+    SG_LOG_I("Building navmesh... Vertices count: {}, polys count: {}, NVP: {}",
           m_polyMesh->nverts,
           m_polyMesh->npolys,
           m_polyMesh->nvp);
@@ -353,7 +353,7 @@ void SGCore::Navigation::NavMesh::build(const std::vector<Primitives::Triangle<>
         return;
     }
 
-    LOG_I(SGCORE_TAG, "Navmesh was built successfully.");
+    SG_LOG_I("Navmesh was built successfully.");
 }
 
 std::vector<glm::vec3> SGCore::Navigation::NavMesh::findPath(const glm::vec3& start,
@@ -362,7 +362,7 @@ std::vector<glm::vec3> SGCore::Navigation::NavMesh::findPath(const glm::vec3& st
 {
     if(!m_navQuery)
     {
-        LOG_E(SGCORE_TAG, "NavMesh was not built.");
+        SG_LOG_E("NavMesh was not built.");
         return {};
     }
 
@@ -374,13 +374,13 @@ std::vector<glm::vec3> SGCore::Navigation::NavMesh::findPath(const glm::vec3& st
 
     if(dtStatusFailed(m_navQuery->findNearestPoly(&start[0], &polyPickHalfExt[0], &filter, &startRef, nullptr)))
     {
-        LOG_E(SGCORE_TAG, "Cannot find nearest poly to start point.");
+        SG_LOG_E("Cannot find nearest poly to start point.");
         return {};
     }
 
     if(dtStatusFailed(m_navQuery->findNearestPoly(&end[0], &polyPickHalfExt[0], &filter, &endRef, nullptr)))
     {
-        LOG_E(SGCORE_TAG, "Cannot find nearest poly to end point.");
+        SG_LOG_E("Cannot find nearest poly to end point.");
         return {};
     }
 
@@ -388,12 +388,12 @@ std::vector<glm::vec3> SGCore::Navigation::NavMesh::findPath(const glm::vec3& st
     {
         if(!startRef)
         {
-            LOG_E(SGCORE_TAG, "Cannot find start polygon.");
+            SG_LOG_E("Cannot find start polygon.");
         }
 
         if(!endRef)
         {
-            LOG_E(SGCORE_TAG, "Cannot find end polygon.");
+            SG_LOG_E("Cannot find end polygon.");
         }
 
         return {};
@@ -406,13 +406,13 @@ std::vector<glm::vec3> SGCore::Navigation::NavMesh::findPath(const glm::vec3& st
     if(dtStatusFailed(m_navQuery->findPath(startRef, endRef, &start[0], &end[0], &filter, polys, &polyCount,
                                            maxPolygons)))
     {
-        LOG_E(SGCORE_TAG, "Cannot find path between polys.");
+        SG_LOG_E("Cannot find path between polys.");
         return {};
     }
 
     if(polyCount == 0)
     {
-        LOG_E(SGCORE_TAG, "Cannot find path between polys. No polys found.");
+        SG_LOG_E("Cannot find path between polys. No polys found.");
         return {};
     }
 
@@ -425,7 +425,7 @@ std::vector<glm::vec3> SGCore::Navigation::NavMesh::findPath(const glm::vec3& st
                                                    straightPath, nullptr, nullptr,
                                                    &straightPathCount, maxPolygons)))
     {
-        LOG_E(SGCORE_TAG, "Cannot find straight path between polys.");
+        SG_LOG_E("Cannot find straight path between polys.");
         return {};
     }
 

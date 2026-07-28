@@ -48,7 +48,7 @@ void SGCore::Atlas::packTexture(const rectpack2D::rect_xywh& inRect, const IText
        inRect.x < 0 || inRect.y < 0 ||
        inRect.w < 0 || inRect.h < 0)
     {
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Can not pack texture into atlas! Out of max texture size bounds!\n"
               "\tCurrent atlas size: {}, {}.\n"
               "\tPack position: {}, {}.\n"

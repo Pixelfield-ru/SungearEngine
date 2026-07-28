@@ -275,8 +275,9 @@ SGCore::Ref<SGCore::Scene> SGCore::Scene::setCurrentScene(const std::string& sce
     {
         if(!std::filesystem::exists(foundIt->m_sceneLocalPath))
         {
-            LOG_E(SGCORE_TAG,
-                  "Cannot set scene '{}' as current! Local path '{}' of this scene is not valid.", sceneName, Utils::toUTF8(foundIt->m_sceneLocalPath.u16string()));
+            SG_LOG_E(
+                "Cannot set scene '{}' as current! Local path '{}' of this scene is not valid.", sceneName,
+                Utils::toUTF8(foundIt->m_sceneLocalPath));
             return nullptr;
         }
 
@@ -292,8 +293,8 @@ SGCore::Ref<SGCore::Scene> SGCore::Scene::setCurrentScene(const std::string& sce
     }
     else
     {
-        LOG_E(SGCORE_TAG,
-              "Cannot set scene '{}' as current! No such scene (maybe you forgot to add this scene).", sceneName);
+        SG_LOG_E(
+            "Cannot set scene '{}' as current! No such scene (maybe you forgot to add this scene).", sceneName);
     }
 
     return nullptr;
@@ -303,8 +304,9 @@ SGCore::Ref<SGCore::Scene> SGCore::Scene::loadSceneAndSetAsCurrent(const std::fi
 {
     if(!std::filesystem::exists(scenePath))
     {
-        LOG_E(SGCORE_TAG,
-              "Cannot set scene as current! Local path '{}' of this scene is not valid.", Utils::toUTF8(scenePath.u16string()));
+        SG_LOG_E(
+            "Cannot set scene as current! Local path '{}' of this scene is not valid.",
+            Utils::toUTF8(scenePath));
         return nullptr;
     }
 
@@ -318,8 +320,8 @@ SGCore::Ref<SGCore::Scene> SGCore::Scene::loadSceneAndSetAsCurrent(const std::fi
 
     if(!sceneLoadOutputLog.empty())
     {
-        LOG_E(SGCORE_TAG, "Error while loading scene by path '{}': {}",
-              Utils::toUTF8(scenePath.u16string()), sceneLoadOutputLog);
+        SG_LOG_E("Error while loading scene by path '{}': {}",
+                 Utils::toUTF8(scenePath), sceneLoadOutputLog);
     }
 
     return loadedScene;
@@ -353,14 +355,14 @@ void SGCore::Scene::saveToFile(const std::filesystem::path& path) noexcept
 
     FileUtils::writeToFile(path, Serde::Serializer::toFormat(*this), false, true);
 
-    LOG_I(SGCORE_TAG, "Scene '{}' has been saved!", m_metaInfo.m_sceneName)
+    SG_LOG_I("Scene '{}' has been saved!", m_metaInfo.m_sceneName);
 }
 
 bool SGCore::Scene::isSystemExists(const SGCore::Ref<SGCore::ISystem>& system) const noexcept
 {
     for(const auto& sys : m_systems)
     {
-        // LOG_W(SGCORE_TAG, "Current system '{}' (type id: '{}'), finding system '{}' (type id: '{}').", typeid(*sys).name(), sys->getTypeID(), typeid(*system).name(), system->getTypeID());
+        // SG_LOG_W("Current system '{}' (type id: '{}'), finding system '{}' (type id: '{}').", typeid(*sys).name(), sys->getTypeID(), typeid(*system).name(), system->getTypeID());
 
         if(sys->getTypeID() == system->getTypeID()) return true;
     }

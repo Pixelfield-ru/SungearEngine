@@ -39,7 +39,7 @@ float SGCore::UI::CSSMathNode::calculate(const float* parentSelectorValue) const
             }
             case CSSMathSign::MS_NO_SIGN:
             {
-                LOG_E(SGCORE_TAG, "CSSMathNode: unexpected error!: math node has sign equals to MS_NO_SIGN!");
+                SG_LOG_E("CSSMathNode: unexpected error!: math node has sign equals to MS_NO_SIGN!");
 
                 continue;
             }

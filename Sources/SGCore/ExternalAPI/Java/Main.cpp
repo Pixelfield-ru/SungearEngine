@@ -6,7 +6,6 @@
 
 #include "JNIManager.h"
 
-#include "SGCore/Logger/AndroidLogcat.h"
 #include "SGCore/Logger/Logger.h"
 #include "SGCore/Main/CoreMain.h"
 
@@ -29,7 +28,7 @@ void Java_com_pixelfield_sungearstarter_AndroidNativeMethods_startCore(JNIEnv* e
     if(!SGCore::Java::JNIManager::initialized())
     {
         // CAN NOT USE LOG_E MACRO BECAUSE Core IS NOT INITIALIZED
-        LOGCAT_E(SGCORE_TAG, "Fatal error while initializing SGCore::Java::JNIManager!")
+        SG_LOG_E("Fatal error while initializing SGCore::Java::JNIManager!")
         return;
     }
 
@@ -73,7 +72,7 @@ void Java_com_pixelfield_sungearstarter_AndroidNativeMethods_loadConfig(JNIEnv* 
     const char* nativeString = env->GetStringUTFChars(configPath, nullptr);
     if(nativeString == nullptr)
     {
-        LOG_E(SGCORE_TAG, "Can not get native string for configPath argument in Java native function 'Java_com_pixelfield_sungearstarter_AndroidNativeMethods_loadConfig'")
+        SG_LOG_E("Can not get native string for configPath argument in Java native function 'Java_com_pixelfield_sungearstarter_AndroidNativeMethods_loadConfig'")
         return;
     }
 

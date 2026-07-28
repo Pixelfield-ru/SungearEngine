@@ -57,10 +57,9 @@ void SGCore::GL46Shader::doCompile()
     {
         if(shaderPartHandle == 0)
         {
-            LOG_E(SGCORE_TAG,
-                  "Cannot create shader program: {} shader was not compiled and has handle equals to 0! Path: ",
-                  sgsleSubShaderTypeToString(shaderPartType),
-                  Utils::toUTF8(getPath().raw().u16string()))
+            SG_LOG_E("Cannot create shader program: {} shader was not compiled and has handle equals to 0! Path: ",
+                     sgsleSubShaderTypeToString(shaderPartType),
+                     Utils::toUTF8(getPath().raw()));
 
             destroy();
 
@@ -83,9 +82,9 @@ void SGCore::GL46Shader::doCompile()
             std::vector<GLchar> infoLog(maxLogLength);
             glGetProgramInfoLog(m_programHandle, maxLogLength, &maxLogLength, &infoLog[0]);
 
-            LOG_E(SGCORE_TAG,
+            SG_LOG_E(
                   "Error in shader program by path: {}\n{}",
-                  Utils::toUTF8(fileAsset->getPath().resolved().u16string()),
+                  Utils::toUTF8(fileAsset->getPath().resolved()),
                   infoLog.data());
         }
 
@@ -111,7 +110,7 @@ void SGCore::GL46Shader::bind() const noexcept
 // TODO: watch SGP1
 void SGCore::GL46Shader::destroy() noexcept
 {
-    LOG_I(SGCORE_TAG, "Destroying shader program with handle '{}'", m_programHandle)
+    SG_LOG_I("Destroying shader program with handle '{}'", m_programHandle);
 
     for(const auto& [shaderPartType, shaderPartHandle] : m_subShadersHandles)
     {
@@ -162,7 +161,7 @@ GLuint SGCore::GL46Shader::compileSubShader(SGCore::SGSLESubShaderType shaderTyp
 
     if(glShaderType == -1)
     {
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Error while compiling subshader! Unknown type of subshader.\n{}", SG_CURRENT_LOCATION_STR);
 
         return 0;
@@ -189,9 +188,9 @@ GLuint SGCore::GL46Shader::compileSubShader(SGCore::SGSLESubShaderType shaderTyp
 
         glDeleteShader(shaderPartHandle);
 
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Error in shader by path: {}\n{}",
-              Utils::toUTF8(fileAsset->getPath().resolved().u16string()),
+              Utils::toUTF8(fileAsset->getPath().resolved()),
               infoLog.data());
 
         return 0;

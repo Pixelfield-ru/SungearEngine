@@ -1035,7 +1035,7 @@ namespace SGCore::Serde
         if (parentAssetManager->isAssetExists(*assetAlias, *assetPath, *assetStorageType, *assetTypeID))
         {
             // setting m_asset to asset from parent asset manager
-            LOG_I(SGCORE_TAG, "Asset is already exist. Reference was resolved automatically.");
+            SG_LOG_I("Asset is already exist. Reference was resolved automatically.");
             valueView.m_data->m_asset =
                     std::static_pointer_cast<AssetT>(
                             parentAssetManager->loadExistingAsset(*assetAlias, *assetPath, *assetStorageType, *assetTypeID).m_asset);
@@ -1063,8 +1063,8 @@ namespace SGCore::Serde
         const auto assetStorageType = valueView.container().template getMember<AssetStorageType>("m_storedBy");
         const auto parentAssetManagerName = valueView.container().template getMember<std::string>("m_parentAssetManagerName");
 
-        LOG_I(SGCORE_TAG, "Deserializing AssetRef... AssetRef data: path: '{}', alias: '{}', asset type ID: '{}', stored by: '{}'",
-              SGCore::Utils::toUTF8(assetPath->resolved().u16string()),
+        SG_LOG_I("Deserializing AssetRef... AssetRef data: path: '{}', alias: '{}', asset type ID: '{}', stored by: '{}'",
+              SGCore::Utils::toUTF8(assetPath->resolved()),
               *assetAlias,
               *assetTypeID,
               std::to_underlying(*assetStorageType));
@@ -1082,7 +1082,7 @@ namespace SGCore::Serde
         if (parentAssetManager->isAssetExists(*assetAlias, *assetPath, *assetStorageType, *assetTypeID))
         {
             // setting m_asset to asset from parent asset manager
-            LOG_I(SGCORE_TAG, "Asset is already exist. Reference was resolved automatically.");
+            SG_LOG_I("Asset is already exist. Reference was resolved automatically.");
             valueView.m_data->m_asset =
                     std::static_pointer_cast<AssetT>(
                             parentAssetManager->loadExistingAsset(*assetAlias, *assetPath, *assetStorageType, *assetTypeID).m_asset);
@@ -1106,8 +1106,8 @@ namespace SGCore::Serde
         // not from assets package then we are trying to load asset from filesystem
         if(*assetStorageType == AssetStorageType::BY_PATH && std::filesystem::exists(assetPath->resolved()))
         {
-            LOG_I(SGCORE_TAG, "Loading AssetRef by path... AssetRef data: path: '{}', alias: '{}', type ID: '{}'",
-                  SGCore::Utils::toUTF8(assetPath->resolved().u16string()),
+            SG_LOG_I("Loading AssetRef by path... AssetRef data: path: '{}', alias: '{}', type ID: '{}'",
+                  SGCore::Utils::toUTF8(assetPath->resolved()),
                   *assetAlias,
                   *assetTypeID);
 

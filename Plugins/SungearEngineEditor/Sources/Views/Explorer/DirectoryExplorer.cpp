@@ -45,7 +45,7 @@ SGE::DirectoryExplorer::DirectoryExplorer()
 
             SGCore::FileUtils::writeToFile(byPath, serializedMaterial, false, false);
 
-            LOG_I(SGEDITOR_TAG, "Material by path '{}' created!", SGCore::Utils::toUTF8(byPath.u16string()));
+            SG_LOG_I("Material by path '{}' created!", SGCore::Utils::toUTF8(byPath.u16string()));
         }
     };
 

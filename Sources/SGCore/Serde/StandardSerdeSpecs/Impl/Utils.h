@@ -147,7 +147,7 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<InterpolatedPath, TFormatType>::serialize(SerializableValueView<const InterpolatedPath, TFormatType>& valueView) noexcept
     {
-        const std::string u8Path = SGCore::Utils::toUTF8(valueView.m_data->raw().u16string());
+        const std::string u8Path = SGCore::Utils::toUTF8(valueView.m_data->raw());
         valueView.container().setAsString(u8Path);
     }
 
@@ -163,7 +163,7 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<CMake::Preset, TFormatType>::serialize(SerializableValueView<const CMake::Preset, TFormatType>& valueView, const CMake::PresetsFileInfo& presetsFile) noexcept
     {
-        LOG_NOT_IMPLEMENTED(SGCORE_TAG)
+        SG_LOG_NOT_IMPLEMENTED();
     }
 
     template<FormatType TFormatType>
@@ -243,7 +243,7 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<CMake::PresetsFileInfo, TFormatType>::serialize(SerializableValueView<const CMake::PresetsFileInfo, TFormatType>& valueView) noexcept
     {
-        LOG_NOT_IMPLEMENTED(SGCORE_TAG)
+        SG_LOG_NOT_IMPLEMENTED();
     }
 
     template<FormatType TFormatType>
@@ -281,7 +281,9 @@ namespace SGCore::Serde
                     const char* envVarContent = std::getenv(variable.c_str());
                     if(envVarContent)
                     {
-                        LOG_E(SGCORE_TAG, "Error while loading presets from cmake: trying to load JSON file by path '{}' but met unknown environemnt variable '{}'", includedFilePath, variable);
+                        SG_LOG_E(
+                            "Error while loading presets from cmake: trying to load JSON file by path '{}' but met unknown environemnt variable '{}'",
+                            includedFilePath, variable);
                     }
 
                     std::cout << fmt::format("CMakePresets: found variable '{}', inserted value '{}'", variable, envVarContent) << std::endl;
@@ -297,7 +299,7 @@ namespace SGCore::Serde
                 if(!std::filesystem::exists(formattedPath))
                 {
                     // trying to apply local path
-                    formattedPath = SGCore::Utils::toUTF8(valueView.m_data->m_path.u16string()) + "/../" + formattedPath;
+                    formattedPath = SGCore::Utils::toUTF8(valueView.m_data->m_path) + "/../" + formattedPath;
                 }
 
                 std::string testDeserLog;
@@ -316,46 +318,46 @@ namespace SGCore::Serde
      // ======================================================== impl Logger::Message
 
     template<FormatType TFormatType>
-    void SerdeSpec<Logger::Message, TFormatType>::serialize(SerializableValueView<const Logger::Message, TFormatType>& valueView) noexcept
+    void SerdeSpec<spdlog::details::log_msg, TFormatType>::serialize(SerializableValueView<const spdlog::details::log_msg, TFormatType>& valueView) noexcept
     {
-        valueView.container().addMember("id", valueView.m_data->m_id);
-        valueView.container().addMember("level", valueView.m_data->m_level);
-        valueView.container().addMember("tag", valueView.m_data->m_tag);
-        valueView.container().addMember("message", valueView.m_data->m_message);
-        valueView.container().addMember("time", valueView.m_data->m_time);
+        valueView.container().addMember("level", valueView.m_data->level);
+        valueView.container().addMember("logger_name", valueView.m_data->logger_name);
+        valueView.container().addMember("payload", valueView.m_data->payload);
+        valueView.container().addMember("time", valueView.m_data->time);
+        valueView.container().addMember("thread_id", valueView.m_data->thread_id);
     }
 
     template<FormatType TFormatType>
-    void SerdeSpec<Logger::Message, TFormatType>::deserialize(DeserializableValueView<Logger::Message, TFormatType>& valueView) noexcept
+    void SerdeSpec<spdlog::details::log_msg, TFormatType>::deserialize(DeserializableValueView<spdlog::details::log_msg, TFormatType>& valueView) noexcept
     {
-        const auto id = valueView.container().template getMember<std::uint64_t>("id");
-        if(id)
-        {
-            valueView.m_data->m_level = *id;
-        }
-
-        const auto level = valueView.container().template getMember<Logger::Level>("level");
+        const auto level = valueView.container().template getMember<spdlog::level::level_enum>("level");
         if(level)
         {
-            valueView.m_data->m_level = *level;
+            valueView.m_data->level = *level;
         }
 
-        auto tag = valueView.container().template getMember<std::string>("tag");
-        if(tag)
+        auto loggerName = valueView.container().template getMember<std::string>("logger_name");
+        if(loggerName)
         {
-            valueView.m_data->m_tag = std::move(*tag);
+            valueView.m_data->logger_name = std::move(*loggerName);
         }
 
-        auto message = valueView.container().template getMember<std::string>("message");
-        if(message)
+        auto payload = valueView.container().template getMember<std::string>("payload");
+        if(payload)
         {
-            valueView.m_data->m_message = std::move(*message);
+            valueView.m_data->payload = std::move(*payload);
         }
 
-        const auto time = valueView.container().template getMember<std::chrono::system_clock::time_point>("time");
+        const auto time = valueView.container().template getMember<spdlog::log_clock::time_point>("time");
         if(time)
         {
             valueView.m_data->m_time = *time;
+        }
+
+        const auto threadID = valueView.container().template getMember<size_t>("thread_id");
+        if(threadID)
+        {
+            valueView.m_data->thread_id = *threadID;
         }
     }
 }

@@ -243,7 +243,7 @@ void SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmen
 
         if (colorAttachments >= DeviceGLInfo::getMaxFBColorAttachments())
         {
-            LOG_E(SGCORE_TAG,
+            SG_LOG_E(
                   "It is not possible to add more color attachments for framebuffer. Current color attachments count: {}. Max color attachments count: {}.\n{}",
                   colorAttachments,
                   DeviceGLInfo::getMaxFBColorAttachments(),
@@ -254,7 +254,7 @@ void SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmen
 
         if(curAttachmentType == attachmentType)
         {
-            LOG_E(SGCORE_TAG,
+            SG_LOG_E(
                   "Error when adding an attachment to the framebuffer: "
                   "an attachment with this type already exists.\n{}",
                   SGCore::Utils::sourceLocationToString(std::source_location::current()));
@@ -285,57 +285,57 @@ void SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmen
         {
             case GL_FRAMEBUFFER_UNDEFINED:
                 // Обработка ошибки: Фреймбуфер не определен
-                LOG_E(SGCORE_TAG,
+                SG_LOG_E(
                       "Error when adding attachment to framebuffer: GL_FRAMEBUFFER_UNDEFINED.\n{0}",
                       SG_CURRENT_LOCATION_STR);
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
                 // Обработка ошибки: Неполное прикрепление
-                LOG_E(SGCORE_TAG,
+                SG_LOG_E(
                       "Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT.\n{0}",
                       SG_CURRENT_LOCATION_STR);
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
                 // Обработка ошибки: Отсутствует прикрепление
-                LOG_E(SGCORE_TAG,
+                SG_LOG_E(
                       "Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT.\n{0}",
                       SG_CURRENT_LOCATION_STR);
                 break;
 #ifdef GL_VERSION_1_0
             case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
                 // Обработка ошибки: Неправильный буфер рисования
-                LOG_E(SGCORE_TAG,
+                SG_LOG_E(
                       "Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER.\n{0}",
                       SG_CURRENT_LOCATION_STR);
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
                 // Обработка ошибки: Неправильный буфер чтения
-                LOG_E(SGCORE_TAG,
+                SG_LOG_E(
                       "Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER.\n{0}",
                       SG_CURRENT_LOCATION_STR);
                 break;
 #endif
             case GL_FRAMEBUFFER_UNSUPPORTED:
                 // Обработка ошибки: Неподдерживаемый формат фреймбуфера
-                LOG_E(SGCORE_TAG,
+                SG_LOG_E(
                       "Error when adding attachment to framebuffer: GL_FRAMEBUFFER_UNSUPPORTED.\n{0}",
                       SG_CURRENT_LOCATION_STR);
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
                 // Обработка ошибки: Неправильное мультисэмплирование
-                LOG_E(SGCORE_TAG,
+                SG_LOG_E(
                       "Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE.\n{0}",
                       SG_CURRENT_LOCATION_STR);
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
                 // Обработка ошибки: Неправильные цели слоя
-                LOG_E(SGCORE_TAG,
+                SG_LOG_E(
                       "Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS.\n{0}",
                       SG_CURRENT_LOCATION_STR);
                 break;
             default:
                 // Обработка ошибки: Неизвестная ошибка
-                LOG_E(SGCORE_TAG,
+                SG_LOG_E(
                       "Error when adding attachment to framebuffer: unknown error.\n{}",
                       SG_CURRENT_LOCATION_STR);
                 break;

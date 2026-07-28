@@ -14,7 +14,7 @@ void SGCore::ShaderAnalyzedFile::doLoad(const InterpolatedPath& path)
 
     SGSLETranslator translator;
 
-    translator.m_config.m_outputDebugDirectoryPath = Utils::toUTF8((FileUtils::getAppPublicResourcesPath() / "SGSLETranslatorOutputDebug").u16string());
+    translator.m_config.m_outputDebugDirectoryPath = Utils::toUTF8((FileUtils::getAppPublicResourcesPath() / "SGSLETranslatorOutputDebug"));
     translator.processCode(path.resolved(), fileAsset->getData(), this);
 }
 

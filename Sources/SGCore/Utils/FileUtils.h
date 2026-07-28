@@ -32,7 +32,7 @@ namespace SGCore::FileUtils
 
         if(!stream)
         {
-            LOG_E(SGCORE_TAG, "Write bytes to file error: File does not exist. Path: {}", Utils::toUTF8(path.u16string()));
+            SG_LOG_E("Write bytes to file error: File does not exist. Path: {}", Utils::toUTF8(path));
             return;
         }
 
@@ -48,7 +48,7 @@ namespace SGCore::FileUtils
 
         if(!stream)
         {
-            LOG_E(SGCORE_TAG, "Write bytes to file error: File does not exist. Path: {}", Utils::toUTF8(path.u16string()));
+            SG_LOG_E("Write bytes to file error: File does not exist. Path: {}", Utils::toUTF8(path));
             return;
         }
 

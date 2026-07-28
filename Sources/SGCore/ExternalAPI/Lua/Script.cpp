@@ -15,7 +15,7 @@ void SGCore::Lua::Script::execute() noexcept
     if(!executionResult.valid())
     {
         const sol::error err = executionResult;
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Lua script execution error:\n{}\nIn file: '{}'",
               err.what(),
               Utils::toUTF8(getPath().resolved().u16string()));
@@ -155,10 +155,10 @@ void SGCore::Lua::Script::initializeLuaState() noexcept
 
         // something very special!
         // in theory, this case can only happen if the file simply does not exist or the paths in package.path are specified incorrectly
-        LOG_W(SGCORE_TAG,
+        SG_LOG_W(
             "Lua warning: '__sg_require' was not found module '{}'. Fallback to bult-in 'require'. Module will not be found in binary assets bundle in the future.\nIn script: '{}'",
             moduleName,
-            Utils::toUTF8(getPath().resolved().u16string()))
+            Utils::toUTF8(getPath().resolved().u16string()));
 
         return originalRequire(moduleName);
     });
@@ -177,7 +177,7 @@ void SGCore::Lua::Script::initializeLuaState() noexcept
     {
         const sol::error err = m_loadResult;
 
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Lua script compilation error:\n{}\nIn file: '{}'",
               err.what(),
               Utils::toUTF8(getPath().resolved().u16string()));

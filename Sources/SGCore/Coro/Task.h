@@ -45,9 +45,7 @@ namespace SGCore::Coro
             }
             catch(const std::exception& e)
             {
-                const std::string msg = fmt::format("SGCore::Coro : caught exception: {}", e.what());
-                LOG_E_UNFORMATTED(SGCORE_TAG, msg);
-                std::cerr << msg << std::endl;
+                SG_LOG_E("SGCore::Coro : caught exception: {}", e.what());
             }
         }
 

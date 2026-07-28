@@ -37,7 +37,7 @@ SGCore::Timer SGCore::CoreMain::m_fixedTimer { true, 100 };
 void SGCore::CoreMain::init()
 {
     HwExceptionHandler::setApplicationName("Sungear Engine");
-    HwExceptionHandler::setOutputLogFilePath(Utils::toUTF8(Logger::getDefaultLogger()->getLogFilePath().u16string()));
+    HwExceptionHandler::setOutputLogFilePath(Utils::toUTF8(Logger::getDefaultLogger()->getLogFilePath()));
     HwExceptionHandler::setupHandler();
     
     // ================================================================================
@@ -52,7 +52,7 @@ void SGCore::CoreMain::init()
                                      "In the variable value, specify the path to the Sungear Engine. "
                                      "Until then, you will not be able to build the project, as well as some other features of the engine.";
 
-        LOG_C_UNFORMATTED(SGCORE_TAG, errorMsg)
+        SG_LOG_C_UNFORMATTED(errorMsg)
         assert(errorMsg.c_str());
         std::exit(0);
     }
@@ -68,7 +68,7 @@ void SGCore::CoreMain::init()
                                          "Until then, you will not be able to build the project, as well as some other features of the engine.\n"
                                          "Current value of 'SUNGEAR_SOURCES_ROOT': " + std::string(sungearEngineRoot);
 
-            LOG_C_UNFORMATTED(SGCORE_TAG, errorMsg)
+            SG_LOG_C_UNFORMATTED(errorMsg)
             assert(errorMsg.c_str());
             std::exit(0);
         }
@@ -170,7 +170,7 @@ SGCore::Config SGCore::CoreMain::loadConfig(const std::filesystem::path& configP
 {
     if(!std::filesystem::exists(configPath))
     {
-        LOG_E(SGCORE_TAG, "Config file does not exist. Path: '{}'", Utils::toUTF8(configPath.u16string()))
+        SG_LOG_E("Config file does not exist. Path: '{}'", Utils::toUTF8(configPath));
         return{};
     }
 
@@ -182,9 +182,9 @@ SGCore::Config SGCore::CoreMain::loadConfig(const std::filesystem::path& configP
 
     if(!configLoadLog.empty())
     {
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Can not load config by path: '{}'.\nError: {}",
-              SGCore::Utils::toUTF8(configPath.u16string()),
+              SGCore::Utils::toUTF8(configPath),
               configLoadLog);
     }
     else
@@ -223,8 +223,7 @@ void SGCore::CoreMain::fixedUpdateStart(const double& dt, const double& fixedDt)
         catch(const std::exception& e)
         {
             std::string what = e.what();
-            LOG_E(SGCORE_TAG,
-                  "Error while fixedUpdate plugin. Error is: {}", what);
+            SG_LOG_E("Error while fixedUpdate plugin. Error is: {}", what);
         }*/
     }
 }
@@ -254,7 +253,7 @@ void SGCore::CoreMain::updateStart(const double& dt, const double& fixedDt)
         catch(const std::exception& e)
         {
             std::string what = e.what();
-            LOG_E(SGCORE_TAG, "Error while update plugin. Error is: {}", what);
+            SG_LOG_E("Error while update plugin. Error is: {}", what);
         }*/
     }
 }

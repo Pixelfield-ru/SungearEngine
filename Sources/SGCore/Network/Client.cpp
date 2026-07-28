@@ -37,14 +37,14 @@ void SGCore::Net::Client::connect(const std::string& endpointAddress,
     m_stream.m_socket->async_connect(serverEndpoint, [this, retriesCount, retryInterval, &serverEndpoint](boost::system::error_code errorCode) -> Coro::Task<> {
         if(retriesCount == 0)
         {
-            LOG_E(SGCORE_TAG, "Server {} does not respond.", serverEndpoint.address().to_string());
+            SG_LOG_E("Server {} does not respond.", serverEndpoint.address().to_string());
             setConnected(false);
             co_return;
         }
 
         if(errorCode)
         {
-            LOG_E(SGCORE_TAG, "Cannot connect to server {}: {}. Retrying...", serverEndpoint.address().to_string(), errorCode.message());
+            SG_LOG_E("Cannot connect to server {}: {}. Retrying...", serverEndpoint.address().to_string(), errorCode.message());
 
             co_await retryInterval;
 
@@ -54,7 +54,7 @@ void SGCore::Net::Client::connect(const std::string& endpointAddress,
         }
 
         setConnected(true);
-        LOG_I(SGCORE_TAG, "Connected to server {}", serverEndpoint.address().to_string());
+        SG_LOG_I("Connected to server {}", serverEndpoint.address().to_string());
     });
 }
 

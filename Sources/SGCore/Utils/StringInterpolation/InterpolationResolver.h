@@ -93,7 +93,7 @@ namespace SGCore
             const auto& globalMarkup = InterpolationMarkupData<std::filesystem::path>::instance().getMarkup();
 
             std::filesystem::path output;
-            const std::string rawAsString = Utils::toUTF8(raw.u16string());
+            const std::string rawAsString = Utils::toUTF8(raw);
 
             std::string currentKey;
             bool enableKeyWrite = false;
@@ -124,7 +124,7 @@ namespace SGCore
                     }
                     else
                     {
-                        LOG_E(SGCORE_TAG,
+                        SG_LOG_E(
                               "Can not find key '{}' to resolve path '{}'! Please, add this key to InterpolationMarkup<std::filesystem::path>!",
                               currentKey, rawAsString);
                     }
@@ -184,7 +184,7 @@ namespace SGCore
                     }
                     else
                     {
-                        LOG_E(SGCORE_TAG,
+                        SG_LOG_E(
                               "Can not find key '{}' to resolve string '{}'! Please, add this key to InterpolationMarkup<std::string>!",
                               currentKey, raw);
                     }

@@ -38,7 +38,7 @@ namespace SGCore
                 return;
             }*/
 
-            LOG_E_UNFORMATTED(SGCORE_TAG, formatted)
+            SG_LOG_E_UNFORMATTED(formatted);
             // std::cerr << formatted << std::endl;
             // fprintf( stderr, formatted.c_str());
         }
@@ -52,14 +52,14 @@ namespace SGCore
             GLint extensionsNum = 0;
             glGetIntegerv(GL_NUM_EXTENSIONS, &extensionsNum);
             
-            LOG_I(SGCORE_TAG, "OpenGL supporting extensions count: {}", extensionsNum);
-            LOG_I(SGCORE_TAG, "OpenGL supporting extensions:");
+            SG_LOG_I("OpenGL supporting extensions count: {}", extensionsNum);
+            SG_LOG_I("OpenGL supporting extensions:");
             
             for(int i = 0; i < extensionsNum; i++)
             {
                 const char* extName = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i));
                 s_supportingExtensions.insert(extName);
-                LOG_I_UNFORMATTED(SGCORE_TAG, extName);
+                SG_LOG_I_UNFORMATTED(extName);
             }
             
             VERSION = reinterpret_cast<const char*>(glGetString(GL_VERSION));
@@ -81,20 +81,20 @@ namespace SGCore
                 MAX_TEXTURE_MAX_ANISOTROPY = 0.0f;
             }
 
-            LOG_I(SGCORE_TAG, "============== DEVICE OPENGL INFO ==============");
+            SG_LOG_I("============== DEVICE OPENGL INFO ==============");
 
-            LOG_I(SGCORE_TAG, "GL_VERSION: {}\n", VERSION);
+            SG_LOG_I("GL_VERSION: {}\n", VERSION);
 
-            LOG_I(SGCORE_TAG, "GL_MAX_COLOR_ATTACHMENTS: {}", MAX_FB_COLOR_ATTACHMENTS);
-            LOG_I(SGCORE_TAG, "GL_MAX_DRAW_BUFFERS: {}", MAX_DRAW_BUFFERS);
-            LOG_I(SGCORE_TAG, "GL_MAX_UNIFORM_BUFFER_BINDINGS: {}", MAX_UNIFORM_BUFFER_BINDINGS);
-            LOG_I(SGCORE_TAG, "GL_MAX_TEXTURE_IMAGE_UNITS: {}", MAX_TEXTURE_IMAGE_UNITS);
-            LOG_I(SGCORE_TAG, "GL_MAX_TEXTURE_MAX_ANISOTROPY: {}", MAX_TEXTURE_MAX_ANISOTROPY);
-            LOG_I(SGCORE_TAG, "GL_MAX_TEXTURE_BUFFER_SUZE: {}", MAX_TEXTURE_BUFFER_SIZE);
-            LOG_I(SGCORE_TAG, "GL_MAX_TEXTURE_SIZE: {}", MAX_TEXTURE_SIZE);
-            LOG_I(SGCORE_TAG, "GL_MAX_VERTEX_ATTRIBS: {}", MAX_VERTEX_ATTRIBS);
+            SG_LOG_I("GL_MAX_COLOR_ATTACHMENTS: {}", MAX_FB_COLOR_ATTACHMENTS);
+            SG_LOG_I("GL_MAX_DRAW_BUFFERS: {}", MAX_DRAW_BUFFERS);
+            SG_LOG_I("GL_MAX_UNIFORM_BUFFER_BINDINGS: {}", MAX_UNIFORM_BUFFER_BINDINGS);
+            SG_LOG_I("GL_MAX_TEXTURE_IMAGE_UNITS: {}", MAX_TEXTURE_IMAGE_UNITS);
+            SG_LOG_I("GL_MAX_TEXTURE_MAX_ANISOTROPY: {}", MAX_TEXTURE_MAX_ANISOTROPY);
+            SG_LOG_I("GL_MAX_TEXTURE_BUFFER_SUZE: {}", MAX_TEXTURE_BUFFER_SIZE);
+            SG_LOG_I("GL_MAX_TEXTURE_SIZE: {}", MAX_TEXTURE_SIZE);
+            SG_LOG_I("GL_MAX_VERTEX_ATTRIBS: {}", MAX_VERTEX_ATTRIBS);
 
-            LOG_I(SGCORE_TAG, "================================================");
+            SG_LOG_I("================================================");
         }
 
         [[maybe_unused]] [[nodiscard]] static auto getMaxFBColorAttachments() noexcept

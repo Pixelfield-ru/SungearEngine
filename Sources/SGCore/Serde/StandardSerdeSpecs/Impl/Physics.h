@@ -111,7 +111,7 @@ namespace SGCore::Serde
         }
         else
         {
-            LOG_E(SGCORE_TAG, "Error while serializing physical collision shape: unknown shape type: '{}'", shapeType);
+            SG_LOG_E("Error while serializing physical collision shape: unknown shape type: '{}'", shapeType);
         }
     }
 
@@ -130,7 +130,7 @@ namespace SGCore::Serde
         const auto shapeType = valueView.container().template getMember<int>("m_shapeType");
         if(!shapeType)
         {
-            LOG_E(SGCORE_TAG, "Error while deserializing physical collision shape: no 'm_shapeType' field detected!");
+            SG_LOG_E("Error while deserializing physical collision shape: no 'm_shapeType' field detected!");
             return;
         }
 
@@ -141,7 +141,7 @@ namespace SGCore::Serde
             const auto shape = valueView.container().template getMember<Scope<btCompoundShape>>("m_shapeObject", shapeTransform, parentRigidbody3D);
             if(!shape)
             {
-                LOG_E(SGCORE_TAG, "Error while deserializing physical collision shape: no 'm_shapeObject' field detected!");
+                SG_LOG_E("Error while deserializing physical collision shape: no 'm_shapeObject' field detected!");
                 return;
             }
 
@@ -163,7 +163,7 @@ namespace SGCore::Serde
         }
         else
         {
-            LOG_E(SGCORE_TAG, "Error while deserializing physical collision shape: unknown shape type: '{}'", *shapeType);
+            SG_LOG_E("Error while deserializing physical collision shape: unknown shape type: '{}'", *shapeType);
         }
     }
 

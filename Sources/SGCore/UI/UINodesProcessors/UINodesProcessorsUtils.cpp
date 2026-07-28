@@ -8,7 +8,7 @@ void SGCore::UI::UINodesProcessorsUtils::printUnknownAttributeError(const UIDocu
                                                                     const pugi::xml_attribute& attribute,
                                                                     const pugi::xml_node& xmlNode) noexcept
 {
-    LOG_E(SGCORE_TAG,
+    SG_LOG_E(
           "Can not process UIDocument correctly: unknown attribute '{}' (value: '{}') in node '{}'.\n"
           "In XML file: '{}'",
           attribute.name(),

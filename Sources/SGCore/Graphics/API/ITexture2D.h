@@ -166,7 +166,7 @@ namespace SGCore
                               "Texture size: {}x{}\n"
                               "Offset to subdata: {}\n"
                               "Elements count to subdata: {}",
-                              Utils::toUTF8(getPath().resolved().u16string()),
+                              Utils::toUTF8(getPath().resolved()),
                               getAlias(),
                               m_width,
                               m_height,
@@ -206,7 +206,7 @@ namespace SGCore
                               "Texture size: width: {}, height: {}\n"
                               "Area offset to subdata: x: {}, y: {}\n"
                               "Area size to subdata: width: {}, height: {}",
-                              Utils::toUTF8(getPath().resolved().u16string()),
+                              Utils::toUTF8(getPath().resolved()),
                               getAlias(),
                               m_width,
                               m_height,

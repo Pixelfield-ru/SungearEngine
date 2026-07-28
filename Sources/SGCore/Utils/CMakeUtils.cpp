@@ -18,7 +18,7 @@ SGCore::CMake::PresetsFileInfo::PresetsFileInfo(const std::filesystem::path& cma
 {
     if(!std::filesystem::exists(cmakePresetsPath))
     {
-        LOG_W(SGCORE_TAG, "Error while parsing CMakePresets.json. Path '{}' does not exist.", Utils::toUTF8(cmakePresetsPath.u16string()))
+        SG_LOG_W("Error while parsing CMakePresets.json. Path '{}' does not exist.", Utils::toUTF8(cmakePresetsPath));
         return;
     }
 
@@ -33,7 +33,7 @@ SGCore::CMake::PresetsFileInfo::PresetsFileInfo(const std::filesystem::path& cma
 
     if(!log.empty())
     {
-        LOG_W(SGCORE_TAG, "Warnings while parsing CMakePresets.json by path '{}': {}", Utils::toUTF8(cmakePresetsPath.u16string()), log)
+        SG_LOG_W("Warnings while parsing CMakePresets.json by path '{}': {}", Utils::toUTF8(cmakePresetsPath), log);
     }
 }
 

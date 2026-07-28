@@ -33,7 +33,7 @@ void SGCore::UI::UITemplateUsageProcessor::processElement(const Ref<TemplateElem
             const auto placeNameAttrib = childNode.attribute("name");
             if(!placeNameAttrib)
             {
-                LOG_W(SGCORE_TAG, "XML place element must have name attribute.")
+                SG_LOG_W("XML place element must have name attribute.");
                 continue;
             }
 
@@ -70,10 +70,10 @@ void SGCore::UI::UITemplateUsageProcessor::processElement(const Ref<TemplateElem
 
             if(places.empty())
             {
-                LOG_E(SGCORE_TAG,
+                SG_LOG_E(
                       "Unable to find any place with name '{}' to insert elements in template '{}'",
                       placeName,
-                      templateElement->m_name)
+                      templateElement->m_name);
                 continue;
             }
 
@@ -95,7 +95,7 @@ void SGCore::UI::UITemplateUsageProcessor::processElement(const Ref<TemplateElem
     {
         if(templateElement->m_attributes.contains(attrib.name())) continue;
 
-        LOG_W(SGCORE_TAG,
+        SG_LOG_W(
               "In UI Document by path '{}' in instantiation of template '{}': unknown attribute '{}' of template was used. Attribute was ignored\n"
               "Line: {}\n"
               "Column: {}",
@@ -103,7 +103,7 @@ void SGCore::UI::UITemplateUsageProcessor::processElement(const Ref<TemplateElem
               templateElement->m_name,
               attrib.name(),
               nodeColumnLine.first,
-              nodeColumnLine.second)
+              nodeColumnLine.second);
     }
 
     // then processing template attributes
@@ -112,7 +112,7 @@ void SGCore::UI::UITemplateUsageProcessor::processElement(const Ref<TemplateElem
         const auto& attrib = elementNode.attribute(templateAttribName);
         if(!attrib && templateAttrib.m_isRequired)
         {
-            LOG_E(SGCORE_TAG,
+            SG_LOG_E(
                   "In UI Document by path '{}' in instantiation of template '{}': attribute '{}' is required\n"
                   "Line: {}\n"
                   "Column: {}",
@@ -120,7 +120,7 @@ void SGCore::UI::UITemplateUsageProcessor::processElement(const Ref<TemplateElem
                   templateElement->m_name,
                   templateAttribName,
                   nodeColumnLine.first,
-                  nodeColumnLine.second)
+                  nodeColumnLine.second);
             continue;
         }
 

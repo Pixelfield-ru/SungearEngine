@@ -15,33 +15,33 @@
 
 void SGCore::GL4Renderer::init() noexcept
 {
-    LOG_I(SGCORE_TAG, "-----------------------------------");
-    LOG_I(SGCORE_TAG, "GLRenderer initializing...");
+    SG_LOG_I("-----------------------------------");
+    SG_LOG_I("GLRenderer initializing...");
 
 #if SG_PLATFORM_PC
     if(!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     {
-        LOG_I(SGCORE_TAG, "Failed to initialize GLAD.");
+        SG_LOG_I("Failed to initialize GLAD.");
     }
     else
     {
-        LOG_I(SGCORE_TAG, "GLAD initialized!");
+        SG_LOG_I("GLAD initialized!");
     }
 #elif SG_PLATFORM_OS_ANDROID
     // -------------------------------------
 
     if(!gladLoadGLES2Loader((GLADloadproc) eglGetProcAddress))
     {
-        LOG_I(SGCORE_TAG, "Failed to initialize GLAD.");
+        SG_LOG_I("Failed to initialize GLAD.");
     }
     else
     {
-        LOG_I(SGCORE_TAG, "GLAD initialized!");
+        SG_LOG_I("GLAD initialized!");
     }
 #endif
 
     printInfo();
-    LOG_I(SGCORE_TAG, "-----------------------------------");
+    SG_LOG_I("-----------------------------------");
 
     DeviceGLInfo::init();
 
@@ -100,7 +100,7 @@ bool SGCore::GL4Renderer::confirmSupport() noexcept
 
     /*if(glMajorVersion < 4)
     {
-        LOG_E(SGCORE_TAG, "OpengGL 4.0 is not supported!\n{}", SG_CURRENT_LOCATION_STR);
+        SG_LOG_E("OpengGL 4.0 is not supported!\n{}", SG_CURRENT_LOCATION_STR);
 
         return false;
     }*/
@@ -129,8 +129,7 @@ void SGCore::GL4Renderer::checkForErrors(const std::source_location& location) n
 
     if(errCode != 0)
     {
-        LOG_E(SGCORE_TAG, "OpenGL error (code: {}): {}", errCode, errStr);
-        std::cerr << fmt::format("OpenGL error (code: {}): {}", errCode, errStr) << std::endl;
+        SG_LOG_E("OpenGL error (code: {}): {}", errCode, errStr);
     }
 }
 

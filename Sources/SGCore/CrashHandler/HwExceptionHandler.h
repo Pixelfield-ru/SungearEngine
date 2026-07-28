@@ -8,7 +8,6 @@
 
 #include "SGCore/Utils/Platform.h"
 #include "SGCore/Utils/Utils.h"
-#include "SGCore/Logger/AndroidLogcat.h"
 #include "SGCore/Logger/Logger.h"
 
 #if SG_PLATFORM_OS_WINDOWS

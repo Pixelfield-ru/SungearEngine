@@ -73,7 +73,7 @@ namespace SGCore
             }
 
 #ifdef SUNGEAR_DEBUG
-            LOG_I(SGCORE_TAG, "Set type ID {} for type '{}'", m_typeID, typeid(T).name());
+            SG_LOG_I("Set type ID {} for type '{}'", m_typeID, typeid(T).name());
 #endif
 
             StaticTypeIDsContainer::addTypeID(m_typeID);

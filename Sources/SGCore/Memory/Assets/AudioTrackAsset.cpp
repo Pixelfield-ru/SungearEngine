@@ -88,7 +88,7 @@ void SGCore::AudioTrackAsset::doLoad(const InterpolatedPath& path)
     }
     else
     {
-        LOG_E(SGCORE_TAG, "Audio file with extension '{}' is not supported. Path to audio file: '{}'", extension, Utils::toUTF8(path.resolved().u16string()));
+        SG_LOG_E("Audio file with extension '{}' is not supported. Path to audio file: '{}'", extension, Utils::toUTF8(path.resolved()));
         return;
     }
     
@@ -96,7 +96,7 @@ void SGCore::AudioTrackAsset::doLoad(const InterpolatedPath& path)
 
     if(!m_dataBuffer)
     {
-        LOG_E(SGCORE_TAG, "Could not load audio from memory: Buffer is nullptr.");
+        SG_LOG_E("Could not load audio from memory: Buffer is nullptr.");
         return;
     }
 
@@ -113,7 +113,7 @@ void SGCore::AudioTrackAsset::doLoad(const InterpolatedPath& path)
         std::memcpy(tmpBuf, m_dataBuffer, 4);
         if(std::strncmp(tmpBuf, "RIFF", 4) != 0)
         {
-            LOG_E(SGCORE_TAG, "Could not load WAV audio from memory: ChunkID does not contain 'RIFF' letters.");
+            SG_LOG_E("Could not load WAV audio from memory: ChunkID does not contain 'RIFF' letters.");
             return;
         }
 
@@ -121,7 +121,7 @@ void SGCore::AudioTrackAsset::doLoad(const InterpolatedPath& path)
         std::memcpy(tmpBuf, m_dataBuffer + 8, 4);
         if(std::strncmp(tmpBuf, "WAVE", 4) != 0)
         {
-            LOG_E(SGCORE_TAG, "Could not load WAV audio from memory: Format does not contain 'WAVE' letters.");
+            SG_LOG_E("Could not load WAV audio from memory: Format does not contain 'WAVE' letters.");
             return;
         }
 
@@ -129,7 +129,7 @@ void SGCore::AudioTrackAsset::doLoad(const InterpolatedPath& path)
         std::memcpy(tmpBuf, m_dataBuffer + 12, 4);
         if(std::strncmp(tmpBuf, "fmt ", 4) != 0)
         {
-            LOG_E(SGCORE_TAG, "Could not load WAV audio from memory: Subchunk1ID does not contain 'fmt ' letters.");
+            SG_LOG_E("Could not load WAV audio from memory: Subchunk1ID does not contain 'fmt ' letters.");
             return;
         }
 
@@ -138,44 +138,44 @@ void SGCore::AudioTrackAsset::doLoad(const InterpolatedPath& path)
         std::memcpy(&subchunk1Size, m_dataBuffer + 16, 4);
         if constexpr(!isLittleNative)
         {
-            SGCore::Utils::swapEndian(tmpBuf, 4);
+            Utils::swapEndian(tmpBuf, 4);
         }
         std::cout << subchunk1Size << std::endl;
 
         std::memcpy(&m_audioFormat, m_dataBuffer + 20, 2);
         if constexpr(!isLittleNative)
         {
-            SGCore::Utils::swapEndian(tmpBuf, 2);
+            Utils::swapEndian(tmpBuf, 2);
         }
 
         std::memcpy(&m_numChannels, m_dataBuffer + 22, 2);
         if constexpr(!isLittleNative)
         {
-            SGCore::Utils::swapEndian(tmpBuf, 2);
+            Utils::swapEndian(tmpBuf, 2);
         }
 
         std::memcpy(&m_sampleRate, m_dataBuffer + 24, 4);
         if constexpr(!isLittleNative)
         {
-            SGCore::Utils::swapEndian(tmpBuf, 4);
+            Utils::swapEndian(tmpBuf, 4);
         }
 
         std::memcpy(&m_byteRate, m_dataBuffer + 28, 4);
         if constexpr(!isLittleNative)
         {
-            SGCore::Utils::swapEndian(tmpBuf, 4);
+            Utils::swapEndian(tmpBuf, 4);
         }
 
         std::memcpy(&m_blockAlign, m_dataBuffer + 32, 2);
         if constexpr(!isLittleNative)
         {
-            SGCore::Utils::swapEndian(tmpBuf, 2);
+            Utils::swapEndian(tmpBuf, 2);
         }
 
         std::memcpy(&m_bitsPerSample, m_dataBuffer + 34, 2);
         if constexpr(!isLittleNative)
         {
-            SGCore::Utils::swapEndian(tmpBuf, 2);
+            Utils::swapEndian(tmpBuf, 2);
         }
 
         std::uint32_t offsetToData = 20 + subchunk1Size;
@@ -206,7 +206,7 @@ void SGCore::AudioTrackAsset::doLoad(const InterpolatedPath& path)
 
         if(!dataFound)
         {
-            LOG_E(SGCORE_TAG, "Could not load WAV audio from memory: Unable to find 'data' chunk.");
+            SG_LOG_E("Could not load WAV audio from memory: Unable to find 'data' chunk.");
             return;
         }
 
@@ -227,7 +227,7 @@ void SGCore::AudioTrackAsset::doLoad(const InterpolatedPath& path)
 
         if(stbErr != STBVorbisError::VORBIS__no_error)
         {
-            LOG_E(SGCORE_TAG, "Could not load ogg from memory. Error is: {0}", stbErr);
+            SG_LOG_E("Could not load ogg from memory. Error is: {0}", stbErr);
             stb_vorbis_close(vorbis);
             return;
         }
@@ -244,7 +244,8 @@ void SGCore::AudioTrackAsset::doLoad(const InterpolatedPath& path)
         int samplesCount = stb_vorbis_get_samples_short_interleaved(vorbis, m_numChannels, (short*) m_dataBuffer, trackByteSize);
         // int samplesCount = stb_vorbis_decode_memory((std::uint8_t*) m_dataBuffer, trackByteSize, &m_numChannels, &m_sampleRate, (short**) &m_dataBuffer);
 
-        LOG_I(SGCORE_TAG, "Loaded audio: samples count: {}, stream length: {}, track byte size: {}", samplesCount, vorbis->stream_len, trackByteSize);
+        SG_LOG_I("Loaded audio: samples count: {}, stream length: {}, track byte size: {}", samplesCount,
+                 vorbis->stream_len, trackByteSize);
 
         stb_vorbis_close(vorbis);
     }

@@ -139,7 +139,7 @@ void SGCore::AssetManager::loadPackage(const InterpolatedPath& fromDirectory,
         }
         else
         {
-            LOG_W(SGCORE_TAG, "Resolver of conflicts for asset manager with name '{}' was not set! Conflicts were not resolved.", m_name);
+            SG_LOG_W("Resolver of conflicts for asset manager with name '{}' was not set! Conflicts were not resolved.", m_name);
 
             resolveMemberAssetsReferences();
         }
@@ -151,8 +151,8 @@ void SGCore::AssetManager::loadPackage(const InterpolatedPath& fromDirectory,
 
     if(!outputLog.empty())
     {
-        LOG_E(SGCORE_TAG, "Error while loading package with assets (directory of package: '{}', name of package '{}'): {}",
-              Utils::toUTF8(fromDirectory.resolved().u16string()), packageName, outputLog);
+        SG_LOG_E("Error while loading package with assets (directory of package: '{}', name of package '{}'): {}",
+                 Utils::toUTF8(fromDirectory.resolved()), packageName, outputLog);
     }
 }
 
@@ -232,10 +232,10 @@ bool SGCore::AssetManager::checkForAssetExistenceInFilesystem(int64_t assetTypeI
 {
     if(!std::filesystem::exists(assetPath.resolved()))
     {
-        LOG_E(SGCORE_TAG,
-              "Can not load asset (typeID: '{}'): this path does not exist.\nAsset path: '{}'",
-              assetTypeID,
-              Utils::toUTF8(assetPath.resolved().u16string()));
+        SG_LOG_E(
+            "Can not load asset (typeID: '{}'): this path does not exist.\nAsset path: '{}'",
+            assetTypeID,
+            Utils::toUTF8(assetPath.resolved()));
 
         return false;
     }

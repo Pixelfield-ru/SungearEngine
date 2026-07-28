@@ -125,9 +125,9 @@ void coreInit()
 
     if(!configLoadLog.empty())
     {
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Can not load config by path: '{}'.\nError: {}",
-              SGCore::Utils::toUTF8(configPath.u16string()),
+              SGCore::Utils::toUTF8(configPath),
               configLoadLog);
     }
 

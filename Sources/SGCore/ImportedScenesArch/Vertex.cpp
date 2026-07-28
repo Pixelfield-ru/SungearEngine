@@ -21,5 +21,5 @@ void SGCore::Vertex::addWeightData(const float& weight, const std::int32_t& bone
         }
     }
 
-    LOG_W(SGCORE_TAG, "Can not add weight data to vertex: there are no free slots for new bones for vertex!");
+    SG_LOG_W("Cannot add weight data to vertex: there are no free slots for new bones for vertex!");
 }

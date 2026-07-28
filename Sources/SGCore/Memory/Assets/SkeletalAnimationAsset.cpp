@@ -5,7 +5,7 @@
 
 void SGCore::SkeletalAnimationAsset::doLoad(const InterpolatedPath& path)
 {
-    LOG_NOT_SUPPORTED_FUNC(SGCORE_TAG);
+    SG_LOG_NOT_SUPPORTED_FUNC();
 }
 
 void SGCore::SkeletalAnimationAsset::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
@@ -29,7 +29,7 @@ void SGCore::SkeletalAnimationAsset::doLoadFromBinaryFile(SGCore::AssetManager* 
 void SGCore::SkeletalAnimationAsset::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolicy,
                                                       SGCore::Ref<SGCore::Threading::Thread> lazyLoadInThread) noexcept
 {
-    LOG_NOT_SUPPORTED_FUNC(SGCORE_TAG);
+    SG_LOG_NOT_SUPPORTED_FUNC();
 }
 
 void SGCore::SkeletalAnimationAsset::changeBoneName(const std::string& lastBoneName,

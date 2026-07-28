@@ -35,7 +35,7 @@ void SGCore::EntityBaseInfo::setParent(const ECS::entity_t& parent,
 
     if(!inRegistry.valid(m_thisEntity))
     {
-        LOG_E(SGCORE_TAG, "Can not set parent for entity '{}'. Entity '{}' (current) is not valid.",
+        SG_LOG_E("Can not set parent for entity '{}'. Entity '{}' (current) is not valid.",
               std::to_underlying(m_thisEntity),
               std::to_underlying(m_thisEntity));
 
@@ -52,7 +52,7 @@ void SGCore::EntityBaseInfo::setParent(const ECS::entity_t& parent,
 
         if(!inRegistry.valid(m_parent))
         {
-            LOG_E(SGCORE_TAG, "Can not detach entity '{}' from entity '{}'. Entity '{}' (parent) is not valid.",
+            SG_LOG_E("Can not detach entity '{}' from entity '{}'. Entity '{}' (parent) is not valid.",
                   std::to_underlying(m_thisEntity),
                   std::to_underlying(m_parent),
                   std::to_underlying(m_parent));
@@ -62,7 +62,7 @@ void SGCore::EntityBaseInfo::setParent(const ECS::entity_t& parent,
         auto* parentBaseInfo = inRegistry.tryGet<EntityBaseInfo>(m_parent);
         if(!parentBaseInfo)
         {
-            LOG_E(SGCORE_TAG, "Can not detach entity '{}' from entity '{}'. Entity '{}' (parent) does not have EntityBaseInfo component.",
+            SG_LOG_E("Can not detach entity '{}' from entity '{}'. Entity '{}' (parent) does not have EntityBaseInfo component.",
                   std::to_underlying(m_thisEntity),
                   std::to_underlying(m_parent),
                   std::to_underlying(m_parent));
@@ -87,7 +87,7 @@ void SGCore::EntityBaseInfo::setParent(const ECS::entity_t& parent,
 
     if(!inRegistry.valid(parent))
     {
-        LOG_E(SGCORE_TAG, "Can not attach entity '{}' to entity '{}'. Entity '{}' (parent) is not valid.",
+        SG_LOG_E("Can not attach entity '{}' to entity '{}'. Entity '{}' (parent) is not valid.",
               std::to_underlying(m_thisEntity),
               std::to_underlying(parent),
               std::to_underlying(parent));
@@ -97,7 +97,7 @@ void SGCore::EntityBaseInfo::setParent(const ECS::entity_t& parent,
     auto* parentBaseInfo = inRegistry.tryGet<EntityBaseInfo>(parent);
     if(!parentBaseInfo)
     {
-        LOG_E(SGCORE_TAG, "Can not attach entity '{}' to entity '{}'. Entity '{}' (parent) does not have EntityBaseInfo component.",
+        SG_LOG_E("Can not attach entity '{}' to entity '{}'. Entity '{}' (parent) does not have EntityBaseInfo component.",
               std::to_underlying(m_thisEntity),
               std::to_underlying(parent),
               std::to_underlying(parent));
@@ -126,7 +126,7 @@ void SGCore::EntityBaseInfo::addChild(const ECS::entity_t& child,
 
     if(!inRegistry.valid(m_thisEntity))
     {
-        LOG_E(SGCORE_TAG, "Can not add child entity '{}' to entity '{}'. Entity '{}' (parent) is not valid.",
+        SG_LOG_E("Can not add child entity '{}' to entity '{}'. Entity '{}' (parent) is not valid.",
               std::to_underlying(child),
               std::to_underlying(m_thisEntity),
               std::to_underlying(m_thisEntity));
@@ -135,7 +135,7 @@ void SGCore::EntityBaseInfo::addChild(const ECS::entity_t& child,
 
     if(!inRegistry.valid(child))
     {
-        LOG_E(SGCORE_TAG, "Can not add child entity '{}' to entity '{}'. Entity '{}' (child) is not valid.",
+        SG_LOG_E("Can not add child entity '{}' to entity '{}'. Entity '{}' (child) is not valid.",
               std::to_underlying(child),
               std::to_underlying(m_thisEntity),
               std::to_underlying(child));
@@ -145,7 +145,7 @@ void SGCore::EntityBaseInfo::addChild(const ECS::entity_t& child,
     auto* childBaseInfo = inRegistry.tryGet<EntityBaseInfo>(child);
     if(!childBaseInfo)
     {
-        LOG_E(SGCORE_TAG, "Can not add child entity '{}' to entity '{}'. Entity '{}' (child) does not have EntityBaseInfo component.",
+        SG_LOG_E("Can not add child entity '{}' to entity '{}'. Entity '{}' (child) does not have EntityBaseInfo component.",
               std::to_underlying(child),
               std::to_underlying(m_thisEntity),
               std::to_underlying(child));
@@ -167,7 +167,7 @@ void SGCore::EntityBaseInfo::removeChild(const ECS::entity_t& child,
 
     if(!inRegistry.valid(m_thisEntity))
     {
-        LOG_E(SGCORE_TAG, "Can not remove child entity '{}' from entity '{}'. Entity '{}' (parent) is not valid.",
+        SG_LOG_E("Can not remove child entity '{}' from entity '{}'. Entity '{}' (parent) is not valid.",
               std::to_underlying(child),
               std::to_underlying(m_thisEntity),
               std::to_underlying(m_thisEntity));
@@ -176,7 +176,7 @@ void SGCore::EntityBaseInfo::removeChild(const ECS::entity_t& child,
 
     if(!inRegistry.valid(child))
     {
-        LOG_E(SGCORE_TAG, "Can not remove child entity '{}' from entity '{}'. Entity '{}' (child) is not valid.",
+        SG_LOG_E("Can not remove child entity '{}' from entity '{}'. Entity '{}' (child) is not valid.",
               std::to_underlying(child),
               std::to_underlying(m_thisEntity),
               std::to_underlying(child));
@@ -186,7 +186,7 @@ void SGCore::EntityBaseInfo::removeChild(const ECS::entity_t& child,
     auto* childBaseInfo = inRegistry.tryGet<EntityBaseInfo>(child);
     if(!childBaseInfo)
     {
-        LOG_E(SGCORE_TAG, "Can not remove child entity '{}' from entity '{}'. Entity '{}' (child) does not have EntityBaseInfo component.",
+        SG_LOG_E("Can not remove child entity '{}' from entity '{}'. Entity '{}' (child) does not have EntityBaseInfo component.",
               std::to_underlying(child),
               std::to_underlying(m_thisEntity),
               std::to_underlying(child));

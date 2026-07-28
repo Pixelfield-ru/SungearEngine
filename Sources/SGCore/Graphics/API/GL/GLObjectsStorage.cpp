@@ -31,7 +31,7 @@ void SGCore::GLObjectsStorage::recreateAll() noexcept
 
         if(!texture->getData() && texture->m_type != SGTextureType::SG_TEXTURE_BUFFER)
         {
-            LOG_W(SGCORE_TAG, "Unable to recreate OpenGL texture with handle '{}': RAM data has been deleted.", lastHandle)
+            SG_LOG_W("Unable to recreate OpenGL texture with handle '{}': RAM data has been deleted.", lastHandle);
         }
     }
 

@@ -15,27 +15,31 @@ void SGCore::Lua::SGCorePackage::doLoadInState(sol::state& luaState, function_re
 {
     sol::table packageTable = packageResult;
 
-    packageTable.set_function("log", [](const std::string& tag, int logLevel, const std::string& message) {
+    packageTable.set_function("log", [](int logLevel, const std::string& message) {
         switch (static_cast<Logger::Level>(logLevel))
         {
-            case Logger::Level::LVL_INFO:
-                LOG_I_UNFORMATTED(tag, message)
+            case Logger::Level::LVL_TRACE:
+                SG_LOG_D_UNFORMATTED(message);
                 break;
 
             case Logger::Level::LVL_DEBUG:
-                LOG_D_UNFORMATTED(tag, message)
+                SG_LOG_D_UNFORMATTED(message);
+                break;
+
+            case Logger::Level::LVL_INFO:
+                SG_LOG_I_UNFORMATTED(message);
                 break;
 
             case Logger::Level::LVL_WARN:
-                LOG_W_UNFORMATTED(tag, message)
+                SG_LOG_W_UNFORMATTED(message);
                 break;
 
             case Logger::Level::LVL_ERROR:
-                LOG_E_UNFORMATTED(tag, message)
+                SG_LOG_E_UNFORMATTED(message);
                 break;
 
             case Logger::Level::LVL_CRITICAL:
-                LOG_C_UNFORMATTED(tag, message)
+                SG_LOG_C_UNFORMATTED(message);
                 break;
         }
     });

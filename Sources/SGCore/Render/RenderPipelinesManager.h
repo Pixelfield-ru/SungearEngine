@@ -28,7 +28,7 @@ namespace SGCore
 
             if(!renderPipeline)
             {
-                LOG_E(SGCORE_TAG, "Cannot set render pipeline with type '{}'. It is not exists.", typeid(PipelineT).name());
+                SG_LOG_E("Cannot set render pipeline with type '{}'. It is not exists.", typeid(PipelineT).name());
 
                 return;
             }
@@ -46,7 +46,7 @@ namespace SGCore
         {
             if(getRenderPipeline<PipelineT>())
             {
-                LOG_E(SGCORE_TAG,"Cannot register render pipeline with type '{}'. It is already exists.", typeid(PipelineT).name());
+                SG_LOG_E("Cannot register render pipeline with type '{}'. It is already exists.", typeid(PipelineT).name());
                 
                 return;
             }
@@ -56,7 +56,7 @@ namespace SGCore
                 renderPass->create(renderPipeline);
             }
 
-            LOG_I(SGCORE_TAG, "Registered render pipeline with type '{}'.", typeid(PipelineT).name())
+            SG_LOG_I("Registered render pipeline with type '{}'.", typeid(PipelineT).name());
 
             m_renderPipelines.push_back(renderPipeline);
         }
@@ -67,7 +67,7 @@ namespace SGCore
         {
             for(const auto& renderPipeline : m_renderPipelines)
             {
-                LOG_I(SGCORE_TAG, "Trying to get render pipeline: {}", typeid(*renderPipeline).name());
+                SG_LOG_I("Trying to get render pipeline: {}", typeid(*renderPipeline).name());
                 if(SG_INSTANCEOF(renderPipeline.get(), PipelineT))
                 {
                     return std::static_pointer_cast<PipelineT>(renderPipeline);

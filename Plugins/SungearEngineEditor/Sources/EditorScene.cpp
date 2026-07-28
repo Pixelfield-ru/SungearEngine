@@ -70,7 +70,7 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::loadByPath(const std::filesystem
 
         if(!outputLog.empty())
         {
-            LOG_E(SGEDITOR_TAG, "Error while deserializing scene: '{}'", outputLog);
+            SG_LOG_E(SGEDITOR_TAG, "Error while deserializing scene: '{}'", outputLog);
         }
     }
 
@@ -83,7 +83,7 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::loadByPath(const std::filesystem
 
         if(!outputLog.empty())
         {
-            LOG_E(SGEDITOR_TAG, "Error while deserializing editor scene: '{}'", outputLog);
+            SG_LOG_E(SGEDITOR_TAG, "Error while deserializing editor scene: '{}'", outputLog);
         }
     }
 
@@ -115,7 +115,7 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::loadByPath(const std::filesystem
         }
         else
         {
-            LOG_E(SGEDITOR_TAG, "Can not resolve EntityRef`s for camera '{}': this camera does not have EntityBaseInfo component!",
+            SG_LOG_E(SGEDITOR_TAG, "Can not resolve EntityRef`s for camera '{}': this camera does not have EntityBaseInfo component!",
                   std::to_underlying(loadedScene->m_data.m_editorCamera));
         }
     }*/

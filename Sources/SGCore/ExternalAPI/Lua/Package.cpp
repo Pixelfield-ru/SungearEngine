@@ -11,10 +11,10 @@ void SGCore::Lua::Package::loadInState(sol::state& luaState, function_result& pa
     auto lockedFile = m_packageFile.lock();
     if(!lockedFile)
     {
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Cannot load Lua package '{}' from file '{}': this file does not exist.",
               getPackageName(),
-              Utils::toUTF8(getPath().resolved().u16string()))
+              Utils::toUTF8(getPath().resolved()));
         return;
     }
 
@@ -26,10 +26,10 @@ void SGCore::Lua::Package::loadInState(sol::state& luaState, function_result& pa
     {
         const sol::error err = result;
 
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Lua package script compilation error:\n{}\nIn file: '{}'",
               err.what(),
-              Utils::toUTF8(getPath().resolved().u16string()));
+              Utils::toUTF8(getPath().resolved()));
     }*/
 }
 

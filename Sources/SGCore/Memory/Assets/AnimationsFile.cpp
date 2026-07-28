@@ -13,8 +13,8 @@ void SGCore::AnimationsFile::doLoad(const SGCore::InterpolatedPath& path)
     Assimp::Importer importer;
 
     const auto resolvedPath = path.resolved();
-    const auto utf8ResolvedPath = Utils::toUTF8(resolvedPath.u16string());
-    const auto utf8Extension = Utils::toUTF8(resolvedPath.extension().u16string());
+    const auto utf8ResolvedPath = Utils::toUTF8(resolvedPath);
+    const auto utf8Extension = Utils::toUTF8(resolvedPath.extension());
 
     if(importer.IsExtensionSupported(utf8Extension))
     {
@@ -22,7 +22,7 @@ void SGCore::AnimationsFile::doLoad(const SGCore::InterpolatedPath& path)
 
         if(!aiImportedScene || aiImportedScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !aiImportedScene->mRootNode)
         {
-            LOG_E(SGCORE_TAG,
+            SG_LOG_E(
                   "Assimp error (while importing scene): {}\n{}",
                   importer.GetErrorString(),
                   SG_CURRENT_LOCATION_STR);
@@ -33,7 +33,7 @@ void SGCore::AnimationsFile::doLoad(const SGCore::InterpolatedPath& path)
     }
     else
     {
-        LOG_E(SGCORE_TAG, "Error loading animations from file '{}': extension '{}' is not supported!",
+        SG_LOG_E("Error loading animations from file '{}': extension '{}' is not supported!",
               utf8ResolvedPath,
               utf8Extension);
     }
@@ -52,7 +52,7 @@ void SGCore::AnimationsFile::doLoadFromBinaryFile(SGCore::AssetManager* parentAs
 void SGCore::AnimationsFile::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolicy,
                                               SGCore::Ref<SGCore::Threading::Thread> lazyLoadInThread) noexcept
 {
-    LOG_NOT_IMPLEMENTED(SGCORE_TAG);
+    SG_LOG_NOT_IMPLEMENTED();
 }
 
 void SGCore::AnimationsFile::onMemberAssetsReferencesResolveImpl(SGCore::AssetManager* updatedAssetManager) noexcept

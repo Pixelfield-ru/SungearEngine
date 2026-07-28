@@ -37,7 +37,7 @@ void onEntitySerialize(SGCore::Serde::SerializableValueView<SGCore::SceneEntityS
                        const SGCore::Scene& serializableScene,
                        const SGCore::ECS::entity_t& serializableEntity) noexcept
 {
-    LOG_I("GENERATED", "Saving entity '{}'...", std::to_underlying(serializableEntity));
+    SG_LOG_I("GENERATED", "Saving entity '{}'...", std::to_underlying(serializableEntity));
 
     // saving components of serializableEntity
 
@@ -138,7 +138,7 @@ void onSystemDeserialize(
         );
         if(system)
         {
-            LOG_D(SGCORE_TAG, "LOADING SYSTEM {}", std::string(typeid(**system).name()));
+            SG_LOG_D("LOADING SYSTEM {}", std::string(typeid(**system).name()));
 
             systemsContainerView.m_data->emplace_back(std::move(*system));
         }
@@ -210,7 +210,7 @@ SGCore::Slot<void(const double& dt, const double& fixedDt)> onUpdateSlot = updat
 
 SG_NOMANGLING SG_DLEXPORT void editorGeneratedCodeEntry()
 {
-    LOG_I("GENERATED", "Calling editorGeneratedCodeEntry()...");
+    SG_LOG_I("Calling editorGeneratedCodeEntry()...");
 
     SGCore::Scene::getOnEntitySerializeEvent<SGCore::Serde::FormatType::JSON>() += onEntitySerializeSlot<SGCore::Serde::FormatType::JSON>;
     SGCore::Scene::getOnEntityDeserializeEvent<SGCore::Serde::FormatType::JSON>() += onEntityDeserializeSlot<SGCore::Serde::FormatType::JSON>;

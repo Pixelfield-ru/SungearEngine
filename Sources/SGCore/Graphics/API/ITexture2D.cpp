@@ -39,7 +39,7 @@ void SGCore::ITexture2D::doLoad(const InterpolatedPath& path)
         /*stbi_load_from_memory(m_textureData.get(), readBytes, &m_width, &m_height,
                               &m_channelsCount, channelsDesired);*/
         m_textureData = data_ptr(
-            stbi_load(Utils::toUTF8(getPath().resolved().u16string()).data(),
+            stbi_load(Utils::toUTF8(getPath().resolved()).data(),
                       &m_width, &m_height,
                       &m_channelsCount, channelsDesired));
         
@@ -75,7 +75,7 @@ void SGCore::ITexture2D::doLoad(const InterpolatedPath& path)
         m_dataType = SGGDataType::SGG_FLOAT;
 
         m_textureData = data_ptr(
-            reinterpret_cast<std::uint8_t*>(stbi_loadf(Utils::toUTF8(getPath().resolved().u16string()).data(),
+            reinterpret_cast<std::uint8_t*>(stbi_loadf(Utils::toUTF8(getPath().resolved()).data(),
                                                        &m_width, &m_height,
                                                        &m_channelsCount, channelsDesired)));
 
@@ -108,12 +108,12 @@ void SGCore::ITexture2D::doLoad(const InterpolatedPath& path)
     }
     else if(ext == ".dds")
     {
-        const std::string resolvedUTF8Path = Utils::toUTF8(getPath().resolved().u16string());
+        const std::string resolvedUTF8Path = Utils::toUTF8(getPath().resolved());
 
         m_gliTexture = gli::load(resolvedUTF8Path);
         if(m_gliTexture.empty())
         {
-            LOG_E(SGCORE_TAG, "Failed to load .DDS texture by path '{}'.", resolvedUTF8Path);
+            SG_LOG_E("Failed to load .DDS texture by path '{}'.", resolvedUTF8Path);
             return;
         }
 
@@ -125,13 +125,13 @@ void SGCore::ITexture2D::doLazyLoad()
 {
     create();
 
-    LOG_I(SGCORE_TAG,
+    SG_LOG_I(
           "Loaded texture (in lazy load). Width: {}, height: {}, MB size: {}, channels: {}, path: {}",
           m_width,
           m_height,
           size_t(m_width * m_height) * getSGGInternalFormatChannelsSizeInBytes(m_internalFormat) / 1024.0 / 1024.0,
           m_channelsCount,
-          Utils::toUTF8(getPath().resolved().u16string()));
+          Utils::toUTF8(getPath().resolved()));
 }
 
 void SGCore::ITexture2D::destroyOnRAM() noexcept

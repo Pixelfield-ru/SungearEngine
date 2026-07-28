@@ -7,7 +7,6 @@
 #include "SGCore/ExternalAPI/Java/JNIManager.h"
 
 #include "SGCore/Input/PCInput.h"
-#include "SGCore/Logger/AndroidLogcat.h"
 
 void SGCore::Window::create()
 {
@@ -16,17 +15,17 @@ void SGCore::Window::create()
 
     if(!glfwInit())
     {
-        LOG_E(SGCORE_TAG, "Failed to initialize GLFW!\n{0}", SG_CURRENT_LOCATION_STR);
+        SG_LOG_E("Failed to initialize GLFW!\n{0}", SG_CURRENT_LOCATION_STR);
     }
 
-    LOG_I(SGCORE_TAG, "-----------------------------------");
-    LOG_I(SGCORE_TAG, "GLFW info:");
-    LOG_I(SGCORE_TAG,
+    SG_LOG_I("-----------------------------------");
+    SG_LOG_I("GLFW info:");
+    SG_LOG_I(
           "GLFW version is {}.{}.{}",
           GLFW_VERSION_MAJOR,
           GLFW_VERSION_MINOR,
           GLFW_VERSION_REVISION);
-    LOG_I(SGCORE_TAG, "-----------------------------------");
+    SG_LOG_I("-----------------------------------");
 
     glfwDefaultWindowHints(); // установка для будущего окна дефолтных настроек
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
@@ -41,7 +40,7 @@ void SGCore::Window::create()
 
     if(!m_handle)
     {
-        LOG_E(SGCORE_TAG, "Failed to initialize GLFW Window!\n{}", SG_CURRENT_LOCATION_STR);
+        SG_LOG_E("Failed to initialize GLFW Window!\n{}", SG_CURRENT_LOCATION_STR);
         return;
     }
     
@@ -82,21 +81,21 @@ void SGCore::Window::create()
 #elif SG_PLATFORM_OS_ANDROID
     if(!m_handle)
     {
-        LOG_E(SGCORE_TAG, "SGCore: Failed to create second window. In: {}", SG_CURRENT_LOCATION_STR);
+        SG_LOG_E("Failed to create second window. In: {}", SG_CURRENT_LOCATION_STR);
         return;
     }
 
     m_eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if(m_eglDisplay == EGL_NO_DISPLAY)
     {
-        LOG_E(SGCORE_TAG, "SGCore: Failed to create EGL display. In: {}", SG_CURRENT_LOCATION_STR);
+        SG_LOG_E("Failed to create EGL display. In: {}", SG_CURRENT_LOCATION_STR);
         return;
     }
 
     EGLint major, minor;
     if(!eglInitialize(m_eglDisplay, &major, &minor))
     {
-        LOG_E(SGCORE_TAG, "SGCore: Failed to initialize EGL. In: {}", SG_CURRENT_LOCATION_STR);
+        SG_LOG_E("Failed to initialize EGL. In: {}", SG_CURRENT_LOCATION_STR);
         return;
     }
 
@@ -116,14 +115,14 @@ void SGCore::Window::create()
     EGLint numConfigs;
     if(!eglChooseConfig(m_eglDisplay, configAttribs, &m_eglConfig, 1, &numConfigs))
     {
-        LOG_E(SGCORE_TAG, "SGCore: Failed to choose EGL config. In: {}", SG_CURRENT_LOCATION_STR);
+        SG_LOG_E("Failed to choose EGL config. In: {}", SG_CURRENT_LOCATION_STR);
         return;
     }
 
     m_eglSurface = eglCreateWindowSurface(m_eglDisplay, m_eglConfig, m_handle, nullptr);
     if(m_eglSurface == EGL_NO_SURFACE)
     {
-        LOG_E(SGCORE_TAG, "SGCore: Failed to create EGL Surface. In: {}", SG_CURRENT_LOCATION_STR);
+        SG_LOG_E("Failed to create EGL Surface. In: {}", SG_CURRENT_LOCATION_STR);
         return;
     }
 
@@ -136,13 +135,13 @@ void SGCore::Window::create()
     m_eglContext = eglCreateContext(m_eglDisplay, m_eglConfig, EGL_NO_CONTEXT, contextAttribs);
     if(m_eglContext == EGL_NO_CONTEXT)
     {
-        LOG_E(SGCORE_TAG, "SGCore: Failed to create EGL context. In: {}", SG_CURRENT_LOCATION_STR);
+        SG_LOG_E("Failed to create EGL context. In: {}", SG_CURRENT_LOCATION_STR);
         return;
     }
 
     makeCurrent();
 
-    LOG_I(SGCORE_TAG, "SGCore: EGL Window initialized. Version: {}.{}", major, minor);
+    SG_LOG_I("EGL Window initialized. Version: {}.{}", major, minor);
 
 #endif
 }
@@ -208,11 +207,11 @@ void SGCore::Window::makeCurrent() noexcept
 #elif SG_PLATFORM_OS_ANDROID
         if(!eglMakeCurrent(m_eglDisplay, m_eglSurface, m_eglSurface, m_eglContext))
         {
-            LOG_E(SGCORE_TAG, "Failed to eglMakeCurrent: {}", eglGetError())
+            SG_LOG_E("Failed to eglMakeCurrent: {}", eglGetError())
             return;
         }
 
-        LOG_I(SGCORE_TAG, "EGL Display was made current")
+        SG_LOG_I("EGL Display was made current")
 #endif
     }
 }
@@ -341,7 +340,7 @@ void SGCore::Window::getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept
 
         if(!env || !context)
         {
-            LOG_E(SGCORE_TAG, "Cannot getPrimaryMonitorSize: JNIManager is not initialized.")
+            SG_LOG_E("Cannot getPrimaryMonitorSize: JNIManager is not initialized.");
             return { 1920, 1080 };
         }
 
@@ -349,7 +348,7 @@ void SGCore::Window::getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept
         jclass metricsClass = env->FindClass("android/util/DisplayMetrics");
         if (!metricsClass)
         {
-            LOG_E(SGCORE_TAG, "Cannot find DisplayMetrics class");
+            SG_LOG_E("Cannot find DisplayMetrics class");
             return { 1920, 1080 };
         }
 
@@ -366,7 +365,7 @@ void SGCore::Window::getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept
 
         if (!windowManager)
         {
-            LOG_E(SGCORE_TAG, "Cannot get WindowManager");
+            SG_LOG_E("Cannot get WindowManager");
             return { 1920, 1080 };
         }
 
@@ -384,7 +383,7 @@ void SGCore::Window::getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept
         int screenWidth = env->GetIntField(metrics, widthField);
         int screenHeight = env->GetIntField(metrics, heightField);
 
-        LOG_I(SGCORE_TAG, "Real screen size: {}x{}", screenWidth, screenHeight);
+        SG_LOG_I("Real screen size: {}x{}", screenWidth, screenHeight);
 
         // cleanup
         env->DeleteLocalRef(metricsClass);
@@ -461,7 +460,7 @@ void SGCore::Window::nativeCloseCallback(window_handle window) noexcept
 #elif SG_PLATFORM_OS_ANDROID
 #endif
 
-    LOG_I(SGCORE_TAG, "Application window closed.");
+    SG_LOG_I("Application window closed.");
 }
 
 void SGCore::Window::nativeIconifyCallback(window_handle window, int iconified) noexcept
@@ -471,7 +470,7 @@ void SGCore::Window::nativeIconifyCallback(window_handle window, int iconified) 
 #elif SG_PLATFORM_OS_ANDROID
 #endif
 
-    LOG_I(SGCORE_TAG, "Application window iconified.");
+    SG_LOG_I("Application window iconified.");
 }
 
 void SGCore::Window::nativeFramebufferSizeCallback(window_handle window, int width, int height) noexcept
@@ -484,7 +483,7 @@ void SGCore::Window::nativeFramebufferSizeCallback(window_handle window, int wid
 
 void SGCore::Window::errorCallback(int errCode, const char* err_msg)
 {
-    LOG_E(SGCORE_TAG, "GLFW error (code {}): {}\n{}", errCode, err_msg, SG_CURRENT_LOCATION_STR);
+    SG_LOG_E("GLFW error (code {}): {}\n{}", errCode, err_msg, SG_CURRENT_LOCATION_STR);
 }
 
 void SGCore::Window::swapBuffers()
@@ -496,7 +495,7 @@ void SGCore::Window::swapBuffers()
 #elif SG_PLATFORM_OS_ANDROID
     if(!eglSwapBuffers(m_eglDisplay, m_eglSurface))
     {
-        LOG_E(SGCORE_TAG, "eglSwapBuffers() failed: {}", eglGetError());
+        SG_LOG_E("eglSwapBuffers() failed: {}", eglGetError());
     }
 #endif
 

@@ -24,15 +24,17 @@ void SGCore::IShader::compile(const SGCore::AssetRef<SGCore::TextFileAsset>& tex
 
     if(!textFileAsset)
     {
-        LOG_E(SGCORE_TAG,
-              "Can not compile subpass shader! File asset is nullptr. Please set m_fileAsset before compiling.\n{}", SG_CURRENT_LOCATION_STR);
+        SG_LOG_E(
+              "Can not compile subpass shader! File asset is nullptr. Please set m_fileAsset before compiling.\n{}",
+              SG_CURRENT_LOCATION_STR);
         return;
     }
 
     if(shaderAnalyzedFile->getSubShaders().empty())
     {
-        LOG_E(SGCORE_TAG,
-              "No sub shaders to compile! Shader path: {}\n{}", Utils::toUTF8(textFileAsset->getPath().resolved().u16string()), SG_CURRENT_LOCATION_STR);
+        SG_LOG_E(
+              "No sub shaders to compile! Shader path: {}\n{}",
+              Utils::toUTF8(textFileAsset->getPath().resolved()), SG_CURRENT_LOCATION_STR);
         return;
     }
 

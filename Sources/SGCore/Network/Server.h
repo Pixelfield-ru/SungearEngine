@@ -56,7 +56,7 @@ namespace SGCore::Net
 
             for(const auto& clientSessionID : clients | std::views::keys)
             {
-                /*LOG_I(SGCORE_TAG,
+                /*SG_LOG_I(
                       "Propagating packet to client {}. Sender is {}. Message type is '{}'",
                       clientSessionID, senderSessionID, typeid(MsgT).name());*/
 

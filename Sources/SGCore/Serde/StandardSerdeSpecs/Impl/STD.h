@@ -310,7 +310,7 @@ namespace SGCore::Serde
     template<FormatType TFormatType>
     void SerdeSpec<std::filesystem::path, TFormatType>::serialize(SerializableValueView<const std::filesystem::path, TFormatType>& valueView) noexcept
     {
-        const std::string u8Path = SGCore::Utils::toUTF8(valueView.m_data->u16string());
+        const std::string u8Path = SGCore::Utils::toUTF8(*valueView.m_data);
         valueView.container().setAsString(u8Path);
     }
 

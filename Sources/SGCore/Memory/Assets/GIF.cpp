@@ -25,17 +25,17 @@ void SGCore::GIF::doLoad(const InterpolatedPath& path)
 
     if(!lockedFile)
     {
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Failed to load GIF file by path '{}': file was not found.",
-              Utils::toUTF8(path.resolved().u16string()))
+              Utils::toUTF8(path.resolved()));
         return;
     }
 
     if(!lockedFile->getDataBuffer())
     {
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Failed to load GIF file by path '{}': file buffer is nullptr.",
-              Utils::toUTF8(path.resolved().u16string()))
+              Utils::toUTF8(path.resolved()));
         return;
     }
 
@@ -59,9 +59,9 @@ void SGCore::GIF::doLoad(const InterpolatedPath& path)
 
     if(!gifData)
     {
-        LOG_E(SGCORE_TAG,
+        SG_LOG_E(
               "Failed to load GIF file by path '{}': {}.",
-              Utils::toUTF8(path.resolved().u16string()),
+              Utils::toUTF8(path.resolved()),
               stbi_failure_reason());
 
         return;

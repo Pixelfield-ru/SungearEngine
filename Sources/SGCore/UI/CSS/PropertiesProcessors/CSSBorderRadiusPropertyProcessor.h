@@ -177,7 +177,7 @@ namespace SGCore::UI
                 // if count of terms is invalid
                 if(leftTermsValues.size() == 0 || leftTermsValues.size() > 4)
                 {
-                    LOG_E(SGCORE_TAG,
+                    SG_LOG_E(
                           "ANTLRCSSListener can not process property '{}' correctly: property has invalid count of terms in section 'value'. "
                           "Property has been set to the default value. "
                           "Number of terms to the left of the operator '/': {}. "
@@ -195,7 +195,7 @@ namespace SGCore::UI
                 // if count of terms is invalid
                 if(rightTermsValues.size() == 0 || rightTermsValues.size() > 4)
                 {
-                    LOG_E(SGCORE_TAG,
+                    SG_LOG_E(
                           "ANTLRCSSListener can not process property '{}' correctly: property has invalid count of terms in section 'value'. "
                           "Property has been set to the default value. "
                           "Number of terms to the right of the operator '/': {}. "

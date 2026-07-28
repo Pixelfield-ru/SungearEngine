@@ -37,7 +37,8 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
 
     Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
 
-    LOG_I(SGCORE_TAG, "Creating framebuffers for LayeredFrameReceiver. Primary monitor size: {}x{}", primaryMonitorWidth, primaryMonitorHeight)
+    SG_LOG_I("Creating framebuffers for LayeredFrameReceiver. Primary monitor size: {}x{}", primaryMonitorWidth,
+             primaryMonitorHeight);
 
     /*primaryMonitorWidth = 4096;
     primaryMonitorHeight = 4096;*/

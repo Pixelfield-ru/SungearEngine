@@ -610,7 +610,7 @@ namespace SGCore::Serde
         const auto m_meshData = valueView.container().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->getMeshData())>>>("m_meshData");
         if(m_meshData)
         {
-            LOG_D(SGCORE_TAG, "Deserializing meshdata from mesh base...");
+            SG_LOG_D("Deserializing meshdata from mesh base...");
             valueView.m_data->setMeshData(*m_meshData);
         }
 

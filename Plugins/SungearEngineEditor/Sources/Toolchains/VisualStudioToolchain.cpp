@@ -135,13 +135,13 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
         auto thread = SungearEngineEditor::getInstance()->m_threadsPool.getThread();
         auto task = SGCore::MakeRef<SGCore::Threading::Task>();
         task->setOnExecuteCallback([&buildFinished, &buildOutputLogFile, pathToProjectRoot, finalCommand]() {
-            LOG_I(PROJECT_BUILD_TAG, "================================== BUILD START ================================");
+            SG_LOG_I("================================== BUILD START ================================");
 
-            LOG_I(PROJECT_BUILD_TAG, "Building project '{}' using Visual Studio toolchain: commands:\n{}\n",
+            SG_LOG_I("Building project '{}' using Visual Studio toolchain: commands:\n{}\n",
                   SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
-                  finalCommand.c_str())
+                  finalCommand.c_str());
 
-            LOG_I(PROJECT_BUILD_TAG, "Building project '{}' using Visual Studio toolchain:",
+            SG_LOG_I("Building project '{}' using Visual Studio toolchain:",
                   SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str())
 
             std::string logContent;
@@ -182,7 +182,7 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
             onProjectBuilt(buildOutput);
         }
 
-        LOG_I(PROJECT_BUILD_TAG, "================================== BUILD END ==================================");
+        SG_LOG_I("================================== BUILD END ==================================");
 
         using namespace std::chrono_literals;
 
