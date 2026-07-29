@@ -31,6 +31,7 @@ std::filesystem::path SGCore::CoreMain::s_sungearEngineRootPath;
 SGCore::Window SGCore::CoreMain::m_window;
 SGCore::Ref<SGCore::IRenderer> SGCore::CoreMain::m_renderer;
 std::atomic<bool> SGCore::CoreMain::m_shouldRestoreState { false };
+std::atomic<bool> SGCore::CoreMain::m_isInitialized { false };
 SGCore::Timer SGCore::CoreMain::m_renderTimer { true, 1200 };
 SGCore::Timer SGCore::CoreMain::m_fixedTimer { true, 100 };
 
@@ -149,6 +150,8 @@ void SGCore::CoreMain::init()
 
     m_fixedTimer.resetTimer();
     m_renderTimer.resetTimer();
+
+    m_isInitialized = true;
 }
 
 void SGCore::CoreMain::startCycle() noexcept
@@ -321,6 +324,11 @@ void SGCore::CoreMain::setShouldRestoreState(bool shouldRestore) noexcept
 bool SGCore::CoreMain::isShouldRestoreState() noexcept
 {
     return m_shouldRestoreState;
+}
+
+bool SGCore::CoreMain::isInitialized() noexcept
+{
+    return m_isInitialized;
 }
 
 void SGCore::CoreMain::restoreState() noexcept

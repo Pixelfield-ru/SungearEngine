@@ -53,6 +53,8 @@ namespace SGCore
 
         static bool isShouldRestoreState() noexcept;
 
+        static bool isInitialized() noexcept;
+
         /**
          * Immediately restores state of app.
          */
@@ -65,6 +67,7 @@ namespace SGCore
         static Ref<IRenderer> m_renderer;
 
         static std::atomic<bool> m_shouldRestoreState;
+        static std::atomic<bool> m_isInitialized;
         
         static Timer m_renderTimer;
         static Timer m_fixedTimer;
