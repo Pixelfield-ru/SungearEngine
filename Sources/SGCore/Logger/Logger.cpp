@@ -69,7 +69,8 @@ SGCore::Logger::Logger(const std::string& loggerName, const std::filesystem::pat
     m_spdlogLogger->sinks().push_back(androidSink);
 #endif
 
-    m_spdlogLogger->flush_on(spdlog::level::info);
+    m_spdlogLogger->set_level(spdlog::level::trace);
+    m_spdlogLogger->flush_on(spdlog::level::trace);
 
     // spdlog::register_logger(m_spdlogLogger);
 }
@@ -86,7 +87,8 @@ SGCore::Logger::Logger(const std::string& loggerName) noexcept
     m_spdlogLogger->sinks().push_back(androidSink);
 #endif
 
-    m_spdlogLogger->flush_on(spdlog::level::info);
+    m_spdlogLogger->set_level(spdlog::level::trace);
+    m_spdlogLogger->flush_on(spdlog::level::trace);
 
     // spdlog::register_logger(m_spdlogLogger);
 }

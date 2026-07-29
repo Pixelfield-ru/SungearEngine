@@ -45,7 +45,8 @@ namespace SGCore
             LVL_INFO,
             LVL_WARN,
             LVL_ERROR,
-            LVL_CRITICAL
+            LVL_CRITICAL,
+            LVL_COUNT
         };
 
         static std::string levelToString(Level level) noexcept;
