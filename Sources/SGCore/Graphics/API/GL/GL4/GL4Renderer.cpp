@@ -358,6 +358,11 @@ void SGCore::GL4Renderer::bindScreenFrameBuffer() const noexcept
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void SGCore::GL4Renderer::setViewport(int x, int y, int width, int height) const noexcept
+{
+    glViewport(x, y, width, height);
+}
+
 SGCore::IGPUObjectsStorage& SGCore::GL4Renderer::storage() noexcept
 {
     return m_storage;

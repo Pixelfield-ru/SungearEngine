@@ -106,6 +106,11 @@ void SGCore::VkRenderer::bindScreenFrameBuffer() const noexcept
     // todo: impl
 }
 
+void SGCore::VkRenderer::setViewport(int x, int y, int width, int height) const noexcept
+{
+    // todo: impl (vkCmdSetViewport once command buffers are wired)
+}
+
 SGCore::IGPUObjectsStorage& SGCore::VkRenderer::storage() noexcept
 {
     return **m_dummyStorage;

@@ -86,6 +86,17 @@ namespace SGCore
 
         void renderTextureOnScreen(const ITexture2D* texture, bool flipOutput = false) noexcept;
 
+        /// Blit texture into a window-space rectangle (OpenGL bottom-left origin).
+        void renderTextureOnScreen(const ITexture2D* texture,
+                                   bool flipOutput,
+                                   int x,
+                                   int y,
+                                   int width,
+                                   int height) noexcept;
+
+        /// Set the active screen viewport in window pixels (OpenGL bottom-left origin).
+        virtual void setViewport(int x, int y, int width, int height) const noexcept = 0;
+
         /**
          * Applies global render state.
          * @param newBlendingState

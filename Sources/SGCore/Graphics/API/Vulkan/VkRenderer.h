@@ -67,6 +67,7 @@ namespace SGCore
         [[nodiscard]] VkMeshData* createMeshData() const override;
 
         void bindScreenFrameBuffer() const noexcept final;
+        void setViewport(int x, int y, int width, int height) const noexcept final;
 
         IGPUObjectsStorage& storage() noexcept final;
         const IGPUObjectsStorage& storage() const noexcept final;

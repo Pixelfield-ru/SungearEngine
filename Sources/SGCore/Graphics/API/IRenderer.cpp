@@ -3,6 +3,8 @@
 #include "SGCore/ImportedScenesArch/IMeshData.h"
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
+#include "SGCore/Main/CoreMain.h"
+#include "SGCore/Memory/AssetManager.h"
 
 void SGCore::IRenderer::init() noexcept
 {
@@ -52,7 +54,31 @@ void SGCore::IRenderer::init() noexcept
 
 void SGCore::IRenderer::renderTextureOnScreen(const ITexture2D* texture, bool flipOutput) noexcept
 {
+    if(!texture)
+    {
+        return;
+    }
+
+    int wndWidth = 0;
+    int wndHeight = 0;
+    CoreMain::getWindow().getSize(wndWidth, wndHeight);
+    renderTextureOnScreen(texture, flipOutput, 0, 0, wndWidth, wndHeight);
+}
+
+void SGCore::IRenderer::renderTextureOnScreen(const ITexture2D* texture,
+                                              bool flipOutput,
+                                              int x,
+                                              int y,
+                                              int width,
+                                              int height) noexcept
+{
+    if(!texture || width <= 0 || height <= 0)
+    {
+        return;
+    }
+
     bindScreenFrameBuffer();
+    setViewport(x, y, width, height);
 
     // trying to reload screen shader
     // todo: bad idea
@@ -74,6 +100,11 @@ void SGCore::IRenderer::renderTextureOnScreen(const ITexture2D* texture, bool fl
         m_screenQuadMesh->m_vertices.size(),
         m_screenQuadMesh->m_indices.size()
     );
+
+    int wndWidth = 0;
+    int wndHeight = 0;
+    CoreMain::getWindow().getSize(wndWidth, wndHeight);
+    setViewport(0, 0, wndWidth, wndHeight);
 }
 
 SGCore::GAPIType SGCore::IRenderer::getGAPIType() const noexcept
