@@ -25,6 +25,7 @@ namespace SGCore
 
         virtual ~ISystem() = default;
 
+        bool m_isSavable = true;
         bool m_active = true;
         std::unordered_map<std::string, double> m_executionTimes;
 

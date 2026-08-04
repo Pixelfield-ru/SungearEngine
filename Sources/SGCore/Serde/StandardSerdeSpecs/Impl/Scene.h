@@ -754,6 +754,8 @@ namespace SGCore::Serde
         // serializing systems
         for(const Ref<ISystem>& system : *valueView.m_data)
         {
+            if(!system->m_isSavable) continue;
+
             valueView.container().pushBack(system);
 
             // else if it is not standard system then

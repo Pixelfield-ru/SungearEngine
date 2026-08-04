@@ -942,6 +942,11 @@ namespace SGCore
             return AssetRef<AssetT>(std::static_pointer_cast<AssetT>(m_assets[pathOrAliasHash][byAsset->getTypeID()]));
         }
 
+        /**
+         * @tparam AssetT
+         * @param alias
+         * @return Loaded asset (asset->isLoaded() returns always true).
+         */
         template<typename AssetT>
         requires(std::is_base_of_v<IAsset, AssetT>)
         [[nodiscard]] AssetRef<AssetT> getOrAddAssetByAlias(const std::string& alias) noexcept
@@ -969,6 +974,11 @@ namespace SGCore
             return AssetRef<AssetT>(std::static_pointer_cast<AssetT>(foundAssetIt->second));
         }
 
+        /**
+         * @tparam AssetT
+         * @param alias
+         * @return Loaded asset (asset->isLoaded() returns always true).
+         */
         template<typename AssetT>
         requires(std::is_base_of_v<IAsset, AssetT>)
         [[nodiscard]] AssetRef<AssetT> getOrAddAssetByPath(const InterpolatedPath& path) noexcept

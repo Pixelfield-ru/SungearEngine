@@ -291,11 +291,9 @@ SGCore::Ref<SGCore::Scene> SGCore::Scene::setCurrentScene(const std::string& sce
 
         return loadedScene;
     }
-    else
-    {
-        SG_LOG_E(
-            "Cannot set scene '{}' as current! No such scene (maybe you forgot to add this scene).", sceneName);
-    }
+
+    SG_LOG_E(
+       "Cannot set scene '{}' as current! No such scene (maybe you forgot to add this scene).", sceneName);
 
     return nullptr;
 }
