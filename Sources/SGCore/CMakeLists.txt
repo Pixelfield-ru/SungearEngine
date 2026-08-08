@@ -5,7 +5,7 @@
 
  SET(CMAKE_SHARED_LIBRARY_PREFIX "")
 
- file(GLOB_RECURSE SGCORE_SOURCES ../SGCore/*.cpp ../SGCore/*.h)
+ file(GLOB_RECURSE SGCORE_SOURCES ../SGCore/*.cpp)
  list(FILTER SGCORE_SOURCES EXCLUDE REGEX ".templates")
 
  include(FetchContent)
