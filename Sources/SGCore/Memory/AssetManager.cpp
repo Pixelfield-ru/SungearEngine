@@ -59,6 +59,12 @@ void SGCore::AssetManager::createPackage(const InterpolatedPath& toDirectory,
                                          const std::string& packageName,
                                          bool createBinary) noexcept
 {
+    if(!std::filesystem::exists(toDirectory.resolved()))
+    {
+        SG_LOG_E("Cannot save assets package by path '{}': path does not exist.", Utils::toUTF8(toDirectory.resolved()));
+        return;
+    }
+
     const std::filesystem::path binaryFilePath = (toDirectory / (packageName + ".bin")).resolved();
     const std::filesystem::path markupFilePath = (toDirectory / (packageName + ".json")).resolved();
 
@@ -86,6 +92,18 @@ void SGCore::AssetManager::loadPackage(const InterpolatedPath& fromDirectory,
 {
     const std::filesystem::path binaryFilePath = (fromDirectory / (packageName + ".bin")).resolved();
     const std::filesystem::path markupFilePath = (fromDirectory / (packageName + ".json")).resolved();
+
+    if(!std::filesystem::exists(binaryFilePath) && loadBinary)
+    {
+        SG_LOG_E("Cannot load assets package binary by path '{}': path does not exist.", Utils::toUTF8(binaryFilePath));
+        return;
+    }
+
+    if(!std::filesystem::exists(markupFilePath))
+    {
+        SG_LOG_E("Cannot load assets package markup by path '{}': path does not exist.", Utils::toUTF8(markupFilePath));
+        return;
+    }
 
     m_package.m_path = binaryFilePath;
     m_package.m_parentAssetManager = this;
