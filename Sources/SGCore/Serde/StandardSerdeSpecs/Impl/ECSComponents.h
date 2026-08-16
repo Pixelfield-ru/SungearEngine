@@ -24,6 +24,7 @@
 #include "SGCore/Render/Alpha/TransparentEntityTag.h"
 #include "SGCore/Render/Alpha/OpaqueEntityTag.h"
 #include "SGCore/Render/MainCameraTag.h"
+#include "SGCore/Animation/AnimationsTree.h"
 
 namespace SGCore::Serde
 {

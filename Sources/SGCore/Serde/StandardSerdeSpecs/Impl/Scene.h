@@ -33,6 +33,7 @@
 #include "SGCore/Render/RenderAbilities/EnableTerrainPass.h"
 #include "SGCore/Render/RenderAbilities/EnableVolumetricPass.h"
 #include "SGCore/Render/MainCameraTag.h"
+#include "SGCore/Serde/StandardSerdeSpecs/ECS/ComponentVisitor.h"
 
 namespace SGCore::Serde
 {
@@ -94,15 +95,16 @@ namespace SGCore::Serde
     void SerdeSpec<ECS::entity_t, TFormatType>::serialize(SerializableValueView<const ECS::entity_t, TFormatType>& valueView, const Scene& serializableScene) noexcept
     {
         auto& serializableEntity = *valueView.m_data;
+        auto ecsRegistry = serializableScene.getECSRegistry();
 
         // valueView.container().setAsArray();
-        if(serializableScene.getECSRegistry()->allOf<NonSavable>(serializableEntity))
+        if(ecsRegistry->allOf<NonSavable>(serializableEntity))
         {
             valueView.discard();
             return;
         }
 
-        auto& entityBaseInfo = serializableScene.getECSRegistry()->get<EntityBaseInfo>(serializableEntity);
+        auto& entityBaseInfo = ecsRegistry->get<EntityBaseInfo>(serializableEntity);
 
 
         // trying to save standard components ===============================================
@@ -111,7 +113,7 @@ namespace SGCore::Serde
         #pragma region Components
 
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<EntityBaseInfo>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<EntityBaseInfo>(serializableEntity);
 
             if(component)
             {
@@ -119,7 +121,7 @@ namespace SGCore::Serde
             }
         }
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<AudioSource>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<AudioSource>(serializableEntity);
 
             if(component)
             {
@@ -127,7 +129,7 @@ namespace SGCore::Serde
             }
         }
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<Transform>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<Transform>(serializableEntity);
 
             if(component)
             {
@@ -135,7 +137,7 @@ namespace SGCore::Serde
             }
         }
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<AABB<float>>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<AABB<float>>(serializableEntity);
 
             if(component)
             {
@@ -143,7 +145,7 @@ namespace SGCore::Serde
             }
         }
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<RenderingBase>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<RenderingBase>(serializableEntity);
 
             if(component)
             {
@@ -151,7 +153,7 @@ namespace SGCore::Serde
             }
         }
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<Camera3D>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<Camera3D>(serializableEntity);
 
             if(component)
             {
@@ -159,7 +161,7 @@ namespace SGCore::Serde
             }
         }
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<SphereGizmo>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<SphereGizmo>(serializableEntity);
 
             if(component)
             {
@@ -167,7 +169,7 @@ namespace SGCore::Serde
             }
         }
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<BoxGizmo>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<BoxGizmo>(serializableEntity);
 
             if(component)
             {
@@ -175,7 +177,7 @@ namespace SGCore::Serde
             }
         }
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<LineGizmo>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<LineGizmo>(serializableEntity);
 
             if(component)
             {
@@ -183,7 +185,7 @@ namespace SGCore::Serde
             }
         }
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<Atmosphere>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<Atmosphere>(serializableEntity);
 
             if(component)
             {
@@ -191,7 +193,7 @@ namespace SGCore::Serde
             }
         }
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<Mesh>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<Mesh>(serializableEntity);
 
             if(component)
             {
@@ -199,7 +201,7 @@ namespace SGCore::Serde
             }
         }
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<SpotLight>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<SpotLight>(serializableEntity);
 
             if(component)
             {
@@ -207,7 +209,7 @@ namespace SGCore::Serde
             }
         }
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<Controllable3D>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<Controllable3D>(serializableEntity);
 
             if(component)
             {
@@ -215,7 +217,7 @@ namespace SGCore::Serde
             }
         }
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<UICamera>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<UICamera>(serializableEntity);
 
             if(component)
             {
@@ -224,7 +226,7 @@ namespace SGCore::Serde
         }
 
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<TransparentEntityTag>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<TransparentEntityTag>(serializableEntity);
 
             if(component)
             {
@@ -233,7 +235,7 @@ namespace SGCore::Serde
         }
 
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<OpaqueEntityTag>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<OpaqueEntityTag>(serializableEntity);
 
             if(component)
             {
@@ -242,40 +244,40 @@ namespace SGCore::Serde
         }
 
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<Pickable>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<Pickable>(serializableEntity);
 
             if(component)
             {
                 valueView.container().addMember(
                     SerdeSpec<Pickable, TFormatType>::type_name(), *component,
-                    serializableEntity, *serializableScene.getECSRegistry());
+                    serializableEntity, *ecsRegistry);
             }
         }
 
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<MotionPlanner>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<MotionPlanner>(serializableEntity);
 
             if(component)
             {
                 valueView.container().addMember(
                     SerdeSpec<MotionPlanner, TFormatType>::type_name(), *component,
-                    serializableEntity, *serializableScene.getECSRegistry());
+                    serializableEntity, *ecsRegistry);
             }
         }
 
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<Rigidbody3D>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<Rigidbody3D>(serializableEntity);
 
             if(component)
             {
                 valueView.container().addMember(
                     SerdeSpec<Rigidbody3D, TFormatType>::type_name(), *component,
-                    serializableEntity, *serializableScene.getECSRegistry());
+                    serializableEntity, *ecsRegistry);
             }
         }
 
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<IKJoint>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<IKJoint>(serializableEntity);
 
             if(component)
             {
@@ -284,7 +286,7 @@ namespace SGCore::Serde
         }
 
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<IKRootJoint>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<IKRootJoint>(serializableEntity);
 
             if(component)
             {
@@ -293,7 +295,7 @@ namespace SGCore::Serde
         }
 
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<EnableBatchingPass>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<EnableBatchingPass>(serializableEntity);
 
             if(component)
             {
@@ -302,7 +304,7 @@ namespace SGCore::Serde
         }
 
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<EnableDecalPass>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<EnableDecalPass>(serializableEntity);
 
             if(component)
             {
@@ -311,7 +313,7 @@ namespace SGCore::Serde
         }
 
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<EnableInstancingPass>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<EnableInstancingPass>(serializableEntity);
 
             if(component)
             {
@@ -320,7 +322,7 @@ namespace SGCore::Serde
         }
 
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<EnableMeshPass>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<EnableMeshPass>(serializableEntity);
 
             if(component)
             {
@@ -329,7 +331,7 @@ namespace SGCore::Serde
         }
 
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<EnableTerrainPass>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<EnableTerrainPass>(serializableEntity);
 
             if(component)
             {
@@ -338,7 +340,7 @@ namespace SGCore::Serde
         }
 
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<EnableVolumetricPass>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<EnableVolumetricPass>(serializableEntity);
 
             if(component)
             {
@@ -347,7 +349,7 @@ namespace SGCore::Serde
         }
 
         {
-            auto* component = serializableScene.getECSRegistry()->tryGet<MainCameraTag>(serializableEntity);
+            auto* component = ecsRegistry->tryGet<MainCameraTag>(serializableEntity);
 
             if(component)
             {
@@ -355,12 +357,21 @@ namespace SGCore::Serde
             }
         }
 
+        // serializing custom components
+        auto& visitorsRegistry = SerializerImpl<TFormatType>::componentsVisitors();
+        for(const auto& visitor : visitorsRegistry.visitors())
+        {
+            auto componentVisitor = std::static_pointer_cast<ComponentVisitor<TFormatType>>(visitor);
+            componentVisitor->m_serializableValueView = &valueView;
+            componentVisitor->m_serOrDeser = true;
+            componentVisitor->visit(*ecsRegistry, serializableEntity, nullptr);
+        }
+
         #pragma endregion Components
 
         // ==================================================================================
         // ==================================================================================
 
-        // calling event to serialize user-provided components
         Scene::getOnEntitySerializeEvent<TFormatType>()(
                 valueView,
                 serializableScene
@@ -672,12 +683,21 @@ namespace SGCore::Serde
             }
         }
 
+        // serializing custom components
+        auto& visitorsRegistry = SerializerImpl<TFormatType>::componentsVisitors();
+        for(const auto& visitor : visitorsRegistry.visitors())
+        {
+            auto componentVisitor = std::static_pointer_cast<ComponentVisitor<TFormatType>>(visitor);
+            componentVisitor->m_deserializableValueView = &valueView;
+            componentVisitor->m_serOrDeser = false;
+            componentVisitor->visit(toRegistry, entity, nullptr);
+        }
+
         #pragma endregion Components
 
         // ==================================================================================
         // ==================================================================================
 
-        // calling event to deserialize user-provided components
         Scene::getOnEntityDeserializeEvent<TFormatType>()(
                 valueView,
                 deserializableScene

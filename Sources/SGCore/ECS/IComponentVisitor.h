@@ -14,11 +14,10 @@
 struct SGCORE_EXPORT visitor_name final : SGCore::ECS::IComponentVisitor                                                                                                            \
 {                                                                                                                                                                                   \
     SG_IMPLEMENT_TYPE_ID(visitor_name);                                                                                                                                             \
-    void visit(SGCore::ECS::registry_t& registry, SGCore::ECS::entity_t entity, const std::function<void(SGCore::ECS::ComponentBase&, std::uint64_t)>& func) noexcept override;                                                                                                                                                           \
+    void visit(SGCore::ECS::registry_t& registry, SGCore::ECS::entity_t entity, const std::function<void(SGCore::ECS::ComponentBase&, std::uint64_t)>& func) noexcept override;     \
 };
 
 #define SG_IMPLEMENT_ECS_COMPONENT_DEFAULT_VISITOR(visitor_name, component_type)                                                                                                        \
-                                                                                                                                                                                        \
 void visitor_name::visit(SGCore::ECS::registry_t& registry, SGCore::ECS::entity_t entity, const std::function<void(SGCore::ECS::ComponentBase&, std::uint64_t)>& func) noexcept         \
 {                                                                                                                                                                                       \
     auto* component = registry.tryGet<component_type>(entity);                                                                                                                          \
@@ -44,7 +43,8 @@ namespace SGCore::ECS
     {
         void registerVisitor(const Ref<IComponentVisitor>& visitor) noexcept;
 
-        void visit(registry_t& registry, entity_t entity, const std::function<void(ComponentBase&, std::uint64_t)>& func) noexcept;
+        void visit(registry_t& registry, entity_t entity, const std::function<void(ComponentBase&, std::uint64_t)>& func) const noexcept;
+        const std::vector<Ref<IComponentVisitor>>& visitors() const noexcept;
 
         static VisitorsRegistry& instance() noexcept;
 

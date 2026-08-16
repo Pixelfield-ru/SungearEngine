@@ -4,8 +4,11 @@
 
 #pragma once
 
-#include "SGCore/Serde/Common.h"
 #include <string>
+#include <vector>
+
+template<FormatType TFormatType>
+struct ComponentVisitor;
 
 template<>
 struct SerializerImpl<FormatType::JSON>
@@ -34,5 +37,7 @@ struct SerializerImpl<FormatType::JSON>
     static void from(const std::string& formattedText,
                      std::string& outputLog,
                      T& outValue,
-                     SharedDataT&& ... sharedData) noexcept;
+                     SharedDataT&&... sharedData) noexcept;
+
+    static SGCore::ECS::VisitorsRegistry& componentsVisitors() noexcept;
 };

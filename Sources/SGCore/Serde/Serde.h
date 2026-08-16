@@ -22,6 +22,7 @@
 
 #include "Common.h"
 #include "Defines.h"
+#include "SGCore/ECS/IComponentVisitor.h"
 #include "SGCore/Logger/Logger.h"
 
 /**
@@ -84,6 +85,9 @@ namespace SGCore::Serde
     struct SerializableValueView;
 
     struct Serializer;
+
+    template<FormatType TFormatType>
+    struct ComponentVisitor;
 
     // ==============================================================================
     // ==============================================================================
@@ -400,6 +404,11 @@ namespace SGCore::Serde
                          std::string& outputLog,
                          T& outValue,
                          SharedDataT&&... sharedData) noexcept
+        {
+
+        }
+
+        static ECS::VisitorsRegistry& componentsVisitors() noexcept
         {
 
         }
