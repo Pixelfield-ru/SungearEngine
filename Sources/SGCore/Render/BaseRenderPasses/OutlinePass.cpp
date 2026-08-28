@@ -21,6 +21,10 @@ void SGCore::OutlinePass::create(const SGCore::Ref<SGCore::IRenderPipeline>& par
 
     m_shader = AssetManager::getInstance()->loadAsset<IShader>(shaderFile->getPath());
 
+    m_combineShader = AssetManager::getInstance()->loadAssetWithAlias<IShader>("OutlineCombineShader", shaderFile->getPath());
+    m_combineShader->addDefine(SGShaderDefineType::SGG_OTHER_DEFINE, ShaderDefine("SG_OUTLINE_COMBINE", ""));
+    m_combineShader->recompile();
+
     m_meshRenderState.m_useFacesCulling = false;
     m_renderState.m_useDepthTest = false;
 
@@ -141,10 +145,14 @@ void SGCore::OutlinePass::render(const Scene* scene,
         layeredFrameReceiver.m_layersFXFrameBuffer->bind();
         layeredFrameReceiver.m_layersFXFrameBuffer->bindAttachmentToDrawIn(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7);
 
-        // then combining outline buffer with attachment7 that contains final scene color
-        m_shader->useInteger("u_pass", 3);
+        // then combining outline buffer with attachment7 that contains final scene color.
+        // A separate program: only one attachment is bound here, and a program that also declares
+        // location 1 would make every draw of this pass warn about a write with no attachment.
+        m_combineShader->bind();
+        m_combineShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+        m_combineShader->useInteger("u_pass", 3);
 
-        m_shader->useTextureBlock("u_scaledOutlineBuffer", 1);
+        m_combineShader->useTextureBlock("u_scaledOutlineBuffer", 1);
 
         // using attachment that contains scaled outline
         layeredFrameReceiver.m_layersFXFrameBuffer->bindAttachment(

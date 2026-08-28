@@ -29,10 +29,7 @@ void SGCore::ImGuiWrap::ImGuiLayer::init() noexcept
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-    auto gapiType = CoreMain::getRenderer()->getGAPIType();
-
-    if (gapiType == GAPIType::SG_API_TYPE_GL4 ||
-        gapiType == GAPIType::SG_API_TYPE_GL46)
+    if(isOpenGLAPI(CoreMain::getRenderer()->getGAPIType()))
     {
 #if SG_PLATFORM_PC
         ImGui_ImplGlfw_InitForOpenGL(CoreMain::getWindow().m_handle, true);
@@ -46,11 +43,7 @@ void SGCore::ImGuiWrap::ImGuiLayer::init() noexcept
 
 void SGCore::ImGuiWrap::ImGuiLayer::destroy() noexcept
 {
-    
-    auto gapiType = CoreMain::getRenderer()->getGAPIType();
-    
-    if (gapiType == GAPIType::SG_API_TYPE_GL4 ||
-        gapiType == GAPIType::SG_API_TYPE_GL46)
+    if(isOpenGLAPI(CoreMain::getRenderer()->getGAPIType()))
     {
         ImGui_ImplOpenGL3_DestroyDeviceObjects();
 #if SG_PLATFORM_PC
@@ -72,10 +65,7 @@ void SGCore::ImGuiWrap::ImGuiLayer::reload() noexcept
 
 void SGCore::ImGuiWrap::ImGuiLayer::beginFrame() noexcept
 {
-    auto gapiType = CoreMain::getRenderer()->getGAPIType();
-
-    if (gapiType == GAPIType::SG_API_TYPE_GL4 ||
-        gapiType == GAPIType::SG_API_TYPE_GL46)
+    if(isOpenGLAPI(CoreMain::getRenderer()->getGAPIType()))
     {
         ImGui_ImplOpenGL3_NewFrame();
 #if SG_PLATFORM_PC
@@ -90,12 +80,9 @@ void SGCore::ImGuiWrap::ImGuiLayer::beginFrame() noexcept
 
 void SGCore::ImGuiWrap::ImGuiLayer::endFrame() noexcept
 {
-    auto gapiType = CoreMain::getRenderer()->getGAPIType();
-
     ImGui::Render();
 
-    if (gapiType == GAPIType::SG_API_TYPE_GL4 ||
-        gapiType == GAPIType::SG_API_TYPE_GL46 || gapiType == GAPIType::SG_API_TYPE_GLES3)
+    if(isOpenGLAPI(CoreMain::getRenderer()->getGAPIType()))
     {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
@@ -134,6 +121,7 @@ void SGCore::ImGuiWrap::ImGuiLayer::destroyDeviceObjects() noexcept
             ImGui_ImplOpenGL3_DestroyDeviceObjects();
             break;
         case SGCore::SG_API_TYPE_VULKAN:
+        case SGCore::SG_API_TYPE_DX12:
             break;
     }
 }

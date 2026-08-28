@@ -24,7 +24,11 @@ SGCore::UI::FontsManager::FontsManager() noexcept
 
 SGCore::UI::FontsManager::~FontsManager() noexcept
 {
+    // fonts hold FT_Face handles of this library: drop them before the library, otherwise the
+    // static destruction of the assets manager runs FT_Done_Face on a freed FT_Library (crash at exit)
+    if(m_fontsAssetsManager) m_fontsAssetsManager->clear();
     msdfgen::deinitializeFreetype(m_FTLib);
+    m_FTLib = nullptr;
 }
 
 void SGCore::UI::FontsManager::init() const noexcept

@@ -68,6 +68,11 @@ namespace SGCore
 
         [[nodiscard]] glm::vec3 readPixelsFromAttachment(const glm::vec2& mousePos, SGFrameBufferAttachmentType attachmentType) const noexcept final;
 
+        [[nodiscard]] std::uintptr_t getNativeHandle() const noexcept final { return m_handler; }
+
+        [[nodiscard]] bool readAttachmentPixels(SGFrameBufferAttachmentType attachmentType,
+                                                AttachmentReadback& out) const noexcept final;
+
     protected:
         GL4FrameBuffer() noexcept = default;
 

@@ -34,6 +34,9 @@ SGCore::IMeshData::IMeshData()
 
 void SGCore::IMeshData::prepare()
 {
+    // any RHI mirror built from the previous data is stale now
+    m_rhi = RHIData { };
+
     m_vertexArray = std::shared_ptr<IVertexArray>(CoreMain::getRenderer()->createVertexArray());
     m_vertexArray->create();
     m_vertexArray->bind();
@@ -84,6 +87,8 @@ void SGCore::IMeshData::prepare()
 
 void SGCore::IMeshData::destroy() noexcept
 {
+    m_rhi = RHIData { };
+
     if(m_vertexArray) m_vertexArray->destroy();
 
     for(const auto& colorsBuf : m_verticesColorsBuffers)
@@ -255,12 +260,47 @@ void SGCore::IMeshData::generatePhysicalMesh() noexcept
     m_physicalMesh = generatePhysicalMesh(m_vertices, m_indices);
 }
 
+namespace
+{
+    /// Puts a buffer's recorded attribute layout back the way it was. Only the records are touched:
+    /// the vertex array state was already written by useAttributes(), and addAttribute does not
+    /// itself touch the graphics API.
+    void restoreAttributes(SGCore::IVertexBuffer& buffer, const std::vector<SGCore::IVertexBuffer::AttributeDesc>& saved) noexcept
+    {
+        buffer.clearAttributes();
+        for(const auto& attribute : saved)
+        {
+            buffer.addAttribute(attribute.m_location, attribute.m_scalarsCount, attribute.m_dataType,
+                                attribute.m_isNormalized, attribute.m_stride, attribute.m_offsetInStruct, attribute.m_divisor);
+        }
+    }
+}
+
 void SGCore::IMeshData::bindBuffersToVertexArray(const Ref<IVertexArray>& toVertexArray,
                                                  std::uint16_t vertexAttribsIDOffset) noexcept
 {
     const auto maxVertexAttribsCount = GPUDeviceInfo::getMaxVertexAttribsCount();
 
+    // This function defines the layout of the mesh buffers FOR THE VERTEX ARRAY BEING BOUND, and the
+    // same buffers are bound into more than one of them: the mesh has its own array (offset 0) and
+    // Instancing binds the very same buffers into its array at offset 7, behind the per-instance
+    // transform attributes. addAttribute only appends and useAttributes replays the WHOLE recorded
+    // list, so without clearing first the second call wrote both layouts into the instancing array
+    // and locations 0..6 — the instance transform — were overwritten with vertex data. The geometry
+    // came out torn on every backend (found 2026-08-22, the first time instancing was ever run).
+    const auto savedVerticesAttributes = m_verticesBuffer->getAttributes();
+    m_verticesBuffer->clearAttributes();
+
     toVertexArray->bind();
+
+    // Register with the array being bound, not just with the mesh's own one. GL records the buffer
+    // bindings in the vertex array object, so this was invisible there; the explicit backends have no
+    // such object and rebuild the draw from IVertexArray::getVertexBuffers()/getIndexBuffer(), so for
+    // the Instancing array they saw only the per-instance buffer — no positions, no indices, and the
+    // draw silently produced nothing (no validation error either: VulkanPipelineState drops shader
+    // inputs that nothing feeds). Both calls are idempotent for the mesh's own array.
+    toVertexArray->addVertexBuffer(m_verticesBuffer.get());
+    toVertexArray->setIndexBuffer(m_indicesBuffer.get());
 
     m_verticesBuffer->bind();
 
@@ -310,9 +350,19 @@ void SGCore::IMeshData::bindBuffersToVertexArray(const Ref<IVertexArray>& toVert
         if(vertexAttribsIDOffset + i + 9 >= maxVertexAttribsCount) break;
 
         m_verticesColorsBuffers[i]->bind();
+        toVertexArray->addVertexBuffer(m_verticesColorsBuffers[i].get());
+
+        const auto savedColorAttributes = m_verticesColorsBuffers[i]->getAttributes();
+        m_verticesColorsBuffers[i]->clearAttributes();
 
         m_verticesColorsBuffers[i]->addAttribute(vertexAttribsIDOffset + i + 9, 4, SGGDataType::SGG_FLOAT, false, 4 * sizeof(float), 0);
         m_verticesColorsBuffers[i]->useAttributes();
+
+        if(vertexAttribsIDOffset != 0)
+        {
+            toVertexArray->setBufferAttributes(m_verticesColorsBuffers[i].get(), m_verticesColorsBuffers[i]->getAttributes());
+            restoreAttributes(*m_verticesColorsBuffers[i], savedColorAttributes);
+        }
     }
 
     // -------------------------------------------------
@@ -320,6 +370,16 @@ void SGCore::IMeshData::bindBuffersToVertexArray(const Ref<IVertexArray>& toVert
     // ------ adding indices -------------------
     m_indicesBuffer->bind();
     // --------------------------------------------
+
+    // A foreign vertex array borrows these buffers at its own location offset, but the recorded
+    // layout has to keep describing the MESH: prepareMeshRHI builds the pipeline vertex input from
+    // it lazily, and would otherwise pick up the shifted locations of whoever bound the mesh last.
+    if(vertexAttribsIDOffset != 0)
+    {
+        // the shifted layout belongs to THIS array; the buffer keeps describing the mesh
+        toVertexArray->setBufferAttributes(m_verticesBuffer.get(), m_verticesBuffer->getAttributes());
+        restoreAttributes(*m_verticesBuffer, savedVerticesAttributes);
+    }
 }
 
 void SGCore::IMeshData::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept

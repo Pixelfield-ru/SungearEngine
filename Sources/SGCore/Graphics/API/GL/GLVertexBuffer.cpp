@@ -62,7 +62,7 @@ void SGCore::GLVertexBuffer::setUsage(SGGUsage usage) noexcept
     m_usage = usage;
 }
 
-void SGCore::GLVertexBuffer::addAttribute(std::uint32_t location,
+void SGCore::GLVertexBuffer::addAttributeImpl(std::uint32_t location,
                                           std::int32_t scalarsCount,
                                           SGGDataType dataType,
                                           bool isNormalized,

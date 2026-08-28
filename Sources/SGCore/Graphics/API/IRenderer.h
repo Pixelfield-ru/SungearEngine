@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "AttachmentReadback.h"
 #include "GAPIType.h"
 #include "IUniformBuffer.h"
 #include "SGCore/Transformations/Transform.h"
@@ -31,12 +32,19 @@ namespace SGCore
     class IShader;
 
     struct IGPUObjectsStorage;
+    class IDevice;
 
     // todo: make description of funcs
     class SGCORE_EXPORT IRenderer
     {
     public:
         virtual ~IRenderer() = default;
+
+        /**
+         * RHI device of this backend (docs/RHI_DESIGN.md). nullptr while a backend has not been
+         * migrated to the RHI yet; available after init().
+         */
+        [[nodiscard]] virtual IDevice* getDevice() noexcept { return nullptr; }
 
         // Buffer for storing matrices of the currently main camera.
         Ref<IUniformBuffer> m_viewMatricesBuffer;
@@ -67,7 +75,7 @@ namespace SGCore
          * @param transformComponent - The transform component of this "camera".
          */
         virtual void prepareUniformBuffers(const RenderingBase& renderingBase,
-                                           const Transform& transform) { }
+                                           const Transform& transform);
 
         virtual void renderMeshData(const IMeshData* meshData,
                                     const MeshRenderState& meshRenderState) { }
@@ -87,12 +95,20 @@ namespace SGCore
         void renderTextureOnScreen(const ITexture2D* texture, bool flipOutput = false) noexcept;
 
         /// Blit texture into a window-space rectangle (OpenGL bottom-left origin).
-        void renderTextureOnScreen(const ITexture2D* texture,
-                                   bool flipOutput,
-                                   int x,
-                                   int y,
-                                   int width,
-                                   int height) noexcept;
+        /// Backends migrated to the RHI override this with an RHI pass (ScreenBlit).
+        virtual void renderTextureOnScreen(const ITexture2D* texture,
+                                           bool flipOutput,
+                                           int x,
+                                           int y,
+                                           int width,
+                                           int height) noexcept;
+
+        /**
+         * Reads the window backbuffer (what the user sees) back to CPU in the backend's native
+         * layout — screenshots and tests. Rows follow the backend's origin convention.
+         * @return false if the backend can not read the backbuffer.
+         */
+        [[nodiscard]] virtual bool readScreenPixels(AttachmentReadback& out) const noexcept { return false; }
 
         /// Set the active screen viewport in window pixels (OpenGL bottom-left origin).
         virtual void setViewport(int x, int y, int width, int height) const noexcept = 0;
@@ -142,6 +158,11 @@ namespace SGCore
         virtual const IGPUObjectsStorage& storage() const noexcept = 0;
 
         virtual void reload() noexcept = 0;
+
+        /// Called once when the main loop ends, while every subsystem is still alive. Explicit
+        /// backends release their device here instead of in static destruction (the loader DLL may
+        /// already be gone by then). GL backends have nothing to do.
+        virtual void shutdown() noexcept { }
 
         [[nodiscard]] GAPIType getGAPIType() const noexcept;
 

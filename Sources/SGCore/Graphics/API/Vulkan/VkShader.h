@@ -5,25 +5,24 @@
 #ifndef SUNGEARENGINE_VKSHADER_H
 #define SUNGEARENGINE_VKSHADER_H
 
-#include "SGCore/Graphics/API/IShader.h"
+#include "SGCore/Graphics/RHI/RHILegacyShader.h"
 
 namespace SGCore
 {
-    // TODO: impl VkShader
-    struct VkShader : public IShader
+    /// The Vulkan half of the shared legacy shader facade: where the "currently bound" shader is
+    /// kept, and the dummy texel buffer a declared samplerBuffer needs (see RHILegacyShader).
+    class VkShader final : public RHILegacyShader
     {
-        ~VkShader() noexcept override;
+        friend class VkRenderer;
 
-        void destroy() noexcept final;
+    public:
+        ~VkShader() noexcept override = default;
 
-        void bind() const noexcept final;
+    protected:
+        VkShader() noexcept = default;
 
-        void useUniformBuffer(const Ref<IUniformBuffer>&) override;
-
-        std::int32_t getShaderUniformLocation(const std::string& uniformName) noexcept final;
-
-    private:
-        void doCompile() noexcept final;
+        void setAsCurrentShader() const noexcept override;
+        void fillBackendDescriptors(IDescriptorSet& set) noexcept override;
     };
 }
 

@@ -59,10 +59,9 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
             "${enginePath}/Resources/sg_shaders/features/ui/text_shader.sgshader"
     );
 
-    m_shadersPaths.addPath(
-            "InstancingShader",
-            "${enginePath}/Resources/sg_shaders/features/pbr/instancing.sgshader"
-    );
+    // no "InstancingShader" entry: instancing is the standard mesh shader compiled with
+    // SG_INSTANCED_RENDERING (see PBRRPInstancingPass::create), not a shader of its own. The file
+    // that used to be registered here included an impl that never existed and translated to 0 stages.
 
     m_shadersPaths.addPath(
             "BatchingShader",

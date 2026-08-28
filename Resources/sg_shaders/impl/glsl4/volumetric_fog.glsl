@@ -7,7 +7,7 @@
 
 #vertex
 
-#include "sg_shaders/impl/glsl4/instancing.glsl"
+#include "sg_shaders/impl/glsl4/vertex_attributes_layout.glsl"
 
 layout (location = SG_VS_POSITIONS_ATTRIBUTE_LOC) in vec3 positionsAttribute;
 layout (location = SG_VS_UV_ATTRIBUTE_LOC) in vec3 UVAttribute;

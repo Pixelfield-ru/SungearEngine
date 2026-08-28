@@ -83,11 +83,13 @@ void SGCore::SunShadowsPass::renderShadows(const Scene* scene, const Ref<IRender
 
                     m_batchShader->useMatrix("CSMLightSpaceMatrix", cascadeMatrix);
 
-                    CoreMain::getRenderer()->renderArray(
+                    CoreMain::getRenderer()->renderArrayInstanced(
                         batch.getVertexArray(),
                         batch.m_batchRenderState,
-                        batch.getTrianglesCount(),
-                        0
+                        // three vertices per triangle, one instance per triangle
+                        3,
+                        0,
+                        batch.getTrianglesCount()
                     );
                 });
 

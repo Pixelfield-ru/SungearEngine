@@ -9,6 +9,8 @@
 #include "SGCore/Math/AABB.h"
 #include "SGCore/Serde/Defines.h"
 #include "SGCore/Graphics/API/IRenderer.h"
+#include "SGCore/Graphics/RHI/IGPUBuffer.h"
+#include "SGCore/Graphics/RHI/RHITypes.h"
 #include "SGCore/Main/CoreMain.h"
 #include "Vertex.h"
 #include "Bone.h"
@@ -148,6 +150,8 @@ namespace SGCore
                                       std::uint16_t vertexAttribsIDOffset = 0) noexcept;
 
         Ref<IVertexArray> getVertexArray() const noexcept;
+        [[nodiscard]] const Ref<IVertexBuffer>& getVerticesBuffer() const noexcept { return m_verticesBuffer; }
+        [[nodiscard]] const std::vector<Ref<IVertexBuffer>>& getVerticesColorsBuffers() const noexcept { return m_verticesColorsBuffers; }
 
     protected:
         void doLoad(const InterpolatedPath& path) override;
@@ -177,6 +181,19 @@ namespace SGCore
         std::vector<Ref<IVertexBuffer>> m_verticesColorsBuffers;
 
         Ref<IIndexBuffer> m_indicesBuffer;
+
+    public:
+        /// RHI-side mirror of the mesh, filled lazily by backends that draw through the RHI
+        /// (GL46Renderer::renderMeshData); the legacy buffers above stay for GL4/GLES.
+        struct RHIData
+        {
+            Ref<IGPUBuffer> m_vertexBuffer;
+            std::vector<Ref<IGPUBuffer>> m_vertexColorsBuffers;
+            Ref<IGPUBuffer> m_indexBuffer;
+            VertexInputDesc m_vertexInput;
+            bool m_prepared { };
+        };
+        RHIData m_rhi;
 
         template<typename... AssetCtorArgs>
         static Ref<IMeshData> createRefInstance(AssetCtorArgs&&... assetCtorArgs) noexcept

@@ -39,7 +39,7 @@ namespace SGCore
 
         void setUsage(SGGUsage) noexcept override;
 
-        void addAttribute(std::uint32_t location,
+        void addAttributeImpl(std::uint32_t location,
                           std::int32_t scalarsCount,
                           SGGDataType dataType,
                           bool isNormalized,
@@ -48,6 +48,10 @@ namespace SGCore
                           std::int32_t divisor) noexcept final;
 
         void useAttributes() const noexcept final;
+
+        void clearAttributesImpl() noexcept final { m_attributes.clear(); }
+
+        [[nodiscard]] std::uintptr_t getNativeHandle() const noexcept final { return m_handler; }
 
     protected:
         void subDataOnGAPISide(const void* data, const size_t& bytesCount, const size_t& bytesOffset, bool isPutData) noexcept override;

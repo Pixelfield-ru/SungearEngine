@@ -17,7 +17,7 @@ void SGCore::PBRRPBatchingPass::create(const Ref<IRenderPipeline>& parentRenderP
     IGeometryPass::create(parentRenderPipeline);
 
     const auto shaderFile = AssetManager::getInstance()->loadAsset<TextFileAsset>(
-            *parentRenderPipeline->m_shadersPaths["StandardTerrainShader"]);
+            *parentRenderPipeline->m_shadersPaths["BatchingShader"]);
 
     m_shader = AssetManager::getInstance()->loadAsset<IShader>(shaderFile->getPath());
 }
@@ -43,11 +43,13 @@ void SGCore::PBRRPBatchingPass::render(const Scene* scene, const Ref<IRenderPipe
                     m_shader.get(), cameraRenderingInfo.m_cameraRenderingBase->m_zFar, 5);
             }
 
-            CoreMain::getRenderer()->renderArray(
+            CoreMain::getRenderer()->renderArrayInstanced(
                 batch.getVertexArray(),
                 batch.m_batchRenderState,
-                batch.getTrianglesCount(),
-                0
+                // three vertices per triangle, one instance per triangle
+                3,
+                0,
+                batch.getTrianglesCount()
             );
         });
     });

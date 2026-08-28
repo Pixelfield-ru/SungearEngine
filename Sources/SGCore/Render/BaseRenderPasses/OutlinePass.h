@@ -17,6 +17,10 @@ namespace SGCore
 
         Ref<IMeshData> m_postProcessQuad;
 
+        /// Pass 3 draws into colour attachment 7 alone, so it needs a variant of the outline program
+        /// that declares only one output; see the SG_OUTLINE_COMBINE branch in outline.glsl.
+        AssetRef<IShader> m_combineShader;
+
         void create(const Ref<IRenderPipeline>& parentRenderPipeline) noexcept final;
 
         void render(const Scene* scene, const Ref<IRenderPipeline>& renderPipeline) noexcept final;

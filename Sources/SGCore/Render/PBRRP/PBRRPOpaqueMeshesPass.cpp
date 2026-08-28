@@ -62,7 +62,10 @@ void SGCore::PBRRPOpaqueMeshesPass::render(const Scene* scene, const Ref<IRender
 
             // ============================== mesh rendering
 
-            if(!mesh.m_base.getMeshData() || !mesh.m_base.getMaterial()) return;
+            if(!mesh.m_base.getMeshData() || !mesh.m_base.getMaterial())
+            {
+                return;
+            }
 
             const auto& meshGeomShader = mesh.m_base.getMaterial()->m_shaders["GeometryPass"];
             const auto& shaderToUse = meshGeomShader ? meshGeomShader : m_shader;

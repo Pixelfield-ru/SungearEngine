@@ -202,4 +202,32 @@ list(APPEND SungearEngine_LIBS "RecastNavigation::Recast")
 list(APPEND SungearEngine_LIBS "RecastNavigation::DebugUtils")
 list(APPEND SungearEngine_LIBS "RecastNavigation::DetourCrowd")
 
+find_package(glslang CONFIG REQUIRED)
+list(APPEND SungearEngine_LIBS "glslang::glslang")
+list(APPEND SungearEngine_LIBS "glslang::SPIRV")
+list(APPEND SungearEngine_LIBS "glslang::glslang-default-resource-limits")
+
+find_package(unofficial-spirv-reflect CONFIG REQUIRED)
+list(APPEND SungearEngine_LIBS "unofficial::spirv-reflect")
+
+if(SG_TARGET_OS_WINDOWS)
+    # DX12 shader path: SPIR-V -> HLSL (spirv-cross) -> bytecode (d3dcompiler, Windows SDK)
+    find_package(spirv_cross_core CONFIG REQUIRED)
+    # spirv-cross-hlsl derives from the GLSL backend, and its config refuses to load without it
+    find_package(spirv_cross_glsl CONFIG REQUIRED)
+    find_package(spirv_cross_hlsl CONFIG REQUIRED)
+    list(APPEND SungearEngine_LIBS "spirv-cross-core")
+    list(APPEND SungearEngine_LIBS "spirv-cross-glsl")
+    list(APPEND SungearEngine_LIBS "spirv-cross-hlsl")
+endif()
+
+find_package(VulkanHeaders CONFIG REQUIRED)
+list(APPEND SungearEngine_LIBS "Vulkan::Headers")
+find_package(VulkanMemoryAllocator CONFIG REQUIRED)
+list(APPEND SungearEngine_LIBS "GPUOpen::VulkanMemoryAllocator")
+if(NOT SG_TARGET_OS_ANDROID)
+    find_package(VulkanLoader CONFIG REQUIRED)
+    list(APPEND SungearEngine_LIBS "Vulkan::Loader")
+endif()
+
 list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}")

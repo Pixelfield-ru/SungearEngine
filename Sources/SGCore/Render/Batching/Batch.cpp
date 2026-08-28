@@ -14,7 +14,10 @@
 
 SGCore::Batch::Batch() noexcept
 {
-    m_batchRenderState.m_drawMode = SGDrawMode::SGG_POINTS;
+    // One instance per triangle, three vertices each — see the vertex stage of pbr/batching.glsl.
+    // Was a point per triangle expanded by a geometry stage, which spirv-cross cannot translate to
+    // HLSL (and which is the slowest way to do this on every backend besides).
+    m_batchRenderState.m_drawMode = SGDrawMode::SGG_TRIANGLES;
     m_batchRenderState.m_useFacesCulling = false;
     m_batchRenderState.m_useIndices = false;
 
@@ -34,14 +37,22 @@ SGCore::Batch::Batch() noexcept
     // ---------- preparing uvs offsets0 ---------------
     std::uint8_t currentVertexAttribID = 0;
 
-    m_fakeVerticesBuffer->addAttribute(currentVertexAttribID, 2, SGGDataType::SGG_INT, false, sizeof(BatchTriangle), 0);
+    // divisor 1 everywhere: one BatchTriangle feeds all three vertices of its instance
+    m_fakeVerticesBuffer->addAttribute(currentVertexAttribID, 2, SGGDataType::SGG_INT, false, sizeof(BatchTriangle), 0, 1);
     ++currentVertexAttribID;
 
     // ---------- preparing uvs offsets ---------------
-    for(std::uint8_t i = 0; i < texture_types_count / 2; ++i)
+    // The offsets are texture_types_count uvec2 read as uvec4 attributes, so it takes
+    // ceil(texture_types_count * 2 / 4) of them -- with an odd count of texture types the old
+    // texture_types_count / 2 left the last half vector unfed, and the shader declares it (the tail
+    // lands in BatchTriangle::padding0, which is exactly what that padding is for).
+    // Unsigned to match the uvec4 the shaders declare: an explicit backend rejects the pipeline when
+    // the attribute format and the shader input disagree in signedness.
+    constexpr std::uint8_t uvOffsetsAttribsCount = (texture_types_count * 2 + 3) / 4;
+    for(std::uint8_t i = 0; i < uvOffsetsAttribsCount; ++i)
     {
-        m_fakeVerticesBuffer->addAttribute(currentVertexAttribID, 4, SGGDataType::SGG_INT, false, sizeof(BatchTriangle),
-                                           offsetof(BatchTriangle, m_atlasesUVsOffset) + i * sizeof(glm::u32vec4));
+        m_fakeVerticesBuffer->addAttribute(currentVertexAttribID, 4, SGGDataType::SGG_UNSIGNED_INT, false, sizeof(BatchTriangle),
+                                           offsetof(BatchTriangle, m_atlasesUVsOffset) + i * sizeof(glm::u32vec4), 1);
 
         ++currentVertexAttribID;
     }
@@ -61,8 +72,10 @@ SGCore::Batch::Batch() noexcept
     m_indicesBuffer = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
     m_indicesBuffer->m_textureBufferUsage = SGGUsage::SGG_DYNAMIC;
     m_indicesBuffer->m_type = SGTextureType::SG_TEXTURE_BUFFER;
+    // signed on purpose: the shaders sample this through an isamplerBuffer, and Vulkan/DX12 reject a
+    // descriptor whose numeric type disagrees with the shader (GL happily reinterprets)
     m_indicesBuffer->create(m_indices.data(), 0, 1, 1,
-                            SGGColorInternalFormat::SGG_RGB32_UNSIGNED_INT,
+                            SGGColorInternalFormat::SGG_RGB32_INT,
                             SGGColorFormat::SGG_RGB_INTEGER);
 
     m_instancesTransformsBuffer = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
@@ -394,7 +407,9 @@ void SGCore::Batch::bind(IShader* shader) const noexcept
 
     shader->useTextureBlock("batchAtlas", 4);
 
-    m_atlas.getTexture()->bind(4);
+    // an atlas that never had a texture packed into it has no texture at all, and every mesh in the
+    // batch being untextured is a perfectly ordinary case
+    if(const auto& atlasTexture = m_atlas.getTexture()) atlasTexture->bind(4);
     /*for(std::uint8_t i = 0; i < m_atlases.size(); ++i)
     {
         const auto& atlas = m_atlases[i];

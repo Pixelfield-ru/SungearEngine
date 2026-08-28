@@ -28,6 +28,11 @@ namespace SGCore
          */
         static void init() noexcept;
 
+        /// Closes every device while the logger and OpenAL are still alive. Called at the end of
+        /// CoreMain::startCycle(); without it the devices die in static destruction, where an
+        /// AL error report hits an already destroyed logger (observed as abort() on exit).
+        static void shutdown() noexcept;
+
         /**
          * Creates new audio device.
          * @param deviceName Name of device.

@@ -39,3 +39,18 @@ SGCore::IIndexBuffer* SGCore::IVertexArray::getIndexBuffer() noexcept
 {
     return m_indexBuffer;
 }
+
+void SGCore::IVertexArray::setBufferAttributes(const IVertexBuffer* vertexBuffer,
+                                               std::vector<IVertexBuffer::AttributeDesc> attributes) noexcept
+{
+    if(!vertexBuffer) return;
+
+    m_bufferAttributes[vertexBuffer] = std::move(attributes);
+}
+
+const std::vector<SGCore::IVertexBuffer::AttributeDesc>*
+SGCore::IVertexArray::getBufferAttributes(const IVertexBuffer* vertexBuffer) const noexcept
+{
+    const auto it = m_bufferAttributes.find(vertexBuffer);
+    return it == m_bufferAttributes.end() ? nullptr : &it->second;
+}

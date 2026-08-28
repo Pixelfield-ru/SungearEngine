@@ -2,6 +2,7 @@
 #include <SGCore/Logger/Logger.h>
 
 #include "SGCore/Graphics/API/IRenderer.h"
+#include "SGCore/Graphics/RHI/IDevice.h"
 #include "Window.h"
 #include "CoreMain.h"
 #include "SGCore/ExternalAPI/Java/JNIManager.h"
@@ -31,7 +32,7 @@ void SGCore::Window::create()
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     // OpenGL is the default API for GLFW, so it's not here
-    if(CoreMain::getRenderer()->getGAPIType() == GAPIType::SG_API_TYPE_VULKAN)
+    if(isExplicitAPI(CoreMain::getRenderer()->getGAPIType()))
     {
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     }
@@ -199,8 +200,7 @@ void SGCore::Window::makeCurrent() noexcept
 {
     Input::PC::setupInput(*this);
 
-    GAPIType apiType = CoreMain::getRenderer()->getGAPIType();
-    if(apiType >= GAPIType::SG_API_TYPE_GL4 && apiType <= GAPIType::SG_API_TYPE_GLES3)
+    if(isOpenGLAPI(CoreMain::getRenderer()->getGAPIType()))
     {
 #if SG_PLATFORM_PC
         glfwMakeContextCurrent(m_handle);
@@ -268,8 +268,7 @@ void SGCore::Window::setSwapInterval(const bool& swapInterval) noexcept
 {
     m_config.m_swapInterval = swapInterval;
 
-    GAPIType apiType = CoreMain::getRenderer()->getGAPIType();
-    if(apiType >= GAPIType::SG_API_TYPE_GL4 && apiType <= GAPIType::SG_API_TYPE_GLES3)
+    if(isOpenGLAPI(CoreMain::getRenderer()->getGAPIType()))
     {
 #if SG_PLATFORM_PC
         glfwSwapInterval(swapInterval);
@@ -490,14 +489,22 @@ void SGCore::Window::swapBuffers()
 {
     auto t0 = Utils::getTimeSecondsAsDouble();
 
-#if SG_PLATFORM_PC
-    glfwSwapBuffers(m_handle);
-#elif SG_PLATFORM_OS_ANDROID
-    if(!eglSwapBuffers(m_eglDisplay, m_eglSurface))
+    if(isOpenGLAPI(CoreMain::getRenderer()->getGAPIType()))
     {
-        SG_LOG_E("eglSwapBuffers() failed: {}", eglGetError());
-    }
+#if SG_PLATFORM_PC
+        glfwSwapBuffers(m_handle);
+#elif SG_PLATFORM_OS_ANDROID
+        if(!eglSwapBuffers(m_eglDisplay, m_eglSurface))
+        {
+            SG_LOG_E("eglSwapBuffers() failed: {}", eglGetError());
+        }
 #endif
+    }
+    else if(auto* device = CoreMain::getRenderer()->getDevice())
+    {
+        // explicit APIs: the RHI swapchain presents the frame
+        device->getSwapchain().present();
+    }
 
     auto t1 = Utils::getTimeSecondsAsDouble();
 

@@ -26,6 +26,8 @@ namespace SGCore
         void subData(std::uint32_t* data, const size_t& elementsCount, const int& offset) noexcept override;
         void bind() noexcept override;
 
+        [[nodiscard]] std::uintptr_t getNativeHandle() const noexcept final { return m_handler; }
+
         void setUsage(SGGUsage) noexcept override;
 
     private:

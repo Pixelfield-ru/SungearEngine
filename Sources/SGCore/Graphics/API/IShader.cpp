@@ -200,11 +200,11 @@ size_t SGCore::IShader::bindMaterialTextures(const SGCore::AssetRef<SGCore::IMat
             if(!tex) continue;
 
             preallocUniformName = textureUniform;
-            
+
             preallocUniformName += '[';
             preallocUniformName += std::to_string(arrayIdx);
             preallocUniformName += ']';
-            
+
             // out of uniform samplers array bounds
             if(!isUniformExists(preallocUniformName)) break;
             
@@ -225,8 +225,12 @@ size_t SGCore::IShader::bindTextures(const std::vector<AssetRef<ITexture2D>>& te
                                      SGTextureSlot slotType,
                                      std::uint8_t samplersOffset) noexcept
 {
-    static const std::string textureUniform = sgStandardTextureTypeNameToStandardUniformName(slotType);
-    static const std::string texturesCountUniform = textureUniform + "_CURRENT_COUNT";
+    // not static: these depend on slotType, and function-local statics would freeze the names of the
+    // first call for every later one — the count of one slot then lands in another slot's uniform
+    // (observed as the skybox reporting a texture it does not have, which switched the shader to a
+    // branch that leaves alpha at 0 and blended the sky away)
+    const std::string textureUniform = sgStandardTextureTypeNameToStandardUniformName(slotType);
+    const std::string texturesCountUniform = textureUniform + "_CURRENT_COUNT";
 
     size_t texUnitOffset = 0;
 

@@ -1,5 +1,0 @@
-#if defined(SG_GLSL4) || defined(SG_GLES32)
-    #include "sg_shaders/impl/glsl4/pbr/instancing.glsl"
-#elif defined(SG_HLSL)
-    #error Instancing PBR shader is not implemented for HLSL!
-#endif

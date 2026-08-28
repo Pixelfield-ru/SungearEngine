@@ -105,6 +105,8 @@ namespace SGCore
                 formattedMsg = msg;
             }
 
+            if(!m_spdlogLogger) return;
+
             const auto now = std::chrono::system_clock::now();
 
             const auto finalText = fmt::format("[{}] [{}] [{}] {}",
@@ -112,8 +114,6 @@ namespace SGCore
                                                   m_spdlogLogger->name(),
                                                   levelStr,
                                                   formattedMsg);
-
-            if(!m_spdlogLogger) return;
 
             switch (level)
             {

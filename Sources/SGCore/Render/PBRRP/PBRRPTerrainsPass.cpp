@@ -18,7 +18,7 @@ void SGCore::PBRRPTerrainsPass::create(const Ref<IRenderPipeline>& parentRenderP
     IGeometryPass::create(parentRenderPipeline);
 
     const auto shaderFile = AssetManager::getInstance()->loadAsset<TextFileAsset>(
-            *parentRenderPipeline->m_shadersPaths["BatchingShader"]);
+            *parentRenderPipeline->m_shadersPaths["StandardTerrainShader"]);
 
     m_shader = AssetManager::getInstance()->loadAsset<IShader>(shaderFile->getPath());
 

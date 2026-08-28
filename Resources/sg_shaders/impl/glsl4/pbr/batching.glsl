@@ -25,6 +25,11 @@ struct BatchInstanceMaterial
 
 #vertex
 
+// One instance per triangle of the batch, three vertices each: the batch is drawn with
+// renderArrayInstanced(vertexArray, state, 3, 0, trianglesCount) and every attribute below carries a
+// divisor of 1. This used to be a point per triangle expanded by a geometry stage; the expansion is
+// the same, it just happens here now, because spirv-cross cannot translate a geometry stage to HLSL
+// and because a geometry stage is the slowest way to do this on every backend anyway.
 layout (location = 0) in ivec2 instanceTriangle;
 
 layout (location = 1) in uvec4 uvOffsets0;
@@ -42,109 +47,7 @@ layout (location = 10) in uvec4 uvOffsets9;
 layout (location = 11) in uvec4 uvOffsets10;
 layout (location = 12) in uvec4 uvOffsets11;
 
-out VSOut
-{
-    int instanceIndex;
-    int triangleIndex;
-
-    mat4 instanceModelMatrix;
-    vec3 instancePosition;
-    vec3 instanceRotation;
-    vec3 instanceScale;
-
-    BatchInstanceMaterial material;
-
-    flat umat4 uvOffsets0;
-    flat umat4 uvOffsets1;
-    flat umat4 uvOffsets2;
-} vsOut;
-
-// transforms of instances in batch
-uniform mediump samplerBuffer u_transformsTextureBuffer;
-uniform mediump samplerBuffer u_materialsTextureBuffer;
-
-void main()
-{
-    vsOut.instanceIndex = instanceTriangle.x;
-    vsOut.triangleIndex = instanceTriangle.y;
-
-    // =================================================================
-
-    mat4 instanceModelMatrix = mat4(1.0);
-
-    // 4 columns of model matrix, 1 position, 1 rotation, 1 scale
-    const int transformJump = 4 + 1 + 1 + 1;
-    // 6 vec4 components
-    const int materialJump = 6;
-
-    instanceModelMatrix[0] = texelFetch(u_transformsTextureBuffer, vsOut.instanceIndex * transformJump);
-    instanceModelMatrix[1] = texelFetch(u_transformsTextureBuffer, vsOut.instanceIndex * transformJump + 1);
-    instanceModelMatrix[2] = texelFetch(u_transformsTextureBuffer, vsOut.instanceIndex * transformJump + 2);
-    instanceModelMatrix[3] = texelFetch(u_transformsTextureBuffer, vsOut.instanceIndex * transformJump + 3);
-
-    vec3 instancePosition = texelFetch(u_transformsTextureBuffer, vsOut.instanceIndex * transformJump + 4).xyz;
-
-    vec3 instanceRotation = texelFetch(u_transformsTextureBuffer, vsOut.instanceIndex * transformJump + 5).xyz;
-
-    vec3 instanceScale = texelFetch(u_transformsTextureBuffer, vsOut.instanceIndex * transformJump + 6).xyz;
-
-    vsOut.instanceModelMatrix = instanceModelMatrix;
-    vsOut.instancePosition = instancePosition;
-    vsOut.instanceRotation = instanceRotation;
-    vsOut.instanceScale = instanceScale;
-
-    vec4 matDiffuseCol = texelFetch(u_materialsTextureBuffer, vsOut.instanceIndex * materialJump);
-    vec4 matSpecularCol = texelFetch(u_materialsTextureBuffer, vsOut.instanceIndex * materialJump + 1);
-    vec4 matAmbientCol = texelFetch(u_materialsTextureBuffer, vsOut.instanceIndex * materialJump + 2);
-    vec4 matEmissionCol = texelFetch(u_materialsTextureBuffer, vsOut.instanceIndex * materialJump + 3);
-    vec4 matTransparentCol = texelFetch(u_materialsTextureBuffer, vsOut.instanceIndex * materialJump + 4);
-    vec3 matShininessMetallicRoughness = texelFetch(u_materialsTextureBuffer, vsOut.instanceIndex * materialJump + 5).rgb;
-
-    vsOut.material.diffuseColor = matDiffuseCol;
-    vsOut.material.specularColor = matSpecularCol;
-    vsOut.material.ambientColor = matAmbientCol;
-    vsOut.material.emissionColor = matEmissionCol;
-    vsOut.material.transparentColor = matTransparentCol;
-    vsOut.material.shininessMetallicRoughness = matShininessMetallicRoughness;
-
-    umat4 uvOffsetsMat0;
-    uvOffsetsMat0.r0 = uvOffsets0;
-    uvOffsetsMat0.r1 = uvOffsets1;
-    uvOffsetsMat0.r2 = uvOffsets2;
-    uvOffsetsMat0.r3 = uvOffsets3;
-
-    umat4 uvOffsetsMat1;
-    uvOffsetsMat1.r0 = uvOffsets4;
-    uvOffsetsMat1.r1 = uvOffsets5;
-    uvOffsetsMat1.r2 = uvOffsets6;
-    uvOffsetsMat1.r3 = uvOffsets7;
-
-    umat4 uvOffsetsMat2;
-    uvOffsetsMat2.r0 = uvOffsets8;
-    uvOffsetsMat2.r1 = uvOffsets9;
-    uvOffsetsMat2.r2 = uvOffsets10;
-    uvOffsetsMat2.r3 = uvOffsets11;
-
-    vsOut.uvOffsets0 = uvOffsetsMat0;
-    vsOut.uvOffsets1 = uvOffsetsMat1;
-    vsOut.uvOffsets2 = uvOffsetsMat2;
-
-    // =================================================================
-
-    gl_Position = vec4(float(instanceTriangle.y), 1.0, 0.0, 1.0);
-}
-
-#end
-
-// =========================================================================
-// =========================================================================
-// =========================================================================
-
-#geometry
-
-layout (points) in;
-layout (triangle_strip, max_vertices = 3) out;
-
+// the block keeps its name so the fragment stage's interface does not have to change
 out GSOut
 {
     vec2 UV;
@@ -165,22 +68,9 @@ out GSOut
     flat umat4 uvOffsets2;
 } gsOut;
 
-in VSOut
-{
-    int instanceIndex;
-    int triangleIndex;
-
-    mat4 instanceModelMatrix;
-    vec3 instancePosition;
-    vec3 instanceRotation;
-    vec3 instanceScale;
-
-    BatchInstanceMaterial material;
-
-    flat umat4 uvOffsets0;
-    flat umat4 uvOffsets1;
-    flat umat4 uvOffsets2;
-} vsIn[];
+// transforms of instances in batch
+uniform mediump samplerBuffer u_transformsTextureBuffer;
+uniform mediump samplerBuffer u_materialsTextureBuffer;
 
 // vertices of instances in batch
 uniform mediump samplerBuffer u_verticesTextureBuffer;
@@ -189,58 +79,95 @@ uniform mediump isamplerBuffer u_indicesTextureBuffer;
 
 void main()
 {
+    int instanceIndex = instanceTriangle.x;
+    int triangleIndex = instanceTriangle.y;
+
+    // which corner of the triangle this invocation is: the draw issues exactly three vertices
+    int corner = gl_VertexID;
+
+    // =================================================================
+
+    mat4 instanceModelMatrix = mat4(1.0);
+
+    // 4 columns of model matrix, 1 position, 1 rotation, 1 scale
+    const int transformJump = 4 + 1 + 1 + 1;
+    // 6 vec4 components
+    const int materialJump = 6;
+
+    instanceModelMatrix[0] = texelFetch(u_transformsTextureBuffer, instanceIndex * transformJump);
+    instanceModelMatrix[1] = texelFetch(u_transformsTextureBuffer, instanceIndex * transformJump + 1);
+    instanceModelMatrix[2] = texelFetch(u_transformsTextureBuffer, instanceIndex * transformJump + 2);
+    instanceModelMatrix[3] = texelFetch(u_transformsTextureBuffer, instanceIndex * transformJump + 3);
+
+    vec3 instancePosition = texelFetch(u_transformsTextureBuffer, instanceIndex * transformJump + 4).xyz;
+
+    vec4 matDiffuseCol = texelFetch(u_materialsTextureBuffer, instanceIndex * materialJump);
+    vec4 matSpecularCol = texelFetch(u_materialsTextureBuffer, instanceIndex * materialJump + 1);
+    vec4 matAmbientCol = texelFetch(u_materialsTextureBuffer, instanceIndex * materialJump + 2);
+    vec4 matEmissionCol = texelFetch(u_materialsTextureBuffer, instanceIndex * materialJump + 3);
+    vec4 matTransparentCol = texelFetch(u_materialsTextureBuffer, instanceIndex * materialJump + 4);
+    vec3 matShininessMetallicRoughness = texelFetch(u_materialsTextureBuffer, instanceIndex * materialJump + 5).rgb;
+
+    gsOut.material.diffuseColor = matDiffuseCol;
+    gsOut.material.specularColor = matSpecularCol;
+    gsOut.material.ambientColor = matAmbientCol;
+    gsOut.material.emissionColor = matEmissionCol;
+    gsOut.material.transparentColor = matTransparentCol;
+    gsOut.material.shininessMetallicRoughness = matShininessMetallicRoughness;
+
+    umat4 uvOffsetsMat0;
+    uvOffsetsMat0.r0 = uvOffsets0;
+    uvOffsetsMat0.r1 = uvOffsets1;
+    uvOffsetsMat0.r2 = uvOffsets2;
+    uvOffsetsMat0.r3 = uvOffsets3;
+
+    umat4 uvOffsetsMat1;
+    uvOffsetsMat1.r0 = uvOffsets4;
+    uvOffsetsMat1.r1 = uvOffsets5;
+    uvOffsetsMat1.r2 = uvOffsets6;
+    uvOffsetsMat1.r3 = uvOffsets7;
+
+    umat4 uvOffsetsMat2;
+    uvOffsetsMat2.r0 = uvOffsets8;
+    uvOffsetsMat2.r1 = uvOffsets9;
+    uvOffsetsMat2.r2 = uvOffsets10;
+    uvOffsetsMat2.r3 = uvOffsets11;
+
+    gsOut.uvOffsets0 = uvOffsetsMat0;
+    gsOut.uvOffsets1 = uvOffsetsMat1;
+    gsOut.uvOffsets2 = uvOffsetsMat2;
+
+    gsOut.instancePosition = instancePosition;
+
+    // =================================================================
+
     // 1 position, 1 uv, 1 normal, 1 tangent, 1 bitangent
     const int vertexJump = 1 + 1 + 1 + 1 + 1;
 
-    ivec3 verticesIndices = texelFetch(u_indicesTextureBuffer, vsIn[0].triangleIndex).xyz;
+    ivec3 verticesIndices = texelFetch(u_indicesTextureBuffer, triangleIndex).xyz;
+    int vertexIndex = verticesIndices[corner];
 
-	bool allVerticesOutside = false; // true;
+    vec3 vertexPos = texelFetch(u_verticesTextureBuffer, vertexIndex * vertexJump).xyz;
+    vec3 vertexUV = texelFetch(u_verticesTextureBuffer, vertexIndex * vertexJump + 1).xyz;
+    vec3 vertexNormal = texelFetch(u_verticesTextureBuffer, vertexIndex * vertexJump + 2).xyz;
+    vec3 vertexTangent = texelFetch(u_verticesTextureBuffer, vertexIndex * vertexJump + 3).xyz;
+    vec3 vertexBitangent = texelFetch(u_verticesTextureBuffer, vertexIndex * vertexJump + 4).xyz;
 
-    for(int i = 0; i < 3; ++i)
-    {
-        int vertexIndex = verticesIndices[i];
+    gsOut.fragPos = vec3(instanceModelMatrix * vec4(vertexPos, 1.0));
 
-        vec3 vertexPos = texelFetch(u_verticesTextureBuffer, vertexIndex * vertexJump).xyz;
-        vec3 vertexUV = texelFetch(u_verticesTextureBuffer, vertexIndex * vertexJump + 1).xyz;
-        vec3 vertexNormal = texelFetch(u_verticesTextureBuffer, vertexIndex * vertexJump + 2).xyz;
-        vec3 vertexTangent = texelFetch(u_verticesTextureBuffer, vertexIndex * vertexJump + 3).xyz;
-        vec3 vertexBitangent = texelFetch(u_verticesTextureBuffer, vertexIndex * vertexJump + 4).xyz;
+    gsOut.UV = vertexUV.xy;
+    gsOut.normal = normalize(vertexNormal);
+    gsOut.worldNormal = normalize(mat3(transpose(inverse(instanceModelMatrix))) * vertexNormal);
+    gsOut.vertexPos = vertexPos;
+    gsOut.verticesIndices = vec3(verticesIndices);
 
-		gsOut.fragPos = vec3(vsIn[0].instanceModelMatrix * vec4(vertexPos, 1.0));
-		
-		/*vec4 clipPos = camera.projectionSpaceMatrix * vec4(gsOut.fragPos, 1.0);
-        vec3 ndc = clipPos.xyz / clipPos.w;
-        if (abs(ndc.x) <= 1.0 && abs(ndc.y) <= 1.0 && abs(ndc.z) <= 1.0) 
-		{
-            allVerticesOutside = false;
-        }*/
-		
-        gsOut.UV = vertexUV.xy;
-        gsOut.normal = normalize(vertexNormal);
-        gsOut.worldNormal = normalize(mat3(transpose(inverse(vsIn[0].instanceModelMatrix))) * vertexNormal);
-        gsOut.vertexPos = vertexPos;
-        gsOut.verticesIndices = vec3(verticesIndices);
+    // 0.0 IN w COMPONENT IS CORRECT!!
+    vec3 T = normalize(vec3(instanceModelMatrix * vec4(vertexTangent, 0.0)));
+    vec3 B = normalize(vec3(instanceModelMatrix * vec4(vertexBitangent, 0.0)));
+    vec3 N = normalize(vec3(instanceModelMatrix * vec4(gsOut.normal, 0.0)));
+    gsOut.TBN = mat3(T, B, N);
 
-        // 0.0 IN w COMPONENT IS CORRECT!!
-        vec3 T = normalize(vec3(vsIn[0].instanceModelMatrix * vec4(vertexTangent, 0.0)));
-        vec3 B = normalize(vec3(vsIn[0].instanceModelMatrix * vec4(vertexBitangent, 0.0)));
-        vec3 N = normalize(vec3(vsIn[0].instanceModelMatrix * vec4(gsOut.normal, 0.0)));
-        gsOut.TBN = mat3(T, B, N);
-
-        gsOut.material = vsIn[0].material;
-
-        gsOut.uvOffsets0 = vsIn[0].uvOffsets0;
-        gsOut.uvOffsets1 = vsIn[0].uvOffsets1;
-        gsOut.uvOffsets2 = vsIn[0].uvOffsets2;
-
-        gl_Position = camera.projectionSpaceMatrix * vec4(gsOut.fragPos, 1.0);
-
-        EmitVertex();
-    }
-	
-	if(allVerticesOutside) return;
-
-    EndPrimitive();
+    gl_Position = camera.projectionSpaceMatrix * vec4(gsOut.fragPos, 1.0);
 }
 
 #end
@@ -341,8 +268,10 @@ void main()
         vec2 texUVOffset = vec2(unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.x));
         vec2 texSize = vec2(unpackU32ToU16Vec2(gsIn.uvOffsets0.r2.y));
 
-        diffuseColor.rgba = vec4(0.0, 0.0, 0.0, 0.0);
-
+        // A mesh with no diffuse texture in the atlas is an ordinary case, and its color comes from
+        // the instance material — which is what diffuseColor was already initialised with above.
+        // Zeroing it here and then discarding on alpha threw away every fragment of every untextured
+        // batch, so nothing a batch contained was ever drawn unless it happened to be textured.
         if(texSize.x < batchAtlasSize.x && texSize.y < batchAtlasSize.y)
         {
             vec2 uv = (texUVOffset + fractUV * texSize) / batchAtlasSize;
@@ -350,9 +279,10 @@ void main()
             vec2 dfdy = dFdy(uv) / batchAtlasSize;
 
             diffuseColor = textureGrad(batchAtlas, uv, dfdx, dfdy);
-        }
 
-        if(diffuseColor.a < 0.05) discard;
+            // alpha cutout, and only where a texture actually supplied that alpha
+            if(diffuseColor.a < 0.05) discard;
+        }
     }
 
     {

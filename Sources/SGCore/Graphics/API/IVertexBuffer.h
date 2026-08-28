@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <sgcore_export.h>
 
 #include "GraphicsDataTypes.h"
@@ -68,13 +69,26 @@ namespace SGCore
 
         virtual void setUsage(SGGUsage) = 0;
 
-        virtual void addAttribute(std::uint32_t location,
-                                  std::int32_t scalarsCount,
-                                  SGGDataType dataType,
-                                  bool isNormalized,
-                                  std::int32_t stride,
-                                  std::uint64_t offsetInStruct,
-                                  std::int32_t divisor) noexcept = 0;
+        /// Backend-agnostic record of one attribute, kept so the RHI can build a VertexInputDesc
+        /// for legacy meshes without asking the GL objects.
+        struct AttributeDesc
+        {
+            std::uint32_t m_location { };
+            std::int32_t m_scalarsCount { };
+            SGGDataType m_dataType = SGGDataType::SGG_FLOAT;
+            bool m_isNormalized { };
+            std::int32_t m_stride { };
+            std::uint64_t m_offsetInStruct { };
+            std::int32_t m_divisor { };
+        };
+
+        void addAttribute(std::uint32_t location,
+                          std::int32_t scalarsCount,
+                          SGGDataType dataType,
+                          bool isNormalized,
+                          std::int32_t stride,
+                          std::uint64_t offsetInStruct,
+                          std::int32_t divisor) noexcept;
 
         void addAttribute(std::uint32_t location,
                           std::int32_t scalarsCount,
@@ -85,10 +99,35 @@ namespace SGCore
 
         virtual void useAttributes() const noexcept = 0;
 
+        /// Drops every recorded attribute, on this object and in the backend. A buffer whose layout is
+        /// redefined (the same mesh buffer bound into a second vertex array at a different location
+        /// offset — that is what Instancing does) must start from empty: addAttribute only ever
+        /// appends, and useAttributes replays the whole list into the bound vertex array.
+        void clearAttributes() noexcept
+        {
+            m_attributesDescs.clear();
+            clearAttributesImpl();
+        }
+
+        /// Backend object handle (GL: buffer name), for wrapping legacy buffers into RHI objects.
+        [[nodiscard]] virtual std::uintptr_t getNativeHandle() const noexcept { return 0; }
+
         const std::vector<std::uint8_t>& getData() const noexcept;
+        [[nodiscard]] const std::vector<AttributeDesc>& getAttributes() const noexcept { return m_attributesDescs; }
 
     protected:
         std::vector<std::uint8_t> m_data;
+        virtual void clearAttributesImpl() noexcept { }
+
+        std::vector<AttributeDesc> m_attributesDescs;
+
+        virtual void addAttributeImpl(std::uint32_t location,
+                                      std::int32_t scalarsCount,
+                                      SGGDataType dataType,
+                                      bool isNormalized,
+                                      std::int32_t stride,
+                                      std::uint64_t offsetInStruct,
+                                      std::int32_t divisor) noexcept = 0;
         IVertexArray* m_parentVertexArray { };
 
         virtual void subDataOnGAPISide(const void* data, const size_t& bytesCount, const size_t& bytesOffset, bool isPutData) = 0;

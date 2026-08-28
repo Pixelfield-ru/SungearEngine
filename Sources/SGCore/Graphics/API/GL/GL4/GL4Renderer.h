@@ -33,9 +33,6 @@ namespace SGCore
 
         void prepareFrame(const glm::ivec2& windowSize) override;
 
-        void prepareUniformBuffers(const RenderingBase& renderingComponent,
-                                   const Transform& transformComponent) override;
-
         void renderMeshData(const IMeshData* meshData,
                             const MeshRenderState& meshRenderState) override;
         
@@ -76,6 +73,8 @@ namespace SGCore
         [[nodiscard]] IMeshData* createMeshData() const override;
 
         void bindScreenFrameBuffer() const noexcept final;
+
+        [[nodiscard]] bool readScreenPixels(AttachmentReadback& out) const noexcept override;
         void setViewport(int x, int y, int width, int height) const noexcept final;
 
         IGPUObjectsStorage& storage() noexcept final;

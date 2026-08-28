@@ -9,6 +9,7 @@
 #include "SGCore/ImportedScenesArch/IMeshData.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Render/Mesh.h"
+#include "SGCore/Render/RenderAbilities/EnableInstancingPass.h"
 
 SGCore::ECS::entity_t SGCore::AutoInstancing::addEntity(const ECS::entity_t& entity,
                                                         ECS::registry_t& inRegistry) noexcept
@@ -35,6 +36,9 @@ SGCore::ECS::entity_t SGCore::AutoInstancing::addEntity(const ECS::entity_t& ent
     const auto newInstancingEntity = inRegistry.create();
 
     auto& newInstancing = inRegistry.emplace<Instancing>(newInstancingEntity);
+    // PBRRPInstancingPass iterates view<EntityBaseInfo, Instancing, EnableInstancingPass>: an entity
+    // with only the Instancing component is filled and uploaded every frame and never drawn
+    inRegistry.emplace<EnableInstancingPass>(newInstancingEntity);
 
     newInstancing.setBaseMeshData(entityMesh.m_base.getMeshData());
     newInstancing.setBaseMaterial(entityMesh.m_base.getMaterial());

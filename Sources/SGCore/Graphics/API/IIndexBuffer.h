@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <sgcore_export.h>
 
 #include "GraphicsDataTypes.h"
@@ -29,6 +30,9 @@ namespace SGCore
         virtual void putData(const std::vector<std::uint32_t>& data) = 0;
         virtual void subData(const std::vector<std::uint32_t>& data, const int& offset) = 0;
         virtual void subData(std::uint32_t* data, const size_t& elementsCount, const int& offset) = 0;
+
+        /// Backend object handle (GL: buffer name), for wrapping legacy buffers into RHI objects.
+        [[nodiscard]] virtual std::uintptr_t getNativeHandle() const noexcept { return 0; }
         virtual void bind() = 0;
 
         virtual void setUsage(SGGUsage) = 0;

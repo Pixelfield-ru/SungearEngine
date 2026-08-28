@@ -69,13 +69,19 @@ void main()
 
     // return;
 
-    // just do nothing
-    if(texture(SGPP_LayersVolumes, finalUV).rgb != calculatePPLayerVolume(SGPP_CurrentLayerIndex).rgb) return;
+    // just do nothing — discard, not return: a `return` here leaves fragColor unassigned, and an
+    // unwritten fragment output is undefined. GL happened to leave the attachment alone, Vulkan wrote
+    // whatever was in the register, so this pass scribbled over the occlusion buffer outside the layer.
+    if(texture(SGPP_LayersVolumes, finalUV).rgb != calculatePPLayerVolume(SGPP_CurrentLayerIndex).rgb) discard;
 
     vec2 noiseTexSize = vec2(textureSize(SG_SSAO_noise, 0));
     vec2 noiseScale = programData.primaryMonitorSize / noiseTexSize;
 
-    vec3 fragViewPos = vec3(camera.viewMatrix * texture(u_GBufferWorldPos, finalUV));
+    // the .xyz and the explicit 1.0 are load-bearing: the geometry pass declares this attachment as
+    // `out vec3`, so its alpha channel is never written and holds an undefined value. Multiplying the
+    // raw vec4 by the view matrix scaled the translation column by that garbage — the whole reason
+    // SSAO on Vulkan and DX12 diverged from GL while every other input matched bit for bit.
+    vec3 fragViewPos = vec3(camera.viewMatrix * vec4(texture(u_GBufferWorldPos, finalUV).xyz, 1.0));
 
     // ssao occlusion pass.
     // writes in SG_SSAO_occlusion
@@ -108,7 +114,8 @@ void main()
             offset.x = clamp(offset.x, 0.001, 0.999);
             offset.y = clamp(offset.y, 0.001, 0.999);
 
-            float sampleDepth = vec3(camera.viewMatrix * texture(u_GBufferWorldPos, offset.xy)).z;
+            // same undefined alpha as above — the sample position needs an explicit w of 1.0 too
+            float sampleDepth = vec3(camera.viewMatrix * vec4(texture(u_GBufferWorldPos, offset.xy).xyz, 1.0)).z;
             float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragViewPos.z - sampleDepth));
             occlusion += (sampleDepth >= smp.z + bias ? 1.0 : 0.0) * rangeCheck;
         }

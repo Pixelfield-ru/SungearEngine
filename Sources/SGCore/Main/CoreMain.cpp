@@ -10,7 +10,7 @@
 #include "SGCore/Logger/Logger.h"
 #include "SGCore/Utils/Paths.h"
 
-#include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
+#include "SGCore/Graphics/API/GAPISelector.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Physics/PhysicsWorld3D.h"
@@ -94,11 +94,15 @@ void SGCore::CoreMain::init()
     /*system("chcp 65001");
     setlocale(LC_ALL, "Russian");*/
 
-    SG_LOG_I("Creating standard renderer...");
+    SG_LOG_I("Selecting graphics API and creating renderer...");
 
-    m_renderer = GL4Renderer::getInstance();
-    // m_renderer = GL46Renderer::getInstance();
-    //m_renderer = VkRenderer::getInstance();
+    m_renderer = GAPISelector::selectRenderer();
+
+    if(!m_renderer)
+    {
+        SG_LOG_C("Engine can not start without a graphics API. Aborting initialization.");
+        return;
+    }
 
     SG_LOG_I("Creating window...");
 
@@ -114,6 +118,16 @@ void SGCore::CoreMain::init()
     SG_LOG_I("Initializing renderer...");
 
     m_renderer->init();
+
+    // A backend that could not initialize asks for the window to close (GL4Renderer and VkRenderer
+    // both do this when confirmSupport() fails). Initialization has to stop here too: everything
+    // below creates GPU resources through the renderer, and a backend that just failed hands out
+    // nullptr, so the run would abort on the first dereference instead of reporting the real reason.
+    if(m_window.shouldClose())
+    {
+        SG_LOG_C("Renderer initialization failed, stopping engine initialization.");
+        return;
+    }
 
     SG_LOG_I("Adding standard assets...");
 
@@ -164,6 +178,9 @@ void SGCore::CoreMain::startCycle() noexcept
 
         // Coro::CoroScheduler::process();
     }
+
+    if(m_renderer) m_renderer->shutdown();
+    AudioDevice::shutdown();
 
     spdlog::shutdown();
 }

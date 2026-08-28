@@ -77,6 +77,13 @@ SGCore::AudioDevice::~AudioDevice()
     }
 }
 
+void SGCore::AudioDevice::shutdown() noexcept
+{
+    m_defaultDevice.reset();
+    m_devices.clear();
+    m_currentContext = nullptr;
+}
+
 SGCore::Ref<SGCore::AudioDevice> SGCore::AudioDevice::createAudioDevice(const std::string& deviceName) noexcept
 {
     auto newAudioDevice = Ref<AudioDevice>(new AudioDevice(deviceName));

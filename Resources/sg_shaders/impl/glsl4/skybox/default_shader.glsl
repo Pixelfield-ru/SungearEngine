@@ -76,6 +76,9 @@ void main()
 
     vec4 skyboxCol = vec4(0.0);
 
+    // both branches show the atmosphere today (the cubemap mixing above is disabled), and the sky is
+    // opaque either way: leaving alpha at the vec4(0.0) it was initialized with makes the whole sky
+    // vanish wherever the fragment is blended
     if(mat_skyboxSamplers_CURRENT_COUNT > 0)
     {
         /*float mixCoeff = 1.0 / mat_skyboxSamplers_CURRENT_COUNT;
@@ -88,7 +91,7 @@ void main()
         skyboxCol.rgb += atmosphereCol.rgb * (1.0 - skyboxCol.rgb);
         skyboxCol.rgb *= a * atmosphereCol.rgb;*/
 
-        skyboxCol.rgb = atmosphereCol;
+        skyboxCol = vec4(atmosphereCol, 1.0);
     }
     else
     {
@@ -116,6 +119,10 @@ void main()
     }
 
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
+
+    // the sky is not pickable, but the output has to be assigned: an unwritten fragment output is
+    // undefined, and this one goes into the picking attachment
+    pickingColor = vec3(0.0);
 
     layerWorldPosColor = vec3(vs_fragWorldPos) * 10.0;
 
