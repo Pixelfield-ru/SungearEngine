@@ -1,5 +1,0 @@
-#if defined(SG_GLSL4) || defined(SG_GLES32)
-    #include "sg_shaders/impl/glsl4/gizmos/complex_gizmos_shader.glsl"
-#elif defined(SG_HLSL)
-    #error Complex gizmos shader is not implemented for HLSL!
-#endif

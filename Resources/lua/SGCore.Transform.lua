@@ -1,4 +1,0 @@
----
---- Created by stuka.
---- DateTime: 12.02.2026 3:06
----

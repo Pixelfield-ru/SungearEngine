@@ -1,15 +1,30 @@
-include(cmake/set-toolchain.cmake)
 include(cmake/platform.cmake)
+include(cmake/cmake_utils.cmake)
+
+set(LIBRARY_NAMESPACE pixelfield)
+set(CODE_NAMESPACE pf)
 
 cmake_minimum_required(VERSION 3.22)
 project(SungearEngine)
 
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+if(SG_TARGET_OS_ANDROID)
+    set(MSDFGEN_USE_SKIA OFF)
+    set(MSDF_ATLAS_USE_SKIA OFF)
+endif()
+set(MSDF_ATLAS_BUILD_STANDALONE OFF)
+set(MSDF_ATLAS_DYNAMIC_RUNTIME ON)
+set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
+list(
+    APPEND
+    CMAKE_MODULE_PATH
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(cmake_utils)
+
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DSUNGEAR_DEBUG)
-endif()
-
-if(CMAKE_SYSTEM_NAME STREQUAL "MinGW")
-    list(APPEND CMAKE_CXX_FLAGS "-static")
 endif()
 
 add_definitions(-DSG_BUILD_PRESET="${SG_BUILD_PRESET}")
@@ -24,25 +39,10 @@ add_definitions(-DUSE_LIBPNG)
 add_definitions(-DHC_NO_COMPRESSION)
 add_definitions(-DNOMINMAX)
 add_definitions(-DWIN32_LEAN_AND_MEAN)
-# BECAUSE I CANT USE antlr4-runtime BECAUSE OF FUCKING MACRO 'ERROR' AND ENUM TYPE IN antlr4 ParseTreeType::ERROR in ParseTreeType.h file
+# because of ANTLR4 enum ERROR
 add_definitions(-DNOGDI)
 
 add_definitions(-DANTLR4CPP_STATIC)
-
-if(SG_TARGET_OS_ANDROID)
-    set(MSDFGEN_USE_SKIA OFF)
-    set(MSDF_ATLAS_USE_SKIA OFF)
-endif()
-set(MSDF_ATLAS_BUILD_STANDALONE OFF)
-set(MSDF_ATLAS_DYNAMIC_RUNTIME ON)
-#add_definitions(-DSPDLOG_WCHAR_TO_UTF8_SUPPORT)
-
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-set(CMAKE_VERBOSE_MAKEFILE ON)
-
-set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
 if(MSVC)
     add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
@@ -58,10 +58,6 @@ if(MSVC)
     endif()
 
     set(MSVC_RUNTIME "static")
-
-    # todo: idk if it is necessary now
-    # set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-    # set(BUILD_SHARED_LIBS OFF)
 elseif()
     # multiple definition because of bullet library
     set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-export-dynamic -Wl,-Bsymbolic")
@@ -103,62 +99,35 @@ message(STATUS "ANDROID_STL: ${ANDROID_STL}")
 # packages --------------------------------------------------
 
 find_package(Bullet REQUIRED)
-find_package(pugixml CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(assimp CONFIG REQUIRED)
-find_package(Freetype REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
 if(SG_TARGET_PLATFORM_PC)
     find_package(glfw3 CONFIG REQUIRED)
 endif()
 find_package(imgui CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
-# find_package(Stb REQUIRED)
-find_package(glad CONFIG REQUIRED)
-find_package(PNG REQUIRED)
-find_package(unofficial-brotli CONFIG REQUIRED)
 find_package(OpenAL CONFIG REQUIRED)
-find_package(lunasvg CONFIG REQUIRED)
 find_package(RapidJSON CONFIG REQUIRED)
-find_package(antlr4-runtime CONFIG REQUIRED)
 find_package(gli CONFIG REQUIRED)
 find_package(meshoptimizer CONFIG REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system asio)
-find_package(JNI REQUIRED)
-find_path(SOL2_INCLUDE_DIRS "sol/abort.hpp")
-find_package(Lua REQUIRED)
 find_package(recastnavigation CONFIG REQUIRED)
 
-message(STATUS "JNI_INCLUDE_DIRS: ${JNI_INCLUDE_DIRS}")
-message(STATUS "JNI_LIBRARIES: ${JNI_LIBRARIES}")
+find_package(slang CONFIG REQUIRED)
+find_package(Vulkan REQUIRED)
+find_package(glad CONFIG REQUIRED)
 
 if(SG_TARGET_OS_ANDROID)
     find_library(SG_ANDROID_LIB android)
     find_library(SG_EGL_LIB EGL)
 endif()
 
-# options --------------------------
+# options
+# set(SG_BUILD_TESTS ON)
 
-# TODO: make SG_BUILD_EDITOR
-set(SG_BUILD_TESTS ON)
-set(SG_BUILD_ENTRY ON)
-
-# ----------------------------------
-# including msdf-atlas-gen ========================================
-
-add_subdirectory(Externals/msdf-atlas-gen)
+# including externals
 add_subdirectory(Externals/rectpack2D)
 
-# =================================================================
-
-add_subdirectory(Sources)
-
-if(${SG_BUILD_TESTS})
-    add_subdirectory(Tests)
-endif()
-
-add_custom_target(auto_install ALL
-        COMMAND ${CMAKE_COMMAND} -E echo "Auto-install target triggered"
-        COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${CMAKE_INSTALL_PREFIX}
-        COMMENT "Automatically installing SungearEngine after project build..."
-)
+# components
+add_subdirectory(components)

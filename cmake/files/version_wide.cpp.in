@@ -1,0 +1,63 @@
+// NOLINTBEGIN
+// clang-format off
+#include "@LIBRARY_NAMESPACE@/@PROJECT_NAME@/version.h"
+
+namespace @CODE_NAMESPACE@::@PROJECT_NAME@
+{
+    template<>
+    wchar_t const*
+    Build<detail::wide, wchar_t const*>::summary()
+    {
+        return
+            L"name=@PROJECT_NAME@"
+            L", version=@build_version@"
+            L", commit=@build_commit@"
+            L", branch=@build_branch@"
+            L", date=@build_date@";
+    }
+
+    template<>
+    wchar_t const*
+    Build<detail::wide, wchar_t const*>::name()
+    {
+        return L"@PROJECT_NAME@";
+    }
+
+    template<>
+    wchar_t const*
+    Build<detail::wide, wchar_t const*>::branch()
+    {
+        return L"@build_branch@";
+    }
+
+    template<>
+    wchar_t const*
+    Build<detail::wide, wchar_t const*>::commit()
+    {
+        return L"@build_commit@";
+    }
+
+    template<>
+    wchar_t const*
+    Build<detail::wide, wchar_t const*>::date()
+    {
+        return L"@build_date@";
+    }
+
+    template<>
+    wchar_t const*
+    Build<detail::wide, wchar_t const*>::number()
+    {
+        return L"@build_number@";
+    }
+
+
+    template<>
+    wchar_t const*
+    Build<detail::wide, wchar_t const*>::version()
+    {
+        return L"@build_version@";
+    }
+}
+// clang-format on
+// NOLINTEND

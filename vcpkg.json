@@ -21,10 +21,6 @@
       "version>=": "3.15.0#0"
     },
     {
-      "name": "freetype",
-      "version>=": "2.13.3"
-    },
-    {
       "name": "glad",
       "features": [
         "extensions",
@@ -60,10 +56,6 @@
       "version>=": "1.90.7"
     },
     {
-      "name": "pugixml",
-      "version>=": "1.15"
-    },
-    {
       "name": "spdlog",
       "version>=": "1.13.0"
     },
@@ -89,10 +81,6 @@
       "version>=": "1.23.1"
     },
     {
-      "name": "lunasvg",
-      "version>=": "3.3.0"
-    },
-    {
       "name": "rapidjson",
       "version>=": "2023-07-17#1"
     },
@@ -100,15 +88,6 @@
       "name": "libbacktrace",
       "version>=": "2023-11-30",
       "platform": "linux"
-    },
-    {
-      "name": "antlr4",
-      "version>=": "4.13.1"
-    },
-    {
-      "name": "skia",
-      "version>=": "129#3",
-      "platform": "!android"
     },
     {
       "name": "gli",
@@ -127,16 +106,10 @@
       "version>=": "1.17.0#1"
     },
     {
-      "name": "sol2",
-      "version>=": "3.5.0#0"
-    },
-    {
-      "name": "lua",
-      "version>=": "5.4.8#0"
-    },
-    {
       "name": "recastnavigation",
       "version>=": "1.6.0#1"
-    }
+    },
+    "vulkan",
+    "shader-slang"
   ]
 }

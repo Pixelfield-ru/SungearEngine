@@ -1,0 +1,35 @@
+// NOLINTBEGIN
+// clang-format off
+#ifndef __@PROJECT_NAME@_version__
+#define __@PROJECT_NAME@_version__
+
+namespace @CODE_NAMESPACE@::@PROJECT_NAME@
+{
+    namespace detail
+    {
+        // clang-format off
+        struct u8 final {};
+        struct thin final {};
+        struct wide final {};
+        // clang-format on
+    }
+
+    template<typename R, typename T>
+    struct Build final
+    {
+        static T summary();
+        static T name();
+        static T branch();
+        static T commit();
+        static T date();
+        static T number();
+        static T version();
+    };
+
+    using build = Build<detail::thin, char const *>;
+    using wbuild = Build<detail::wide, wchar_t const *>;
+    using u8build = Build<detail::u8, char8_t const *>;
+}
+#endif
+// clang-format on
+// NOLINTEND
