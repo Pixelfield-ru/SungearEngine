@@ -93,6 +93,8 @@ pf::rhi::VulkanDescriptorSet& pf::rhi::VulkanDescriptorSet::operator=(VulkanDesc
 {
     if(std::addressof(other) == this) return *this;
 
+    destroy();
+
     context_ = std::exchange(other.context_, {});
     logical_device_ = std::exchange(other.logical_device_, {});
     pool_ = std::exchange(other.pool_, VK_NULL_HANDLE);

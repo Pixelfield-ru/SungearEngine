@@ -8,16 +8,6 @@
 
 namespace pf::rhi
 {
-    enum class LogLevel
-    {
-        kTrace,
-        kDebug,
-        kInfo,
-        kWarn,
-        kError,
-        kFatal
-    };
-
     enum class Error
     {
         kNotOptimalSwapchain = 1,

@@ -11,7 +11,7 @@
 namespace pf::rhi
 {
     // OpenGL needs internalformat for storage, plus format+type for pixel transfers.
-    struct GLFormatInfo
+    struct GLFormatInfo final
     {
         GLenum internal_format = GL_NONE; // sized internal format (e.g. GL_RGBA8)
         GLenum format = GL_NONE;         // pixel format (e.g. GL_RGBA)

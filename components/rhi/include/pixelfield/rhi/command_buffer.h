@@ -48,7 +48,6 @@ namespace pf::rhi
         std::vector<ClearInfo> clear_infos;
     };
 
-    // todo: make bind descriptors set
     struct ICommandBuffer
     {
         virtual ~ICommandBuffer() noexcept = default;

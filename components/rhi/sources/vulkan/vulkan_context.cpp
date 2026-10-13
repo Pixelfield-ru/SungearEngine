@@ -66,7 +66,6 @@ pf::rhi::VulkanContext::VulkanContext(VulkanContext&& other) noexcept :
     enabled_extensions_(std::move(other.enabled_extensions_))
 {
     rhi_debug_output_ = std::move(other.rhi_debug_output_);
-    enable_rhi_debug_output_ = other.enable_rhi_debug_output_;
 }
 
 pf::rhi::VulkanContext::~VulkanContext() noexcept
@@ -80,8 +79,7 @@ std::error_code pf::rhi::VulkanContext::create(VulkanContextCreateInfo create_in
     output.allocator_ = std::move(create_info.allocator);
     output.enabled_extensions_ = std::move(create_info.extensions);
     output.enabled_validation_layers_ = std::move(create_info.validation_layers);
-    output.rhi_debug_output_ = std::move(create_info.rhi_debug_output_func);
-    output.enable_rhi_debug_output_ = create_info.enable_rhi_debug_output;
+    output.rhi_debug_output_ = std::move(create_info.rhi_debug_output);
 
     // getting count of extensions that are supported by instance
     uint32_t extension_count = 0;
@@ -358,7 +356,6 @@ pf::rhi::VulkanContext& pf::rhi::VulkanContext::operator=(VulkanContext&& other)
     enabled_validation_layers_ = std::move(other.enabled_validation_layers_);
     enabled_extensions_ = std::move(other.enabled_extensions_);
     rhi_debug_output_ = std::move(other.rhi_debug_output_);
-    enable_rhi_debug_output_ = other.enable_rhi_debug_output_;
 
     return *this;
 }

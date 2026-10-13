@@ -8,7 +8,7 @@
 #include <string>
 #include <functional>
 
-#include "errors.h"
+#include "pixelfield/core/log.h"
 #include "logical_device.h"
 
 namespace pf::rhi
@@ -21,12 +21,10 @@ namespace pf::rhi
         std::string engine_name;
         /// Optional.
         bool enable_api_debug_output {};
-        /// Optional.
-        bool enable_rhi_debug_output {};
         //// Required.
         GLFWwindow* window {};
         /// Optional.
-        std::function<void(LogLevel level, std::string_view msg)> rhi_debug_output_func;
+        core::LogCallback rhi_debug_output;
     };
 
     struct IPhysicalDevice;
@@ -41,16 +39,12 @@ namespace pf::rhi
 
         [[nodiscard]] virtual std::expected<std::unique_ptr<ILogicalDevice>, std::error_code> createLogicalDevice(const LogicalDeviceCreateInfo& create_info) noexcept = 0;
 
-        void printDebugMessage(LogLevel level, std::string_view msg) const noexcept
+        void printDebugMessage(core::LogLevel level, std::string_view msg) const noexcept
         {
-            if(enable_rhi_debug_output_ && rhi_debug_output_)
-            {
-                rhi_debug_output_(level, msg);
-            }
+            rhi_debug_output_(level, msg);
         }
 
     protected:
-        bool enable_rhi_debug_output_ {};
-        std::function<void(LogLevel level, std::string_view msg)> rhi_debug_output_;
+        core::LogCallback rhi_debug_output_;
     };
 }

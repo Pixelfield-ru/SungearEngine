@@ -18,7 +18,7 @@ namespace pf::rhi
     struct IPass;
     struct IDescriptorSet;
 
-    // todo: make vertex input and pipeline layout & maybe allow use multiple viewports
+    // todo: maybe allow use multiple viewports
     struct PipelineStateCreateInfo final
     {
         const IContext* context {};

@@ -11,7 +11,8 @@ namespace pf::core
     enum class CoreError
     {
         kInvalidArgument = 1,
-        kUnexpectedError
+        kUnexpectedError,
+        kUninitialized,
     };
 
     struct CoreErrorCategory final : public std::error_category
@@ -24,6 +25,7 @@ namespace pf::core
             {
                 case CoreError::kInvalidArgument: return "Invalid argument was passed.";
                 case CoreError::kUnexpectedError: return "Unexpected error.";
+                case CoreError::kUninitialized: return "Got uninitialized object.";
                 default: return "Unknown error";
             }
         }
