@@ -54,7 +54,12 @@ namespace pf::core
         {
             const auto index = typeIndex<T>();
 
-            return index < storage_.size();
+            return index < storage_.size() && storage_[index];
+        }
+
+        [[nodiscard]] bool hasType(std::uint32_t type_index) const noexcept
+        {
+            return type_index < storage_.size() && storage_[type_index];
         }
 
     private:

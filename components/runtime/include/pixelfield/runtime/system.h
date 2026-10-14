@@ -23,11 +23,11 @@ namespace pf::runtime
         /**
          * @return Indices of types that the system reads.
          */
-        virtual std::span<const std::uint32_t> reads() const noexcept = 0;
+        [[nodiscard]] virtual std::span<const std::uint32_t> reads() const noexcept = 0;
         /**
         * @return Indices of types that the system writes.
         */
-        virtual std::span<const std::uint32_t> writes() const noexcept = 0;
+        [[nodiscard]] virtual std::span<const std::uint32_t> writes() const noexcept = 0;
 
         /**
         * Execute system once.
@@ -41,6 +41,6 @@ namespace pf::runtime
         * @param context System context.
         * @return Result code.
         */
-        virtual std::error_code start(SystemContext& context) = 0;
+        virtual std::error_code initialize(SystemContext& context) = 0;
     };
 }

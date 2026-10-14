@@ -17,7 +17,7 @@ namespace pf::runtime
         [[nodiscard]] std::span<const std::uint32_t> writes() const noexcept override;
 
         std::error_code execute(SystemContext& context) noexcept override;
-        std::error_code start(SystemContext& context) noexcept override;
+        std::error_code initialize(SystemContext& context) noexcept override;
 
     private:
         static inline std::array read_ids_ { core::typeIndex<std::chrono::steady_clock::time_point>() };
