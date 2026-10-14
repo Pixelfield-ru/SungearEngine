@@ -2,7 +2,7 @@
 // Created by stuka on 12.10.2026.
 //
 
-#include "pixelfield/core/encoding.h"
+#include "../include/pixelfield/core/utility/encoding.h"
 
 std::string pf::core::pathToUtf8(const std::filesystem::path& path) noexcept
 {

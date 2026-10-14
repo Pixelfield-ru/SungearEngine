@@ -13,7 +13,7 @@
 #include "pixelfield/rhi/context.h"
 #include "pixelfield/rhi/slang/slang_compiled_shader.h"
 #include "pixelfield/core/errors.h"
-#include "pixelfield/core/encoding.h"
+#include "../../../core/include/pixelfield/core/utility/encoding.h"
 #include "pixelfield/rhi/slang/slang_errors.h"
 
 std::error_code pf::rhi::SlangShaderCompiler::compileShader(const IContext& context, ICompiledShader& compiled_shader,
