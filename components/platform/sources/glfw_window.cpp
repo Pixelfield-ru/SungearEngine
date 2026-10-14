@@ -62,7 +62,7 @@ std::error_code pf::platform::GLFWWindow::create(const WindowCreateInfo& create_
 
     if(!platform().initialized())
     {
-        return core::CoreError::kUninitialized;
+        return core::Error::kUninitialized;
     }
 
     glfwDefaultWindowHints();

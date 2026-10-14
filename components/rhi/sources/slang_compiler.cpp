@@ -13,7 +13,7 @@
 #include "pixelfield/rhi/context.h"
 #include "pixelfield/rhi/slang/slang_compiled_shader.h"
 #include "pixelfield/core/errors.h"
-#include "../../../core/include/pixelfield/core/utility/encoding.h"
+#include "pixelfield/core/utility/encoding.h"
 #include "pixelfield/rhi/slang/slang_errors.h"
 
 std::error_code pf::rhi::SlangShaderCompiler::compileShader(const IContext& context, ICompiledShader& compiled_shader,
@@ -24,7 +24,7 @@ std::error_code pf::rhi::SlangShaderCompiler::compileShader(const IContext& cont
     {
         const auto msg = std::format("Cannot compile shader '{}': incompatible compiler.", core::pathToUtf8(shader_path));
         context.printDebugMessage(core::LogLevel::kError, msg);
-        return core::CoreError::kInvalidArgument;
+        return core::Error::kInvalidArgument;
     }
 
     slang_shader->stages.clear();

@@ -17,7 +17,7 @@ std::span<const std::uint32_t> pf::runtime::FrameTimeSystem::writes() const noex
 std::error_code pf::runtime::FrameTimeSystem::execute(SystemContext& context) noexcept
 {
     pf_assert(context.resources.hasType<std::chrono::steady_clock::time_point>(), "Cannot find resource in context.");
-    pf_assert(context.resources.hasType<FrameTime>(), "Type was not registered. Maybe system start() was not called.");
+    pf_assert(context.resources.hasType<FrameTime>(), "Type was not registered. Maybe system initialize() was not called.");
 
     const auto& now = context.resources.read<std::chrono::steady_clock::time_point>();
     auto& frame_time = context.resources.write<FrameTime>();
@@ -37,7 +37,7 @@ std::error_code pf::runtime::FrameTimeSystem::execute(SystemContext& context) no
     return {};
 }
 
-std::error_code pf::runtime::FrameTimeSystem::start(SystemContext& context) noexcept
+std::error_code pf::runtime::FrameTimeSystem::initialize(SystemContext& context) noexcept
 {
     context.resources.emplace<FrameTime>();
 
