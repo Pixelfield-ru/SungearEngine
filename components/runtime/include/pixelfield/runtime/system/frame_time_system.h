@@ -6,7 +6,7 @@
 
 #include <array>
 
-#include "pixelfield/runtime/system.h"
+#include "pixelfield/runtime/system/system.h"
 #include "pixelfield/runtime/frame_time.h"
 
 namespace pf::runtime

@@ -2,7 +2,7 @@
 // Created by stuka on 14.10.2026.
 //
 
-#include "pixelfield/runtime/systems/frame_time_system.h"
+#include "pixelfield/runtime/system/frame_time_system.h"
 
 std::span<const std::uint32_t> pf::runtime::FrameTimeSystem::reads() const noexcept
 {

@@ -2,13 +2,13 @@
 // Created by stuka on 14.10.2026.
 //
 
-#include "pixelfield/runtime/system_graph.h"
+#include "pixelfield/runtime/system/system_graph.h"
 
 #include <algorithm>
 #include <ranges>
 #include <unordered_set>
 
-#include "pixelfield/runtime/system.h"
+#include "pixelfield/runtime/system/system.h"
 #include "pixelfield/runtime/errors.h"
 
 std::expected<pf::runtime::SystemGraph, std::error_code> pf::runtime::SystemGraph::build(

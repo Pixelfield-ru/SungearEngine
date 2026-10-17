@@ -31,6 +31,8 @@ namespace pf::runtime
 
     struct SystemGraph final
     {
+        friend struct SystemScheduler;
+
         struct Node final
         {
             /// Executable system.
