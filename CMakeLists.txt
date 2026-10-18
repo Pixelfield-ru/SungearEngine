@@ -1,8 +1,8 @@
 include(cmake/platform.cmake)
 include(cmake/cmake_utils.cmake)
 
-set(LIBRARY_NAMESPACE pixelfield)
-set(CODE_NAMESPACE pf)
+set(LIBRARY_NAMESPACE sg)
+set(CODE_NAMESPACE sg)
 
 cmake_minimum_required(VERSION 3.22)
 project(SungearEngine)
@@ -118,6 +118,8 @@ find_package(slang CONFIG REQUIRED)
 find_package(Vulkan REQUIRED)
 find_package(glad CONFIG REQUIRED)
 
+find_package(sgf REQUIRED COMPONENTS runtime)
+
 if(SG_TARGET_OS_ANDROID)
     find_library(SG_ANDROID_LIB android)
     find_library(SG_EGL_LIB EGL)
@@ -125,9 +127,6 @@ endif()
 
 # options
 # set(SG_BUILD_TESTS ON)
-
-# including externals
-add_subdirectory(Externals/rectpack2D)
 
 # components
 add_subdirectory(components)

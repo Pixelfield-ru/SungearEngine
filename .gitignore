@@ -48,6 +48,7 @@ Resources/SGResources/models/test
 Games
 
 CMakeSettings.json
+CMakeUserPresets.json
 
 build
 

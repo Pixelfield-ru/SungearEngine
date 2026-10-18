@@ -1,0 +1,38 @@
+@PACKAGE_INIT@
+
+@SGF_COMPONENT_DEPENDENCIES@
+
+set(_sgf_components "@SGF_COMPONENTS@")
+set(_sgf_requested "${sgf_FIND_COMPONENTS}")
+if(NOT _sgf_requested)
+    set(_sgf_requested "${_sgf_components}")
+endif()
+
+macro(_sgf_load_component component)
+    if(NOT TARGET sgf::${component} AND NOT ";${_sgf_loading};" MATCHES ";${component};")
+        list(APPEND _sgf_loading "${component}")
+        foreach(_sgf_dependency IN LISTS _sgf_${component}_deps)
+            _sgf_load_component("${_sgf_dependency}")
+        endforeach()
+        include("${CMAKE_CURRENT_LIST_DIR}/sgf-${component}-targets.cmake")
+    endif()
+endmacro()
+
+foreach(_sgf_component IN LISTS _sgf_requested)
+    if(NOT ";${_sgf_components};" MATCHES ";${_sgf_component};")
+        set(sgf_FOUND FALSE)
+        set(sgf_NOT_FOUND_MESSAGE "sgf does not provide component '${_sgf_component}'. Available components: ${_sgf_components}.")
+        return()
+    endif()
+
+    _sgf_load_component("${_sgf_component}")
+    set(sgf_${_sgf_component}_FOUND TRUE)
+endforeach()
+
+unset(_sgf_loading)
+unset(_sgf_component)
+unset(_sgf_dependency)
+unset(_sgf_requested)
+unset(_sgf_components)
+
+check_required_components(sgf)

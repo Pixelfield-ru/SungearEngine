@@ -1,0 +1,19 @@
+{
+  "version": 5,
+  "configurePresets": [
+    {
+      "name": "debug-x64-windows-static-md-local",
+      "inherits": "debug-x64-windows-static-md",
+      "cacheVariables": {
+        "CMAKE_INSTALL_PREFIX": "D:/Pixelfield/sungearframework-installed/x64-windows-static-md/debug"
+      }
+    },
+    {
+      "name": "release-x64-windows-static-md-local",
+      "inherits": "release-x64-windows-static-md",
+      "cacheVariables": {
+        "CMAKE_INSTALL_PREFIX": "D:/Pixelfield/sungearframework-installed/x64-windows-static-md/release"
+      }
+    }
+  ]
+}

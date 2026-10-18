@@ -9,9 +9,9 @@
         "SG_BUILD_TYPE": "Release",
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_SYSTEM_PROCESSOR": "x64",
-        "VCPKG_INSTALLED_DIR": "$env{SUNGEAR_ROOT}/vcpkg/vcpkg_installed",
-        "CMAKE_TOOLCHAIN_FILE": "$env{SUNGEAR_ROOT}/vcpkg/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_OVERLAY_TRIPLETS": "$env{SUNGEAR_ROOT}/cmake/vcpkg-triplets"
+        "VCPKG_INSTALLED_DIR": "$env{PIXELFIELD_VCPKG_ROOT}/vcpkg_installed",
+        "CMAKE_TOOLCHAIN_FILE": "$env{PIXELFIELD_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/vcpkg-triplets"
       }
     },
     {
@@ -22,9 +22,9 @@
         "SG_BUILD_TYPE": "Debug",
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_SYSTEM_PROCESSOR": "x64",
-        "VCPKG_INSTALLED_DIR": "$env{SUNGEAR_ROOT}/vcpkg/vcpkg_installed",
-        "CMAKE_TOOLCHAIN_FILE": "$env{SUNGEAR_ROOT}/vcpkg/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_OVERLAY_TRIPLETS": "$env{SUNGEAR_ROOT}/cmake/vcpkg-triplets"
+        "VCPKG_INSTALLED_DIR": "$env{PIXELFIELD_VCPKG_ROOT}/vcpkg_installed",
+        "CMAKE_TOOLCHAIN_FILE": "$env{PIXELFIELD_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/vcpkg-triplets"
       }
     }
   ]

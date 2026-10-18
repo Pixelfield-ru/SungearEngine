@@ -33,22 +33,18 @@ give_dirs(
     DIRS "${PROJECT_SOURCE_DIR}/sources"
 )
 
-add_library(
-    ${PROJECT_NAME} STATIC
+add_executable(
+    ${PROJECT_NAME}
     ${source_units}
-)
-
-add_library(
-    ${LIBRARY_NAMESPACE}::${PROJECT_NAME}
-    ALIAS ${PROJECT_NAME}
 )
 
 handle_version()
 
 target_link_libraries(
     ${PROJECT_NAME} PRIVATE
+    glm::glm
 
-    pixelfield::core
+    sgf::runtime
 )
 
 target_include_directories(
