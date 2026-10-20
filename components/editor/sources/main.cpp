@@ -61,10 +61,23 @@ int main()
     scheduler_create_info.debug_output = &logger;
     scheduler_create_info.graph = &system_graph;
     scheduler_create_info.thread_pool = &thread_pool;
-    sgf::runtime::SystemScheduler system_scheduler(scheduler_create_info);
+    sgf::runtime::SystemScheduleState schedule;
+    schedule.type = sgf::runtime::kFrame;
+    // 120 frames per seconds
+    schedule.interval = std::chrono::nanoseconds(1'000'000'000 / 120);
+    scheduler_create_info.schedules.push_back(schedule);
+
+    sgf::runtime::SystemScheduler system_scheduler;
+    if(const auto res = sgf::runtime::SystemScheduler::create(scheduler_create_info, system_scheduler))
+    {
+        return 1;
+    }
 
     // system_scheduler.run();
-    system_scheduler.runOnce();
+    if(const auto res = system_scheduler.runOnce())
+    {
+        return 1;
+    }
 
     return 0;
 }
