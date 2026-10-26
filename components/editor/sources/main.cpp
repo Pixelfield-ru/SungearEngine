@@ -13,6 +13,8 @@
 #include <sgf/runtime/system/frame_time_system.h>
 #include <sgf/runtime/execution/thread_pool.h>
 
+#include <sgf/assets/asset_handle.h>
+
 struct MyResource final : std::pmr::memory_resource
 {
     size_t memoryUsage() const noexcept
@@ -61,6 +63,16 @@ private:
 
 int main()
 {
+    sgf::assets::Handle<int> handle;
+    sgf::assets::WeakHandle<int> weak_handle = handle;
+    sgf::assets::AnyHandle any_handle = handle;
+    sgf::assets::AnyWeakHandle any_weak_handle = any_handle;
+    any_handle = weak_handle.lock();
+    any_weak_handle = any_handle;
+    handle = weak_handle.lock();
+    any_handle = any_weak_handle.lock();
+    handle = any_handle.as<int>();
+
     MyResource resource;
 
     sgf::core::LogCallback logger;
@@ -69,12 +81,11 @@ int main()
         std::println("Level {}: {}", std::to_underlying(level), msg);
     };
 
-    sgf::runtime::SystemContext system_context;
-    system_context.resources = sgf::core::TypeMap(&resource);
+    sgf::runtime::SystemContext system_context(&resource);
     system_context.resources.emplace<std::chrono::steady_clock::time_point>(std::chrono::steady_clock::now());
 
     sgf::core::Vector<sgf::core::UniquePtr<sgf::runtime::ISystem>> systems(&resource);
-    systems.push_back(sgf::core::make_unique<sgf::runtime::FrameTimeSystem>(&resource));
+    systems.push_back(sgf::core::makeUnique<sgf::runtime::FrameTimeSystem>(&resource));
 
     for(const auto& system : systems)
     {
@@ -92,14 +103,9 @@ int main()
     system_graph_build_info.context = &system_context;
     system_graph_build_info.debug_output = &logger;
     system_graph_build_info.systems = systems_pointer;
-    system_graph_build_info.memory_resource = &resource;
 
-    sgf::runtime::SystemGraph system_graph;
-    if(auto res = sgf::runtime::SystemGraph::build(system_graph_build_info))
-    {
-        system_graph = std::move(*res);
-    }
-    else
+    sgf::runtime::SystemGraph system_graph(&resource);
+    if(auto res = sgf::runtime::SystemGraph::build(system_graph_build_info, system_graph))
     {
         return 1;
     }
@@ -111,14 +117,13 @@ int main()
     scheduler_create_info.debug_output = &logger;
     scheduler_create_info.graph = &system_graph;
     scheduler_create_info.thread_pool = &thread_pool;
-    scheduler_create_info.memory_resource = &resource;
     sgf::runtime::SystemScheduleState schedule;
     schedule.type = sgf::runtime::kFrame;
     // 120 frames per seconds
     schedule.interval = std::chrono::nanoseconds(1'000'000'000 / 120);
     scheduler_create_info.schedules.push_back(schedule);
 
-    sgf::runtime::SystemScheduler system_scheduler;
+    sgf::runtime::SystemScheduler system_scheduler(&resource);
     if(const auto res = sgf::runtime::SystemScheduler::create(scheduler_create_info, system_scheduler))
     {
         return 1;
