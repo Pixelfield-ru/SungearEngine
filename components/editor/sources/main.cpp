@@ -14,6 +14,7 @@
 #include <sgf/runtime/execution/thread_pool.h>
 
 #include <sgf/assets/asset_handle.h>
+#include <sgf/assets/asset_server.h>
 
 struct MyResource final : std::pmr::memory_resource
 {
@@ -72,6 +73,13 @@ int main()
     handle = weak_handle.lock();
     any_handle = any_weak_handle.lock();
     handle = any_handle.as<int>();
+
+    sgf::assets::AssetServer asset_server(24);
+    auto handle0 = asset_server.find(0, sgf::core::typeIndex<int>());
+    if(!handle0)
+    {
+        std::cerr << "handle is invalid" << std::endl;
+    }
 
     MyResource resource;
 
