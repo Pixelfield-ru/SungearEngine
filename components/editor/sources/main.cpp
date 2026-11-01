@@ -16,6 +16,92 @@
 #include <sgf/assets/asset_handle.h>
 #include <sgf/assets/asset_server.h>
 
+#include <sgf/serialization/serializer.h>
+#include <sgf/serialization/connection.h>
+#include <sgf/serialization/types_connection.h>
+#include <sgf/serialization/macroses.h>
+#include <sgf/serialization/format/json/json_reader.h>
+#include <sgf/serialization/format/json/json_writer.h>
+#include <sgf/serialization/spec/specs.h>
+
+struct Base
+{
+    int a { 1 };
+
+    virtual ~Base() = default;
+
+    virtual void foo()
+    {
+        std::println("hello base");
+    }
+};
+
+struct Derived final : Base
+{
+    int b { 2 };
+    sgf::core::UnorderedMap<int, sgf::core::String> c { { 0, "value" } };
+
+    void foo() override
+    {
+        std::println("hello base");
+    }
+};
+
+namespace sgf::serialization
+{
+    template<>
+    struct SerializerSpec<Base> final
+    {
+        SGF_SERIALIZER_TYPE_NAME(Base)
+
+        template<typename... ArgsT>
+        static std::error_code serialize(Serializer& serializer, const Base& value, ArgsT&&... args)
+        {
+            return serializer.serializeField("a", value.a);
+        }
+
+        template<typename... ArgsT>
+        static std::error_code deserialize(Serializer& serializer, Base& value, ArgsT&&... args)
+        {
+            if(const auto err = serializer.deserializeField("a", value.a)) return err;
+
+            return {};
+        }
+    };
+}
+
+namespace sgf::serialization
+{
+    template<>
+    struct SerializerSpec<Derived> final : core::base_types<Base>
+    {
+        SGF_SERIALIZER_TYPE_NAME(Derived)
+
+        template<typename... ArgsT>
+        static std::error_code serialize(Serializer& serializer, const Derived& value, ArgsT&&... args)
+        {
+            if(const auto err = serializer.serializeField("b", value.b)) return err;
+            if(const auto err = serializer.serializeField("c", value.c)) return err;
+            std::println("args count: {}", sizeof...(args));
+
+            return {};
+        }
+
+        template<typename... ArgsT>
+        static std::error_code deserialize(Serializer& serializer, Derived& value, ArgsT&&... args)
+        {
+            if(const auto err = serializer.deserializeField("b", value.b)) return err;
+            if(const auto err = serializer.deserializeField("c", value.c)) return err;
+            std::println("args count: {}", sizeof...(args));
+
+            return {};
+        }
+    };
+}
+
+SGF_SERIALIZER_ADD_CONNECTION(Base, Derived)
+SGF_SERIALIZER_ADD_CONNECTION(Base, Derived, int)
+
 struct MyResource final : std::pmr::memory_resource
 {
     size_t memoryUsage() const noexcept
@@ -82,6 +168,7 @@ int main()
     }
 
     MyResource resource;
+    std::pmr::polymorphic_allocator allocator(&resource);
 
     sgf::core::LogCallback logger;
     logger.enabled = true;
@@ -142,6 +229,45 @@ int main()
     {
         return 1;
     }
+
+    auto json_writer = sgf::core::makeUnique<sgf::serialization::JsonWriter>(allocator);
+    if(const auto err = json_writer->setSettings({
+        .pretty = true
+    }))
+    {
+        return 1;
+    }
+    auto json_reader = sgf::core::makeUnique<sgf::serialization::JsonReader>(allocator);
+
+    sgf::serialization::Serializer serializer(json_writer.get(), json_reader.get(), allocator);
+
+    sgf::core::SharedPtr<Base> base = sgf::core::makeShared<Derived>(allocator);
+    base->a = 20;
+    static_cast<Derived*>(base.get())->c[1] = "2_test";
+
+    if(const auto err = serializer.serialize(base.get(), 9))
+    {
+        std::println("Error in serialization: {}", err.message());
+        return 1;
+    }
+
+    std::println("serialized data:\n{}", serializer.writer()->data());
+
+    if(const auto err = serializer.reader()->parse(serializer.writer()->data()))
+    {
+        std::println("Cannot parse: {}", err.message());
+        return 1;
+    }
+
+    sgf::core::SharedPtr<Base> deser {};
+    if(const auto err = serializer.deserialize(deser, 3))
+    {
+        std::println("Cannot deserialize: {}", err.message());
+        return 1;
+    }
+
+    std::println("Deserialized: {}", typeid(*deser).name());
+    std::println("a is: {}", deser->a);
 
     std::println("memory usage: {}", resource.memoryUsage());
 

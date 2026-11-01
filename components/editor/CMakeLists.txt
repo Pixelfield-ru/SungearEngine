@@ -45,6 +45,7 @@ target_link_libraries(
     glm::glm
 
     sgf::runtime
+    sgf::serialization
 )
 
 target_include_directories(
