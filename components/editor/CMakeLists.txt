@@ -46,6 +46,7 @@ target_link_libraries(
 
     sgf::runtime
     sgf::serialization
+    sgf::assets
 )
 
 target_include_directories(

@@ -118,7 +118,7 @@ find_package(slang CONFIG REQUIRED)
 find_package(Vulkan REQUIRED)
 find_package(glad CONFIG REQUIRED)
 
-find_package(sgf REQUIRED COMPONENTS runtime serialization)
+find_package(sgf REQUIRED COMPONENTS runtime serialization assets)
 
 if(SG_TARGET_OS_ANDROID)
     find_library(SG_ANDROID_LIB android)

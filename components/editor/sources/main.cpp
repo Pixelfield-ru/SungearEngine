@@ -150,25 +150,34 @@ private:
 
 int main()
 {
-    sgf::assets::Handle<int> handle;
-    sgf::assets::WeakHandle<int> weak_handle = handle;
-    sgf::assets::AnyHandle any_handle = handle;
-    sgf::assets::AnyWeakHandle any_weak_handle = any_handle;
-    any_handle = weak_handle.lock();
-    any_weak_handle = any_handle;
-    handle = weak_handle.lock();
-    any_handle = any_weak_handle.lock();
-    handle = any_handle.as<int>();
+    MyResource resource;
+    std::pmr::polymorphic_allocator allocator(&resource);
 
-    sgf::assets::AssetServer asset_server(24);
+    auto json_writer = sgf::core::makeUnique<sgf::serialization::JsonWriter>(allocator);
+    if(const auto err = json_writer->setSettings({
+        .pretty = true
+    }))
+    {
+        return 1;
+    }
+    auto json_reader = sgf::core::makeUnique<sgf::serialization::JsonReader>(allocator);
+
+    sgf::serialization::Serializer serializer(json_writer.get(), json_reader.get(), allocator);
+
+    sgf::assets::AssetServer asset_server(serializer, 24, allocator);
     auto handle0 = asset_server.find(0, sgf::core::typeIndex<int>());
     if(!handle0)
     {
         std::cerr << "handle is invalid" << std::endl;
     }
 
-    MyResource resource;
-    std::pmr::polymorphic_allocator allocator(&resource);
+    if(const auto err = asset_server.mount("./"))
+    {
+        std::println("cannot mount asset server: {}", err.message());
+        return 1;
+    }
+
+    serializer.reset();
 
     sgf::core::LogCallback logger;
     logger.enabled = true;
@@ -229,17 +238,6 @@ int main()
     {
         return 1;
     }
-
-    auto json_writer = sgf::core::makeUnique<sgf::serialization::JsonWriter>(allocator);
-    if(const auto err = json_writer->setSettings({
-        .pretty = true
-    }))
-    {
-        return 1;
-    }
-    auto json_reader = sgf::core::makeUnique<sgf::serialization::JsonReader>(allocator);
-
-    sgf::serialization::Serializer serializer(json_writer.get(), json_reader.get(), allocator);
 
     sgf::core::SharedPtr<Base> base = sgf::core::makeShared<Derived>(allocator);
     base->a = 20;
