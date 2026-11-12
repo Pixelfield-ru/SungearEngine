@@ -7,14 +7,17 @@
 #include <print>
 #include <ranges>
 
+#include <sgf/core/thread_pool.h>
+
 #include <sgf/runtime/system/system.h>
 #include <sgf/runtime/system/system_graph.h>
 #include <sgf/runtime/system/system_scheduler.h>
 #include <sgf/runtime/system/frame_time_system.h>
-#include <sgf/runtime/execution/thread_pool.h>
 
-#include <sgf/assets/asset_handle.h>
-#include <sgf/assets/asset_server.h>
+#include <sgf/assets/handle.h>
+#include <sgf/assets/server.h>
+#include <sgf/assets/std/blob.h>
+#include <sgf/assets/std/blob_loader.h>
 
 #include <sgf/serialization/serializer.h>
 #include <sgf/serialization/connection.h>
@@ -163,12 +166,17 @@ int main()
     auto json_reader = sgf::core::makeUnique<sgf::serialization::JsonReader>(allocator);
 
     sgf::serialization::Serializer serializer(json_writer.get(), json_reader.get(), allocator);
+    sgf::core::ThreadPool thread_pool(std::thread::hardware_concurrency() * 2);
 
-    sgf::assets::AssetServer asset_server(serializer, 24, allocator);
-    auto handle0 = asset_server.find(0, sgf::core::typeIndex<int>());
-    if(!handle0)
+    sgf::assets::AssetServer asset_server(allocator);
+    sgf::assets::AssetServerCreateInfo asset_server_create_info;
+    asset_server_create_info.serializer = serializer;
+    asset_server_create_info.thread_pool = &thread_pool;
+
+    if(const auto err = sgf::assets::AssetServer::create(asset_server_create_info, asset_server))
     {
-        std::cerr << "handle is invalid" << std::endl;
+        std::println("error: {}", err.message());
+        return 1;
     }
 
     if(const auto err = asset_server.mount("./"))
@@ -177,7 +185,37 @@ int main()
         return 1;
     }
 
-    serializer.reset();
+    auto blob_loader = sgf::core::makeUnique<sgf::assets::BlobLoader>(allocator);
+
+    asset_server.storage<sgf::assets::Blob>().setLoader(std::move(blob_loader));
+
+    sgf::assets::Handle<sgf::assets::Blob> test_blob;
+    if(auto val = asset_server.load<sgf::assets::Blob>("test.txt"))
+    {
+        test_blob = std::move(*val);
+    }
+    else
+    {
+        std::println("cannot load blob: {}", val.error().message());
+        return 1;
+    }
+
+    // waiting for asset
+    while(test_blob.state() != sgf::assets::AssetState::kLoaded) { }
+
+    const sgf::core::String test_str(reinterpret_cast<const char*>(test_blob->bytes.data()),
+                                     test_blob->bytes.size(),
+                                     test_blob->bytes.get_allocator());
+
+    std::println("test.txt contains: {}", test_str);
+    std::println("baking asset...");
+
+    sgf::assets::AnyHandle test_blob_any = test_blob;
+    if(const auto err = asset_server.bake(test_blob_any, "test_archive.sga", 12))
+    {
+        std::println("cannot bake: {}", err.message());
+        return 1;
+    }
 
     sgf::core::LogCallback logger;
     logger.enabled = true;
@@ -213,8 +251,6 @@ int main()
     {
         return 1;
     }
-
-    sgf::runtime::ThreadPool thread_pool(std::thread::hardware_concurrency() * 2);
 
     sgf::runtime::SystemSchedulerCreateInfo scheduler_create_info;
     scheduler_create_info.context = &system_context;

@@ -64,6 +64,10 @@
       "version>=": "2024-07-29#1"
     },
     {
+      "name": "zstd",
+      "version>=": "1.5.5"
+    },
+    {
       "name": "vcpkg-cmake",
       "version>=": "2023-05-04"
     },
