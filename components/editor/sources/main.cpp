@@ -167,11 +167,17 @@ int main()
 
     sgf::serialization::Serializer serializer(json_writer.get(), json_reader.get(), allocator);
     sgf::core::ThreadPool thread_pool(std::thread::hardware_concurrency() * 2);
+    sgf::core::LogCallback logger;
+    logger.enabled = true;
+    logger.function = [](sgf::core::LogLevel level, std::string_view msg, std::source_location caller) {
+        std::println("Level {}: {} ({}:{})", std::to_underlying(level), msg, caller.file_name(), caller.line());
+    };
 
     sgf::assets::AssetServer asset_server(allocator);
     sgf::assets::AssetServerCreateInfo asset_server_create_info;
     asset_server_create_info.serializer = serializer;
     asset_server_create_info.thread_pool = &thread_pool;
+    asset_server_create_info.debug_output = &logger;
 
     if(const auto err = sgf::assets::AssetServer::create(asset_server_create_info, asset_server))
     {
@@ -216,12 +222,6 @@ int main()
         std::println("cannot bake: {}", err.message());
         return 1;
     }
-
-    sgf::core::LogCallback logger;
-    logger.enabled = true;
-    logger.function = [](sgf::core::LogLevel level, std::string_view msg) {
-        std::println("Level {}: {}", std::to_underlying(level), msg);
-    };
 
     sgf::runtime::SystemContext system_context(&resource);
     system_context.resources.emplace<std::chrono::steady_clock::time_point>(std::chrono::steady_clock::now());
