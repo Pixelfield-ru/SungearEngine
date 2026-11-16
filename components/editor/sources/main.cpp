@@ -30,83 +30,10 @@
 #include <sgf/serialization/format/json/json_writer.h>
 #include <sgf/serialization/spec/specs.h>
 
-struct Base
-{
-    int a { 1 };
+#include <sgf/platform/window.h>
+#include <sgf/platform/platform.h>
 
-    virtual ~Base() = default;
-
-    virtual void foo()
-    {
-        std::println("hello base");
-    }
-};
-
-struct Derived final : Base
-{
-    int b { 2 };
-    sgf::core::UnorderedMap<int, sgf::core::String> c { { 0, "value" } };
-
-    void foo() override
-    {
-        std::println("hello base");
-    }
-};
-
-namespace sgf::serialization
-{
-    template<>
-    struct SerializerSpec<Base> final
-    {
-        SGF_SERIALIZER_TYPE_NAME(Base)
-
-        template<typename... ArgsT>
-        static std::error_code serialize(Serializer& serializer, const Base& value, ArgsT&&... args)
-        {
-            return serializer.serializeField("a", value.a);
-        }
-
-        template<typename... ArgsT>
-        static std::error_code deserialize(Serializer& serializer, Base& value, ArgsT&&... args)
-        {
-            if(const auto err = serializer.deserializeField("a", value.a)) return err;
-
-            return {};
-        }
-    };
-}
-
-namespace sgf::serialization
-{
-    template<>
-    struct SerializerSpec<Derived> final : core::base_types<Base>
-    {
-        SGF_SERIALIZER_TYPE_NAME(Derived)
-
-        template<typename... ArgsT>
-        static std::error_code serialize(Serializer& serializer, const Derived& value, ArgsT&&... args)
-        {
-            if(const auto err = serializer.serializeField("b", value.b)) return err;
-            if(const auto err = serializer.serializeField("c", value.c)) return err;
-            std::println("args count: {}", sizeof...(args));
-
-            return {};
-        }
-
-        template<typename... ArgsT>
-        static std::error_code deserialize(Serializer& serializer, Derived& value, ArgsT&&... args)
-        {
-            if(const auto err = serializer.deserializeField("b", value.b)) return err;
-            if(const auto err = serializer.deserializeField("c", value.c)) return err;
-            std::println("args count: {}", sizeof...(args));
-
-            return {};
-        }
-    };
-}
-
-SGF_SERIALIZER_ADD_CONNECTION(Base, Derived)
-SGF_SERIALIZER_ADD_CONNECTION(Base, Derived, int)
+#include "platform_polling_system.h"
 
 struct MyResource final : std::pmr::memory_resource
 {
@@ -157,6 +84,10 @@ private:
 int main()
 {
     MyResource resource;
+
+    /*std::byte stack[sgf::core::stack_optimal_size];
+    std::pmr::monotonic_buffer_resource stack_resource(stack, sizeof(stack), &resource);
+    std::pmr::polymorphic_allocator allocator(&stack_resource);*/
     std::pmr::polymorphic_allocator allocator(&resource);
 
     auto json_writer = sgf::core::makeUnique<sgf::serialization::JsonWriter>(allocator);
@@ -196,21 +127,10 @@ int main()
 
     auto blob_loader = sgf::core::makeUnique<sgf::assets::BlobLoader>(allocator);
     auto image_loader = sgf::core::makeUnique<sgf::assets::ImageLoader>(allocator);
-    image_loader->addImporter(sgf::core::makeUnique<sgf::assets::PngImporter>(allocator));
+    std::ignore = image_loader->addImporter(sgf::core::makeUnique<sgf::assets::PngImporter>(allocator));
 
     asset_server.storage<sgf::assets::Blob>().setLoader(std::move(blob_loader));
     asset_server.storage<sgf::assets::Image>().setLoader(std::move(image_loader));
-
-    /*sgf::assets::Handle<sgf::assets::Blob> test_blob;
-    if(auto val = asset_server.load(1, sgf::core::stableTypeHash<sgf::assets::AssetStorage<sgf::assets::Blob>>()))
-    {
-        test_blob = val->as<sgf::assets::Blob>();
-    }
-    else
-    {
-        std::println("cannot load blob: {}", val.error().message());
-        return 1;
-    }*/
 
     sgf::assets::Handle<sgf::assets::Blob> test_blob;
     if(auto val = asset_server.load<sgf::assets::Blob>("test.txt"))
@@ -264,11 +184,12 @@ int main()
         return 1;
     }
 
-    sgf::runtime::SystemContext system_context(&resource);
-    system_context.resources.emplace<std::chrono::steady_clock::time_point>(std::chrono::steady_clock::now());
+    sgf::runtime::SystemContext system_context(allocator);
+    auto& system_scheduler = system_context.resources.emplace<sgf::runtime::SystemScheduler>(allocator);
 
-    sgf::core::Vector<sgf::core::UniquePtr<sgf::runtime::ISystem>> systems(&resource);
-    systems.push_back(sgf::core::makeUnique<sgf::runtime::FrameTimeSystem>(&resource));
+    sgf::core::Vector<sgf::core::UniquePtr<sgf::runtime::ISystem>> systems(allocator);
+    systems.push_back(sgf::core::makeUnique<sgf::runtime::FrameTimeSystem>(allocator));
+    systems.push_back(sgf::core::makeUnique<PlatformPollingSystem>(allocator));
 
     for(const auto& system : systems)
     {
@@ -287,7 +208,7 @@ int main()
     system_graph_build_info.debug_output = &logger;
     system_graph_build_info.systems = systems_pointer;
 
-    sgf::runtime::SystemGraph system_graph(&resource);
+    sgf::runtime::SystemGraph system_graph(allocator);
     if(auto res = sgf::runtime::SystemGraph::build(system_graph_build_info, system_graph))
     {
         return 1;
@@ -304,47 +225,44 @@ int main()
     schedule.interval = std::chrono::nanoseconds(1'000'000'000 / 120);
     scheduler_create_info.schedules.push_back(schedule);
 
-    sgf::runtime::SystemScheduler system_scheduler(&resource);
     if(const auto res = sgf::runtime::SystemScheduler::create(scheduler_create_info, system_scheduler))
     {
         return 1;
     }
 
-    // system_scheduler.run();
-    if(const auto res = system_scheduler.runOnce())
+    // std::println("memory usage: {}", resource.memoryUsage());
+
+    if(const auto err = sgf::platform::platform().init())
     {
+        std::println("Cannot init the platform: {}", err.message());
         return 1;
     }
 
-    sgf::core::SharedPtr<Base> base = sgf::core::makeShared<Derived>(allocator);
-    base->a = 20;
-    static_cast<Derived*>(base.get())->c[1] = "2_test";
+    sgf::platform::Window window0;
+    sgf::platform::Window window1;
 
-    if(const auto err = serializer.serialize(base.get(), 9))
+    sgf::platform::WindowCreateInfo window_create_info;
+    window_create_info.debug_output = &logger;
+    window_create_info.width = 400;
+    window_create_info.height = 400;
+    window_create_info.client_api = sgf::platform::WindowClientApi::kNoApi;
+    window_create_info.fullscreen = false;
+    window_create_info.title = "test0";
+
+    if(const auto err = sgf::platform::Window::create(window_create_info, window0))
     {
-        std::println("Error in serialization: {}", err.message());
+        std::println("Cannot create the window: {}", err.message());
         return 1;
     }
 
-    std::println("serialized data:\n{}", serializer.writer()->data());
-
-    if(const auto err = serializer.reader()->parse(serializer.writer()->data()))
+    window_create_info.title = "test1";
+    if(const auto err = sgf::platform::Window::create(window_create_info, window1))
     {
-        std::println("Cannot parse: {}", err.message());
+        std::println("Cannot create the window: {}", err.message());
         return 1;
     }
 
-    sgf::core::SharedPtr<Base> deser {};
-    if(const auto err = serializer.deserialize(deser, 3))
-    {
-        std::println("Cannot deserialize: {}", err.message());
-        return 1;
-    }
-
-    std::println("Deserialized: {}", typeid(*deser).name());
-    std::println("a is: {}", deser->a);
-
-    std::println("memory usage: {}", resource.memoryUsage());
+    system_scheduler.run();
 
     return 0;
 }
