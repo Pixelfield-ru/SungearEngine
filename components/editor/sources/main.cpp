@@ -18,6 +18,9 @@
 #include <sgf/assets/server.h>
 #include <sgf/assets/std/blob.h>
 #include <sgf/assets/std/blob_loader.h>
+#include <sgf/assets/std/image.h>
+#include <sgf/assets/std/image_loader.h>
+#include <sgf/assets/std/png_importer.h>
 
 #include <sgf/serialization/serializer.h>
 #include <sgf/serialization/connection.h>
@@ -192,8 +195,22 @@ int main()
     }
 
     auto blob_loader = sgf::core::makeUnique<sgf::assets::BlobLoader>(allocator);
+    auto image_loader = sgf::core::makeUnique<sgf::assets::ImageLoader>(allocator);
+    image_loader->addImporter(sgf::core::makeUnique<sgf::assets::PngImporter>(allocator));
 
     asset_server.storage<sgf::assets::Blob>().setLoader(std::move(blob_loader));
+    asset_server.storage<sgf::assets::Image>().setLoader(std::move(image_loader));
+
+    /*sgf::assets::Handle<sgf::assets::Blob> test_blob;
+    if(auto val = asset_server.load(1, sgf::core::stableTypeHash<sgf::assets::AssetStorage<sgf::assets::Blob>>()))
+    {
+        test_blob = val->as<sgf::assets::Blob>();
+    }
+    else
+    {
+        std::println("cannot load blob: {}", val.error().message());
+        return 1;
+    }*/
 
     sgf::assets::Handle<sgf::assets::Blob> test_blob;
     if(auto val = asset_server.load<sgf::assets::Blob>("test.txt"))
@@ -206,20 +223,44 @@ int main()
         return 1;
     }
 
+    sgf::assets::Handle<sgf::assets::Image> test_image;
+    if(auto val = asset_server.load<sgf::assets::Image>("hi_flyer.jpg"))
+    {
+        test_image = std::move(*val);
+    }
+    else
+    {
+        std::println("cannot load image: {}", val.error().message());
+        return 1;
+    }
+
     // waiting for asset
-    while(test_blob.state() != sgf::assets::AssetState::kLoaded) { }
+    while(test_blob.state() == sgf::assets::AssetState::kLoading ||
+          test_image.state() == sgf::assets::AssetState::kLoading)
+    {
+        if(test_image.error())
+        {
+            std::println("Cannot load image: {}", test_image.error().message());
+            return 1;
+        }
+    }
 
     const sgf::core::String test_str(reinterpret_cast<const char*>(test_blob->bytes.data()),
                                      test_blob->bytes.size(),
                                      test_blob->bytes.get_allocator());
 
     std::println("test.txt contains: {}", test_str);
-    std::println("baking asset...");
+    std::println("baking assets...");
 
-    sgf::assets::AnyHandle test_blob_any = test_blob;
-    if(const auto err = asset_server.bake(test_blob_any, "test_archive.sga", 12))
+    if(const auto err = asset_server.bake(test_image, "test_archive.sga", 12))
     {
-        std::println("cannot bake: {}", err.message());
+        std::println("cannot bake image: {}", err.message());
+        return 1;
+    }
+
+    if(const auto err = asset_server.bake(test_blob, "test_archive.sga", 12))
+    {
+        std::println("cannot bake blob: {}", err.message());
         return 1;
     }
 
