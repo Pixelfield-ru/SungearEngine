@@ -42,7 +42,6 @@ handle_version()
 
 target_link_libraries(
     ${PROJECT_NAME} PRIVATE
-    glm::glm
 
     sgf::runtime
     sgf::serialization

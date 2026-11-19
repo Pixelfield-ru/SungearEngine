@@ -98,27 +98,7 @@ message(STATUS "ANDROID_STL: ${ANDROID_STL}")
 
 # packages --------------------------------------------------
 
-find_package(Bullet REQUIRED)
-find_package(glm CONFIG REQUIRED)
-find_package(assimp CONFIG REQUIRED)
-find_package(EnTT CONFIG REQUIRED)
-if(SG_TARGET_PLATFORM_PC)
-    find_package(glfw3 CONFIG REQUIRED)
-endif()
-find_package(imgui CONFIG REQUIRED)
-find_package(spdlog CONFIG REQUIRED)
-find_package(OpenAL CONFIG REQUIRED)
-find_package(RapidJSON CONFIG REQUIRED)
-find_package(gli CONFIG REQUIRED)
-find_package(meshoptimizer CONFIG REQUIRED)
-find_package(Boost REQUIRED COMPONENTS system asio)
-find_package(recastnavigation CONFIG REQUIRED)
-
-find_package(slang CONFIG REQUIRED)
-find_package(Vulkan REQUIRED)
-find_package(glad CONFIG REQUIRED)
-
-find_package(sgf REQUIRED COMPONENTS runtime serialization assets platform)
+sgf_find_package(sgf REQUIRED COMPONENTS runtime serialization assets platform)
 
 if(SG_TARGET_OS_ANDROID)
     find_library(SG_ANDROID_LIB android)

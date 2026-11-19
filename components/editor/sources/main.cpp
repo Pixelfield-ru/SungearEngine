@@ -100,7 +100,7 @@ int main()
     auto json_reader = sgf::core::makeUnique<sgf::serialization::JsonReader>(allocator);
 
     sgf::serialization::Serializer serializer(json_writer.get(), json_reader.get(), allocator);
-    sgf::core::ThreadPool thread_pool(std::thread::hardware_concurrency() * 2);
+    sgf::core::ThreadPool thread_pool(std::thread::hardware_concurrency() * 2, allocator);
     sgf::core::LogCallback logger;
     logger.enabled = true;
     logger.function = [](sgf::core::LogLevel level, std::string_view msg, std::source_location caller) {
@@ -154,15 +154,14 @@ int main()
         return 1;
     }
 
-    // waiting for asset
-    while(test_blob.state() == sgf::assets::AssetState::kLoading ||
-          test_image.state() == sgf::assets::AssetState::kLoading)
+    // waiting for assets
+    test_blob.wait();
+    test_image.wait();
+
+    if(test_image.error())
     {
-        if(test_image.error())
-        {
-            std::println("Cannot load image: {}", test_image.error().message());
-            return 1;
-        }
+        std::println("Cannot load image: {}", test_image.error().message());
+        return 1;
     }
 
     const sgf::core::String test_str(reinterpret_cast<const char*>(test_blob->bytes.data()),

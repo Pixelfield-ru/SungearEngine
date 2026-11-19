@@ -2,19 +2,19 @@
   "name": "sungearengine",
   "version-string": "0.14.0.8",
   "homepage": "https://github.com/Pixelfield-ru/SungearEngine/tree/main",
-  "builtin-baseline": "3895230f38e498525f2560a281223d12066fa74a",
+  "builtin-baseline": "de36db04550a8625e3154b1a758c60035901f244",
   "dependencies": [
     {
-      "name": "assimp",
-      "version>=": "5.3.1#4"
+      "name": "fastgltf",
+      "version>=": "1.0.1#0"
+    },
+    {
+      "name": "simdutf",
+      "version>=": "9.4.0"
     },
     {
       "name": "boost-stacktrace",
       "version>=": "1.84.0"
-    },
-    {
-      "name": "bullet3",
-      "version>=": "3.25#1"
     },
     {
       "name": "entt",
