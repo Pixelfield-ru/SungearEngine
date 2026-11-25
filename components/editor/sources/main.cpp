@@ -8,6 +8,7 @@
 #include <ranges>
 
 #include <sgf/core/execution/thread_pool.h>
+#include <sgf/core/utility/env.h>
 
 #include <sgf/runtime/system/system.h>
 #include <sgf/runtime/system/system_graph.h>
@@ -125,6 +126,14 @@ int main()
         return 1;
     }
 
+    sgf::core::Env env(allocator);
+    if(const auto err = asset_server.importStandardResources(env.get("SUNGEAR_ROOT") / std::filesystem::path("resources"),
+                                                           false))
+    {
+        std::println("Cannot import engine resources: {}", err.message());
+        return 1;
+    }
+
     auto blob_loader = sgf::core::makeUnique<sgf::assets::BlobLoader>(allocator);
     auto image_loader = sgf::core::makeUnique<sgf::assets::ImageLoader>(allocator);
     std::ignore = image_loader->addImporter(sgf::core::makeUnique<sgf::assets::PngImporter>(allocator));
@@ -132,10 +141,11 @@ int main()
     asset_server.storage<sgf::assets::Blob>().setLoader(std::move(blob_loader));
     asset_server.storage<sgf::assets::Image>().setLoader(std::move(image_loader));
 
-    sgf::assets::Handle<sgf::assets::Blob> test_blob;
-    if(auto val = asset_server.load<sgf::assets::Blob>("test.txt"))
+    sgf::assets::Handle<sgf::assets::Blob> gamecontroller_db;
+    if(auto val = asset_server.load<sgf::assets::Blob>("engine/resources/misc/gamecontrollerdb.txt",
+                                                       sgf::core::ExecutionDomain::kCurrent))
     {
-        test_blob = std::move(*val);
+        gamecontroller_db = std::move(*val);
     }
     else
     {
@@ -155,7 +165,6 @@ int main()
     }
 
     // waiting for assets
-    test_blob.wait();
     test_image.wait();
 
     if(test_image.error())
@@ -164,11 +173,6 @@ int main()
         return 1;
     }
 
-    const sgf::core::String test_str(reinterpret_cast<const char*>(test_blob->bytes.data()),
-                                     test_blob->bytes.size(),
-                                     test_blob->bytes.get_allocator());
-
-    std::println("test.txt contains: {}", test_str);
     std::println("baking assets...");
 
     if(const auto err = asset_server.bake(test_image, "test_archive.sga", 12))
@@ -177,7 +181,7 @@ int main()
         return 1;
     }
 
-    if(const auto err = asset_server.bake(test_blob, "test_archive.sga", 12))
+    if(const auto err = asset_server.bake(gamecontroller_db, "test_archive.sga", 12))
     {
         std::println("cannot bake blob: {}", err.message());
         return 1;
@@ -235,6 +239,24 @@ int main()
     {
         std::println("Cannot init the platform: {}", err.message());
         return 1;
+    }
+
+    const std::string_view db_view(reinterpret_cast<const char*>(gamecontroller_db->bytes.data()), gamecontroller_db->bytes.size());
+    if(const auto err = sgf::platform::platform().updateGamepadMappings(db_view, allocator))
+    {
+        std::println("Cannot load gamecontroller DB: {}", err.message());
+        return 1;
+    }
+
+    auto& gamepad = sgf::platform::platform().gamepads()[0];
+    if(gamepad.connected())
+    {
+        std::println("Gamepad connected! Name: {}, GUID: {}", gamepad.name(), gamepad.guid());
+        std::println("Gamepad is {}", gamepad.mapped() ? "mapped" : "unmapped");
+    }
+    else
+    {
+        std::println("Gamepad is not connected!");
     }
 
     sgf::platform::Window window0;
