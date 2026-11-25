@@ -12,7 +12,7 @@ struct PlatformPollingSystem final : sgf::runtime::ISystem
 {
     PlatformPollingSystem()
     {
-        execution_domain_ = sgf::runtime::ExecutionDomain::kMain;
+        execution_domain_ = sgf::core::ExecutionDomain::kCurrent;
     }
 
     [[nodiscard]] std::span<const std::uint32_t> reads() const noexcept override
@@ -33,6 +33,15 @@ struct PlatformPollingSystem final : sgf::runtime::ISystem
         {
             // stop scheduler. stop program
             scheduler.stop();
+        }
+
+        auto* window = sgf::platform::platform().focusedWindow();
+        if(window)
+        {
+            if(window->mouse().released(sgf::platform::MouseButton::kRight))
+            {
+                std::println("left mouse button pressed! focused window: {}", window->title());
+            }
         }
 
         sgf::platform::platform().poll();

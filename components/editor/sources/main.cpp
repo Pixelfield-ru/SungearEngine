@@ -7,7 +7,7 @@
 #include <print>
 #include <ranges>
 
-#include <sgf/core/thread_pool.h>
+#include <sgf/core/execution/thread_pool.h>
 
 #include <sgf/runtime/system/system.h>
 #include <sgf/runtime/system/system_graph.h>
@@ -45,7 +45,7 @@ struct MyResource final : std::pmr::memory_resource
 private:
     void* do_allocate(size_t bytes, size_t alignment) override
     {
-        std::println("allocated {} bytes with alignment {}", bytes, alignment);
+        // std::println("allocated {} bytes with alignment {}", bytes, alignment);
 
         mem_usage_ += bytes;
 
@@ -59,7 +59,7 @@ private:
 
     void do_deallocate(void* p, size_t bytes, size_t alignment) override
     {
-        std::println("deallocated {} bytes with alignment {}", bytes, alignment);
+        // std::println("deallocated {} bytes with alignment {}", bytes, alignment);
 
         if(alignment <= alignof(std::max_align_t))
         {
