@@ -98,7 +98,7 @@ message(STATUS "ANDROID_STL: ${ANDROID_STL}")
 
 # packages --------------------------------------------------
 
-sgf_find_package(sgf REQUIRED COMPONENTS runtime serialization assets platform)
+sgf_find_package(sgf REQUIRED COMPONENTS runtime serialization assets platform rhi)
 
 if(SG_TARGET_OS_ANDROID)
     find_library(SG_ANDROID_LIB android)
