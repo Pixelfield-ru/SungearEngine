@@ -37,6 +37,7 @@ handle_version()
 target_link_libraries(
     ${PROJECT_NAME} PRIVATE
 
+    sgf::runtime
     sgf::rhi
     sgf::platform
     Vulkan::Vulkan

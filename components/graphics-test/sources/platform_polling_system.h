@@ -4,9 +4,13 @@
 
 #pragma once
 
-#include <sgf/runtime/system/system.h>
-
 #include <array>
+#include <print>
+
+#include <sgf/platform/platform.h>
+#include <sgf/platform/window.h>
+#include <sgf/runtime/system/system.h>
+#include <sgf/runtime/system/system_scheduler.h>
 
 struct PlatformPollingSystem final : sgf::runtime::ISystem
 {
@@ -22,7 +26,7 @@ struct PlatformPollingSystem final : sgf::runtime::ISystem
 
     [[nodiscard]] std::span<const std::uint32_t> writes() const noexcept override
     {
-        return {};
+        return write_ids_;
     }
 
     std::error_code execute(sgf::runtime::SystemContext& context) override
